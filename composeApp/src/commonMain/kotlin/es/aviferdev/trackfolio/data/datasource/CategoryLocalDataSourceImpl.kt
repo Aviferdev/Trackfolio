@@ -1,0 +1,50 @@
+package es.aviferdev.trackfolio.data.datasource
+
+import app.cash.sqldelight.coroutines.asFlow
+import app.cash.sqldelight.coroutines.mapToList
+import app.cash.sqldelight.coroutines.mapToOne
+import app.cash.sqldelight.coroutines.mapToOneOrNull
+import es.aviferdev.trackfolio.data.database.CategoryEntity
+import es.aviferdev.trackfolio.data.database.TrackfolioDatabase
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.withContext
+
+class CategoryLocalDataSourceImpl(
+    private val database: TrackfolioDatabase
+) : CategoryLocalDataSource {
+
+    private val queries = database.categoryQueries
+
+    override fun getAll(): Flow<List<CategoryEntity>> =
+        queries.selectAll().asFlow().mapToList(Dispatchers.IO)
+
+    override fun getByType(type: String): Flow<List<CategoryEntity>> =
+        queries.selectByType(type).asFlow().mapToList(Dispatchers.IO)
+
+    override fun getById(id: String): Flow<CategoryEntity?> =
+        queries.selectById(id).asFlow().mapToOneOrNull(Dispatchers.IO)
+
+    override fun count(): Flow<Long> =
+        queries.countAll().asFlow().mapToOne(Dispatchers.IO)
+
+    override suspend fun insert(entity: CategoryEntity): Result<Unit> =
+        runCatching {
+            withContext(Dispatchers.IO) {
+                queries.insert(
+                    id = entity.id,
+                    name = entity.name,
+                    type = entity.type,
+                    isDefault = entity.isDefault
+                )
+            }
+        }
+
+    override suspend fun delete(id: String): Result<Unit> =
+        runCatching {
+            withContext(Dispatchers.IO) {
+                queries.delete(id)
+            }
+        }
+}

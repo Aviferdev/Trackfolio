@@ -1,0 +1,32 @@
+CREATE TABLE AccountEntity (
+    id TEXT NOT NULL PRIMARY KEY,
+    name TEXT NOT NULL,
+    type TEXT NOT NULL,
+    currency TEXT NOT NULL DEFAULT 'EUR',
+    balance REAL NOT NULL DEFAULT 0.0,
+    createdAt INTEGER NOT NULL
+);
+
+selectAll:
+SELECT * FROM AccountEntity ORDER BY createdAt ASC;
+
+selectById:
+SELECT * FROM AccountEntity WHERE id = :id;
+
+insert:
+INSERT OR REPLACE INTO AccountEntity(id, name, type, currency, balance, createdAt)
+VALUES (?, ?, ?, ?, ?, ?);
+
+update:
+UPDATE AccountEntity
+SET name = :name, type = :type, currency = :currency, balance = :balance
+WHERE id = :id;
+
+updateBalance:
+UPDATE AccountEntity SET balance = :balance WHERE id = :id;
+
+delete:
+DELETE FROM AccountEntity WHERE id = :id;
+
+getTotalBalance:
+SELECT COALESCE(SUM(balance), 0.0) AS totalBalance FROM AccountEntity;

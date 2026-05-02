@@ -1,0 +1,37 @@
+CREATE TABLE DebtEntity (
+    id TEXT NOT NULL PRIMARY KEY,
+    personName TEXT NOT NULL,
+    amount REAL NOT NULL,
+    direction TEXT NOT NULL,
+    date INTEGER NOT NULL,
+    isPaid INTEGER NOT NULL DEFAULT 0,
+    notes TEXT,
+    createdAt INTEGER NOT NULL
+);
+
+selectActive:
+SELECT * FROM DebtEntity WHERE isPaid = 0 ORDER BY date DESC;
+
+selectAll:
+SELECT * FROM DebtEntity ORDER BY date DESC;
+
+selectById:
+SELECT * FROM DebtEntity WHERE id = :id;
+
+insert:
+INSERT INTO DebtEntity(id, personName, amount, direction, date, isPaid, notes, createdAt)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?);
+
+update:
+UPDATE DebtEntity
+SET personName = :personName, amount = :amount, direction = :direction,
+    date = :date, notes = :notes
+WHERE id = :id;
+
+markAsPaid:
+UPDATE DebtEntity SET isPaid = 1 WHERE id = :id;
+
+getTotalByDirection:
+SELECT COALESCE(SUM(amount), 0.0) AS total
+FROM DebtEntity
+WHERE direction = :direction AND isPaid = 0;
