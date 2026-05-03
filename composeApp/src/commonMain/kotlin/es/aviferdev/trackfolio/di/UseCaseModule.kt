@@ -14,6 +14,9 @@ import es.aviferdev.trackfolio.domain.usecase.transaction.GetMonthlyTotalsUseCas
 import es.aviferdev.trackfolio.domain.usecase.transaction.GetTransactionsByMonthUseCase
 import es.aviferdev.trackfolio.domain.usecase.transaction.SaveTransactionUseCase
 import es.aviferdev.trackfolio.domain.usecase.transaction.UpdateTransactionUseCase
+import es.aviferdev.trackfolio.ui.home.AddTransactionViewModel
+import es.aviferdev.trackfolio.ui.home.HomeViewModel
+import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
 val useCaseModule = module {
@@ -35,4 +38,7 @@ val useCaseModule = module {
     factory { MarkDebtAsPaidUseCase(get()) }
 
     factory { GetCategoriesByTypeUseCase(get()) }
+
+    viewModel { HomeViewModel(get()) }
+    viewModel { AddTransactionViewModel(get(), get()) }
 }

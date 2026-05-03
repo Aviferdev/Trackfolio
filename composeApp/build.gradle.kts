@@ -48,8 +48,11 @@ kotlin {
             implementation(libs.sqldelight.coroutines)
             implementation(libs.koin.core)
             implementation(libs.koin.compose)
+            implementation(libs.koin.compose.viewmodel)
             implementation(libs.coroutines.core)
             implementation(libs.uuid)
+            implementation(libs.kotlinx.datetime)
+            implementation(libs.navigation.compose)
         }
     }
 }

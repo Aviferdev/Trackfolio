@@ -7,6 +7,8 @@ fun MainViewController() = ComposeUIViewController {
     App()
 }
 
-fun initApp() {
-    initKoinIos()
+object AppInitializer {
+    fun start() {
+        initKoinIos()
+    }
 }

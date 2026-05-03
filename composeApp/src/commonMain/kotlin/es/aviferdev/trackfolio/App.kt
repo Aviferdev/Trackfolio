@@ -1,21 +1,25 @@
 package es.aviferdev.trackfolio
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
+import androidx.compose.runtime.LaunchedEffect
+import es.aviferdev.trackfolio.data.database.DatabaseInitializer
+import es.aviferdev.trackfolio.ui.navigation.TrackfolioNavHost
+import es.aviferdev.trackfolio.ui.theme.TrackfolioTheme
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import org.koin.compose.koinInject
 
 @Composable
 fun App() {
-    MaterialTheme {
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            Text("Trackfolio funciona")
+    val databaseInitializer = koinInject<DatabaseInitializer>()
+
+    LaunchedEffect(Unit) {
+        withContext(Dispatchers.Default) {
+            databaseInitializer.initializeIfNeeded()
         }
+    }
+
+    TrackfolioTheme {
+        TrackfolioNavHost()
     }
 }

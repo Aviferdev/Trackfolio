@@ -1,3 +1,14 @@
 package es.aviferdev.trackfolio.di
 
-fun initKoinIos() = initKoin(platformModule = iosModule)
+import org.koin.core.context.startKoin
+
+fun initKoinIos() {
+    startKoin {
+        modules(
+            iosModule,
+            databaseModule,
+            repositoryModule,
+            useCaseModule
+        )
+    }
+}
