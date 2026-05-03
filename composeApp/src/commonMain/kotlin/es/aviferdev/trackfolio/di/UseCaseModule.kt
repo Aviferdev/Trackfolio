@@ -16,6 +16,7 @@ import es.aviferdev.trackfolio.domain.usecase.transaction.SaveTransactionUseCase
 import es.aviferdev.trackfolio.domain.usecase.transaction.UpdateTransactionUseCase
 import es.aviferdev.trackfolio.ui.home.AddTransactionViewModel
 import es.aviferdev.trackfolio.ui.home.HomeViewModel
+import es.aviferdev.trackfolio.ui.transaction.TransactionViewModel
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
@@ -41,4 +42,5 @@ val useCaseModule = module {
 
     viewModel { HomeViewModel(get()) }
     viewModel { AddTransactionViewModel(get(), get()) }
+    viewModel { TransactionViewModel(get(), get(), get()) }
 }

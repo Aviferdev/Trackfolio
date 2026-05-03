@@ -27,6 +27,7 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun HomeScreen(
+    onNavigateToTransactions: () -> Unit = {},
     viewModel: HomeViewModel = koinViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -54,7 +55,8 @@ fun HomeScreen(
             is HomeUiState.Success -> {
                 HomeContent(
                     balance = state.balance,
-                    onAddTransaction = { showAddTransaction = true }
+                    onAddTransaction = { showAddTransaction = true },
+                    onNavigateToTransactions = onNavigateToTransactions
                 )
             }
         }
@@ -89,7 +91,8 @@ fun HomeScreen(
 @Composable
 private fun HomeContent(
     balance: HomeBalance,
-    onAddTransaction: () -> Unit
+    onAddTransaction: () -> Unit,
+    onNavigateToTransactions: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -102,7 +105,10 @@ private fun HomeContent(
         Spacer(Modifier.height(24.dp))
         HeroCard(balance = balance)
         Spacer(Modifier.height(28.dp))
-        RecentTransactionsSection(transactions = balance.recentTransactions)
+        RecentTransactionsSection(
+            transactions = balance.recentTransactions,
+            onVerTodos = onNavigateToTransactions
+        )
         Spacer(Modifier.height(28.dp))
         QuickAccessSection()
     }
@@ -241,7 +247,10 @@ private fun MonthlyIndicator(
 }
 
 @Composable
-private fun RecentTransactionsSection(transactions: List<Transaction>) {
+private fun RecentTransactionsSection(
+    transactions: List<Transaction>,
+    onVerTodos: () -> Unit
+) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -258,7 +267,7 @@ private fun RecentTransactionsSection(transactions: List<Transaction>) {
             fontSize = 13.sp,
             color = PrimaryDark,
             fontWeight = FontWeight.Medium,
-            modifier = Modifier.clickable { }
+            modifier = Modifier.clickable { onVerTodos() }
         )
     }
 
