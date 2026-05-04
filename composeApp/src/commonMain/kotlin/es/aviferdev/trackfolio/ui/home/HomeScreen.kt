@@ -22,7 +22,6 @@ import es.aviferdev.trackfolio.domain.model.HomeBalance
 import es.aviferdev.trackfolio.domain.model.Transaction
 import es.aviferdev.trackfolio.domain.model.TransactionType
 import es.aviferdev.trackfolio.ui.theme.*
-import kotlinx.datetime.Clock
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -32,6 +31,7 @@ fun HomeScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     var showAddTransaction by remember { mutableStateOf(false) }
+    var showInitialBalance by remember { mutableStateOf(false) }
 
     Box(
         modifier = Modifier
@@ -53,8 +53,12 @@ fun HomeScreen(
                 )
             }
             is HomeUiState.Success -> {
+                if (state.showInitialBalancePrompt && !showAddTransaction) {
+                    LaunchedEffect(state) { showInitialBalance = true }
+                }
                 HomeContent(
                     balance = state.balance,
+                    categoryNames = state.categoryNames,
                     onAddTransaction = { showAddTransaction = true },
                     onNavigateToTransactions = onNavigateToTransactions
                 )
@@ -86,11 +90,22 @@ fun HomeScreen(
             onDismiss = { showAddTransaction = false }
         )
     }
+
+    if (showInitialBalance) {
+        SetInitialBalanceBottomSheet(
+            onDismiss = { showInitialBalance = false },
+            onConfirm = { amount ->
+                viewModel.setInitialBalance(amount)
+                showInitialBalance = false
+            }
+        )
+    }
 }
 
 @Composable
 private fun HomeContent(
     balance: HomeBalance,
+    categoryNames: Map<String, String>,
     onAddTransaction: () -> Unit,
     onNavigateToTransactions: () -> Unit
 ) {
@@ -98,8 +113,9 @@ private fun HomeContent(
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
+            .windowInsetsPadding(WindowInsets.statusBars)
             .padding(horizontal = 20.dp)
-            .padding(top = 52.dp, bottom = 100.dp)
+            .padding(top = 16.dp, bottom = 100.dp)
     ) {
         HeaderSection()
         Spacer(Modifier.height(24.dp))
@@ -107,6 +123,7 @@ private fun HomeContent(
         Spacer(Modifier.height(28.dp))
         RecentTransactionsSection(
             transactions = balance.recentTransactions,
+            categoryNames = categoryNames,
             onVerTodos = onNavigateToTransactions
         )
         Spacer(Modifier.height(28.dp))
@@ -173,7 +190,6 @@ private fun HeroCard(balance: HomeBalance) {
                 color = Color.White,
                 letterSpacing = (-0.5).sp
             )
-
             if (balance.totalOwed > 0 || balance.totalOwing > 0) {
                 Spacer(Modifier.height(6.dp))
                 Text(
@@ -182,14 +198,12 @@ private fun HeroCard(balance: HomeBalance) {
                     color = Color.White.copy(alpha = 0.65f)
                 )
             }
-
             Spacer(Modifier.height(20.dp))
             HorizontalDivider(color = Color.White.copy(alpha = 0.15f), thickness = 0.5.dp)
             Spacer(Modifier.height(16.dp))
-
             Row(modifier = Modifier.fillMaxWidth()) {
                 MonthlyIndicator(
-                    label = "Deudas que me deben",
+                    label = "Me deben",
                     amount = balance.totalOwed,
                     isPositive = true,
                     modifier = Modifier.weight(1f)
@@ -202,7 +216,7 @@ private fun HeroCard(balance: HomeBalance) {
                         .align(Alignment.CenterVertically)
                 )
                 MonthlyIndicator(
-                    label = "Deudas que debo",
+                    label = "Debo yo",
                     amount = balance.totalOwing,
                     isPositive = false,
                     modifier = Modifier.weight(1f)
@@ -221,7 +235,6 @@ private fun MonthlyIndicator(
 ) {
     val color = if (isPositive) Color(0xFF66BB6A) else Color(0xFFEF9A9A)
     val arrow = if (isPositive) "↑" else "↓"
-
     Column(
         modifier = modifier.padding(horizontal = 8.dp),
         horizontalAlignment = if (isPositive) Alignment.Start else Alignment.End
@@ -249,6 +262,7 @@ private fun MonthlyIndicator(
 @Composable
 private fun RecentTransactionsSection(
     transactions: List<Transaction>,
+    categoryNames: Map<String, String>,
     onVerTodos: () -> Unit
 ) {
     Row(
@@ -270,32 +284,59 @@ private fun RecentTransactionsSection(
             modifier = Modifier.clickable { onVerTodos() }
         )
     }
-
     Spacer(Modifier.height(12.dp))
-
     if (transactions.isEmpty()) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 24.dp),
-            contentAlignment = Alignment.Center
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(12.dp),
+            colors = CardDefaults.cardColors(containerColor = SurfaceWhite),
+            border = CardDefaults.outlinedCardBorder(),
+            elevation = CardDefaults.cardElevation(0.dp)
         ) {
-            Text(
-                text = "Sin movimientos recientes",
-                fontSize = 14.sp,
-                color = TextSecondary
-            )
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 32.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(
+                        text = "Sin movimientos",
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = TextPrimary
+                    )
+                    Spacer(Modifier.height(4.dp))
+                    Text(
+                        text = "Pulsa + para añadir tu primer movimiento",
+                        fontSize = 13.sp,
+                        color = TextSecondary,
+                        textAlign = TextAlign.Center
+                    )
+                }
+            }
         }
     } else {
-        Column(modifier = Modifier.fillMaxWidth()) {
-            transactions.forEachIndexed { index, transaction ->
-                TransactionRow(transaction = transaction)
-                if (index < transactions.lastIndex) {
-                    HorizontalDivider(
-                        modifier = Modifier.padding(start = 56.dp),
-                        color = BorderGray,
-                        thickness = 0.5.dp
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(12.dp),
+            colors = CardDefaults.cardColors(containerColor = SurfaceWhite),
+            border = CardDefaults.outlinedCardBorder(),
+            elevation = CardDefaults.cardElevation(0.dp)
+        ) {
+            Column {
+                transactions.forEachIndexed { index, transaction ->
+                    TransactionRow(
+                        transaction = transaction,
+                        categoryName = categoryNames[transaction.categoryId] ?: transaction.categoryId
                     )
+                    if (index < transactions.lastIndex) {
+                        HorizontalDivider(
+                            modifier = Modifier.padding(start = 70.dp),
+                            color = BorderGray,
+                            thickness = 0.5.dp
+                        )
+                    }
                 }
             }
         }
@@ -303,16 +344,19 @@ private fun RecentTransactionsSection(
 }
 
 @Composable
-private fun TransactionRow(transaction: Transaction) {
+private fun TransactionRow(
+    transaction: Transaction,
+    categoryName: String
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 12.dp),
+            .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         val isIncome = transaction.type == TransactionType.INCOME
         val bgColor = if (isIncome) IncomeGreen else ExpenseRed
-        val initial = transaction.categoryId.firstOrNull()?.uppercaseChar()?.toString() ?: "?"
+        val initial = categoryName.firstOrNull()?.uppercaseChar()?.toString() ?: "?"
 
         Box(
             modifier = Modifier
@@ -328,12 +372,10 @@ private fun TransactionRow(transaction: Transaction) {
                 color = Color.White
             )
         }
-
         Spacer(Modifier.width(14.dp))
-
         Column(modifier = Modifier.weight(1f)) {
             Text(
-                text = transaction.categoryId,
+                text = categoryName,
                 fontSize = 15.sp,
                 fontWeight = FontWeight.Medium,
                 color = TextPrimary
@@ -345,7 +387,6 @@ private fun TransactionRow(transaction: Transaction) {
                 color = TextSecondary
             )
         }
-
         val prefix = if (isIncome) "+" else "−"
         val amountColor = if (isIncome) IncomeGreen else ExpenseRed
         Text(
@@ -397,32 +438,6 @@ private fun QuickAccessCard(
             Text(text = icon, fontSize = 24.sp)
             Spacer(Modifier.height(8.dp))
             Text(text = label, fontSize = 13.sp, color = TextSecondary, textAlign = TextAlign.Center)
-        }
-    }
-}
-
-private fun formatAmount(amount: Double): String {
-    val rounded = (amount * 100).toLong()
-    val euros = rounded / 100
-    val cents = rounded % 100
-    val eurosStr = buildString {
-        euros.toString().reversed().forEachIndexed { i, c ->
-            if (i > 0 && i % 3 == 0) append('.')
-            append(c)
-        }
-    }.reversed()
-    return "$eurosStr,${cents.toString().padStart(2, '0')}"
-}
-
-private fun formatDate(epochMillis: Long): String {
-    val days = epochMillis / 86_400_000L
-    val today = Clock.System.now().toEpochMilliseconds() / 86_400_000L
-    return when (days) {
-        today     -> "hoy"
-        today - 1 -> "ayer"
-        else      -> {
-            val d = (epochMillis / 86_400_000L).toString()
-            d
         }
     }
 }

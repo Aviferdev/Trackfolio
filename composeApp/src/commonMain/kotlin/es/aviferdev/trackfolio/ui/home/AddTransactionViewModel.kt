@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import es.aviferdev.trackfolio.domain.model.Category
 import es.aviferdev.trackfolio.domain.model.Transaction
+import es.aviferdev.trackfolio.data.database.DatabaseInitializer
 import es.aviferdev.trackfolio.domain.model.TransactionType
 import es.aviferdev.trackfolio.domain.usecase.category.GetCategoriesByTypeUseCase
 import es.aviferdev.trackfolio.domain.usecase.transaction.SaveTransactionUseCase
@@ -94,7 +95,7 @@ class AddTransactionViewModel(
             val now = Clock.System.now().toEpochMilliseconds()
             val transaction = Transaction(
                 id = generateId(),
-                accountId = "default",
+                accountId = DatabaseInitializer.DEFAULT_ACCOUNT_ID,
                 amount = amountValue,
                 type = type,
                 categoryId = selectedCategoryId,

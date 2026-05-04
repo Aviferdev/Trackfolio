@@ -57,10 +57,7 @@ fun TransactionListScreen(
         }
 
         if (uiState.isLoading) {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
+            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 CircularProgressIndicator(color = PrimaryDark)
             }
         } else if (uiState.transactions.isEmpty()) {
@@ -77,11 +74,15 @@ fun TransactionListScreen(
                     SwipeToDeleteContainer(
                         onDelete = { transactionToDelete = transaction }
                     ) {
-                        TransactionListRow(transaction = transaction)
+                        TransactionListRow(
+                            transaction = transaction,
+                            categoryName = uiState.categoryNames[transaction.categoryId]
+                                ?: transaction.categoryId
+                        )
                     }
                     if (index < uiState.transactions.lastIndex) {
                         HorizontalDivider(
-                            modifier = Modifier.padding(start = 56.dp),
+                            modifier = Modifier.padding(start = 70.dp),
                             color = BorderGray,
                             thickness = 0.5.dp
                         )
@@ -112,18 +113,15 @@ private fun MonthHeader(
     val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
     val isCurrentMonth = year == now.year.toString() &&
         month == now.monthNumber.toString().padStart(2, '0')
-
     val monthName = MONTH_NAMES.getOrElse(month.toIntOrNull()?.minus(1) ?: 0) { month }
 
-    Surface(
-        color = SurfaceWhite,
-        shadowElevation = 1.dp
-    ) {
+    Surface(color = SurfaceWhite, shadowElevation = 1.dp) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
+                .windowInsetsPadding(WindowInsets.statusBars)
                 .padding(horizontal = 20.dp)
-                .padding(top = 52.dp, bottom = 16.dp)
+                .padding(top = 16.dp, bottom = 16.dp)
         ) {
             Text(
                 text = "Movimientos",
@@ -146,7 +144,6 @@ private fun MonthHeader(
                 ) {
                     Text("‹", fontSize = 22.sp, color = TextPrimary, fontWeight = FontWeight.Light)
                 }
-
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Text(
                         text = monthName,
@@ -154,13 +151,8 @@ private fun MonthHeader(
                         fontWeight = FontWeight.SemiBold,
                         color = TextPrimary
                     )
-                    Text(
-                        text = year,
-                        fontSize = 13.sp,
-                        color = TextSecondary
-                    )
+                    Text(text = year, fontSize = 13.sp, color = TextSecondary)
                 }
-
                 IconButton(
                     onClick = onNext,
                     enabled = !isCurrentMonth,
@@ -182,12 +174,8 @@ private fun MonthHeader(
 }
 
 @Composable
-private fun TotalsCard(
-    totalIncome: Double,
-    totalExpense: Double
-) {
+private fun TotalsCard(totalIncome: Double, totalExpense: Double) {
     val balance = totalIncome - totalExpense
-
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -198,42 +186,12 @@ private fun TotalsCard(
         border = CardDefaults.outlinedCardBorder()
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 14.dp)
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 14.dp)
         ) {
-            TotalItem(
-                label = "Ingresos",
-                amount = totalIncome,
-                color = IncomeGreen,
-                prefix = "+",
-                modifier = Modifier.weight(1f)
-            )
-
-            Box(
-                modifier = Modifier
-                    .width(0.5.dp)
-                    .height(44.dp)
-                    .background(BorderGray)
-                    .align(Alignment.CenterVertically)
-            )
-
-            TotalItem(
-                label = "Gastos",
-                amount = totalExpense,
-                color = ExpenseRed,
-                prefix = "−",
-                modifier = Modifier.weight(1f)
-            )
-
-            Box(
-                modifier = Modifier
-                    .width(0.5.dp)
-                    .height(44.dp)
-                    .background(BorderGray)
-                    .align(Alignment.CenterVertically)
-            )
-
+            TotalItem(label = "Ingresos", amount = totalIncome, color = IncomeGreen, prefix = "+", modifier = Modifier.weight(1f))
+            Box(modifier = Modifier.width(0.5.dp).height(44.dp).background(BorderGray).align(Alignment.CenterVertically))
+            TotalItem(label = "Gastos", amount = totalExpense, color = ExpenseRed, prefix = "−", modifier = Modifier.weight(1f))
+            Box(modifier = Modifier.width(0.5.dp).height(44.dp).background(BorderGray).align(Alignment.CenterVertically))
             TotalItem(
                 label = "Balance",
                 amount = balance,
@@ -246,26 +204,13 @@ private fun TotalsCard(
 }
 
 @Composable
-private fun TotalItem(
-    label: String,
-    amount: Double,
-    color: Color,
-    prefix: String,
-    modifier: Modifier = Modifier
-) {
-    Column(
-        modifier = modifier,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(
-            text = label,
-            fontSize = 11.sp,
-            color = TextSecondary,
-            textAlign = TextAlign.Center
-        )
+private fun TotalItem(label: String, amount: Double, color: Color, prefix: String, modifier: Modifier = Modifier) {
+    val abs = if (amount < 0) -amount else amount
+    Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
+        Text(text = label, fontSize = 11.sp, color = TextSecondary, textAlign = TextAlign.Center)
         Spacer(Modifier.height(4.dp))
         Text(
-            text = "$prefix ${formatAmount(kotlin.math.abs(amount))} €",
+            text = "$prefix ${formatAmount(abs)} €",
             fontSize = 13.sp,
             fontWeight = FontWeight.SemiBold,
             color = color,
@@ -276,19 +221,12 @@ private fun TotalItem(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun SwipeToDeleteContainer(
-    onDelete: () -> Unit,
-    content: @Composable () -> Unit
-) {
+private fun SwipeToDeleteContainer(onDelete: () -> Unit, content: @Composable () -> Unit) {
     val dismissState = rememberSwipeToDismissBoxState(
         confirmValueChange = { value ->
-            if (value == SwipeToDismissBoxValue.EndToStart) {
-                onDelete()
-                false
-            } else false
+            if (value == SwipeToDismissBoxValue.EndToStart) { onDelete(); false } else false
         }
     )
-
     SwipeToDismissBox(
         state = dismissState,
         enableDismissFromStartToEnd = false,
@@ -302,79 +240,44 @@ private fun SwipeToDeleteContainer(
                 label = "swipe_bg"
             )
             Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(color)
-                    .padding(end = 20.dp),
+                modifier = Modifier.fillMaxSize().background(color).padding(end = 20.dp),
                 contentAlignment = Alignment.CenterEnd
             ) {
-                Text(
-                    text = "Eliminar",
-                    color = Color.White,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Medium
-                )
+                Text("Eliminar", color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.Medium)
             }
         }
     ) {
-        Surface(color = SurfaceWhite) {
-            content()
-        }
+        Surface(color = SurfaceWhite) { content() }
     }
 }
 
 @Composable
-private fun TransactionListRow(transaction: Transaction) {
+private fun TransactionListRow(transaction: Transaction, categoryName: String) {
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 12.dp),
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         val isIncome = transaction.type == TransactionType.INCOME
         val bgColor = if (isIncome) IncomeGreen else ExpenseRed
-        val initial = transaction.categoryId.firstOrNull()?.uppercaseChar()?.toString() ?: "?"
+        val initial = categoryName.firstOrNull()?.uppercaseChar()?.toString() ?: "?"
 
         Box(
-            modifier = Modifier
-                .size(42.dp)
-                .clip(CircleShape)
-                .background(bgColor),
+            modifier = Modifier.size(42.dp).clip(CircleShape).background(bgColor),
             contentAlignment = Alignment.Center
         ) {
-            Text(
-                text = initial,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.White
-            )
+            Text(text = initial, fontSize = 16.sp, fontWeight = FontWeight.Bold, color = Color.White)
         }
-
         Spacer(Modifier.width(14.dp))
-
         Column(modifier = Modifier.weight(1f)) {
-            Text(
-                text = transaction.categoryId,
-                fontSize = 15.sp,
-                fontWeight = FontWeight.Medium,
-                color = TextPrimary
-            )
+            Text(text = categoryName, fontSize = 15.sp, fontWeight = FontWeight.Medium, color = TextPrimary)
             Spacer(Modifier.height(2.dp))
-            if (!transaction.notes.isNullOrBlank()) {
-                Text(
-                    text = transaction.notes,
-                    fontSize = 12.sp,
-                    color = TextSecondary
-                )
-            } else {
-                Text(
-                    text = formatDate(transaction.date),
-                    fontSize = 12.sp,
-                    color = TextSecondary
-                )
-            }
+            Text(
+                text = if (!transaction.notes.isNullOrBlank()) transaction.notes
+                       else formatDate(transaction.date),
+                fontSize = 12.sp,
+                color = TextSecondary
+            )
         }
-
         Column(horizontalAlignment = Alignment.End) {
             val prefix = if (isIncome) "+" else "−"
             val amountColor = if (isIncome) IncomeGreen else ExpenseRed
@@ -384,11 +287,7 @@ private fun TransactionListRow(transaction: Transaction) {
                 fontWeight = FontWeight.SemiBold,
                 color = amountColor
             )
-            Text(
-                text = formatDate(transaction.date),
-                fontSize = 11.sp,
-                color = TextSecondary
-            )
+            Text(text = formatDate(transaction.date), fontSize = 11.sp, color = TextSecondary)
         }
     }
 }
@@ -397,9 +296,7 @@ private fun TransactionListRow(transaction: Transaction) {
 private fun EmptyState(month: String, year: String) {
     val monthName = MONTH_NAMES.getOrElse(month.toIntOrNull()?.minus(1) ?: 0) { month }
     Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(32.dp),
+        modifier = Modifier.fillMaxSize().padding(32.dp),
         contentAlignment = Alignment.Center
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -412,7 +309,7 @@ private fun EmptyState(month: String, year: String) {
             )
             Spacer(Modifier.height(8.dp))
             Text(
-                text = "No hay movimientos registrados en $monthName $year",
+                text = "No hay movimientos en $monthName $year",
                 fontSize = 14.sp,
                 color = TextSecondary,
                 textAlign = TextAlign.Center
@@ -422,76 +319,14 @@ private fun EmptyState(month: String, year: String) {
 }
 
 @Composable
-private fun DeleteConfirmDialog(
-    onConfirm: () -> Unit,
-    onDismiss: () -> Unit
-) {
+private fun DeleteConfirmDialog(onConfirm: () -> Unit, onDismiss: () -> Unit) {
     AlertDialog(
         onDismissRequest = onDismiss,
         containerColor = SurfaceWhite,
-        title = {
-            Text(
-                text = "Eliminar movimiento",
-                fontSize = 17.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = TextPrimary
-            )
-        },
-        text = {
-            Text(
-                text = "¿Seguro que quieres eliminar este movimiento? Esta acción no se puede deshacer.",
-                fontSize = 14.sp,
-                color = TextSecondary
-            )
-        },
-        confirmButton = {
-            TextButton(onClick = onConfirm) {
-                Text(
-                    text = "Eliminar",
-                    color = ExpenseRed,
-                    fontWeight = FontWeight.Medium
-                )
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text(
-                    text = "Cancelar",
-                    color = PrimaryDark,
-                    fontWeight = FontWeight.Medium
-                )
-            }
-        },
+        title = { Text("Eliminar movimiento", fontSize = 17.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary) },
+        text = { Text("¿Seguro que quieres eliminar este movimiento? Esta acción no se puede deshacer.", fontSize = 14.sp, color = TextSecondary) },
+        confirmButton = { TextButton(onClick = onConfirm) { Text("Eliminar", color = ExpenseRed, fontWeight = FontWeight.Medium) } },
+        dismissButton = { TextButton(onClick = onDismiss) { Text("Cancelar", color = PrimaryDark, fontWeight = FontWeight.Medium) } },
         shape = RoundedCornerShape(16.dp)
     )
-}
-
-private fun formatAmount(amount: Double): String {
-    val rounded = (amount * 100).toLong()
-    val euros = rounded / 100
-    val cents = rounded % 100
-    val eurosStr = buildString {
-        euros.toString().reversed().forEachIndexed { i, c ->
-            if (i > 0 && i % 3 == 0) append('.')
-            append(c)
-        }
-    }.reversed()
-    return "$eurosStr,${cents.toString().padStart(2, '0')}"
-}
-
-private fun formatDate(epochMillis: Long): String {
-    val days = epochMillis / 86_400_000L
-    val today = Clock.System.now().toEpochMilliseconds() / 86_400_000L
-    return when (days) {
-        today -> "hoy"
-        today - 1 -> "ayer"
-        else -> {
-            val totalDays = epochMillis / 86_400_000L
-            val y = 1970 + (totalDays / 365).toInt()
-            val dayOfYear = (totalDays % 365).toInt()
-            val m = (dayOfYear / 30) + 1
-            val d = (dayOfYear % 30) + 1
-            "${d.toString().padStart(2, '0')}/${m.toString().padStart(2, '0')}/$y"
-        }
-    }
 }

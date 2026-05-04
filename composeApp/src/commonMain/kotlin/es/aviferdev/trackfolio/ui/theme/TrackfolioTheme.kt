@@ -1,5 +1,6 @@
 package es.aviferdev.trackfolio.ui.theme
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
@@ -16,30 +17,38 @@ val TextPrimary    = Color(0xFF1A1A1A)
 val TextSecondary  = Color(0xFF757575)
 
 private val LightColors = lightColorScheme(
-    primary        = PrimaryDark,
-    onPrimary      = Color.White,
-    background     = BackgroundGray,
-    onBackground   = TextPrimary,
-    surface        = SurfaceWhite,
-    onSurface      = TextPrimary,
-    surfaceVariant = BackgroundGray,
-    outline        = BorderGray
+    primary           = PrimaryDark,
+    onPrimary         = Color.White,
+    background        = BackgroundGray,
+    onBackground      = TextPrimary,
+    surface           = SurfaceWhite,
+    onSurface         = TextPrimary,
+    surfaceVariant    = BackgroundGray,
+    outline           = BorderGray,
+    secondary         = Color(0xFF455A7A),
+    onSecondary       = Color.White,
+    tertiary          = Color(0xFF2E7D32),
+    onTertiary        = Color.White
 )
 
 private val DarkColors = darkColorScheme(
-    primary        = Color(0xFF4A7FBF),
-    onPrimary      = Color.White,
-    background     = Color(0xFF121212),
-    onBackground   = Color(0xFFE0E0E0),
-    surface        = Color(0xFF1E1E1E),
-    onSurface      = Color(0xFFE0E0E0),
-    surfaceVariant = Color(0xFF2C2C2C),
-    outline        = Color(0xFF444444)
+    primary           = Color(0xFF4A7FBF),
+    onPrimary         = Color.White,
+    background        = Color(0xFF111318),
+    onBackground      = Color(0xFFE2E2E9),
+    surface           = Color(0xFF1C1C22),
+    onSurface         = Color(0xFFE2E2E9),
+    surfaceVariant    = Color(0xFF242428),
+    outline           = Color(0xFF3A3A44),
+    secondary         = Color(0xFF7FA8D4),
+    onSecondary       = Color(0xFF1A1A2E),
+    tertiary          = Color(0xFF4CAF50),
+    onTertiary        = Color.Black
 )
 
 @Composable
 fun TrackfolioTheme(
-    darkTheme: Boolean = false,
+    darkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit
 ) {
     MaterialTheme(

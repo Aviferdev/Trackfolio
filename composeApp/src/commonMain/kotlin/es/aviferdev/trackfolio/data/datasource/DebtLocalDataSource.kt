@@ -11,4 +11,5 @@ interface DebtLocalDataSource {
     suspend fun insert(entity: DebtEntity): Result<Unit>
     suspend fun update(entity: DebtEntity): Result<Unit>
     suspend fun markAsPaid(id: String): Result<Unit>
+    suspend fun delete(id: String): Result<Unit>
 }

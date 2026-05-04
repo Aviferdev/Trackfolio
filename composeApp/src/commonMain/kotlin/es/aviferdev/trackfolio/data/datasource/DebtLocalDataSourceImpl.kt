@@ -67,4 +67,11 @@ class DebtLocalDataSourceImpl(
                 queries.markAsPaid(id)
             }
         }
+
+    override suspend fun delete(id: String): Result<Unit> =
+        runCatching {
+            withContext(Dispatchers.IO) {
+                queries.delete(id)
+            }
+        }
 }

@@ -11,4 +11,5 @@ interface DebtRepository {
     suspend fun save(debt: Debt): Result<Unit>
     suspend fun update(debt: Debt): Result<Unit>
     suspend fun markAsPaid(id: String): Result<Unit>
+    suspend fun delete(id: String): Result<Unit>
 }

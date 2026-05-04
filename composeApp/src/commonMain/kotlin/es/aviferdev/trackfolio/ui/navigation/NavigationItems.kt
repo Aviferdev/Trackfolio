@@ -31,8 +31,8 @@ fun bottomNavItems() = listOf(
     ),
     BottomNavItem(
         screen = Screen.Settings,
-        label  = "Ajustes",
-        icon   = Icons.Outlined.Settings
+        label  = "Resumen",
+        icon   = Icons.Outlined.DateRange
     )
 )
 

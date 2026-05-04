@@ -3,7 +3,9 @@ package es.aviferdev.trackfolio.di
 import es.aviferdev.trackfolio.domain.usecase.account.DeleteAccountUseCase
 import es.aviferdev.trackfolio.domain.usecase.account.GetAccountsUseCase
 import es.aviferdev.trackfolio.domain.usecase.account.SaveAccountUseCase
+import es.aviferdev.trackfolio.domain.usecase.account.SetInitialBalanceUseCase
 import es.aviferdev.trackfolio.domain.usecase.category.GetCategoriesByTypeUseCase
+import es.aviferdev.trackfolio.domain.usecase.debt.DeleteDebtUseCase
 import es.aviferdev.trackfolio.domain.usecase.debt.GetActiveDebtsUseCase
 import es.aviferdev.trackfolio.domain.usecase.debt.MarkDebtAsPaidUseCase
 import es.aviferdev.trackfolio.domain.usecase.debt.SaveDebtUseCase
@@ -14,6 +16,8 @@ import es.aviferdev.trackfolio.domain.usecase.transaction.GetMonthlyTotalsUseCas
 import es.aviferdev.trackfolio.domain.usecase.transaction.GetTransactionsByMonthUseCase
 import es.aviferdev.trackfolio.domain.usecase.transaction.SaveTransactionUseCase
 import es.aviferdev.trackfolio.domain.usecase.transaction.UpdateTransactionUseCase
+import es.aviferdev.trackfolio.ui.annual.AnnualViewModel
+import es.aviferdev.trackfolio.ui.debt.DebtViewModel
 import es.aviferdev.trackfolio.ui.home.AddTransactionViewModel
 import es.aviferdev.trackfolio.ui.home.HomeViewModel
 import es.aviferdev.trackfolio.ui.transaction.TransactionViewModel
@@ -24,6 +28,7 @@ val useCaseModule = module {
     factory { GetAccountsUseCase(get()) }
     factory { SaveAccountUseCase(get()) }
     factory { DeleteAccountUseCase(get()) }
+    factory { SetInitialBalanceUseCase(get()) }
 
     factory { GetTransactionsByMonthUseCase(get()) }
     factory { GetMonthlyTotalsUseCase(get()) }
@@ -37,10 +42,13 @@ val useCaseModule = module {
     factory { GetActiveDebtsUseCase(get()) }
     factory { SaveDebtUseCase(get()) }
     factory { MarkDebtAsPaidUseCase(get()) }
+    factory { DeleteDebtUseCase(get()) }
 
     factory { GetCategoriesByTypeUseCase(get()) }
 
-    viewModel { HomeViewModel(get()) }
+    viewModel { HomeViewModel(get(), get(), get()) }
     viewModel { AddTransactionViewModel(get(), get()) }
-    viewModel { TransactionViewModel(get(), get(), get()) }
+    viewModel { TransactionViewModel(get(), get(), get(), get()) }
+    viewModel { DebtViewModel(get(), get(), get(), get()) }
+    viewModel { AnnualViewModel(get()) }
 }

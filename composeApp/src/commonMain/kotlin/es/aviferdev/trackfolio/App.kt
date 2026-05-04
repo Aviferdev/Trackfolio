@@ -1,7 +1,10 @@
 package es.aviferdev.trackfolio
 
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.Modifier
 import es.aviferdev.trackfolio.data.database.DatabaseInitializer
 import es.aviferdev.trackfolio.ui.navigation.TrackfolioNavHost
 import es.aviferdev.trackfolio.ui.theme.TrackfolioTheme

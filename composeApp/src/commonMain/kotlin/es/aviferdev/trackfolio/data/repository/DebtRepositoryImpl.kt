@@ -30,4 +30,7 @@ class DebtRepositoryImpl(
 
     override suspend fun markAsPaid(id: String): Result<Unit> =
         dataSource.markAsPaid(id)
+
+    override suspend fun delete(id: String): Result<Unit> =
+        dataSource.delete(id)
 }

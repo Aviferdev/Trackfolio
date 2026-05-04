@@ -18,6 +18,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import es.aviferdev.trackfolio.ui.annual.AnnualSummaryScreen
+import es.aviferdev.trackfolio.ui.debt.DebtListScreen
 import es.aviferdev.trackfolio.ui.home.HomeScreen
 import es.aviferdev.trackfolio.ui.transaction.TransactionListScreen
 import es.aviferdev.trackfolio.ui.theme.PrimaryDark
@@ -91,10 +93,10 @@ fun TrackfolioNavHost() {
                 TransactionListScreen()
             }
             composable(Screen.Debts.route) {
-                PlaceholderScreen("Deudas")
+                DebtListScreen()
             }
             composable(Screen.Settings.route) {
-                PlaceholderScreen("Ajustes")
+                AnnualSummaryScreen()
             }
         }
     }
