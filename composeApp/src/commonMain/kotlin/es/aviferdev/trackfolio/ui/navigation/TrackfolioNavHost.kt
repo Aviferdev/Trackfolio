@@ -21,6 +21,7 @@ import androidx.navigation.compose.rememberNavController
 import es.aviferdev.trackfolio.ui.annual.AnnualSummaryScreen
 import es.aviferdev.trackfolio.ui.debt.DebtListScreen
 import es.aviferdev.trackfolio.ui.home.HomeScreen
+import es.aviferdev.trackfolio.ui.settings.SettingsScreen
 import es.aviferdev.trackfolio.ui.transaction.TransactionListScreen
 import es.aviferdev.trackfolio.ui.theme.PrimaryDark
 import es.aviferdev.trackfolio.ui.theme.TextSecondary
@@ -34,38 +35,30 @@ data class BottomNavItem(
 
 @Composable
 fun TrackfolioNavHost() {
-    val navController = rememberNavController()
-    val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val currentDestination = navBackStackEntry?.destination
-
-    val items = bottomNavItems()
+    val navController       = rememberNavController()
+    val navBackStackEntry   by navController.currentBackStackEntryAsState()
+    val currentDestination  = navBackStackEntry?.destination
+    val items               = bottomNavItems()
 
     Scaffold(
         bottomBar = {
-            NavigationBar(
-                containerColor = Color.White
-            ) {
+            NavigationBar(containerColor = Color.White) {
                 items.forEach { item ->
                     val selected = currentDestination?.hierarchy
                         ?.any { it.route == item.screen.route } == true
 
                     NavigationBarItem(
                         selected = selected,
-                        onClick = {
+                        onClick  = {
                             navController.navigate(item.screen.route) {
                                 popUpTo(navController.graph.findStartDestination().id) {
                                     saveState = true
                                 }
                                 launchSingleTop = true
-                                restoreState = true
+                                restoreState    = true
                             }
                         },
-                        icon = {
-                            Icon(
-                                imageVector = if (selected) item.selectedIcon else item.icon,
-                                contentDescription = item.label
-                            )
-                        },
+                        icon  = { Icon(if (selected) item.selectedIcon else item.icon, item.label) },
                         label = { Text(item.label) },
                         colors = NavigationBarItemDefaults.colors(
                             selectedIconColor   = PrimaryDark,
@@ -92,11 +85,14 @@ fun TrackfolioNavHost() {
             composable(Screen.Transactions.route) {
                 TransactionListScreen()
             }
+            composable(Screen.Charts.route) {
+                AnnualSummaryScreen()
+            }
             composable(Screen.Debts.route) {
                 DebtListScreen()
             }
             composable(Screen.Settings.route) {
-                AnnualSummaryScreen()
+                SettingsScreen()
             }
         }
     }

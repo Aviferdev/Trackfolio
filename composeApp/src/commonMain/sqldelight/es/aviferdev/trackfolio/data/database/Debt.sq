@@ -1,13 +1,22 @@
 CREATE TABLE DebtEntity (
-    id TEXT NOT NULL PRIMARY KEY,
-    personName TEXT NOT NULL,
-    amount REAL NOT NULL,
-    direction TEXT NOT NULL,
-    date INTEGER NOT NULL,
-    isPaid INTEGER NOT NULL DEFAULT 0,
-    notes TEXT,
-    createdAt INTEGER NOT NULL
+    id         TEXT    NOT NULL PRIMARY KEY,
+    accountId  TEXT    NOT NULL,
+    personName TEXT    NOT NULL,
+    amount     REAL    NOT NULL,
+    direction  TEXT    NOT NULL,
+    date       INTEGER NOT NULL,
+    isPaid     INTEGER NOT NULL DEFAULT 0,
+    notes      TEXT,
+    createdAt  INTEGER NOT NULL,
+    FOREIGN KEY (accountId) REFERENCES AccountEntity(id) ON DELETE CASCADE
 );
+
+CREATE INDEX idx_debt_account ON DebtEntity(accountId);
+
+selectActiveByAccount:
+SELECT * FROM DebtEntity
+WHERE accountId = :accountId AND isPaid = 0
+ORDER BY date DESC;
 
 selectActive:
 SELECT * FROM DebtEntity WHERE isPaid = 0 ORDER BY date DESC;
@@ -19,8 +28,8 @@ selectById:
 SELECT * FROM DebtEntity WHERE id = :id;
 
 insert:
-INSERT INTO DebtEntity(id, personName, amount, direction, date, isPaid, notes, createdAt)
-VALUES (?, ?, ?, ?, ?, ?, ?, ?);
+INSERT INTO DebtEntity(id, accountId, personName, amount, direction, date, isPaid, notes, createdAt)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
 
 update:
 UPDATE DebtEntity
@@ -38,3 +47,8 @@ getTotalByDirection:
 SELECT COALESCE(SUM(amount), 0.0) AS total
 FROM DebtEntity
 WHERE direction = :direction AND isPaid = 0;
+
+getTotalByDirectionAndAccount:
+SELECT COALESCE(SUM(amount), 0.0) AS total
+FROM DebtEntity
+WHERE accountId = :accountId AND direction = :direction AND isPaid = 0;

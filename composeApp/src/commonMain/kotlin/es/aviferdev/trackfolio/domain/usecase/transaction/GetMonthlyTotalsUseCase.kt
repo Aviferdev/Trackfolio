@@ -5,6 +5,6 @@ import es.aviferdev.trackfolio.domain.repository.TransactionRepository
 import kotlinx.coroutines.flow.Flow
 
 class GetMonthlyTotalsUseCase(private val repository: TransactionRepository) {
-    operator fun invoke(year: String, month: String): Flow<MonthlyTotals> =
-        repository.getMonthlyTotals(year, month)
+    operator fun invoke(accountId: String, year: String, month: String): Flow<MonthlyTotals> =
+        repository.getMonthlyTotalsByAccount(accountId, year, month)
 }

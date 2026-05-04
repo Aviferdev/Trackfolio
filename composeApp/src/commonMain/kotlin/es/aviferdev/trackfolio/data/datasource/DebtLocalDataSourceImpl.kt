@@ -17,6 +17,9 @@ class DebtLocalDataSourceImpl(
 
     private val queries = database.debtQueries
 
+    override fun getActiveByAccount(accountId: String): Flow<List<DebtEntity>> =
+        queries.selectActiveByAccount(accountId).asFlow().mapToList(Dispatchers.IO)
+
     override fun getActive(): Flow<List<DebtEntity>> =
         queries.selectActive().asFlow().mapToList(Dispatchers.IO)
 
@@ -31,18 +34,24 @@ class DebtLocalDataSourceImpl(
             .mapToOneOrNull(Dispatchers.IO)
             .map { it ?: 0.0 }
 
+    override fun getTotalByDirectionAndAccount(accountId: String, direction: String): Flow<Double> =
+        queries.getTotalByDirectionAndAccount(accountId, direction).asFlow()
+            .mapToOneOrNull(Dispatchers.IO)
+            .map { it ?: 0.0 }
+
     override suspend fun insert(entity: DebtEntity): Result<Unit> =
         runCatching {
             withContext(Dispatchers.IO) {
                 queries.insert(
-                    id = entity.id,
+                    id         = entity.id,
+                    accountId  = entity.accountId,
                     personName = entity.personName,
-                    amount = entity.amount,
-                    direction = entity.direction,
-                    date = entity.date,
-                    isPaid = entity.isPaid,
-                    notes = entity.notes,
-                    createdAt = entity.createdAt
+                    amount     = entity.amount,
+                    direction  = entity.direction,
+                    date       = entity.date,
+                    isPaid     = entity.isPaid,
+                    notes      = entity.notes,
+                    createdAt  = entity.createdAt
                 )
             }
         }
@@ -52,26 +61,18 @@ class DebtLocalDataSourceImpl(
             withContext(Dispatchers.IO) {
                 queries.update(
                     personName = entity.personName,
-                    amount = entity.amount,
-                    direction = entity.direction,
-                    date = entity.date,
-                    notes = entity.notes,
-                    id = entity.id
+                    amount     = entity.amount,
+                    direction  = entity.direction,
+                    date       = entity.date,
+                    notes      = entity.notes,
+                    id         = entity.id
                 )
             }
         }
 
     override suspend fun markAsPaid(id: String): Result<Unit> =
-        runCatching {
-            withContext(Dispatchers.IO) {
-                queries.markAsPaid(id)
-            }
-        }
+        runCatching { withContext(Dispatchers.IO) { queries.markAsPaid(id) } }
 
     override suspend fun delete(id: String): Result<Unit> =
-        runCatching {
-            withContext(Dispatchers.IO) {
-                queries.delete(id)
-            }
-        }
+        runCatching { withContext(Dispatchers.IO) { queries.delete(id) } }
 }

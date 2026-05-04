@@ -6,12 +6,12 @@ import es.aviferdev.trackfolio.domain.model.Transaction
 import kotlinx.coroutines.flow.Flow
 
 interface TransactionRepository {
-    fun getAll(): Flow<List<Transaction>>
-    fun getByAccount(accountId: String): Flow<List<Transaction>>
-    fun getByMonth(year: String, month: String): Flow<List<Transaction>>
-    fun getMonthlyTotals(year: String, month: String): Flow<MonthlyTotals>
-    fun getAnnualSummary(year: String): Flow<AnnualSummary>
-    suspend fun save(transaction: Transaction): Result<Unit>
-    suspend fun update(transaction: Transaction): Result<Unit>
-    suspend fun delete(id: String): Result<Unit>
+    fun getTransactionsByMonthAndAccount(accountId: String, year: String, month: String): Flow<List<Transaction>>
+    fun getMonthlyTotalsByAccount(accountId: String, year: String, month: String): Flow<MonthlyTotals>
+    fun getAnnualSummaryByAccount(accountId: String, year: String): Flow<AnnualSummary>
+    fun getRecentTransactionsByAccount(accountId: String, limit: Long = 5L): Flow<List<Transaction>>
+    fun getMonthlyBreakdown(accountId: String, year: String): Flow<List<MonthlyTotals>>
+    suspend fun saveTransaction(transaction: Transaction): Result<Unit>
+    suspend fun updateTransaction(transaction: Transaction): Result<Unit>
+    suspend fun deleteTransaction(id: String): Result<Unit>
 }

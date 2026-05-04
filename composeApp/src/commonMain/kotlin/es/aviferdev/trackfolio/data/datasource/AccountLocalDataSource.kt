@@ -1,14 +1,16 @@
 package es.aviferdev.trackfolio.data.datasource
 
-import es.aviferdev.trackfolio.data.database.AccountEntity
+import es.aviferdev.trackfolio.domain.model.Account
 import kotlinx.coroutines.flow.Flow
 
 interface AccountLocalDataSource {
-    fun getAll(): Flow<List<AccountEntity>>
-    fun getById(id: String): Flow<AccountEntity?>
-    fun getTotalBalance(): Flow<Double>
-    suspend fun insert(entity: AccountEntity): Result<Unit>
-    suspend fun update(entity: AccountEntity): Result<Unit>
-    suspend fun updateBalance(id: String, balance: Double): Result<Unit>
-    suspend fun delete(id: String): Result<Unit>
+    fun getAllAccounts(): Flow<List<Account>>
+    fun getAccountById(id: String): Flow<Account?>
+    fun getTotalComputedBalance(): Flow<Double>
+    suspend fun insertAccount(account: Account)
+    suspend fun updateAccount(account: Account)
+    suspend fun updateInitialBalance(accountId: String, amount: Double)
+    suspend fun deleteAccount(accountId: String)
+    // Mantenemos count() para DatabaseInitializer
+    fun count(): kotlinx.coroutines.flow.Flow<Long>
 }

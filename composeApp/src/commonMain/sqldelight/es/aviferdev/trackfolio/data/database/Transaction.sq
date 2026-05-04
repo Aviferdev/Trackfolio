@@ -1,18 +1,20 @@
 CREATE TABLE TransactionEntity (
-    id TEXT NOT NULL PRIMARY KEY,
-    accountId TEXT NOT NULL,
-    amount REAL NOT NULL,
-    type TEXT NOT NULL,
-    categoryId TEXT NOT NULL,
-    date INTEGER NOT NULL,
-    notes TEXT,
-    createdAt INTEGER NOT NULL,
+    id          TEXT    NOT NULL PRIMARY KEY,
+    accountId   TEXT    NOT NULL,
+    amount      REAL    NOT NULL,
+    type        TEXT    NOT NULL,
+    categoryId  TEXT    NOT NULL,
+    date        INTEGER NOT NULL,
+    notes       TEXT,
+    createdAt   INTEGER NOT NULL,
     FOREIGN KEY (accountId) REFERENCES AccountEntity(id) ON DELETE CASCADE,
     FOREIGN KEY (categoryId) REFERENCES CategoryEntity(id)
 );
 
 CREATE INDEX idx_transaction_account ON TransactionEntity(accountId);
 CREATE INDEX idx_transaction_date ON TransactionEntity(date);
+
+-- ─── Queries básicas ──────────────────────────────────────────────────────────
 
 selectAll:
 SELECT * FROM TransactionEntity ORDER BY date DESC;
@@ -25,24 +27,57 @@ SELECT * FROM TransactionEntity
 WHERE accountId = :accountId
 ORDER BY date DESC;
 
+-- ─── Filtradas por cuenta + mes/año (Sprint 9) ────────────────────────────────
+
+selectByMonthAndAccount:
+SELECT * FROM TransactionEntity
+WHERE accountId = :accountId
+  AND strftime('%Y', date / 1000, 'unixepoch') = :year
+  AND strftime('%m', date / 1000, 'unixepoch') = :month
+ORDER BY date DESC;
+
+selectRecentByAccount:
+SELECT * FROM TransactionEntity
+WHERE accountId = :accountId
+ORDER BY date DESC
+LIMIT :limit;
+
+getMonthlyTotalsByAccount:
+SELECT
+    COALESCE(SUM(CASE WHEN type = 'INCOME'  THEN amount ELSE 0.0 END), 0.0) AS totalIncome,
+    COALESCE(SUM(CASE WHEN type = 'EXPENSE' THEN amount ELSE 0.0 END), 0.0) AS totalExpense
+FROM TransactionEntity
+WHERE accountId = :accountId
+  AND strftime('%Y', date / 1000, 'unixepoch') = :year
+  AND strftime('%m', date / 1000, 'unixepoch') = :month;
+
+getAnnualTotalsByAccount:
+SELECT
+    COALESCE(SUM(CASE WHEN type = 'INCOME'  THEN amount ELSE 0.0 END), 0.0) AS totalIncome,
+    COALESCE(SUM(CASE WHEN type = 'EXPENSE' THEN amount ELSE 0.0 END), 0.0) AS totalExpense
+FROM TransactionEntity
+WHERE accountId = :accountId
+  AND strftime('%Y', date / 1000, 'unixepoch') = :year;
+
+-- Totales por mes para todos los meses de un año (para gráfico de barras)
+getMonthlyBreakdownByAccount:
+SELECT
+    strftime('%m', date / 1000, 'unixepoch') AS month,
+    COALESCE(SUM(CASE WHEN type = 'INCOME'  THEN amount ELSE 0.0 END), 0.0) AS totalIncome,
+    COALESCE(SUM(CASE WHEN type = 'EXPENSE' THEN amount ELSE 0.0 END), 0.0) AS totalExpense
+FROM TransactionEntity
+WHERE accountId = :accountId
+  AND strftime('%Y', date / 1000, 'unixepoch') = :year
+GROUP BY month
+ORDER BY month ASC;
+
+-- ─── Retrocompatibilidad (sin filtro de cuenta) ───────────────────────────────
+
 selectByMonth:
 SELECT * FROM TransactionEntity
 WHERE strftime('%Y', date / 1000, 'unixepoch') = :year
 AND strftime('%m', date / 1000, 'unixepoch') = :month
 ORDER BY date DESC;
-
-insert:
-INSERT INTO TransactionEntity(id, accountId, amount, type, categoryId, date, notes, createdAt)
-VALUES (?, ?, ?, ?, ?, ?, ?, ?);
-
-update:
-UPDATE TransactionEntity
-SET accountId = :accountId, amount = :amount, type = :type,
-    categoryId = :categoryId, date = :date, notes = :notes
-WHERE id = :id;
-
-delete:
-DELETE FROM TransactionEntity WHERE id = :id;
 
 getMonthlyTotals:
 SELECT
@@ -58,3 +93,18 @@ SELECT
     COALESCE(SUM(CASE WHEN type = 'EXPENSE' THEN amount ELSE 0 END), 0.0) AS totalExpense
 FROM TransactionEntity
 WHERE strftime('%Y', date / 1000, 'unixepoch') = :year;
+
+-- ─── CRUD ─────────────────────────────────────────────────────────────────────
+
+insert:
+INSERT INTO TransactionEntity(id, accountId, amount, type, categoryId, date, notes, createdAt)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?);
+
+update:
+UPDATE TransactionEntity
+SET accountId = :accountId, amount = :amount, type = :type,
+    categoryId = :categoryId, date = :date, notes = :notes
+WHERE id = :id;
+
+delete:
+DELETE FROM TransactionEntity WHERE id = :id;

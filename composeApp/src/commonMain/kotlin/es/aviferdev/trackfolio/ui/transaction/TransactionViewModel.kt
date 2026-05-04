@@ -9,6 +9,7 @@ import es.aviferdev.trackfolio.domain.usecase.category.GetCategoriesByTypeUseCas
 import es.aviferdev.trackfolio.domain.usecase.transaction.DeleteTransactionUseCase
 import es.aviferdev.trackfolio.domain.usecase.transaction.GetMonthlyTotalsUseCase
 import es.aviferdev.trackfolio.domain.usecase.transaction.GetTransactionsByMonthUseCase
+import es.aviferdev.trackfolio.ui.account.AccountSession
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -22,19 +23,12 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 
 data class TransactionListUiState(
-    val transactions: List<Transaction> = emptyList(),
-    val totals: MonthlyTotals? = null,
-    val categoryNames: Map<String, String> = emptyMap(),
-    val year: String = "",
-    val month: String = "",
-    val isLoading: Boolean = true
-)
-
-private data class PeriodData(
-    val transactions: List<Transaction>,
-    val totals: MonthlyTotals,
-    val year: String,
-    val month: String
+    val transactions: List<Transaction>     = emptyList(),
+    val totals: MonthlyTotals?              = null,
+    val categoryNames: Map<String, String>  = emptyMap(),
+    val year: String                        = "",
+    val month: String                       = "",
+    val isLoading: Boolean                  = true
 )
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -42,7 +36,8 @@ class TransactionViewModel(
     private val getTransactionsByMonth: GetTransactionsByMonthUseCase,
     private val getMonthlyTotals: GetMonthlyTotalsUseCase,
     private val deleteTransactionUseCase: DeleteTransactionUseCase,
-    private val getCategoriesByType: GetCategoriesByTypeUseCase
+    private val getCategoriesByType: GetCategoriesByTypeUseCase,
+    private val session: AccountSession
 ) : ViewModel() {
 
     private val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
@@ -50,20 +45,6 @@ class TransactionViewModel(
     private val _selectedPeriod = MutableStateFlow(
         Pair(now.year.toString(), now.monthNumber.toString().padStart(2, '0'))
     )
-
-    private val periodDataFlow = _selectedPeriod.flatMapLatest { (year, month) ->
-        combine(
-            getTransactionsByMonth(year, month),
-            getMonthlyTotals(year, month)
-        ) { transactions, totals ->
-            PeriodData(
-                transactions = transactions,
-                totals = totals,
-                year = year,
-                month = month
-            )
-        }
-    }
 
     private val categoryNamesFlow = combine(
         getCategoriesByType(TransactionType.INCOME),
@@ -73,22 +54,42 @@ class TransactionViewModel(
     }
 
     val uiState: StateFlow<TransactionListUiState> = combine(
-        periodDataFlow,
-        categoryNamesFlow
-    ) { periodData, categoryNames ->
-        TransactionListUiState(
-            transactions = periodData.transactions,
-            totals = periodData.totals,
-            categoryNames = categoryNames,
-            year = periodData.year,
-            month = periodData.month,
-            isLoading = false
-        )
+        session.selectedAccountId,
+        _selectedPeriod
+    ) { accountId, period ->
+        accountId to period
+    }.flatMapLatest { (accountId, period) ->
+        val (year, month) = period
+        if (accountId == null) {
+            combine(categoryNamesFlow) { cats ->
+                TransactionListUiState(
+                    categoryNames = cats[0],
+                    year          = year,
+                    month         = month,
+                    isLoading     = false
+                )
+            }
+        } else {
+            combine(
+                getTransactionsByMonth(accountId, year, month),
+                getMonthlyTotals(accountId, year, month),
+                categoryNamesFlow
+            ) { transactions, totals, categoryNames ->
+                TransactionListUiState(
+                    transactions  = transactions,
+                    totals        = totals,
+                    categoryNames = categoryNames,
+                    year          = year,
+                    month         = month,
+                    isLoading     = false
+                )
+            }
+        }
     }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5_000),
+        scope        = viewModelScope,
+        started      = SharingStarted.WhileSubscribed(5_000),
         initialValue = TransactionListUiState(
-            year = _selectedPeriod.value.first,
+            year  = _selectedPeriod.value.first,
             month = _selectedPeriod.value.second
         )
     )
@@ -96,24 +97,24 @@ class TransactionViewModel(
     fun previousMonth() {
         val (y, m) = _selectedPeriod.value
         val month = m.toInt()
-        val year = y.toInt()
-        if (month == 1) {
-            _selectedPeriod.value = Pair((year - 1).toString(), "12")
+        val year  = y.toInt()
+        _selectedPeriod.value = if (month == 1) {
+            Pair((year - 1).toString(), "12")
         } else {
-            _selectedPeriod.value = Pair(y, (month - 1).toString().padStart(2, '0'))
+            Pair(y, (month - 1).toString().padStart(2, '0'))
         }
     }
 
     fun nextMonth() {
         val (y, m) = _selectedPeriod.value
-        val month = m.toInt()
-        val year = y.toInt()
+        val month  = m.toInt()
+        val year   = y.toInt()
         val nowDate = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
         if (year == nowDate.year && month == nowDate.monthNumber) return
-        if (month == 12) {
-            _selectedPeriod.value = Pair((year + 1).toString(), "01")
+        _selectedPeriod.value = if (month == 12) {
+            Pair((year + 1).toString(), "01")
         } else {
-            _selectedPeriod.value = Pair(y, (month + 1).toString().padStart(2, '0'))
+            Pair(y, (month + 1).toString().padStart(2, '0'))
         }
     }
 

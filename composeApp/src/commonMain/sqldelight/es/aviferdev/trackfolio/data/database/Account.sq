@@ -1,11 +1,12 @@
 CREATE TABLE AccountEntity (
-    id TEXT NOT NULL PRIMARY KEY,
-    name TEXT NOT NULL,
-    type TEXT NOT NULL,
-    currency TEXT NOT NULL DEFAULT 'EUR',
-    balance REAL NOT NULL DEFAULT 0.0,
-    createdAt INTEGER NOT NULL
+    id          TEXT    NOT NULL PRIMARY KEY,
+    name        TEXT    NOT NULL,
+    currency    TEXT    NOT NULL DEFAULT 'EUR',
+    balance     REAL    NOT NULL DEFAULT 0.0,
+    createdAt   INTEGER NOT NULL
 );
+
+-- ─── Queries básicas ──────────────────────────────────────────────────────────
 
 selectAll:
 SELECT * FROM AccountEntity ORDER BY createdAt ASC;
@@ -14,19 +15,69 @@ selectById:
 SELECT * FROM AccountEntity WHERE id = :id;
 
 insert:
-INSERT OR REPLACE INTO AccountEntity(id, name, type, currency, balance, createdAt)
-VALUES (?, ?, ?, ?, ?, ?);
+INSERT OR REPLACE INTO AccountEntity(id, name, currency, balance, createdAt)
+VALUES (?, ?, ?, ?, ?);
 
 update:
 UPDATE AccountEntity
-SET name = :name, type = :type, currency = :currency, balance = :balance
+SET name = :name, currency = :currency
 WHERE id = :id;
 
-updateBalance:
+updateInitialBalance:
 UPDATE AccountEntity SET balance = :balance WHERE id = :id;
 
 delete:
 DELETE FROM AccountEntity WHERE id = :id;
 
-getTotalBalance:
-SELECT COALESCE(SUM(balance), 0.0) AS totalBalance FROM AccountEntity;
+-- ─── Balance calculado dinámicamente ─────────────────────────────────────────
+
+getComputedBalance:
+SELECT
+    a.id,
+    a.name,
+    a.currency,
+    a.balance AS initialBalance,
+    a.createdAt,
+    COALESCE(a.balance, 0.0)
+        + COALESCE(SUM(CASE WHEN t.type = 'INCOME'  THEN t.amount ELSE 0.0 END), 0.0)
+        - COALESCE(SUM(CASE WHEN t.type = 'EXPENSE' THEN t.amount ELSE 0.0 END), 0.0)
+    AS computedBalance
+FROM AccountEntity a
+LEFT JOIN TransactionEntity t ON t.accountId = a.id
+WHERE a.id = :id
+GROUP BY a.id;
+
+getAllComputedBalances:
+SELECT
+    a.id,
+    a.name,
+    a.currency,
+    a.balance AS initialBalance,
+    a.createdAt,
+    COALESCE(a.balance, 0.0)
+        + COALESCE(SUM(CASE WHEN t.type = 'INCOME'  THEN t.amount ELSE 0.0 END), 0.0)
+        - COALESCE(SUM(CASE WHEN t.type = 'EXPENSE' THEN t.amount ELSE 0.0 END), 0.0)
+    AS computedBalance
+FROM AccountEntity a
+LEFT JOIN TransactionEntity t ON t.accountId = a.id
+GROUP BY a.id
+ORDER BY a.createdAt ASC;
+
+getTotalComputedBalance:
+SELECT
+    COALESCE(SUM(
+        COALESCE(a.balance, 0.0)
+        + COALESCE(inc.total, 0.0)
+        - COALESCE(exp.total, 0.0)
+    ), 0.0) AS totalBalance
+FROM AccountEntity a
+LEFT JOIN (
+    SELECT accountId, SUM(amount) AS total
+    FROM TransactionEntity WHERE type = 'INCOME'
+    GROUP BY accountId
+) inc ON inc.accountId = a.id
+LEFT JOIN (
+    SELECT accountId, SUM(amount) AS total
+    FROM TransactionEntity WHERE type = 'EXPENSE'
+    GROUP BY accountId
+) exp ON exp.accountId = a.id;

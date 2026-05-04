@@ -17,12 +17,17 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.trackfolio.domain.model.AnnualSummary
+import es.aviferdev.trackfolio.domain.model.MonthlyTotals
 import es.aviferdev.trackfolio.ui.theme.*
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.math.abs
+
+private val MONTH_LABELS = listOf(
+    "E", "F", "M", "A", "M", "J", "J", "A", "S", "O", "N", "D"
+)
 
 @Composable
 fun AnnualSummaryScreen(
@@ -36,9 +41,9 @@ fun AnnualSummaryScreen(
             .background(BackgroundGray)
     ) {
         AnnualHeader(
-            year = uiState.year,
+            year      = uiState.year,
             onPrevious = { viewModel.previousYear() },
-            onNext = { viewModel.nextYear() }
+            onNext     = { viewModel.nextYear() }
         )
 
         if (uiState.isLoading) {
@@ -47,20 +52,18 @@ fun AnnualSummaryScreen(
             }
         } else {
             uiState.summary?.let { summary ->
-                AnnualContent(summary = summary)
-            }
+                AnnualContent(
+                    summary   = summary,
+                    breakdown = uiState.monthlyBreakdown
+                )
+            } ?: EmptyYearState()
         }
     }
 }
 
 @Composable
-private fun AnnualHeader(
-    year: String,
-    onPrevious: () -> Unit,
-    onNext: () -> Unit
-) {
-    val nowYear = Clock.System.now()
-        .toLocalDateTime(TimeZone.currentSystemDefault()).year
+private fun AnnualHeader(year: String, onPrevious: () -> Unit, onNext: () -> Unit) {
+    val nowYear       = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).year
     val isCurrentYear = year.toIntOrNull() == nowYear
 
     Surface(color = SurfaceWhite, shadowElevation = 1.dp) {
@@ -71,36 +74,23 @@ private fun AnnualHeader(
                 .padding(horizontal = 20.dp)
                 .padding(top = 16.dp, bottom = 16.dp)
         ) {
-            Text(
-                text = "Resumen anual",
-                fontSize = 20.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = TextPrimary
-            )
+            Text("Resumen anual", fontSize = 20.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary)
             Spacer(Modifier.height(16.dp))
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier              = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment     = Alignment.CenterVertically
             ) {
                 IconButton(
-                    onClick = onPrevious,
-                    modifier = Modifier
-                        .size(36.dp)
-                        .clip(CircleShape)
-                        .background(BackgroundGray)
+                    onClick  = onPrevious,
+                    modifier = Modifier.size(36.dp).clip(CircleShape).background(BackgroundGray)
                 ) {
                     Text("‹", fontSize = 22.sp, color = TextPrimary, fontWeight = FontWeight.Light)
                 }
-                Text(
-                    text = year,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    color = TextPrimary
-                )
+                Text(year, fontSize = 20.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary)
                 IconButton(
-                    onClick = onNext,
-                    enabled = !isCurrentYear,
+                    onClick  = onNext,
+                    enabled  = !isCurrentYear,
                     modifier = Modifier
                         .size(36.dp)
                         .clip(CircleShape)
@@ -108,8 +98,8 @@ private fun AnnualHeader(
                 ) {
                     Text(
                         "›",
-                        fontSize = 22.sp,
-                        color = if (!isCurrentYear) TextPrimary else TextSecondary.copy(alpha = 0.3f),
+                        fontSize   = 22.sp,
+                        color      = if (!isCurrentYear) TextPrimary else TextSecondary.copy(alpha = 0.3f),
                         fontWeight = FontWeight.Light
                     )
                 }
@@ -119,7 +109,7 @@ private fun AnnualHeader(
 }
 
 @Composable
-private fun AnnualContent(summary: AnnualSummary) {
+private fun AnnualContent(summary: AnnualSummary, breakdown: List<MonthlyTotals>) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -129,66 +119,188 @@ private fun AnnualContent(summary: AnnualSummary) {
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         BalanceHeroCard(summary = summary)
+
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier              = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             AnnualMetricCard(
-                label = "Ingresos totales",
-                amount = summary.totalIncome,
-                color = IncomeGreen,
+                label            = "Ingresos totales",
+                amount           = summary.totalIncome,
+                color            = IncomeGreen,
                 variationPercent = summary.incomeVariationPercent,
-                modifier = Modifier.weight(1f)
+                modifier         = Modifier.weight(1f)
             )
             AnnualMetricCard(
-                label = "Gastos totales",
-                amount = summary.totalExpense,
-                color = ExpenseRed,
+                label            = "Gastos totales",
+                amount           = summary.totalExpense,
+                color            = ExpenseRed,
                 variationPercent = -summary.expenseVariationPercent,
-                modifier = Modifier.weight(1f)
+                modifier         = Modifier.weight(1f)
             )
         }
+
+        // ── Gráfico de barras mensual ──────────────────────────────────────
+        MonthlyBarChart(breakdown = breakdown, year = summary.year)
+
+        // ── Comparativa año anterior ───────────────────────────────────────
         if (summary.previousYearIncome > 0 || summary.previousYearExpense > 0) {
             PreviousYearCard(summary = summary)
         }
     }
 }
 
+// ─── Gráfico de barras por mes ────────────────────────────────────────────────
+@Composable
+private fun MonthlyBarChart(breakdown: List<MonthlyTotals>, year: String) {
+    // Construimos un mapa completo para los 12 meses (rellena con 0 los que no tienen datos)
+    val dataMap = breakdown.associateBy { it.month.trimStart('0').ifEmpty { "0" }.toInt() }
+    val maxValue = (1..12).maxOf { m ->
+        val row = dataMap[m]
+        maxOf(row?.totalIncome ?: 0.0, row?.totalExpense ?: 0.0)
+    }.coerceAtLeast(1.0)
+
+    Card(
+        modifier  = Modifier.fillMaxWidth(),
+        shape     = RoundedCornerShape(14.dp),
+        colors    = CardDefaults.cardColors(containerColor = SurfaceWhite),
+        elevation = CardDefaults.cardElevation(0.dp),
+        border    = CardDefaults.outlinedCardBorder()
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(
+                text       = "Evolución mensual $year",
+                fontSize   = 14.sp,
+                fontWeight = FontWeight.SemiBold,
+                color      = TextPrimary
+            )
+            Spacer(Modifier.height(4.dp))
+
+            // Leyenda
+            Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                LegendItem(color = IncomeGreen, label = "Ingresos")
+                LegendItem(color = ExpenseRed,  label = "Gastos")
+            }
+
+            Spacer(Modifier.height(16.dp))
+
+            // Barras
+            Row(
+                modifier              = Modifier.fillMaxWidth().height(160.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment     = Alignment.Bottom
+            ) {
+                (1..12).forEach { monthNum ->
+                    val row     = dataMap[monthNum]
+                    val income  = row?.totalIncome  ?: 0.0
+                    val expense = row?.totalExpense ?: 0.0
+                    MonthBarGroup(
+                        monthLabel  = MONTH_LABELS[monthNum - 1],
+                        income      = income,
+                        expense     = expense,
+                        maxValue    = maxValue,
+                        modifier    = Modifier.weight(1f)
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun MonthBarGroup(
+    monthLabel: String,
+    income: Double,
+    expense: Double,
+    maxValue: Double,
+    modifier: Modifier = Modifier
+) {
+    val incomeRatio  = (income  / maxValue).toFloat().coerceIn(0f, 1f)
+    val expenseRatio = (expense / maxValue).toFloat().coerceIn(0f, 1f)
+    val maxBarHeight = 130.dp
+
+    Column(
+        modifier            = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Bottom
+    ) {
+        // Barras de income y expense lado a lado
+        Row(
+            modifier            = Modifier.height(maxBarHeight),
+            verticalAlignment   = Alignment.Bottom,
+            horizontalArrangement = Arrangement.spacedBy(1.dp)
+        ) {
+            // Barra ingreso
+            Box(
+                modifier = Modifier
+                    .width(4.dp)
+                    .fillMaxHeight(incomeRatio)
+                    .clip(RoundedCornerShape(topStart = 2.dp, topEnd = 2.dp))
+                    .background(IncomeGreen)
+            )
+            // Barra gasto
+            Box(
+                modifier = Modifier
+                    .width(4.dp)
+                    .fillMaxHeight(expenseRatio)
+                    .clip(RoundedCornerShape(topStart = 2.dp, topEnd = 2.dp))
+                    .background(ExpenseRed)
+            )
+        }
+        Spacer(Modifier.height(4.dp))
+        Text(
+            text      = monthLabel,
+            fontSize  = 9.sp,
+            color     = TextSecondary,
+            textAlign = TextAlign.Center
+        )
+    }
+}
+
+@Composable
+private fun LegendItem(color: Color, label: String) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Box(
+            modifier = Modifier
+                .size(8.dp)
+                .clip(CircleShape)
+                .background(color)
+        )
+        Spacer(Modifier.width(4.dp))
+        Text(label, fontSize = 11.sp, color = TextSecondary)
+    }
+}
+
+// ─── Tarjetas existentes ──────────────────────────────────────────────────────
 @Composable
 private fun BalanceHeroCard(summary: AnnualSummary) {
-    val balance = summary.balance
+    val balance    = summary.balance
     val isPositive = balance >= 0
 
     Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = PrimaryDark),
+        modifier  = Modifier.fillMaxWidth(),
+        shape     = RoundedCornerShape(16.dp),
+        colors    = CardDefaults.cardColors(containerColor = PrimaryDark),
         elevation = CardDefaults.cardElevation(4.dp)
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 20.dp, vertical = 20.dp),
+            modifier            = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 20.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(
-                text = "Balance ${summary.year}",
-                fontSize = 13.sp,
-                color = Color.White.copy(alpha = 0.65f)
-            )
+            Text("Balance ${summary.year}", fontSize = 13.sp, color = Color.White.copy(alpha = 0.65f))
             Spacer(Modifier.height(8.dp))
             Text(
-                text = "${if (isPositive) "+" else "−"} ${formatAmount(abs(balance))} €",
-                fontSize = 36.sp,
-                fontWeight = FontWeight.Bold,
-                color = if (isPositive) Color(0xFF66BB6A) else Color(0xFFEF9A9A),
+                text          = "${if (isPositive) "+" else "−"} ${formatAmount(abs(balance))} €",
+                fontSize      = 36.sp,
+                fontWeight    = FontWeight.Bold,
+                color         = if (isPositive) Color(0xFF66BB6A) else Color(0xFFEF9A9A),
                 letterSpacing = (-0.5).sp
             )
             Spacer(Modifier.height(4.dp))
             Text(
-                text = if (isPositive) "Año positivo" else "Año en negativo",
+                if (isPositive) "Año positivo" else "Año en negativo",
                 fontSize = 13.sp,
-                color = Color.White.copy(alpha = 0.65f)
+                color    = Color.White.copy(alpha = 0.65f)
             )
         }
     }
@@ -202,44 +314,31 @@ private fun AnnualMetricCard(
     variationPercent: Double,
     modifier: Modifier = Modifier
 ) {
-    val hasPreviousData = variationPercent != 0.0
+    val hasPrevious        = variationPercent != 0.0
     val isPositiveVariation = variationPercent >= 0
 
     Card(
-        modifier = modifier,
-        shape = RoundedCornerShape(14.dp),
-        colors = CardDefaults.cardColors(containerColor = SurfaceWhite),
+        modifier  = modifier,
+        shape     = RoundedCornerShape(14.dp),
+        colors    = CardDefaults.cardColors(containerColor = SurfaceWhite),
         elevation = CardDefaults.cardElevation(0.dp),
-        border = CardDefaults.outlinedCardBorder()
+        border    = CardDefaults.outlinedCardBorder()
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-        ) {
-            Text(text = label, fontSize = 12.sp, color = TextSecondary)
+        Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
+            Text(label, fontSize = 12.sp, color = TextSecondary)
             Spacer(Modifier.height(8.dp))
-            Text(
-                text = "${formatAmount(amount)} €",
-                fontSize = 18.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = color
-            )
-            if (hasPreviousData) {
+            Text("${formatAmount(amount)} €", fontSize = 18.sp, fontWeight = FontWeight.SemiBold, color = color)
+            if (hasPrevious) {
                 Spacer(Modifier.height(6.dp))
-                val sign = if (isPositiveVariation) "+" else ""
+                val sign     = if (isPositiveVariation) "+" else ""
                 val varColor = if (isPositiveVariation) IncomeGreen else ExpenseRed
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(
-                        text = if (isPositiveVariation) "▲" else "▼",
-                        fontSize = 10.sp,
-                        color = varColor
-                    )
+                    Text(if (isPositiveVariation) "▲" else "▼", fontSize = 10.sp, color = varColor)
                     Spacer(Modifier.width(3.dp))
                     Text(
-                        text = "$sign${formatPercent(variationPercent)}% vs año anterior",
+                        "$sign${formatPercent(variationPercent)}% vs año anterior",
                         fontSize = 11.sp,
-                        color = varColor
+                        color    = varColor
                     )
                 }
             }
@@ -250,88 +349,69 @@ private fun AnnualMetricCard(
 @Composable
 private fun PreviousYearCard(summary: AnnualSummary) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(14.dp),
-        colors = CardDefaults.cardColors(containerColor = SurfaceWhite),
+        modifier  = Modifier.fillMaxWidth(),
+        shape     = RoundedCornerShape(14.dp),
+        colors    = CardDefaults.cardColors(containerColor = SurfaceWhite),
         elevation = CardDefaults.cardElevation(0.dp),
-        border = CardDefaults.outlinedCardBorder()
+        border    = CardDefaults.outlinedCardBorder()
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-        ) {
+        Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
             Text(
-                text = "Comparativa con ${summary.year.toInt() - 1}",
-                fontSize = 14.sp,
+                "Comparativa con ${summary.year.toInt() - 1}",
+                fontSize   = 14.sp,
                 fontWeight = FontWeight.SemiBold,
-                color = TextPrimary
+                color      = TextPrimary
             )
             Spacer(Modifier.height(14.dp))
-            ComparisonRow(
-                label = "Ingresos",
-                current = summary.totalIncome,
-                previous = summary.previousYearIncome,
-                color = IncomeGreen
-            )
+            ComparisonRow("Ingresos", summary.totalIncome,  summary.previousYearIncome,  IncomeGreen)
+            Spacer(Modifier.height(10.dp))
+            HorizontalDivider(color = BorderGray, thickness = 0.5.dp)
+            Spacer(Modifier.height(10.dp))
+            ComparisonRow("Gastos",   summary.totalExpense, summary.previousYearExpense, ExpenseRed)
             Spacer(Modifier.height(10.dp))
             HorizontalDivider(color = BorderGray, thickness = 0.5.dp)
             Spacer(Modifier.height(10.dp))
             ComparisonRow(
-                label = "Gastos",
-                current = summary.totalExpense,
-                previous = summary.previousYearExpense,
-                color = ExpenseRed
-            )
-            Spacer(Modifier.height(10.dp))
-            HorizontalDivider(color = BorderGray, thickness = 0.5.dp)
-            Spacer(Modifier.height(10.dp))
-            ComparisonRow(
-                label = "Balance",
-                current = summary.balance,
+                label    = "Balance",
+                current  = summary.balance,
                 previous = summary.previousYearIncome - summary.previousYearExpense,
-                color = if (summary.balance >= 0) IncomeGreen else ExpenseRed
+                color    = if (summary.balance >= 0) IncomeGreen else ExpenseRed
             )
         }
     }
 }
 
 @Composable
-private fun ComparisonRow(
-    label: String,
-    current: Double,
-    previous: Double,
-    color: Color
-) {
+private fun ComparisonRow(label: String, current: Double, previous: Double, color: Color) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier              = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment     = Alignment.CenterVertically
     ) {
-        Text(text = label, fontSize = 13.sp, color = TextSecondary, modifier = Modifier.weight(1f))
-        Text(
-            text = "${formatAmount(previous)} €",
-            fontSize = 13.sp,
-            color = TextSecondary,
-            textAlign = TextAlign.End,
-            modifier = Modifier.weight(1f)
-        )
-        Text(
-            text = "${formatAmount(current)} €",
-            fontSize = 13.sp,
-            fontWeight = FontWeight.SemiBold,
-            color = color,
-            textAlign = TextAlign.End,
-            modifier = Modifier.weight(1f)
-        )
+        Text(label,                  fontSize = 13.sp, color = TextSecondary, modifier = Modifier.weight(1f))
+        Text("${formatAmount(previous)} €", fontSize = 13.sp, color = TextSecondary, textAlign = TextAlign.End, modifier = Modifier.weight(1f))
+        Text("${formatAmount(current)} €",  fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = color, textAlign = TextAlign.End, modifier = Modifier.weight(1f))
+    }
+}
+
+@Composable
+private fun EmptyYearState() {
+    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Text("📊", fontSize = 48.sp)
+            Spacer(Modifier.height(12.dp))
+            Text("Sin datos para este año", fontSize = 17.sp, fontWeight = FontWeight.Medium, color = TextPrimary)
+            Spacer(Modifier.height(6.dp))
+            Text("Añade movimientos para ver el resumen", fontSize = 13.sp, color = TextSecondary)
+        }
     }
 }
 
 private fun formatAmount(amount: Double): String {
-    val abs = abs(amount)
+    val abs     = abs(amount)
     val rounded = (abs * 100).toLong()
-    val euros = rounded / 100
-    val cents = rounded % 100
+    val euros   = rounded / 100
+    val cents   = rounded % 100
     val eurosStr = buildString {
         euros.toString().reversed().forEachIndexed { i, c ->
             if (i > 0 && i % 3 == 0) append('.')
@@ -343,9 +423,8 @@ private fun formatAmount(amount: Double): String {
 
 private fun formatPercent(value: Double): String {
     val abs = abs(value)
-    return if (abs == abs.toLong().toDouble()) {
-        abs.toLong().toString()
-    } else {
+    return if (abs == abs.toLong().toDouble()) abs.toLong().toString()
+    else {
         val rounded = (abs * 10).toLong()
         "${rounded / 10},${rounded % 10}"
     }

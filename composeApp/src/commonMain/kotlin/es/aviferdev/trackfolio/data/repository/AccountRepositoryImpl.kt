@@ -1,29 +1,32 @@
 package es.aviferdev.trackfolio.data.repository
 
-import es.aviferdev.trackfolio.data.database.mapper.toDomain
-import es.aviferdev.trackfolio.data.database.mapper.toEntity
 import es.aviferdev.trackfolio.data.datasource.AccountLocalDataSource
 import es.aviferdev.trackfolio.domain.model.Account
 import es.aviferdev.trackfolio.domain.repository.AccountRepository
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
 
 class AccountRepositoryImpl(
     private val dataSource: AccountLocalDataSource
 ) : AccountRepository {
 
-    override fun getAll(): Flow<List<Account>> =
-        dataSource.getAll().map { it.map { entity -> entity.toDomain() } }
+    override fun getAllAccounts(): Flow<List<Account>> =
+        dataSource.getAllAccounts()
 
-    override fun getById(id: String): Flow<Account?> =
-        dataSource.getById(id).map { it?.toDomain() }
+    override fun getAccountById(id: String): Flow<Account?> =
+        dataSource.getAccountById(id)
 
-    override fun getTotalBalance(): Flow<Double> =
-        dataSource.getTotalBalance()
+    override fun getTotalComputedBalance(): Flow<Double> =
+        dataSource.getTotalComputedBalance()
 
-    override suspend fun save(account: Account): Result<Unit> =
-        dataSource.insert(account.toEntity())
+    override suspend fun saveAccount(account: Account): Result<Unit> =
+        runCatching { dataSource.insertAccount(account) }
 
-    override suspend fun delete(id: String): Result<Unit> =
-        dataSource.delete(id)
+    override suspend fun updateAccount(account: Account): Result<Unit> =
+        runCatching { dataSource.updateAccount(account) }
+
+    override suspend fun setInitialBalance(accountId: String, amount: Double): Result<Unit> =
+        runCatching { dataSource.updateInitialBalance(accountId, amount) }
+
+    override suspend fun deleteAccount(accountId: String): Result<Unit> =
+        runCatching { dataSource.deleteAccount(accountId) }
 }

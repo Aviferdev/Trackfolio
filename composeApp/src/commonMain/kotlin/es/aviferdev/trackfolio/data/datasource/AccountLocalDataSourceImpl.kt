@@ -2,9 +2,11 @@ package es.aviferdev.trackfolio.data.datasource
 
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
+import app.cash.sqldelight.coroutines.mapToOne
 import app.cash.sqldelight.coroutines.mapToOneOrNull
-import es.aviferdev.trackfolio.data.database.AccountEntity
 import es.aviferdev.trackfolio.data.database.TrackfolioDatabase
+import es.aviferdev.trackfolio.data.database.mapper.toDomain
+import es.aviferdev.trackfolio.domain.model.Account
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
@@ -17,55 +19,60 @@ class AccountLocalDataSourceImpl(
 
     private val queries = database.accountQueries
 
-    override fun getAll(): Flow<List<AccountEntity>> =
-        queries.selectAll().asFlow().mapToList(Dispatchers.IO)
+    override fun getAllAccounts(): Flow<List<Account>> =
+        queries.getAllComputedBalances()
+            .asFlow()
+            .mapToList(Dispatchers.IO)
+            .map { list -> list.map { it.toDomain() } }
 
-    override fun getById(id: String): Flow<AccountEntity?> =
-        queries.selectById(id).asFlow().mapToOneOrNull(Dispatchers.IO)
-
-    override fun getTotalBalance(): Flow<Double> =
-        queries.getTotalBalance().asFlow()
+    override fun getAccountById(id: String): Flow<Account?> =
+        queries.getComputedBalance(id)
+            .asFlow()
             .mapToOneOrNull(Dispatchers.IO)
-            .map { it ?: 0.0 }
+            .map { it?.toDomain() }
 
-    override suspend fun insert(entity: AccountEntity): Result<Unit> =
-        runCatching {
-            withContext(Dispatchers.IO) {
-                queries.insert(
-                    id = entity.id,
-                    name = entity.name,
-                    type = entity.type,
-                    currency = entity.currency,
-                    balance = entity.balance,
-                    createdAt = entity.createdAt
-                )
-            }
-        }
+    override fun getTotalComputedBalance(): Flow<Double> =
+        queries.getTotalComputedBalance()
+            .asFlow()
+            .mapToOne(Dispatchers.IO)
 
-    override suspend fun update(entity: AccountEntity): Result<Unit> =
-        runCatching {
-            withContext(Dispatchers.IO) {
-                queries.update(
-                    name = entity.name,
-                    type = entity.type,
-                    currency = entity.currency,
-                    balance = entity.balance,
-                    id = entity.id
-                )
-            }
-        }
+    override fun count(): Flow<Long> =
+        queries.selectAll()
+            .asFlow()
+            .mapToList(Dispatchers.IO)
+            .map { it.size.toLong() }
 
-    override suspend fun updateBalance(id: String, balance: Double): Result<Unit> =
-        runCatching {
-            withContext(Dispatchers.IO) {
-                queries.updateBalance(balance = balance, id = id)
-            }
+    override suspend fun insertAccount(account: Account) {
+        withContext(Dispatchers.IO) {
+            queries.insert(
+                id        = account.id,
+                name      = account.name,
+                currency  = account.currency,
+                balance   = account.initialBalance,
+                createdAt = account.createdAt
+            )
         }
+    }
 
-    override suspend fun delete(id: String): Result<Unit> =
-        runCatching {
-            withContext(Dispatchers.IO) {
-                queries.delete(id)
-            }
+    override suspend fun updateAccount(account: Account) {
+        withContext(Dispatchers.IO) {
+            queries.update(
+                name     = account.name,
+                currency = account.currency,
+                id       = account.id
+            )
         }
+    }
+
+    override suspend fun updateInitialBalance(accountId: String, amount: Double) {
+        withContext(Dispatchers.IO) {
+            queries.updateInitialBalance(balance = amount, id = accountId)
+        }
+    }
+
+    override suspend fun deleteAccount(accountId: String) {
+        withContext(Dispatchers.IO) {
+            queries.delete(accountId)
+        }
+    }
 }

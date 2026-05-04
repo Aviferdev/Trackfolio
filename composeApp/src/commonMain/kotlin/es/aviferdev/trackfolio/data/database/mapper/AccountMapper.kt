@@ -1,23 +1,23 @@
 package es.aviferdev.trackfolio.data.database.mapper
 
-import es.aviferdev.trackfolio.data.database.AccountEntity
+import es.aviferdev.trackfolio.data.database.GetAllComputedBalances
+import es.aviferdev.trackfolio.data.database.GetComputedBalance
 import es.aviferdev.trackfolio.domain.model.Account
-import es.aviferdev.trackfolio.domain.model.AccountType
 
-fun AccountEntity.toDomain(): Account = Account(
-    id = id,
-    name = name,
-    type = AccountType.valueOf(type),
-    currency = currency,
-    balance = balance,
-    createdAt = createdAt
+fun GetComputedBalance.toDomain(): Account = Account(
+    id              = id,
+    name            = name,
+    currency        = currency,
+    initialBalance  = initialBalance,
+    computedBalance = computedBalance ?: initialBalance,
+    createdAt       = createdAt
 )
 
-fun Account.toEntity(): AccountEntity = AccountEntity(
-    id = id,
-    name = name,
-    type = type.name,
-    currency = currency,
-    balance = balance,
-    createdAt = createdAt
+fun GetAllComputedBalances.toDomain(): Account = Account(
+    id              = id,
+    name            = name,
+    currency        = currency,
+    initialBalance  = initialBalance,
+    computedBalance = computedBalance ?: initialBalance,
+    createdAt       = createdAt
 )

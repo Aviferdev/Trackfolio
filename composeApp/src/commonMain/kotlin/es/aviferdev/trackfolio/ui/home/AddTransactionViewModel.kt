@@ -7,17 +7,17 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import es.aviferdev.trackfolio.domain.model.Category
 import es.aviferdev.trackfolio.domain.model.Transaction
-import es.aviferdev.trackfolio.data.database.DatabaseInitializer
 import es.aviferdev.trackfolio.domain.model.TransactionType
 import es.aviferdev.trackfolio.domain.usecase.category.GetCategoriesByTypeUseCase
 import es.aviferdev.trackfolio.domain.usecase.transaction.SaveTransactionUseCase
-import kotlinx.datetime.Clock
+import es.aviferdev.trackfolio.ui.account.AccountSession
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import kotlinx.datetime.Clock
 
 sealed class AddTransactionUiState {
     data object Idle    : AddTransactionUiState()
@@ -28,7 +28,8 @@ sealed class AddTransactionUiState {
 
 class AddTransactionViewModel(
     private val saveTransaction: SaveTransactionUseCase,
-    private val getCategoriesByType: GetCategoriesByTypeUseCase
+    private val getCategoriesByType: GetCategoriesByTypeUseCase,
+    private val session: AccountSession
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<AddTransactionUiState>(AddTransactionUiState.Idle)
@@ -59,8 +60,7 @@ class AddTransactionViewModel(
     }
 
     fun onAmountChange(value: String) {
-        val filtered = value.filter { it.isDigit() || it == ',' || it == '.' }
-        amount = filtered
+        amount = value.filter { it.isDigit() || it == ',' || it == '.' }
     }
 
     fun onTypeChange(newType: TransactionType) {
@@ -91,17 +91,23 @@ class AddTransactionViewModel(
 
         viewModelScope.launch {
             val amountValue = amount.replace(',', '.').toDoubleOrNull() ?: return@launch
+            // Usa la cuenta seleccionada actualmente en la sesión
+            val accountId = session.selectedAccountId.value
+                ?: run {
+                    _uiState.value = AddTransactionUiState.Error("No hay cuenta seleccionada")
+                    return@launch
+                }
 
             val now = Clock.System.now().toEpochMilliseconds()
             val transaction = Transaction(
-                id = generateId(),
-                accountId = DatabaseInitializer.DEFAULT_ACCOUNT_ID,
-                amount = amountValue,
-                type = type,
+                id         = generateId(),
+                accountId  = accountId,
+                amount     = amountValue,
+                type       = type,
                 categoryId = selectedCategoryId,
-                date = now,
-                notes = notes.ifBlank { null },
-                createdAt = now
+                date       = now,
+                notes      = notes.ifBlank { null },
+                createdAt  = now
             )
 
             saveTransaction(transaction)
@@ -112,6 +118,6 @@ class AddTransactionViewModel(
 
     private fun generateId(): String {
         val chars = "abcdefghijklmnopqrstuvwxyz0123456789"
-        return (1..36).map { chars.random() }.joinToString("")
+        return "tx_" + (1..29).map { chars.random() }.joinToString("")
     }
 }

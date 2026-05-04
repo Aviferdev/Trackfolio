@@ -3,10 +3,11 @@ package es.aviferdev.trackfolio.domain.model
 data class Account(
     val id: String,
     val name: String,
-    val type: AccountType,
     val currency: String,
-    val balance: Double,
+    val initialBalance: Double,   // saldo inicial — obligatorio antes de operar
+    val computedBalance: Double,  // initialBalance + SUM(INCOME) - SUM(EXPENSE), calculado en BD
     val createdAt: Long
-)
-
-enum class AccountType { CASH, BANK, OTHER }
+) {
+    /** True si el usuario todavía no ha configurado el saldo inicial */
+    val needsInitialBalance: Boolean get() = initialBalance == 0.0 && computedBalance == 0.0
+}

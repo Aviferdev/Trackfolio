@@ -3,6 +3,7 @@ package es.aviferdev.trackfolio.ui.navigation
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material.icons.outlined.DateRange
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Settings
@@ -25,14 +26,19 @@ fun bottomNavItems() = listOf(
         icon   = Icons.Outlined.DateRange
     ),
     BottomNavItem(
+        screen = Screen.Charts,
+        label  = "Gráficos",
+        icon   = Icons.Outlined.Star
+    ),
+    BottomNavItem(
         screen = Screen.Debts,
         label  = "Deudas",
         icon   = Icons.Outlined.Warning
     ),
     BottomNavItem(
         screen = Screen.Settings,
-        label  = "Resumen",
-        icon   = Icons.Outlined.DateRange
+        label  = "Ajustes",
+        icon   = Icons.Outlined.Settings
     )
 )
 

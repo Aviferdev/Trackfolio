@@ -2,14 +2,17 @@ package es.aviferdev.trackfolio.data.datasource
 
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
-import app.cash.sqldelight.coroutines.mapToOne
-import es.aviferdev.trackfolio.data.database.GetAnnualTotals
-import es.aviferdev.trackfolio.data.database.GetMonthlyTotals
+import app.cash.sqldelight.coroutines.mapToOneOrNull
 import es.aviferdev.trackfolio.data.database.TrackfolioDatabase
 import es.aviferdev.trackfolio.data.database.TransactionEntity
+import es.aviferdev.trackfolio.data.database.mapper.toDomain
+import es.aviferdev.trackfolio.domain.model.AnnualSummary
+import es.aviferdev.trackfolio.domain.model.MonthlyTotals
+import es.aviferdev.trackfolio.domain.model.Transaction
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 
 class TransactionLocalDataSourceImpl(
@@ -18,33 +21,82 @@ class TransactionLocalDataSourceImpl(
 
     private val queries = database.transactionQueries
 
-    override fun getAll(): Flow<List<TransactionEntity>> =
-        queries.selectAll().asFlow().mapToList(Dispatchers.IO)
+    override fun getByMonthAndAccount(
+        accountId: String, year: String, month: String
+    ): Flow<List<Transaction>> =
+        queries.selectByMonthAndAccount(accountId, year, month)
+            .asFlow()
+            .mapToList(Dispatchers.IO)
+            .map { list -> list.map { it.toDomain() } }
 
-    override fun getByAccount(accountId: String): Flow<List<TransactionEntity>> =
-        queries.selectByAccount(accountId).asFlow().mapToList(Dispatchers.IO)
+    override fun getMonthlyTotalsByAccount(
+        accountId: String, year: String, month: String
+    ): Flow<MonthlyTotals> =
+        queries.getMonthlyTotalsByAccount(accountId, year, month)
+            .asFlow()
+            .mapToOneOrNull(Dispatchers.IO)
+            .map { row ->
+                MonthlyTotals(
+                    year         = year,
+                    month        = month,
+                    totalIncome  = row?.totalIncome ?: 0.0,
+                    totalExpense = row?.totalExpense ?: 0.0
+                )
+            }
 
-    override fun getByMonth(year: String, month: String): Flow<List<TransactionEntity>> =
-        queries.selectByMonth(year = year, month = month).asFlow().mapToList(Dispatchers.IO)
+    override fun getAnnualTotalsByAccount(
+        accountId: String, year: String
+    ): Flow<AnnualSummary> {
+        val prevYear = (year.toInt() - 1).toString()
+        return queries.getAnnualTotalsByAccount(accountId, year)
+            .asFlow()
+            .mapToOneOrNull(Dispatchers.IO)
+            .map { current ->
+                val prev = queries.getAnnualTotalsByAccount(accountId, prevYear)
+                    .executeAsOneOrNull()
+                AnnualSummary(
+                    year                = year,
+                    totalIncome         = current?.totalIncome ?: 0.0,
+                    totalExpense        = current?.totalExpense ?: 0.0,
+                    previousYearIncome  = prev?.totalIncome ?: 0.0,
+                    previousYearExpense = prev?.totalExpense ?: 0.0
+                )
+            }
+    }
 
-    override fun getMonthlyTotals(year: String, month: String): Flow<GetMonthlyTotals> =
-        queries.getMonthlyTotals(year = year, month = month).asFlow().mapToOne(Dispatchers.IO)
+    override fun getRecentByAccount(accountId: String, limit: Long): Flow<List<Transaction>> =
+        queries.selectRecentByAccount(accountId, limit)
+            .asFlow()
+            .mapToList(Dispatchers.IO)
+            .map { list -> list.map { it.toDomain() } }
 
-    override fun getAnnualTotals(year: String): Flow<GetAnnualTotals> =
-        queries.getAnnualTotals(year).asFlow().mapToOne(Dispatchers.IO)
+    override fun getMonthlyBreakdown(accountId: String, year: String): Flow<List<MonthlyTotals>> =
+        queries.getMonthlyBreakdownByAccount(accountId, year)
+            .asFlow()
+            .mapToList(Dispatchers.IO)
+            .map { rows ->
+                rows.map { row ->
+                    MonthlyTotals(
+                        year         = year,
+                        month        = row.month ?: "01",
+                        totalIncome  = row.totalIncome,
+                        totalExpense = row.totalExpense
+                    )
+                }
+            }
 
     override suspend fun insert(entity: TransactionEntity): Result<Unit> =
         runCatching {
             withContext(Dispatchers.IO) {
                 queries.insert(
-                    id = entity.id,
-                    accountId = entity.accountId,
-                    amount = entity.amount,
-                    type = entity.type,
+                    id         = entity.id,
+                    accountId  = entity.accountId,
+                    amount     = entity.amount,
+                    type       = entity.type,
                     categoryId = entity.categoryId,
-                    date = entity.date,
-                    notes = entity.notes,
-                    createdAt = entity.createdAt
+                    date       = entity.date,
+                    notes      = entity.notes,
+                    createdAt  = entity.createdAt
                 )
             }
         }
@@ -53,13 +105,13 @@ class TransactionLocalDataSourceImpl(
         runCatching {
             withContext(Dispatchers.IO) {
                 queries.update(
-                    accountId = entity.accountId,
-                    amount = entity.amount,
-                    type = entity.type,
+                    accountId  = entity.accountId,
+                    amount     = entity.amount,
+                    type       = entity.type,
                     categoryId = entity.categoryId,
-                    date = entity.date,
-                    notes = entity.notes,
-                    id = entity.id
+                    date       = entity.date,
+                    notes      = entity.notes,
+                    id         = entity.id
                 )
             }
         }

@@ -1,43 +1,36 @@
 package es.aviferdev.trackfolio.data.database
 
-import es.aviferdev.trackfolio.data.database.mapper.toEntity
-import es.aviferdev.trackfolio.data.datasource.AccountLocalDataSource
 import es.aviferdev.trackfolio.data.datasource.CategoryLocalDataSource
-import es.aviferdev.trackfolio.domain.model.Account
-import es.aviferdev.trackfolio.domain.model.AccountType
+import es.aviferdev.trackfolio.data.datasource.AccountLocalDataSource
 import es.aviferdev.trackfolio.domain.model.Category
 import es.aviferdev.trackfolio.domain.model.TransactionType
 import kotlinx.coroutines.flow.first
-import kotlinx.datetime.Clock
 
 class DatabaseInitializer(
     private val categoryDataSource: CategoryLocalDataSource,
     private val accountDataSource: AccountLocalDataSource
 ) {
+    companion object {
+        const val DEFAULT_ACCOUNT_ID = "account_default"
+    }
+
     suspend fun initializeIfNeeded() {
         val categoryCount = categoryDataSource.count().first()
         if (categoryCount == 0L) insertDefaultCategories()
-
-        val accounts = accountDataSource.getAll().first()
-        if (accounts.isEmpty()) insertDefaultAccount()
+        // Las cuentas las crea el usuario desde Ajustes
     }
 
     private suspend fun insertDefaultCategories() {
         defaultCategories().forEach { category ->
-            categoryDataSource.insert(category.toEntity())
+            categoryDataSource.insert(
+                CategoryEntity(
+                    id        = category.id,
+                    name      = category.name,
+                    type      = category.type.name,
+                    isDefault = if (category.isDefault) 1L else 0L
+                )
+            )
         }
-    }
-
-    private suspend fun insertDefaultAccount() {
-        val account = Account(
-            id = DEFAULT_ACCOUNT_ID,
-            name = "Mi cuenta",
-            type = AccountType.CASH,
-            currency = "EUR",
-            balance = 0.0,
-            createdAt = Clock.System.now().toEpochMilliseconds()
-        )
-        accountDataSource.insert(account.toEntity())
     }
 
     private fun defaultCategories(): List<Category> = listOf(
@@ -56,8 +49,4 @@ class DatabaseInitializer(
         Category(id = "cat_inc_05", name = "Reembolso",    type = TransactionType.INCOME,  isDefault = true),
         Category(id = "cat_inc_06", name = "Otros",        type = TransactionType.INCOME,  isDefault = true),
     )
-
-    companion object {
-        const val DEFAULT_ACCOUNT_ID = "account_default"
-    }
 }

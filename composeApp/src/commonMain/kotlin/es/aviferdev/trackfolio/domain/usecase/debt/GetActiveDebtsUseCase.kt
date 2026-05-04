@@ -5,5 +5,6 @@ import es.aviferdev.trackfolio.domain.repository.DebtRepository
 import kotlinx.coroutines.flow.Flow
 
 class GetActiveDebtsUseCase(private val repository: DebtRepository) {
-    operator fun invoke(): Flow<List<Debt>> = repository.getActive()
+    operator fun invoke(accountId: String): Flow<List<Debt>> =
+        repository.getActiveByAccount(accountId)
 }

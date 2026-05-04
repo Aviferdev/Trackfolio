@@ -7,24 +7,43 @@ import es.aviferdev.trackfolio.domain.repository.DebtRepository
 import es.aviferdev.trackfolio.domain.repository.TransactionRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 
 class GetHomeBalanceUseCase(
     private val accountRepository: AccountRepository,
     private val transactionRepository: TransactionRepository,
     private val debtRepository: DebtRepository
 ) {
-    operator fun invoke(): Flow<HomeBalance> = combine(
-        accountRepository.getTotalBalance(),
-        debtRepository.getTotalByDirection(DebtDirection.I_OWE),
-        debtRepository.getTotalByDirection(DebtDirection.THEY_OWE),
-        transactionRepository.getAll()
-    ) { totalCash, totalOwing, totalOwed, allTransactions ->
-        HomeBalance(
-            totalCash = totalCash,
-            netBalance = totalCash - totalOwing + totalOwed,
-            totalOwed = totalOwed,
-            totalOwing = totalOwing,
-            recentTransactions = allTransactions.take(3)
-        )
-    }
+    operator fun invoke(selectedAccountId: String?): Flow<HomeBalance> =
+        accountRepository.getAllAccounts().flatMapLatest { accounts ->
+            if (accounts.isEmpty()) {
+                flowOf(
+                    HomeBalance(
+                        selectedAccount        = null,
+                        selectedAccountBalance = 0.0,
+                        totalGlobalBalance     = 0.0,
+                        totalOwed              = 0.0,
+                        totalOwing             = 0.0,
+                        recentTransactions     = emptyList()
+                    )
+                )
+            } else {
+                val account = accounts.find { it.id == selectedAccountId } ?: accounts.first()
+                combine(
+                    transactionRepository.getRecentTransactionsByAccount(account.id, 5L),
+                    debtRepository.getTotalByDirectionAndAccount(account.id, DebtDirection.THEY_OWE),
+                    debtRepository.getTotalByDirectionAndAccount(account.id, DebtDirection.I_OWE)
+                ) { recent, totalOwed, totalOwing ->
+                    HomeBalance(
+                        selectedAccount        = account,
+                        selectedAccountBalance = account.computedBalance,
+                        totalGlobalBalance     = accounts.sumOf { it.computedBalance },
+                        totalOwed              = totalOwed,
+                        totalOwing             = totalOwing,
+                        recentTransactions     = recent
+                    )
+                }
+            }
+        }
 }

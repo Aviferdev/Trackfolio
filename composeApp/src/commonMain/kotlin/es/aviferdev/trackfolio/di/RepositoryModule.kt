@@ -19,13 +19,13 @@ import es.aviferdev.trackfolio.domain.repository.TransactionRepository
 import org.koin.dsl.module
 
 val repositoryModule = module {
-    single<AccountLocalDataSource> { AccountLocalDataSourceImpl(get()) }
+    single<AccountLocalDataSource>     { AccountLocalDataSourceImpl(get()) }
     single<TransactionLocalDataSource> { TransactionLocalDataSourceImpl(get()) }
-    single<CategoryLocalDataSource> { CategoryLocalDataSourceImpl(get()) }
-    single<DebtLocalDataSource> { DebtLocalDataSourceImpl(get()) }
+    single<CategoryLocalDataSource>    { CategoryLocalDataSourceImpl(get()) }
+    single<DebtLocalDataSource>        { DebtLocalDataSourceImpl(get()) }
 
-    single<AccountRepository> { AccountRepositoryImpl(get()) }
+    single<AccountRepository>     { AccountRepositoryImpl(get()) }
     single<TransactionRepository> { TransactionRepositoryImpl(get()) }
-    single<CategoryRepository> { CategoryRepositoryImpl(get()) }
-    single<DebtRepository> { DebtRepositoryImpl(get()) }
+    single<CategoryRepository>    { CategoryRepositoryImpl(get()) }
+    single<DebtRepository>        { DebtRepositoryImpl(get()) }
 }

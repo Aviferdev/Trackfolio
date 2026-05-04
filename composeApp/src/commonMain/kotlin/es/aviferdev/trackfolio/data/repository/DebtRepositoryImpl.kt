@@ -13,14 +13,20 @@ class DebtRepositoryImpl(
     private val dataSource: DebtLocalDataSource
 ) : DebtRepository {
 
+    override fun getActiveByAccount(accountId: String): Flow<List<Debt>> =
+        dataSource.getActiveByAccount(accountId).map { it.map { e -> e.toDomain() } }
+
     override fun getActive(): Flow<List<Debt>> =
-        dataSource.getActive().map { it.map { entity -> entity.toDomain() } }
+        dataSource.getActive().map { it.map { e -> e.toDomain() } }
 
     override fun getAll(): Flow<List<Debt>> =
-        dataSource.getAll().map { it.map { entity -> entity.toDomain() } }
+        dataSource.getAll().map { it.map { e -> e.toDomain() } }
 
     override fun getTotalByDirection(direction: DebtDirection): Flow<Double> =
         dataSource.getTotalByDirection(direction.name)
+
+    override fun getTotalByDirectionAndAccount(accountId: String, direction: DebtDirection): Flow<Double> =
+        dataSource.getTotalByDirectionAndAccount(accountId, direction.name)
 
     override suspend fun save(debt: Debt): Result<Unit> =
         dataSource.insert(debt.toEntity())
