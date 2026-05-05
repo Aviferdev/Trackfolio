@@ -3,10 +3,13 @@ package es.aviferdev.trackfolio.ui.settings
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -24,6 +27,7 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.trackfolio.domain.model.Account
+import es.aviferdev.trackfolio.domain.model.AssetCategory
 import es.aviferdev.trackfolio.domain.model.TransactionType
 import es.aviferdev.trackfolio.security.AppLockManager
 import es.aviferdev.trackfolio.security.BiometricAuthenticator
@@ -31,6 +35,7 @@ import es.aviferdev.trackfolio.security.BiometricResult
 import es.aviferdev.trackfolio.ui.account.AccountViewModel
 import es.aviferdev.trackfolio.ui.account.AddEditAccountBottomSheet
 import es.aviferdev.trackfolio.ui.home.SetInitialBalanceBottomSheet
+import es.aviferdev.trackfolio.ui.portfolio.AssetCategoryViewModel
 import es.aviferdev.trackfolio.ui.theme.*
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
@@ -39,14 +44,16 @@ import androidx.compose.ui.text.input.ImeAction
 
 @Composable
 fun SettingsScreen(
-    accountViewModel:  AccountViewModel  = koinViewModel(),
-    backupViewModel:   BackupViewModel   = koinViewModel(),
-    categoryViewModel: CategoryViewModel = koinViewModel()
+    accountViewModel:        AccountViewModel        = koinViewModel(),
+    backupViewModel:         BackupViewModel         = koinViewModel(),
+    categoryViewModel:       CategoryViewModel       = koinViewModel(),
+    assetCategoryViewModel:  AssetCategoryViewModel  = koinViewModel()
 ) {
-    val accountState  by accountViewModel.uiState.collectAsState()
-    val selectedId    by accountViewModel.selectedAccountId.collectAsState()
-    val backupState   by backupViewModel.state.collectAsState()
-    val categoryState by categoryViewModel.uiState.collectAsState()
+    val accountState       by accountViewModel.uiState.collectAsState()
+    val selectedId         by accountViewModel.selectedAccountId.collectAsState()
+    val backupState        by backupViewModel.state.collectAsState()
+    val categoryState      by categoryViewModel.uiState.collectAsState()
+    val assetCategoryState by assetCategoryViewModel.uiState.collectAsState()
 
     val authenticator: BiometricAuthenticator = koinInject()
     val lockManager: AppLockManager           = koinInject()
@@ -256,6 +263,88 @@ fun SettingsScreen(
 
             // ── PREFERENCIAS ─────────────────────────────────────────────────
             item { Spacer(Modifier.height(4.dp)) }
+            item {
+                Row(
+                    modifier              = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment     = Alignment.CenterVertically
+                ) {
+                    Text("PORTFOLIO", fontSize = 11.sp, fontWeight = FontWeight.SemiBold, color = TextSecondary)
+                }
+            }
+            item {
+                SectionHeader(
+                    title       = "Categorías de activos",
+                    actionLabel = "+ Nueva",
+                    onAction    = { assetCategoryViewModel.openAddSheet() }
+                )
+            }
+            item {
+                SettingsGroupCard {
+                    if (assetCategoryState.categories.isEmpty()) {
+                        Box(
+                            modifier         = Modifier.fillMaxWidth().padding(16.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                "Sin categorías. Créalas para agrupar tus activos (Cryptos, ETFs, Bonos…).",
+                                fontSize  = 12.sp,
+                                color     = TextSecondary,
+                                textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                            )
+                        }
+                    } else {
+                        assetCategoryState.categories.forEachIndexed { index, cat ->
+                            Row(
+                                modifier          = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 16.dp, vertical = 12.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(cat.icon, fontSize = 18.sp, modifier = Modifier.size(28.dp))
+                                Spacer(Modifier.width(8.dp))
+                                Text(
+                                    text     = cat.name,
+                                    fontSize = 14.sp,
+                                    color    = TextPrimary,
+                                    modifier = Modifier.weight(1f)
+                                )
+                                IconButton(
+                                    onClick  = { assetCategoryViewModel.openEditSheet(cat) },
+                                    modifier = Modifier.size(28.dp)
+                                ) {
+                                    Icon(
+                                        Icons.Default.Edit,
+                                        contentDescription = "Editar",
+                                        modifier = Modifier.size(14.dp),
+                                        tint     = TextSecondary
+                                    )
+                                }
+                                IconButton(
+                                    onClick  = { assetCategoryViewModel.requestDelete(cat) },
+                                    modifier = Modifier.size(28.dp)
+                                ) {
+                                    Icon(
+                                        Icons.Default.Delete,
+                                        contentDescription = "Eliminar",
+                                        modifier = Modifier.size(14.dp),
+                                        tint     = ExpenseRed
+                                    )
+                                }
+                            }
+                            if (index < assetCategoryState.categories.lastIndex) {
+                                HorizontalDivider(
+                                    color     = BorderGray,
+                                    thickness = 0.5.dp,
+                                    modifier  = Modifier.padding(start = 36.dp)
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+
+            item { Spacer(Modifier.height(4.dp)) }
             item { SectionHeader(title = "PREFERENCIAS") }
             item {
                 SettingsGroupCard {
@@ -443,6 +532,68 @@ fun SettingsScreen(
             text  = { Text(msg, fontSize = 14.sp, color = TextSecondary) },
             confirmButton = {
                 TextButton(onClick = { categoryViewModel.clearError() }) {
+                    Text("Aceptar", color = PrimaryDark, fontWeight = FontWeight.Medium)
+                }
+            },
+            shape = RoundedCornerShape(16.dp)
+        )
+    }
+
+    // ── Sheets y diálogos para categorías de portfolio ───────────────────
+
+    if (assetCategoryState.showAddSheet) {
+        AddEditAssetCategorySheet(
+            initial   = null,
+            onSave    = { name, icon -> assetCategoryViewModel.addCategory(name, icon) },
+            onDismiss = { assetCategoryViewModel.closeAddSheet() }
+        )
+    }
+
+    assetCategoryState.editing?.let { editing ->
+        AddEditAssetCategorySheet(
+            initial   = editing,
+            onSave    = { name, icon -> assetCategoryViewModel.renameCategory(editing.id, name, icon) },
+            onDismiss = { assetCategoryViewModel.closeEditSheet() }
+        )
+    }
+
+    assetCategoryState.pendingDelete?.let { pending ->
+        AlertDialog(
+            onDismissRequest = { assetCategoryViewModel.cancelDelete() },
+            containerColor   = SurfaceWhite,
+            icon             = { Text(pending.icon, fontSize = 28.sp) },
+            title = {
+                Text("Eliminar categoría", fontSize = 17.sp,
+                    fontWeight = FontWeight.SemiBold, color = TextPrimary)
+            },
+            text  = {
+                Text(
+                    "Se eliminará «${pending.name}». Los activos que tenían esta categoría asignada quedarán agrupados como «Sin categoría».",
+                    fontSize = 14.sp, color = TextSecondary
+                )
+            },
+            confirmButton = {
+                TextButton(onClick = { assetCategoryViewModel.confirmDelete() }) {
+                    Text("Eliminar", color = ExpenseRed, fontWeight = FontWeight.Medium)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { assetCategoryViewModel.cancelDelete() }) {
+                    Text("Cancelar", color = PrimaryDark, fontWeight = FontWeight.Medium)
+                }
+            },
+            shape = RoundedCornerShape(16.dp)
+        )
+    }
+
+    assetCategoryState.error?.let { msg ->
+        AlertDialog(
+            onDismissRequest = { assetCategoryViewModel.clearError() },
+            containerColor   = SurfaceWhite,
+            title = { Text("Error", fontSize = 17.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary) },
+            text  = { Text(msg, fontSize = 14.sp, color = TextSecondary) },
+            confirmButton = {
+                TextButton(onClick = { assetCategoryViewModel.clearError() }) {
                     Text("Aceptar", color = PrimaryDark, fontWeight = FontWeight.Medium)
                 }
             },
@@ -848,6 +999,135 @@ private fun EmptyAccountsCard(onAdd: () -> Unit) {
                 Icon(Icons.Default.Add, null, modifier = Modifier.size(16.dp), tint = PrimaryDark)
                 Spacer(Modifier.width(6.dp))
                 Text("Añadir cuenta", color = PrimaryDark, fontSize = 14.sp)
+            }
+        }
+    }
+}
+
+// AddEditAssetCategorySheet — sheet para crear o editar una categoría de portfolio
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun AddEditAssetCategorySheet(
+    initial: AssetCategory?,
+    onSave: (name: String, icon: String) -> Unit,
+    onDismiss: () -> Unit
+) {
+    val isEditing = initial != null
+
+    var name      by remember { mutableStateOf(initial?.name ?: "") }
+    var icon      by remember { mutableStateOf(initial?.icon ?: "📦") }
+    var nameError by remember { mutableStateOf(false) }
+
+    // Lista corta de iconos sugeridos. El usuario puede pegar cualquier emoji manualmente.
+    val suggestedIcons = listOf(
+        "📦", "💰", "💵", "🪙", "📈", "📉", "📊",
+        "🏠", "🏦", "💳", "₿", "⚡", "🗽", "📦",
+        "🔓", "💸", "🎩", "🚀", "⚖️", "📜"
+    ).distinct()
+
+    ModalBottomSheet(
+        onDismissRequest = onDismiss,
+        sheetState       = rememberModalBottomSheetState(skipPartiallyExpanded = true),
+        containerColor   = SurfaceWhite,
+        dragHandle = {
+            Box(
+                modifier = Modifier
+                    .padding(top = 12.dp, bottom = 4.dp)
+                    .width(40.dp).height(4.dp)
+                    .clip(RoundedCornerShape(2.dp))
+                    .background(BorderGray)
+            )
+        }
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .imePadding()
+                .padding(horizontal = 24.dp)
+                .padding(bottom = 32.dp)
+        ) {
+            Spacer(Modifier.height(4.dp))
+            Text(
+                text       = if (isEditing) "Editar categoría de portfolio" else "Nueva categoría de portfolio",
+                fontSize   = 18.sp,
+                fontWeight = FontWeight.SemiBold,
+                color      = TextPrimary
+            )
+            Spacer(Modifier.height(20.dp))
+
+            // Selector de icono — muestra el actual y abajo una lista para elegir
+            Text("Icono", fontSize = 12.sp, color = TextSecondary, fontWeight = FontWeight.Medium)
+            Spacer(Modifier.height(8.dp))
+
+            Row(
+                modifier              = Modifier
+                    .fillMaxWidth()
+                    .horizontalScroll(rememberScrollState()),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                suggestedIcons.forEach { ic ->
+                    val isSel = ic == icon
+                    Box(
+                        modifier = Modifier
+                            .size(40.dp)
+                            .clip(RoundedCornerShape(10.dp))
+                            .background(if (isSel) SurfaceElevated else SurfaceWhite)
+                            .border(
+                                width = if (isSel) 1.5.dp else 0.5.dp,
+                                color = if (isSel) PrimaryDark else BorderGray,
+                                shape = RoundedCornerShape(10.dp)
+                            )
+                            .clickable { icon = ic },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(ic, fontSize = 18.sp)
+                    }
+                }
+            }
+            Spacer(Modifier.height(16.dp))
+
+            OutlinedTextField(
+                value         = name,
+                onValueChange = { name = it; nameError = false },
+                label         = { Text("Nombre de la categoría") },
+                placeholder   = { Text("Ej. Cryptos, ETFs, Bonos") },
+                isError       = nameError,
+                supportingText = if (nameError) {{ Text("El nombre es obligatorio") }} else null,
+                modifier      = Modifier.fillMaxWidth(),
+                singleLine    = true,
+                shape         = RoundedCornerShape(10.dp),
+                keyboardOptions = KeyboardOptions(
+                    capitalization = KeyboardCapitalization.Sentences,
+                    imeAction      = ImeAction.Done
+                ),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor   = PrimaryDark,
+                    unfocusedBorderColor = BorderGray
+                )
+            )
+
+            Spacer(Modifier.height(28.dp))
+
+            Button(
+                onClick = {
+                    if (name.isBlank()) { nameError = true; return@Button }
+                    onSave(name.trim(), icon)
+                },
+                modifier = Modifier.fillMaxWidth().height(52.dp),
+                shape    = RoundedCornerShape(10.dp),
+                colors   = ButtonDefaults.buttonColors(containerColor = PrimaryDark)
+            ) {
+                Text(
+                    text       = if (isEditing) "Guardar cambios" else "Crear categoría",
+                    fontSize   = 16.sp,
+                    fontWeight = FontWeight.Medium,
+                    color      = MaterialTheme.colorScheme.onPrimary
+                )
+            }
+
+            Spacer(Modifier.height(8.dp))
+            TextButton(onClick = onDismiss, modifier = Modifier.fillMaxWidth()) {
+                Text("Cancelar", fontSize = 14.sp, color = TextSecondary)
             }
         }
     }

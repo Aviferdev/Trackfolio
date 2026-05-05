@@ -219,6 +219,45 @@ fun BackupPasswordSheet(
                         Text("Cerrar", fontSize = 16.sp, fontWeight = FontWeight.Medium, color = MaterialTheme.colorScheme.onPrimary)
                     }
                 }
+                isSuccess && !isExport -> {
+                    // Import completado: hay que reiniciar la app para aplicar la BD
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clip(RoundedCornerShape(10.dp))
+                                .background(IncomeGreen.copy(alpha = 0.18f))
+                                .padding(16.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                Text(
+                                    "✅  Backup descifrado correctamente",
+                                    fontSize   = 14.sp,
+                                    fontWeight = FontWeight.Medium,
+                                    color      = IncomeGreen,
+                                    textAlign  = TextAlign.Center
+                                )
+                                Spacer(Modifier.height(8.dp))
+                                Text(
+                                    "Cierra y vuelve a abrir la aplicación para aplicar los datos restaurados.",
+                                    fontSize  = 12.sp,
+                                    color     = TextSecondary,
+                                    textAlign = TextAlign.Center
+                                )
+                            }
+                        }
+                        Spacer(Modifier.height(12.dp))
+                        Button(
+                            onClick  = onDismiss,
+                            modifier = Modifier.fillMaxWidth().height(52.dp),
+                            shape    = RoundedCornerShape(10.dp),
+                            colors   = ButtonDefaults.buttonColors(containerColor = PrimaryDark)
+                        ) {
+                            Text("Entendido", fontSize = 16.sp, fontWeight = FontWeight.Medium, color = MaterialTheme.colorScheme.onPrimary)
+                        }
+                    }
+                }
                 else -> {
                     val canSubmit = !isLoading && pwd.isNotBlank() &&
                             (!isExport || confirmPwd.isNotBlank())
@@ -257,11 +296,6 @@ fun BackupPasswordSheet(
         }
     }
 
-    // Auto-cerrar tras éxito solo en importación
-    if (isSuccess && !isExport) {
-        LaunchedEffect(Unit) {
-            kotlinx.coroutines.delay(600)
-            onDismiss()
-        }
-    }
+    // El sheet de import ya no se auto-cierra: el usuario debe leer el aviso
+    // de que necesita reiniciar la app y darle a "Entendido" explícitamente.
 }

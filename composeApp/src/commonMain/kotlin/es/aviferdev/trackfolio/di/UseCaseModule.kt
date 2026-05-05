@@ -10,6 +10,19 @@ import es.aviferdev.trackfolio.domain.usecase.asset.DeleteAssetUseCase
 import es.aviferdev.trackfolio.domain.usecase.asset.GetAssetsByAccountUseCase
 import es.aviferdev.trackfolio.domain.usecase.asset.SaveAssetUseCase
 import es.aviferdev.trackfolio.domain.usecase.asset.UpdateAssetUseCase
+import es.aviferdev.trackfolio.domain.usecase.assetcategory.ArchiveAssetCategoryUseCase
+import es.aviferdev.trackfolio.domain.usecase.assetcategory.GetAllAssetCategoriesIncludingArchivedUseCase
+import es.aviferdev.trackfolio.domain.usecase.assetcategory.GetAssetCategoriesUseCase
+import es.aviferdev.trackfolio.domain.usecase.assetcategory.RenameAssetCategoryUseCase
+import es.aviferdev.trackfolio.domain.usecase.assetcategory.SaveAssetCategoryUseCase
+import es.aviferdev.trackfolio.domain.usecase.assettag.ArchiveAssetTagUseCase
+import es.aviferdev.trackfolio.domain.usecase.assettag.GetAssetTagAssignmentsUseCase
+import es.aviferdev.trackfolio.domain.usecase.assettag.GetAssetTagsByCategoryUseCase
+import es.aviferdev.trackfolio.domain.usecase.assettag.GetAssetTagsUseCase
+import es.aviferdev.trackfolio.domain.usecase.assettag.RemoveAssetTagAssignmentUseCase
+import es.aviferdev.trackfolio.domain.usecase.assettag.RenameAssetTagUseCase
+import es.aviferdev.trackfolio.domain.usecase.assettag.SaveAssetTagUseCase
+import es.aviferdev.trackfolio.domain.usecase.assettag.UpsertAssetTagAssignmentUseCase
 import es.aviferdev.trackfolio.domain.usecase.category.GetAllCategoriesIncludingArchivedUseCase
 import es.aviferdev.trackfolio.domain.usecase.category.GetCategoriesByTypeUseCase
 import es.aviferdev.trackfolio.domain.usecase.debt.DeleteDebtUseCase
@@ -31,6 +44,7 @@ import es.aviferdev.trackfolio.ui.annual.AnnualViewModel
 import es.aviferdev.trackfolio.ui.debt.DebtViewModel
 import es.aviferdev.trackfolio.ui.home.AddTransactionViewModel
 import es.aviferdev.trackfolio.ui.home.HomeViewModel
+import es.aviferdev.trackfolio.ui.portfolio.AssetCategoryViewModel
 import es.aviferdev.trackfolio.ui.portfolio.PortfolioViewModel
 import es.aviferdev.trackfolio.ui.settings.BackupViewModel
 import es.aviferdev.trackfolio.ui.settings.CategoryViewModel
@@ -75,7 +89,24 @@ val useCaseModule = module {
     factory { UpdateAssetUseCase(get()) }
     factory { DeleteAssetUseCase(get()) }
 
-    // ── Category ──────────────────────────────────────────────────────────────
+    // ── Asset Category ────────────────────────────────────────────────────────
+    factory { GetAssetCategoriesUseCase(get()) }
+    factory { GetAllAssetCategoriesIncludingArchivedUseCase(get()) }
+    factory { SaveAssetCategoryUseCase(get()) }
+    factory { RenameAssetCategoryUseCase(get()) }
+    factory { ArchiveAssetCategoryUseCase(get()) }
+
+    // ── Asset Tag ─────────────────────────────────────────────────────────────
+    factory { GetAssetTagsUseCase(get()) }
+    factory { GetAssetTagsByCategoryUseCase(get()) }
+    factory { SaveAssetTagUseCase(get()) }
+    factory { RenameAssetTagUseCase(get()) }
+    factory { ArchiveAssetTagUseCase(get()) }
+    factory { GetAssetTagAssignmentsUseCase(get()) }
+    factory { UpsertAssetTagAssignmentUseCase(get()) }
+    factory { RemoveAssetTagAssignmentUseCase(get()) }
+
+    // ── Category (gastos/ingresos) ────────────────────────────────────────────
     factory { GetCategoriesByTypeUseCase(get()) }
     factory { GetAllCategoriesIncludingArchivedUseCase(get()) }
 
@@ -125,11 +156,20 @@ val useCaseModule = module {
     }
     viewModel {
         PortfolioViewModel(
-            getAssetsByAccount = get(),
-            saveAsset          = get(),
-            updateAsset        = get(),
-            deleteAsset        = get(),
-            session            = get()
+            getAssetsByAccount                  = get(),
+            saveAsset                           = get(),
+            updateAsset                         = get(),
+            deleteAsset                         = get(),
+            getAssetCategoriesIncludingArchived = get(),
+            session                             = get()
+        )
+    }
+    viewModel {
+        AssetCategoryViewModel(
+            getCategories   = get(),
+            saveCategory    = get(),
+            renameCategory  = get(),
+            archiveCategory = get()
         )
     }
     viewModel { BackupViewModel(get()) }

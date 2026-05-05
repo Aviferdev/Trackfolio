@@ -9,12 +9,16 @@ import es.aviferdev.trackfolio.di.androidModule
 import es.aviferdev.trackfolio.di.initKoin
 import es.aviferdev.trackfolio.security.BiometricAuthenticator
 import es.aviferdev.trackfolio.security.DatabaseBackupManager
+import es.aviferdev.trackfolio.security.setAppContextForPendingImport
 import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidContext
 
 class TrackfolioApp : Application() {
     override fun onCreate() {
         super.onCreate()
+        // Registrar el context para que applyPendingDatabaseImport pueda
+        // localizar la BD antes de que arranque Koin/SQLDelight.
+        setAppContextForPendingImport(this)
         initKoin(platformModule = androidModule) {
             androidContext(this@TrackfolioApp)
         }

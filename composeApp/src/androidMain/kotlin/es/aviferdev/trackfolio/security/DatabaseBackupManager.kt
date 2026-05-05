@@ -1,6 +1,5 @@
 package es.aviferdev.trackfolio.security
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -16,8 +15,6 @@ actual class DatabaseBackupManager(private val context: Context) {
     private val DB_NAME     = "trackfolio.db"
     private val BACKUP_NAME = "trackfolio_backup.trackfolio"
 
-    // Referencia débil a la Activity actual (evita memory leaks).
-    // MainActivity la registra/desregistra en onCreate/onDestroy.
     private var activityRef: WeakReference<ComponentActivity>? = null
 
     fun bindActivity(activity: ComponentActivity) {
@@ -61,8 +58,6 @@ actual class DatabaseBackupManager(private val context: Context) {
                 putExtra(Intent.EXTRA_SUBJECT, "Backup Trackfolio")
                 addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             }
-            // El chooser debe lanzarse desde la Activity, no desde Application,
-            // para que aparezca encima de la app actual.
             val chooser = Intent.createChooser(shareIntent, "Exportar backup Trackfolio")
             activity.startActivity(chooser)
 
@@ -94,9 +89,19 @@ actual class DatabaseBackupManager(private val context: Context) {
 
                 val decrypted = decryptBackup(fileBytes, password)
 
+                // Validar cabecera SQLite antes de tocar nada
+                if (!isValidSqliteHeader(decrypted)) {
+                    onResult(BackupResult.Error("El archivo no contiene una base de datos válida"))
+                    return@register
+                }
+
+                // Escribir como ".pending" en lugar de sobrescribir directamente.
+                // El fichero se aplica al siguiente arranque (ver applyPendingDatabaseImport).
+                // Sobrescribir mientras la BD está abierta provoca crashes y corrupción.
                 val dbFile = context.getDatabasePath(DB_NAME)
                 dbFile.parentFile?.mkdirs()
-                FileOutputStream(dbFile).use { it.write(decrypted) }
+                val pendingFile = File(dbFile.parentFile, "$DB_NAME.pending")
+                FileOutputStream(pendingFile).use { it.write(decrypted) }
 
                 onResult(BackupResult.Success)
             } catch (e: Exception) {
@@ -104,5 +109,14 @@ actual class DatabaseBackupManager(private val context: Context) {
             }
         }
         launcher.launch(arrayOf("application/octet-stream", "*/*"))
+    }
+
+    private fun isValidSqliteHeader(bytes: ByteArray): Boolean {
+        val header = "SQLite format 3\u0000"
+        if (bytes.size < header.length) return false
+        for (i in header.indices) {
+            if (bytes[i].toInt().toChar() != header[i]) return false
+        }
+        return true
     }
 }

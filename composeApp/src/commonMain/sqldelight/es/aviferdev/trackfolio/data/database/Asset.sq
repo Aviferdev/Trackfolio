@@ -1,17 +1,20 @@
 CREATE TABLE AssetEntity (
-    id            TEXT    NOT NULL PRIMARY KEY,
-    accountId     TEXT    NOT NULL,
-    ticker        TEXT    NOT NULL,
-    name          TEXT    NOT NULL,
-    quantity      REAL    NOT NULL,
-    purchasePrice REAL    NOT NULL,
-    purchaseDate  INTEGER NOT NULL,
-    notes         TEXT,
-    createdAt     INTEGER NOT NULL,
-    FOREIGN KEY (accountId) REFERENCES AccountEntity(id) ON DELETE CASCADE
+    id              TEXT    NOT NULL PRIMARY KEY,
+    accountId       TEXT    NOT NULL,
+    ticker          TEXT    NOT NULL,
+    name            TEXT    NOT NULL,
+    quantity        REAL    NOT NULL,
+    purchasePrice   REAL    NOT NULL,
+    purchaseDate    INTEGER NOT NULL,
+    notes           TEXT,
+    createdAt       INTEGER NOT NULL,
+    assetCategoryId TEXT,
+    FOREIGN KEY (accountId)       REFERENCES AccountEntity(id) ON DELETE CASCADE,
+    FOREIGN KEY (assetCategoryId) REFERENCES AssetCategoryEntity(id) ON DELETE SET NULL
 );
 
-CREATE INDEX idx_asset_account ON AssetEntity(accountId);
+CREATE INDEX idx_asset_account  ON AssetEntity(accountId);
+CREATE INDEX idx_asset_category ON AssetEntity(assetCategoryId);
 
 selectAll:
 SELECT * FROM AssetEntity ORDER BY createdAt DESC;
@@ -21,17 +24,23 @@ SELECT * FROM AssetEntity
 WHERE accountId = :accountId
 ORDER BY createdAt DESC;
 
+selectByAccountAndCategory:
+SELECT * FROM AssetEntity
+WHERE accountId = :accountId AND assetCategoryId = :categoryId
+ORDER BY createdAt DESC;
+
 selectById:
 SELECT * FROM AssetEntity WHERE id = :id;
 
 insert:
-INSERT INTO AssetEntity(id, accountId, ticker, name, quantity, purchasePrice, purchaseDate, notes, createdAt)
-VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
+INSERT INTO AssetEntity(id, accountId, ticker, name, quantity, purchasePrice, purchaseDate, notes, createdAt, assetCategoryId)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 
 update:
 UPDATE AssetEntity
 SET ticker = :ticker, name = :name, quantity = :quantity,
-    purchasePrice = :purchasePrice, purchaseDate = :purchaseDate, notes = :notes
+    purchasePrice = :purchasePrice, purchaseDate = :purchaseDate, notes = :notes,
+    assetCategoryId = :assetCategoryId
 WHERE id = :id;
 
 delete:

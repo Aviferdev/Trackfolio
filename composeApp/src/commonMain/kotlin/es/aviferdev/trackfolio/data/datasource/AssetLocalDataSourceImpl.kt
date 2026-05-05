@@ -42,15 +42,16 @@ class AssetLocalDataSourceImpl(
             withContext(Dispatchers.IO) {
                 val e = asset.toEntity()
                 queries.insert(
-                    id            = e.id,
-                    accountId     = e.accountId,
-                    ticker        = e.ticker,
-                    name          = e.name,
-                    quantity      = e.quantity,
-                    purchasePrice = e.purchasePrice,
-                    purchaseDate  = e.purchaseDate,
-                    notes         = e.notes,
-                    createdAt     = e.createdAt
+                    id              = e.id,
+                    accountId       = e.accountId,
+                    ticker          = e.ticker,
+                    name            = e.name,
+                    quantity        = e.quantity,
+                    purchasePrice   = e.purchasePrice,
+                    purchaseDate    = e.purchaseDate,
+                    notes           = e.notes,
+                    createdAt       = e.createdAt,
+                    assetCategoryId = e.assetCategoryId
                 )
             }
         }
@@ -60,13 +61,14 @@ class AssetLocalDataSourceImpl(
             withContext(Dispatchers.IO) {
                 val e = asset.toEntity()
                 queries.update(
-                    ticker        = e.ticker,
-                    name          = e.name,
-                    quantity      = e.quantity,
-                    purchasePrice = e.purchasePrice,
-                    purchaseDate  = e.purchaseDate,
-                    notes         = e.notes,
-                    id            = e.id
+                    ticker          = e.ticker,
+                    name            = e.name,
+                    quantity        = e.quantity,
+                    purchasePrice   = e.purchasePrice,
+                    purchaseDate    = e.purchaseDate,
+                    notes           = e.notes,
+                    assetCategoryId = e.assetCategoryId,
+                    id              = e.id
                 )
             }
         }

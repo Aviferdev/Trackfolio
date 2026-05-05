@@ -1,6 +1,5 @@
 package es.aviferdev.trackfolio.ui.portfolio
 
-import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -20,8 +19,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import es.aviferdev.trackfolio.domain.model.Asset
-import es.aviferdev.trackfolio.ui.account.AccountSelectorBar
 import es.aviferdev.trackfolio.ui.account.AccountViewModel
 import es.aviferdev.trackfolio.ui.theme.*
 import org.koin.compose.viewmodel.koinViewModel
@@ -32,8 +29,9 @@ fun PortfolioScreen(
     viewModel: PortfolioViewModel = koinViewModel(),
     accountViewModel: AccountViewModel = koinViewModel()
 ) {
-    val state        by viewModel.portfolioState.collectAsState()
-    val sheetState   by viewModel.uiState.collectAsState()
+    val state               by viewModel.portfolioState.collectAsState()
+    val sheetState          by viewModel.uiState.collectAsState()
+    val availableCategories by viewModel.availableCategories.collectAsState()
 
     accountViewModel.selectAccount()
 
@@ -46,9 +44,7 @@ fun PortfolioScreen(
             modifier       = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(bottom = 100.dp)
         ) {
-            item {
-                PortfolioHeader()
-            }
+            item { PortfolioHeader() }
 
             item {
                 PortfolioSummaryCard(
@@ -56,39 +52,39 @@ fun PortfolioScreen(
                     totalCurrentValue = state.totalCurrentValue,
                     totalPnL          = state.totalPnL,
                     totalPnLPercent   = state.totalPnLPercent,
+                    positionsCount    = state.rows.size,
                     modifier          = Modifier.padding(horizontal = 20.dp, vertical = 8.dp)
                 )
             }
 
-            // ── Lista de posiciones ───────────────────────────────────────────
+            // ── Lista de grupos ──────────────────────────────────────────────
             if (state.isLoading) {
                 item {
                     Box(
-                        modifier        = Modifier.fillMaxWidth().height(200.dp),
+                        modifier         = Modifier.fillMaxWidth().height(200.dp),
                         contentAlignment = Alignment.Center
                     ) {
                         CircularProgressIndicator(color = PrimaryDark)
                     }
                 }
-            } else if (state.rows.isEmpty()) {
+            } else if (state.groups.isEmpty()) {
                 item { EmptyPortfolioState() }
             } else {
-                item {
-                    Text(
-                        text       = "Posiciones",
-                        fontSize   = 14.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        color      = TextSecondary,
-                        modifier   = Modifier.padding(horizontal = 20.dp, vertical = 4.dp)
-                    )
-                }
-                items(state.rows, key = { it.asset.id }) { row ->
-                    AssetCard(
-                        row      = row,
-                        onEdit   = { viewModel.openEditSheet(row.asset) },
-                        onDelete = { viewModel.requestDelete(row.asset) },
-                        modifier = Modifier.padding(horizontal = 20.dp, vertical = 6.dp)
-                    )
+                state.groups.forEach { group ->
+                    item(key = "header_${group.category?.id ?: "none"}") {
+                        CategoryGroupHeader(group = group)
+                    }
+                    items(
+                        items = group.rows,
+                        key   = { row -> row.asset.id }
+                    ) { row ->
+                        AssetCard(
+                            row      = row,
+                            onEdit   = { viewModel.openEditSheet(row.asset) },
+                            onDelete = { viewModel.requestDelete(row.asset) },
+                            modifier = Modifier.padding(horizontal = 20.dp, vertical = 6.dp)
+                        )
+                    }
                 }
             }
         }
@@ -100,10 +96,10 @@ fun PortfolioScreen(
                 .align(Alignment.BottomEnd)
                 .padding(end = 24.dp, bottom = 32.dp)
                 .size(56.dp),
-            shape         = CircleShape,
+            shape          = CircleShape,
             containerColor = PrimaryDark,
             contentColor   = Color.White,
-            elevation     = FloatingActionButtonDefaults.elevation(4.dp)
+            elevation      = FloatingActionButtonDefaults.elevation(4.dp)
         ) {
             Text("+", fontSize = 28.sp, fontWeight = FontWeight.Light, color = Color.White)
         }
@@ -112,9 +108,10 @@ fun PortfolioScreen(
     // ── Sheets y diálogos ────────────────────────────────────────────────────
     if (sheetState.showAddSheet) {
         AddEditAssetBottomSheet(
-            asset     = null,
-            onSave    = { ticker, name, qty, price, date, notes ->
-                viewModel.addAsset(ticker, name, qty, price, date, notes)
+            asset      = null,
+            categories = availableCategories,
+            onSave     = { ticker, name, qty, price, date, notes, categoryId ->
+                viewModel.addAsset(ticker, name, qty, price, date, notes, categoryId)
             },
             onDismiss = { viewModel.closeAddSheet() }
         )
@@ -122,9 +119,13 @@ fun PortfolioScreen(
 
     if (sheetState.showEditSheet && sheetState.editingAsset != null) {
         AddEditAssetBottomSheet(
-            asset     = sheetState.editingAsset,
-            onSave    = { ticker, name, qty, price, date, notes ->
-                viewModel.editAsset(sheetState.editingAsset!!, ticker, name, qty, price, date, notes)
+            asset      = sheetState.editingAsset,
+            categories = availableCategories,
+            onSave     = { ticker, name, qty, price, date, notes, categoryId ->
+                viewModel.editAsset(
+                    sheetState.editingAsset!!,
+                    ticker, name, qty, price, date, notes, categoryId
+                )
             },
             onDismiss = { viewModel.closeEditSheet() }
         )
@@ -192,6 +193,7 @@ private fun PortfolioSummaryCard(
     totalCurrentValue: Double,
     totalPnL: Double,
     totalPnLPercent: Double,
+    positionsCount: Int,
     modifier: Modifier = Modifier
 ) {
     Card(
@@ -238,9 +240,9 @@ private fun PortfolioSummaryCard(
                             .padding(horizontal = 6.dp, vertical = 2.dp)
                     ) {
                         Text(
-                            text     = "$pnlPrefix${formatPercent(abs(totalPnLPercent))}%",
-                            fontSize = 12.sp,
-                            color    = pnlColor,
+                            text       = "$pnlPrefix${formatPercent(abs(totalPnLPercent))}%",
+                            fontSize   = 12.sp,
+                            color      = pnlColor,
                             fontWeight = FontWeight.Medium
                         )
                     }
@@ -255,8 +257,8 @@ private fun PortfolioSummaryCard(
                 modifier              = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                SummaryItem(label = "Invertido",   value = formatAmount(totalInvested))
-                SummaryItem(label = "Posiciones",  value = "—")
+                SummaryItem(label = "Invertido",  value = formatAmount(totalInvested))
+                SummaryItem(label = "Posiciones", value = positionsCount.toString())
             }
         }
     }
@@ -268,6 +270,64 @@ private fun SummaryItem(label: String, value: String) {
         Text(label, fontSize = 11.sp, color = Color.White.copy(alpha = 0.55f))
         Spacer(Modifier.height(2.dp))
         Text(value, fontSize = 14.sp, color = Color.White, fontWeight = FontWeight.Medium)
+    }
+}
+
+// ─── Cabecera de grupo de categoría ──────────────────────────────────────────
+@Composable
+private fun CategoryGroupHeader(group: CategoryGroup) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 20.dp)
+            .padding(top = 14.dp, bottom = 4.dp)
+    ) {
+        Row(
+            modifier              = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment     = Alignment.CenterVertically
+        ) {
+            // Icono + nombre + nº de activos
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(group.displayIcon, fontSize = 18.sp)
+                Spacer(Modifier.width(8.dp))
+                Text(
+                    text       = group.displayName,
+                    fontSize   = 14.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color      = TextPrimary
+                )
+                Spacer(Modifier.width(8.dp))
+                Text(
+                    text  = "(${group.rows.size})",
+                    fontSize = 12.sp,
+                    color = TextSecondary
+                )
+            }
+        }
+        Spacer(Modifier.height(6.dp))
+        // Línea con valores: invertido | actual
+        Row(
+            modifier              = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment     = Alignment.CenterVertically
+        ) {
+            ValueChip(label = "Invertido", value = formatAmount(group.totalInvested))
+            ValueChip(label = "Actual",    value = formatAmount(group.totalCurrentValue))
+        }
+    }
+}
+
+@Composable
+private fun ValueChip(label: String, value: String) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Text("$label: ", fontSize = 12.sp, color = TextSecondary)
+        Text(
+            text       = value,
+            fontSize   = 13.sp,
+            color      = TextPrimary,
+            fontWeight = FontWeight.SemiBold
+        )
     }
 }
 
@@ -300,7 +360,7 @@ private fun AssetCard(
         ) {
             // Avatar ticker
             Box(
-                modifier        = Modifier
+                modifier         = Modifier
                     .size(44.dp)
                     .clip(RoundedCornerShape(10.dp))
                     .background(PrimaryDark),
@@ -378,7 +438,7 @@ private fun AssetCard(
 @Composable
 private fun EmptyPortfolioState() {
     Box(
-        modifier        = Modifier.fillMaxWidth().padding(40.dp),
+        modifier         = Modifier.fillMaxWidth().padding(40.dp),
         contentAlignment = Alignment.Center
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -401,7 +461,7 @@ private fun EmptyPortfolioState() {
     }
 }
 
-// ─── Helpers de formato ────────────────────────────────────────────────────────
+// ─── Helpers de formato ──────────────────────────────────────────────────────
 private fun formatQty(value: Double): String {
     return if (value == value.toLong().toDouble()) {
         value.toLong().toString()

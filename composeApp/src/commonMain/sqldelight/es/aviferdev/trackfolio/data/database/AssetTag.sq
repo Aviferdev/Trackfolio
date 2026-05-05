@@ -1,0 +1,91 @@
+CREATE TABLE AssetTagEntity (
+    id          TEXT    NOT NULL PRIMARY KEY,
+    name        TEXT    NOT NULL,
+    categoryId  TEXT,
+    color       TEXT    NOT NULL DEFAULT '#3D6EAD',
+    archived    INTEGER NOT NULL DEFAULT 0,
+    createdAt   INTEGER NOT NULL,
+    FOREIGN KEY (categoryId) REFERENCES AssetCategoryEntity(id) ON DELETE SET NULL
+);
+
+CREATE INDEX idx_asset_tag_category ON AssetTagEntity(categoryId);
+CREATE INDEX idx_asset_tag_archived ON AssetTagEntity(archived);
+
+-- ─── Etiquetas ────────────────────────────────────────────────────────────────
+
+selectAll:
+SELECT * FROM AssetTagEntity
+WHERE archived = 0
+ORDER BY name ASC;
+
+selectAllIncludingArchived:
+SELECT * FROM AssetTagEntity
+ORDER BY archived ASC, name ASC;
+
+selectByCategory:
+SELECT * FROM AssetTagEntity
+WHERE archived = 0 AND (categoryId = :categoryId OR categoryId IS NULL)
+ORDER BY name ASC;
+
+selectGlobal:
+SELECT * FROM AssetTagEntity
+WHERE archived = 0 AND categoryId IS NULL
+ORDER BY name ASC;
+
+selectById:
+SELECT * FROM AssetTagEntity WHERE id = :id;
+
+insertTag:
+INSERT OR IGNORE INTO AssetTagEntity(id, name, categoryId, color, archived, createdAt)
+VALUES (?, ?, ?, ?, 0, ?);
+
+updateTagName:
+UPDATE AssetTagEntity
+SET name = :name, color = :color
+WHERE id = :id;
+
+archiveTag:
+UPDATE AssetTagEntity
+SET archived = 1
+WHERE id = :id;
+
+unarchiveTag:
+UPDATE AssetTagEntity
+SET archived = 0
+WHERE id = :id;
+
+-- ─── Asignaciones tag ↔ asset (con peso porcentual) ──────────────────────────
+
+CREATE TABLE AssetTagAssignmentEntity (
+    assetId  TEXT NOT NULL,
+    tagId    TEXT NOT NULL,
+    weight   REAL NOT NULL DEFAULT 0.0,
+    PRIMARY KEY (assetId, tagId),
+    FOREIGN KEY (assetId) REFERENCES AssetEntity(id) ON DELETE CASCADE,
+    FOREIGN KEY (tagId)   REFERENCES AssetTagEntity(id) ON DELETE CASCADE
+);
+
+CREATE INDEX idx_asset_tag_assignment_asset ON AssetTagAssignmentEntity(assetId);
+CREATE INDEX idx_asset_tag_assignment_tag   ON AssetTagAssignmentEntity(tagId);
+
+selectAssignmentsByAsset:
+SELECT t.id, t.name, t.categoryId, t.color, t.archived, t.createdAt, a.weight
+FROM AssetTagAssignmentEntity a
+INNER JOIN AssetTagEntity t ON t.id = a.tagId
+WHERE a.assetId = :assetId
+ORDER BY t.name ASC;
+
+selectAssignmentsByTag:
+SELECT * FROM AssetTagAssignmentEntity
+WHERE tagId = :tagId;
+
+upsertAssignment:
+INSERT INTO AssetTagAssignmentEntity(assetId, tagId, weight)
+VALUES (?, ?, ?);
+
+deleteAssignment:
+DELETE FROM AssetTagAssignmentEntity
+WHERE assetId = :assetId AND tagId = :tagId;
+
+deleteAssignmentsByAsset:
+DELETE FROM AssetTagAssignmentEntity WHERE assetId = :assetId;

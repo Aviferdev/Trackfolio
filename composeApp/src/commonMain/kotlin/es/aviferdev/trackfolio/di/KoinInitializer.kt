@@ -1,5 +1,6 @@
 package es.aviferdev.trackfolio.di
 
+import es.aviferdev.trackfolio.security.applyPendingDatabaseImport
 import org.koin.core.context.startKoin
 import org.koin.core.module.Module
 import org.koin.dsl.KoinAppDeclaration
@@ -8,6 +9,11 @@ fun initKoin(
     platformModule: Module,
     appDeclaration: KoinAppDeclaration = {}
 ) {
+    // CRÍTICO: aplicar cualquier import de backup pendiente ANTES de instanciar
+    // el driver de SQLite. Si no se hace aquí, el driver abre la BD vieja y
+    // sobrescribirla luego provoca crashes y corrupción.
+    applyPendingDatabaseImport()
+
     startKoin {
         appDeclaration()
         modules(

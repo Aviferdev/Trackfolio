@@ -25,7 +25,6 @@ actual class DatabaseBackupManager {
     actual fun exportEncrypted(password: String, onResult: (BackupResult) -> Unit) {
         println("$TAG ▶ exportEncrypted INVOCADO (passwordLen=${password.length})")
 
-        // Wrappear onResult para tracear cuándo se llama (y desde dónde)
         val tracedResult: (BackupResult) -> Unit = { r ->
             when (r) {
                 is BackupResult.Success -> println("$TAG ✅ onResult(Success)")
@@ -34,67 +33,43 @@ actual class DatabaseBackupManager {
             onResult(r)
         }
 
-        // ── Bloque 1: lectura BD + cifrado + escritura temp ──────────────────
         val outUrl: NSURL
         try {
-            println("$TAG · Buscando ruta de BD…")
             val dbPath = dbFilePath()
             if (dbPath == null) {
-                println("$TAG · dbFilePath() devolvió null")
                 tracedResult(BackupResult.Error("Base de datos no encontrada"))
                 return
             }
-            println("$TAG · dbPath=$dbPath")
-
-            val dbExists = NSFileManager.defaultManager.fileExistsAtPath(dbPath)
-            println("$TAG · dbExists=$dbExists")
 
             val dbData = NSData.dataWithContentsOfFile(dbPath)
             if (dbData == null) {
-                println("$TAG · NSData.dataWithContentsOfFile devolvió null")
                 tracedResult(BackupResult.Error("No se puede leer la base de datos"))
                 return
             }
-            println("$TAG · BD leída: ${dbData.length} bytes")
 
             val dbBytes   = dbData.toKotlinByteArray()
-            println("$TAG · Cifrando (${dbBytes.size} bytes)…")
             val encrypted = encryptBackup(dbBytes, password)
-            println("$TAG · Cifrado OK (${encrypted.size} bytes)")
 
             val tempDir = NSTemporaryDirectory()
             val outPath = "$tempDir$BACKUP_NAME"
-            println("$TAG · Escribiendo temp en $outPath")
             val ok = encrypted.toNSData().writeToFile(outPath, atomically = true)
             if (!ok) {
-                println("$TAG · writeToFile devolvió false")
                 tracedResult(BackupResult.Error("No se pudo escribir el fichero temporal"))
                 return
             }
             outUrl = NSURL.fileURLWithPath(outPath)
-            println("$TAG · Fichero temp listo: ${outUrl.absoluteString}")
         } catch (e: Exception) {
-            println("$TAG · EXCEPCIÓN en bloque de cifrado: ${e::class.simpleName}: ${e.message}")
             tracedResult(BackupResult.Error(e.message ?: "Error al cifrar el backup"))
             return
         }
 
-        // ── Bloque 2: presentación en main queue ─────────────────────────────
-        println("$TAG · Programando dispatch_async al main queue…")
         dispatch_async(dispatch_get_main_queue()) {
-            println("$TAG · [main] dispatch_async ejecutándose")
-
             val presenter = topViewController()
             if (presenter == null) {
-                println("$TAG · [main] topViewController() devolvió null")
                 tracedResult(BackupResult.Error("No se puede presentar el diálogo de compartir"))
                 return@dispatch_async
             }
-            println("$TAG · [main] presenter=${presenter::class.simpleName}, presentedVC=${presenter.presentedViewController?.let { it::class.simpleName } ?: "null"}")
 
-            // Si el presenter ya está presentando otro VC, presentar encima fallaría.
-            // En ese caso subimos al VC más arriba (debería estar resuelto por topViewController,
-            // pero por seguridad lo verificamos).
             val realPresenter = run {
                 var p: UIViewController = presenter
                 while (p.presentedViewController != null) {
@@ -102,41 +77,37 @@ actual class DatabaseBackupManager {
                 }
                 p
             }
-            println("$TAG · [main] realPresenter=${realPresenter::class.simpleName}")
 
             val activityVC = UIActivityViewController(
                 activityItems         = listOf(outUrl),
                 applicationActivities = null
             )
-            println("$TAG · [main] UIActivityViewController creado")
-
-            // En iPad
             activityVC.popoverPresentationController?.let { popover ->
                 popover.sourceView = realPresenter.view
                 popover.sourceRect = CGRectMakeCenter(realPresenter.view)
-                println("$TAG · [main] popoverPresentationController configurado (iPad)")
             }
-
-            println("$TAG · [main] Llamando a presentViewController…")
             realPresenter.presentViewController(activityVC, animated = true) {
-                println("$TAG · [main] completion del present invocado — sheet visible")
                 tracedResult(BackupResult.Success)
             }
-            println("$TAG · [main] presentViewController retornó (presentación pendiente)")
         }
-        println("$TAG · exportEncrypted retornando (async pendiente)")
     }
 
     actual fun importEncrypted(password: String, onResult: (BackupResult) -> Unit) {
         println("$TAG ▶ importEncrypted INVOCADO")
 
+        val tracedResult: (BackupResult) -> Unit = { r ->
+            when (r) {
+                is BackupResult.Success -> println("$TAG ✅ import onResult(Success)")
+                is BackupResult.Error   -> println("$TAG ❌ import onResult(Error): ${r.message}")
+            }
+            onResult(r)
+        }
+
         dispatch_async(dispatch_get_main_queue()) {
             val presenter = topViewController() ?: run {
-                println("$TAG · [main] topViewController() devolvió null")
-                onResult(BackupResult.Error("No se puede presentar el selector"))
+                tracedResult(BackupResult.Error("No se puede presentar el selector"))
                 return@dispatch_async
             }
-            println("$TAG · [main] import presenter=${presenter::class.simpleName}")
 
             val realPresenter = run {
                 var p: UIViewController = presenter
@@ -146,9 +117,23 @@ actual class DatabaseBackupManager {
                 p
             }
 
+            // Creamos el delegate y lo retenemos en variable de instancia para
+            // que no sea recolectado mientras el picker está visible.
             val delegate = ImportPickerDelegate(
-                onPick  = { fileUrl -> restoreFromUrl(fileUrl, password, onResult) },
-                onError = { msg    -> onResult(BackupResult.Error(msg)) }
+                onPick  = { fileUrl ->
+                    println("$TAG · documentPicker.onPick recibido")
+                    // Diferimos el restore para dejar que el picker termine su animación
+                    // de dismiss antes de procesar (evita crashes de UIKit por
+                    // operaciones costosas dentro del callback).
+                    dispatch_async(dispatch_get_main_queue()) {
+                        restoreFromUrl(fileUrl, password, tracedResult)
+                    }
+                },
+                onError = { msg ->
+                    println("$TAG · documentPicker.onError: $msg")
+                    pickerDelegateHolder = null
+                    tracedResult(BackupResult.Error(msg))
+                }
             )
 
             val picker = UIDocumentPickerViewController(
@@ -164,35 +149,120 @@ actual class DatabaseBackupManager {
     }
 
     private fun restoreFromUrl(fileUrl: NSURL, password: String, onResult: (BackupResult) -> Unit) {
+        println("$TAG · restoreFromUrl iniciado: ${fileUrl.absoluteString}")
+
+        // Liberamos el delegate ahora que el picker ya cerró.
         pickerDelegateHolder = null
+
+        // ── 1) Acceso security-scoped al fichero seleccionado ───────────────
+        // Los UIDocumentPicker entregan URLs con security scope: hay que pedir
+        // permiso explícito antes de leer y liberar después, o el read falla.
+        val accessGranted = fileUrl.startAccessingSecurityScopedResource()
+        println("$TAG · startAccessingSecurityScopedResource=$accessGranted")
+
         try {
-            val data = NSData.dataWithContentsOfURL(fileUrl) ?: run {
-                onResult(BackupResult.Error("No se puede leer el archivo"))
+            // ── 2) Coordinar la lectura con NSFileCoordinator ───────────────
+            // El proveedor del fichero (Files, iCloud, etc.) puede tenerlo
+            // bloqueado o necesitar descargarlo. NSFileCoordinator gestiona eso.
+            val data = readDataCoordinated(fileUrl)
+            if (data == null) {
+                onResult(BackupResult.Error("No se puede leer el archivo seleccionado"))
                 return
             }
-            val decrypted = decryptBackup(data.toKotlinByteArray(), password)
+            println("$TAG · Archivo leído: ${data.length} bytes")
+
+            // ── 3) Descifrar ────────────────────────────────────────────────
+            val decrypted: ByteArray = try {
+                decryptBackup(data.toKotlinByteArray(), password)
+            } catch (e: Exception) {
+                println("$TAG · Fallo al descifrar: ${e::class.simpleName}: ${e.message}")
+                onResult(BackupResult.Error("Contraseña incorrecta o archivo dañado"))
+                return
+            }
+            println("$TAG · Descifrado OK: ${decrypted.size} bytes")
+
+            // ── 4) Validar cabecera SQLite antes de sobrescribir ────────────
+            // Una BD válida empieza con los bytes 'SQLite format 3\u0000'.
+            // Si descifró pero el contenido no es una BD, no pisamos nada.
+            if (!isValidSqliteHeader(decrypted)) {
+                println("$TAG · Cabecera SQLite no válida tras descifrar")
+                onResult(BackupResult.Error("El archivo no contiene una base de datos válida"))
+                return
+            }
+
+            // ── 5) Localizar la BD actual ───────────────────────────────────
             val dbPath = dbFilePath() ?: run {
-                onResult(BackupResult.Error("No se puede localizar la BD"))
+                onResult(BackupResult.Error("No se puede localizar la BD actual"))
                 return
             }
-            decrypted.toNSData().writeToFile(dbPath, atomically = true)
+            println("$TAG · BD actual: $dbPath")
+
+            // ── 6) Escribir a un fichero temporal "pending" ─────────────────
+            // No sobrescribimos directamente la BD porque está abierta por
+            // SQLDelight: hacerlo provoca crashes (handles inválidos, cache
+            // page mismatch). En su lugar, dejamos un fichero pendiente que
+            // se aplica al próximo arranque de la app.
+            val pendingPath = "$dbPath.pending"
+            val pendingNSData = decrypted.toNSData()
+            val writeOk = pendingNSData.writeToFile(pendingPath, atomically = true)
+            if (!writeOk) {
+                println("$TAG · No se pudo escribir el fichero pending")
+                onResult(BackupResult.Error("No se pudo preparar la importación"))
+                return
+            }
+            println("$TAG · Fichero pending escrito: $pendingPath")
+
+            // ── 7) Devolver Success con un mensaje específico ───────────────
+            // El llamador es responsable de pedir al usuario que reinicie la
+            // app. La aplicación del backup ocurre en el próximo arranque.
             onResult(BackupResult.Success)
-        } catch (e: Exception) {
-            onResult(BackupResult.Error("Contraseña incorrecta o archivo dañado"))
+
+        } finally {
+            if (accessGranted) {
+                fileUrl.stopAccessingSecurityScopedResource()
+            }
         }
     }
 
+    /**
+     * Lee el contenido del fichero usando NSFileCoordinator. Esto fuerza la
+     * descarga si está en iCloud y respeta los locks del proveedor.
+     */
+    private fun readDataCoordinated(url: NSURL): NSData? {
+        val coordinator = NSFileCoordinator(filePresenter = null)
+        var result: NSData? = null
+        var coordError: NSError? = null
+
+        coordinator.coordinateReadingItemAtURL(
+            url,
+            options = NSFileCoordinatorReadingWithoutChanges,
+            error = null
+        ) { coordinatedUrl ->
+            if (coordinatedUrl != null) {
+                result = NSData.dataWithContentsOfURL(coordinatedUrl)
+            }
+        }
+
+        if (coordError != null) {
+            println("$TAG · NSFileCoordinator error: ${coordError?.localizedDescription}")
+        }
+        return result
+    }
+
+    /** Comprueba el "magic header" de SQLite. */
+    private fun isValidSqliteHeader(bytes: ByteArray): Boolean {
+        // "SQLite format 3\u0000" = 16 bytes
+        val header = "SQLite format 3\u0000"
+        if (bytes.size < header.length) return false
+        for (i in header.indices) {
+            if (bytes[i].toInt().toChar() != header[i]) return false
+        }
+        return true
+    }
+
     private fun dbFilePath(): String? {
-        // SQLDelight NativeSqliteDriver guarda la BD por defecto en
-        // Library/Caches/databases/<name>. Probamos esa ruta y otras posibles.
         val fm = NSFileManager.defaultManager
 
-        // Candidatos por carpeta + subcarpeta:
-        //   - Library/Caches/databases/<name>      ← ubicación por defecto de NativeSqliteDriver 2.x
-        //   - Documents/databases/<name>           ← versiones antiguas
-        //   - Documents/<name>                     ← fallback histórico
-        //   - Library/Application Support/<name>   ← ubicación previa de este código
-        //   - Library/<name>                       ← raro pero posible
         val candidates = mutableListOf<Pair<String, String?>>()
 
         fun addCandidate(label: String, dir: NSSearchPathDirectory, subFolder: String? = null) {
@@ -220,10 +290,7 @@ actual class DatabaseBackupManager {
             }
         }
 
-        // Último recurso: búsqueda recursiva en todo el contenedor de la app
-        // por un fichero llamado trackfolio.db. Solo se ejecuta si todas las
-        // rutas conocidas fallan, así que es barato.
-        println("$TAG · dbFilePath(): no en rutas conocidas, buscando recursivamente…")
+        // Búsqueda recursiva como último recurso
         val homeDir = NSHomeDirectory()
         val found = findFileRecursively(homeDir, DB_NAME, maxDepth = 6)
         if (found != null) {
@@ -231,28 +298,21 @@ actual class DatabaseBackupManager {
             return found
         }
 
-        println("$TAG · dbFilePath(): NO ENCONTRADA. Candidatos probados:")
-        for ((label, path) in candidates) {
-            println("$TAG     - $label: $path")
-        }
+        println("$TAG · dbFilePath(): NO ENCONTRADA")
         return null
     }
 
-    /** Búsqueda recursiva sencilla por nombre exacto, limitada en profundidad. */
     private fun findFileRecursively(rootPath: String, fileName: String, maxDepth: Int): String? {
         val fm = NSFileManager.defaultManager
         if (maxDepth < 0) return null
         @Suppress("UNCHECKED_CAST")
         val entries = fm.contentsOfDirectoryAtPath(rootPath, error = null) as? List<String>
             ?: return null
-        // Primero, ficheros en este nivel
         for (entry in entries) {
             if (entry == fileName) return "$rootPath/$entry"
         }
-        // Luego, recursión en subdirectorios
         for (entry in entries) {
             val sub = "$rootPath/$entry"
-            // Saltar enlaces simbólicos / cosas que no son carpeta
             val attrs = fm.attributesOfItemAtPath(sub, error = null) ?: continue
             val type = attrs[NSFileType] as? String ?: continue
             if (type == NSFileTypeDirectory) {
@@ -287,35 +347,26 @@ actual class DatabaseBackupManager {
 
 @OptIn(ExperimentalForeignApi::class)
 private fun topViewController(): UIViewController? {
-    println("$TAG · topViewController() inicio")
     val scenes = UIApplication.sharedApplication.connectedScenes
-    println("$TAG · connectedScenes count=${scenes.size}")
 
     var window: UIWindow? = null
-
     for (scene in scenes) {
         val windowScene = scene as? UIWindowScene ?: continue
-        val state = windowScene.activationState
-        println("$TAG · scene activationState=$state (foregroundActive=$UISceneActivationStateForegroundActive)")
-        if (state != UISceneActivationStateForegroundActive) continue
+        if (windowScene.activationState != UISceneActivationStateForegroundActive) continue
 
         val sceneWindows = windowScene.windows
-        println("$TAG · scene.windows count=${sceneWindows.size}")
         var keyWin: UIWindow? = null
         var firstWin: UIWindow? = null
         for (w in sceneWindows) {
             val uiWin = w as? UIWindow ?: continue
             if (firstWin == null) firstWin = uiWin
-            val isKey = uiWin.isKeyWindow()
-            println("$TAG ·   window isKeyWindow=$isKey hidden=${uiWin.hidden}")
-            if (isKey) { keyWin = uiWin; break }
+            if (uiWin.isKeyWindow()) { keyWin = uiWin; break }
         }
         window = keyWin ?: firstWin
         if (window != null) break
     }
 
     if (window == null) {
-        println("$TAG · sin foregroundActive — fallback a primera scene")
         outer@ for (scene in scenes) {
             val ws = scene as? UIWindowScene ?: continue
             for (w in ws.windows) {
@@ -326,20 +377,14 @@ private fun topViewController(): UIViewController? {
         }
     }
 
-    if (window == null) {
-        println("$TAG · No se encontró ninguna window")
-        return null
-    }
-    println("$TAG · window encontrada, rootVC=${window?.rootViewController?.let { it::class.simpleName } ?: "null"}")
+    if (window == null) return null
 
     var top: UIViewController? = window?.rootViewController
     var depth = 0
     while (top?.presentedViewController != null && depth < 10) {
-        println("$TAG ·   subiendo: ${top!!::class.simpleName} → ${top!!.presentedViewController!!::class.simpleName}")
         top = top!!.presentedViewController
         depth++
     }
-    println("$TAG · topViewController() devuelve ${top?.let { it::class.simpleName } ?: "null"}")
     return top
 }
 
