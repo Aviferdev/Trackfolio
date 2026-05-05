@@ -14,6 +14,8 @@ import platform.darwin.dispatch_async
 import platform.darwin.dispatch_get_main_queue
 import platform.posix.memcpy
 
+private const val TAG = "[BackupManager]"
+
 @OptIn(ExperimentalForeignApi::class)
 actual class DatabaseBackupManager {
 
@@ -21,72 +23,129 @@ actual class DatabaseBackupManager {
     private val BACKUP_NAME = "trackfolio_backup.trackfolio"
 
     actual fun exportEncrypted(password: String, onResult: (BackupResult) -> Unit) {
-        // Preparamos el fichero cifrado fuera del hilo principal-async para
-        // que cualquier excepción suba al catch y se reporte al usuario.
+        println("$TAG ▶ exportEncrypted INVOCADO (passwordLen=${password.length})")
+
+        // Wrappear onResult para tracear cuándo se llama (y desde dónde)
+        val tracedResult: (BackupResult) -> Unit = { r ->
+            when (r) {
+                is BackupResult.Success -> println("$TAG ✅ onResult(Success)")
+                is BackupResult.Error   -> println("$TAG ❌ onResult(Error): ${r.message}")
+            }
+            onResult(r)
+        }
+
+        // ── Bloque 1: lectura BD + cifrado + escritura temp ──────────────────
         val outUrl: NSURL
         try {
-            val dbPath = dbFilePath() ?: run {
-                onResult(BackupResult.Error("Base de datos no encontrada"))
+            println("$TAG · Buscando ruta de BD…")
+            val dbPath = dbFilePath()
+            if (dbPath == null) {
+                println("$TAG · dbFilePath() devolvió null")
+                tracedResult(BackupResult.Error("Base de datos no encontrada"))
                 return
             }
-            val dbData = NSData.dataWithContentsOfFile(dbPath) ?: run {
-                onResult(BackupResult.Error("No se puede leer la base de datos"))
+            println("$TAG · dbPath=$dbPath")
+
+            val dbExists = NSFileManager.defaultManager.fileExistsAtPath(dbPath)
+            println("$TAG · dbExists=$dbExists")
+
+            val dbData = NSData.dataWithContentsOfFile(dbPath)
+            if (dbData == null) {
+                println("$TAG · NSData.dataWithContentsOfFile devolvió null")
+                tracedResult(BackupResult.Error("No se puede leer la base de datos"))
                 return
             }
+            println("$TAG · BD leída: ${dbData.length} bytes")
 
             val dbBytes   = dbData.toKotlinByteArray()
+            println("$TAG · Cifrando (${dbBytes.size} bytes)…")
             val encrypted = encryptBackup(dbBytes, password)
+            println("$TAG · Cifrado OK (${encrypted.size} bytes)")
 
             val tempDir = NSTemporaryDirectory()
             val outPath = "$tempDir$BACKUP_NAME"
+            println("$TAG · Escribiendo temp en $outPath")
             val ok = encrypted.toNSData().writeToFile(outPath, atomically = true)
             if (!ok) {
-                onResult(BackupResult.Error("No se pudo escribir el fichero temporal"))
+                println("$TAG · writeToFile devolvió false")
+                tracedResult(BackupResult.Error("No se pudo escribir el fichero temporal"))
                 return
             }
             outUrl = NSURL.fileURLWithPath(outPath)
+            println("$TAG · Fichero temp listo: ${outUrl.absoluteString}")
         } catch (e: Exception) {
-            onResult(BackupResult.Error(e.message ?: "Error al cifrar el backup"))
+            println("$TAG · EXCEPCIÓN en bloque de cifrado: ${e::class.simpleName}: ${e.message}")
+            tracedResult(BackupResult.Error(e.message ?: "Error al cifrar el backup"))
             return
         }
 
-        // Presentación del UIActivityViewController en main queue
+        // ── Bloque 2: presentación en main queue ─────────────────────────────
+        println("$TAG · Programando dispatch_async al main queue…")
         dispatch_async(dispatch_get_main_queue()) {
+            println("$TAG · [main] dispatch_async ejecutándose")
+
             val presenter = topViewController()
             if (presenter == null) {
-                onResult(BackupResult.Error("No se puede presentar el diálogo de compartir"))
+                println("$TAG · [main] topViewController() devolvió null")
+                tracedResult(BackupResult.Error("No se puede presentar el diálogo de compartir"))
                 return@dispatch_async
             }
+            println("$TAG · [main] presenter=${presenter::class.simpleName}, presentedVC=${presenter.presentedViewController?.let { it::class.simpleName } ?: "null"}")
+
+            // Si el presenter ya está presentando otro VC, presentar encima fallaría.
+            // En ese caso subimos al VC más arriba (debería estar resuelto por topViewController,
+            // pero por seguridad lo verificamos).
+            val realPresenter = run {
+                var p: UIViewController = presenter
+                while (p.presentedViewController != null) {
+                    p = p.presentedViewController!!
+                }
+                p
+            }
+            println("$TAG · [main] realPresenter=${realPresenter::class.simpleName}")
 
             val activityVC = UIActivityViewController(
                 activityItems         = listOf(outUrl),
                 applicationActivities = null
             )
+            println("$TAG · [main] UIActivityViewController creado")
 
-            // En iPad, UIActivityViewController DEBE tener configurado un
-            // popoverPresentationController.sourceView/sourceRect o lanza una
-            // excepción silenciosa y no se muestra nada. En iPhone, esta propiedad
-            // es null y el ?.let no ejecuta el bloque.
+            // En iPad
             activityVC.popoverPresentationController?.let { popover ->
-                popover.sourceView = presenter.view
-                popover.sourceRect = CGRectMakeCenter(presenter.view)
+                popover.sourceView = realPresenter.view
+                popover.sourceRect = CGRectMakeCenter(realPresenter.view)
+                println("$TAG · [main] popoverPresentationController configurado (iPad)")
             }
 
-            presenter.presentViewController(activityVC, animated = true) {
-                // El completion del present se invoca cuando el sheet ya está visible
-                onResult(BackupResult.Success)
+            println("$TAG · [main] Llamando a presentViewController…")
+            realPresenter.presentViewController(activityVC, animated = true) {
+                println("$TAG · [main] completion del present invocado — sheet visible")
+                tracedResult(BackupResult.Success)
             }
+            println("$TAG · [main] presentViewController retornó (presentación pendiente)")
         }
+        println("$TAG · exportEncrypted retornando (async pendiente)")
     }
 
     actual fun importEncrypted(password: String, onResult: (BackupResult) -> Unit) {
+        println("$TAG ▶ importEncrypted INVOCADO")
+
         dispatch_async(dispatch_get_main_queue()) {
             val presenter = topViewController() ?: run {
+                println("$TAG · [main] topViewController() devolvió null")
                 onResult(BackupResult.Error("No se puede presentar el selector"))
                 return@dispatch_async
             }
+            println("$TAG · [main] import presenter=${presenter::class.simpleName}")
 
-            // Instancia nueva cada vez — evita el bug del codegen con object+NSObject en K/N 2.1.0
+            val realPresenter = run {
+                var p: UIViewController = presenter
+                while (p.presentedViewController != null) {
+                    p = p.presentedViewController!!
+                }
+                p
+            }
+
             val delegate = ImportPickerDelegate(
                 onPick  = { fileUrl -> restoreFromUrl(fileUrl, password, onResult) },
                 onError = { msg    -> onResult(BackupResult.Error(msg)) }
@@ -98,10 +157,9 @@ actual class DatabaseBackupManager {
             picker.delegate = delegate
             picker.allowsMultipleSelection = false
 
-            // Retenemos el delegado para que no sea recolectado mientras el picker está visible
             pickerDelegateHolder = delegate
 
-            presenter.presentViewController(picker, animated = true, completion = null)
+            realPresenter.presentViewController(picker, animated = true, completion = null)
         }
     }
 
@@ -125,11 +183,84 @@ actual class DatabaseBackupManager {
     }
 
     private fun dbFilePath(): String? {
-        val urls = NSFileManager.defaultManager.URLsForDirectory(
-            NSApplicationSupportDirectory, NSUserDomainMask
-        )
-        val base = urls.firstOrNull() as? NSURL ?: return null
-        return base.URLByAppendingPathComponent(DB_NAME)?.path
+        // SQLDelight NativeSqliteDriver guarda la BD por defecto en
+        // Library/Caches/databases/<name>. Probamos esa ruta y otras posibles.
+        val fm = NSFileManager.defaultManager
+
+        // Candidatos por carpeta + subcarpeta:
+        //   - Library/Caches/databases/<name>      ← ubicación por defecto de NativeSqliteDriver 2.x
+        //   - Documents/databases/<name>           ← versiones antiguas
+        //   - Documents/<name>                     ← fallback histórico
+        //   - Library/Application Support/<name>   ← ubicación previa de este código
+        //   - Library/<name>                       ← raro pero posible
+        val candidates = mutableListOf<Pair<String, String?>>()
+
+        fun addCandidate(label: String, dir: NSSearchPathDirectory, subFolder: String? = null) {
+            val urls = fm.URLsForDirectory(dir, NSUserDomainMask)
+            val base = urls.firstOrNull() as? NSURL ?: return
+            val withSub = if (subFolder != null)
+                base.URLByAppendingPathComponent(subFolder)?.URLByAppendingPathComponent(DB_NAME)
+            else
+                base.URLByAppendingPathComponent(DB_NAME)
+            candidates.add(label to withSub?.path)
+        }
+
+        addCandidate("Caches/databases",            NSCachesDirectory,            "databases")
+        addCandidate("Documents/databases",         NSDocumentDirectory,          "databases")
+        addCandidate("Documents",                   NSDocumentDirectory)
+        addCandidate("ApplicationSupport/databases",NSApplicationSupportDirectory,"databases")
+        addCandidate("ApplicationSupport",          NSApplicationSupportDirectory)
+        addCandidate("Library",                     NSLibraryDirectory)
+        addCandidate("Caches",                      NSCachesDirectory)
+
+        for ((label, path) in candidates) {
+            if (path != null && fm.fileExistsAtPath(path)) {
+                println("$TAG · dbFilePath(): encontrado en $label → $path")
+                return path
+            }
+        }
+
+        // Último recurso: búsqueda recursiva en todo el contenedor de la app
+        // por un fichero llamado trackfolio.db. Solo se ejecuta si todas las
+        // rutas conocidas fallan, así que es barato.
+        println("$TAG · dbFilePath(): no en rutas conocidas, buscando recursivamente…")
+        val homeDir = NSHomeDirectory()
+        val found = findFileRecursively(homeDir, DB_NAME, maxDepth = 6)
+        if (found != null) {
+            println("$TAG · dbFilePath(): encontrado por búsqueda recursiva → $found")
+            return found
+        }
+
+        println("$TAG · dbFilePath(): NO ENCONTRADA. Candidatos probados:")
+        for ((label, path) in candidates) {
+            println("$TAG     - $label: $path")
+        }
+        return null
+    }
+
+    /** Búsqueda recursiva sencilla por nombre exacto, limitada en profundidad. */
+    private fun findFileRecursively(rootPath: String, fileName: String, maxDepth: Int): String? {
+        val fm = NSFileManager.defaultManager
+        if (maxDepth < 0) return null
+        @Suppress("UNCHECKED_CAST")
+        val entries = fm.contentsOfDirectoryAtPath(rootPath, error = null) as? List<String>
+            ?: return null
+        // Primero, ficheros en este nivel
+        for (entry in entries) {
+            if (entry == fileName) return "$rootPath/$entry"
+        }
+        // Luego, recursión en subdirectorios
+        for (entry in entries) {
+            val sub = "$rootPath/$entry"
+            // Saltar enlaces simbólicos / cosas que no son carpeta
+            val attrs = fm.attributesOfItemAtPath(sub, error = null) ?: continue
+            val type = attrs[NSFileType] as? String ?: continue
+            if (type == NSFileTypeDirectory) {
+                val nested = findFileRecursively(sub, fileName, maxDepth - 1)
+                if (nested != null) return nested
+            }
+        }
+        return null
     }
 
     private fun ByteArray.toNSData(): NSData =
@@ -149,42 +280,42 @@ actual class DatabaseBackupManager {
         return result
     }
 
-    // Retiene el delegado mientras el picker está visible (evita GC prematuro)
     private var pickerDelegateHolder: ImportPickerDelegate? = null
 }
 
 // ─── Helpers de UIKit ─────────────────────────────────────────────────────────
 
-/**
- * Obtiene el ViewController más arriba en la jerarquía de presentación.
- * Maneja correctamente iOS 13+ con UIScene (donde keyWindow puede ser null
- * o estar mal definido) iterando las connectedScenes activas.
- */
 @OptIn(ExperimentalForeignApi::class)
 private fun topViewController(): UIViewController? {
-    // 1) Buscar la window activa entre las escenas conectadas (iOS 13+).
+    println("$TAG · topViewController() inicio")
     val scenes = UIApplication.sharedApplication.connectedScenes
+    println("$TAG · connectedScenes count=${scenes.size}")
+
     var window: UIWindow? = null
 
     for (scene in scenes) {
         val windowScene = scene as? UIWindowScene ?: continue
-        if (windowScene.activationState != UISceneActivationStateForegroundActive) continue
+        val state = windowScene.activationState
+        println("$TAG · scene activationState=$state (foregroundActive=$UISceneActivationStateForegroundActive)")
+        if (state != UISceneActivationStateForegroundActive) continue
 
-        // windows es NSArray; iteramos buscando la key window y, en su defecto, la primera.
         val sceneWindows = windowScene.windows
+        println("$TAG · scene.windows count=${sceneWindows.size}")
         var keyWin: UIWindow? = null
         var firstWin: UIWindow? = null
         for (w in sceneWindows) {
             val uiWin = w as? UIWindow ?: continue
             if (firstWin == null) firstWin = uiWin
-            if (uiWin.isKeyWindow()) { keyWin = uiWin; break }
+            val isKey = uiWin.isKeyWindow()
+            println("$TAG ·   window isKeyWindow=$isKey hidden=${uiWin.hidden}")
+            if (isKey) { keyWin = uiWin; break }
         }
         window = keyWin ?: firstWin
         if (window != null) break
     }
 
-    // 2) Fallback: primera window de cualquier escena conectada
     if (window == null) {
+        println("$TAG · sin foregroundActive — fallback a primera scene")
         outer@ for (scene in scenes) {
             val ws = scene as? UIWindowScene ?: continue
             for (w in ws.windows) {
@@ -195,15 +326,23 @@ private fun topViewController(): UIViewController? {
         }
     }
 
-    // 3) Subir hasta el VC presentado más arriba
-    var top: UIViewController? = window?.rootViewController
-    while (top?.presentedViewController != null) {
-        top = top.presentedViewController
+    if (window == null) {
+        println("$TAG · No se encontró ninguna window")
+        return null
     }
+    println("$TAG · window encontrada, rootVC=${window?.rootViewController?.let { it::class.simpleName } ?: "null"}")
+
+    var top: UIViewController? = window?.rootViewController
+    var depth = 0
+    while (top?.presentedViewController != null && depth < 10) {
+        println("$TAG ·   subiendo: ${top!!::class.simpleName} → ${top!!.presentedViewController!!::class.simpleName}")
+        top = top!!.presentedViewController
+        depth++
+    }
+    println("$TAG · topViewController() devuelve ${top?.let { it::class.simpleName } ?: "null"}")
     return top
 }
 
-/** Centro del view, para anclar popovers en iPad. */
 @OptIn(ExperimentalForeignApi::class)
 private fun CGRectMakeCenter(view: UIView): CValue<CGRect> {
     return view.bounds.useContents {
@@ -216,9 +355,6 @@ private fun CGRectMakeCenter(view: UIView): CValue<CGRect> {
     }
 }
 
-// ─── Delegado UIDocumentPickerViewController ──────────────────────────────────
-// Clase normal (no object) para evitar el bug de K/N 2.1.0 con object+NSObject
-// en inicializadores de campos globales.
 @OptIn(ExperimentalForeignApi::class)
 class ImportPickerDelegate(
     private val onPick:  (NSURL) -> Unit,

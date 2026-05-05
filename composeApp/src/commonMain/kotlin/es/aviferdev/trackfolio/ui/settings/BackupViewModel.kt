@@ -55,20 +55,26 @@ class BackupViewModel(
     }
 
     fun confirmExport() {
+        println("[BackupVM] ▶ confirmExport() invocado")
         val s = _state.value
         when {
             s.password.length < 6 -> {
+                println("[BackupVM] · password demasiado corta")
                 _state.value = s.copy(passwordError = "La contraseña debe tener al menos 6 caracteres")
                 return
             }
             s.password != s.confirmPassword -> {
+                println("[BackupVM] · contraseñas no coinciden")
                 _state.value = s.copy(passwordError = "Las contraseñas no coinciden")
                 return
             }
         }
+        println("[BackupVM] · validación OK → estado Loading")
         _state.value = s.copy(backupState = BackupUiState.Loading)
         viewModelScope.launch {
+            println("[BackupVM] · dentro de viewModelScope.launch → llamando a backupManager.exportEncrypted")
             backupManager.exportEncrypted(s.password) { result ->
+                println("[BackupVM] · callback de exportEncrypted recibido: $result")
                 _state.value = when (result) {
                     is BackupResult.Success -> _state.value.copy(
                         backupState = BackupUiState.Success
@@ -77,7 +83,9 @@ class BackupViewModel(
                         backupState = BackupUiState.Error(result.message)
                     )
                 }
+                println("[BackupVM] · estado actualizado a ${_state.value.backupState}")
             }
+            println("[BackupVM] · backupManager.exportEncrypted retornó (callback puede llegar después)")
         }
     }
 

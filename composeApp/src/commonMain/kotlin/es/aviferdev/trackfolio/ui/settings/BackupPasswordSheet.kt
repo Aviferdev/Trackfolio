@@ -32,6 +32,7 @@ fun BackupPasswordSheet(
     val isExport    = state.action == BackupAction.EXPORT
     val isLoading   = state.backupState is BackupUiState.Loading
     val isSuccess   = state.backupState is BackupUiState.Success
+    val errorState  = state.backupState as? BackupUiState.Error
 
     // ── Estado LOCAL de los TextFields ────────────────────────────────────────
     // Mantenemos el texto en local state para evitar que cada pulsación dispare
@@ -162,10 +163,28 @@ fun BackupPasswordSheet(
                     )
                 }
 
-                // Error
+                // Error de validación de contraseña
                 state.passwordError?.let { err ->
                     Spacer(Modifier.height(6.dp))
                     Text(err, fontSize = 12.sp, color = ExpenseRed)
+                }
+
+                // Error devuelto por la operación de backup (no validación)
+                errorState?.let { err ->
+                    Spacer(Modifier.height(12.dp))
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(10.dp))
+                            .background(ExpenseRed.copy(alpha = 0.18f))
+                            .padding(12.dp)
+                    ) {
+                        Text(
+                            text     = "⚠️  ${err.message}",
+                            fontSize = 13.sp,
+                            color    = ExpenseRed
+                        )
+                    }
                 }
             }
 
