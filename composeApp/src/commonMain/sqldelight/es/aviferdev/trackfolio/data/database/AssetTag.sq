@@ -80,7 +80,7 @@ SELECT * FROM AssetTagAssignmentEntity
 WHERE tagId = :tagId;
 
 upsertAssignment:
-INSERT INTO AssetTagAssignmentEntity(assetId, tagId, weight)
+INSERT OR REPLACE INTO AssetTagAssignmentEntity(assetId, tagId, weight)
 VALUES (?, ?, ?);
 
 deleteAssignment:
