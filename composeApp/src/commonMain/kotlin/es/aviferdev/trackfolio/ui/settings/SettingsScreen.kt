@@ -146,21 +146,27 @@ fun SettingsScreen(
                                     color    = TextPrimary,
                                     modifier = Modifier.weight(1f)
                                 )
-                                if (cat.isDefault == 0L) {
-                                    IconButton(
-                                        onClick  = { categoryViewModel.deleteCategory(cat.id) },
-                                        modifier = Modifier.size(28.dp)
-                                    ) {
-                                        Icon(
-                                            Icons.Default.Delete,
-                                            contentDescription = "Eliminar",
-                                            modifier = Modifier.size(14.dp),
-                                            tint     = ExpenseRed
-                                        )
-                                    }
-                                } else {
-                                    Text("•", fontSize = 11.sp, color = TextSecondary,
-                                        modifier = Modifier.padding(end = 4.dp))
+                                IconButton(
+                                    onClick  = { categoryViewModel.openEditSheet(cat) },
+                                    modifier = Modifier.size(28.dp)
+                                ) {
+                                    Icon(
+                                        Icons.Default.Edit,
+                                        contentDescription = "Editar",
+                                        modifier = Modifier.size(14.dp),
+                                        tint     = TextSecondary
+                                    )
+                                }
+                                IconButton(
+                                    onClick  = { categoryViewModel.requestDelete(cat) },
+                                    modifier = Modifier.size(28.dp)
+                                ) {
+                                    Icon(
+                                        Icons.Default.Delete,
+                                        contentDescription = "Eliminar",
+                                        modifier = Modifier.size(14.dp),
+                                        tint     = ExpenseRed
+                                    )
                                 }
                             }
                             if (index < categoryState.expenseCategories.lastIndex) {
@@ -213,21 +219,27 @@ fun SettingsScreen(
                                     color    = TextPrimary,
                                     modifier = Modifier.weight(1f)
                                 )
-                                if (cat.isDefault == 0L) {
-                                    IconButton(
-                                        onClick  = { categoryViewModel.deleteCategory(cat.id) },
-                                        modifier = Modifier.size(28.dp)
-                                    ) {
-                                        Icon(
-                                            Icons.Default.Delete,
-                                            contentDescription = "Eliminar",
-                                            modifier = Modifier.size(14.dp),
-                                            tint     = ExpenseRed
-                                        )
-                                    }
-                                } else {
-                                    Text("•", fontSize = 11.sp, color = TextSecondary,
-                                        modifier = Modifier.padding(end = 4.dp))
+                                IconButton(
+                                    onClick  = { categoryViewModel.openEditSheet(cat) },
+                                    modifier = Modifier.size(28.dp)
+                                ) {
+                                    Icon(
+                                        Icons.Default.Edit,
+                                        contentDescription = "Editar",
+                                        modifier = Modifier.size(14.dp),
+                                        tint     = TextSecondary
+                                    )
+                                }
+                                IconButton(
+                                    onClick  = { categoryViewModel.requestDelete(cat) },
+                                    modifier = Modifier.size(28.dp)
+                                ) {
+                                    Icon(
+                                        Icons.Default.Delete,
+                                        contentDescription = "Eliminar",
+                                        modifier = Modifier.size(14.dp),
+                                        tint     = ExpenseRed
+                                    )
                                 }
                             }
                             if (index < categoryState.incomeCategories.lastIndex) {
@@ -384,6 +396,59 @@ fun SettingsScreen(
             onDismiss = { categoryViewModel.closeAddSheet() }
         )
     }
+
+    categoryState.editing?.let { editing ->
+        EditCategorySheet(
+            currentName = editing.name,
+            type        = TransactionType.valueOf(editing.type),
+            onSave      = { newName -> categoryViewModel.renameCategory(editing.id, newName) },
+            onDismiss   = { categoryViewModel.closeEditSheet() }
+        )
+    }
+
+    categoryState.pendingDelete?.let { pending ->
+        AlertDialog(
+            onDismissRequest = { categoryViewModel.cancelDelete() },
+            containerColor   = SurfaceWhite,
+            icon             = { Text("🗂️", fontSize = 28.sp) },
+            title = {
+                Text("Eliminar categoría", fontSize = 17.sp,
+                    fontWeight = FontWeight.SemiBold, color = TextPrimary)
+            },
+            text  = {
+                Text(
+                    "Se eliminará «${pending.name}» del listado. Los movimientos que ya tengan asignada esta categoría conservarán su nombre y no se perderán datos.",
+                    fontSize = 14.sp, color = TextSecondary
+                )
+            },
+            confirmButton = {
+                TextButton(onClick = { categoryViewModel.confirmDelete() }) {
+                    Text("Eliminar", color = ExpenseRed, fontWeight = FontWeight.Medium)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { categoryViewModel.cancelDelete() }) {
+                    Text("Cancelar", color = PrimaryDark, fontWeight = FontWeight.Medium)
+                }
+            },
+            shape = RoundedCornerShape(16.dp)
+        )
+    }
+
+    categoryState.error?.let { msg ->
+        AlertDialog(
+            onDismissRequest = { categoryViewModel.clearError() },
+            containerColor   = SurfaceWhite,
+            title = { Text("Error", fontSize = 17.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary) },
+            text  = { Text(msg, fontSize = 14.sp, color = TextSecondary) },
+            confirmButton = {
+                TextButton(onClick = { categoryViewModel.clearError() }) {
+                    Text("Aceptar", color = PrimaryDark, fontWeight = FontWeight.Medium)
+                }
+            },
+            shape = RoundedCornerShape(16.dp)
+        )
+    }
 }
 
 // ─── AddCategorySheet ─────────────────────────────────────────────────────────
@@ -471,6 +536,91 @@ private fun AddCategorySheet(
     }
 }
 
+// ─── EditCategorySheet ───────────────────────────────────────────────────────────
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun EditCategorySheet(
+    currentName: String,
+    type: TransactionType,
+    onSave: (newName: String) -> Unit,
+    onDismiss: () -> Unit
+) {
+    var name      by remember { mutableStateOf(currentName) }
+    var nameError by remember { mutableStateOf(false) }
+    val color     = if (type == TransactionType.INCOME) IncomeGreen else ExpenseRed
+    val typeLabel = if (type == TransactionType.INCOME) "ingreso" else "gasto"
+
+    ModalBottomSheet(
+        onDismissRequest = onDismiss,
+        sheetState       = rememberModalBottomSheetState(skipPartiallyExpanded = true),
+        containerColor   = SurfaceWhite
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .imePadding()
+                .padding(horizontal = 24.dp)
+                .padding(bottom = 32.dp)
+        ) {
+            Spacer(Modifier.height(4.dp))
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Box(
+                    modifier = Modifier
+                        .size(10.dp)
+                        .clip(CircleShape)
+                        .background(color)
+                )
+                Spacer(Modifier.width(10.dp))
+                Text(
+                    text       = "Editar categoría de $typeLabel",
+                    fontSize   = 18.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color      = TextPrimary
+                )
+            }
+            Spacer(Modifier.height(24.dp))
+
+            OutlinedTextField(
+                value         = name,
+                onValueChange = { name = it; nameError = false },
+                label         = { Text("Nombre de la categoría") },
+                isError       = nameError,
+                supportingText = if (nameError) {{ Text("El nombre es obligatorio") }} else null,
+                modifier       = Modifier.fillMaxWidth(),
+                singleLine     = true,
+                shape          = RoundedCornerShape(10.dp),
+                keyboardOptions = KeyboardOptions(
+                    capitalization = KeyboardCapitalization.Sentences,
+                    imeAction      = ImeAction.Done
+                ),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor   = PrimaryDark,
+                    unfocusedBorderColor = BorderGray
+                )
+            )
+
+            Spacer(Modifier.height(28.dp))
+
+            Button(
+                onClick = {
+                    if (name.isBlank()) { nameError = true; return@Button }
+                    onSave(name.trim())
+                },
+                modifier = Modifier.fillMaxWidth().height(52.dp),
+                shape    = RoundedCornerShape(10.dp),
+                colors   = ButtonDefaults.buttonColors(containerColor = PrimaryDark)
+            ) {
+                Text("Guardar cambios", fontSize = 16.sp, fontWeight = FontWeight.Medium)
+            }
+
+            Spacer(Modifier.height(8.dp))
+            TextButton(onClick = onDismiss, modifier = Modifier.fillMaxWidth()) {
+                Text("Cancelar", fontSize = 14.sp, color = TextSecondary)
+            }
+        }
+    }
+}
+
 // ─── SettingsAccountCard ─────────────────────────────────────────────────────
 @Composable
 private fun SettingsAccountCard(
@@ -485,7 +635,7 @@ private fun SettingsAccountCard(
         label = "border"
     )
     val bgColor by animateColorAsState(
-        targetValue = if (isSelected) Color(0xFFE8EDF5) else SurfaceWhite,
+        targetValue = if (isSelected) SurfaceElevated else SurfaceWhite,
         label = "bg"
     )
 

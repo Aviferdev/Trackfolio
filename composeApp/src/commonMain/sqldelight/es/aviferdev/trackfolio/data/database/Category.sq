@@ -1,25 +1,58 @@
 CREATE TABLE CategoryEntity (
-    id TEXT NOT NULL PRIMARY KEY,
-    name TEXT NOT NULL,
-    type TEXT NOT NULL,
-    isDefault INTEGER NOT NULL DEFAULT 0
+    id        TEXT    NOT NULL PRIMARY KEY,
+    name      TEXT    NOT NULL,
+    type      TEXT    NOT NULL,
+    isDefault INTEGER NOT NULL DEFAULT 0,
+    archived  INTEGER NOT NULL DEFAULT 0
 );
 
+CREATE INDEX idx_category_archived ON CategoryEntity(archived);
+
+-- ─── Lectura: usuarios finales (ocultan archivadas) ────────────────────────────
+
 selectAll:
-SELECT * FROM CategoryEntity ORDER BY name ASC;
+SELECT * FROM CategoryEntity
+WHERE archived = 0
+ORDER BY name ASC;
 
 selectByType:
-SELECT * FROM CategoryEntity WHERE type = :type ORDER BY name ASC;
+SELECT * FROM CategoryEntity
+WHERE type = :type AND archived = 0
+ORDER BY name ASC;
+
+-- ─── Lectura: incluye archivadas (para resolver nombres en transacciones) ──────
+
+selectAllIncludingArchived:
+SELECT * FROM CategoryEntity ORDER BY name ASC;
+
+selectByTypeIncludingArchived:
+SELECT * FROM CategoryEntity
+WHERE type = :type
+ORDER BY name ASC;
 
 selectById:
 SELECT * FROM CategoryEntity WHERE id = :id;
 
-insert:
-INSERT OR IGNORE INTO CategoryEntity(id, name, type, isDefault)
-VALUES (?, ?, ?, ?);
-
-delete:
-DELETE FROM CategoryEntity WHERE id = :id AND isDefault = 0;
-
 countAll:
-SELECT COUNT(*) FROM CategoryEntity;
+SELECT COUNT(*) FROM CategoryEntity WHERE archived = 0;
+
+-- ─── Escritura ─────────────────────────────────────────────────────────────────
+
+insert:
+INSERT OR IGNORE INTO CategoryEntity(id, name, type, isDefault, archived)
+VALUES (?, ?, ?, ?, 0);
+
+updateName:
+UPDATE CategoryEntity
+SET name = :name
+WHERE id = :id;
+
+archive:
+UPDATE CategoryEntity
+SET archived = 1
+WHERE id = :id;
+
+unarchive:
+UPDATE CategoryEntity
+SET archived = 0
+WHERE id = :id;

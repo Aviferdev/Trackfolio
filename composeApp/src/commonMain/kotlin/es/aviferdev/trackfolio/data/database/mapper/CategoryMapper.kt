@@ -15,5 +15,6 @@ fun Category.toEntity(): CategoryEntity = CategoryEntity(
     id = id,
     name = name,
     type = type.name,
-    isDefault = if (isDefault) 1L else 0L
+    isDefault = if (isDefault) 1L else 0L,
+    archived = 0L
 )

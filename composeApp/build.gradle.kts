@@ -62,7 +62,7 @@ sqldelight {
     databases {
         create("TrackfolioDatabase") {
             packageName.set("es.aviferdev.trackfolio.data.database")
-            version = 3
+            version = 4
         }
     }
 }

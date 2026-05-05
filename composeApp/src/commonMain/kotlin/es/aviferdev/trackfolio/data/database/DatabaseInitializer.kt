@@ -27,7 +27,8 @@ class DatabaseInitializer(
                     id        = category.id,
                     name      = category.name,
                     type      = category.type.name,
-                    isDefault = if (category.isDefault) 1L else 0L
+                    isDefault = if (category.isDefault) 1L else 0L,
+                    archived  = 0L
                 )
             )
         }

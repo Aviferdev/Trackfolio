@@ -1,5 +1,6 @@
 package es.aviferdev.trackfolio.security
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -8,14 +9,34 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.FileProvider
 import java.io.File
 import java.io.FileOutputStream
+import java.lang.ref.WeakReference
 
 actual class DatabaseBackupManager(private val context: Context) {
 
     private val DB_NAME     = "trackfolio.db"
     private val BACKUP_NAME = "trackfolio_backup.trackfolio"
 
+    // Referencia débil a la Activity actual (evita memory leaks).
+    // MainActivity la registra/desregistra en onCreate/onDestroy.
+    private var activityRef: WeakReference<ComponentActivity>? = null
+
+    fun bindActivity(activity: ComponentActivity) {
+        activityRef = WeakReference(activity)
+    }
+
+    fun unbindActivity() {
+        activityRef = null
+    }
+
+    private fun currentActivity(): ComponentActivity? = activityRef?.get()
+
     actual fun exportEncrypted(password: String, onResult: (BackupResult) -> Unit) {
         try {
+            val activity = currentActivity() ?: run {
+                onResult(BackupResult.Error("La aplicación no está en primer plano"))
+                return
+            }
+
             val dbFile = context.getDatabasePath(DB_NAME)
             if (!dbFile.exists()) {
                 onResult(BackupResult.Error("Base de datos no encontrada"))
@@ -35,14 +56,15 @@ actual class DatabaseBackupManager(private val context: Context) {
             )
 
             val shareIntent = Intent(Intent.ACTION_SEND).apply {
-                type     = "application/octet-stream"
+                type = "application/octet-stream"
                 putExtra(Intent.EXTRA_STREAM, uri)
                 putExtra(Intent.EXTRA_SUBJECT, "Backup Trackfolio")
                 addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             }
+            // El chooser debe lanzarse desde la Activity, no desde Application,
+            // para que aparezca encima de la app actual.
             val chooser = Intent.createChooser(shareIntent, "Exportar backup Trackfolio")
-            chooser.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            context.startActivity(chooser)
+            activity.startActivity(chooser)
 
             onResult(BackupResult.Success)
         } catch (e: Exception) {
@@ -51,8 +73,8 @@ actual class DatabaseBackupManager(private val context: Context) {
     }
 
     actual fun importEncrypted(password: String, onResult: (BackupResult) -> Unit) {
-        val activity = context as? ComponentActivity ?: run {
-            onResult(BackupResult.Error("Contexto inválido para importar"))
+        val activity = currentActivity() ?: run {
+            onResult(BackupResult.Error("La aplicación no está en primer plano"))
             return
         }
 

@@ -4,8 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import es.aviferdev.trackfolio.domain.model.MonthlyTotals
 import es.aviferdev.trackfolio.domain.model.Transaction
-import es.aviferdev.trackfolio.domain.model.TransactionType
-import es.aviferdev.trackfolio.domain.usecase.category.GetCategoriesByTypeUseCase
+import es.aviferdev.trackfolio.domain.usecase.category.GetAllCategoriesIncludingArchivedUseCase
 import es.aviferdev.trackfolio.domain.usecase.transaction.DeleteTransactionUseCase
 import es.aviferdev.trackfolio.domain.usecase.transaction.GetMonthlyTotalsUseCase
 import es.aviferdev.trackfolio.domain.usecase.transaction.GetTransactionsByMonthUseCase
@@ -16,6 +15,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
@@ -38,7 +38,7 @@ class TransactionViewModel(
     private val getTransactionsByMonth: GetTransactionsByMonthUseCase,
     private val getMonthlyTotals: GetMonthlyTotalsUseCase,
     private val deleteTransactionUseCase: DeleteTransactionUseCase,
-    private val getCategoriesByType: GetCategoriesByTypeUseCase,
+    private val getAllCategoriesIncludingArchived: GetAllCategoriesIncludingArchivedUseCase,
     private val session: AccountSession
 ) : ViewModel() {
 
@@ -51,12 +51,10 @@ class TransactionViewModel(
     private val _searchQuery = MutableStateFlow("")
     val searchQuery: StateFlow<String> = _searchQuery
 
-    private val categoryNamesFlow = combine(
-        getCategoriesByType(TransactionType.INCOME),
-        getCategoriesByType(TransactionType.EXPENSE)
-    ) { income, expense ->
-        (income + expense).associate { it.id to it.name }
-    }
+    // Incluye categorías archivadas para que las transacciones existentes
+    // sigan mostrando el nombre original aunque la categoría haya sido eliminada.
+    private val categoryNamesFlow = getAllCategoriesIncludingArchived()
+        .map { all -> all.associate { it.id to it.name } }
 
     val uiState: StateFlow<TransactionListUiState> = combine(
         session.selectedAccountId,
@@ -67,9 +65,9 @@ class TransactionViewModel(
     }.flatMapLatest { (accountId, period, query) ->
         val (year, month) = period
         if (accountId == null) {
-            combine(categoryNamesFlow) { cats ->
+            categoryNamesFlow.map { categoryNames ->
                 TransactionListUiState(
-                    categoryNames = cats[0],
+                    categoryNames = categoryNames,
                     year          = year,
                     month         = month,
                     searchQuery   = query,

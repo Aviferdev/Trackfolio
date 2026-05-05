@@ -10,6 +10,7 @@ import es.aviferdev.trackfolio.domain.usecase.asset.DeleteAssetUseCase
 import es.aviferdev.trackfolio.domain.usecase.asset.GetAssetsByAccountUseCase
 import es.aviferdev.trackfolio.domain.usecase.asset.SaveAssetUseCase
 import es.aviferdev.trackfolio.domain.usecase.asset.UpdateAssetUseCase
+import es.aviferdev.trackfolio.domain.usecase.category.GetAllCategoriesIncludingArchivedUseCase
 import es.aviferdev.trackfolio.domain.usecase.category.GetCategoriesByTypeUseCase
 import es.aviferdev.trackfolio.domain.usecase.debt.DeleteDebtUseCase
 import es.aviferdev.trackfolio.domain.usecase.debt.GetActiveDebtsUseCase
@@ -76,6 +77,7 @@ val useCaseModule = module {
 
     // ── Category ──────────────────────────────────────────────────────────────
     factory { GetCategoriesByTypeUseCase(get()) }
+    factory { GetAllCategoriesIncludingArchivedUseCase(get()) }
 
     // ── ViewModels ────────────────────────────────────────────────────────────
     viewModel {
@@ -109,7 +111,7 @@ val useCaseModule = module {
             getTransactionsByMonth = get(),
             getMonthlyTotals       = get(),
             deleteTransactionUseCase = get(),
-            getCategoriesByType    = get(),
+            getAllCategoriesIncludingArchived = get(),
             session                = get()
         )
     }

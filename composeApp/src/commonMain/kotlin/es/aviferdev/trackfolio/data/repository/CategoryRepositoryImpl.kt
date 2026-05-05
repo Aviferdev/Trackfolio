@@ -14,10 +14,13 @@ class CategoryRepositoryImpl(
 ) : CategoryRepository {
 
     override fun getAll(): Flow<List<Category>> =
-        dataSource.getAll().map { it.map { entity -> entity.toDomain() } }
+        dataSource.getAll().map { list -> list.map { it.toDomain() } }
 
     override fun getByType(type: TransactionType): Flow<List<Category>> =
-        dataSource.getByType(type.name).map { it.map { entity -> entity.toDomain() } }
+        dataSource.getByType(type.name).map { list -> list.map { it.toDomain() } }
+
+    override fun getAllIncludingArchived(): Flow<List<Category>> =
+        dataSource.getAllIncludingArchived().map { list -> list.map { it.toDomain() } }
 
     override fun count(): Flow<Long> =
         dataSource.count()
@@ -25,6 +28,12 @@ class CategoryRepositoryImpl(
     override suspend fun save(category: Category): Result<Unit> =
         dataSource.insert(category.toEntity())
 
-    override suspend fun delete(id: String): Result<Unit> =
-        dataSource.delete(id)
+    override suspend fun rename(id: String, newName: String): Result<Unit> =
+        dataSource.updateName(id, newName)
+
+    override suspend fun archive(id: String): Result<Unit> =
+        dataSource.archive(id)
+
+    override suspend fun unarchive(id: String): Result<Unit> =
+        dataSource.unarchive(id)
 }

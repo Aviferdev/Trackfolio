@@ -7,11 +7,28 @@ import androidx.biometric.BiometricManager.Authenticators.DEVICE_CREDENTIAL
 import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
+import java.lang.ref.WeakReference
 
 actual class BiometricAuthenticator(private val context: Context) {
 
+    // Referencia débil a la Activity (FragmentActivity, requerida por BiometricPrompt).
+    // MainActivity la registra/desregistra en onCreate/onDestroy.
+    private var activityRef: WeakReference<FragmentActivity>? = null
+
+    fun bindActivity(activity: FragmentActivity) {
+        activityRef = WeakReference(activity)
+    }
+
+    fun unbindActivity() {
+        activityRef = null
+    }
+
+    private fun currentActivity(): FragmentActivity? = activityRef?.get()
+
     actual fun isAvailable(): Boolean {
         val manager = BiometricManager.from(context)
+        // Aceptamos cualquiera de los dos: biometría fuerte o credencial del dispositivo
+        // (PIN/patrón/contraseña). Si el usuario al menos tiene PIN, podrá desbloquear.
         return manager.canAuthenticate(BIOMETRIC_STRONG or DEVICE_CREDENTIAL) ==
             BiometricManager.BIOMETRIC_SUCCESS
     }
@@ -21,8 +38,8 @@ actual class BiometricAuthenticator(private val context: Context) {
         subtitle: String,
         onResult: (BiometricResult) -> Unit
     ) {
-        val activity = context as? FragmentActivity ?: run {
-            onResult(BiometricResult.Error("Context is not a FragmentActivity"))
+        val activity = currentActivity() ?: run {
+            onResult(BiometricResult.Error("La aplicación no está en primer plano"))
             return
         }
 

@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -31,8 +32,19 @@ fun BackupPasswordSheet(
     val isExport    = state.action == BackupAction.EXPORT
     val isLoading   = state.backupState is BackupUiState.Loading
     val isSuccess   = state.backupState is BackupUiState.Success
+
+    // ── Estado LOCAL de los TextFields ────────────────────────────────────────
+    // Mantenemos el texto en local state para evitar que cada pulsación dispare
+    // una recomposición del sheet completo a través del StateFlow del ViewModel.
+    // Solo notificamos al VM cuando el valor cambia respecto al que ya tenía.
+    var pwd        by remember(state.action) { mutableStateOf(state.password) }
+    var confirmPwd by remember(state.action) { mutableStateOf(state.confirmPassword) }
     var showPwd     by remember { mutableStateOf(false) }
     var showConfirm by remember { mutableStateOf(false) }
+
+    // Si el VM resetea el state (p.ej. tras éxito o dismiss), reflejarlo.
+    LaunchedEffect(state.password)        { if (state.password != pwd) pwd = state.password }
+    LaunchedEffect(state.confirmPassword) { if (state.confirmPassword != confirmPwd) confirmPwd = state.confirmPassword }
 
     ModalBottomSheet(
         onDismissRequest = { if (!isLoading) onDismiss() },
@@ -44,7 +56,7 @@ fun BackupPasswordSheet(
                     .padding(top = 12.dp, bottom = 4.dp)
                     .width(40.dp).height(4.dp)
                     .clip(RoundedCornerShape(2.dp))
-                    .background(Color(0xFFBDBDBD))
+                    .background(BorderGray)
             )
         }
     ) {
@@ -82,8 +94,11 @@ fun BackupPasswordSheet(
             // ── Campos de contraseña (ocultos tras éxito en export) ───────────
             if (!isSuccess) {
                 OutlinedTextField(
-                    value         = state.password,
-                    onValueChange = onPasswordChange,
+                    value         = pwd,
+                    onValueChange = { newValue ->
+                        pwd = newValue
+                        onPasswordChange(newValue)
+                    },
                     label         = { Text(if (isExport) "Contraseña de cifrado" else "Contraseña del backup") },
                     visualTransformation = if (showPwd) VisualTransformation.None
                                            else PasswordVisualTransformation(),
@@ -101,6 +116,7 @@ fun BackupPasswordSheet(
                     },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                     isError    = state.passwordError != null,
+                    enabled    = !isLoading,
                     modifier   = Modifier.fillMaxWidth(),
                     singleLine = true,
                     shape      = RoundedCornerShape(10.dp),
@@ -113,8 +129,11 @@ fun BackupPasswordSheet(
                 if (isExport) {
                     Spacer(Modifier.height(12.dp))
                     OutlinedTextField(
-                        value         = state.confirmPassword,
-                        onValueChange = onConfirmPasswordChange,
+                        value         = confirmPwd,
+                        onValueChange = { newValue ->
+                            confirmPwd = newValue
+                            onConfirmPasswordChange(newValue)
+                        },
                         label         = { Text("Confirmar contraseña") },
                         visualTransformation = if (showConfirm) VisualTransformation.None
                                                else PasswordVisualTransformation(),
@@ -132,6 +151,7 @@ fun BackupPasswordSheet(
                         },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                         isError    = state.passwordError != null,
+                        enabled    = !isLoading,
                         modifier   = Modifier.fillMaxWidth(),
                         singleLine = true,
                         shape      = RoundedCornerShape(10.dp),
@@ -159,7 +179,7 @@ fun BackupPasswordSheet(
                         modifier = Modifier
                             .fillMaxWidth()
                             .clip(RoundedCornerShape(10.dp))
-                            .background(Color(0xFFE8F5E9))
+                            .background(IncomeGreen.copy(alpha = 0.18f))
                             .padding(16.dp),
                         contentAlignment = Alignment.Center
                     ) {
@@ -167,7 +187,7 @@ fun BackupPasswordSheet(
                             "✅  Backup exportado correctamente",
                             fontSize   = 14.sp,
                             fontWeight = FontWeight.Medium,
-                            color      = Color(0xFF2E7D32)
+                            color      = IncomeGreen
                         )
                     }
                     Spacer(Modifier.height(12.dp))
@@ -177,13 +197,16 @@ fun BackupPasswordSheet(
                         shape    = RoundedCornerShape(10.dp),
                         colors   = ButtonDefaults.buttonColors(containerColor = PrimaryDark)
                     ) {
-                        Text("Cerrar", fontSize = 16.sp, fontWeight = FontWeight.Medium, color = Color.White)
+                        Text("Cerrar", fontSize = 16.sp, fontWeight = FontWeight.Medium, color = MaterialTheme.colorScheme.onPrimary)
                     }
                 }
                 else -> {
+                    val canSubmit = !isLoading && pwd.isNotBlank() &&
+                            (!isExport || confirmPwd.isNotBlank())
+
                     Button(
                         onClick  = onConfirm,
-                        enabled  = !isLoading && state.password.isNotBlank(),
+                        enabled  = canSubmit,
                         modifier = Modifier.fillMaxWidth().height(52.dp),
                         shape    = RoundedCornerShape(10.dp),
                         colors   = ButtonDefaults.buttonColors(
@@ -194,7 +217,7 @@ fun BackupPasswordSheet(
                         if (isLoading) {
                             CircularProgressIndicator(
                                 modifier    = Modifier.size(20.dp),
-                                color       = Color.White,
+                                color       = MaterialTheme.colorScheme.onPrimary,
                                 strokeWidth = 2.dp
                             )
                         } else {
@@ -202,12 +225,12 @@ fun BackupPasswordSheet(
                                 text       = if (isExport) "Exportar y compartir" else "Restaurar backup",
                                 fontSize   = 16.sp,
                                 fontWeight = FontWeight.Medium,
-                                color      = Color.White
+                                color      = MaterialTheme.colorScheme.onPrimary
                             )
                         }
                     }
                     Spacer(Modifier.height(12.dp))
-                    TextButton(onClick = onDismiss) {
+                    TextButton(onClick = onDismiss, enabled = !isLoading) {
                         Text("Cancelar", fontSize = 14.sp, color = TextSecondary)
                     }
                 }

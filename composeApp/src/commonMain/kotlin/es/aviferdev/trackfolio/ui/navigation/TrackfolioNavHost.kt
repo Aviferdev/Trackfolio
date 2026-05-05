@@ -13,7 +13,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavDestination.Companion.hierarchy
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -24,6 +23,8 @@ import es.aviferdev.trackfolio.ui.home.HomeScreen
 import es.aviferdev.trackfolio.ui.portfolio.PortfolioScreen
 import es.aviferdev.trackfolio.ui.settings.SettingsScreen
 import es.aviferdev.trackfolio.ui.theme.PrimaryDark
+import es.aviferdev.trackfolio.ui.theme.SurfaceElevated
+import es.aviferdev.trackfolio.ui.theme.SurfaceWhite
 import es.aviferdev.trackfolio.ui.theme.TextSecondary
 import es.aviferdev.trackfolio.ui.transaction.TransactionListScreen
 
@@ -43,20 +44,26 @@ fun TrackfolioNavHost() {
 
     Scaffold(
         bottomBar = {
-            NavigationBar(containerColor = Color.White) {
+            NavigationBar(containerColor = SurfaceWhite) {
                 items.forEach { item ->
                     val selected = currentDestination?.hierarchy
                         ?.any { it.route == item.screen.route } == true
 
                     NavigationBarItem(
                         selected = selected,
-                        onClick  = {
-                            navController.navigate(item.screen.route) {
-                                popUpTo(navController.graph.findStartDestination().id) {
-                                    saveState = true
+                        onClick = {
+                            if (currentDestination?.route == item.screen.route) return@NavigationBarItem
+
+                            // Estrategia simple y robusta para Compose Multiplatform Navigation 2.8.0-alpha:
+                            // 1) Vaciar la pila hasta Home (start destination).
+                            // 2) Si el destino es Home, ya estamos. Si es otro tab, navegamos encima.
+                            // No usamos saveState/restoreState porque su comportamiento es inestable
+                            // en versiones alpha y puede dejar destinos "fantasma" en la pila.
+                            navController.popBackStack(Screen.Home.route, inclusive = false)
+                            if (item.screen.route != Screen.Home.route) {
+                                navController.navigate(item.screen.route) {
+                                    launchSingleTop = true
                                 }
-                                launchSingleTop = true
-                                restoreState    = true
                             }
                         },
                         icon  = { Icon(if (selected) item.selectedIcon else item.icon, item.label) },
@@ -66,7 +73,7 @@ fun TrackfolioNavHost() {
                             selectedTextColor   = PrimaryDark,
                             unselectedIconColor = TextSecondary,
                             unselectedTextColor = TextSecondary,
-                            indicatorColor      = Color(0xFFE8EDF5)
+                            indicatorColor      = SurfaceElevated
                         )
                     )
                 }
@@ -81,13 +88,19 @@ fun TrackfolioNavHost() {
             composable(Screen.Home.route) {
                 HomeScreen(
                     onNavigateToTransactions = {
-                        navController.navigate(Screen.Transactions.route)
+                        navController.navigate(Screen.Transactions.route) {
+                            launchSingleTop = true
+                        }
                     },
                     onNavigateToCharts = {
-                        navController.navigate(Screen.Charts.route)
+                        navController.navigate(Screen.Charts.route) {
+                            launchSingleTop = true
+                        }
                     },
                     onNavigateToSettings = {
-                        navController.navigate(Screen.Settings.route)
+                        navController.navigate(Screen.Settings.route) {
+                            launchSingleTop = true
+                        }
                     }
                 )
             }

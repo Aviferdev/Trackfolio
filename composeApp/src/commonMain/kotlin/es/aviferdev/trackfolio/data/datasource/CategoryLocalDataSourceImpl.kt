@@ -23,6 +23,9 @@ class CategoryLocalDataSourceImpl(
     override fun getByType(type: String): Flow<List<CategoryEntity>> =
         queries.selectByType(type).asFlow().mapToList(Dispatchers.IO)
 
+    override fun getAllIncludingArchived(): Flow<List<CategoryEntity>> =
+        queries.selectAllIncludingArchived().asFlow().mapToList(Dispatchers.IO)
+
     override fun getById(id: String): Flow<CategoryEntity?> =
         queries.selectById(id).asFlow().mapToOneOrNull(Dispatchers.IO)
 
@@ -33,18 +36,32 @@ class CategoryLocalDataSourceImpl(
         runCatching {
             withContext(Dispatchers.IO) {
                 queries.insert(
-                    id = entity.id,
-                    name = entity.name,
-                    type = entity.type,
+                    id        = entity.id,
+                    name      = entity.name,
+                    type      = entity.type,
                     isDefault = entity.isDefault
                 )
             }
         }
 
-    override suspend fun delete(id: String): Result<Unit> =
+    override suspend fun updateName(id: String, name: String): Result<Unit> =
         runCatching {
             withContext(Dispatchers.IO) {
-                queries.delete(id)
+                queries.updateName(name = name, id = id)
+            }
+        }
+
+    override suspend fun archive(id: String): Result<Unit> =
+        runCatching {
+            withContext(Dispatchers.IO) {
+                queries.archive(id)
+            }
+        }
+
+    override suspend fun unarchive(id: String): Result<Unit> =
+        runCatching {
+            withContext(Dispatchers.IO) {
+                queries.unarchive(id)
             }
         }
 }
