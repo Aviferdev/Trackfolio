@@ -10,16 +10,18 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavDestination.Companion.hierarchy
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import es.aviferdev.trackfolio.ui.annual.AnnualSummaryScreen
 import es.aviferdev.trackfolio.ui.debt.DebtListScreen
 import es.aviferdev.trackfolio.ui.home.HomeScreen
+import es.aviferdev.trackfolio.ui.portfolio.AssetHistoryScreen
 import es.aviferdev.trackfolio.ui.portfolio.PortfolioScreen
 import es.aviferdev.trackfolio.ui.settings.SettingsScreen
 import es.aviferdev.trackfolio.ui.theme.PrimaryDark
@@ -108,7 +110,13 @@ fun TrackfolioNavHost() {
                 TransactionListScreen()
             }
             composable(Screen.Portfolio.route) {
-                PortfolioScreen()
+                PortfolioScreen(
+                    onAssetClick = { assetId ->
+                        navController.navigate(Screen.AssetHistory.buildRoute(assetId)) {
+                            launchSingleTop = true
+                        }
+                    }
+                )
             }
             composable(Screen.Debts.route) {
                 DebtListScreen()
@@ -118,6 +126,18 @@ fun TrackfolioNavHost() {
             }
             composable(Screen.Charts.route) {
                 AnnualSummaryScreen()
+            }
+            composable(
+                route = Screen.AssetHistory.route,
+                arguments = listOf(
+                    navArgument(Screen.AssetHistory.ARG_ASSET_ID) { type = NavType.StringType }
+                )
+            ) { backStackEntry ->
+                val assetId = backStackEntry.arguments?.getString(Screen.AssetHistory.ARG_ASSET_ID).orEmpty()
+                AssetHistoryScreen(
+                    assetId = assetId,
+                    onBack  = { navController.popBackStack() }
+                )
             }
         }
     }

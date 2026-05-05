@@ -1,0 +1,68 @@
+-- Movimientos (compra/venta) de un activo. Cada movimiento tiene su fecha
+-- propia y la plataforma donde se ejecutó. El P&L del activo se deriva en
+-- el dominio agregando todos sus movimientos en orden cronológico (FIFO).
+--
+-- type: "BUY" | "SELL". Se valida en el dominio (no CHECK SQL para evitar
+--       depender del dialecto).
+-- feeNote: texto libre informativo, NO entra en cálculos.
+
+CREATE TABLE AssetTransactionEntity (
+    id            TEXT    NOT NULL PRIMARY KEY,
+    assetId       TEXT    NOT NULL,
+    type          TEXT    NOT NULL,
+    quantity      REAL    NOT NULL,
+    pricePerUnit  REAL    NOT NULL,
+    date          INTEGER NOT NULL,
+    platformId    TEXT    NOT NULL,
+    feeNote       TEXT,
+    notes         TEXT,
+    createdAt     INTEGER NOT NULL,
+    FOREIGN KEY (assetId)    REFERENCES AssetEntity(id)    ON DELETE CASCADE,
+    FOREIGN KEY (platformId) REFERENCES PlatformEntity(id) ON DELETE RESTRICT
+);
+
+CREATE INDEX idx_asset_tx_asset    ON AssetTransactionEntity(assetId);
+CREATE INDEX idx_asset_tx_platform ON AssetTransactionEntity(platformId);
+CREATE INDEX idx_asset_tx_date     ON AssetTransactionEntity(date);
+
+-- ─── Lectura ──────────────────────────────────────────────────────────────────
+
+selectByAsset:
+SELECT * FROM AssetTransactionEntity
+WHERE assetId = :assetId
+ORDER BY date ASC, createdAt ASC;
+
+selectByAssetDesc:
+SELECT * FROM AssetTransactionEntity
+WHERE assetId = :assetId
+ORDER BY date DESC, createdAt DESC;
+
+selectByAccount:
+SELECT t.* FROM AssetTransactionEntity t
+INNER JOIN AssetEntity a ON a.id = t.assetId
+WHERE a.accountId = :accountId
+ORDER BY t.date ASC, t.createdAt ASC;
+
+selectById:
+SELECT * FROM AssetTransactionEntity WHERE id = :id;
+
+countByPlatform:
+SELECT COUNT(*) FROM AssetTransactionEntity WHERE platformId = :platformId;
+
+-- ─── Escritura ────────────────────────────────────────────────────────────────
+
+insert:
+INSERT INTO AssetTransactionEntity(id, assetId, type, quantity, pricePerUnit, date, platformId, feeNote, notes, createdAt)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+update:
+UPDATE AssetTransactionEntity
+SET type = :type, quantity = :quantity, pricePerUnit = :pricePerUnit,
+    date = :date, platformId = :platformId, feeNote = :feeNote, notes = :notes
+WHERE id = :id;
+
+delete:
+DELETE FROM AssetTransactionEntity WHERE id = :id;
+
+deleteByAsset:
+DELETE FROM AssetTransactionEntity WHERE assetId = :assetId;

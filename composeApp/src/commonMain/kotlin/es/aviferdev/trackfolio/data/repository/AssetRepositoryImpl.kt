@@ -15,9 +15,6 @@ class AssetRepositoryImpl(
     override fun getAssetById(id: String): Flow<Asset?> =
         dataSource.getById(id)
 
-    override fun getTotalInvestedByAccount(accountId: String): Flow<Double> =
-        dataSource.getTotalInvestedByAccount(accountId)
-
     override suspend fun saveAsset(asset: Asset): Result<Unit> =
         dataSource.insert(asset)
 

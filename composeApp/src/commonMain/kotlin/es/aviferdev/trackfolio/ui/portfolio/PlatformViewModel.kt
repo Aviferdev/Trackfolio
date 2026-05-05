@@ -1,0 +1,114 @@
+package es.aviferdev.trackfolio.ui.portfolio
+
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import es.aviferdev.trackfolio.domain.model.Platform
+import es.aviferdev.trackfolio.domain.usecase.platform.ArchivePlatformUseCase
+import es.aviferdev.trackfolio.domain.usecase.platform.GetPlatformsUseCase
+import es.aviferdev.trackfolio.domain.usecase.platform.RenamePlatformUseCase
+import es.aviferdev.trackfolio.domain.usecase.platform.SavePlatformUseCase
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
+import kotlinx.datetime.Clock
+
+data class PlatformListUiState(
+    val platforms: List<Platform>      = emptyList(),
+    val showAddSheet: Boolean          = false,
+    val editing: Platform?             = null,
+    val pendingDelete: Platform?       = null,
+    val error: String?                 = null
+)
+
+class PlatformViewModel(
+    private val getPlatforms: GetPlatformsUseCase,
+    private val savePlatform: SavePlatformUseCase,
+    private val renamePlatform: RenamePlatformUseCase,
+    private val archivePlatform: ArchivePlatformUseCase
+) : ViewModel() {
+
+    private val _showAddSheet  = MutableStateFlow(false)
+    private val _editing       = MutableStateFlow<Platform?>(null)
+    private val _pendingDelete = MutableStateFlow<Platform?>(null)
+    private val _error         = MutableStateFlow<String?>(null)
+
+    val uiState: StateFlow<PlatformListUiState> = combine(
+        getPlatforms(),
+        combine(_showAddSheet, _editing, _pendingDelete, _error) { s, e, p, err ->
+            Quad(s, e, p, err)
+        }
+    ) { platforms, q ->
+        PlatformListUiState(
+            platforms     = platforms,
+            showAddSheet  = q.a,
+            editing       = q.b,
+            pendingDelete = q.c,
+            error         = q.d
+        )
+    }.stateIn(
+        scope        = viewModelScope,
+        started      = SharingStarted.WhileSubscribed(5_000),
+        initialValue = PlatformListUiState()
+    )
+
+    fun openAddSheet()  { _showAddSheet.value = true }
+    fun closeAddSheet() { _showAddSheet.value = false }
+
+    fun openEditSheet(platform: Platform) { _editing.value = platform }
+    fun closeEditSheet()                  { _editing.value = null }
+
+    fun addPlatform(name: String, icon: String) {
+        val trimmed = name.trim()
+        if (trimmed.isBlank()) return
+        if (uiState.value.platforms.any { it.name.equals(trimmed, ignoreCase = true) }) {
+            _error.value = "Ya existe una plataforma con ese nombre"
+            return
+        }
+        viewModelScope.launch {
+            val now = Clock.System.now().toEpochMilliseconds()
+            val nextOrder = (uiState.value.platforms.maxOfOrNull { it.sortOrder } ?: -1) + 1
+            savePlatform(
+                Platform(
+                    id        = "platform_$now",
+                    name      = trimmed,
+                    icon      = icon.ifBlank { "🏦" },
+                    sortOrder = nextOrder,
+                    createdAt = now
+                )
+            ).onFailure { _error.value = it.message }
+            _showAddSheet.value = false
+        }
+    }
+
+    fun renamePlatform(id: String, newName: String, newIcon: String) {
+        val trimmed = newName.trim()
+        if (trimmed.isBlank()) return
+        if (uiState.value.platforms.any { it.id != id && it.name.equals(trimmed, ignoreCase = true) }) {
+            _error.value = "Ya existe una plataforma con ese nombre"
+            return
+        }
+        viewModelScope.launch {
+            renamePlatform.invoke(id, trimmed, newIcon.ifBlank { "🏦" })
+                .onFailure { _error.value = it.message }
+            _editing.value = null
+        }
+    }
+
+    fun requestDelete(platform: Platform) { _pendingDelete.value = platform }
+    fun cancelDelete()                    { _pendingDelete.value = null }
+
+    fun confirmDelete() {
+        val p = _pendingDelete.value ?: return
+        viewModelScope.launch {
+            archivePlatform(p.id).onFailure { _error.value = it.message }
+            _pendingDelete.value = null
+        }
+    }
+
+    fun clearError() { _error.value = null }
+
+    private data class Quad<A, B, C, D>(val a: A, val b: B, val c: C, val d: D)
+}

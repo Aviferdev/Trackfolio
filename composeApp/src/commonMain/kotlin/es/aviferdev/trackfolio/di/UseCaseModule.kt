@@ -24,6 +24,12 @@ import es.aviferdev.trackfolio.domain.usecase.assettag.RemoveAssetTagAssignmentU
 import es.aviferdev.trackfolio.domain.usecase.assettag.RenameAssetTagUseCase
 import es.aviferdev.trackfolio.domain.usecase.assettag.SaveAssetTagUseCase
 import es.aviferdev.trackfolio.domain.usecase.assettag.UpsertAssetTagAssignmentUseCase
+import es.aviferdev.trackfolio.domain.usecase.assettransaction.DeleteAssetTransactionUseCase
+import es.aviferdev.trackfolio.domain.usecase.assettransaction.GetTransactionsByAccountUseCase
+import es.aviferdev.trackfolio.domain.usecase.assettransaction.GetTransactionsByAssetDescUseCase
+import es.aviferdev.trackfolio.domain.usecase.assettransaction.GetTransactionsByAssetUseCase
+import es.aviferdev.trackfolio.domain.usecase.assettransaction.SaveAssetTransactionUseCase
+import es.aviferdev.trackfolio.domain.usecase.assettransaction.UpdateAssetTransactionUseCase
 import es.aviferdev.trackfolio.domain.usecase.category.GetAllCategoriesIncludingArchivedUseCase
 import es.aviferdev.trackfolio.domain.usecase.category.GetCategoriesByTypeUseCase
 import es.aviferdev.trackfolio.domain.usecase.debt.DeleteDebtUseCase
@@ -32,6 +38,11 @@ import es.aviferdev.trackfolio.domain.usecase.debt.MarkDebtAsPaidUseCase
 import es.aviferdev.trackfolio.domain.usecase.debt.SaveDebtUseCase
 import es.aviferdev.trackfolio.domain.usecase.debt.UpdateDebtUseCase
 import es.aviferdev.trackfolio.domain.usecase.home.GetHomeBalanceUseCase
+import es.aviferdev.trackfolio.domain.usecase.platform.ArchivePlatformUseCase
+import es.aviferdev.trackfolio.domain.usecase.platform.GetAllPlatformsIncludingArchivedUseCase
+import es.aviferdev.trackfolio.domain.usecase.platform.GetPlatformsUseCase
+import es.aviferdev.trackfolio.domain.usecase.platform.RenamePlatformUseCase
+import es.aviferdev.trackfolio.domain.usecase.platform.SavePlatformUseCase
 import es.aviferdev.trackfolio.domain.usecase.transaction.DeleteTransactionUseCase
 import es.aviferdev.trackfolio.domain.usecase.transaction.GetAnnualSummaryUseCase
 import es.aviferdev.trackfolio.domain.usecase.transaction.GetMonthlyBreakdownUseCase
@@ -45,12 +56,16 @@ import es.aviferdev.trackfolio.ui.annual.AnnualViewModel
 import es.aviferdev.trackfolio.ui.debt.DebtViewModel
 import es.aviferdev.trackfolio.ui.home.AddTransactionViewModel
 import es.aviferdev.trackfolio.ui.home.HomeViewModel
+import es.aviferdev.trackfolio.ui.portfolio.AssetCatalogViewModel
 import es.aviferdev.trackfolio.ui.portfolio.AssetCategoryViewModel
+import es.aviferdev.trackfolio.ui.portfolio.AssetHistoryViewModel
+import es.aviferdev.trackfolio.ui.portfolio.PlatformViewModel
 import es.aviferdev.trackfolio.ui.portfolio.PortfolioViewModel
 import es.aviferdev.trackfolio.ui.settings.BackupViewModel
 import es.aviferdev.trackfolio.ui.settings.CategoryViewModel
 import es.aviferdev.trackfolio.ui.transaction.TransactionViewModel
 import org.koin.core.module.dsl.viewModel
+import org.koin.core.parameter.parametersOf
 import org.koin.dsl.module
 
 val useCaseModule = module {
@@ -84,12 +99,20 @@ val useCaseModule = module {
     factory { MarkDebtAsPaidUseCase(get()) }
     factory { DeleteDebtUseCase(get()) }
 
-    // ── Asset ─────────────────────────────────────────────────────────────────
+    // ── Asset (catálogo) ──────────────────────────────────────────────────────
     factory { GetAssetsByAccountUseCase(get()) }
     factory { SaveAssetUseCase(get()) }
     factory { UpdateAssetUseCase(get()) }
     factory { UpdateAssetCurrentPriceUseCase(get()) }
     factory { DeleteAssetUseCase(get()) }
+
+    // ── Asset Transaction ─────────────────────────────────────────────────────
+    factory { GetTransactionsByAssetUseCase(get()) }
+    factory { GetTransactionsByAssetDescUseCase(get()) }
+    factory { GetTransactionsByAccountUseCase(get()) }
+    factory { SaveAssetTransactionUseCase(get()) }
+    factory { UpdateAssetTransactionUseCase(get()) }
+    factory { DeleteAssetTransactionUseCase(get()) }
 
     // ── Asset Category ────────────────────────────────────────────────────────
     factory { GetAssetCategoriesUseCase(get()) }
@@ -107,6 +130,13 @@ val useCaseModule = module {
     factory { GetAssetTagAssignmentsUseCase(get()) }
     factory { UpsertAssetTagAssignmentUseCase(get()) }
     factory { RemoveAssetTagAssignmentUseCase(get()) }
+
+    // ── Platform ──────────────────────────────────────────────────────────────
+    factory { GetPlatformsUseCase(get()) }
+    factory { GetAllPlatformsIncludingArchivedUseCase(get()) }
+    factory { SavePlatformUseCase(get()) }
+    factory { RenamePlatformUseCase(get()) }
+    factory { ArchivePlatformUseCase(get()) }
 
     // ── Category (gastos/ingresos) ────────────────────────────────────────────
     factory { GetCategoriesByTypeUseCase(get()) }
@@ -141,11 +171,11 @@ val useCaseModule = module {
     }
     viewModel {
         TransactionViewModel(
-            getTransactionsByMonth = get(),
-            getMonthlyTotals       = get(),
-            deleteTransactionUseCase = get(),
+            getTransactionsByMonth            = get(),
+            getMonthlyTotals                  = get(),
+            deleteTransactionUseCase          = get(),
             getAllCategoriesIncludingArchived = get(),
-            session                = get()
+            session                           = get()
         )
     }
     viewModel { DebtViewModel(get(), get(), get(), get(), get(), get()) }
@@ -165,6 +195,19 @@ val useCaseModule = module {
             deleteAsset                         = get(),
             getAssetCategoriesIncludingArchived = get(),
             getAccountById                      = get(),
+            getTransactionsByAccount            = get(),
+            getPlatforms                        = get(),
+            saveAssetTransaction                = get(),
+            session                             = get()
+        )
+    }
+    viewModel {
+        AssetCatalogViewModel(
+            getAssetsByAccount                  = get(),
+            saveAsset                           = get(),
+            updateAsset                         = get(),
+            deleteAsset                         = get(),
+            getAssetCategoriesIncludingArchived = get(),
             session                             = get()
         )
     }
@@ -174,6 +217,28 @@ val useCaseModule = module {
             saveCategory    = get(),
             renameCategory  = get(),
             archiveCategory = get()
+        )
+    }
+    viewModel {
+        PlatformViewModel(
+            getPlatforms    = get(),
+            savePlatform    = get(),
+            renamePlatform  = get(),
+            archivePlatform = get()
+        )
+    }
+    // El AssetHistoryViewModel necesita el assetId como parámetro de navegación.
+    viewModel { (assetId: String) ->
+        AssetHistoryViewModel(
+            assetId                  = assetId,
+            getAssetById             = get(),
+            getTransactionsByAsset   = get(),
+            getPlatforms             = get(),
+            getAccountById           = get(),
+            saveAssetTransaction     = get(),
+            updateAssetTransaction   = get(),
+            deleteAssetTransaction   = get(),
+            updateAssetCurrentPrice  = get()
         )
     }
     viewModel { BackupViewModel(get()) }

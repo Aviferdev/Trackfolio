@@ -27,7 +27,9 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.trackfolio.domain.model.Account
+import es.aviferdev.trackfolio.domain.model.Asset
 import es.aviferdev.trackfolio.domain.model.AssetCategory
+import es.aviferdev.trackfolio.domain.model.Platform
 import es.aviferdev.trackfolio.domain.model.TransactionType
 import es.aviferdev.trackfolio.security.AppLockManager
 import es.aviferdev.trackfolio.security.BiometricAuthenticator
@@ -35,7 +37,11 @@ import es.aviferdev.trackfolio.security.BiometricResult
 import es.aviferdev.trackfolio.ui.account.AccountViewModel
 import es.aviferdev.trackfolio.ui.account.AddEditAccountBottomSheet
 import es.aviferdev.trackfolio.ui.home.SetInitialBalanceBottomSheet
+import es.aviferdev.trackfolio.ui.portfolio.AddEditAssetBottomSheet
+import es.aviferdev.trackfolio.ui.portfolio.AddEditPlatformSheet
+import es.aviferdev.trackfolio.ui.portfolio.AssetCatalogViewModel
 import es.aviferdev.trackfolio.ui.portfolio.AssetCategoryViewModel
+import es.aviferdev.trackfolio.ui.portfolio.PlatformViewModel
 import es.aviferdev.trackfolio.ui.theme.*
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
@@ -47,13 +53,17 @@ fun SettingsScreen(
     accountViewModel:        AccountViewModel        = koinViewModel(),
     backupViewModel:         BackupViewModel         = koinViewModel(),
     categoryViewModel:       CategoryViewModel       = koinViewModel(),
-    assetCategoryViewModel:  AssetCategoryViewModel  = koinViewModel()
+    assetCategoryViewModel:  AssetCategoryViewModel  = koinViewModel(),
+    assetCatalogViewModel:   AssetCatalogViewModel   = koinViewModel(),
+    platformViewModel:       PlatformViewModel       = koinViewModel()
 ) {
     val accountState       by accountViewModel.uiState.collectAsState()
     val selectedId         by accountViewModel.selectedAccountId.collectAsState()
     val backupState        by backupViewModel.state.collectAsState()
     val categoryState      by categoryViewModel.uiState.collectAsState()
     val assetCategoryState by assetCategoryViewModel.uiState.collectAsState()
+    val assetCatalogState  by assetCatalogViewModel.uiState.collectAsState()
+    val platformState      by platformViewModel.uiState.collectAsState()
 
     val authenticator: BiometricAuthenticator = koinInject()
     val lockManager: AppLockManager           = koinInject()
@@ -344,6 +354,173 @@ fun SettingsScreen(
                 }
             }
 
+            // ── Activos ──────────────────────────────────────────────────────
+            item {
+                SectionHeader(
+                    title       = "Activos",
+                    actionLabel = "+ Nuevo",
+                    onAction    = { assetCatalogViewModel.openAddSheet() }
+                )
+            }
+            item {
+                SettingsGroupCard {
+                    if (assetCatalogState.assets.isEmpty()) {
+                        Box(
+                            modifier         = Modifier.fillMaxWidth().padding(16.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                "Sin activos. Da de alta los tickers que quieres seguir (acciones, ETFs, cryptos…).",
+                                fontSize  = 12.sp,
+                                color     = TextSecondary,
+                                textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                            )
+                        }
+                    } else {
+                        assetCatalogState.assets.forEachIndexed { index, asset ->
+                            val cat = assetCatalogState.categories.firstOrNull { it.id == asset.assetCategoryId }
+                            Row(
+                                modifier          = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 16.dp, vertical = 12.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Box(
+                                    modifier         = Modifier
+                                        .size(34.dp)
+                                        .clip(RoundedCornerShape(8.dp))
+                                        .background(PrimaryDark),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(
+                                        text       = asset.ticker.take(3),
+                                        fontSize   = if (asset.ticker.length > 3) 8.sp else 10.sp,
+                                        color      = Color.White,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                }
+                                Spacer(Modifier.width(10.dp))
+                                Column(modifier = Modifier.weight(1f)) {
+                                    Text(
+                                        text     = asset.name,
+                                        fontSize = 14.sp,
+                                        color    = TextPrimary,
+                                        maxLines = 1
+                                    )
+                                    Text(
+                                        text     = if (cat != null) "${asset.ticker} · ${cat.icon} ${cat.name}" else "${asset.ticker} · Sin categoría",
+                                        fontSize = 11.sp,
+                                        color    = TextSecondary
+                                    )
+                                }
+                                IconButton(
+                                    onClick  = { assetCatalogViewModel.openEditSheet(asset) },
+                                    modifier = Modifier.size(28.dp)
+                                ) {
+                                    Icon(
+                                        Icons.Default.Edit,
+                                        contentDescription = "Editar",
+                                        modifier = Modifier.size(14.dp),
+                                        tint     = TextSecondary
+                                    )
+                                }
+                                IconButton(
+                                    onClick  = { assetCatalogViewModel.requestDelete(asset) },
+                                    modifier = Modifier.size(28.dp)
+                                ) {
+                                    Icon(
+                                        Icons.Default.Delete,
+                                        contentDescription = "Eliminar",
+                                        modifier = Modifier.size(14.dp),
+                                        tint     = ExpenseRed
+                                    )
+                                }
+                            }
+                            if (index < assetCatalogState.assets.lastIndex) {
+                                HorizontalDivider(
+                                    color     = BorderGray,
+                                    thickness = 0.5.dp,
+                                    modifier  = Modifier.padding(start = 60.dp)
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+
+            // ── Plataformas ──────────────────────────────────────────────────
+            item {
+                SectionHeader(
+                    title       = "Plataformas",
+                    actionLabel = "+ Nueva",
+                    onAction    = { platformViewModel.openAddSheet() }
+                )
+            }
+            item {
+                SettingsGroupCard {
+                    if (platformState.platforms.isEmpty()) {
+                        Box(
+                            modifier         = Modifier.fillMaxWidth().padding(16.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                "Sin plataformas. Define los brokers, exchanges o bancos que usas.",
+                                fontSize  = 12.sp,
+                                color     = TextSecondary,
+                                textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                            )
+                        }
+                    } else {
+                        platformState.platforms.forEachIndexed { index, p ->
+                            Row(
+                                modifier          = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 16.dp, vertical = 12.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(p.icon, fontSize = 18.sp, modifier = Modifier.size(28.dp))
+                                Spacer(Modifier.width(8.dp))
+                                Text(
+                                    text     = p.name,
+                                    fontSize = 14.sp,
+                                    color    = TextPrimary,
+                                    modifier = Modifier.weight(1f)
+                                )
+                                IconButton(
+                                    onClick  = { platformViewModel.openEditSheet(p) },
+                                    modifier = Modifier.size(28.dp)
+                                ) {
+                                    Icon(
+                                        Icons.Default.Edit,
+                                        contentDescription = "Editar",
+                                        modifier = Modifier.size(14.dp),
+                                        tint     = TextSecondary
+                                    )
+                                }
+                                IconButton(
+                                    onClick  = { platformViewModel.requestDelete(p) },
+                                    modifier = Modifier.size(28.dp)
+                                ) {
+                                    Icon(
+                                        Icons.Default.Delete,
+                                        contentDescription = "Eliminar",
+                                        modifier = Modifier.size(14.dp),
+                                        tint     = ExpenseRed
+                                    )
+                                }
+                            }
+                            if (index < platformState.platforms.lastIndex) {
+                                HorizontalDivider(
+                                    color     = BorderGray,
+                                    thickness = 0.5.dp,
+                                    modifier  = Modifier.padding(start = 36.dp)
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+
             item { Spacer(Modifier.height(4.dp)) }
             item { SectionHeader(title = "PREFERENCIAS") }
             item {
@@ -592,6 +769,138 @@ fun SettingsScreen(
             text  = { Text(msg, fontSize = 14.sp, color = TextSecondary) },
             confirmButton = {
                 TextButton(onClick = { assetCategoryViewModel.clearError() }) {
+                    Text("Aceptar", color = PrimaryDark, fontWeight = FontWeight.Medium)
+                }
+            },
+            shape = RoundedCornerShape(16.dp)
+        )
+    }
+
+    // ── Sheets y diálogos para Activos del catálogo ──────────────────────
+
+    if (assetCatalogState.showAddSheet) {
+        AddEditAssetBottomSheet(
+            asset        = null,
+            categories   = assetCatalogState.categories,
+            currencyCode = accountState.accounts.firstOrNull { it.id == selectedId }?.currency ?: "EUR",
+            onSave       = { ticker, name, notes, categoryId, currentPrice ->
+                assetCatalogViewModel.addAsset(ticker, name, notes, categoryId, currentPrice)
+            },
+            onDismiss    = { assetCatalogViewModel.closeAddSheet() }
+        )
+    }
+
+    assetCatalogState.editing?.let { editing ->
+        AddEditAssetBottomSheet(
+            asset        = editing,
+            categories   = assetCatalogState.categories,
+            currencyCode = accountState.accounts.firstOrNull { it.id == selectedId }?.currency ?: "EUR",
+            onSave       = { ticker, name, notes, categoryId, currentPrice ->
+                assetCatalogViewModel.editAsset(editing, ticker, name, notes, categoryId, currentPrice)
+            },
+            onDismiss    = { assetCatalogViewModel.closeEditSheet() }
+        )
+    }
+
+    assetCatalogState.pendingDelete?.let { pending ->
+        AlertDialog(
+            onDismissRequest = { assetCatalogViewModel.cancelDelete() },
+            containerColor   = SurfaceWhite,
+            icon             = { Text("⚠️", fontSize = 28.sp) },
+            title = {
+                Text("Eliminar activo", fontSize = 17.sp,
+                    fontWeight = FontWeight.SemiBold, color = TextPrimary)
+            },
+            text  = {
+                Text(
+                    "Se eliminará «${pending.name} (${pending.ticker})» del catálogo. Todos sus movimientos asociados también se eliminarán. Esta acción no se puede deshacer.",
+                    fontSize = 14.sp, color = TextSecondary
+                )
+            },
+            confirmButton = {
+                TextButton(onClick = { assetCatalogViewModel.confirmDelete() }) {
+                    Text("Eliminar", color = ExpenseRed, fontWeight = FontWeight.Medium)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { assetCatalogViewModel.cancelDelete() }) {
+                    Text("Cancelar", color = PrimaryDark, fontWeight = FontWeight.Medium)
+                }
+            },
+            shape = RoundedCornerShape(16.dp)
+        )
+    }
+
+    assetCatalogState.error?.let { msg ->
+        AlertDialog(
+            onDismissRequest = { assetCatalogViewModel.clearError() },
+            containerColor   = SurfaceWhite,
+            title = { Text("Error", fontSize = 17.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary) },
+            text  = { Text(msg, fontSize = 14.sp, color = TextSecondary) },
+            confirmButton = {
+                TextButton(onClick = { assetCatalogViewModel.clearError() }) {
+                    Text("Aceptar", color = PrimaryDark, fontWeight = FontWeight.Medium)
+                }
+            },
+            shape = RoundedCornerShape(16.dp)
+        )
+    }
+
+    // ── Sheets y diálogos para Plataformas ──────────────────────────────────
+
+    if (platformState.showAddSheet) {
+        AddEditPlatformSheet(
+            initial   = null,
+            onSave    = { name, icon -> platformViewModel.addPlatform(name, icon) },
+            onDismiss = { platformViewModel.closeAddSheet() }
+        )
+    }
+
+    platformState.editing?.let { editing ->
+        AddEditPlatformSheet(
+            initial   = editing,
+            onSave    = { name, icon -> platformViewModel.renamePlatform(editing.id, name, icon) },
+            onDismiss = { platformViewModel.closeEditSheet() }
+        )
+    }
+
+    platformState.pendingDelete?.let { pending ->
+        AlertDialog(
+            onDismissRequest = { platformViewModel.cancelDelete() },
+            containerColor   = SurfaceWhite,
+            icon             = { Text(pending.icon, fontSize = 28.sp) },
+            title = {
+                Text("Archivar plataforma", fontSize = 17.sp,
+                    fontWeight = FontWeight.SemiBold, color = TextPrimary)
+            },
+            text  = {
+                Text(
+                    "Se archivará «${pending.name}». No aparecerá en los selectores de movimientos nuevos, pero los movimientos históricos que la usen conservarán la referencia.",
+                    fontSize = 14.sp, color = TextSecondary
+                )
+            },
+            confirmButton = {
+                TextButton(onClick = { platformViewModel.confirmDelete() }) {
+                    Text("Archivar", color = ExpenseRed, fontWeight = FontWeight.Medium)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { platformViewModel.cancelDelete() }) {
+                    Text("Cancelar", color = PrimaryDark, fontWeight = FontWeight.Medium)
+                }
+            },
+            shape = RoundedCornerShape(16.dp)
+        )
+    }
+
+    platformState.error?.let { msg ->
+        AlertDialog(
+            onDismissRequest = { platformViewModel.clearError() },
+            containerColor   = SurfaceWhite,
+            title = { Text("Error", fontSize = 17.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary) },
+            text  = { Text(msg, fontSize = 14.sp, color = TextSecondary) },
+            confirmButton = {
+                TextButton(onClick = { platformViewModel.clearError() }) {
                     Text("Aceptar", color = PrimaryDark, fontWeight = FontWeight.Medium)
                 }
             },

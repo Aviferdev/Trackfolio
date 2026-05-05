@@ -79,8 +79,13 @@ fun UpdateCurrentPriceSheet(
             )
 
             Spacer(Modifier.height(8.dp))
+            val currentLabel = if (asset.currentPrice != null) {
+                "Precio anterior: ${formatAmountWithCurrency(asset.currentPrice!!, currencyCode)}"
+            } else {
+                "Aún no hay un precio registrado para este activo"
+            }
             Text(
-                text      = "Precio de compra: ${formatAmountWithCurrency(asset.purchasePrice, currencyCode)}",
+                text      = currentLabel,
                 fontSize  = 12.sp,
                 color     = TextSecondary,
                 textAlign = TextAlign.Center

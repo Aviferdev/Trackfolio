@@ -6,6 +6,11 @@ import androidx.lifecycle.viewModelScope
 import es.aviferdev.trackfolio.domain.model.Account
 import es.aviferdev.trackfolio.domain.model.Asset
 import es.aviferdev.trackfolio.domain.model.AssetCategory
+import es.aviferdev.trackfolio.domain.model.AssetTransaction
+import es.aviferdev.trackfolio.domain.model.AssetTransactionType
+import es.aviferdev.trackfolio.domain.model.Platform
+import es.aviferdev.trackfolio.domain.portfolio.AssetPosition
+import es.aviferdev.trackfolio.domain.portfolio.PortfolioCalculator
 import es.aviferdev.trackfolio.domain.usecase.account.GetAccountByIdUseCase
 import es.aviferdev.trackfolio.domain.usecase.asset.DeleteAssetUseCase
 import es.aviferdev.trackfolio.domain.usecase.asset.GetAssetsByAccountUseCase
@@ -13,6 +18,9 @@ import es.aviferdev.trackfolio.domain.usecase.asset.SaveAssetUseCase
 import es.aviferdev.trackfolio.domain.usecase.asset.UpdateAssetCurrentPriceUseCase
 import es.aviferdev.trackfolio.domain.usecase.asset.UpdateAssetUseCase
 import es.aviferdev.trackfolio.domain.usecase.assetcategory.GetAllAssetCategoriesIncludingArchivedUseCase
+import es.aviferdev.trackfolio.domain.usecase.assettransaction.GetTransactionsByAccountUseCase
+import es.aviferdev.trackfolio.domain.usecase.assettransaction.SaveAssetTransactionUseCase
+import es.aviferdev.trackfolio.domain.usecase.platform.GetPlatformsUseCase
 import es.aviferdev.trackfolio.ui.account.AccountSession
 import es.aviferdev.trackfolio.ui.theme.CategoryPalette
 import es.aviferdev.trackfolio.ui.theme.UncategorizedColor
@@ -20,7 +28,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
@@ -29,42 +36,30 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 
-// ─── Estado de cada posición enriquecida ─────────────────────────────────────
+// ─── Estado de cada activo enriquecido con su posición FIFO ──────────────────
 data class AssetRow(
     val asset: Asset,
-    /** Precio efectivo (current si existe, si no el de compra). */
-    val currentPrice: Double,
-    /** Valor actual de la posición = quantity × currentPrice. */
-    val currentValue: Double,
-    /** Ganancia/pérdida absoluta. 0 cuando no hay precio actual. */
-    val pnlAmount: Double,
-    /** Ganancia/pérdida porcentual. 0 cuando no hay precio actual. */
-    val pnlPercent: Double,
-    /** True si el usuario ya ha registrado un precio actual para este activo. */
-    val hasCurrentPrice: Boolean
+    val position: AssetPosition
 )
 
-/** Grupo de activos pertenecientes a la misma categoría (o "Sin categoría"). */
+/** Grupo de activos abiertos pertenecientes a la misma categoría (o "Sin categoría"). */
 data class CategoryGroup(
-    val category: AssetCategory?,        // null = grupo "Sin categoría"
+    val category: AssetCategory?,
     val rows: List<AssetRow>,
-    val totalInvested: Double,           // suma cantidad × precio_compra
-    val totalCurrentValue: Double,       // suma cantidad × precio_actual_efectivo
-    val totalPnL: Double                 // currentValue − invested
+    val totalInvested: Double,           // coste de las unidades aún en cartera
+    val totalCurrentValue: Double,       // valor actual de mercado
+    val totalUnrealizedPnL: Double,      // P&L latente
+    val totalRealizedPnL: Double,        // P&L cerrado por ventas (para mostrar)
+    val totalPnL: Double,                // realized + unrealized
+    val totalPnLPercent: Double          // sobre el invertido remanente
 ) {
     val displayName: String   get() = category?.name ?: "Sin categoría"
     val displayIcon: String   get() = category?.icon ?: "❔"
     val sortKey: Int          get() = category?.sortOrder ?: Int.MAX_VALUE
 }
 
-/**
- * Slice del donut chart de distribución por categoría.
- *
- * @param percent Porcentaje del valor actual total (0..100).
- * @param color Color asignado para pintar el arco y la leyenda.
- */
 data class CategorySlice(
-    val categoryId: String?,    // null = "Sin categoría"
+    val categoryId: String?,
     val name: String,
     val icon: String,
     val value: Double,
@@ -73,29 +68,30 @@ data class CategorySlice(
 )
 
 data class PortfolioUiState(
-    val groups: List<CategoryGroup>     = emptyList(),
+    val groups: List<CategoryGroup>     = emptyList(),         // posiciones abiertas
+    val closedPositions: List<AssetRow> = emptyList(),         // qty==0 && realized!=0 (decisión A)
     val distribution: List<CategorySlice> = emptyList(),
     val totalInvested: Double           = 0.0,
     val totalCurrentValue: Double       = 0.0,
+    val totalRealizedPnL: Double        = 0.0,
+    val totalUnrealizedPnL: Double      = 0.0,
     val totalPnL: Double                = 0.0,
     val totalPnLPercent: Double         = 0.0,
-    /** Código ISO de la cuenta seleccionada (EUR/USD/…). "EUR" como fallback. */
+    val openPositionsCount: Int         = 0,
     val currencyCode: String            = "EUR",
+    /** Activos del catálogo (incluso sin movimientos) — para el selector. */
+    val allAssets: List<Asset>          = emptyList(),
+    val platforms: List<Platform>       = emptyList(),
     val isLoading: Boolean              = true,
     val error: String?                  = null,
-    // Sheets / diálogos (estado controlado, en _uiState)
-    val showAddSheet: Boolean           = false,
-    val showEditSheet: Boolean          = false,
-    val editingAsset: Asset?            = null,
-    val showDeleteConfirm: Boolean      = false,
-    val assetToDelete: Asset?           = null,
-    // Sheet rápido para actualizar solo el precio actual
+
+    // Sheet rápido de actualización de precio (mantenido del flujo anterior)
     val showUpdatePriceSheet: Boolean   = false,
-    val pricingAsset: Asset?            = null
-) {
-    /** Acceso plano a todas las filas (para compatibilidad con código antiguo). */
-    val rows: List<AssetRow> get() = groups.flatMap { it.rows }
-}
+    val pricingAsset: Asset?            = null,
+
+    // Sheet de "Nuevo movimiento" desde el FAB del Portfolio
+    val showAddTxSheet: Boolean         = false
+)
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class PortfolioViewModel(
@@ -106,11 +102,20 @@ class PortfolioViewModel(
     private val deleteAsset: DeleteAssetUseCase,
     private val getAssetCategoriesIncludingArchived: GetAllAssetCategoriesIncludingArchivedUseCase,
     private val getAccountById: GetAccountByIdUseCase,
+    private val getTransactionsByAccount: GetTransactionsByAccountUseCase,
+    private val getPlatforms: GetPlatformsUseCase,
+    private val saveAssetTransaction: SaveAssetTransactionUseCase,
     private val session: AccountSession
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(PortfolioUiState())
-    val uiState: StateFlow<PortfolioUiState> = _uiState.asStateFlow()
+    private val _sheetState = MutableStateFlow(SheetState())
+
+    private data class SheetState(
+        val showUpdatePriceSheet: Boolean = false,
+        val pricingAsset: Asset? = null,
+        val showAddTxSheet: Boolean = false,
+        val error: String? = null
+    )
 
     val portfolioState: StateFlow<PortfolioUiState> = session.selectedAccountId
         .flatMapLatest { accountId ->
@@ -120,11 +125,21 @@ class PortfolioViewModel(
                 combine(
                     getAssetsByAccount(accountId),
                     getAssetCategoriesIncludingArchived(),
-                    getAccountById(accountId)
-                ) { assets, categories, account ->
-                    buildState(assets, categories, account)
+                    getAccountById(accountId),
+                    getTransactionsByAccount(accountId),
+                    getPlatforms(),
+                ) { assets, categories, account, txs, platforms ->
+                    buildState(assets, categories, account, txs, platforms)
                 }
             }
+        }
+        .combine(_sheetState) { state, sheets ->
+            state.copy(
+                showUpdatePriceSheet = sheets.showUpdatePriceSheet,
+                pricingAsset         = sheets.pricingAsset,
+                showAddTxSheet       = sheets.showAddTxSheet,
+                error                = sheets.error
+            )
         }
         .stateIn(
             scope        = viewModelScope,
@@ -132,10 +147,6 @@ class PortfolioViewModel(
             initialValue = PortfolioUiState()
         )
 
-    /**
-     * Categorías activas (no archivadas) disponibles para asignar a un asset.
-     * A diferencia de `portfolioState.groups`, incluye categorías sin assets.
-     */
     val availableCategories: StateFlow<List<AssetCategory>> = getAssetCategoriesIncludingArchived()
         .map { list -> list.filter { !it.archived } }
         .stateIn(
@@ -147,55 +158,71 @@ class PortfolioViewModel(
     private fun buildState(
         assets: List<Asset>,
         categories: List<AssetCategory>,
-        account: Account?
+        account: Account?,
+        transactions: List<AssetTransaction>,
+        platforms: List<Platform>
     ): PortfolioUiState {
-        // Cada activo: usa currentPrice si existe, si no purchasePrice (P&L = 0).
-        val rows = assets.map { asset ->
-            val price = asset.effectivePrice
-            AssetRow(
-                asset           = asset,
-                currentPrice    = price,
-                currentValue    = asset.quantity * price,
-                pnlAmount       = asset.effectivePnL,
-                pnlPercent      = asset.effectivePnLPercent,
-                hasCurrentPrice = asset.hasCurrentPrice
-            )
+        // Agrupar movimientos por activo.
+        val txByAsset: Map<String, List<AssetTransaction>> =
+            transactions.groupBy { it.assetId }
+
+        // Para cada activo, calcular su posición FIFO y separar:
+        //  - openRows  → tienen qty > 0 (posiciones vivas)
+        //  - closedRows → qty == 0 pero realizedPnL != 0 (posiciones cerradas
+        //                 con histórico de P&L que el usuario debe poder revisar)
+        //  - silent    → qty == 0 y realizedPnL == 0 (ocultos del portfolio)
+        val openRows   = mutableListOf<AssetRow>()
+        val closedRows = mutableListOf<AssetRow>()
+        for (asset in assets) {
+            val txs = txByAsset[asset.id].orEmpty()
+            val pos = PortfolioCalculator.calculate(txs, asset.currentPrice)
+            when {
+                pos.netQuantity > 0.0      -> openRows.add(AssetRow(asset, pos))
+                pos.realizedPnL != 0.0     -> closedRows.add(AssetRow(asset, pos))
+                else                       -> { /* silenciado */ }
+            }
         }
 
-        // Mapa id → categoría (incluyendo archivadas, para no perder activos
-        // ligados a categorías eliminadas)
         val byId = categories.associateBy { it.id }
-
-        // Agrupar por assetCategoryId
         val grouped: Map<String?, List<AssetRow>> =
-            rows.groupBy { it.asset.assetCategoryId }
+            openRows.groupBy { it.asset.assetCategoryId }
 
-        // Construir grupos. Activos con categoría inexistente caen en "Sin categoría".
         val groups: List<CategoryGroup> = grouped
             .map { (categoryId, groupRows) ->
                 val cat = categoryId?.let { byId[it] }
-                val invested  = groupRows.sumOf { it.asset.totalInvested }
-                val current   = groupRows.sumOf { it.currentValue }
+                val invested  = groupRows.sumOf { it.position.totalInvestedRemaining }
+                val current   = groupRows.sumOf { it.position.currentValue }
+                val realized  = groupRows.sumOf { it.position.realizedPnL }
+                val unrealized = groupRows.sumOf { it.position.unrealizedPnL }
+                val total     = realized + unrealized
                 CategoryGroup(
-                    category          = cat,
-                    rows              = groupRows.sortedByDescending { it.currentValue },
-                    totalInvested     = invested,
-                    totalCurrentValue = current,
-                    totalPnL          = current - invested
+                    category           = cat,
+                    rows               = groupRows.sortedByDescending { it.position.currentValue },
+                    totalInvested      = invested,
+                    totalCurrentValue  = current,
+                    totalUnrealizedPnL = unrealized,
+                    totalRealizedPnL   = realized,
+                    totalPnL           = total,
+                    totalPnLPercent    = if (invested > 0.0) (total / invested) * 100.0 else 0.0
                 )
             }
             .sortedWith(
                 compareBy(
-                    { if (it.category == null) 1 else 0 }, // "Sin categoría" al final
+                    { if (it.category == null) 1 else 0 },
                     { it.sortKey },
                     { it.displayName }
                 )
             )
 
-        val totalInvested     = groups.sumOf { it.totalInvested }
-        val totalCurrentValue = groups.sumOf { it.totalCurrentValue }
+        val totalInvested      = groups.sumOf { it.totalInvested }
+        val totalCurrentValue  = groups.sumOf { it.totalCurrentValue }
+        // El P&L realizado SUMA tanto el de las posiciones abiertas (ventas
+        // parciales) como el de las cerradas (vendidas por completo).
+        val totalRealizedPnL   = groups.sumOf { it.totalRealizedPnL } +
+                                 closedRows.sumOf { it.position.realizedPnL }
+        val totalUnrealizedPnL = groups.sumOf { it.totalUnrealizedPnL }
+        val totalPnL           = totalRealizedPnL + totalUnrealizedPnL
 
-        // ── Distribución por categoría (donut) ──────────────────────────────
         val distribution: List<CategorySlice> = if (totalCurrentValue <= 0.0) {
             emptyList()
         } else {
@@ -214,186 +241,94 @@ class PortfolioViewModel(
                 .sortedByDescending { it.percent }
         }
 
-        return _uiState.value.copy(
-            groups            = groups,
-            distribution      = distribution,
-            totalInvested     = totalInvested,
-            totalCurrentValue = totalCurrentValue,
-            totalPnL          = totalCurrentValue - totalInvested,
-            totalPnLPercent   = if (totalInvested == 0.0) 0.0
-                                else ((totalCurrentValue - totalInvested) / totalInvested) * 100.0,
-            currencyCode      = account?.currency ?: "EUR",
-            isLoading         = false
+        // Para el % total tomamos como base el invertido remanente — es lo
+        // que el usuario tiene "vivo". Si solo quedan posiciones cerradas y
+        // todo se vendió, mostramos el % sobre el bruto invertido histórico.
+        val pnlBase = if (totalInvested > 0.0) totalInvested
+                      else closedRows.sumOf { row -> row.position.realizedPnL.let { 0.0 } } // fallback noop
+
+        return PortfolioUiState(
+            groups             = groups,
+            closedPositions    = closedRows.sortedByDescending { it.position.realizedPnL },
+            distribution       = distribution,
+            totalInvested      = totalInvested,
+            totalCurrentValue  = totalCurrentValue,
+            totalRealizedPnL   = totalRealizedPnL,
+            totalUnrealizedPnL = totalUnrealizedPnL,
+            totalPnL           = totalPnL,
+            totalPnLPercent    = if (totalInvested > 0.0) (totalPnL / totalInvested) * 100.0 else 0.0,
+            openPositionsCount = openRows.size,
+            currencyCode       = account?.currency ?: "EUR",
+            allAssets          = assets,
+            platforms          = platforms,
+            isLoading          = false
         )
     }
 
-    /**
-     * Asigna un color de la paleta a un grupo. Para "Sin categoría" devuelve
-     * siempre el gris reservado. Para categorías reales, usa `sortOrder` como
-     * índice (módulo paleta) para que el color sea estable entre sesiones.
-     */
     private fun colorForGroup(group: CategoryGroup, fallbackIndex: Int): Color {
         val cat = group.category ?: return UncategorizedColor
         val idx = if (cat.sortOrder >= 0) cat.sortOrder else fallbackIndex
         return CategoryPalette[idx % CategoryPalette.size]
     }
 
-    // ── Sheet controls ────────────────────────────────────────────────────────
-    fun openAddSheet() {
-        _uiState.value = _uiState.value.copy(showAddSheet = true)
-    }
-
-    fun closeAddSheet() {
-        _uiState.value = _uiState.value.copy(showAddSheet = false)
-    }
-
-    fun openEditSheet(asset: Asset) {
-        _uiState.value = _uiState.value.copy(showEditSheet = true, editingAsset = asset)
-    }
-
-    fun closeEditSheet() {
-        _uiState.value = _uiState.value.copy(showEditSheet = false, editingAsset = null)
-    }
-
-    fun requestDelete(asset: Asset) {
-        _uiState.value = _uiState.value.copy(showDeleteConfirm = true, assetToDelete = asset)
-    }
-
-    fun cancelDelete() {
-        _uiState.value = _uiState.value.copy(showDeleteConfirm = false, assetToDelete = null)
-    }
-
-    /** Abre el sheet rápido para refrescar solo el precio actual del activo. */
+    // ── Sheet rápido de actualización de precio ──────────────────────────────
     fun openUpdatePriceSheet(asset: Asset) {
-        _uiState.value = _uiState.value.copy(showUpdatePriceSheet = true, pricingAsset = asset)
+        _sheetState.value = _sheetState.value.copy(showUpdatePriceSheet = true, pricingAsset = asset)
     }
 
     fun closeUpdatePriceSheet() {
-        _uiState.value = _uiState.value.copy(showUpdatePriceSheet = false, pricingAsset = null)
+        _sheetState.value = _sheetState.value.copy(showUpdatePriceSheet = false, pricingAsset = null)
     }
 
-    // ── CRUD ──────────────────────────────────────────────────────────────────
-    fun addAsset(
-        ticker: String,
-        name: String,
-        quantity: Double,
-        purchasePrice: Double,
-        purchaseDate: Long,
-        notes: String?,
-        assetCategoryId: String? = null,
-        currentPrice: Double? = null
-    ) {
-        val accountId = session.selectedAccountId.value ?: return
-        viewModelScope.launch {
-            val now = Clock.System.now().toEpochMilliseconds()
-            val asset = Asset(
-                id              = generateId(),
-                accountId       = accountId,
-                ticker          = ticker.uppercase().trim(),
-                name            = name.trim(),
-                quantity        = quantity,
-                purchasePrice   = purchasePrice,
-                purchaseDate    = purchaseDate,
-                notes           = notes?.ifBlank { null },
-                createdAt       = now,
-                assetCategoryId = assetCategoryId,
-                currentPrice    = currentPrice,
-                currentPriceUpdatedAt = if (currentPrice != null) now else null
-            )
-            saveAsset(asset)
-                .onSuccess {
-                    _uiState.value = _uiState.value.copy(showAddSheet = false)
-                }
-                .onFailure { e ->
-                    _uiState.value = _uiState.value.copy(error = e.message)
-                }
-        }
-    }
-
-    fun editAsset(
-        original: Asset,
-        ticker: String,
-        name: String,
-        quantity: Double,
-        purchasePrice: Double,
-        purchaseDate: Long,
-        notes: String?,
-        assetCategoryId: String? = original.assetCategoryId,
-        currentPrice: Double? = original.currentPrice
-    ) {
-        viewModelScope.launch {
-            // Si el precio actual ha cambiado respecto al original, actualizamos
-            // el timestamp; si se mantiene igual, conservamos el timestamp previo;
-            // si pasa de un valor a null (lo borraron), también ponemos null.
-            val updatedAt = when {
-                currentPrice == null                       -> null
-                currentPrice == original.currentPrice      -> original.currentPriceUpdatedAt
-                else -> Clock.System.now().toEpochMilliseconds()
-            }
-            updateAsset(
-                original.copy(
-                    ticker                = ticker.uppercase().trim(),
-                    name                  = name.trim(),
-                    quantity              = quantity,
-                    purchasePrice         = purchasePrice,
-                    purchaseDate          = purchaseDate,
-                    notes                 = notes?.ifBlank { null },
-                    assetCategoryId       = assetCategoryId,
-                    currentPrice          = currentPrice,
-                    currentPriceUpdatedAt = updatedAt
-                )
-            )
-                .onSuccess {
-                    _uiState.value = _uiState.value.copy(showEditSheet = false, editingAsset = null)
-                }
-                .onFailure { e ->
-                    _uiState.value = _uiState.value.copy(error = e.message)
-                }
-        }
-    }
-
-    /**
-     * Actualiza únicamente el precio actual del activo (atajo desde el sheet
-     * rápido en la pantalla de portfolio). Persiste el timestamp para que el
-     * usuario sepa cuándo lo refrescó por última vez.
-     */
     fun refreshCurrentPrice(asset: Asset, newPrice: Double) {
         viewModelScope.launch {
             val now = Clock.System.now().toEpochMilliseconds()
             updateAssetCurrentPrice(asset.id, newPrice, now)
-                .onSuccess {
-                    _uiState.value = _uiState.value.copy(
-                        showUpdatePriceSheet = false,
-                        pricingAsset         = null
-                    )
-                }
-                .onFailure { e ->
-                    _uiState.value = _uiState.value.copy(error = e.message)
-                }
+                .onSuccess { closeUpdatePriceSheet() }
+                .onFailure { _sheetState.value = _sheetState.value.copy(error = it.message) }
         }
     }
 
-    fun confirmDelete() {
-        val asset = _uiState.value.assetToDelete ?: return
+    // ── Sheet de "Nuevo movimiento" desde el FAB ────────────────────────────
+    fun openAddTransactionSheet() {
+        _sheetState.value = _sheetState.value.copy(showAddTxSheet = true)
+    }
+
+    fun closeAddTransactionSheet() {
+        _sheetState.value = _sheetState.value.copy(showAddTxSheet = false)
+    }
+
+    fun addTransaction(
+        assetId: String,
+        type: AssetTransactionType,
+        quantity: Double,
+        pricePerUnit: Double,
+        date: Long,
+        platformId: String,
+        feeNote: String?,
+        notes: String?
+    ) {
         viewModelScope.launch {
-            deleteAsset(asset.id)
-                .onSuccess {
-                    _uiState.value = _uiState.value.copy(
-                        showDeleteConfirm = false, assetToDelete = null
-                    )
-                }
-                .onFailure { e ->
-                    _uiState.value = _uiState.value.copy(error = e.message)
-                }
+            val now = Clock.System.now().toEpochMilliseconds()
+            val tx = AssetTransaction(
+                id           = "tx_${now}_${(0..9999).random()}",
+                assetId      = assetId,
+                type         = type,
+                quantity     = quantity,
+                pricePerUnit = pricePerUnit,
+                date         = date,
+                platformId   = platformId,
+                feeNote      = feeNote?.ifBlank { null },
+                notes        = notes?.ifBlank { null },
+                createdAt    = now
+            )
+            saveAssetTransaction(tx)
+                .onSuccess { closeAddTransactionSheet() }
+                .onFailure { _sheetState.value = _sheetState.value.copy(error = it.message) }
         }
     }
 
     fun clearError() {
-        _uiState.value = _uiState.value.copy(error = null)
-    }
-
-    private fun generateId(): String {
-        val chars = "abcdefghijklmnopqrstuvwxyz0123456789"
-        return "asset_" + (1..26).map { chars.random() }.joinToString("")
+        _sheetState.value = _sheetState.value.copy(error = null)
     }
 }

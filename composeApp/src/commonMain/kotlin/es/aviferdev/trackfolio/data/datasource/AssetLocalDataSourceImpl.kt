@@ -2,7 +2,6 @@ package es.aviferdev.trackfolio.data.datasource
 
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
-import app.cash.sqldelight.coroutines.mapToOne
 import app.cash.sqldelight.coroutines.mapToOneOrNull
 import es.aviferdev.trackfolio.data.database.TrackfolioDatabase
 import es.aviferdev.trackfolio.data.database.mapper.toDomain
@@ -32,11 +31,6 @@ class AssetLocalDataSourceImpl(
             .mapToOneOrNull(Dispatchers.IO)
             .map { it?.toDomain() }
 
-    override fun getTotalInvestedByAccount(accountId: String): Flow<Double> =
-        queries.getTotalInvestedByAccount(accountId)
-            .asFlow()
-            .mapToOne(Dispatchers.IO)
-
     override suspend fun insert(asset: Asset): Result<Unit> =
         runCatching {
             withContext(Dispatchers.IO) {
@@ -46,9 +40,6 @@ class AssetLocalDataSourceImpl(
                     accountId             = e.accountId,
                     ticker                = e.ticker,
                     name                  = e.name,
-                    quantity              = e.quantity,
-                    purchasePrice         = e.purchasePrice,
-                    purchaseDate          = e.purchaseDate,
                     notes                 = e.notes,
                     createdAt             = e.createdAt,
                     assetCategoryId       = e.assetCategoryId,
@@ -65,9 +56,6 @@ class AssetLocalDataSourceImpl(
                 queries.update(
                     ticker                = e.ticker,
                     name                  = e.name,
-                    quantity              = e.quantity,
-                    purchasePrice         = e.purchasePrice,
-                    purchaseDate          = e.purchaseDate,
                     notes                 = e.notes,
                     assetCategoryId       = e.assetCategoryId,
                     currentPrice          = e.currentPrice,

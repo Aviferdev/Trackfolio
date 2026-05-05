@@ -6,7 +6,6 @@ import kotlinx.coroutines.flow.Flow
 interface AssetRepository {
     fun getAssetsByAccount(accountId: String): Flow<List<Asset>>
     fun getAssetById(id: String): Flow<Asset?>
-    fun getTotalInvestedByAccount(accountId: String): Flow<Double>
     suspend fun saveAsset(asset: Asset): Result<Unit>
     suspend fun updateAsset(asset: Asset): Result<Unit>
     suspend fun updateCurrentPrice(id: String, price: Double, updatedAt: Long): Result<Unit>

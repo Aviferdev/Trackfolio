@@ -22,8 +22,13 @@ import androidx.compose.ui.unit.sp
 import es.aviferdev.trackfolio.domain.model.Asset
 import es.aviferdev.trackfolio.domain.model.AssetCategory
 import es.aviferdev.trackfolio.ui.theme.*
-import kotlinx.datetime.Clock
 
+/**
+ * Sheet para crear o editar la **ficha de catálogo** de un activo: ticker,
+ * nombre, categoría, precio actual y notas. Las cantidades y precios de
+ * compra ya no se piden aquí — eso vive en los movimientos
+ * (AddEditAssetTransactionBottomSheet).
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddEditAssetBottomSheet(
@@ -33,9 +38,6 @@ fun AddEditAssetBottomSheet(
     onSave: (
         ticker: String,
         name: String,
-        quantity: Double,
-        purchasePrice: Double,
-        purchaseDate: Long,
         notes: String?,
         assetCategoryId: String?,
         currentPrice: Double?
@@ -43,12 +45,10 @@ fun AddEditAssetBottomSheet(
     onDismiss: () -> Unit
 ) {
     val isEditing = asset != null
-    val currencySymbol = currencySymbol(currencyCode)
+    val symbol    = currencySymbol(currencyCode)
 
     var ticker        by remember { mutableStateOf(asset?.ticker ?: "") }
     var name          by remember { mutableStateOf(asset?.name ?: "") }
-    var quantity      by remember { mutableStateOf(asset?.quantity?.toString() ?: "") }
-    var purchasePrice by remember { mutableStateOf(asset?.purchasePrice?.toString() ?: "") }
     var currentPrice  by remember { mutableStateOf(asset?.currentPrice?.toString() ?: "") }
     var notes         by remember { mutableStateOf(asset?.notes ?: "") }
     var selectedCategoryId by remember { mutableStateOf(asset?.assetCategoryId) }
@@ -57,8 +57,6 @@ fun AddEditAssetBottomSheet(
     var nameError   by remember { mutableStateOf(false) }
 
     val isValid = ticker.isNotBlank() && name.isNotBlank()
-        && quantity.replace(',', '.').toDoubleOrNull()?.let { it > 0 } == true
-        && purchasePrice.replace(',', '.').toDoubleOrNull()?.let { it > 0 } == true
         && (currentPrice.isBlank() || currentPrice.replace(',', '.').toDoubleOrNull()?.let { it >= 0 } == true)
 
     ModalBottomSheet(
@@ -86,11 +84,17 @@ fun AddEditAssetBottomSheet(
         ) {
             Spacer(Modifier.height(4.dp))
             Text(
-                text       = if (isEditing) "Editar posición" else "Nueva posición",
+                text       = if (isEditing) "Editar activo" else "Nuevo activo",
                 fontSize   = 18.sp,
                 fontWeight = FontWeight.SemiBold,
                 color      = TextPrimary,
-                modifier   = Modifier.padding(bottom = 20.dp)
+                modifier   = Modifier.padding(bottom = 4.dp)
+            )
+            Text(
+                text     = "Define la ficha del activo. Las compras y ventas se registran después como movimientos.",
+                fontSize = 11.sp,
+                color    = TextSecondary,
+                modifier = Modifier.padding(bottom = 18.dp)
             )
 
             // ── Selector de categoría ────────────────────────────────────────
@@ -108,7 +112,6 @@ fun AddEditAssetBottomSheet(
                         .horizontalScroll(rememberScrollState()),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    // Chip "Sin categoría"
                     CategoryChip(
                         icon       = "❔",
                         label      = "Sin categoría",
@@ -126,7 +129,6 @@ fun AddEditAssetBottomSheet(
                 }
                 Spacer(Modifier.height(16.dp))
             } else {
-                // Sin categorías creadas: mostrar hint para crearlas en Ajustes
                 Text(
                     text     = "💡  Puedes crear categorías de activos desde Ajustes para agruparlas (ej. Cryptos, ETFs).",
                     fontSize = 11.sp,
@@ -172,53 +174,16 @@ fun AddEditAssetBottomSheet(
             )
             Spacer(Modifier.height(12.dp))
 
-            // Cantidad + Precio compra en fila
-            Row(
-                modifier              = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                OutlinedTextField(
-                    value         = quantity,
-                    onValueChange = { quantity = it.filter { c -> c.isDigit() || c == ',' || c == '.' } },
-                    label         = { Text("Cantidad") },
-                    placeholder   = { Text("0") },
-                    modifier      = Modifier.weight(1f),
-                    singleLine    = true,
-                    shape         = RoundedCornerShape(10.dp),
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                    colors        = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor   = PrimaryDark,
-                        unfocusedBorderColor = BorderGray
-                    )
-                )
-                OutlinedTextField(
-                    value         = purchasePrice,
-                    onValueChange = { purchasePrice = it.filter { c -> c.isDigit() || c == ',' || c == '.' } },
-                    label         = { Text("Precio compra") },
-                    placeholder   = { Text("0,00") },
-                    trailingIcon  = { Text(currencySymbol, color = TextSecondary, modifier = Modifier.padding(end = 12.dp)) },
-                    modifier      = Modifier.weight(1f),
-                    singleLine    = true,
-                    shape         = RoundedCornerShape(10.dp),
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                    colors        = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor   = PrimaryDark,
-                        unfocusedBorderColor = BorderGray
-                    )
-                )
-            }
-            Spacer(Modifier.height(12.dp))
-
-            // Precio actual (opcional) — habilita el cálculo de revalorización
+            // Precio actual (opcional)
             OutlinedTextField(
                 value         = currentPrice,
                 onValueChange = { currentPrice = it.filter { c -> c.isDigit() || c == ',' || c == '.' } },
                 label         = { Text("Precio actual (opcional)") },
                 placeholder   = { Text("0,00") },
-                trailingIcon  = { Text(currencySymbol, color = TextSecondary, modifier = Modifier.padding(end = 12.dp)) },
+                trailingIcon  = { Text(symbol, color = TextSecondary, modifier = Modifier.padding(end = 12.dp)) },
                 supportingText = {
                     Text(
-                        text     = "Déjalo vacío si todavía no lo conoces. Lo puedes actualizar después.",
+                        text     = "Sirve para calcular el valor actual y la revalorización. Lo puedes actualizar después.",
                         fontSize = 11.sp,
                         color    = TextSecondary
                     )
@@ -254,16 +219,10 @@ fun AddEditAssetBottomSheet(
                 onClick = {
                     if (ticker.isBlank()) { tickerError = true; return@Button }
                     if (name.isBlank())   { nameError = true; return@Button }
-                    val qty   = quantity.replace(',', '.').toDoubleOrNull() ?: return@Button
-                    val price = purchasePrice.replace(',', '.').toDoubleOrNull() ?: return@Button
-                    val curr  = currentPrice.replace(',', '.').toDoubleOrNull()
-                    val date  = asset?.purchaseDate ?: Clock.System.now().toEpochMilliseconds()
+                    val curr = currentPrice.replace(',', '.').toDoubleOrNull()
                     onSave(
                         ticker.trim(),
                         name.trim(),
-                        qty,
-                        price,
-                        date,
                         notes.ifBlank { null },
                         selectedCategoryId,
                         curr
@@ -278,7 +237,7 @@ fun AddEditAssetBottomSheet(
                 )
             ) {
                 Text(
-                    text       = if (isEditing) "Guardar cambios" else "Añadir posición",
+                    text       = if (isEditing) "Guardar cambios" else "Crear activo",
                     fontSize   = 16.sp,
                     fontWeight = FontWeight.Medium
                 )

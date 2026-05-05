@@ -1,0 +1,57 @@
+-- Plataformas (broker, exchange, banco) donde se ejecutan los movimientos
+-- de portfolio. Gestionadas desde Ajustes. Soportan archivado lógico para
+-- preservar la integridad referencial con movimientos antiguos.
+
+CREATE TABLE PlatformEntity (
+    id        TEXT    NOT NULL PRIMARY KEY,
+    name      TEXT    NOT NULL,
+    icon      TEXT    NOT NULL DEFAULT '🏦',
+    sortOrder INTEGER NOT NULL DEFAULT 0,
+    archived  INTEGER NOT NULL DEFAULT 0,
+    createdAt INTEGER NOT NULL
+);
+
+CREATE INDEX idx_platform_archived ON PlatformEntity(archived);
+
+-- ─── Lectura ──────────────────────────────────────────────────────────────────
+
+selectAll:
+SELECT * FROM PlatformEntity
+WHERE archived = 0
+ORDER BY sortOrder ASC, name ASC;
+
+selectAllIncludingArchived:
+SELECT * FROM PlatformEntity
+ORDER BY archived ASC, sortOrder ASC, name ASC;
+
+selectById:
+SELECT * FROM PlatformEntity WHERE id = :id;
+
+countAll:
+SELECT COUNT(*) FROM PlatformEntity WHERE archived = 0;
+
+-- ─── Escritura ────────────────────────────────────────────────────────────────
+
+insert:
+INSERT OR IGNORE INTO PlatformEntity(id, name, icon, sortOrder, archived, createdAt)
+VALUES (?, ?, ?, ?, 0, ?);
+
+updateNameAndIcon:
+UPDATE PlatformEntity
+SET name = :name, icon = :icon
+WHERE id = :id;
+
+updateSortOrder:
+UPDATE PlatformEntity
+SET sortOrder = :sortOrder
+WHERE id = :id;
+
+archive:
+UPDATE PlatformEntity
+SET archived = 1
+WHERE id = :id;
+
+unarchive:
+UPDATE PlatformEntity
+SET archived = 0
+WHERE id = :id;
