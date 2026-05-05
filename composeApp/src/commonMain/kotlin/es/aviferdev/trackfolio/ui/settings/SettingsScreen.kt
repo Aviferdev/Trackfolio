@@ -391,8 +391,6 @@ fun SettingsScreen(
                     BackupActionRow(icon = "☁️", label = "Exportar backup", onClick = { backupViewModel.openExport() })
                     HorizontalDivider(color = BorderGray, thickness = 0.5.dp, modifier = Modifier.padding(start = 52.dp))
                     BackupActionRow(icon = "📥", label = "Importar backup", onClick = { backupViewModel.openImport() })
-                    HorizontalDivider(color = BorderGray, thickness = 0.5.dp, modifier = Modifier.padding(start = 52.dp))
-                    SettingsRow(icon = "🔔", label = "Recordatorios", value = "Próximamente")
                 }
             }
 

@@ -9,5 +9,6 @@ interface AssetRepository {
     fun getTotalInvestedByAccount(accountId: String): Flow<Double>
     suspend fun saveAsset(asset: Asset): Result<Unit>
     suspend fun updateAsset(asset: Asset): Result<Unit>
+    suspend fun updateCurrentPrice(id: String, price: Double, updatedAt: Long): Result<Unit>
     suspend fun deleteAsset(id: String): Result<Unit>
 }

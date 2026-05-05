@@ -9,6 +9,7 @@ import es.aviferdev.trackfolio.domain.usecase.account.UpdateAccountUseCase
 import es.aviferdev.trackfolio.domain.usecase.asset.DeleteAssetUseCase
 import es.aviferdev.trackfolio.domain.usecase.asset.GetAssetsByAccountUseCase
 import es.aviferdev.trackfolio.domain.usecase.asset.SaveAssetUseCase
+import es.aviferdev.trackfolio.domain.usecase.asset.UpdateAssetCurrentPriceUseCase
 import es.aviferdev.trackfolio.domain.usecase.asset.UpdateAssetUseCase
 import es.aviferdev.trackfolio.domain.usecase.assetcategory.ArchiveAssetCategoryUseCase
 import es.aviferdev.trackfolio.domain.usecase.assetcategory.GetAllAssetCategoriesIncludingArchivedUseCase
@@ -87,6 +88,7 @@ val useCaseModule = module {
     factory { GetAssetsByAccountUseCase(get()) }
     factory { SaveAssetUseCase(get()) }
     factory { UpdateAssetUseCase(get()) }
+    factory { UpdateAssetCurrentPriceUseCase(get()) }
     factory { DeleteAssetUseCase(get()) }
 
     // ── Asset Category ────────────────────────────────────────────────────────
@@ -159,8 +161,10 @@ val useCaseModule = module {
             getAssetsByAccount                  = get(),
             saveAsset                           = get(),
             updateAsset                         = get(),
+            updateAssetCurrentPrice             = get(),
             deleteAsset                         = get(),
             getAssetCategoriesIncludingArchived = get(),
+            getAccountById                      = get(),
             session                             = get()
         )
     }

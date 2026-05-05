@@ -1,0 +1,10 @@
+-- Migración v5 → v6
+-- Portfolio: precio actual editable manualmente y fecha de última actualización
+-- para mostrar revalorización (P&L) real frente al precio de compra.
+--
+-- Ambas columnas son NULL-able: un activo recién creado puede no tener precio
+-- actual hasta que el usuario lo actualice. Cuando currentPrice es NULL, el
+-- ViewModel cae en `purchasePrice` y P&L sale 0 ("Sin precio actual").
+
+ALTER TABLE AssetEntity ADD COLUMN currentPrice REAL;
+ALTER TABLE AssetEntity ADD COLUMN currentPriceUpdatedAt INTEGER;

@@ -9,5 +9,6 @@ interface AssetLocalDataSource {
     fun getTotalInvestedByAccount(accountId: String): Flow<Double>
     suspend fun insert(asset: Asset): Result<Unit>
     suspend fun update(asset: Asset): Result<Unit>
+    suspend fun updateCurrentPrice(id: String, price: Double, updatedAt: Long): Result<Unit>
     suspend fun delete(id: String): Result<Unit>
 }

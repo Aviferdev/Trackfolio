@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -28,6 +29,7 @@ import kotlinx.datetime.Clock
 fun AddEditAssetBottomSheet(
     asset: Asset?,                          // null = crear
     categories: List<AssetCategory>,        // categorías activas disponibles
+    currencyCode: String = "EUR",           // moneda de la cuenta seleccionada
     onSave: (
         ticker: String,
         name: String,
@@ -35,16 +37,19 @@ fun AddEditAssetBottomSheet(
         purchasePrice: Double,
         purchaseDate: Long,
         notes: String?,
-        assetCategoryId: String?
+        assetCategoryId: String?,
+        currentPrice: Double?
     ) -> Unit,
     onDismiss: () -> Unit
 ) {
     val isEditing = asset != null
+    val currencySymbol = currencySymbol(currencyCode)
 
     var ticker        by remember { mutableStateOf(asset?.ticker ?: "") }
     var name          by remember { mutableStateOf(asset?.name ?: "") }
     var quantity      by remember { mutableStateOf(asset?.quantity?.toString() ?: "") }
     var purchasePrice by remember { mutableStateOf(asset?.purchasePrice?.toString() ?: "") }
+    var currentPrice  by remember { mutableStateOf(asset?.currentPrice?.toString() ?: "") }
     var notes         by remember { mutableStateOf(asset?.notes ?: "") }
     var selectedCategoryId by remember { mutableStateOf(asset?.assetCategoryId) }
 
@@ -54,6 +59,7 @@ fun AddEditAssetBottomSheet(
     val isValid = ticker.isNotBlank() && name.isNotBlank()
         && quantity.replace(',', '.').toDoubleOrNull()?.let { it > 0 } == true
         && purchasePrice.replace(',', '.').toDoubleOrNull()?.let { it > 0 } == true
+        && (currentPrice.isBlank() || currentPrice.replace(',', '.').toDoubleOrNull()?.let { it >= 0 } == true)
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
@@ -76,6 +82,7 @@ fun AddEditAssetBottomSheet(
                 .imePadding()
                 .padding(horizontal = 20.dp)
                 .padding(bottom = 32.dp)
+                .verticalScroll(rememberScrollState())
         ) {
             Spacer(Modifier.height(4.dp))
             Text(
@@ -165,7 +172,7 @@ fun AddEditAssetBottomSheet(
             )
             Spacer(Modifier.height(12.dp))
 
-            // Cantidad + Precio en fila
+            // Cantidad + Precio compra en fila
             Row(
                 modifier              = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -189,6 +196,7 @@ fun AddEditAssetBottomSheet(
                     onValueChange = { purchasePrice = it.filter { c -> c.isDigit() || c == ',' || c == '.' } },
                     label         = { Text("Precio compra") },
                     placeholder   = { Text("0,00") },
+                    trailingIcon  = { Text(currencySymbol, color = TextSecondary, modifier = Modifier.padding(end = 12.dp)) },
                     modifier      = Modifier.weight(1f),
                     singleLine    = true,
                     shape         = RoundedCornerShape(10.dp),
@@ -199,6 +207,31 @@ fun AddEditAssetBottomSheet(
                     )
                 )
             }
+            Spacer(Modifier.height(12.dp))
+
+            // Precio actual (opcional) — habilita el cálculo de revalorización
+            OutlinedTextField(
+                value         = currentPrice,
+                onValueChange = { currentPrice = it.filter { c -> c.isDigit() || c == ',' || c == '.' } },
+                label         = { Text("Precio actual (opcional)") },
+                placeholder   = { Text("0,00") },
+                trailingIcon  = { Text(currencySymbol, color = TextSecondary, modifier = Modifier.padding(end = 12.dp)) },
+                supportingText = {
+                    Text(
+                        text     = "Déjalo vacío si todavía no lo conoces. Lo puedes actualizar después.",
+                        fontSize = 11.sp,
+                        color    = TextSecondary
+                    )
+                },
+                modifier      = Modifier.fillMaxWidth(),
+                singleLine    = true,
+                shape         = RoundedCornerShape(10.dp),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                colors        = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor   = PrimaryDark,
+                    unfocusedBorderColor = BorderGray
+                )
+            )
             Spacer(Modifier.height(12.dp))
 
             // Nota
@@ -223,6 +256,7 @@ fun AddEditAssetBottomSheet(
                     if (name.isBlank())   { nameError = true; return@Button }
                     val qty   = quantity.replace(',', '.').toDoubleOrNull() ?: return@Button
                     val price = purchasePrice.replace(',', '.').toDoubleOrNull() ?: return@Button
+                    val curr  = currentPrice.replace(',', '.').toDoubleOrNull()
                     val date  = asset?.purchaseDate ?: Clock.System.now().toEpochMilliseconds()
                     onSave(
                         ticker.trim(),
@@ -231,7 +265,8 @@ fun AddEditAssetBottomSheet(
                         price,
                         date,
                         notes.ifBlank { null },
-                        selectedCategoryId
+                        selectedCategoryId,
+                        curr
                     )
                 },
                 enabled  = isValid,

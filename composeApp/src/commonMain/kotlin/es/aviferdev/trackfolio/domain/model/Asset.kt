@@ -10,21 +10,45 @@ data class Asset(
     val purchaseDate: Long,       // epoch millis
     val notes: String?,
     val createdAt: Long,
-    val assetCategoryId: String? = null   // FK opcional a AssetCategory
+    val assetCategoryId: String? = null,    // FK opcional a AssetCategory
+    /**
+     * Precio unitario actual del activo. NULL mientras el usuario no haya
+     * introducido todavía un precio actualizado. Cuando es NULL, los cálculos
+     * de revalorización caen en `purchasePrice` y P&L = 0.
+     */
+    val currentPrice: Double? = null,
+    /** Epoch millis con la fecha en que se actualizó por última vez `currentPrice`. */
+    val currentPriceUpdatedAt: Long? = null
 ) {
     /** Valor total invertido = cantidad × precio de compra */
     val totalInvested: Double get() = quantity * purchasePrice
 
-    /**
-     * Ganancia/pérdida con precio actual.
-     * Se calcula en el ViewModel una vez que se tiene el precio actual.
-     */
-    fun unrealizedPnL(currentPrice: Double): Double =
-        (currentPrice - purchasePrice) * quantity
+    /** Precio efectivo a usar en cálculos: el actual si existe, si no el de compra. */
+    val effectivePrice: Double get() = currentPrice ?: purchasePrice
 
-    fun pnLPercent(currentPrice: Double): Double =
-        if (purchasePrice == 0.0) 0.0
+    /** True si el usuario ya ha introducido un precio actual. */
+    val hasCurrentPrice: Boolean get() = currentPrice != null
+
+    /** Valor de mercado actual (cantidad × precio efectivo). */
+    val effectiveCurrentValue: Double get() = quantity * effectivePrice
+
+    /** Ganancia/pérdida no realizada con el precio actual conocido (0 si no hay). */
+    val effectivePnL: Double get() =
+        if (currentPrice == null) 0.0
+        else (currentPrice - purchasePrice) * quantity
+
+    /** Porcentaje de revalorización con el precio actual conocido (0 si no hay). */
+    val effectivePnLPercent: Double get() =
+        if (currentPrice == null || purchasePrice == 0.0) 0.0
         else ((currentPrice - purchasePrice) / purchasePrice) * 100.0
 
-    fun currentValue(currentPrice: Double): Double = currentPrice * quantity
+    // ── Helpers paramétricos (compatibilidad con código existente) ───────────
+    fun unrealizedPnL(price: Double): Double =
+        (price - purchasePrice) * quantity
+
+    fun pnLPercent(price: Double): Double =
+        if (purchasePrice == 0.0) 0.0
+        else ((price - purchasePrice) / purchasePrice) * 100.0
+
+    fun currentValue(price: Double): Double = price * quantity
 }

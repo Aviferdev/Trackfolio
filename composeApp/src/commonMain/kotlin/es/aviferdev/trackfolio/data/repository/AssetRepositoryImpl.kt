@@ -24,6 +24,9 @@ class AssetRepositoryImpl(
     override suspend fun updateAsset(asset: Asset): Result<Unit> =
         dataSource.update(asset)
 
+    override suspend fun updateCurrentPrice(id: String, price: Double, updatedAt: Long): Result<Unit> =
+        dataSource.updateCurrentPrice(id, price, updatedAt)
+
     override suspend fun deleteAsset(id: String): Result<Unit> =
         dataSource.delete(id)
 }

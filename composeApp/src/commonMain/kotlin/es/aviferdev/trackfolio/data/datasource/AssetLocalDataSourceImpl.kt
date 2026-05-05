@@ -42,16 +42,18 @@ class AssetLocalDataSourceImpl(
             withContext(Dispatchers.IO) {
                 val e = asset.toEntity()
                 queries.insert(
-                    id              = e.id,
-                    accountId       = e.accountId,
-                    ticker          = e.ticker,
-                    name            = e.name,
-                    quantity        = e.quantity,
-                    purchasePrice   = e.purchasePrice,
-                    purchaseDate    = e.purchaseDate,
-                    notes           = e.notes,
-                    createdAt       = e.createdAt,
-                    assetCategoryId = e.assetCategoryId
+                    id                    = e.id,
+                    accountId             = e.accountId,
+                    ticker                = e.ticker,
+                    name                  = e.name,
+                    quantity              = e.quantity,
+                    purchasePrice         = e.purchasePrice,
+                    purchaseDate          = e.purchaseDate,
+                    notes                 = e.notes,
+                    createdAt             = e.createdAt,
+                    assetCategoryId       = e.assetCategoryId,
+                    currentPrice          = e.currentPrice,
+                    currentPriceUpdatedAt = e.currentPriceUpdatedAt
                 )
             }
         }
@@ -61,14 +63,27 @@ class AssetLocalDataSourceImpl(
             withContext(Dispatchers.IO) {
                 val e = asset.toEntity()
                 queries.update(
-                    ticker          = e.ticker,
-                    name            = e.name,
-                    quantity        = e.quantity,
-                    purchasePrice   = e.purchasePrice,
-                    purchaseDate    = e.purchaseDate,
-                    notes           = e.notes,
-                    assetCategoryId = e.assetCategoryId,
-                    id              = e.id
+                    ticker                = e.ticker,
+                    name                  = e.name,
+                    quantity              = e.quantity,
+                    purchasePrice         = e.purchasePrice,
+                    purchaseDate          = e.purchaseDate,
+                    notes                 = e.notes,
+                    assetCategoryId       = e.assetCategoryId,
+                    currentPrice          = e.currentPrice,
+                    currentPriceUpdatedAt = e.currentPriceUpdatedAt,
+                    id                    = e.id
+                )
+            }
+        }
+
+    override suspend fun updateCurrentPrice(id: String, price: Double, updatedAt: Long): Result<Unit> =
+        runCatching {
+            withContext(Dispatchers.IO) {
+                queries.updateCurrentPrice(
+                    currentPrice          = price,
+                    currentPriceUpdatedAt = updatedAt,
+                    id                    = id
                 )
             }
         }

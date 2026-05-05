@@ -10,29 +10,33 @@ import es.aviferdev.trackfolio.domain.model.AssetTag
 // ─── Asset ────────────────────────────────────────────────────────────────────
 
 fun AssetEntity.toDomain(): Asset = Asset(
-    id              = id,
-    accountId       = accountId,
-    ticker          = ticker,
-    name            = name,
-    quantity        = quantity,
-    purchasePrice   = purchasePrice,
-    purchaseDate    = purchaseDate,
-    notes           = notes,
-    createdAt       = createdAt,
-    assetCategoryId = assetCategoryId
+    id                    = id,
+    accountId             = accountId,
+    ticker                = ticker,
+    name                  = name,
+    quantity              = quantity,
+    purchasePrice         = purchasePrice,
+    purchaseDate          = purchaseDate,
+    notes                 = notes,
+    createdAt             = createdAt,
+    assetCategoryId       = assetCategoryId,
+    currentPrice          = currentPrice,
+    currentPriceUpdatedAt = currentPriceUpdatedAt
 )
 
 fun Asset.toEntity(): AssetEntity = AssetEntity(
-    id              = id,
-    accountId       = accountId,
-    ticker          = ticker,
-    name            = name,
-    quantity        = quantity,
-    purchasePrice   = purchasePrice,
-    purchaseDate    = purchaseDate,
-    notes           = notes,
-    createdAt       = createdAt,
-    assetCategoryId = assetCategoryId
+    id                    = id,
+    accountId             = accountId,
+    ticker                = ticker,
+    name                  = name,
+    quantity              = quantity,
+    purchasePrice         = purchasePrice,
+    purchaseDate          = purchaseDate,
+    notes                 = notes,
+    createdAt             = createdAt,
+    assetCategoryId       = assetCategoryId,
+    currentPrice          = currentPrice,
+    currentPriceUpdatedAt = currentPriceUpdatedAt
 )
 
 // ─── AssetCategory ────────────────────────────────────────────────────────────

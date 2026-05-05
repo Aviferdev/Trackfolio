@@ -37,6 +37,26 @@ val TextPrimary    = Color(0xFFE2E2E9)
 /** Texto secundario / labels. */
 val TextSecondary  = Color(0xFF9AA0AC)
 
+/**
+ * Paleta para colorear categorías en el donut chart del portfolio. Pensada
+ * para destacar bien sobre fondo oscuro (Background/Surface). Se asigna por
+ * índice (sortOrder de la categoría); cuando hay más categorías que colores,
+ * se cicla. El gris se reserva para "Sin categoría".
+ */
+val CategoryPalette: List<Color> = listOf(
+    Color(0xFF3D6EAD), // azul (PrimaryDark)
+    Color(0xFFE0A458), // naranja cálido
+    Color(0xFF66BB6A), // verde
+    Color(0xFFB66DCB), // púrpura
+    Color(0xFF4FC3D7), // turquesa
+    Color(0xFFEF7A85), // coral
+    Color(0xFFD4C04F), // amarillo apagado
+    Color(0xFF8FA3B0)  // gris azulado
+)
+
+/** Color reservado para activos sin categoría asignada. */
+val UncategorizedColor: Color = Color(0xFF6E7480)
+
 // ─── Material color scheme ────────────────────────────────────────────────────
 private val DarkColors = darkColorScheme(
     primary           = PrimaryDark,

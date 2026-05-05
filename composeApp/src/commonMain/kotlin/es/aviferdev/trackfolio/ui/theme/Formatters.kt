@@ -39,3 +39,55 @@ fun formatAmount(amount: Double): String {
     }.reversed()
     return "$eurosStr,${cents.toString().padStart(2, '0')}"
 }
+
+// ─── Moneda ──────────────────────────────────────────────────────────────────
+
+/**
+ * Convierte un código ISO-4217 (EUR, USD, GBP…) a su símbolo más reconocible.
+ * Para monedas que comparten el `$` (USD, MXN, ARS, CLP) se usa solo `$`,
+ * confiando en que la cuenta ya identifica de cuál se trata.
+ */
+fun currencySymbol(code: String): String = when (code.uppercase()) {
+    "EUR" -> "€"
+    "USD", "MXN", "ARS", "CLP" -> "$"
+    "GBP" -> "£"
+    "JPY" -> "¥"
+    "CHF" -> "Fr"
+    else  -> code
+}
+
+/** Importe formateado seguido de su símbolo de moneda — "1.234,56 €". */
+fun formatAmountWithCurrency(amount: Double, currencyCode: String): String =
+    "${formatAmount(amount)} ${currencySymbol(currencyCode)}"
+
+// ─── Tiempo relativo ─────────────────────────────────────────────────────────
+
+/**
+ * Devuelve una cadena legible del estilo «hace 5 minutos», «hace 3 días»,
+ * «hace 2 meses» a partir de un epoch millis del pasado. Útil para mostrar
+ * la frescura del precio actual de un activo.
+ */
+fun formatRelativeTime(epochMillis: Long): String {
+    val now      = kotlinx.datetime.Clock.System.now().toEpochMilliseconds()
+    val diffMs   = (now - epochMillis).coerceAtLeast(0L)
+    val seconds  = diffMs / 1_000L
+    val minutes  = seconds / 60L
+    val hours    = minutes / 60L
+    val days     = hours / 24L
+    val months   = days / 30L
+    val years    = days / 365L
+
+    return when {
+        seconds < 45L  -> "ahora mismo"
+        minutes < 2L   -> "hace 1 minuto"
+        minutes < 60L  -> "hace $minutes minutos"
+        hours   < 2L   -> "hace 1 hora"
+        hours   < 24L  -> "hace $hours horas"
+        days    < 2L   -> "ayer"
+        days    < 30L  -> "hace $days días"
+        months  < 2L   -> "hace 1 mes"
+        days    < 365L -> "hace $months meses"
+        years   < 2L   -> "hace 1 año"
+        else           -> "hace $years años"
+    }
+}

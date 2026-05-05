@@ -1,14 +1,16 @@
 CREATE TABLE AssetEntity (
-    id              TEXT    NOT NULL PRIMARY KEY,
-    accountId       TEXT    NOT NULL,
-    ticker          TEXT    NOT NULL,
-    name            TEXT    NOT NULL,
-    quantity        REAL    NOT NULL,
-    purchasePrice   REAL    NOT NULL,
-    purchaseDate    INTEGER NOT NULL,
-    notes           TEXT,
-    createdAt       INTEGER NOT NULL,
-    assetCategoryId TEXT,
+    id                     TEXT    NOT NULL PRIMARY KEY,
+    accountId              TEXT    NOT NULL,
+    ticker                 TEXT    NOT NULL,
+    name                   TEXT    NOT NULL,
+    quantity               REAL    NOT NULL,
+    purchasePrice          REAL    NOT NULL,
+    purchaseDate           INTEGER NOT NULL,
+    notes                  TEXT,
+    createdAt              INTEGER NOT NULL,
+    assetCategoryId        TEXT,
+    currentPrice           REAL,
+    currentPriceUpdatedAt  INTEGER,
     FOREIGN KEY (accountId)       REFERENCES AccountEntity(id) ON DELETE CASCADE,
     FOREIGN KEY (assetCategoryId) REFERENCES AssetCategoryEntity(id) ON DELETE SET NULL
 );
@@ -33,14 +35,22 @@ selectById:
 SELECT * FROM AssetEntity WHERE id = :id;
 
 insert:
-INSERT INTO AssetEntity(id, accountId, ticker, name, quantity, purchasePrice, purchaseDate, notes, createdAt, assetCategoryId)
-VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+INSERT INTO AssetEntity(id, accountId, ticker, name, quantity, purchasePrice, purchaseDate, notes, createdAt, assetCategoryId, currentPrice, currentPriceUpdatedAt)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 
 update:
 UPDATE AssetEntity
 SET ticker = :ticker, name = :name, quantity = :quantity,
     purchasePrice = :purchasePrice, purchaseDate = :purchaseDate, notes = :notes,
-    assetCategoryId = :assetCategoryId
+    assetCategoryId = :assetCategoryId,
+    currentPrice = :currentPrice, currentPriceUpdatedAt = :currentPriceUpdatedAt
+WHERE id = :id;
+
+-- Actualiza solo el precio actual y la fecha (cuando el usuario refresca la
+-- cotización desde la pantalla de portfolio sin tocar el resto de campos).
+updateCurrentPrice:
+UPDATE AssetEntity
+SET currentPrice = :currentPrice, currentPriceUpdatedAt = :currentPriceUpdatedAt
 WHERE id = :id;
 
 delete:
