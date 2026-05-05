@@ -3,6 +3,7 @@ package es.aviferdev.trackfolio.ui.settings
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -22,18 +23,28 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.trackfolio.domain.model.Account
+import es.aviferdev.trackfolio.security.AppLockManager
+import es.aviferdev.trackfolio.security.BiometricAuthenticator
+import es.aviferdev.trackfolio.security.BiometricResult
 import es.aviferdev.trackfolio.ui.account.AccountViewModel
 import es.aviferdev.trackfolio.ui.account.AddEditAccountBottomSheet
 import es.aviferdev.trackfolio.ui.home.SetInitialBalanceBottomSheet
 import es.aviferdev.trackfolio.ui.theme.*
+import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun SettingsScreen(
-    accountViewModel: AccountViewModel = koinViewModel()
+    accountViewModel: AccountViewModel = koinViewModel(),
+    backupViewModel: BackupViewModel   = koinViewModel()
 ) {
-    val accountState by accountViewModel.uiState.collectAsState()
-    val selectedId   by accountViewModel.selectedAccountId.collectAsState()
+    val accountState     by accountViewModel.uiState.collectAsState()
+    val selectedId       by accountViewModel.selectedAccountId.collectAsState()
+    val backupState      by backupViewModel.state.collectAsState()
+    val authenticator: BiometricAuthenticator = koinInject()
+    val lockManager: AppLockManager           = koinInject()
+    var biometricEnabled by remember { mutableStateOf(lockManager.biometricEnabled) }
+    var biometricError   by remember { mutableStateOf<String?>(null) }
 
     Column(
         modifier = Modifier
@@ -93,9 +104,48 @@ fun SettingsScreen(
             item { SectionHeader(title = "SEGURIDAD") }
             item {
                 SettingsGroupCard {
-                    SettingsRow(icon = "🔒", label = "Bloqueo con biometría", value = "Próximamente")
+                    BiometricToggleRow(
+                        enabled     = biometricEnabled,
+                        isAvailable = authenticator.isAvailable(),
+                        error       = biometricError,
+                        onToggle    = { shouldEnable ->
+                            biometricError = null
+                            if (shouldEnable) {
+                                // Verificar que funciona antes de activar
+                                authenticator.authenticate(
+                                    title    = "Activar bloqueo biométrico",
+                                    subtitle = "Confirma tu identidad"
+                                ) { result ->
+                                    when (result) {
+                                        is BiometricResult.Success -> {
+                                            lockManager.enableBiometric()
+                                            biometricEnabled = true
+                                        }
+                                        is BiometricResult.NotAvailable ->
+                                            biometricError = "Biometría no disponible en este dispositivo"
+                                        is BiometricResult.Error ->
+                                            biometricError = result.message
+                                        else -> Unit
+                                    }
+                                }
+                            } else {
+                                lockManager.disableBiometric()
+                                biometricEnabled = false
+                            }
+                        }
+                    )
                     HorizontalDivider(color = BorderGray, thickness = 0.5.dp, modifier = Modifier.padding(start = 52.dp))
-                    SettingsRow(icon = "☁️", label = "Copia de seguridad", value = "Próximamente")
+                    BackupActionRow(
+                        icon    = "☁️",
+                        label   = "Exportar backup",
+                        onClick = { backupViewModel.openExport() }
+                    )
+                    HorizontalDivider(color = BorderGray, thickness = 0.5.dp, modifier = Modifier.padding(start = 52.dp))
+                    BackupActionRow(
+                        icon    = "📥",
+                        label   = "Importar backup",
+                        onClick = { backupViewModel.openImport() }
+                    )
                     HorizontalDivider(color = BorderGray, thickness = 0.5.dp, modifier = Modifier.padding(start = 52.dp))
                     SettingsRow(icon = "🔔", label = "Recordatorios", value = "Próximamente")
                 }
@@ -146,6 +196,22 @@ fun SettingsScreen(
                 accountViewModel.editAccount(accountState.editingAccount!!, name, currency)
             },
             onDismiss = { accountViewModel.closeEditSheet() }
+        )
+    }
+
+    // ── Sheet de backup ────────────────────────────────────────────────────
+    if (backupState.action != BackupAction.NONE) {
+        BackupPasswordSheet(
+            state                   = backupState,
+            onPasswordChange        = backupViewModel::onPasswordChange,
+            onConfirmPasswordChange = backupViewModel::onConfirmPasswordChange,
+            onConfirm               = {
+                if (backupState.action == BackupAction.EXPORT)
+                    backupViewModel.confirmExport()
+                else
+                    backupViewModel.confirmImport()
+            },
+            onDismiss = { backupViewModel.dismiss() }
         )
     }
 
@@ -313,6 +379,73 @@ private fun SettingsRow(icon: String, label: String, value: String) {
             Text(text = value, fontSize = 13.sp, color = TextSecondary)
         } else {
             Text("›", fontSize = 18.sp, color = TextSecondary)
+        }
+    }
+}
+
+@Composable
+private fun BackupActionRow(icon: String, label: String, onClick: () -> Unit) {
+    Row(
+        modifier          = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
+            .padding(horizontal = 16.dp, vertical = 14.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(icon, fontSize = 18.sp, modifier = Modifier.size(28.dp))
+        Spacer(Modifier.width(12.dp))
+        Text(text = label, fontSize = 15.sp, color = PrimaryDark, modifier = Modifier.weight(1f))
+        Text("›", fontSize = 18.sp, color = PrimaryDark)
+    }
+}
+
+@Composable
+private fun BiometricToggleRow(
+    enabled: Boolean,
+    isAvailable: Boolean,
+    error: String?,
+    onToggle: (Boolean) -> Unit
+) {
+    Column {
+        Row(
+            modifier          = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 14.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text("🔒", fontSize = 18.sp, modifier = Modifier.size(28.dp))
+            Spacer(Modifier.width(12.dp))
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text     = "Bloqueo con biometría",
+                    fontSize = 15.sp,
+                    color    = if (isAvailable) TextPrimary else TextSecondary
+                )
+                if (!isAvailable) {
+                    Text(
+                        text     = "No disponible en este dispositivo",
+                        fontSize = 11.sp,
+                        color    = TextSecondary
+                    )
+                }
+            }
+            Switch(
+                checked         = enabled,
+                onCheckedChange = { if (isAvailable) onToggle(it) },
+                enabled         = isAvailable,
+                colors          = SwitchDefaults.colors(
+                    checkedThumbColor   = SurfaceWhite,
+                    checkedTrackColor   = PrimaryDark,
+                    uncheckedThumbColor = SurfaceWhite,
+                    uncheckedTrackColor = BorderGray
+                )
+            )
+        }
+        error?.let { msg ->
+            Text(
+                text     = msg,
+                fontSize = 11.sp,
+                color    = ExpenseRed,
+                modifier = Modifier.padding(start = 56.dp, end = 16.dp, bottom = 8.dp)
+            )
         }
     }
 }

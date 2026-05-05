@@ -29,6 +29,7 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun HomeScreen(
     onNavigateToTransactions: () -> Unit = {},
+    onNavigateToCharts: () -> Unit = {},
     viewModel: HomeViewModel = koinViewModel(),
     accountViewModel: AccountViewModel = koinViewModel()
 ) {
@@ -68,7 +69,8 @@ fun HomeScreen(
                     selectedAccountId = selectedId,
                     onAccountSelected = { id -> accountViewModel.selectAccount(id) },
                     onAddTransaction = { showAddTransaction = true },
-                    onNavigateToTransactions = onNavigateToTransactions
+                    onNavigateToTransactions = onNavigateToTransactions,
+                    onNavigateToCharts = onNavigateToCharts
                 )
             }
         }
@@ -120,7 +122,8 @@ private fun HomeContent(
     selectedAccountId: String?,
     onAccountSelected: (String) -> Unit,
     onAddTransaction: () -> Unit,
-    onNavigateToTransactions: () -> Unit
+    onNavigateToTransactions: () -> Unit,
+    onNavigateToCharts: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -189,7 +192,10 @@ private fun HomeContent(
         Spacer(Modifier.height(28.dp))
 
         // Acceso rápido
-        QuickAccessSection(modifier = Modifier.padding(horizontal = 20.dp))
+        QuickAccessSection(
+            onNavigateToCharts = onNavigateToCharts,
+            modifier = Modifier.padding(horizontal = 20.dp)
+        )
     }
 }
 
@@ -231,31 +237,41 @@ private fun HeroCard(balance: HomeBalance, modifier: Modifier = Modifier) {
                     color    = Color.White.copy(alpha = 0.55f)
                 )
             }
-            if (balance.totalOwed > 0 || balance.totalOwing > 0) {
-                Spacer(Modifier.height(20.dp))
-                HorizontalDivider(color = Color.White.copy(alpha = 0.15f), thickness = 0.5.dp)
-                Spacer(Modifier.height(16.dp))
-                Row(modifier = Modifier.fillMaxWidth()) {
-                    MonthlyIndicator(
-                        label      = "Me deben",
-                        amount     = balance.totalOwed,
-                        isPositive = true,
-                        modifier   = Modifier.weight(1f)
-                    )
-                    Box(
-                        modifier = Modifier
-                            .width(0.5.dp)
-                            .height(40.dp)
-                            .background(Color.White.copy(alpha = 0.15f))
-                            .align(Alignment.CenterVertically)
-                    )
-                    MonthlyIndicator(
-                        label      = "Debo yo",
-                        amount     = balance.totalOwing,
-                        isPositive = false,
-                        modifier   = Modifier.weight(1f)
-                    )
-                }
+
+            Spacer(Modifier.height(20.dp))
+            HorizontalDivider(color = Color.White.copy(alpha = 0.15f), thickness = 0.5.dp)
+            Spacer(Modifier.height(16.dp))
+
+            // Balance neto incluyendo deudas
+            val netWithDebts = balance.selectedAccountBalance + balance.totalOwed - balance.totalOwing
+            Text(
+                text     = "Neto con deudas: ${formatAmount(netWithDebts)} $currency",
+                fontSize = 11.sp,
+                color    = Color.White.copy(alpha = 0.50f)
+            )
+
+            Spacer(Modifier.height(12.dp))
+
+            Row(modifier = Modifier.fillMaxWidth()) {
+                MonthlyIndicator(
+                    label      = "Me deben",
+                    amount     = balance.totalOwed,
+                    isPositive = true,
+                    modifier   = Modifier.weight(1f)
+                )
+                Box(
+                    modifier = Modifier
+                        .width(0.5.dp)
+                        .height(40.dp)
+                        .background(Color.White.copy(alpha = 0.15f))
+                        .align(Alignment.CenterVertically)
+                )
+                MonthlyIndicator(
+                    label      = "Debo yo",
+                    amount     = balance.totalOwing,
+                    isPositive = false,
+                    modifier   = Modifier.weight(1f)
+                )
             }
         }
     }
@@ -413,7 +429,7 @@ private fun TransactionRow(transaction: Transaction, categoryName: String) {
 }
 
 @Composable
-private fun QuickAccessSection(modifier: Modifier = Modifier) {
+private fun QuickAccessSection(onNavigateToCharts: () -> Unit = {}, modifier: Modifier = Modifier) {
     Column(modifier = modifier) {
         Text(
             text       = "Acceso rápido",
@@ -426,16 +442,27 @@ private fun QuickAccessSection(modifier: Modifier = Modifier) {
             modifier              = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            QuickAccessCard(label = "Portfolio", icon = "📈", modifier = Modifier.weight(1f))
-            QuickAccessCard(label = "Histórico", icon = "🕐", modifier = Modifier.weight(1f))
+            QuickAccessCard(
+                label    = "Gráficos",
+                icon     = "📊",
+                onClick  = onNavigateToCharts,
+                modifier = Modifier.weight(1f)
+            )
+            QuickAccessCard(
+                label    = "Histórico",
+                icon     = "🕐",
+                onClick  = {},
+                modifier = Modifier.weight(1f)
+            )
             Spacer(modifier = Modifier.weight(1f))
         }
     }
 }
 
 @Composable
-private fun QuickAccessCard(label: String, icon: String, modifier: Modifier = Modifier) {
+private fun QuickAccessCard(label: String, icon: String, onClick: () -> Unit = {}, modifier: Modifier = Modifier) {
     Card(
+        onClick   = onClick,
         modifier  = modifier.aspectRatio(1.2f),
         shape     = RoundedCornerShape(12.dp),
         colors    = CardDefaults.cardColors(containerColor = SurfaceWhite),

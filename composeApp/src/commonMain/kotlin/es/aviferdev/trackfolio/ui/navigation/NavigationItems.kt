@@ -3,11 +3,11 @@ package es.aviferdev.trackfolio.ui.navigation
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material.icons.outlined.DateRange
 import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Settings
-import androidx.compose.material.icons.outlined.Warning
+import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -26,14 +26,14 @@ fun bottomNavItems() = listOf(
         icon   = Icons.Outlined.DateRange
     ),
     BottomNavItem(
-        screen = Screen.Charts,
-        label  = "Gráficos",
+        screen = Screen.Portfolio,
+        label  = "Portfolio",
         icon   = Icons.Outlined.Star
     ),
     BottomNavItem(
         screen = Screen.Debts,
         label  = "Deudas",
-        icon   = Icons.Outlined.Warning
+        icon   = Icons.Outlined.Person
     ),
     BottomNavItem(
         screen = Screen.Settings,

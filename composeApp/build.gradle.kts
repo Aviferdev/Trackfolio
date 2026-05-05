@@ -31,6 +31,7 @@ kotlin {
             implementation(libs.androidx.activity.compose)
             implementation(libs.sqldelight.android.driver)
             implementation(libs.koin.android)
+            implementation("androidx.biometric:biometric:1.1.0")
         }
         iosMain.dependencies {
             implementation(libs.sqldelight.native.driver)
@@ -61,7 +62,7 @@ sqldelight {
     databases {
         create("TrackfolioDatabase") {
             packageName.set("es.aviferdev.trackfolio.data.database")
-            version = 2
+            version = 3
         }
     }
 }

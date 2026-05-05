@@ -21,6 +21,7 @@ import androidx.navigation.compose.rememberNavController
 import es.aviferdev.trackfolio.ui.annual.AnnualSummaryScreen
 import es.aviferdev.trackfolio.ui.debt.DebtListScreen
 import es.aviferdev.trackfolio.ui.home.HomeScreen
+import es.aviferdev.trackfolio.ui.portfolio.PortfolioScreen
 import es.aviferdev.trackfolio.ui.settings.SettingsScreen
 import es.aviferdev.trackfolio.ui.transaction.TransactionListScreen
 import es.aviferdev.trackfolio.ui.theme.PrimaryDark
@@ -35,10 +36,10 @@ data class BottomNavItem(
 
 @Composable
 fun TrackfolioNavHost() {
-    val navController       = rememberNavController()
-    val navBackStackEntry   by navController.currentBackStackEntryAsState()
-    val currentDestination  = navBackStackEntry?.destination
-    val items               = bottomNavItems()
+    val navController      = rememberNavController()
+    val navBackStackEntry  by navController.currentBackStackEntryAsState()
+    val currentDestination = navBackStackEntry?.destination
+    val items              = bottomNavItems()
 
     Scaffold(
         bottomBar = {
@@ -78,21 +79,29 @@ fun TrackfolioNavHost() {
             modifier         = Modifier.padding(innerPadding)
         ) {
             composable(Screen.Home.route) {
-                HomeScreen(onNavigateToTransactions = {
-                    navController.navigate(Screen.Transactions.route)
-                })
+                HomeScreen(
+                    onNavigateToTransactions = {
+                        navController.navigate(Screen.Transactions.route)
+                    },
+                    onNavigateToCharts = {
+                        navController.navigate(Screen.Charts.route)
+                    }
+                )
             }
             composable(Screen.Transactions.route) {
                 TransactionListScreen()
             }
-            composable(Screen.Charts.route) {
-                AnnualSummaryScreen()
+            composable(Screen.Portfolio.route) {
+                PortfolioScreen()
             }
             composable(Screen.Debts.route) {
                 DebtListScreen()
             }
             composable(Screen.Settings.route) {
                 SettingsScreen()
+            }
+            composable(Screen.Charts.route) {
+                AnnualSummaryScreen()
             }
         }
     }

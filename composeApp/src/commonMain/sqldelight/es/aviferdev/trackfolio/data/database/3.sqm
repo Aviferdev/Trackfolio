@@ -1,0 +1,14 @@
+CREATE TABLE AssetEntity (
+    id            TEXT    NOT NULL PRIMARY KEY,
+    accountId     TEXT    NOT NULL,
+    ticker        TEXT    NOT NULL,
+    name          TEXT    NOT NULL,
+    quantity      REAL    NOT NULL,
+    purchasePrice REAL    NOT NULL,
+    purchaseDate  INTEGER NOT NULL,
+    notes         TEXT,
+    createdAt     INTEGER NOT NULL,
+    FOREIGN KEY (accountId) REFERENCES AccountEntity(id) ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS idx_asset_account ON AssetEntity(accountId);

@@ -6,6 +6,10 @@ import es.aviferdev.trackfolio.domain.usecase.account.GetAccountsUseCase
 import es.aviferdev.trackfolio.domain.usecase.account.SaveAccountUseCase
 import es.aviferdev.trackfolio.domain.usecase.account.SetInitialBalanceUseCase
 import es.aviferdev.trackfolio.domain.usecase.account.UpdateAccountUseCase
+import es.aviferdev.trackfolio.domain.usecase.asset.DeleteAssetUseCase
+import es.aviferdev.trackfolio.domain.usecase.asset.GetAssetsByAccountUseCase
+import es.aviferdev.trackfolio.domain.usecase.asset.SaveAssetUseCase
+import es.aviferdev.trackfolio.domain.usecase.asset.UpdateAssetUseCase
 import es.aviferdev.trackfolio.domain.usecase.category.GetCategoriesByTypeUseCase
 import es.aviferdev.trackfolio.domain.usecase.debt.DeleteDebtUseCase
 import es.aviferdev.trackfolio.domain.usecase.debt.GetActiveDebtsUseCase
@@ -25,6 +29,8 @@ import es.aviferdev.trackfolio.ui.annual.AnnualViewModel
 import es.aviferdev.trackfolio.ui.debt.DebtViewModel
 import es.aviferdev.trackfolio.ui.home.AddTransactionViewModel
 import es.aviferdev.trackfolio.ui.home.HomeViewModel
+import es.aviferdev.trackfolio.ui.portfolio.PortfolioViewModel
+import es.aviferdev.trackfolio.ui.settings.BackupViewModel
 import es.aviferdev.trackfolio.ui.transaction.TransactionViewModel
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
@@ -58,6 +64,12 @@ val useCaseModule = module {
     factory { SaveDebtUseCase(get()) }
     factory { MarkDebtAsPaidUseCase(get()) }
     factory { DeleteDebtUseCase(get()) }
+
+    // ── Asset ─────────────────────────────────────────────────────────────────
+    factory { GetAssetsByAccountUseCase(get()) }
+    factory { SaveAssetUseCase(get()) }
+    factory { UpdateAssetUseCase(get()) }
+    factory { DeleteAssetUseCase(get()) }
 
     // ── Category ──────────────────────────────────────────────────────────────
     factory { GetCategoriesByTypeUseCase(get()) }
@@ -105,4 +117,14 @@ val useCaseModule = module {
             session             = get()
         )
     }
+    viewModel {
+        PortfolioViewModel(
+            getAssetsByAccount = get(),
+            saveAsset          = get(),
+            updateAsset        = get(),
+            deleteAsset        = get(),
+            session            = get()
+        )
+    }
+    viewModel { BackupViewModel(get()) }
 }
