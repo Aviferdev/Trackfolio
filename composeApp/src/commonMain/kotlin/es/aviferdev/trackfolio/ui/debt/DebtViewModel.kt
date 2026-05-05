@@ -8,6 +8,7 @@ import es.aviferdev.trackfolio.domain.usecase.debt.DeleteDebtUseCase
 import es.aviferdev.trackfolio.domain.usecase.debt.GetActiveDebtsUseCase
 import es.aviferdev.trackfolio.domain.usecase.debt.MarkDebtAsPaidUseCase
 import es.aviferdev.trackfolio.domain.usecase.debt.SaveDebtUseCase
+import es.aviferdev.trackfolio.domain.usecase.debt.UpdateDebtUseCase
 import es.aviferdev.trackfolio.ui.account.AccountSession
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
@@ -32,6 +33,7 @@ class DebtViewModel(
     getActiveDebts: GetActiveDebtsUseCase,
     private val markDebtAsPaid: MarkDebtAsPaidUseCase,
     private val saveDebt: SaveDebtUseCase,
+    private val updateDebtUseCase: UpdateDebtUseCase,
     private val deleteDebtUseCase: DeleteDebtUseCase,
     private val session: AccountSession
 ) : ViewModel() {
@@ -66,6 +68,17 @@ class DebtViewModel(
 
     fun deleteDebt(id: String) {
         viewModelScope.launch { deleteDebtUseCase(id) }
+    }
+
+    fun editDebt(original: Debt, personName: String, amount: Double, direction: DebtDirection, notes: String?) {
+        viewModelScope.launch {
+            updateDebtUseCase(original.copy(
+                personName = personName,
+                amount     = amount,
+                direction  = direction,
+                notes      = notes
+            ))
+        }
     }
 
     fun saveDebt(personName: String, amount: Double, direction: DebtDirection, notes: String?) {

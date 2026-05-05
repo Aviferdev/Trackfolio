@@ -10,6 +10,7 @@ import es.aviferdev.trackfolio.domain.model.Transaction
 import es.aviferdev.trackfolio.domain.model.TransactionType
 import es.aviferdev.trackfolio.domain.usecase.category.GetCategoriesByTypeUseCase
 import es.aviferdev.trackfolio.domain.usecase.transaction.SaveTransactionUseCase
+import es.aviferdev.trackfolio.domain.usecase.transaction.UpdateTransactionUseCase
 import es.aviferdev.trackfolio.ui.account.AccountSession
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -28,6 +29,7 @@ sealed class AddTransactionUiState {
 
 class AddTransactionViewModel(
     private val saveTransaction: SaveTransactionUseCase,
+    private val updateTransaction: UpdateTransactionUseCase,
     private val getCategoriesByType: GetCategoriesByTypeUseCase,
     private val session: AccountSession
 ) : ViewModel() {
@@ -35,18 +37,18 @@ class AddTransactionViewModel(
     private val _uiState = MutableStateFlow<AddTransactionUiState>(AddTransactionUiState.Idle)
     val uiState: StateFlow<AddTransactionUiState> = _uiState.asStateFlow()
 
+    // Transacción en edición (null = modo creación)
+    private var editingTransaction: Transaction? = null
+    val isEditing: Boolean get() = editingTransaction != null
+
     var amount by mutableStateOf("")
         private set
-
     var type by mutableStateOf(TransactionType.EXPENSE)
         private set
-
     var categories by mutableStateOf<List<Category>>(emptyList())
         private set
-
     var selectedCategoryId by mutableStateOf("")
         private set
-
     var notes by mutableStateOf("")
         private set
 
@@ -55,7 +57,22 @@ class AddTransactionViewModel(
             && amount.replace(',', '.').toDoubleOrNull()?.let { it > 0 } == true
             && selectedCategoryId.isNotEmpty()
 
-    init {
+    init { loadCategories() }
+
+    /** Llama esto antes de mostrar el sheet en modo edición */
+    fun loadForEdit(transaction: Transaction) {
+        editingTransaction = transaction
+        amount = transaction.amount.toString().replace('.', ',')
+        type   = transaction.type
+        notes  = transaction.notes ?: ""
+        loadCategoriesAndSelect(transaction.type, transaction.categoryId)
+    }
+
+    fun resetForCreate() {
+        editingTransaction = null
+        amount = ""
+        type   = TransactionType.EXPENSE
+        notes  = ""
         loadCategories()
     }
 
@@ -68,19 +85,21 @@ class AddTransactionViewModel(
         loadCategories()
     }
 
-    fun onCategoryChange(categoryId: String) {
-        selectedCategoryId = categoryId
-    }
-
-    fun onNotesChange(value: String) {
-        notes = value
-    }
+    fun onCategoryChange(categoryId: String) { selectedCategoryId = categoryId }
+    fun onNotesChange(value: String) { notes = value }
 
     private fun loadCategories() {
-        getCategoriesByType(type)
+        loadCategoriesAndSelect(type, null)
+    }
+
+    private fun loadCategoriesAndSelect(forType: TransactionType, selectId: String?) {
+        getCategoriesByType(forType)
             .onEach { list ->
                 categories = list
-                selectedCategoryId = list.firstOrNull()?.id ?: ""
+                selectedCategoryId = if (selectId != null && list.any { it.id == selectId })
+                    selectId
+                else
+                    list.firstOrNull()?.id ?: ""
             }
             .launchIn(viewModelScope)
     }
@@ -88,31 +107,42 @@ class AddTransactionViewModel(
     fun save() {
         if (!isValid) return
         _uiState.value = AddTransactionUiState.Loading
-
         viewModelScope.launch {
             val amountValue = amount.replace(',', '.').toDoubleOrNull() ?: return@launch
-            // Usa la cuenta seleccionada actualmente en la sesión
-            val accountId = session.selectedAccountId.value
-                ?: run {
-                    _uiState.value = AddTransactionUiState.Error("No hay cuenta seleccionada")
-                    return@launch
-                }
-
+            val accountId   = session.selectedAccountId.value ?: run {
+                _uiState.value = AddTransactionUiState.Error("No hay cuenta seleccionada")
+                return@launch
+            }
             val now = Clock.System.now().toEpochMilliseconds()
-            val transaction = Transaction(
-                id         = generateId(),
-                accountId  = accountId,
-                amount     = amountValue,
-                type       = type,
-                categoryId = selectedCategoryId,
-                date       = now,
-                notes      = notes.ifBlank { null },
-                createdAt  = now
-            )
 
-            saveTransaction(transaction)
-                .onSuccess { _uiState.value = AddTransactionUiState.Success }
-                .onFailure { _uiState.value = AddTransactionUiState.Error(it.message ?: "Error al guardar") }
+            val existing = editingTransaction
+            if (existing != null) {
+                // Modo edición
+                val updated = existing.copy(
+                    amount     = amountValue,
+                    type       = type,
+                    categoryId = selectedCategoryId,
+                    notes      = notes.ifBlank { null }
+                )
+                updateTransaction(updated)
+                    .onSuccess { _uiState.value = AddTransactionUiState.Success }
+                    .onFailure { _uiState.value = AddTransactionUiState.Error(it.message ?: "Error") }
+            } else {
+                // Modo creación
+                val transaction = Transaction(
+                    id         = generateId(),
+                    accountId  = accountId,
+                    amount     = amountValue,
+                    type       = type,
+                    categoryId = selectedCategoryId,
+                    date       = now,
+                    notes      = notes.ifBlank { null },
+                    createdAt  = now
+                )
+                saveTransaction(transaction)
+                    .onSuccess { _uiState.value = AddTransactionUiState.Success }
+                    .onFailure { _uiState.value = AddTransactionUiState.Error(it.message ?: "Error") }
+            }
         }
     }
 

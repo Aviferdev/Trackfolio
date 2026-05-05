@@ -1,8 +1,6 @@
 package es.aviferdev.trackfolio
 
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.*
-import androidx.compose.ui.Modifier
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
@@ -20,17 +18,20 @@ fun App() {
     val databaseInitializer = koinInject<DatabaseInitializer>()
     val appLockManager      = koinInject<AppLockManager>()
 
-    // Estado local del bloqueo, sincronizado con AppLockManager
-    var isLocked by remember { mutableStateOf(appLockManager.isLocked) }
+    // Inicializar con el estado real (persiste entre sesiones via AppSettings)
+    var isLocked by remember {
+        appLockManager.onAppStart()   // bloquea al arrancar si biometría activa
+        mutableStateOf(appLockManager.isLocked)
+    }
 
-    // Inicializar BD al arrancar
+    // Inicializar BD
     LaunchedEffect(Unit) {
         withContext(Dispatchers.Default) {
             databaseInitializer.initializeIfNeeded()
         }
     }
 
-    // Observar ciclo de vida para bloquear al pasar a background
+    // Bloquear al pasar a background
     val lifecycleOwner = LocalLifecycleOwner.current
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
@@ -40,6 +41,7 @@ fun App() {
                     isLocked = appLockManager.isLocked
                 }
                 Lifecycle.Event.ON_START -> {
+                    // Sincronizar por si cambió desde otro hilo
                     isLocked = appLockManager.isLocked
                 }
                 else -> Unit

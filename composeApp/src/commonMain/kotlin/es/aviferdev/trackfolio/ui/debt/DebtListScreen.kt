@@ -28,8 +28,9 @@ fun DebtListScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     var showAddDebt by remember { mutableStateOf(false) }
+    var debtToEdit     by remember { mutableStateOf<Debt?>(null) }
     var debtToMarkPaid by remember { mutableStateOf<Debt?>(null) }
-    var debtToDelete by remember { mutableStateOf<Debt?>(null) }
+    var debtToDelete   by remember { mutableStateOf<Debt?>(null) }
 
     Box(
         modifier = Modifier
@@ -66,8 +67,9 @@ fun DebtListScreen(
                             onDelete = { debtToDelete = debt }
                         ) {
                             DebtCard(
-                                debt = debt,
-                                onMarkPaid = { debtToMarkPaid = debt }
+                                debt       = debt,
+                                onMarkPaid = { debtToMarkPaid = debt },
+                                onEdit     = { debtToEdit = debt }
                             )
                         }
                         HorizontalDivider(
@@ -91,8 +93,9 @@ fun DebtListScreen(
                             onDelete = { debtToDelete = debt }
                         ) {
                             DebtCard(
-                                debt = debt,
-                                onMarkPaid = { debtToMarkPaid = debt }
+                                debt       = debt,
+                                onMarkPaid = { debtToMarkPaid = debt },
+                                onEdit     = { debtToEdit = debt }
                             )
                         }
                         HorizontalDivider(
@@ -133,6 +136,14 @@ fun DebtListScreen(
         AddDebtBottomSheet(
             onDismiss = { showAddDebt = false },
             viewModel = viewModel
+        )
+    }
+
+    debtToEdit?.let { debt ->
+        AddDebtBottomSheet(
+            editingDebt = debt,
+            onDismiss   = { debtToEdit = null },
+            viewModel   = viewModel
         )
     }
 
@@ -283,7 +294,8 @@ private fun DebtSectionTitle(
 @Composable
 private fun DebtCard(
     debt: Debt,
-    onMarkPaid: () -> Unit
+    onMarkPaid: () -> Unit,
+    onEdit: () -> Unit
 ) {
     Row(
         modifier = Modifier
@@ -341,17 +353,28 @@ private fun DebtCard(
             )
             Spacer(Modifier.height(4.dp))
             TextButton(
-                onClick = onMarkPaid,
-                contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp),
-                modifier = Modifier.height(24.dp)
-            ) {
-                Text(
-                    text = "Marcar pagada",
-                    fontSize = 11.sp,
-                    color = PrimaryDark,
-                    fontWeight = FontWeight.Medium
-                )
-            }
+                    onClick = onMarkPaid,
+                    contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp),
+                    modifier = Modifier.height(24.dp)
+                ) {
+                    Text(
+                        text = "Marcar pagada",
+                        fontSize = 11.sp,
+                        color = PrimaryDark,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+                TextButton(
+                    onClick = onEdit,
+                    contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp),
+                    modifier = Modifier.height(24.dp)
+                ) {
+                    Text(
+                        text = "Editar",
+                        fontSize = 11.sp,
+                        color = TextSecondary
+                    )
+                }
         }
     }
 }

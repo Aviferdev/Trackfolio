@@ -1,29 +1,39 @@
 package es.aviferdev.trackfolio.security
 
+private const val KEY_BIOMETRIC_ENABLED = "biometric_enabled"
+
 /**
- * Gestiona el estado de bloqueo de la app y las preferencias de biometría.
- * Singleton Koin (single).
+ * Gestiona el bloqueo de la app.
+ * La preferencia de biometría se persiste en AppSettings (SharedPrefs / NSUserDefaults).
+ * El estado de bloqueo (_isLocked) es solo en memoria — se resetea al matar la app
+ * pero se activa correctamente al volver de background si estaba habilitado.
  */
-class AppLockManager {
-    /** True cuando la app está bloqueada y requiere autenticación */
+class AppLockManager(private val settings: AppSettings) {
+
     private var _isLocked = false
     val isLocked: Boolean get() = _isLocked
 
-    /** True si el usuario ha activado el bloqueo biométrico en Ajustes */
-    private var _biometricEnabled = false
-    val biometricEnabled: Boolean get() = _biometricEnabled
+    /** Lee la preferencia persistida */
+    val biometricEnabled: Boolean
+        get() = settings.getBool(KEY_BIOMETRIC_ENABLED, false)
 
     fun enableBiometric() {
-        _biometricEnabled = true
+        settings.putBool(KEY_BIOMETRIC_ENABLED, true)
     }
 
     fun disableBiometric() {
-        _biometricEnabled = false
+        settings.putBool(KEY_BIOMETRIC_ENABLED, false)
+        _isLocked = false
     }
 
-    /** Llamado cuando la app pasa a background */
+    /** Llamado cuando la app pasa a background (ON_STOP / sceneDidEnterBackground) */
     fun onAppBackground() {
-        if (_biometricEnabled) _isLocked = true
+        if (biometricEnabled) _isLocked = true
+    }
+
+    /** Llamado al arrancar la app — bloquea si la biometría está activada */
+    fun onAppStart() {
+        if (biometricEnabled) _isLocked = true
     }
 
     /** Llamado cuando la autenticación es exitosa */

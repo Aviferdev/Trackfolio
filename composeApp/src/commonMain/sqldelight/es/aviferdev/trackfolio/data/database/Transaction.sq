@@ -71,6 +71,13 @@ WHERE accountId = :accountId
 GROUP BY month
 ORDER BY month ASC;
 
+-- Búsqueda por nota o categoría (para TransactionListScreen)
+searchByAccountAndText:
+SELECT * FROM TransactionEntity
+WHERE accountId = :accountId
+  AND (notes LIKE :query)
+ORDER BY date DESC;
+
 -- ─── Retrocompatibilidad (sin filtro de cuenta) ───────────────────────────────
 
 selectByMonth:

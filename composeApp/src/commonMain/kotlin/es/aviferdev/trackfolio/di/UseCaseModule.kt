@@ -15,6 +15,7 @@ import es.aviferdev.trackfolio.domain.usecase.debt.DeleteDebtUseCase
 import es.aviferdev.trackfolio.domain.usecase.debt.GetActiveDebtsUseCase
 import es.aviferdev.trackfolio.domain.usecase.debt.MarkDebtAsPaidUseCase
 import es.aviferdev.trackfolio.domain.usecase.debt.SaveDebtUseCase
+import es.aviferdev.trackfolio.domain.usecase.debt.UpdateDebtUseCase
 import es.aviferdev.trackfolio.domain.usecase.home.GetHomeBalanceUseCase
 import es.aviferdev.trackfolio.domain.usecase.transaction.DeleteTransactionUseCase
 import es.aviferdev.trackfolio.domain.usecase.transaction.GetAnnualSummaryUseCase
@@ -31,6 +32,7 @@ import es.aviferdev.trackfolio.ui.home.AddTransactionViewModel
 import es.aviferdev.trackfolio.ui.home.HomeViewModel
 import es.aviferdev.trackfolio.ui.portfolio.PortfolioViewModel
 import es.aviferdev.trackfolio.ui.settings.BackupViewModel
+import es.aviferdev.trackfolio.ui.settings.CategoryViewModel
 import es.aviferdev.trackfolio.ui.transaction.TransactionViewModel
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
@@ -62,6 +64,7 @@ val useCaseModule = module {
     // ── Debts ─────────────────────────────────────────────────────────────────
     factory { GetActiveDebtsUseCase(get()) }
     factory { SaveDebtUseCase(get()) }
+    factory { UpdateDebtUseCase(get()) }
     factory { MarkDebtAsPaidUseCase(get()) }
     factory { DeleteDebtUseCase(get()) }
 
@@ -96,6 +99,7 @@ val useCaseModule = module {
     viewModel {
         AddTransactionViewModel(
             saveTransaction     = get(),
+            updateTransaction   = get(),
             getCategoriesByType = get(),
             session             = get()
         )
@@ -109,7 +113,7 @@ val useCaseModule = module {
             session                = get()
         )
     }
-    viewModel { DebtViewModel(get(), get(), get(), get(), get()) }
+    viewModel { DebtViewModel(get(), get(), get(), get(), get(), get()) }
     viewModel {
         AnnualViewModel(
             getAnnualSummary    = get(),
@@ -127,4 +131,5 @@ val useCaseModule = module {
         )
     }
     viewModel { BackupViewModel(get()) }
+    viewModel { CategoryViewModel(get()) }
 }

@@ -23,12 +23,14 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 
 data class TransactionListUiState(
-    val transactions: List<Transaction>     = emptyList(),
-    val totals: MonthlyTotals?              = null,
-    val categoryNames: Map<String, String>  = emptyMap(),
-    val year: String                        = "",
-    val month: String                       = "",
-    val isLoading: Boolean                  = true
+    val transactions: List<Transaction>         = emptyList(),
+    val filteredTransactions: List<Transaction> = emptyList(),
+    val totals: MonthlyTotals?                  = null,
+    val categoryNames: Map<String, String>      = emptyMap(),
+    val year: String                            = "",
+    val month: String                           = "",
+    val searchQuery: String                     = "",
+    val isLoading: Boolean                      = true
 )
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -46,6 +48,9 @@ class TransactionViewModel(
         Pair(now.year.toString(), now.monthNumber.toString().padStart(2, '0'))
     )
 
+    private val _searchQuery = MutableStateFlow("")
+    val searchQuery: StateFlow<String> = _searchQuery
+
     private val categoryNamesFlow = combine(
         getCategoriesByType(TransactionType.INCOME),
         getCategoriesByType(TransactionType.EXPENSE)
@@ -55,10 +60,11 @@ class TransactionViewModel(
 
     val uiState: StateFlow<TransactionListUiState> = combine(
         session.selectedAccountId,
-        _selectedPeriod
-    ) { accountId, period ->
-        accountId to period
-    }.flatMapLatest { (accountId, period) ->
+        _selectedPeriod,
+        _searchQuery
+    ) { accountId, period, query ->
+        Triple(accountId, period, query)
+    }.flatMapLatest { (accountId, period, query) ->
         val (year, month) = period
         if (accountId == null) {
             combine(categoryNamesFlow) { cats ->
@@ -66,6 +72,7 @@ class TransactionViewModel(
                     categoryNames = cats[0],
                     year          = year,
                     month         = month,
+                    searchQuery   = query,
                     isLoading     = false
                 )
             }
@@ -75,13 +82,22 @@ class TransactionViewModel(
                 getMonthlyTotals(accountId, year, month),
                 categoryNamesFlow
             ) { transactions, totals, categoryNames ->
+                val filtered = if (query.isBlank()) transactions
+                else transactions.filter { t ->
+                    val catName = categoryNames[t.categoryId]?.lowercase() ?: ""
+                    val note    = t.notes?.lowercase() ?: ""
+                    val q       = query.lowercase()
+                    catName.contains(q) || note.contains(q)
+                }
                 TransactionListUiState(
-                    transactions  = transactions,
-                    totals        = totals,
-                    categoryNames = categoryNames,
-                    year          = year,
-                    month         = month,
-                    isLoading     = false
+                    transactions         = transactions,
+                    filteredTransactions = filtered,
+                    totals               = totals,
+                    categoryNames        = categoryNames,
+                    year                 = year,
+                    month                = month,
+                    searchQuery          = query,
+                    isLoading            = false
                 )
             }
         }
@@ -94,33 +110,25 @@ class TransactionViewModel(
         )
     )
 
+    fun onSearchQueryChange(query: String) { _searchQuery.value = query }
+
     fun previousMonth() {
         val (y, m) = _selectedPeriod.value
-        val month = m.toInt()
-        val year  = y.toInt()
-        _selectedPeriod.value = if (month == 1) {
-            Pair((year - 1).toString(), "12")
-        } else {
-            Pair(y, (month - 1).toString().padStart(2, '0'))
-        }
+        val month  = m.toInt(); val year = y.toInt()
+        _selectedPeriod.value = if (month == 1) Pair((year - 1).toString(), "12")
+        else Pair(y, (month - 1).toString().padStart(2, '0'))
     }
 
     fun nextMonth() {
         val (y, m) = _selectedPeriod.value
-        val month  = m.toInt()
-        val year   = y.toInt()
+        val month  = m.toInt(); val year = y.toInt()
         val nowDate = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
         if (year == nowDate.year && month == nowDate.monthNumber) return
-        _selectedPeriod.value = if (month == 12) {
-            Pair((year + 1).toString(), "01")
-        } else {
-            Pair(y, (month + 1).toString().padStart(2, '0'))
-        }
+        _selectedPeriod.value = if (month == 12) Pair((year + 1).toString(), "01")
+        else Pair(y, (month + 1).toString().padStart(2, '0'))
     }
 
     fun deleteTransaction(id: String) {
-        viewModelScope.launch {
-            deleteTransactionUseCase(id)
-        }
+        viewModelScope.launch { deleteTransactionUseCase(id) }
     }
 }

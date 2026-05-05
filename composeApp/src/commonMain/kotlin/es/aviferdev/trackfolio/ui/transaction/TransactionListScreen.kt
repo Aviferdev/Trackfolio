@@ -23,6 +23,8 @@ import es.aviferdev.trackfolio.ui.theme.*
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import es.aviferdev.trackfolio.ui.home.AddTransactionBottomSheet
+import es.aviferdev.trackfolio.ui.home.AddTransactionViewModel
 import org.koin.compose.viewmodel.koinViewModel
 
 private val MONTH_NAMES = listOf(
@@ -35,7 +37,10 @@ fun TransactionListScreen(
     viewModel: TransactionViewModel = koinViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val searchQuery by viewModel.searchQuery.collectAsState()
     var transactionToDelete by remember { mutableStateOf<Transaction?>(null) }
+    var transactionToEdit   by remember { mutableStateOf<Transaction?>(null) }
+    val addViewModel: AddTransactionViewModel = koinViewModel()
 
     Column(
         modifier = Modifier
@@ -49,6 +54,11 @@ fun TransactionListScreen(
             onNext = { viewModel.nextMonth() }
         )
 
+        SearchBar(
+            query    = searchQuery,
+            onChange = { viewModel.onSearchQueryChange(it) }
+        )
+
         uiState.totals?.let { totals ->
             TotalsCard(
                 totalIncome = totals.totalIncome,
@@ -60,27 +70,27 @@ fun TransactionListScreen(
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 CircularProgressIndicator(color = PrimaryDark)
             }
-        } else if (uiState.transactions.isEmpty()) {
-            EmptyState(month = uiState.month, year = uiState.year)
+        } else if (uiState.filteredTransactions.isEmpty()) {
+            EmptyState(month = uiState.month, year = uiState.year, isSearch = searchQuery.isNotBlank())
         } else {
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(horizontal = 20.dp, vertical = 12.dp)
             ) {
                 itemsIndexed(
-                    items = uiState.transactions,
+                    items = uiState.filteredTransactions,
                     key = { _, t -> t.id }
                 ) { index, transaction ->
                     SwipeToDeleteContainer(
                         onDelete = { transactionToDelete = transaction }
                     ) {
                         TransactionListRow(
-                            transaction = transaction,
-                            categoryName = uiState.categoryNames[transaction.categoryId]
-                                ?: transaction.categoryId
+                            transaction  = transaction,
+                            categoryName = uiState.categoryNames[transaction.categoryId] ?: transaction.categoryId,
+                            onEdit       = { transactionToEdit = transaction }
                         )
                     }
-                    if (index < uiState.transactions.lastIndex) {
+                    if (index < uiState.filteredTransactions.lastIndex) {
                         HorizontalDivider(
                             modifier = Modifier.padding(start = 70.dp),
                             color = BorderGray,
@@ -101,6 +111,43 @@ fun TransactionListScreen(
             onDismiss = { transactionToDelete = null }
         )
     }
+
+    transactionToEdit?.let { transaction ->
+        LaunchedEffect(transaction.id) {
+            addViewModel.loadForEdit(transaction)
+        }
+        AddTransactionBottomSheet(
+            onDismiss = {
+                addViewModel.resetForCreate()
+                transactionToEdit = null
+            },
+            viewModel = addViewModel
+        )
+    }
+}
+
+@Composable
+private fun SearchBar(query: String, onChange: (String) -> Unit) {
+    OutlinedTextField(
+        value         = query,
+        onValueChange = onChange,
+        placeholder   = { Text("Buscar por nota o categoría…", fontSize = 14.sp, color = TextSecondary.copy(alpha = 0.6f)) },
+        modifier      = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 20.dp, vertical = 8.dp),
+        shape         = RoundedCornerShape(10.dp),
+        singleLine    = true,
+        colors        = OutlinedTextFieldDefaults.colors(
+            focusedBorderColor   = PrimaryDark,
+            unfocusedBorderColor = BorderGray,
+        ),
+        trailingIcon = if (query.isNotBlank()) {{
+            TextButton(
+                onClick        = { onChange("") },
+                contentPadding = PaddingValues(horizontal = 8.dp)
+            ) { Text("×", fontSize = 18.sp, color = TextSecondary) }
+        }} else null
+    )
 }
 
 @Composable
@@ -252,7 +299,7 @@ private fun SwipeToDeleteContainer(onDelete: () -> Unit, content: @Composable ()
 }
 
 @Composable
-private fun TransactionListRow(transaction: Transaction, categoryName: String) {
+private fun TransactionListRow(transaction: Transaction, categoryName: String, onEdit: () -> Unit) {
     Row(
         modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically
@@ -279,7 +326,7 @@ private fun TransactionListRow(transaction: Transaction, categoryName: String) {
             )
         }
         Column(horizontalAlignment = Alignment.End) {
-            val prefix = if (isIncome) "+" else "−"
+            val prefix      = if (isIncome) "+" else "−"
             val amountColor = if (isIncome) IncomeGreen else ExpenseRed
             Text(
                 text = "$prefix ${formatAmount(transaction.amount)} €",
@@ -288,12 +335,19 @@ private fun TransactionListRow(transaction: Transaction, categoryName: String) {
                 color = amountColor
             )
             Text(text = formatDate(transaction.date), fontSize = 11.sp, color = TextSecondary)
+            TextButton(
+                onClick        = onEdit,
+                contentPadding = PaddingValues(horizontal = 4.dp, vertical = 0.dp),
+                modifier       = Modifier.height(20.dp)
+            ) {
+                Text("Editar", fontSize = 10.sp, color = PrimaryDark.copy(alpha = 0.7f))
+            }
         }
     }
 }
 
 @Composable
-private fun EmptyState(month: String, year: String) {
+private fun EmptyState(month: String, year: String, isSearch: Boolean = false) {
     val monthName = MONTH_NAMES.getOrElse(month.toIntOrNull()?.minus(1) ?: 0) { month }
     Box(
         modifier = Modifier.fillMaxSize().padding(32.dp),
@@ -301,7 +355,7 @@ private fun EmptyState(month: String, year: String) {
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text(
-                text = "Sin movimientos",
+                text = if (isSearch) "Sin resultados" else "Sin movimientos",
                 fontSize = 17.sp,
                 fontWeight = FontWeight.Medium,
                 color = TextPrimary,
@@ -309,7 +363,8 @@ private fun EmptyState(month: String, year: String) {
             )
             Spacer(Modifier.height(8.dp))
             Text(
-                text = "No hay movimientos en $monthName $year",
+                text = if (isSearch) "No hay movimientos que coincidan con tu búsqueda"
+                       else "No hay movimientos en $monthName $year",
                 fontSize = 14.sp,
                 color = TextSecondary,
                 textAlign = TextAlign.Center

@@ -29,11 +29,13 @@ fun BackupPasswordSheet(
     onDismiss: () -> Unit
 ) {
     val isExport    = state.action == BackupAction.EXPORT
+    val isLoading   = state.backupState is BackupUiState.Loading
+    val isSuccess   = state.backupState is BackupUiState.Success
     var showPwd     by remember { mutableStateOf(false) }
     var showConfirm by remember { mutableStateOf(false) }
 
     ModalBottomSheet(
-        onDismissRequest = onDismiss,
+        onDismissRequest = { if (!isLoading) onDismiss() },
         sheetState       = rememberModalBottomSheetState(skipPartiallyExpanded = true),
         containerColor   = SurfaceWhite,
         dragHandle = {
@@ -77,52 +79,21 @@ fun BackupPasswordSheet(
 
             Spacer(Modifier.height(24.dp))
 
-            // ── Contraseña ────────────────────────────────────────────────────
-            OutlinedTextField(
-                value         = state.password,
-                onValueChange = onPasswordChange,
-                label         = { Text(if (isExport) "Contraseña de cifrado" else "Contraseña del backup") },
-                visualTransformation = if (showPwd) VisualTransformation.None
-                                       else PasswordVisualTransformation(),
-                trailingIcon  = {
-                    TextButton(
-                        onClick            = { showPwd = !showPwd },
-                        contentPadding     = PaddingValues(horizontal = 8.dp)
-                    ) {
-                        Text(
-                            text     = if (showPwd) "Ocultar" else "Mostrar",
-                            fontSize = 11.sp,
-                            color    = TextSecondary
-                        )
-                    }
-                },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                isError    = state.passwordError != null,
-                modifier   = Modifier.fillMaxWidth(),
-                singleLine = true,
-                shape      = RoundedCornerShape(10.dp),
-                colors     = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor   = PrimaryDark,
-                    unfocusedBorderColor = BorderGray
-                )
-            )
-
-            // ── Confirmar contraseña (solo exportar) ──────────────────────────
-            if (isExport) {
-                Spacer(Modifier.height(12.dp))
+            // ── Campos de contraseña (ocultos tras éxito en export) ───────────
+            if (!isSuccess) {
                 OutlinedTextField(
-                    value         = state.confirmPassword,
-                    onValueChange = onConfirmPasswordChange,
-                    label         = { Text("Confirmar contraseña") },
-                    visualTransformation = if (showConfirm) VisualTransformation.None
+                    value         = state.password,
+                    onValueChange = onPasswordChange,
+                    label         = { Text(if (isExport) "Contraseña de cifrado" else "Contraseña del backup") },
+                    visualTransformation = if (showPwd) VisualTransformation.None
                                            else PasswordVisualTransformation(),
-                    trailingIcon  = {
+                    trailingIcon = {
                         TextButton(
-                            onClick        = { showConfirm = !showConfirm },
+                            onClick        = { showPwd = !showPwd },
                             contentPadding = PaddingValues(horizontal = 8.dp)
                         ) {
                             Text(
-                                text     = if (showConfirm) "Ocultar" else "Mostrar",
+                                if (showPwd) "Ocultar" else "Mostrar",
                                 fontSize = 11.sp,
                                 color    = TextSecondary
                             )
@@ -138,57 +109,116 @@ fun BackupPasswordSheet(
                         unfocusedBorderColor = BorderGray
                     )
                 )
-            }
 
-            // ── Error ─────────────────────────────────────────────────────────
-            state.passwordError?.let { err ->
-                Spacer(Modifier.height(6.dp))
-                Text(err, fontSize = 12.sp, color = ExpenseRed)
+                if (isExport) {
+                    Spacer(Modifier.height(12.dp))
+                    OutlinedTextField(
+                        value         = state.confirmPassword,
+                        onValueChange = onConfirmPasswordChange,
+                        label         = { Text("Confirmar contraseña") },
+                        visualTransformation = if (showConfirm) VisualTransformation.None
+                                               else PasswordVisualTransformation(),
+                        trailingIcon = {
+                            TextButton(
+                                onClick        = { showConfirm = !showConfirm },
+                                contentPadding = PaddingValues(horizontal = 8.dp)
+                            ) {
+                                Text(
+                                    if (showConfirm) "Ocultar" else "Mostrar",
+                                    fontSize = 11.sp,
+                                    color    = TextSecondary
+                                )
+                            }
+                        },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                        isError    = state.passwordError != null,
+                        modifier   = Modifier.fillMaxWidth(),
+                        singleLine = true,
+                        shape      = RoundedCornerShape(10.dp),
+                        colors     = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor   = PrimaryDark,
+                            unfocusedBorderColor = BorderGray
+                        )
+                    )
+                }
+
+                // Error
+                state.passwordError?.let { err ->
+                    Spacer(Modifier.height(6.dp))
+                    Text(err, fontSize = 12.sp, color = ExpenseRed)
+                }
             }
 
             Spacer(Modifier.height(28.dp))
 
-            // ── Botón ─────────────────────────────────────────────────────────
-            val isLoading = state.backupState is BackupUiState.Loading
-
-            Button(
-                onClick  = onConfirm,
-                enabled  = !isLoading && state.password.isNotBlank(),
-                modifier = Modifier.fillMaxWidth().height(52.dp),
-                shape    = RoundedCornerShape(10.dp),
-                colors   = ButtonDefaults.buttonColors(
-                    containerColor         = PrimaryDark,
-                    disabledContainerColor = PrimaryDark.copy(alpha = 0.38f)
-                )
-            ) {
-                if (isLoading) {
-                    CircularProgressIndicator(
-                        modifier    = Modifier.size(20.dp),
-                        color       = Color.White,
-                        strokeWidth = 2.dp
-                    )
-                } else {
-                    Text(
-                        text       = if (isExport) "Exportar y compartir" else "Restaurar backup",
-                        fontSize   = 16.sp,
-                        fontWeight = FontWeight.Medium,
-                        color      = Color.White
-                    )
+            // ── Acción principal ──────────────────────────────────────────────
+            when {
+                isSuccess && isExport -> {
+                    // Export completado: mostrar confirmación y cerrar
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(10.dp))
+                            .background(Color(0xFFE8F5E9))
+                            .padding(16.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            "✅  Backup exportado correctamente",
+                            fontSize   = 14.sp,
+                            fontWeight = FontWeight.Medium,
+                            color      = Color(0xFF2E7D32)
+                        )
+                    }
+                    Spacer(Modifier.height(12.dp))
+                    Button(
+                        onClick  = onDismiss,
+                        modifier = Modifier.fillMaxWidth().height(52.dp),
+                        shape    = RoundedCornerShape(10.dp),
+                        colors   = ButtonDefaults.buttonColors(containerColor = PrimaryDark)
+                    ) {
+                        Text("Cerrar", fontSize = 16.sp, fontWeight = FontWeight.Medium, color = Color.White)
+                    }
                 }
-            }
-
-            Spacer(Modifier.height(12.dp))
-
-            TextButton(onClick = onDismiss) {
-                Text("Cancelar", fontSize = 14.sp, color = TextSecondary)
+                else -> {
+                    Button(
+                        onClick  = onConfirm,
+                        enabled  = !isLoading && state.password.isNotBlank(),
+                        modifier = Modifier.fillMaxWidth().height(52.dp),
+                        shape    = RoundedCornerShape(10.dp),
+                        colors   = ButtonDefaults.buttonColors(
+                            containerColor         = PrimaryDark,
+                            disabledContainerColor = PrimaryDark.copy(alpha = 0.38f)
+                        )
+                    ) {
+                        if (isLoading) {
+                            CircularProgressIndicator(
+                                modifier    = Modifier.size(20.dp),
+                                color       = Color.White,
+                                strokeWidth = 2.dp
+                            )
+                        } else {
+                            Text(
+                                text       = if (isExport) "Exportar y compartir" else "Restaurar backup",
+                                fontSize   = 16.sp,
+                                fontWeight = FontWeight.Medium,
+                                color      = Color.White
+                            )
+                        }
+                    }
+                    Spacer(Modifier.height(12.dp))
+                    TextButton(onClick = onDismiss) {
+                        Text("Cancelar", fontSize = 14.sp, color = TextSecondary)
+                    }
+                }
             }
         }
     }
 
-    // Cerrar automáticamente tras éxito
-    if (state.backupState is BackupUiState.Success) {
+    // Auto-cerrar tras éxito solo en importación
+    if (isSuccess && !isExport) {
         LaunchedEffect(Unit) {
-            kotlinx.coroutines.delay(300)
+            kotlinx.coroutines.delay(600)
             onDismiss()
         }
     }

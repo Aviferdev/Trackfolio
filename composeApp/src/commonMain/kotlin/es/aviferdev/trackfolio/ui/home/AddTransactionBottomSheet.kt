@@ -65,7 +65,7 @@ fun AddTransactionBottomSheet(
             Spacer(Modifier.height(8.dp))
 
             Text(
-                text = "Importe",
+                text = if (viewModel.isEditing) "Editar movimiento" else "Importe",
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Medium,
                 color = TextPrimary
@@ -171,7 +171,7 @@ fun AddTransactionBottomSheet(
                         strokeWidth = 2.dp
                     )
                 } else {
-                    Text("Guardar", fontSize = 16.sp, fontWeight = FontWeight.Medium)
+                    Text(if (uiState is AddTransactionUiState.Loading) "" else if (viewModel.isEditing) "Guardar cambios" else "Guardar", fontSize = 16.sp, fontWeight = FontWeight.Medium)
                 }
             }
         }
