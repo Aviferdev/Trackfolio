@@ -27,6 +27,7 @@ fun DebtListScreen(
     viewModel: DebtViewModel = koinViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val balancesHidden = LocalBalanceHidden.current
     var showAddDebt by remember { mutableStateOf(false) }
     var debtToEdit     by remember { mutableStateOf<Debt?>(null) }
     var debtToMarkPaid by remember { mutableStateOf<Debt?>(null) }
@@ -49,17 +50,19 @@ fun DebtListScreen(
             ) {
                 item {
                     DebtHeader(
-                        totalTheyOwe = uiState.totalTheyOwe,
-                        totalIOwe = uiState.totalIOwe
+                        totalTheyOwe   = uiState.totalTheyOwe,
+                        totalIOwe      = uiState.totalIOwe,
+                        balancesHidden = balancesHidden
                     )
                 }
 
                 if (uiState.debtsTheyOwe.isNotEmpty()) {
                     item {
                         DebtSectionTitle(
-                            title = "Me deben",
-                            total = uiState.totalTheyOwe,
-                            color = IncomeGreen
+                            title          = "Me deben",
+                            total          = uiState.totalTheyOwe,
+                            color          = IncomeGreen,
+                            balancesHidden = balancesHidden
                         )
                     }
                     items(uiState.debtsTheyOwe, key = { it.id }) { debt ->
@@ -67,9 +70,10 @@ fun DebtListScreen(
                             onDelete = { debtToDelete = debt }
                         ) {
                             DebtCard(
-                                debt       = debt,
-                                onMarkPaid = { debtToMarkPaid = debt },
-                                onEdit     = { debtToEdit = debt }
+                                debt           = debt,
+                                balancesHidden = balancesHidden,
+                                onMarkPaid     = { debtToMarkPaid = debt },
+                                onEdit         = { debtToEdit = debt }
                             )
                         }
                         HorizontalDivider(
@@ -83,9 +87,10 @@ fun DebtListScreen(
                 if (uiState.debtsIOwe.isNotEmpty()) {
                     item {
                         DebtSectionTitle(
-                            title = "Debo yo",
-                            total = uiState.totalIOwe,
-                            color = ExpenseRed
+                            title          = "Debo yo",
+                            total          = uiState.totalIOwe,
+                            color          = ExpenseRed,
+                            balancesHidden = balancesHidden
                         )
                     }
                     items(uiState.debtsIOwe, key = { it.id }) { debt ->
@@ -93,9 +98,10 @@ fun DebtListScreen(
                             onDelete = { debtToDelete = debt }
                         ) {
                             DebtCard(
-                                debt       = debt,
-                                onMarkPaid = { debtToMarkPaid = debt },
-                                onEdit     = { debtToEdit = debt }
+                                debt           = debt,
+                                balancesHidden = balancesHidden,
+                                onMarkPaid     = { debtToMarkPaid = debt },
+                                onEdit         = { debtToEdit = debt }
                             )
                         }
                         HorizontalDivider(
@@ -174,7 +180,8 @@ fun DebtListScreen(
 @Composable
 private fun DebtHeader(
     totalTheyOwe: Double,
-    totalIOwe: Double
+    totalIOwe: Double,
+    balancesHidden: Boolean
 ) {
     Surface(color = SurfaceWhite, shadowElevation = 1.dp) {
         Column(
@@ -204,11 +211,12 @@ private fun DebtHeader(
                         .padding(horizontal = 20.dp, vertical = 16.dp)
                 ) {
                     DebtSummaryItem(
-                        label = "Me deben",
-                        amount = totalTheyOwe,
-                        color = Color(0xFF66BB6A),
-                        modifier = Modifier.weight(1f),
-                        align = Alignment.Start
+                        label          = "Me deben",
+                        amount         = totalTheyOwe,
+                        color          = Color(0xFF66BB6A),
+                        balancesHidden = balancesHidden,
+                        modifier       = Modifier.weight(1f),
+                        align          = Alignment.Start
                     )
                     Box(
                         modifier = Modifier
@@ -218,11 +226,12 @@ private fun DebtHeader(
                             .align(Alignment.CenterVertically)
                     )
                     DebtSummaryItem(
-                        label = "Debo yo",
-                        amount = totalIOwe,
-                        color = Color(0xFFEF9A9A),
-                        modifier = Modifier.weight(1f),
-                        align = Alignment.End
+                        label          = "Debo yo",
+                        amount         = totalIOwe,
+                        color          = Color(0xFFEF9A9A),
+                        balancesHidden = balancesHidden,
+                        modifier       = Modifier.weight(1f),
+                        align          = Alignment.End
                     )
                 }
             }
@@ -235,6 +244,7 @@ private fun DebtSummaryItem(
     label: String,
     amount: Double,
     color: Color,
+    balancesHidden: Boolean,
     modifier: Modifier = Modifier,
     align: Alignment.Horizontal
 ) {
@@ -245,7 +255,7 @@ private fun DebtSummaryItem(
         Text(text = label, fontSize = 12.sp, color = Color.White.copy(alpha = 0.65f))
         Spacer(Modifier.height(4.dp))
         Text(
-            text = "${formatAmount(amount)} €",
+            text = "${maskAmount(formatAmount(amount), balancesHidden)} €",
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
             color = color
@@ -257,7 +267,8 @@ private fun DebtSummaryItem(
 private fun DebtSectionTitle(
     title: String,
     total: Double,
-    color: Color
+    color: Color,
+    balancesHidden: Boolean
 ) {
     Row(
         modifier = Modifier
@@ -283,7 +294,7 @@ private fun DebtSectionTitle(
             )
         }
         Text(
-            text = "${formatAmount(total)} €",
+            text = "${maskAmount(formatAmount(total), balancesHidden)} €",
             fontSize = 13.sp,
             fontWeight = FontWeight.Medium,
             color = color
@@ -294,6 +305,7 @@ private fun DebtSectionTitle(
 @Composable
 private fun DebtCard(
     debt: Debt,
+    balancesHidden: Boolean,
     onMarkPaid: () -> Unit,
     onEdit: () -> Unit
 ) {
@@ -346,7 +358,7 @@ private fun DebtCard(
             val amountColor = if (isTheyOwe) IncomeGreen else ExpenseRed
             val prefix = if (isTheyOwe) "+" else "−"
             Text(
-                text = "$prefix ${formatAmount(debt.amount)} €",
+                text = "$prefix ${maskAmount(formatAmount(debt.amount), balancesHidden)} €",
                 fontSize = 14.sp,
                 fontWeight = FontWeight.SemiBold,
                 color = amountColor

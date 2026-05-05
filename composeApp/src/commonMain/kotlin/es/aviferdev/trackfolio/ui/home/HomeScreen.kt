@@ -24,6 +24,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material.icons.outlined.Visibility
+import androidx.compose.material.icons.outlined.VisibilityOff
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -50,18 +52,22 @@ import androidx.compose.ui.unit.sp
 import es.aviferdev.trackfolio.domain.model.HomeBalance
 import es.aviferdev.trackfolio.domain.model.Transaction
 import es.aviferdev.trackfolio.domain.model.TransactionType
+import es.aviferdev.trackfolio.security.BalanceVisibilityManager
 import es.aviferdev.trackfolio.ui.account.AccountSelectorBar
 import es.aviferdev.trackfolio.ui.account.AccountViewModel
 import es.aviferdev.trackfolio.ui.theme.BackgroundGray
 import es.aviferdev.trackfolio.ui.theme.BorderGray
 import es.aviferdev.trackfolio.ui.theme.ExpenseRed
 import es.aviferdev.trackfolio.ui.theme.IncomeGreen
+import es.aviferdev.trackfolio.ui.theme.LocalBalanceHidden
 import es.aviferdev.trackfolio.ui.theme.PrimaryDark
 import es.aviferdev.trackfolio.ui.theme.SurfaceWhite
 import es.aviferdev.trackfolio.ui.theme.TextPrimary
 import es.aviferdev.trackfolio.ui.theme.TextSecondary
 import es.aviferdev.trackfolio.ui.theme.formatAmount
 import es.aviferdev.trackfolio.ui.theme.formatDate
+import es.aviferdev.trackfolio.ui.theme.maskAmount
+import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -75,6 +81,8 @@ fun HomeScreen(
     val uiState        by viewModel.uiState.collectAsState()
     val accountState   by accountViewModel.uiState.collectAsState()
     val selectedId     by accountViewModel.selectedAccountId.collectAsState()
+    val balanceVisibility = koinInject<BalanceVisibilityManager>()
+    val balancesHidden = LocalBalanceHidden.current
     var showAddTransaction by remember { mutableStateOf(false) }
     var showInitialBalance by remember { mutableStateOf(false) }
 
@@ -106,6 +114,8 @@ fun HomeScreen(
                     categoryNames = state.categoryNames,
                     accounts = accountState.accounts,
                     selectedAccountId = selectedId,
+                    balancesHidden = balancesHidden,
+                    onToggleBalances = { balanceVisibility.toggle() },
                     onAccountSelected = { id -> accountViewModel.selectAccount(id) },
                     onNavigateToTransactions = onNavigateToTransactions,
                     onNavigateToCharts = onNavigateToCharts,
@@ -159,6 +169,8 @@ private fun HomeContent(
     categoryNames: Map<String, String>,
     accounts: List<es.aviferdev.trackfolio.domain.model.Account>,
     selectedAccountId: String?,
+    balancesHidden: Boolean,
+    onToggleBalances: () -> Unit,
     onAccountSelected: (String) -> Unit,
     onNavigateToTransactions: () -> Unit,
     onNavigateToCharts: () -> Unit,
@@ -187,19 +199,40 @@ private fun HomeContent(
                     color = TextPrimary
                 )
             }
-            Box(
-                modifier = Modifier
-                    .size(40.dp)
-                    .clip(CircleShape)
-                    .background(SurfaceWhite)
-                    .border(0.5.dp, BorderGray, CircleShape)
-                    .clickable{onNavigateToSettings()},
-                contentAlignment = Alignment.Center,
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(
-                    Icons.Outlined.Settings,
-                    "Ajustes"
-                )
+                Box(
+                    modifier = Modifier
+                        .size(40.dp)
+                        .clip(CircleShape)
+                        .background(SurfaceWhite)
+                        .border(0.5.dp, BorderGray, CircleShape)
+                        .clickable { onToggleBalances() },
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Icon(
+                        imageVector = if (balancesHidden) Icons.Outlined.VisibilityOff
+                                      else Icons.Outlined.Visibility,
+                        contentDescription = if (balancesHidden) "Mostrar saldos"
+                                              else "Ocultar saldos"
+                    )
+                }
+                Box(
+                    modifier = Modifier
+                        .size(40.dp)
+                        .clip(CircleShape)
+                        .background(SurfaceWhite)
+                        .border(0.5.dp, BorderGray, CircleShape)
+                        .clickable { onNavigateToSettings() },
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Icon(
+                        Icons.Outlined.Settings,
+                        "Ajustes"
+                    )
+                }
             }
         }
 
@@ -214,17 +247,19 @@ private fun HomeContent(
         }
 
         HeroCard(
-            balance  = balance,
-            modifier = Modifier.padding(horizontal = 20.dp)
+            balance        = balance,
+            balancesHidden = balancesHidden,
+            modifier       = Modifier.padding(horizontal = 20.dp)
         )
 
         Spacer(Modifier.height(28.dp))
 
         RecentTransactionsSection(
-            transactions  = balance.recentTransactions,
-            categoryNames = categoryNames,
-            onVerTodos    = onNavigateToTransactions,
-            modifier      = Modifier.padding(horizontal = 20.dp)
+            transactions   = balance.recentTransactions,
+            categoryNames  = categoryNames,
+            balancesHidden = balancesHidden,
+            onVerTodos     = onNavigateToTransactions,
+            modifier       = Modifier.padding(horizontal = 20.dp)
         )
 
         Spacer(Modifier.height(28.dp))
@@ -237,7 +272,7 @@ private fun HomeContent(
 }
 
 @Composable
-private fun HeroCard(balance: HomeBalance, modifier: Modifier = Modifier) {
+private fun HeroCard(balance: HomeBalance, balancesHidden: Boolean, modifier: Modifier = Modifier) {
     val accountLabel = balance.selectedAccount?.name ?: "Sin cuenta"
     val currency     = balance.selectedAccount?.currency ?: "EUR"
 
@@ -259,7 +294,7 @@ private fun HeroCard(balance: HomeBalance, modifier: Modifier = Modifier) {
             )
             Spacer(Modifier.height(8.dp))
             Text(
-                text          = "${formatAmount(balance.selectedAccountBalance)} $currency",
+                text          = "${maskAmount(formatAmount(balance.selectedAccountBalance), balancesHidden)} $currency",
                 fontSize      = 34.sp,
                 fontWeight    = FontWeight.Bold,
                 color         = Color.White,
@@ -272,7 +307,7 @@ private fun HeroCard(balance: HomeBalance, modifier: Modifier = Modifier) {
 
             val netWithDebts = balance.selectedAccountBalance + balance.totalOwed - balance.totalOwing
             Text(
-                text     = "Neto con deudas: ${formatAmount(netWithDebts)} $currency",
+                text     = "Neto con deudas: ${maskAmount(formatAmount(netWithDebts), balancesHidden)} $currency",
                 fontSize = 11.sp,
                 color    = Color.White.copy(alpha = 0.50f)
             )
@@ -281,10 +316,11 @@ private fun HeroCard(balance: HomeBalance, modifier: Modifier = Modifier) {
 
             Row(modifier = Modifier.fillMaxWidth()) {
                 MonthlyIndicator(
-                    label      = "Me deben",
-                    amount     = balance.totalOwed,
-                    isPositive = true,
-                    modifier   = Modifier.weight(1f)
+                    label          = "Me deben",
+                    amount         = balance.totalOwed,
+                    isPositive     = true,
+                    balancesHidden = balancesHidden,
+                    modifier       = Modifier.weight(1f)
                 )
                 Box(
                     modifier = Modifier
@@ -294,10 +330,11 @@ private fun HeroCard(balance: HomeBalance, modifier: Modifier = Modifier) {
                         .align(Alignment.CenterVertically)
                 )
                 MonthlyIndicator(
-                    label      = "Debo yo",
-                    amount     = balance.totalOwing,
-                    isPositive = false,
-                    modifier   = Modifier.weight(1f)
+                    label          = "Debo yo",
+                    amount         = balance.totalOwing,
+                    isPositive     = false,
+                    balancesHidden = balancesHidden,
+                    modifier       = Modifier.weight(1f)
                 )
             }
         }
@@ -309,6 +346,7 @@ private fun MonthlyIndicator(
     label: String,
     amount: Double,
     isPositive: Boolean,
+    balancesHidden: Boolean,
     modifier: Modifier = Modifier
 ) {
     val color = if (isPositive) Color(0xFF66BB6A) else Color(0xFFEF9A9A)
@@ -321,7 +359,7 @@ private fun MonthlyIndicator(
             Text(text = arrow, fontSize = 13.sp, color = color, fontWeight = FontWeight.Bold)
             Spacer(Modifier.width(4.dp))
             Text(
-                text       = "${formatAmount(amount)} €",
+                text       = "${maskAmount(formatAmount(amount), balancesHidden)} €",
                 fontSize   = 13.sp,
                 color      = color,
                 fontWeight = FontWeight.SemiBold
@@ -341,6 +379,7 @@ private fun MonthlyIndicator(
 private fun RecentTransactionsSection(
     transactions: List<Transaction>,
     categoryNames: Map<String, String>,
+    balancesHidden: Boolean,
     onVerTodos: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -405,8 +444,9 @@ private fun RecentTransactionsSection(
                 Column {
                     transactions.forEachIndexed { index, transaction ->
                         TransactionRow(
-                            transaction  = transaction,
-                            categoryName = categoryNames[transaction.categoryId] ?: transaction.categoryId
+                            transaction    = transaction,
+                            categoryName   = categoryNames[transaction.categoryId] ?: transaction.categoryId,
+                            balancesHidden = balancesHidden
                         )
                         if (index < transactions.lastIndex) {
                             HorizontalDivider(
@@ -423,7 +463,7 @@ private fun RecentTransactionsSection(
 }
 
 @Composable
-private fun TransactionRow(transaction: Transaction, categoryName: String) {
+private fun TransactionRow(transaction: Transaction, categoryName: String, balancesHidden: Boolean) {
     Row(
         modifier          = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically
@@ -447,7 +487,7 @@ private fun TransactionRow(transaction: Transaction, categoryName: String) {
         val prefix      = if (isIncome) "+" else "−"
         val amountColor = if (isIncome) IncomeGreen else ExpenseRed
         Text(
-            text       = "$prefix ${formatAmount(transaction.amount)} €",
+            text       = "$prefix ${maskAmount(formatAmount(transaction.amount), balancesHidden)} €",
             fontSize   = 14.sp,
             fontWeight = FontWeight.SemiBold,
             color      = amountColor

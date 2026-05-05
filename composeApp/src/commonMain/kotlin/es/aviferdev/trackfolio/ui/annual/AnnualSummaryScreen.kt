@@ -34,6 +34,7 @@ fun AnnualSummaryScreen(
     viewModel: AnnualViewModel = koinViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val balancesHidden = LocalBalanceHidden.current
 
     Column(
         modifier = Modifier
@@ -53,8 +54,9 @@ fun AnnualSummaryScreen(
         } else {
             uiState.summary?.let { summary ->
                 AnnualContent(
-                    summary   = summary,
-                    breakdown = uiState.monthlyBreakdown
+                    summary        = summary,
+                    breakdown      = uiState.monthlyBreakdown,
+                    balancesHidden = balancesHidden
                 )
             } ?: EmptyYearState()
         }
@@ -109,7 +111,7 @@ private fun AnnualHeader(year: String, onPrevious: () -> Unit, onNext: () -> Uni
 }
 
 @Composable
-private fun AnnualContent(summary: AnnualSummary, breakdown: List<MonthlyTotals>) {
+private fun AnnualContent(summary: AnnualSummary, breakdown: List<MonthlyTotals>, balancesHidden: Boolean) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -118,7 +120,7 @@ private fun AnnualContent(summary: AnnualSummary, breakdown: List<MonthlyTotals>
             .padding(top = 20.dp, bottom = 40.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        BalanceHeroCard(summary = summary)
+        BalanceHeroCard(summary = summary, balancesHidden = balancesHidden)
 
         Row(
             modifier              = Modifier.fillMaxWidth(),
@@ -129,6 +131,7 @@ private fun AnnualContent(summary: AnnualSummary, breakdown: List<MonthlyTotals>
                 amount           = summary.totalIncome,
                 color            = IncomeGreen,
                 variationPercent = summary.incomeVariationPercent,
+                balancesHidden   = balancesHidden,
                 modifier         = Modifier.weight(1f)
             )
             AnnualMetricCard(
@@ -136,6 +139,7 @@ private fun AnnualContent(summary: AnnualSummary, breakdown: List<MonthlyTotals>
                 amount           = summary.totalExpense,
                 color            = ExpenseRed,
                 variationPercent = -summary.expenseVariationPercent,
+                balancesHidden   = balancesHidden,
                 modifier         = Modifier.weight(1f)
             )
         }
@@ -145,7 +149,7 @@ private fun AnnualContent(summary: AnnualSummary, breakdown: List<MonthlyTotals>
 
         // ── Comparativa año anterior ───────────────────────────────────────
         if (summary.previousYearIncome > 0 || summary.previousYearExpense > 0) {
-            PreviousYearCard(summary = summary)
+            PreviousYearCard(summary = summary, balancesHidden = balancesHidden)
         }
     }
 }
@@ -273,7 +277,7 @@ private fun LegendItem(color: Color, label: String) {
 
 // ─── Tarjetas existentes ──────────────────────────────────────────────────────
 @Composable
-private fun BalanceHeroCard(summary: AnnualSummary) {
+private fun BalanceHeroCard(summary: AnnualSummary, balancesHidden: Boolean) {
     val balance    = summary.balance
     val isPositive = balance >= 0
 
@@ -290,7 +294,7 @@ private fun BalanceHeroCard(summary: AnnualSummary) {
             Text("Balance ${summary.year}", fontSize = 13.sp, color = Color.White.copy(alpha = 0.65f))
             Spacer(Modifier.height(8.dp))
             Text(
-                text          = "${if (isPositive) "+" else "−"} ${formatAmount(abs(balance))} €",
+                text          = "${if (isPositive) "+" else "−"} ${maskAmount(formatAmount(abs(balance)), balancesHidden)} €",
                 fontSize      = 36.sp,
                 fontWeight    = FontWeight.Bold,
                 color         = if (isPositive) Color(0xFF66BB6A) else Color(0xFFEF9A9A),
@@ -312,6 +316,7 @@ private fun AnnualMetricCard(
     amount: Double,
     color: Color,
     variationPercent: Double,
+    balancesHidden: Boolean,
     modifier: Modifier = Modifier
 ) {
     val hasPrevious        = variationPercent != 0.0
@@ -327,7 +332,7 @@ private fun AnnualMetricCard(
         Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
             Text(label, fontSize = 12.sp, color = TextSecondary)
             Spacer(Modifier.height(8.dp))
-            Text("${formatAmount(amount)} €", fontSize = 18.sp, fontWeight = FontWeight.SemiBold, color = color)
+            Text("${maskAmount(formatAmount(amount), balancesHidden)} €", fontSize = 18.sp, fontWeight = FontWeight.SemiBold, color = color)
             if (hasPrevious) {
                 Spacer(Modifier.height(6.dp))
                 val sign     = if (isPositiveVariation) "+" else ""
@@ -347,7 +352,7 @@ private fun AnnualMetricCard(
 }
 
 @Composable
-private fun PreviousYearCard(summary: AnnualSummary) {
+private fun PreviousYearCard(summary: AnnualSummary, balancesHidden: Boolean) {
     Card(
         modifier  = Modifier.fillMaxWidth(),
         shape     = RoundedCornerShape(14.dp),
@@ -363,11 +368,11 @@ private fun PreviousYearCard(summary: AnnualSummary) {
                 color      = TextPrimary
             )
             Spacer(Modifier.height(14.dp))
-            ComparisonRow("Ingresos", summary.totalIncome,  summary.previousYearIncome,  IncomeGreen)
+            ComparisonRow("Ingresos", summary.totalIncome,  summary.previousYearIncome,  IncomeGreen, balancesHidden)
             Spacer(Modifier.height(10.dp))
             HorizontalDivider(color = BorderGray, thickness = 0.5.dp)
             Spacer(Modifier.height(10.dp))
-            ComparisonRow("Gastos",   summary.totalExpense, summary.previousYearExpense, ExpenseRed)
+            ComparisonRow("Gastos",   summary.totalExpense, summary.previousYearExpense, ExpenseRed, balancesHidden)
             Spacer(Modifier.height(10.dp))
             HorizontalDivider(color = BorderGray, thickness = 0.5.dp)
             Spacer(Modifier.height(10.dp))
@@ -375,22 +380,23 @@ private fun PreviousYearCard(summary: AnnualSummary) {
                 label    = "Balance",
                 current  = summary.balance,
                 previous = summary.previousYearIncome - summary.previousYearExpense,
-                color    = if (summary.balance >= 0) IncomeGreen else ExpenseRed
+                color    = if (summary.balance >= 0) IncomeGreen else ExpenseRed,
+                balancesHidden = balancesHidden
             )
         }
     }
 }
 
 @Composable
-private fun ComparisonRow(label: String, current: Double, previous: Double, color: Color) {
+private fun ComparisonRow(label: String, current: Double, previous: Double, color: Color, balancesHidden: Boolean) {
     Row(
         modifier              = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment     = Alignment.CenterVertically
     ) {
         Text(label,                  fontSize = 13.sp, color = TextSecondary, modifier = Modifier.weight(1f))
-        Text("${formatAmount(previous)} €", fontSize = 13.sp, color = TextSecondary, textAlign = TextAlign.End, modifier = Modifier.weight(1f))
-        Text("${formatAmount(current)} €",  fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = color, textAlign = TextAlign.End, modifier = Modifier.weight(1f))
+        Text("${maskAmount(formatAmount(previous), balancesHidden)} €", fontSize = 13.sp, color = TextSecondary, textAlign = TextAlign.End, modifier = Modifier.weight(1f))
+        Text("${maskAmount(formatAmount(current), balancesHidden)} €",  fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = color, textAlign = TextAlign.End, modifier = Modifier.weight(1f))
     }
 }
 

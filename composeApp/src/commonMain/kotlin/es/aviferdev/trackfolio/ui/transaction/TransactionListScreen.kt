@@ -38,6 +38,7 @@ fun TransactionListScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val searchQuery by viewModel.searchQuery.collectAsState()
+    val balancesHidden = LocalBalanceHidden.current
     var transactionToDelete by remember { mutableStateOf<Transaction?>(null) }
     var transactionToEdit   by remember { mutableStateOf<Transaction?>(null) }
     val addViewModel: AddTransactionViewModel = koinViewModel()
@@ -61,8 +62,9 @@ fun TransactionListScreen(
 
         uiState.totals?.let { totals ->
             TotalsCard(
-                totalIncome = totals.totalIncome,
-                totalExpense = totals.totalExpense
+                totalIncome    = totals.totalIncome,
+                totalExpense   = totals.totalExpense,
+                balancesHidden = balancesHidden
             )
         }
 
@@ -85,9 +87,10 @@ fun TransactionListScreen(
                         onDelete = { transactionToDelete = transaction }
                     ) {
                         TransactionListRow(
-                            transaction  = transaction,
-                            categoryName = uiState.categoryNames[transaction.categoryId] ?: transaction.categoryId,
-                            onEdit       = { transactionToEdit = transaction }
+                            transaction    = transaction,
+                            categoryName   = uiState.categoryNames[transaction.categoryId] ?: transaction.categoryId,
+                            balancesHidden = balancesHidden,
+                            onEdit         = { transactionToEdit = transaction }
                         )
                     }
                     if (index < uiState.filteredTransactions.lastIndex) {
@@ -221,7 +224,7 @@ private fun MonthHeader(
 }
 
 @Composable
-private fun TotalsCard(totalIncome: Double, totalExpense: Double) {
+private fun TotalsCard(totalIncome: Double, totalExpense: Double, balancesHidden: Boolean) {
     val balance = totalIncome - totalExpense
     Card(
         modifier = Modifier
@@ -235,15 +238,16 @@ private fun TotalsCard(totalIncome: Double, totalExpense: Double) {
         Row(
             modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 14.dp)
         ) {
-            TotalItem(label = "Ingresos", amount = totalIncome, color = IncomeGreen, prefix = "+", modifier = Modifier.weight(1f))
+            TotalItem(label = "Ingresos", amount = totalIncome, color = IncomeGreen, prefix = "+", balancesHidden = balancesHidden, modifier = Modifier.weight(1f))
             Box(modifier = Modifier.width(0.5.dp).height(44.dp).background(BorderGray).align(Alignment.CenterVertically))
-            TotalItem(label = "Gastos", amount = totalExpense, color = ExpenseRed, prefix = "−", modifier = Modifier.weight(1f))
+            TotalItem(label = "Gastos", amount = totalExpense, color = ExpenseRed, prefix = "−", balancesHidden = balancesHidden, modifier = Modifier.weight(1f))
             Box(modifier = Modifier.width(0.5.dp).height(44.dp).background(BorderGray).align(Alignment.CenterVertically))
             TotalItem(
                 label = "Balance",
                 amount = balance,
                 color = if (balance >= 0) IncomeGreen else ExpenseRed,
                 prefix = if (balance >= 0) "+" else "−",
+                balancesHidden = balancesHidden,
                 modifier = Modifier.weight(1f)
             )
         }
@@ -251,13 +255,13 @@ private fun TotalsCard(totalIncome: Double, totalExpense: Double) {
 }
 
 @Composable
-private fun TotalItem(label: String, amount: Double, color: Color, prefix: String, modifier: Modifier = Modifier) {
+private fun TotalItem(label: String, amount: Double, color: Color, prefix: String, balancesHidden: Boolean, modifier: Modifier = Modifier) {
     val abs = if (amount < 0) -amount else amount
     Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
         Text(text = label, fontSize = 11.sp, color = TextSecondary, textAlign = TextAlign.Center)
         Spacer(Modifier.height(4.dp))
         Text(
-            text = "$prefix ${formatAmount(abs)} €",
+            text = "$prefix ${maskAmount(formatAmount(abs), balancesHidden)} €",
             fontSize = 13.sp,
             fontWeight = FontWeight.SemiBold,
             color = color,
@@ -299,7 +303,7 @@ private fun SwipeToDeleteContainer(onDelete: () -> Unit, content: @Composable ()
 }
 
 @Composable
-private fun TransactionListRow(transaction: Transaction, categoryName: String, onEdit: () -> Unit) {
+private fun TransactionListRow(transaction: Transaction, categoryName: String, balancesHidden: Boolean, onEdit: () -> Unit) {
     Row(
         modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically
@@ -329,7 +333,7 @@ private fun TransactionListRow(transaction: Transaction, categoryName: String, o
             val prefix      = if (isIncome) "+" else "−"
             val amountColor = if (isIncome) IncomeGreen else ExpenseRed
             Text(
-                text = "$prefix ${formatAmount(transaction.amount)} €",
+                text = "$prefix ${maskAmount(formatAmount(transaction.amount), balancesHidden)} €",
                 fontSize = 14.sp,
                 fontWeight = FontWeight.SemiBold,
                 color = amountColor

@@ -6,8 +6,10 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import es.aviferdev.trackfolio.data.database.DatabaseInitializer
 import es.aviferdev.trackfolio.security.AppLockManager
+import es.aviferdev.trackfolio.security.BalanceVisibilityManager
 import es.aviferdev.trackfolio.ui.navigation.TrackfolioNavHost
 import es.aviferdev.trackfolio.ui.security.LockScreen
+import es.aviferdev.trackfolio.ui.theme.LocalBalanceHidden
 import es.aviferdev.trackfolio.ui.theme.TrackfolioTheme
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -17,12 +19,16 @@ import org.koin.compose.koinInject
 fun App() {
     val databaseInitializer = koinInject<DatabaseInitializer>()
     val appLockManager      = koinInject<AppLockManager>()
+    val balanceVisibility   = koinInject<BalanceVisibilityManager>()
 
     // Inicializar con el estado real (persiste entre sesiones via AppSettings)
     var isLocked by remember {
         appLockManager.onAppStart()   // bloquea al arrancar si biometría activa
         mutableStateOf(appLockManager.isLocked)
     }
+
+    // Observa el flow de visibilidad de saldos para propagarlo a toda la UI
+    val balancesHidden by balanceVisibility.balancesHidden.collectAsState()
 
     // Inicializar BD
     LaunchedEffect(Unit) {
@@ -52,15 +58,17 @@ fun App() {
     }
 
     TrackfolioTheme {
-        if (isLocked) {
-            LockScreen(
-                onUnlocked = {
-                    appLockManager.onUnlocked()
-                    isLocked = false
-                }
-            )
-        } else {
-            TrackfolioNavHost()
+        CompositionLocalProvider(LocalBalanceHidden provides balancesHidden) {
+            if (isLocked) {
+                LockScreen(
+                    onUnlocked = {
+                        appLockManager.onUnlocked()
+                        isLocked = false
+                    }
+                )
+            } else {
+                TrackfolioNavHost()
+            }
         }
     }
 }

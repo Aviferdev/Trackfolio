@@ -61,11 +61,12 @@ fun AccountListScreen(
             ) {
                 items(uiState.accounts, key = { it.id }) { account ->
                     AccountCard(
-                        account    = account,
-                        isSelected = account.id == selectedId,
-                        onSelect   = { viewModel.selectAccount(account.id) },
-                        onEdit     = { viewModel.openEditSheet(account) },
-                        onDelete   = { viewModel.requestDelete(account) }
+                        account        = account,
+                        isSelected     = account.id == selectedId,
+                        balancesHidden = LocalBalanceHidden.current,
+                        onSelect       = { viewModel.selectAccount(account.id) },
+                        onEdit         = { viewModel.openEditSheet(account) },
+                        onDelete       = { viewModel.requestDelete(account) }
                     )
                 }
             }
@@ -121,6 +122,7 @@ fun AccountListScreen(
 private fun AccountCard(
     account: Account,
     isSelected: Boolean,
+    balancesHidden: Boolean,
     onSelect: () -> Unit,
     onEdit: () -> Unit,
     onDelete: () -> Unit
@@ -207,7 +209,7 @@ private fun AccountCard(
                     Column {
                         Text("Saldo actual", fontSize = 11.sp, color = TextSecondary)
                         Text(
-                            text       = "${formatAmount(account.computedBalance)} ${account.currency}",
+                            text       = "${maskAmount(formatAmount(account.computedBalance), balancesHidden)} ${account.currency}",
                             fontSize   = 20.sp,
                             fontWeight = FontWeight.Bold,
                             color      = if (account.computedBalance >= 0) PrimaryDark else ExpenseRed

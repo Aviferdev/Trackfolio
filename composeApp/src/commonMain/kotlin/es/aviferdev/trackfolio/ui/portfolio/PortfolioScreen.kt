@@ -1,6 +1,7 @@
 package es.aviferdev.trackfolio.ui.portfolio
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -9,6 +10,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -32,6 +34,7 @@ fun PortfolioScreen(
     val state               by viewModel.portfolioState.collectAsState()
     val sheetState          by viewModel.uiState.collectAsState()
     val availableCategories by viewModel.availableCategories.collectAsState()
+    val balancesHidden = LocalBalanceHidden.current
 
     accountViewModel.selectAccount()
 
@@ -53,8 +56,23 @@ fun PortfolioScreen(
                     totalPnL          = state.totalPnL,
                     totalPnLPercent   = state.totalPnLPercent,
                     positionsCount    = state.rows.size,
+                    currencyCode      = state.currencyCode,
+                    balancesHidden    = balancesHidden,
                     modifier          = Modifier.padding(horizontal = 20.dp, vertical = 8.dp)
                 )
+            }
+
+            // ── Donut chart de distribución por categoría ────────────────────
+            if (state.distribution.isNotEmpty()) {
+                item {
+                    PortfolioDistributionCard(
+                        slices            = state.distribution,
+                        totalCurrentValue = state.totalCurrentValue,
+                        currencyCode      = state.currencyCode,
+                        balancesHidden    = balancesHidden,
+                        modifier          = Modifier.padding(horizontal = 20.dp, vertical = 8.dp)
+                    )
+                }
             }
 
             // ── Lista de grupos ──────────────────────────────────────────────
@@ -72,17 +90,24 @@ fun PortfolioScreen(
             } else {
                 state.groups.forEach { group ->
                     item(key = "header_${group.category?.id ?: "none"}") {
-                        CategoryGroupHeader(group = group)
+                        CategoryGroupHeader(
+                            group          = group,
+                            currencyCode   = state.currencyCode,
+                            balancesHidden = balancesHidden
+                        )
                     }
                     items(
                         items = group.rows,
                         key   = { row -> row.asset.id }
                     ) { row ->
                         AssetCard(
-                            row      = row,
-                            onEdit   = { viewModel.openEditSheet(row.asset) },
-                            onDelete = { viewModel.requestDelete(row.asset) },
-                            modifier = Modifier.padding(horizontal = 20.dp, vertical = 6.dp)
+                            row            = row,
+                            currencyCode   = state.currencyCode,
+                            balancesHidden = balancesHidden,
+                            onEdit         = { viewModel.openEditSheet(row.asset) },
+                            onDelete       = { viewModel.requestDelete(row.asset) },
+                            onUpdatePrice  = { viewModel.openUpdatePriceSheet(row.asset) },
+                            modifier       = Modifier.padding(horizontal = 20.dp, vertical = 6.dp)
                         )
                     }
                 }
@@ -108,10 +133,11 @@ fun PortfolioScreen(
     // ── Sheets y diálogos ────────────────────────────────────────────────────
     if (sheetState.showAddSheet) {
         AddEditAssetBottomSheet(
-            asset      = null,
-            categories = availableCategories,
-            onSave     = { ticker, name, qty, price, date, notes, categoryId ->
-                viewModel.addAsset(ticker, name, qty, price, date, notes, categoryId)
+            asset        = null,
+            categories   = availableCategories,
+            currencyCode = state.currencyCode,
+            onSave       = { ticker, name, qty, price, date, notes, categoryId, currentPrice ->
+                viewModel.addAsset(ticker, name, qty, price, date, notes, categoryId, currentPrice)
             },
             onDismiss = { viewModel.closeAddSheet() }
         )
@@ -119,15 +145,25 @@ fun PortfolioScreen(
 
     if (sheetState.showEditSheet && sheetState.editingAsset != null) {
         AddEditAssetBottomSheet(
-            asset      = sheetState.editingAsset,
-            categories = availableCategories,
-            onSave     = { ticker, name, qty, price, date, notes, categoryId ->
+            asset        = sheetState.editingAsset,
+            categories   = availableCategories,
+            currencyCode = state.currencyCode,
+            onSave       = { ticker, name, qty, price, date, notes, categoryId, currentPrice ->
                 viewModel.editAsset(
                     sheetState.editingAsset!!,
-                    ticker, name, qty, price, date, notes, categoryId
+                    ticker, name, qty, price, date, notes, categoryId, currentPrice
                 )
             },
             onDismiss = { viewModel.closeEditSheet() }
+        )
+    }
+
+    if (sheetState.showUpdatePriceSheet && sheetState.pricingAsset != null) {
+        UpdateCurrentPriceSheet(
+            asset        = sheetState.pricingAsset!!,
+            currencyCode = state.currencyCode,
+            onConfirm    = { newPrice -> viewModel.refreshCurrentPrice(sheetState.pricingAsset!!, newPrice) },
+            onDismiss    = { viewModel.closeUpdatePriceSheet() }
         )
     }
 
@@ -194,8 +230,12 @@ private fun PortfolioSummaryCard(
     totalPnL: Double,
     totalPnLPercent: Double,
     positionsCount: Int,
+    currencyCode: String,
+    balancesHidden: Boolean,
     modifier: Modifier = Modifier
 ) {
+    val symbol = currencySymbol(currencyCode)
+
     Card(
         modifier  = modifier.fillMaxWidth(),
         shape     = RoundedCornerShape(16.dp),
@@ -207,75 +247,119 @@ private fun PortfolioSummaryCard(
                 .fillMaxWidth()
                 .padding(horizontal = 20.dp, vertical = 20.dp)
         ) {
+            // ── Valor actual destacado ─────────────────────────────────────
             Text(
                 text     = "Valor total",
                 fontSize = 13.sp,
                 color    = Color.White.copy(alpha = 0.65f)
             )
             Spacer(Modifier.height(6.dp))
-            Text(
-                text          = formatAmount(totalCurrentValue),
-                fontSize      = 34.sp,
-                fontWeight    = FontWeight.Bold,
-                color         = Color.White,
-                letterSpacing = (-0.5).sp
-            )
-
-            if (totalPnL != 0.0) {
-                Spacer(Modifier.height(8.dp))
-                val pnlColor  = if (totalPnL >= 0) Color(0xFF66BB6A) else Color(0xFFEF9A9A)
-                val pnlPrefix = if (totalPnL >= 0) "+" else "−"
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(
-                        text       = "$pnlPrefix ${formatAmount(abs(totalPnL))}",
-                        fontSize   = 15.sp,
-                        color      = pnlColor,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                    Spacer(Modifier.width(8.dp))
-                    Box(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(4.dp))
-                            .background(pnlColor.copy(alpha = 0.2f))
-                            .padding(horizontal = 6.dp, vertical = 2.dp)
-                    ) {
-                        Text(
-                            text       = "$pnlPrefix${formatPercent(abs(totalPnLPercent))}%",
-                            fontSize   = 12.sp,
-                            color      = pnlColor,
-                            fontWeight = FontWeight.Medium
-                        )
-                    }
-                }
+            Row(verticalAlignment = Alignment.Bottom) {
+                Text(
+                    text          = maskAmount(formatAmount(totalCurrentValue), balancesHidden),
+                    fontSize      = 34.sp,
+                    fontWeight    = FontWeight.Bold,
+                    color         = Color.White,
+                    letterSpacing = (-0.5).sp
+                )
+                Spacer(Modifier.width(6.dp))
+                Text(
+                    text       = symbol,
+                    fontSize   = 18.sp,
+                    color      = Color.White.copy(alpha = 0.8f),
+                    fontWeight = FontWeight.Medium,
+                    modifier   = Modifier.padding(bottom = 4.dp)
+                )
             }
 
-            Spacer(Modifier.height(16.dp))
+            Spacer(Modifier.height(18.dp))
             HorizontalDivider(color = Color.White.copy(alpha = 0.15f), thickness = 0.5.dp)
-            Spacer(Modifier.height(12.dp))
+            Spacer(Modifier.height(16.dp))
 
+            // ── Invertido + Beneficio destacados ───────────────────────────
             Row(
                 modifier              = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment     = Alignment.Top
             ) {
-                SummaryItem(label = "Invertido",  value = formatAmount(totalInvested))
-                SummaryItem(label = "Posiciones", value = positionsCount.toString())
+                MetricColumn(
+                    label    = "Invertido",
+                    primary  = "${maskAmount(formatAmount(totalInvested), balancesHidden)} $symbol",
+                    color    = Color.White,
+                    modifier = Modifier.weight(1f)
+                )
+                Box(
+                    modifier = Modifier
+                        .width(0.5.dp)
+                        .height(44.dp)
+                        .background(Color.White.copy(alpha = 0.15f))
+                )
+                MetricColumn(
+                    label     = "Beneficio total",
+                    primary   = if (totalPnL == 0.0)
+                                    "—"
+                                else "${if (totalPnL >= 0) "+" else "−"} ${maskAmount(formatAmount(abs(totalPnL)), balancesHidden)} $symbol",
+                    secondary = if (totalPnL == 0.0) null
+                                else "${if (totalPnLPercent >= 0) "+" else "−"}${formatPercent(abs(totalPnLPercent))}%",
+                    color     = when {
+                        totalPnL > 0 -> Color(0xFF66BB6A)
+                        totalPnL < 0 -> Color(0xFFEF9A9A)
+                        else         -> Color.White
+                    },
+                    modifier = Modifier.weight(1f).padding(start = 16.dp)
+                )
             }
+
+            Spacer(Modifier.height(14.dp))
+
+            // ── Pie discreto: nº de posiciones ─────────────────────────────
+            Text(
+                text     = "$positionsCount ${if (positionsCount == 1) "posición" else "posiciones"}",
+                fontSize = 11.sp,
+                color    = Color.White.copy(alpha = 0.55f)
+            )
         }
     }
 }
 
 @Composable
-private fun SummaryItem(label: String, value: String) {
-    Column {
+private fun MetricColumn(
+    label: String,
+    primary: String,
+    color: Color,
+    secondary: String? = null,
+    modifier: Modifier = Modifier
+) {
+    Column(modifier = modifier) {
         Text(label, fontSize = 11.sp, color = Color.White.copy(alpha = 0.55f))
-        Spacer(Modifier.height(2.dp))
-        Text(value, fontSize = 14.sp, color = Color.White, fontWeight = FontWeight.Medium)
+        Spacer(Modifier.height(4.dp))
+        Text(
+            text       = primary,
+            fontSize   = 16.sp,
+            color      = color,
+            fontWeight = FontWeight.SemiBold,
+            maxLines   = 1
+        )
+        if (secondary != null) {
+            Spacer(Modifier.height(2.dp))
+            Text(
+                text     = secondary,
+                fontSize = 11.sp,
+                color    = color.copy(alpha = 0.85f),
+                fontWeight = FontWeight.Medium
+            )
+        }
     }
 }
 
 // ─── Cabecera de grupo de categoría ──────────────────────────────────────────
 @Composable
-private fun CategoryGroupHeader(group: CategoryGroup) {
+private fun CategoryGroupHeader(
+    group: CategoryGroup,
+    currencyCode: String,
+    balancesHidden: Boolean
+) {
+    val symbol = currencySymbol(currencyCode)
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -312,8 +396,14 @@ private fun CategoryGroupHeader(group: CategoryGroup) {
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment     = Alignment.CenterVertically
         ) {
-            ValueChip(label = "Invertido", value = formatAmount(group.totalInvested))
-            ValueChip(label = "Actual",    value = formatAmount(group.totalCurrentValue))
+            ValueChip(
+                label = "Invertido",
+                value = "${maskAmount(formatAmount(group.totalInvested), balancesHidden)} $symbol"
+            )
+            ValueChip(
+                label = "Actual",
+                value = "${maskAmount(formatAmount(group.totalCurrentValue), balancesHidden)} $symbol"
+            )
         }
     }
 }
@@ -335,11 +425,15 @@ private fun ValueChip(label: String, value: String) {
 @Composable
 private fun AssetCard(
     row: AssetRow,
+    currencyCode: String,
+    balancesHidden: Boolean,
     onEdit: () -> Unit,
     onDelete: () -> Unit,
+    onUpdatePrice: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val asset      = row.asset
+    val symbol     = currencySymbol(currencyCode)
     val isPositive = row.pnlAmount >= 0
     val pnlColor   = if (row.pnlAmount > 0) IncomeGreen
                      else if (row.pnlAmount < 0) ExpenseRed
@@ -376,7 +470,7 @@ private fun AssetCard(
             }
             Spacer(Modifier.width(12.dp))
 
-            // Nombre + cantidad
+            // Nombre + cantidad × precio compra + frescura del precio
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text       = asset.name,
@@ -387,10 +481,18 @@ private fun AssetCard(
                 )
                 Spacer(Modifier.height(2.dp))
                 Text(
-                    text     = "${formatQty(asset.quantity)} × ${formatAmount(asset.purchasePrice)}",
+                    text     = "${formatQty(asset.quantity)} × ${maskAmount(formatAmount(asset.purchasePrice), balancesHidden)} $symbol",
                     fontSize = 12.sp,
                     color    = TextSecondary
                 )
+                if (row.hasCurrentPrice && asset.currentPriceUpdatedAt != null) {
+                    Spacer(Modifier.height(2.dp))
+                    Text(
+                        text     = "actualizado ${formatRelativeTime(asset.currentPriceUpdatedAt)}",
+                        fontSize = 10.sp,
+                        color    = TextSecondary.copy(alpha = 0.75f)
+                    )
+                }
             }
 
             Spacer(Modifier.width(8.dp))
@@ -398,17 +500,22 @@ private fun AssetCard(
             // Valor + P&L
             Column(horizontalAlignment = Alignment.End) {
                 Text(
-                    text       = formatAmount(row.currentValue),
+                    text       = "${maskAmount(formatAmount(row.currentValue), balancesHidden)} $symbol",
                     fontSize   = 15.sp,
                     fontWeight = FontWeight.SemiBold,
                     color      = TextPrimary
                 )
-                if (row.pnlAmount != 0.0) {
+                if (row.hasCurrentPrice) {
                     val prefix = if (isPositive) "+" else "−"
                     Text(
-                        text     = "$prefix ${formatAmount(abs(row.pnlAmount))}",
+                        text     = "$prefix ${maskAmount(formatAmount(abs(row.pnlAmount)), balancesHidden)} $symbol",
                         fontSize = 12.sp,
                         color    = pnlColor
+                    )
+                    Text(
+                        text     = "$prefix${formatPercent(abs(row.pnlPercent))}%",
+                        fontSize = 11.sp,
+                        color    = pnlColor.copy(alpha = 0.85f)
                     )
                 } else {
                     Text(
@@ -423,6 +530,12 @@ private fun AssetCard(
 
             // Acciones
             Column {
+                IconButton(onClick = onUpdatePrice, modifier = Modifier.size(28.dp)) {
+                    Icon(
+                        Icons.Outlined.Refresh, contentDescription = "Actualizar precio",
+                        modifier = Modifier.size(15.dp), tint = PrimaryDark
+                    )
+                }
                 IconButton(onClick = onEdit, modifier = Modifier.size(28.dp)) {
                     Icon(Icons.Default.Edit, null, modifier = Modifier.size(14.dp), tint = TextSecondary)
                 }
