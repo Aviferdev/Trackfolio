@@ -3,13 +3,42 @@ package es.aviferdev.trackfolio.ui.home
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -23,13 +52,23 @@ import es.aviferdev.trackfolio.domain.model.Transaction
 import es.aviferdev.trackfolio.domain.model.TransactionType
 import es.aviferdev.trackfolio.ui.account.AccountSelectorBar
 import es.aviferdev.trackfolio.ui.account.AccountViewModel
-import es.aviferdev.trackfolio.ui.theme.*
+import es.aviferdev.trackfolio.ui.theme.BackgroundGray
+import es.aviferdev.trackfolio.ui.theme.BorderGray
+import es.aviferdev.trackfolio.ui.theme.ExpenseRed
+import es.aviferdev.trackfolio.ui.theme.IncomeGreen
+import es.aviferdev.trackfolio.ui.theme.PrimaryDark
+import es.aviferdev.trackfolio.ui.theme.SurfaceWhite
+import es.aviferdev.trackfolio.ui.theme.TextPrimary
+import es.aviferdev.trackfolio.ui.theme.TextSecondary
+import es.aviferdev.trackfolio.ui.theme.formatAmount
+import es.aviferdev.trackfolio.ui.theme.formatDate
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun HomeScreen(
     onNavigateToTransactions: () -> Unit = {},
     onNavigateToCharts: () -> Unit = {},
+    onNavigateToSettings: () -> Unit = {},
     viewModel: HomeViewModel = koinViewModel(),
     accountViewModel: AccountViewModel = koinViewModel()
 ) {
@@ -68,9 +107,9 @@ fun HomeScreen(
                     accounts = accountState.accounts,
                     selectedAccountId = selectedId,
                     onAccountSelected = { id -> accountViewModel.selectAccount(id) },
-                    onAddTransaction = { showAddTransaction = true },
                     onNavigateToTransactions = onNavigateToTransactions,
-                    onNavigateToCharts = onNavigateToCharts
+                    onNavigateToCharts = onNavigateToCharts,
+                    onNavigateToSettings = onNavigateToSettings
                 )
             }
         }
@@ -121,18 +160,17 @@ private fun HomeContent(
     accounts: List<es.aviferdev.trackfolio.domain.model.Account>,
     selectedAccountId: String?,
     onAccountSelected: (String) -> Unit,
-    onAddTransaction: () -> Unit,
     onNavigateToTransactions: () -> Unit,
-    onNavigateToCharts: () -> Unit
+    onNavigateToCharts: () -> Unit,
+    onNavigateToSettings: () -> Unit
 ) {
     Column(
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
             .windowInsetsPadding(WindowInsets.statusBars)
-            .padding(top = 16.dp, bottom = 100.dp)
+            .padding(bottom = 100.dp)
     ) {
-        // Header
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -154,16 +192,18 @@ private fun HomeContent(
                     .size(40.dp)
                     .clip(CircleShape)
                     .background(SurfaceWhite)
-                    .border(0.5.dp, BorderGray, CircleShape),
-                contentAlignment = Alignment.Center
+                    .border(0.5.dp, BorderGray, CircleShape)
+                    .clickable{onNavigateToSettings()},
+                contentAlignment = Alignment.Center,
             ) {
-                Text("⚙", fontSize = 16.sp)
+                Icon(
+                    Icons.Outlined.Settings,
+                    "Ajustes"
+                )
             }
         }
 
         Spacer(Modifier.height(16.dp))
-
-        // Selector de cuentas (si hay más de una o siempre para acceso rápido)
         if (accounts.isNotEmpty()) {
             AccountSelectorBar(
                 accounts          = accounts,
@@ -173,7 +213,6 @@ private fun HomeContent(
             Spacer(Modifier.height(8.dp))
         }
 
-        // HeroCard con balance de la cuenta seleccionada
         HeroCard(
             balance  = balance,
             modifier = Modifier.padding(horizontal = 20.dp)
@@ -181,7 +220,6 @@ private fun HomeContent(
 
         Spacer(Modifier.height(28.dp))
 
-        // Últimos movimientos
         RecentTransactionsSection(
             transactions  = balance.recentTransactions,
             categoryNames = categoryNames,
@@ -191,7 +229,6 @@ private fun HomeContent(
 
         Spacer(Modifier.height(28.dp))
 
-        // Acceso rápido
         QuickAccessSection(
             onNavigateToCharts = onNavigateToCharts,
             modifier = Modifier.padding(horizontal = 20.dp)
@@ -228,21 +265,11 @@ private fun HeroCard(balance: HomeBalance, modifier: Modifier = Modifier) {
                 color         = Color.White,
                 letterSpacing = (-0.5).sp
             )
-            // Total global si hay más de una cuenta
-            if (balance.totalGlobalBalance != balance.selectedAccountBalance) {
-                Spacer(Modifier.height(4.dp))
-                Text(
-                    text     = "Total global: ${formatAmount(balance.totalGlobalBalance)} $currency",
-                    fontSize = 12.sp,
-                    color    = Color.White.copy(alpha = 0.55f)
-                )
-            }
 
             Spacer(Modifier.height(20.dp))
             HorizontalDivider(color = Color.White.copy(alpha = 0.15f), thickness = 0.5.dp)
             Spacer(Modifier.height(16.dp))
 
-            // Balance neto incluyendo deudas
             val netWithDebts = balance.selectedAccountBalance + balance.totalOwed - balance.totalOwing
             Text(
                 text     = "Neto con deudas: ${formatAmount(netWithDebts)} $currency",
@@ -448,12 +475,6 @@ private fun QuickAccessSection(onNavigateToCharts: () -> Unit = {}, modifier: Mo
                 onClick  = onNavigateToCharts,
                 modifier = Modifier.weight(1f)
             )
-            QuickAccessCard(
-                label    = "Histórico",
-                icon     = "🕐",
-                onClick  = {},
-                modifier = Modifier.weight(1f)
-            )
             Spacer(modifier = Modifier.weight(1f))
         }
     }
@@ -463,7 +484,7 @@ private fun QuickAccessSection(onNavigateToCharts: () -> Unit = {}, modifier: Mo
 private fun QuickAccessCard(label: String, icon: String, onClick: () -> Unit = {}, modifier: Modifier = Modifier) {
     Card(
         onClick   = onClick,
-        modifier  = modifier.aspectRatio(1.2f),
+        modifier  = modifier.aspectRatio(1f),
         shape     = RoundedCornerShape(12.dp),
         colors    = CardDefaults.cardColors(containerColor = SurfaceWhite),
         border    = CardDefaults.outlinedCardBorder(),

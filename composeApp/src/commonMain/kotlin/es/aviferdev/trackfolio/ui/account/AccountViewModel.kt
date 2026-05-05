@@ -23,7 +23,6 @@ data class AccountUiState(
     val editingAccount: Account?    = null,
     val showDeleteConfirm: Boolean  = false,
     val accountToDelete: Account?   = null,
-    // Saldo inicial obligatorio: cuenta recién creada esperando configuración
     val pendingInitialBalanceAccount: Account? = null
 )
 
@@ -66,10 +65,20 @@ class AccountViewModel(
     fun selectAccount(id: String) {
         val account = _uiState.value.accounts.find { it.id == id } ?: return
         if (account.needsInitialBalance) {
-            // Muestra el sheet de saldo inicial en lugar de seleccionarla
             _uiState.value = _uiState.value.copy(pendingInitialBalanceAccount = account)
         } else {
             session.selectAccount(id)
+        }
+    }
+
+    fun selectAccount() {
+        val account = _uiState.value.accounts.find { it.id == session.selectedAccountId.value } ?: return
+        if (account.needsInitialBalance) {
+            _uiState.value = _uiState.value.copy(pendingInitialBalanceAccount = account)
+        } else {
+            session.selectedAccountId.value?.let {
+                session.selectAccount(it)
+            }
         }
     }
 
@@ -130,11 +139,6 @@ class AccountViewModel(
             session.selectAccount(account.id)
             _uiState.value = _uiState.value.copy(pendingInitialBalanceAccount = null)
         }
-    }
-
-    fun dismissInitialBalancePrompt() {
-        // No se puede descartar: si la cuenta no tiene saldo inicial, no se puede usar
-        // Solo se llama si el usuario cancela ANTES de guardar la cuenta (no aplica aquí)
     }
 
     fun editAccount(account: Account, newName: String, newCurrency: String) {

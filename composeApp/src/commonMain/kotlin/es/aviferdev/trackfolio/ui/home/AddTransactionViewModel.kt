@@ -117,7 +117,6 @@ class AddTransactionViewModel(
 
             val existing = editingTransaction
             if (existing != null) {
-                // Modo edición
                 val updated = existing.copy(
                     amount     = amountValue,
                     type       = type,
@@ -128,7 +127,6 @@ class AddTransactionViewModel(
                     .onSuccess { _uiState.value = AddTransactionUiState.Success }
                     .onFailure { _uiState.value = AddTransactionUiState.Error(it.message ?: "Error") }
             } else {
-                // Modo creación
                 val transaction = Transaction(
                     id         = generateId(),
                     accountId  = accountId,
@@ -144,6 +142,10 @@ class AddTransactionViewModel(
                     .onFailure { _uiState.value = AddTransactionUiState.Error(it.message ?: "Error") }
             }
         }
+    }
+
+    fun clear(){
+        _uiState.value = AddTransactionUiState.Idle
     }
 
     private fun generateId(): String {

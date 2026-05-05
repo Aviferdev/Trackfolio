@@ -22,7 +22,6 @@ class GetHomeBalanceUseCase(
                     HomeBalance(
                         selectedAccount        = null,
                         selectedAccountBalance = 0.0,
-                        totalGlobalBalance     = 0.0,
                         totalOwed              = 0.0,
                         totalOwing             = 0.0,
                         recentTransactions     = emptyList()
@@ -38,7 +37,6 @@ class GetHomeBalanceUseCase(
                     HomeBalance(
                         selectedAccount        = account,
                         selectedAccountBalance = account.computedBalance,
-                        totalGlobalBalance     = accounts.sumOf { it.computedBalance },
                         totalOwed              = totalOwed,
                         totalOwing             = totalOwing,
                         recentTransactions     = recent

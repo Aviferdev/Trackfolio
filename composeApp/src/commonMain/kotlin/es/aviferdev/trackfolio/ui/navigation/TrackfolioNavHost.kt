@@ -23,9 +23,9 @@ import es.aviferdev.trackfolio.ui.debt.DebtListScreen
 import es.aviferdev.trackfolio.ui.home.HomeScreen
 import es.aviferdev.trackfolio.ui.portfolio.PortfolioScreen
 import es.aviferdev.trackfolio.ui.settings.SettingsScreen
-import es.aviferdev.trackfolio.ui.transaction.TransactionListScreen
 import es.aviferdev.trackfolio.ui.theme.PrimaryDark
 import es.aviferdev.trackfolio.ui.theme.TextSecondary
+import es.aviferdev.trackfolio.ui.transaction.TransactionListScreen
 
 data class BottomNavItem(
     val screen: Screen,
@@ -85,6 +85,9 @@ fun TrackfolioNavHost() {
                     },
                     onNavigateToCharts = {
                         navController.navigate(Screen.Charts.route)
+                    },
+                    onNavigateToSettings = {
+                        navController.navigate(Screen.Settings.route)
                     }
                 )
             }

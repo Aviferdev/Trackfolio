@@ -34,8 +34,8 @@ fun PortfolioScreen(
 ) {
     val state        by viewModel.portfolioState.collectAsState()
     val sheetState   by viewModel.uiState.collectAsState()
-    val accountState by accountViewModel.uiState.collectAsState()
-    val selectedId   by accountViewModel.selectedAccountId.collectAsState()
+
+    accountViewModel.selectAccount()
 
     Box(
         modifier = Modifier
@@ -46,23 +46,10 @@ fun PortfolioScreen(
             modifier       = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(bottom = 100.dp)
         ) {
-            // ── Cabecera ──────────────────────────────────────────────────────
             item {
                 PortfolioHeader()
             }
 
-            // ── Selector de cuentas ───────────────────────────────────────────
-            if (accountState.accounts.isNotEmpty()) {
-                item {
-                    AccountSelectorBar(
-                        accounts          = accountState.accounts,
-                        selectedAccountId = selectedId,
-                        onAccountSelected = { accountViewModel.selectAccount(it) }
-                    )
-                }
-            }
-
-            // ── Tarjeta resumen ───────────────────────────────────────────────
             item {
                 PortfolioSummaryCard(
                     totalInvested     = state.totalInvested,
