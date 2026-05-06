@@ -23,9 +23,9 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Close
-import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material.icons.outlined.Visibility
+import androidx.compose.material.icons.outlined.VisibilityOff
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -213,8 +213,8 @@ private fun HomeContent(
                     contentAlignment = Alignment.Center,
                 ) {
                     Icon(
-                        imageVector = if (balancesHidden) Icons.Outlined.Lock
-                                      else Icons.Outlined.Close,
+                        imageVector = if (balancesHidden) Icons.Outlined.VisibilityOff
+                                      else Icons.Outlined.Visibility,
                         contentDescription = if (balancesHidden) "Mostrar saldos"
                                               else "Ocultar saldos"
                     )

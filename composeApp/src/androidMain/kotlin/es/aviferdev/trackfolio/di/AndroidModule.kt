@@ -1,6 +1,7 @@
 package es.aviferdev.trackfolio.di
 
 import es.aviferdev.trackfolio.data.database.DatabaseDriverFactory
+import es.aviferdev.trackfolio.domain.pdf.PdfReportGenerator
 import es.aviferdev.trackfolio.security.AppLockManager
 import es.aviferdev.trackfolio.security.AppSettings
 import es.aviferdev.trackfolio.security.BalanceVisibilityManager
@@ -16,4 +17,5 @@ val androidModule = module {
     single { AppLockManager(get()) }
     single { BalanceVisibilityManager(get()) }
     single { DatabaseBackupManager(androidContext()) }
+    single { PdfReportGenerator(androidContext()) }
 }

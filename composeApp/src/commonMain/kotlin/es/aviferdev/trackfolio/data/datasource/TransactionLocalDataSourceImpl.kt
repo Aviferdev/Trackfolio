@@ -85,18 +85,27 @@ class TransactionLocalDataSourceImpl(
                 }
             }
 
+    override fun getIncomeByYear(accountId: String, year: String): Flow<List<Transaction>> =
+        queries.getIncomeByYear(accountId, year)
+            .asFlow()
+            .mapToList(Dispatchers.IO)
+            .map { list -> list.map { it.toDomain() } }
+
     override suspend fun insert(entity: TransactionEntity): Result<Unit> =
         runCatching {
             withContext(Dispatchers.IO) {
                 queries.insert(
-                    id         = entity.id,
-                    accountId  = entity.accountId,
-                    amount     = entity.amount,
-                    type       = entity.type,
-                    categoryId = entity.categoryId,
-                    date       = entity.date,
-                    notes      = entity.notes,
-                    createdAt  = entity.createdAt
+                    id          = entity.id,
+                    accountId   = entity.accountId,
+                    amount      = entity.amount,
+                    type        = entity.type,
+                    categoryId  = entity.categoryId,
+                    date        = entity.date,
+                    notes       = entity.notes,
+                    createdAt   = entity.createdAt,
+                    grossAmount = entity.grossAmount,
+                    irpfPercent = entity.irpfPercent,
+                    taxType     = entity.taxType
                 )
             }
         }
@@ -105,13 +114,16 @@ class TransactionLocalDataSourceImpl(
         runCatching {
             withContext(Dispatchers.IO) {
                 queries.update(
-                    accountId  = entity.accountId,
-                    amount     = entity.amount,
-                    type       = entity.type,
-                    categoryId = entity.categoryId,
-                    date       = entity.date,
-                    notes      = entity.notes,
-                    id         = entity.id
+                    accountId   = entity.accountId,
+                    amount      = entity.amount,
+                    type        = entity.type,
+                    categoryId  = entity.categoryId,
+                    date        = entity.date,
+                    notes       = entity.notes,
+                    grossAmount = entity.grossAmount,
+                    irpfPercent = entity.irpfPercent,
+                    taxType     = entity.taxType,
+                    id          = entity.id
                 )
             }
         }

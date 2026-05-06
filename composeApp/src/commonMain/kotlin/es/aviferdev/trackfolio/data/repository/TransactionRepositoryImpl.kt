@@ -35,6 +35,9 @@ class TransactionRepositoryImpl(
     override fun getMonthlyBreakdown(accountId: String, year: String): Flow<List<MonthlyTotals>> =
         dataSource.getMonthlyBreakdown(accountId, year)
 
+    override fun getIncomeByYear(accountId: String, year: String): Flow<List<Transaction>> =
+        dataSource.getIncomeByYear(accountId, year)
+
     override suspend fun saveTransaction(transaction: Transaction): Result<Unit> =
         dataSource.insert(transaction.toEntity())
 

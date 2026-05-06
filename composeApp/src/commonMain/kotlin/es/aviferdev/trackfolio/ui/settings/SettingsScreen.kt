@@ -50,6 +50,7 @@ import androidx.compose.ui.text.input.ImeAction
 
 @Composable
 fun SettingsScreen(
+    onNavigateToFiscalReport: () -> Unit = {},
     accountViewModel:        AccountViewModel        = koinViewModel(),
     backupViewModel:         BackupViewModel         = koinViewModel(),
     categoryViewModel:       CategoryViewModel       = koinViewModel(),
@@ -167,31 +168,17 @@ fun SettingsScreen(
                                     onClick  = { categoryViewModel.openEditSheet(cat) },
                                     modifier = Modifier.size(28.dp)
                                 ) {
-                                    Icon(
-                                        Icons.Default.Edit,
-                                        contentDescription = "Editar",
-                                        modifier = Modifier.size(14.dp),
-                                        tint     = TextSecondary
-                                    )
+                                    Icon(Icons.Default.Edit, "Editar", modifier = Modifier.size(14.dp), tint = TextSecondary)
                                 }
                                 IconButton(
                                     onClick  = { categoryViewModel.requestDelete(cat) },
                                     modifier = Modifier.size(28.dp)
                                 ) {
-                                    Icon(
-                                        Icons.Default.Delete,
-                                        contentDescription = "Eliminar",
-                                        modifier = Modifier.size(14.dp),
-                                        tint     = ExpenseRed
-                                    )
+                                    Icon(Icons.Default.Delete, "Eliminar", modifier = Modifier.size(14.dp), tint = ExpenseRed)
                                 }
                             }
                             if (index < categoryState.expenseCategories.lastIndex) {
-                                HorizontalDivider(
-                                    color    = BorderGray,
-                                    thickness = 0.5.dp,
-                                    modifier = Modifier.padding(start = 36.dp)
-                                )
+                                HorizontalDivider(color = BorderGray, thickness = 0.5.dp, modifier = Modifier.padding(start = 36.dp))
                             }
                         }
                     }
@@ -240,38 +227,24 @@ fun SettingsScreen(
                                     onClick  = { categoryViewModel.openEditSheet(cat) },
                                     modifier = Modifier.size(28.dp)
                                 ) {
-                                    Icon(
-                                        Icons.Default.Edit,
-                                        contentDescription = "Editar",
-                                        modifier = Modifier.size(14.dp),
-                                        tint     = TextSecondary
-                                    )
+                                    Icon(Icons.Default.Edit, "Editar", modifier = Modifier.size(14.dp), tint = TextSecondary)
                                 }
                                 IconButton(
                                     onClick  = { categoryViewModel.requestDelete(cat) },
                                     modifier = Modifier.size(28.dp)
                                 ) {
-                                    Icon(
-                                        Icons.Default.Delete,
-                                        contentDescription = "Eliminar",
-                                        modifier = Modifier.size(14.dp),
-                                        tint     = ExpenseRed
-                                    )
+                                    Icon(Icons.Default.Delete, "Eliminar", modifier = Modifier.size(14.dp), tint = ExpenseRed)
                                 }
                             }
                             if (index < categoryState.incomeCategories.lastIndex) {
-                                HorizontalDivider(
-                                    color    = BorderGray,
-                                    thickness = 0.5.dp,
-                                    modifier = Modifier.padding(start = 36.dp)
-                                )
+                                HorizontalDivider(color = BorderGray, thickness = 0.5.dp, modifier = Modifier.padding(start = 36.dp))
                             }
                         }
                     }
                 }
             }
 
-            // ── PREFERENCIAS ─────────────────────────────────────────────────
+            // ── PORTFOLIO ─────────────────────────────────────────────────────
             item { Spacer(Modifier.height(4.dp)) }
             item {
                 Row(
@@ -313,41 +286,16 @@ fun SettingsScreen(
                             ) {
                                 Text(cat.icon, fontSize = 18.sp, modifier = Modifier.size(28.dp))
                                 Spacer(Modifier.width(8.dp))
-                                Text(
-                                    text     = cat.name,
-                                    fontSize = 14.sp,
-                                    color    = TextPrimary,
-                                    modifier = Modifier.weight(1f)
-                                )
-                                IconButton(
-                                    onClick  = { assetCategoryViewModel.openEditSheet(cat) },
-                                    modifier = Modifier.size(28.dp)
-                                ) {
-                                    Icon(
-                                        Icons.Default.Edit,
-                                        contentDescription = "Editar",
-                                        modifier = Modifier.size(14.dp),
-                                        tint     = TextSecondary
-                                    )
+                                Text(text = cat.name, fontSize = 14.sp, color = TextPrimary, modifier = Modifier.weight(1f))
+                                IconButton(onClick = { assetCategoryViewModel.openEditSheet(cat) }, modifier = Modifier.size(28.dp)) {
+                                    Icon(Icons.Default.Edit, "Editar", modifier = Modifier.size(14.dp), tint = TextSecondary)
                                 }
-                                IconButton(
-                                    onClick  = { assetCategoryViewModel.requestDelete(cat) },
-                                    modifier = Modifier.size(28.dp)
-                                ) {
-                                    Icon(
-                                        Icons.Default.Delete,
-                                        contentDescription = "Eliminar",
-                                        modifier = Modifier.size(14.dp),
-                                        tint     = ExpenseRed
-                                    )
+                                IconButton(onClick = { assetCategoryViewModel.requestDelete(cat) }, modifier = Modifier.size(28.dp)) {
+                                    Icon(Icons.Default.Delete, "Eliminar", modifier = Modifier.size(14.dp), tint = ExpenseRed)
                                 }
                             }
                             if (index < assetCategoryState.categories.lastIndex) {
-                                HorizontalDivider(
-                                    color     = BorderGray,
-                                    thickness = 0.5.dp,
-                                    modifier  = Modifier.padding(start = 36.dp)
-                                )
+                                HorizontalDivider(color = BorderGray, thickness = 0.5.dp, modifier = Modifier.padding(start = 36.dp))
                             }
                         }
                     }
@@ -401,47 +349,21 @@ fun SettingsScreen(
                                 }
                                 Spacer(Modifier.width(10.dp))
                                 Column(modifier = Modifier.weight(1f)) {
-                                    Text(
-                                        text     = asset.name,
-                                        fontSize = 14.sp,
-                                        color    = TextPrimary,
-                                        maxLines = 1
-                                    )
+                                    Text(text = asset.name, fontSize = 14.sp, color = TextPrimary, maxLines = 1)
                                     Text(
                                         text     = if (cat != null) "${asset.ticker} · ${cat.icon} ${cat.name}" else "${asset.ticker} · Sin categoría",
-                                        fontSize = 11.sp,
-                                        color    = TextSecondary
+                                        fontSize = 11.sp, color = TextSecondary
                                     )
                                 }
-                                IconButton(
-                                    onClick  = { assetCatalogViewModel.openEditSheet(asset) },
-                                    modifier = Modifier.size(28.dp)
-                                ) {
-                                    Icon(
-                                        Icons.Default.Edit,
-                                        contentDescription = "Editar",
-                                        modifier = Modifier.size(14.dp),
-                                        tint     = TextSecondary
-                                    )
+                                IconButton(onClick = { assetCatalogViewModel.openEditSheet(asset) }, modifier = Modifier.size(28.dp)) {
+                                    Icon(Icons.Default.Edit, "Editar", modifier = Modifier.size(14.dp), tint = TextSecondary)
                                 }
-                                IconButton(
-                                    onClick  = { assetCatalogViewModel.requestDelete(asset) },
-                                    modifier = Modifier.size(28.dp)
-                                ) {
-                                    Icon(
-                                        Icons.Default.Delete,
-                                        contentDescription = "Eliminar",
-                                        modifier = Modifier.size(14.dp),
-                                        tint     = ExpenseRed
-                                    )
+                                IconButton(onClick = { assetCatalogViewModel.requestDelete(asset) }, modifier = Modifier.size(28.dp)) {
+                                    Icon(Icons.Default.Delete, "Eliminar", modifier = Modifier.size(14.dp), tint = ExpenseRed)
                                 }
                             }
                             if (index < assetCatalogState.assets.lastIndex) {
-                                HorizontalDivider(
-                                    color     = BorderGray,
-                                    thickness = 0.5.dp,
-                                    modifier  = Modifier.padding(start = 60.dp)
-                                )
+                                HorizontalDivider(color = BorderGray, thickness = 0.5.dp, modifier = Modifier.padding(start = 60.dp))
                             }
                         }
                     }
@@ -480,47 +402,23 @@ fun SettingsScreen(
                             ) {
                                 Text(p.icon, fontSize = 18.sp, modifier = Modifier.size(28.dp))
                                 Spacer(Modifier.width(8.dp))
-                                Text(
-                                    text     = p.name,
-                                    fontSize = 14.sp,
-                                    color    = TextPrimary,
-                                    modifier = Modifier.weight(1f)
-                                )
-                                IconButton(
-                                    onClick  = { platformViewModel.openEditSheet(p) },
-                                    modifier = Modifier.size(28.dp)
-                                ) {
-                                    Icon(
-                                        Icons.Default.Edit,
-                                        contentDescription = "Editar",
-                                        modifier = Modifier.size(14.dp),
-                                        tint     = TextSecondary
-                                    )
+                                Text(text = p.name, fontSize = 14.sp, color = TextPrimary, modifier = Modifier.weight(1f))
+                                IconButton(onClick = { platformViewModel.openEditSheet(p) }, modifier = Modifier.size(28.dp)) {
+                                    Icon(Icons.Default.Edit, "Editar", modifier = Modifier.size(14.dp), tint = TextSecondary)
                                 }
-                                IconButton(
-                                    onClick  = { platformViewModel.requestDelete(p) },
-                                    modifier = Modifier.size(28.dp)
-                                ) {
-                                    Icon(
-                                        Icons.Default.Delete,
-                                        contentDescription = "Eliminar",
-                                        modifier = Modifier.size(14.dp),
-                                        tint     = ExpenseRed
-                                    )
+                                IconButton(onClick = { platformViewModel.requestDelete(p) }, modifier = Modifier.size(28.dp)) {
+                                    Icon(Icons.Default.Delete, "Eliminar", modifier = Modifier.size(14.dp), tint = ExpenseRed)
                                 }
                             }
                             if (index < platformState.platforms.lastIndex) {
-                                HorizontalDivider(
-                                    color     = BorderGray,
-                                    thickness = 0.5.dp,
-                                    modifier  = Modifier.padding(start = 36.dp)
-                                )
+                                HorizontalDivider(color = BorderGray, thickness = 0.5.dp, modifier = Modifier.padding(start = 36.dp))
                             }
                         }
                     }
                 }
             }
 
+            // ── PREFERENCIAS ─────────────────────────────────────────────────
             item { Spacer(Modifier.height(4.dp)) }
             item { SectionHeader(title = "PREFERENCIAS") }
             item {
@@ -565,9 +463,21 @@ fun SettingsScreen(
                         }
                     )
                     HorizontalDivider(color = BorderGray, thickness = 0.5.dp, modifier = Modifier.padding(start = 52.dp))
-                    BackupActionRow(icon = "☁️", label = "Exportar backup", onClick = { backupViewModel.openExport() })
+                    BackupActionRow(icon = "☁️",  label = "Exportar backup",  onClick = { backupViewModel.openExport() })
                     HorizontalDivider(color = BorderGray, thickness = 0.5.dp, modifier = Modifier.padding(start = 52.dp))
-                    BackupActionRow(icon = "📥", label = "Importar backup", onClick = { backupViewModel.openImport() })
+                    BackupActionRow(icon = "📥", label = "Importar backup",  onClick = { backupViewModel.openImport() })
+                }
+            }
+
+            // ── INFORMES ──────────────────────────────────────────────────────
+            item { SectionHeader(title = "INFORMES") }
+            item {
+                SettingsGroupCard {
+                    BackupActionRow(
+                        icon    = "🧾",
+                        label   = "Informe fiscal (PDF)",
+                        onClick = onNavigateToFiscalReport
+                    )
                 }
             }
 
@@ -675,10 +585,7 @@ fun SettingsScreen(
             onDismissRequest = { categoryViewModel.cancelDelete() },
             containerColor   = SurfaceWhite,
             icon             = { Text("🗂️", fontSize = 28.sp) },
-            title = {
-                Text("Eliminar categoría", fontSize = 17.sp,
-                    fontWeight = FontWeight.SemiBold, color = TextPrimary)
-            },
+            title = { Text("Eliminar categoría", fontSize = 17.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary) },
             text  = {
                 Text(
                     "Se eliminará «${pending.name}» del listado. Los movimientos que ya tengan asignada esta categoría conservarán su nombre y no se perderán datos.",
@@ -714,8 +621,6 @@ fun SettingsScreen(
         )
     }
 
-    // ── Sheets y diálogos para categorías de portfolio ───────────────────
-
     if (assetCategoryState.showAddSheet) {
         AddEditAssetCategorySheet(
             initial   = null,
@@ -737,10 +642,7 @@ fun SettingsScreen(
             onDismissRequest = { assetCategoryViewModel.cancelDelete() },
             containerColor   = SurfaceWhite,
             icon             = { Text(pending.icon, fontSize = 28.sp) },
-            title = {
-                Text("Eliminar categoría", fontSize = 17.sp,
-                    fontWeight = FontWeight.SemiBold, color = TextPrimary)
-            },
+            title = { Text("Eliminar categoría", fontSize = 17.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary) },
             text  = {
                 Text(
                     "Se eliminará «${pending.name}». Los activos que tenían esta categoría asignada quedarán agrupados como «Sin categoría».",
@@ -776,8 +678,6 @@ fun SettingsScreen(
         )
     }
 
-    // ── Sheets y diálogos para Activos del catálogo ──────────────────────
-
     if (assetCatalogState.showAddSheet) {
         AddEditAssetBottomSheet(
             asset        = null,
@@ -807,10 +707,7 @@ fun SettingsScreen(
             onDismissRequest = { assetCatalogViewModel.cancelDelete() },
             containerColor   = SurfaceWhite,
             icon             = { Text("⚠️", fontSize = 28.sp) },
-            title = {
-                Text("Eliminar activo", fontSize = 17.sp,
-                    fontWeight = FontWeight.SemiBold, color = TextPrimary)
-            },
+            title = { Text("Eliminar activo", fontSize = 17.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary) },
             text  = {
                 Text(
                     "Se eliminará «${pending.name} (${pending.ticker})» del catálogo. Todos sus movimientos asociados también se eliminarán. Esta acción no se puede deshacer.",
@@ -846,8 +743,6 @@ fun SettingsScreen(
         )
     }
 
-    // ── Sheets y diálogos para Plataformas ──────────────────────────────────
-
     if (platformState.showAddSheet) {
         AddEditPlatformSheet(
             initial   = null,
@@ -869,10 +764,7 @@ fun SettingsScreen(
             onDismissRequest = { platformViewModel.cancelDelete() },
             containerColor   = SurfaceWhite,
             icon             = { Text(pending.icon, fontSize = 28.sp) },
-            title = {
-                Text("Archivar plataforma", fontSize = 17.sp,
-                    fontWeight = FontWeight.SemiBold, color = TextPrimary)
-            },
+            title = { Text("Archivar plataforma", fontSize = 17.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary) },
             text  = {
                 Text(
                     "Se archivará «${pending.name}». No aparecerá en los selectores de movimientos nuevos, pero los movimientos históricos que la usen conservarán la referencia.",
@@ -912,11 +804,7 @@ fun SettingsScreen(
 // ─── AddCategorySheet ─────────────────────────────────────────────────────────
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun AddCategorySheet(
-    type: TransactionType,
-    onSave: (name: String) -> Unit,
-    onDismiss: () -> Unit
-) {
+private fun AddCategorySheet(type: TransactionType, onSave: (name: String) -> Unit, onDismiss: () -> Unit) {
     var name      by remember { mutableStateOf("") }
     var nameError by remember { mutableStateOf(false) }
     val color     = if (type == TransactionType.INCOME) IncomeGreen else ExpenseRed
@@ -928,64 +816,34 @@ private fun AddCategorySheet(
         containerColor   = SurfaceWhite
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .imePadding()
-                .padding(horizontal = 24.dp)
-                .padding(bottom = 32.dp)
+            modifier = Modifier.fillMaxWidth().imePadding()
+                .padding(horizontal = 24.dp).padding(bottom = 32.dp)
         ) {
             Spacer(Modifier.height(4.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Box(
-                    modifier = Modifier
-                        .size(10.dp)
-                        .clip(CircleShape)
-                        .background(color)
-                )
+                Box(modifier = Modifier.size(10.dp).clip(CircleShape).background(color))
                 Spacer(Modifier.width(10.dp))
-                Text(
-                    text       = "Nueva categoría de $typeLabel",
-                    fontSize   = 18.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    color      = TextPrimary
-                )
+                Text("Nueva categoría de $typeLabel", fontSize = 18.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary)
             }
             Spacer(Modifier.height(24.dp))
-
             OutlinedTextField(
-                value         = name,
-                onValueChange = { name = it; nameError = false },
-                label         = { Text("Nombre de la categoría") },
-                placeholder   = { Text("Ej. Mascotas, Gimnasio…") },
-                isError       = nameError,
+                value = name, onValueChange = { name = it; nameError = false },
+                label = { Text("Nombre de la categoría") },
+                placeholder = { Text("Ej. Mascotas, Gimnasio…") },
+                isError = nameError,
                 supportingText = if (nameError) {{ Text("El nombre es obligatorio") }} else null,
-                modifier       = Modifier.fillMaxWidth(),
-                singleLine     = true,
-                shape          = RoundedCornerShape(10.dp),
-                keyboardOptions = KeyboardOptions(
-                    capitalization = KeyboardCapitalization.Sentences,
-                    imeAction      = ImeAction.Done
-                ),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor   = PrimaryDark,
-                    unfocusedBorderColor = BorderGray
-                )
+                modifier = Modifier.fillMaxWidth(), singleLine = true,
+                shape = RoundedCornerShape(10.dp),
+                keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences, imeAction = ImeAction.Done),
+                colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = PrimaryDark, unfocusedBorderColor = BorderGray)
             )
-
             Spacer(Modifier.height(28.dp))
-
             Button(
-                onClick = {
-                    if (name.isBlank()) { nameError = true; return@Button }
-                    onSave(name.trim())
-                },
+                onClick = { if (name.isBlank()) { nameError = true; return@Button }; onSave(name.trim()) },
                 modifier = Modifier.fillMaxWidth().height(52.dp),
-                shape    = RoundedCornerShape(10.dp),
-                colors   = ButtonDefaults.buttonColors(containerColor = PrimaryDark)
-            ) {
-                Text("Crear categoría", fontSize = 16.sp, fontWeight = FontWeight.Medium)
-            }
-
+                shape = RoundedCornerShape(10.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = PrimaryDark)
+            ) { Text("Crear categoría", fontSize = 16.sp, fontWeight = FontWeight.Medium) }
             Spacer(Modifier.height(8.dp))
             TextButton(onClick = onDismiss, modifier = Modifier.fillMaxWidth()) {
                 Text("Cancelar", fontSize = 14.sp, color = TextSecondary)
@@ -994,15 +852,10 @@ private fun AddCategorySheet(
     }
 }
 
-// ─── EditCategorySheet ───────────────────────────────────────────────────────────
+// ─── EditCategorySheet ────────────────────────────────────────────────────────
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun EditCategorySheet(
-    currentName: String,
-    type: TransactionType,
-    onSave: (newName: String) -> Unit,
-    onDismiss: () -> Unit
-) {
+private fun EditCategorySheet(currentName: String, type: TransactionType, onSave: (String) -> Unit, onDismiss: () -> Unit) {
     var name      by remember { mutableStateOf(currentName) }
     var nameError by remember { mutableStateOf(false) }
     val color     = if (type == TransactionType.INCOME) IncomeGreen else ExpenseRed
@@ -1014,63 +867,33 @@ private fun EditCategorySheet(
         containerColor   = SurfaceWhite
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .imePadding()
-                .padding(horizontal = 24.dp)
-                .padding(bottom = 32.dp)
+            modifier = Modifier.fillMaxWidth().imePadding()
+                .padding(horizontal = 24.dp).padding(bottom = 32.dp)
         ) {
             Spacer(Modifier.height(4.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Box(
-                    modifier = Modifier
-                        .size(10.dp)
-                        .clip(CircleShape)
-                        .background(color)
-                )
+                Box(modifier = Modifier.size(10.dp).clip(CircleShape).background(color))
                 Spacer(Modifier.width(10.dp))
-                Text(
-                    text       = "Editar categoría de $typeLabel",
-                    fontSize   = 18.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    color      = TextPrimary
-                )
+                Text("Editar categoría de $typeLabel", fontSize = 18.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary)
             }
             Spacer(Modifier.height(24.dp))
-
             OutlinedTextField(
-                value         = name,
-                onValueChange = { name = it; nameError = false },
-                label         = { Text("Nombre de la categoría") },
-                isError       = nameError,
+                value = name, onValueChange = { name = it; nameError = false },
+                label = { Text("Nombre de la categoría") },
+                isError = nameError,
                 supportingText = if (nameError) {{ Text("El nombre es obligatorio") }} else null,
-                modifier       = Modifier.fillMaxWidth(),
-                singleLine     = true,
-                shape          = RoundedCornerShape(10.dp),
-                keyboardOptions = KeyboardOptions(
-                    capitalization = KeyboardCapitalization.Sentences,
-                    imeAction      = ImeAction.Done
-                ),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor   = PrimaryDark,
-                    unfocusedBorderColor = BorderGray
-                )
+                modifier = Modifier.fillMaxWidth(), singleLine = true,
+                shape = RoundedCornerShape(10.dp),
+                keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences, imeAction = ImeAction.Done),
+                colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = PrimaryDark, unfocusedBorderColor = BorderGray)
             )
-
             Spacer(Modifier.height(28.dp))
-
             Button(
-                onClick = {
-                    if (name.isBlank()) { nameError = true; return@Button }
-                    onSave(name.trim())
-                },
+                onClick = { if (name.isBlank()) { nameError = true; return@Button }; onSave(name.trim()) },
                 modifier = Modifier.fillMaxWidth().height(52.dp),
-                shape    = RoundedCornerShape(10.dp),
-                colors   = ButtonDefaults.buttonColors(containerColor = PrimaryDark)
-            ) {
-                Text("Guardar cambios", fontSize = 16.sp, fontWeight = FontWeight.Medium)
-            }
-
+                shape = RoundedCornerShape(10.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = PrimaryDark)
+            ) { Text("Guardar cambios", fontSize = 16.sp, fontWeight = FontWeight.Medium) }
             Spacer(Modifier.height(8.dp))
             TextButton(onClick = onDismiss, modifier = Modifier.fillMaxWidth()) {
                 Text("Cancelar", fontSize = 14.sp, color = TextSecondary)
@@ -1079,47 +902,36 @@ private fun EditCategorySheet(
     }
 }
 
-// ─── SettingsAccountCard ─────────────────────────────────────────────────────
+// ─── SettingsAccountCard ──────────────────────────────────────────────────────
 @Composable
 private fun SettingsAccountCard(
-    account: Account,
-    isSelected: Boolean,
-    onSelect: () -> Unit,
-    onEdit: () -> Unit,
-    onDelete: () -> Unit
+    account: Account, isSelected: Boolean,
+    onSelect: () -> Unit, onEdit: () -> Unit, onDelete: () -> Unit
 ) {
     val borderColor by animateColorAsState(
-        targetValue = if (isSelected) PrimaryDark.copy(alpha = 0.6f) else BorderGray,
-        label = "border"
-    )
+        targetValue = if (isSelected) PrimaryDark.copy(alpha = 0.6f) else BorderGray, label = "border")
     val bgColor by animateColorAsState(
-        targetValue = if (isSelected) SurfaceElevated else SurfaceWhite,
-        label = "bg"
-    )
+        targetValue = if (isSelected) SurfaceElevated else SurfaceWhite, label = "bg")
 
     Card(
-        onClick   = onSelect,
-        modifier  = Modifier.fillMaxWidth(),
-        shape     = RoundedCornerShape(14.dp),
-        border    = BorderStroke(if (isSelected) 1.5.dp else 0.5.dp, borderColor),
-        colors    = CardDefaults.cardColors(containerColor = bgColor),
+        onClick = onSelect, modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(14.dp),
+        border = BorderStroke(if (isSelected) 1.5.dp else 0.5.dp, borderColor),
+        colors = CardDefaults.cardColors(containerColor = bgColor),
         elevation = CardDefaults.cardElevation(0.dp)
     ) {
         Row(
-            modifier          = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 14.dp),
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 14.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Box(
-                modifier        = Modifier
-                    .size(42.dp)
-                    .clip(CircleShape)
+                modifier = Modifier.size(42.dp).clip(CircleShape)
                     .background(if (isSelected) PrimaryDark else BackgroundGray),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text       = account.name.firstOrNull()?.uppercaseChar()?.toString() ?: "?",
-                    fontSize   = 18.sp,
-                    color      = if (isSelected) Color.White else TextSecondary,
+                    account.name.firstOrNull()?.uppercaseChar()?.toString() ?: "?",
+                    fontSize = 18.sp, color = if (isSelected) Color.White else TextSecondary,
                     fontWeight = FontWeight.Bold
                 )
             }
@@ -1127,31 +939,23 @@ private fun SettingsAccountCard(
             Column(modifier = Modifier.weight(1f)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
-                        text       = account.name,
-                        fontSize   = 15.sp,
+                        account.name, fontSize = 15.sp,
                         fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Medium,
-                        color      = TextPrimary
+                        color = TextPrimary
                     )
-                    if (account.needsInitialBalance) {
-                        Spacer(Modifier.width(6.dp))
-                        Text("⚠️", fontSize = 12.sp)
-                    }
+                    if (account.needsInitialBalance) { Spacer(Modifier.width(6.dp)); Text("⚠️", fontSize = 12.sp) }
                 }
                 Text(
-                    text  = if (account.needsInitialBalance) "Saldo inicial pendiente" else account.currency,
+                    if (account.needsInitialBalance) "Saldo inicial pendiente" else account.currency,
                     fontSize = 12.sp,
                     color = if (account.needsInitialBalance) ExpenseRed else TextSecondary
                 )
             }
             if (isSelected) {
                 Box(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(50))
-                        .background(PrimaryDark)
-                        .padding(horizontal = 8.dp, vertical = 3.dp)
-                ) {
-                    Text("Activa", fontSize = 10.sp, color = Color.White, fontWeight = FontWeight.Medium)
-                }
+                    modifier = Modifier.clip(RoundedCornerShape(50))
+                        .background(PrimaryDark).padding(horizontal = 8.dp, vertical = 3.dp)
+                ) { Text("Activa", fontSize = 10.sp, color = Color.White, fontWeight = FontWeight.Medium) }
                 Spacer(Modifier.width(8.dp))
             }
             IconButton(onClick = onEdit, modifier = Modifier.size(32.dp)) {
@@ -1165,24 +969,16 @@ private fun SettingsAccountCard(
 }
 
 // ─── Componentes auxiliares ───────────────────────────────────────────────────
-
 @Composable
-private fun SectionHeader(
-    title: String,
-    actionLabel: String? = null,
-    onAction: (() -> Unit)? = null
-) {
+private fun SectionHeader(title: String, actionLabel: String? = null, onAction: (() -> Unit)? = null) {
     Row(
-        modifier              = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment     = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically
     ) {
         Text(title, fontSize = 11.sp, fontWeight = FontWeight.SemiBold, color = TextSecondary)
         if (actionLabel != null && onAction != null) {
-            TextButton(
-                onClick        = onAction,
-                contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp)
-            ) {
+            TextButton(onClick = onAction, contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp)) {
                 Text(actionLabel, fontSize = 13.sp, color = PrimaryDark, fontWeight = FontWeight.Medium)
             }
         }
@@ -1192,20 +988,16 @@ private fun SectionHeader(
 @Composable
 private fun SettingsGroupCard(content: @Composable ColumnScope.() -> Unit) {
     Card(
-        modifier  = Modifier.fillMaxWidth(),
-        shape     = RoundedCornerShape(14.dp),
-        colors    = CardDefaults.cardColors(containerColor = SurfaceWhite),
-        border    = BorderStroke(0.5.dp, BorderGray),
-        elevation = CardDefaults.cardElevation(0.dp)
-    ) {
-        Column(content = content)
-    }
+        modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(14.dp),
+        colors = CardDefaults.cardColors(containerColor = SurfaceWhite),
+        border = BorderStroke(0.5.dp, BorderGray), elevation = CardDefaults.cardElevation(0.dp)
+    ) { Column(content = content) }
 }
 
 @Composable
 private fun SettingsRow(icon: String, label: String, value: String) {
     Row(
-        modifier          = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 14.dp),
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 14.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(icon, fontSize = 18.sp, modifier = Modifier.size(28.dp))
@@ -1219,9 +1011,7 @@ private fun SettingsRow(icon: String, label: String, value: String) {
 @Composable
 private fun BackupActionRow(icon: String, label: String, onClick: () -> Unit) {
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick)
+        modifier = Modifier.fillMaxWidth().clickable(onClick = onClick)
             .padding(horizontal = 16.dp, vertical = 14.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -1233,48 +1023,29 @@ private fun BackupActionRow(icon: String, label: String, onClick: () -> Unit) {
 }
 
 @Composable
-private fun BiometricToggleRow(
-    enabled: Boolean,
-    isAvailable: Boolean,
-    error: String?,
-    onToggle: (Boolean) -> Unit
-) {
+private fun BiometricToggleRow(enabled: Boolean, isAvailable: Boolean, error: String?, onToggle: (Boolean) -> Unit) {
     Column {
         Row(
-            modifier          = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 14.dp),
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 14.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text("🔒", fontSize = 18.sp, modifier = Modifier.size(28.dp))
             Spacer(Modifier.width(12.dp))
             Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    "Bloqueo con biometría",
-                    fontSize = 15.sp,
-                    color    = if (isAvailable) TextPrimary else TextSecondary
-                )
-                if (!isAvailable) {
-                    Text("No disponible en este dispositivo", fontSize = 11.sp, color = TextSecondary)
-                }
+                Text("Bloqueo con biometría", fontSize = 15.sp, color = if (isAvailable) TextPrimary else TextSecondary)
+                if (!isAvailable) Text("No disponible en este dispositivo", fontSize = 11.sp, color = TextSecondary)
             }
             Switch(
-                checked         = enabled,
-                onCheckedChange = { if (isAvailable) onToggle(it) },
-                enabled         = isAvailable,
-                colors          = SwitchDefaults.colors(
-                    checkedThumbColor   = SurfaceWhite,
-                    checkedTrackColor   = PrimaryDark,
-                    uncheckedThumbColor = SurfaceWhite,
-                    uncheckedTrackColor = BorderGray
+                checked = enabled, onCheckedChange = { if (isAvailable) onToggle(it) }, enabled = isAvailable,
+                colors = SwitchDefaults.colors(
+                    checkedThumbColor = SurfaceWhite, checkedTrackColor = PrimaryDark,
+                    uncheckedThumbColor = SurfaceWhite, uncheckedTrackColor = BorderGray
                 )
             )
         }
         error?.let {
-            Text(
-                it,
-                fontSize = 11.sp,
-                color    = ExpenseRed,
-                modifier = Modifier.padding(start = 56.dp, end = 16.dp, bottom = 8.dp)
-            )
+            Text(it, fontSize = 11.sp, color = ExpenseRed,
+                modifier = Modifier.padding(start = 56.dp, end = 16.dp, bottom = 8.dp))
         }
     }
 }
@@ -1282,14 +1053,12 @@ private fun BiometricToggleRow(
 @Composable
 private fun EmptyAccountsCard(onAdd: () -> Unit) {
     Card(
-        modifier  = Modifier.fillMaxWidth(),
-        shape     = RoundedCornerShape(14.dp),
-        colors    = CardDefaults.cardColors(containerColor = SurfaceWhite),
-        border    = BorderStroke(0.5.dp, BorderGray),
-        elevation = CardDefaults.cardElevation(0.dp)
+        modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(14.dp),
+        colors = CardDefaults.cardColors(containerColor = SurfaceWhite),
+        border = BorderStroke(0.5.dp, BorderGray), elevation = CardDefaults.cardElevation(0.dp)
     ) {
         Column(
-            modifier            = Modifier.fillMaxWidth().padding(24.dp),
+            modifier = Modifier.fillMaxWidth().padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text("🏦", fontSize = 32.sp)
@@ -1299,9 +1068,8 @@ private fun EmptyAccountsCard(onAdd: () -> Unit) {
             Text("Crea tu primera cuenta para empezar", fontSize = 13.sp, color = TextSecondary)
             Spacer(Modifier.height(16.dp))
             OutlinedButton(
-                onClick = onAdd,
-                shape   = RoundedCornerShape(10.dp),
-                border  = BorderStroke(1.dp, PrimaryDark)
+                onClick = onAdd, shape = RoundedCornerShape(10.dp),
+                border = BorderStroke(1.dp, PrimaryDark)
             ) {
                 Icon(Icons.Default.Add, null, modifier = Modifier.size(16.dp), tint = PrimaryDark)
                 Spacer(Modifier.width(6.dp))
@@ -1311,127 +1079,84 @@ private fun EmptyAccountsCard(onAdd: () -> Unit) {
     }
 }
 
-// AddEditAssetCategorySheet — sheet para crear o editar una categoría de portfolio
+// ─── AddEditAssetCategorySheet ────────────────────────────────────────────────
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun AddEditAssetCategorySheet(
-    initial: AssetCategory?,
-    onSave: (name: String, icon: String) -> Unit,
-    onDismiss: () -> Unit
+    initial: AssetCategory?, onSave: (String, String) -> Unit, onDismiss: () -> Unit
 ) {
     val isEditing = initial != null
-
     var name      by remember { mutableStateOf(initial?.name ?: "") }
     var icon      by remember { mutableStateOf(initial?.icon ?: "📦") }
     var nameError by remember { mutableStateOf(false) }
-
-    // Lista corta de iconos sugeridos. El usuario puede pegar cualquier emoji manualmente.
     val suggestedIcons = listOf(
-        "📦", "💰", "💵", "🪙", "📈", "📉", "📊",
-        "🏠", "🏦", "💳", "₿", "⚡", "🗽", "📦",
-        "🔓", "💸", "🎩", "🚀", "⚖️", "📜"
+        "📦","💰","💵","🪙","📈","📉","📊","🏠","🏦","💳","₿","⚡","🗽","🔓","💸","🎩","🚀","⚖️","📜"
     ).distinct()
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
-        sheetState       = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-        containerColor   = SurfaceWhite,
+        sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
+        containerColor = SurfaceWhite,
         dragHandle = {
-            Box(
-                modifier = Modifier
-                    .padding(top = 12.dp, bottom = 4.dp)
-                    .width(40.dp).height(4.dp)
-                    .clip(RoundedCornerShape(2.dp))
-                    .background(BorderGray)
-            )
+            Box(modifier = Modifier.padding(top = 12.dp, bottom = 4.dp).width(40.dp).height(4.dp)
+                .clip(RoundedCornerShape(2.dp)).background(BorderGray))
         }
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .imePadding()
-                .padding(horizontal = 24.dp)
-                .padding(bottom = 32.dp)
+            modifier = Modifier.fillMaxWidth().imePadding()
+                .padding(horizontal = 24.dp).padding(bottom = 32.dp)
         ) {
             Spacer(Modifier.height(4.dp))
             Text(
-                text       = if (isEditing) "Editar categoría de portfolio" else "Nueva categoría de portfolio",
-                fontSize   = 18.sp,
-                fontWeight = FontWeight.SemiBold,
-                color      = TextPrimary
+                if (isEditing) "Editar categoría de portfolio" else "Nueva categoría de portfolio",
+                fontSize = 18.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary
             )
             Spacer(Modifier.height(20.dp))
-
-            // Selector de icono — muestra el actual y abajo una lista para elegir
             Text("Icono", fontSize = 12.sp, color = TextSecondary, fontWeight = FontWeight.Medium)
             Spacer(Modifier.height(8.dp))
-
             Row(
-                modifier              = Modifier
-                    .fillMaxWidth()
-                    .horizontalScroll(rememberScrollState()),
+                modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 suggestedIcons.forEach { ic ->
                     val isSel = ic == icon
                     Box(
-                        modifier = Modifier
-                            .size(40.dp)
-                            .clip(RoundedCornerShape(10.dp))
+                        modifier = Modifier.size(40.dp).clip(RoundedCornerShape(10.dp))
                             .background(if (isSel) SurfaceElevated else SurfaceWhite)
                             .border(
-                                width = if (isSel) 1.5.dp else 0.5.dp,
-                                color = if (isSel) PrimaryDark else BorderGray,
-                                shape = RoundedCornerShape(10.dp)
-                            )
-                            .clickable { icon = ic },
+                                if (isSel) 1.5.dp else 0.5.dp,
+                                if (isSel) PrimaryDark else BorderGray,
+                                RoundedCornerShape(10.dp)
+                            ).clickable { icon = ic },
                         contentAlignment = Alignment.Center
-                    ) {
-                        Text(ic, fontSize = 18.sp)
-                    }
+                    ) { Text(ic, fontSize = 18.sp) }
                 }
             }
             Spacer(Modifier.height(16.dp))
-
             OutlinedTextField(
-                value         = name,
-                onValueChange = { name = it; nameError = false },
-                label         = { Text("Nombre de la categoría") },
-                placeholder   = { Text("Ej. Cryptos, ETFs, Bonos") },
-                isError       = nameError,
+                value = name, onValueChange = { name = it; nameError = false },
+                label = { Text("Nombre de la categoría") },
+                placeholder = { Text("Ej. Cryptos, ETFs, Bonos") },
+                isError = nameError,
                 supportingText = if (nameError) {{ Text("El nombre es obligatorio") }} else null,
-                modifier      = Modifier.fillMaxWidth(),
-                singleLine    = true,
-                shape         = RoundedCornerShape(10.dp),
-                keyboardOptions = KeyboardOptions(
-                    capitalization = KeyboardCapitalization.Sentences,
-                    imeAction      = ImeAction.Done
-                ),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor   = PrimaryDark,
-                    unfocusedBorderColor = BorderGray
-                )
+                modifier = Modifier.fillMaxWidth(), singleLine = true,
+                shape = RoundedCornerShape(10.dp),
+                keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences, imeAction = ImeAction.Done),
+                colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = PrimaryDark, unfocusedBorderColor = BorderGray)
             )
-
             Spacer(Modifier.height(28.dp))
-
             Button(
-                onClick = {
-                    if (name.isBlank()) { nameError = true; return@Button }
-                    onSave(name.trim(), icon)
-                },
+                onClick = { if (name.isBlank()) { nameError = true; return@Button }; onSave(name.trim(), icon) },
                 modifier = Modifier.fillMaxWidth().height(52.dp),
-                shape    = RoundedCornerShape(10.dp),
-                colors   = ButtonDefaults.buttonColors(containerColor = PrimaryDark)
+                shape = RoundedCornerShape(10.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = PrimaryDark)
             ) {
                 Text(
-                    text       = if (isEditing) "Guardar cambios" else "Crear categoría",
-                    fontSize   = 16.sp,
-                    fontWeight = FontWeight.Medium,
-                    color      = MaterialTheme.colorScheme.onPrimary
+                    if (isEditing) "Guardar cambios" else "Crear categoría",
+                    fontSize = 16.sp, fontWeight = FontWeight.Medium,
+                    color = MaterialTheme.colorScheme.onPrimary
                 )
             }
-
             Spacer(Modifier.height(8.dp))
             TextButton(onClick = onDismiss, modifier = Modifier.fillMaxWidth()) {
                 Text("Cancelar", fontSize = 14.sp, color = TextSecondary)

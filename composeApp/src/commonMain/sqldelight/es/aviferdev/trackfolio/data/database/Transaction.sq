@@ -1,18 +1,22 @@
 CREATE TABLE TransactionEntity (
     id          TEXT    NOT NULL PRIMARY KEY,
     accountId   TEXT    NOT NULL,
-    amount      REAL    NOT NULL,
-    type        TEXT    NOT NULL,
+    amount      REAL    NOT NULL,       -- importe neto (el que entra/sale de la cuenta)
+    type        TEXT    NOT NULL,       -- 'INCOME' | 'EXPENSE'
     categoryId  TEXT    NOT NULL,
     date        INTEGER NOT NULL,
     notes       TEXT,
     createdAt   INTEGER NOT NULL,
-    FOREIGN KEY (accountId) REFERENCES AccountEntity(id) ON DELETE CASCADE,
+    -- ── Campos fiscales IRPF (solo ingresos; null = sin info fiscal) ──────────
+    grossAmount REAL,                   -- importe bruto antes de retención
+    irpfPercent REAL,                   -- porcentaje de retención (ej. 19.0)
+    taxType     TEXT,                   -- IncomeTaxType.name
+    FOREIGN KEY (accountId)  REFERENCES AccountEntity(id) ON DELETE CASCADE,
     FOREIGN KEY (categoryId) REFERENCES CategoryEntity(id)
 );
 
 CREATE INDEX idx_transaction_account ON TransactionEntity(accountId);
-CREATE INDEX idx_transaction_date ON TransactionEntity(date);
+CREATE INDEX idx_transaction_date    ON TransactionEntity(date);
 
 -- ─── Queries básicas ──────────────────────────────────────────────────────────
 
@@ -27,7 +31,7 @@ SELECT * FROM TransactionEntity
 WHERE accountId = :accountId
 ORDER BY date DESC;
 
--- ─── Filtradas por cuenta + mes/año (Sprint 9) ────────────────────────────────
+-- ─── Filtradas por cuenta + mes/año ──────────────────────────────────────────
 
 selectByMonthAndAccount:
 SELECT * FROM TransactionEntity
@@ -59,7 +63,6 @@ FROM TransactionEntity
 WHERE accountId = :accountId
   AND strftime('%Y', date / 1000, 'unixepoch') = :year;
 
--- Totales por mes para todos los meses de un año (para gráfico de barras)
 getMonthlyBreakdownByAccount:
 SELECT
     strftime('%m', date / 1000, 'unixepoch') AS month,
@@ -71,7 +74,17 @@ WHERE accountId = :accountId
 GROUP BY month
 ORDER BY month ASC;
 
--- Búsqueda por nota o categoría (para TransactionListScreen)
+-- ─── Ingresos del año con datos fiscales (para informe IRPF) ─────────────────
+
+getIncomeByYear:
+SELECT * FROM TransactionEntity
+WHERE accountId = :accountId
+  AND type = 'INCOME'
+  AND strftime('%Y', date / 1000, 'unixepoch') = :year
+ORDER BY date DESC;
+
+-- ─── Búsqueda ─────────────────────────────────────────────────────────────────
+
 searchByAccountAndText:
 SELECT * FROM TransactionEntity
 WHERE accountId = :accountId
@@ -104,13 +117,22 @@ WHERE strftime('%Y', date / 1000, 'unixepoch') = :year;
 -- ─── CRUD ─────────────────────────────────────────────────────────────────────
 
 insert:
-INSERT INTO TransactionEntity(id, accountId, amount, type, categoryId, date, notes, createdAt)
-VALUES (?, ?, ?, ?, ?, ?, ?, ?);
+INSERT INTO TransactionEntity(
+    id, accountId, amount, type, categoryId, date, notes, createdAt,
+    grossAmount, irpfPercent, taxType
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 
 update:
 UPDATE TransactionEntity
-SET accountId = :accountId, amount = :amount, type = :type,
-    categoryId = :categoryId, date = :date, notes = :notes
+SET accountId   = :accountId,
+    amount      = :amount,
+    type        = :type,
+    categoryId  = :categoryId,
+    date        = :date,
+    notes       = :notes,
+    grossAmount = :grossAmount,
+    irpfPercent = :irpfPercent,
+    taxType     = :taxType
 WHERE id = :id;
 
 delete:

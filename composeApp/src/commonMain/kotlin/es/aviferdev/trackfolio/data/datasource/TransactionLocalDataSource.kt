@@ -9,12 +9,13 @@ import es.aviferdev.trackfolio.domain.model.Transaction
 import kotlinx.coroutines.flow.Flow
 
 interface TransactionLocalDataSource {
-    // Filtradas por cuenta (Sprint 9)
     fun getByMonthAndAccount(accountId: String, year: String, month: String): Flow<List<Transaction>>
     fun getMonthlyTotalsByAccount(accountId: String, year: String, month: String): Flow<MonthlyTotals>
     fun getAnnualTotalsByAccount(accountId: String, year: String): Flow<AnnualSummary>
     fun getRecentByAccount(accountId: String, limit: Long): Flow<List<Transaction>>
     fun getMonthlyBreakdown(accountId: String, year: String): Flow<List<MonthlyTotals>>
+    /** Todos los ingresos del año indicado, incluyendo campos fiscales. */
+    fun getIncomeByYear(accountId: String, year: String): Flow<List<Transaction>>
     // CRUD
     suspend fun insert(entity: TransactionEntity): Result<Unit>
     suspend fun update(entity: TransactionEntity): Result<Unit>

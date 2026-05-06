@@ -40,6 +40,7 @@ kotlin {
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.material3)
+            implementation(compose.materialIconsExtended)
             implementation(compose.ui)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
@@ -62,7 +63,7 @@ sqldelight {
     databases {
         create("TrackfolioDatabase") {
             packageName.set("es.aviferdev.trackfolio.data.database")
-            version = 7
+            version = 8
         }
     }
 }

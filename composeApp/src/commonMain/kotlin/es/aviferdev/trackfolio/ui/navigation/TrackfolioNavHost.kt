@@ -20,6 +20,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import es.aviferdev.trackfolio.ui.annual.AnnualSummaryScreen
 import es.aviferdev.trackfolio.ui.debt.DebtListScreen
+import es.aviferdev.trackfolio.ui.fiscal.FiscalReportScreen
 import es.aviferdev.trackfolio.ui.home.HomeScreen
 import es.aviferdev.trackfolio.ui.portfolio.AssetHistoryScreen
 import es.aviferdev.trackfolio.ui.portfolio.PortfolioScreen
@@ -55,12 +56,6 @@ fun TrackfolioNavHost() {
                         selected = selected,
                         onClick = {
                             if (currentDestination?.route == item.screen.route) return@NavigationBarItem
-
-                            // Estrategia simple y robusta para Compose Multiplatform Navigation 2.8.0-alpha:
-                            // 1) Vaciar la pila hasta Home (start destination).
-                            // 2) Si el destino es Home, ya estamos. Si es otro tab, navegamos encima.
-                            // No usamos saveState/restoreState porque su comportamiento es inestable
-                            // en versiones alpha y puede dejar destinos "fantasma" en la pila.
                             navController.popBackStack(Screen.Home.route, inclusive = false)
                             if (item.screen.route != Screen.Home.route) {
                                 navController.navigate(item.screen.route) {
@@ -90,19 +85,13 @@ fun TrackfolioNavHost() {
             composable(Screen.Home.route) {
                 HomeScreen(
                     onNavigateToTransactions = {
-                        navController.navigate(Screen.Transactions.route) {
-                            launchSingleTop = true
-                        }
+                        navController.navigate(Screen.Transactions.route) { launchSingleTop = true }
                     },
                     onNavigateToCharts = {
-                        navController.navigate(Screen.Charts.route) {
-                            launchSingleTop = true
-                        }
+                        navController.navigate(Screen.Charts.route) { launchSingleTop = true }
                     },
                     onNavigateToSettings = {
-                        navController.navigate(Screen.Settings.route) {
-                            launchSingleTop = true
-                        }
+                        navController.navigate(Screen.Settings.route) { launchSingleTop = true }
                     }
                 )
             }
@@ -122,13 +111,24 @@ fun TrackfolioNavHost() {
                 DebtListScreen()
             }
             composable(Screen.Settings.route) {
-                SettingsScreen()
+                SettingsScreen(
+                    onNavigateToFiscalReport = {
+                        navController.navigate(Screen.FiscalReport.route) {
+                            launchSingleTop = true
+                        }
+                    }
+                )
             }
             composable(Screen.Charts.route) {
                 AnnualSummaryScreen()
             }
+            composable(Screen.FiscalReport.route) {
+                FiscalReportScreen(
+                    onBack = { navController.popBackStack() }
+                )
+            }
             composable(
-                route = Screen.AssetHistory.route,
+                route     = Screen.AssetHistory.route,
                 arguments = listOf(
                     navArgument(Screen.AssetHistory.ARG_ASSET_ID) { type = NavType.StringType }
                 )

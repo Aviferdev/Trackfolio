@@ -1,0 +1,37 @@
+package es.aviferdev.trackfolio.domain.model
+
+/**
+ * Datos consolidados para el informe fiscal.
+ * Se recopilan de todos los repositorios en [GetFiscalReportDataUseCase].
+ */
+data class FiscalReportData(
+    val accountName: String,
+    val currency: String,
+    val year: String,
+    val generatedAt: Long,
+    val annualSummary: AnnualSummary?,
+    val monthlyBreakdown: List<MonthlyTotals>,
+    val activeDebts: List<Debt>,
+    val assetPositions: List<AssetPosition>,
+    /** Desglose de ingresos por tipo de rendimiento IRPF (vacío si no hay datos fiscales). */
+    val incomeTaxBreakdown: List<FiscalIncomeTaxBreakdown> = emptyList()
+)
+
+/**
+ * Posición consolidada de un activo para el informe fiscal.
+ */
+data class AssetPosition(
+    val ticker: String,
+    val name: String,
+    val categoryName: String?,
+    val netQuantity: Double,
+    val avgCostBasis: Double,
+    val totalCost: Double,
+    val currentPrice: Double?,
+    val currentValue: Double?,
+    val unrealizedPnl: Double?,
+    val realizedPnl: Double,
+    val totalBought: Double,
+    val totalSold: Double,
+    val yearTransactions: List<AssetTransaction>
+)

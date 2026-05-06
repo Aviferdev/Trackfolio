@@ -37,6 +37,7 @@ import es.aviferdev.trackfolio.domain.usecase.debt.GetActiveDebtsUseCase
 import es.aviferdev.trackfolio.domain.usecase.debt.MarkDebtAsPaidUseCase
 import es.aviferdev.trackfolio.domain.usecase.debt.SaveDebtUseCase
 import es.aviferdev.trackfolio.domain.usecase.debt.UpdateDebtUseCase
+import es.aviferdev.trackfolio.domain.usecase.fiscal.GetFiscalReportDataUseCase
 import es.aviferdev.trackfolio.domain.usecase.home.GetHomeBalanceUseCase
 import es.aviferdev.trackfolio.domain.usecase.platform.ArchivePlatformUseCase
 import es.aviferdev.trackfolio.domain.usecase.platform.GetAllPlatformsIncludingArchivedUseCase
@@ -54,6 +55,7 @@ import es.aviferdev.trackfolio.ui.account.AccountSession
 import es.aviferdev.trackfolio.ui.account.AccountViewModel
 import es.aviferdev.trackfolio.ui.annual.AnnualViewModel
 import es.aviferdev.trackfolio.ui.debt.DebtViewModel
+import es.aviferdev.trackfolio.ui.fiscal.FiscalReportViewModel
 import es.aviferdev.trackfolio.ui.home.AddTransactionViewModel
 import es.aviferdev.trackfolio.ui.home.HomeViewModel
 import es.aviferdev.trackfolio.ui.portfolio.AssetCatalogViewModel
@@ -65,11 +67,10 @@ import es.aviferdev.trackfolio.ui.settings.BackupViewModel
 import es.aviferdev.trackfolio.ui.settings.CategoryViewModel
 import es.aviferdev.trackfolio.ui.transaction.TransactionViewModel
 import org.koin.core.module.dsl.viewModel
-import org.koin.core.parameter.parametersOf
 import org.koin.dsl.module
 
 val useCaseModule = module {
-    // Sesión compartida — singleton para que todos los ViewModels vean la misma cuenta
+    // Sesión compartida
     single { AccountSession() }
 
     // ── Account ──────────────────────────────────────────────────────────────
@@ -142,6 +143,18 @@ val useCaseModule = module {
     factory { GetCategoriesByTypeUseCase(get()) }
     factory { GetAllCategoriesIncludingArchivedUseCase(get()) }
 
+    // ── Fiscal ────────────────────────────────────────────────────────────────
+    factory {
+        GetFiscalReportDataUseCase(
+            accountRepository         = get(),
+            transactionRepository     = get(),
+            debtRepository            = get(),
+            assetRepository           = get(),
+            assetTransactionRepository = get(),
+            assetCategoryRepository   = get()
+        )
+    }
+
     // ── ViewModels ────────────────────────────────────────────────────────────
     viewModel {
         AccountViewModel(
@@ -174,7 +187,7 @@ val useCaseModule = module {
             getTransactionsByMonth            = get(),
             getMonthlyTotals                  = get(),
             deleteTransactionUseCase          = get(),
-            getAllCategoriesIncludingArchived = get(),
+            getAllCategoriesIncludingArchived  = get(),
             session                           = get()
         )
     }
@@ -227,7 +240,6 @@ val useCaseModule = module {
             archivePlatform = get()
         )
     }
-    // El AssetHistoryViewModel necesita el assetId como parámetro de navegación.
     viewModel { (assetId: String) ->
         AssetHistoryViewModel(
             assetId                  = assetId,
@@ -243,4 +255,13 @@ val useCaseModule = module {
     }
     viewModel { BackupViewModel(get()) }
     viewModel { CategoryViewModel(get()) }
+
+    // ── FiscalReportViewModel ─────────────────────────────────────────────────
+    viewModel {
+        FiscalReportViewModel(
+            getFiscalReportData = get(),
+            pdfGenerator        = get(),
+            session             = get()
+        )
+    }
 }

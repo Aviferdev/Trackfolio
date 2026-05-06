@@ -16,6 +16,7 @@ import platform.Foundation.NSUserDomainMask
 private const val DB_NAME = "trackfolio.db"
 private const val PENDING_TAG = "[PendingImport]"
 
+@OptIn(ExperimentalForeignApi::class)
 actual fun applyPendingDatabaseImport(): Boolean {
     val fm = NSFileManager.defaultManager
 
