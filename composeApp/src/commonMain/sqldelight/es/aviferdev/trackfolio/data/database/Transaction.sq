@@ -1,17 +1,21 @@
 CREATE TABLE TransactionEntity (
-    id          TEXT    NOT NULL PRIMARY KEY,
-    accountId   TEXT    NOT NULL,
-    amount      REAL    NOT NULL,       -- importe neto (el que entra/sale de la cuenta)
-    type        TEXT    NOT NULL,       -- 'INCOME' | 'EXPENSE'
-    categoryId  TEXT    NOT NULL,
-    date        INTEGER NOT NULL,
-    notes       TEXT,
-    createdAt   INTEGER NOT NULL,
-    -- ── Campos fiscales IRPF (solo ingresos; null = sin info fiscal) ──────────
-    grossAmount REAL,                   -- importe bruto antes de retención
-    irpfPercent REAL,                   -- porcentaje de retención (ej. 19.0)
-    taxType     TEXT,                   -- IncomeTaxType.name
-    FOREIGN KEY (accountId)  REFERENCES AccountEntity(id) ON DELETE CASCADE,
+    id                    TEXT    NOT NULL PRIMARY KEY,
+    accountId             TEXT    NOT NULL,
+    amount                REAL    NOT NULL,
+    type                  TEXT    NOT NULL,
+    categoryId            TEXT,
+    date                  INTEGER NOT NULL,
+    notes                 TEXT,
+    createdAt             INTEGER NOT NULL,
+    -- ── Campos de ingreso ─────────────────────────────────────────────────────
+    incomeType            TEXT,
+    grossAmount           REAL,
+    irpfPercent           REAL,
+    socialSecurityAmount  REAL,
+    commissionAmount      REAL,
+    issuerId              TEXT,
+    issuerName            TEXT,
+    FOREIGN KEY (accountId) REFERENCES AccountEntity(id) ON DELETE CASCADE,
     FOREIGN KEY (categoryId) REFERENCES CategoryEntity(id)
 );
 
@@ -74,7 +78,7 @@ WHERE accountId = :accountId
 GROUP BY month
 ORDER BY month ASC;
 
--- ─── Ingresos del año con datos fiscales (para informe IRPF) ─────────────────
+-- ─── Ingresos del año (para informe fiscal) ──────────────────────────────────
 
 getIncomeByYear:
 SELECT * FROM TransactionEntity
@@ -88,7 +92,7 @@ ORDER BY date DESC;
 searchByAccountAndText:
 SELECT * FROM TransactionEntity
 WHERE accountId = :accountId
-  AND (notes LIKE :query)
+  AND (notes LIKE :query OR issuerName LIKE :query)
 ORDER BY date DESC;
 
 -- ─── Retrocompatibilidad (sin filtro de cuenta) ───────────────────────────────
@@ -119,20 +123,25 @@ WHERE strftime('%Y', date / 1000, 'unixepoch') = :year;
 insert:
 INSERT INTO TransactionEntity(
     id, accountId, amount, type, categoryId, date, notes, createdAt,
-    grossAmount, irpfPercent, taxType
-) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+    incomeType, grossAmount, irpfPercent, socialSecurityAmount,
+    commissionAmount, issuerId, issuerName
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 
 update:
 UPDATE TransactionEntity
-SET accountId   = :accountId,
-    amount      = :amount,
-    type        = :type,
-    categoryId  = :categoryId,
-    date        = :date,
-    notes       = :notes,
-    grossAmount = :grossAmount,
-    irpfPercent = :irpfPercent,
-    taxType     = :taxType
+SET accountId            = :accountId,
+    amount               = :amount,
+    type                 = :type,
+    categoryId           = :categoryId,
+    date                 = :date,
+    notes                = :notes,
+    incomeType           = :incomeType,
+    grossAmount          = :grossAmount,
+    irpfPercent          = :irpfPercent,
+    socialSecurityAmount = :socialSecurityAmount,
+    commissionAmount     = :commissionAmount,
+    issuerId             = :issuerId,
+    issuerName           = :issuerName
 WHERE id = :id;
 
 delete:

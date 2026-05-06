@@ -228,10 +228,7 @@ private fun HomeContent(
                         .clickable { onNavigateToSettings() },
                     contentAlignment = Alignment.Center,
                 ) {
-                    Icon(
-                        Icons.Outlined.Settings,
-                        "Ajustes"
-                    )
+                    Icon(Icons.Outlined.Settings, "Ajustes")
                 }
             }
         }
@@ -283,15 +280,9 @@ private fun HeroCard(balance: HomeBalance, balancesHidden: Boolean, modifier: Mo
         elevation = CardDefaults.cardElevation(4.dp)
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 20.dp, vertical = 20.dp)
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 20.dp)
         ) {
-            Text(
-                text     = accountLabel,
-                fontSize = 13.sp,
-                color    = Color.White.copy(alpha = 0.65f)
-            )
+            Text(text = accountLabel, fontSize = 13.sp, color = Color.White.copy(alpha = 0.65f))
             Spacer(Modifier.height(8.dp))
             Text(
                 text          = "${maskAmount(formatAmount(balance.selectedAccountBalance), balancesHidden)} $currency",
@@ -315,40 +306,18 @@ private fun HeroCard(balance: HomeBalance, balancesHidden: Boolean, modifier: Mo
             Spacer(Modifier.height(12.dp))
 
             Row(modifier = Modifier.fillMaxWidth()) {
-                MonthlyIndicator(
-                    label          = "Me deben",
-                    amount         = balance.totalOwed,
-                    isPositive     = true,
-                    balancesHidden = balancesHidden,
-                    modifier       = Modifier.weight(1f)
-                )
+                MonthlyIndicator("Me deben", balance.totalOwed, true, balancesHidden, Modifier.weight(1f))
                 Box(
-                    modifier = Modifier
-                        .width(0.5.dp)
-                        .height(40.dp)
-                        .background(Color.White.copy(alpha = 0.15f))
-                        .align(Alignment.CenterVertically)
+                    modifier = Modifier.width(0.5.dp).height(40.dp).background(Color.White.copy(alpha = 0.15f)).align(Alignment.CenterVertically)
                 )
-                MonthlyIndicator(
-                    label          = "Debo yo",
-                    amount         = balance.totalOwing,
-                    isPositive     = false,
-                    balancesHidden = balancesHidden,
-                    modifier       = Modifier.weight(1f)
-                )
+                MonthlyIndicator("Debo yo", balance.totalOwing, false, balancesHidden, Modifier.weight(1f))
             }
         }
     }
 }
 
 @Composable
-private fun MonthlyIndicator(
-    label: String,
-    amount: Double,
-    isPositive: Boolean,
-    balancesHidden: Boolean,
-    modifier: Modifier = Modifier
-) {
+private fun MonthlyIndicator(label: String, amount: Double, isPositive: Boolean, balancesHidden: Boolean, modifier: Modifier = Modifier) {
     val color = if (isPositive) Color(0xFF66BB6A) else Color(0xFFEF9A9A)
     val arrow = if (isPositive) "↑" else "↓"
     Column(
@@ -389,19 +358,8 @@ private fun RecentTransactionsSection(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment     = Alignment.CenterVertically
         ) {
-            Text(
-                text       = "Últimos movimientos",
-                fontSize   = 16.sp,
-                fontWeight = FontWeight.SemiBold,
-                color      = TextPrimary
-            )
-            Text(
-                text       = "Ver todos",
-                fontSize   = 13.sp,
-                color      = PrimaryDark,
-                fontWeight = FontWeight.Medium,
-                modifier   = Modifier.clickable { onVerTodos() }
-            )
+            Text("Últimos movimientos", fontSize = 16.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary)
+            Text("Ver todos", fontSize = 13.sp, color = PrimaryDark, fontWeight = FontWeight.Medium, modifier = Modifier.clickable { onVerTodos() })
         }
         Spacer(Modifier.height(12.dp))
         if (transactions.isEmpty()) {
@@ -412,24 +370,11 @@ private fun RecentTransactionsSection(
                 border    = CardDefaults.outlinedCardBorder(),
                 elevation = CardDefaults.cardElevation(0.dp)
             ) {
-                Box(
-                    modifier        = Modifier.fillMaxWidth().padding(vertical = 32.dp),
-                    contentAlignment = Alignment.Center
-                ) {
+                Box(modifier = Modifier.fillMaxWidth().padding(vertical = 32.dp), contentAlignment = Alignment.Center) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text(
-                            text       = "Sin movimientos",
-                            fontSize   = 15.sp,
-                            fontWeight = FontWeight.Medium,
-                            color      = TextPrimary
-                        )
+                        Text("Sin movimientos", fontSize = 15.sp, fontWeight = FontWeight.Medium, color = TextPrimary)
                         Spacer(Modifier.height(4.dp))
-                        Text(
-                            text      = "Pulsa + para añadir tu primer movimiento",
-                            fontSize  = 13.sp,
-                            color     = TextSecondary,
-                            textAlign = TextAlign.Center
-                        )
+                        Text("Pulsa + para añadir tu primer movimiento", fontSize = 13.sp, color = TextSecondary, textAlign = TextAlign.Center)
                     }
                 }
             }
@@ -445,15 +390,11 @@ private fun RecentTransactionsSection(
                     transactions.forEachIndexed { index, transaction ->
                         TransactionRow(
                             transaction    = transaction,
-                            categoryName   = categoryNames[transaction.categoryId] ?: transaction.categoryId,
+                            categoryName   = resolveTransactionLabel(transaction, categoryNames),
                             balancesHidden = balancesHidden
                         )
                         if (index < transactions.lastIndex) {
-                            HorizontalDivider(
-                                modifier  = Modifier.padding(start = 70.dp),
-                                color     = BorderGray,
-                                thickness = 0.5.dp
-                            )
+                            HorizontalDivider(modifier = Modifier.padding(start = 70.dp), color = BorderGray, thickness = 0.5.dp)
                         }
                     }
                 }
@@ -468,9 +409,10 @@ private fun TransactionRow(transaction: Transaction, categoryName: String, balan
         modifier          = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        val isIncome = transaction.type == TransactionType.INCOME
+        val isIncome = transaction.isIncome
         val bgColor  = if (isIncome) IncomeGreen else ExpenseRed
-        val initial  = categoryName.firstOrNull()?.uppercaseChar()?.toString() ?: "?"
+        val emoji    = if (isIncome) transaction.incomeType?.emoji else null
+        val initial  = emoji ?: categoryName.firstOrNull()?.uppercaseChar()?.toString() ?: "?"
 
         Box(
             modifier        = Modifier.size(42.dp).clip(CircleShape).background(bgColor),
@@ -482,7 +424,12 @@ private fun TransactionRow(transaction: Transaction, categoryName: String, balan
         Column(modifier = Modifier.weight(1f)) {
             Text(text = categoryName, fontSize = 15.sp, fontWeight = FontWeight.Medium, color = TextPrimary)
             Spacer(Modifier.height(2.dp))
-            Text(text = formatDate(transaction.date), fontSize = 12.sp, color = TextSecondary)
+            val subtitle = if (isIncome && transaction.issuerName != null) {
+                transaction.issuerName
+            } else {
+                formatDate(transaction.date)
+            }
+            Text(text = subtitle, fontSize = 12.sp, color = TextSecondary)
         }
         val prefix      = if (isIncome) "+" else "−"
         val amountColor = if (isIncome) IncomeGreen else ExpenseRed
@@ -495,26 +442,22 @@ private fun TransactionRow(transaction: Transaction, categoryName: String, balan
     }
 }
 
+/** Resuelve el nombre a mostrar: para ingresos usa incomeType.label, para gastos usa categoryName. */
+private fun resolveTransactionLabel(transaction: Transaction, categoryNames: Map<String, String>): String {
+    return if (transaction.isIncome) {
+        transaction.incomeType?.label ?: "Ingreso"
+    } else {
+        transaction.categoryId?.let { categoryNames[it] } ?: "Gasto"
+    }
+}
+
 @Composable
 private fun QuickAccessSection(onNavigateToCharts: () -> Unit = {}, modifier: Modifier = Modifier) {
     Column(modifier = modifier) {
-        Text(
-            text       = "Acceso rápido",
-            fontSize   = 16.sp,
-            fontWeight = FontWeight.SemiBold,
-            color      = TextPrimary
-        )
+        Text("Acceso rápido", fontSize = 16.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary)
         Spacer(Modifier.height(12.dp))
-        Row(
-            modifier              = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            QuickAccessCard(
-                label    = "Gráficos",
-                icon     = "📊",
-                onClick  = onNavigateToCharts,
-                modifier = Modifier.weight(1f)
-            )
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            QuickAccessCard(label = "Gráficos", icon = "📊", onClick = onNavigateToCharts, modifier = Modifier.weight(1f))
             Spacer(modifier = Modifier.weight(1f))
         }
     }

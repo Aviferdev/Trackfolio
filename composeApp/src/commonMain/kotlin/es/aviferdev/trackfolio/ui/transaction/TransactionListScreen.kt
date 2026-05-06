@@ -53,17 +53,11 @@ fun TransactionListScreen(
         SearchBar(query = searchQuery, onChange = { viewModel.onSearchQueryChange(it) })
 
         uiState.totals?.let { totals ->
-            TotalsCard(
-                totalIncome    = totals.totalIncome,
-                totalExpense   = totals.totalExpense,
-                balancesHidden = balancesHidden
-            )
+            TotalsCard(totalIncome = totals.totalIncome, totalExpense = totals.totalExpense, balancesHidden = balancesHidden)
         }
 
         if (uiState.isLoading) {
-            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator(color = PrimaryDark)
-            }
+            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { CircularProgressIndicator(color = PrimaryDark) }
         } else if (uiState.filteredTransactions.isEmpty()) {
             EmptyState(month = uiState.month, year = uiState.year, isSearch = searchQuery.isNotBlank())
         } else {
@@ -78,17 +72,13 @@ fun TransactionListScreen(
                     SwipeToDeleteContainer(onDelete = { transactionToDelete = transaction }) {
                         TransactionListRow(
                             transaction    = transaction,
-                            categoryName   = uiState.categoryNames[transaction.categoryId] ?: transaction.categoryId,
+                            label          = TransactionViewModel.resolveLabel(transaction, uiState.categoryNames),
                             balancesHidden = balancesHidden,
                             onEdit         = { transactionToEdit = transaction }
                         )
                     }
                     if (index < uiState.filteredTransactions.lastIndex) {
-                        HorizontalDivider(
-                            modifier  = Modifier.padding(start = 70.dp),
-                            color     = BorderGray,
-                            thickness = 0.5.dp
-                        )
+                        HorizontalDivider(modifier = Modifier.padding(start = 70.dp), color = BorderGray, thickness = 0.5.dp)
                     }
                 }
             }
@@ -111,13 +101,12 @@ fun TransactionListScreen(
     }
 }
 
-// ─── Search bar ───────────────────────────────────────────────────────────────
 @Composable
 private fun SearchBar(query: String, onChange: (String) -> Unit) {
     OutlinedTextField(
         value         = query,
         onValueChange = onChange,
-        placeholder   = { Text("Buscar por nota o categoría…", fontSize = 14.sp, color = TextSecondary.copy(alpha = 0.6f)) },
+        placeholder   = { Text("Buscar por nota, categoría o emisor…", fontSize = 14.sp, color = TextSecondary.copy(alpha = 0.6f)) },
         modifier      = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 8.dp),
         shape         = RoundedCornerShape(10.dp),
         singleLine    = true,
@@ -130,7 +119,6 @@ private fun SearchBar(query: String, onChange: (String) -> Unit) {
     )
 }
 
-// ─── Month header ─────────────────────────────────────────────────────────────
 @Composable
 private fun MonthHeader(year: String, month: String, onPrevious: () -> Unit, onNext: () -> Unit) {
     val now           = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
@@ -139,11 +127,7 @@ private fun MonthHeader(year: String, month: String, onPrevious: () -> Unit, onN
 
     Surface(color = SurfaceWhite, shadowElevation = 1.dp) {
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .windowInsetsPadding(WindowInsets.statusBars)
-                .padding(horizontal = 20.dp)
-                .padding(top = 16.dp, bottom = 16.dp)
+            modifier = Modifier.fillMaxWidth().windowInsetsPadding(WindowInsets.statusBars).padding(horizontal = 20.dp).padding(top = 16.dp, bottom = 16.dp)
         ) {
             Text("Movimientos", fontSize = 20.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary)
             Spacer(Modifier.height(16.dp))
@@ -171,7 +155,6 @@ private fun MonthHeader(year: String, month: String, onPrevious: () -> Unit, onN
     }
 }
 
-// ─── Totals card ──────────────────────────────────────────────────────────────
 @Composable
 private fun TotalsCard(totalIncome: Double, totalExpense: Double, balancesHidden: Boolean) {
     val balance = totalIncome - totalExpense
@@ -183,11 +166,11 @@ private fun TotalsCard(totalIncome: Double, totalExpense: Double, balancesHidden
         border    = CardDefaults.outlinedCardBorder()
     ) {
         Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 14.dp)) {
-            TotalItem(label = "Ingresos", amount = totalIncome, color = IncomeGreen, prefix = "+", balancesHidden = balancesHidden, modifier = Modifier.weight(1f))
+            TotalItem("Ingresos", totalIncome, IncomeGreen, "+", balancesHidden, Modifier.weight(1f))
             Box(modifier = Modifier.width(0.5.dp).height(44.dp).background(BorderGray).align(Alignment.CenterVertically))
-            TotalItem(label = "Gastos",   amount = totalExpense, color = ExpenseRed,  prefix = "−", balancesHidden = balancesHidden, modifier = Modifier.weight(1f))
+            TotalItem("Gastos", totalExpense, ExpenseRed, "−", balancesHidden, Modifier.weight(1f))
             Box(modifier = Modifier.width(0.5.dp).height(44.dp).background(BorderGray).align(Alignment.CenterVertically))
-            TotalItem(label = "Balance",  amount = balance, color = if (balance >= 0) IncomeGreen else ExpenseRed, prefix = if (balance >= 0) "+" else "−", balancesHidden = balancesHidden, modifier = Modifier.weight(1f))
+            TotalItem("Balance", balance, if (balance >= 0) IncomeGreen else ExpenseRed, if (balance >= 0) "+" else "−", balancesHidden, Modifier.weight(1f))
         }
     }
 }
@@ -198,17 +181,10 @@ private fun TotalItem(label: String, amount: Double, color: Color, prefix: Strin
     Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
         Text(label, fontSize = 11.sp, color = TextSecondary, textAlign = TextAlign.Center)
         Spacer(Modifier.height(4.dp))
-        Text(
-            "$prefix ${maskAmount(formatAmount(abs), balancesHidden)} €",
-            fontSize   = 13.sp,
-            fontWeight = FontWeight.SemiBold,
-            color      = color,
-            textAlign  = TextAlign.Center
-        )
+        Text("$prefix ${maskAmount(formatAmount(abs), balancesHidden)} €", fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = color, textAlign = TextAlign.Center)
     }
 }
 
-// ─── Swipe to delete ──────────────────────────────────────────────────────────
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SwipeToDeleteContainer(onDelete: () -> Unit, content: @Composable () -> Unit) {
@@ -238,18 +214,17 @@ private fun SwipeToDeleteContainer(onDelete: () -> Unit, content: @Composable ()
     }
 }
 
-// ─── Transaction row ──────────────────────────────────────────────────────────
 @Composable
 private fun TransactionListRow(
     transaction: Transaction,
-    categoryName: String,
+    label: String,
     balancesHidden: Boolean,
     onEdit: () -> Unit
 ) {
-    val isIncome   = transaction.type == TransactionType.INCOME
-    val bgColor    = if (isIncome) IncomeGreen else ExpenseRed
-    val initial    = categoryName.firstOrNull()?.uppercaseChar()?.toString() ?: "?"
-    val hasFiscal  = isIncome && transaction.taxType != null
+    val isIncome = transaction.isIncome
+    val bgColor  = if (isIncome) IncomeGreen else ExpenseRed
+    val emoji    = if (isIncome) transaction.incomeType?.emoji else null
+    val initial  = emoji ?: label.firstOrNull()?.uppercaseChar()?.toString() ?: "?"
 
     Row(
         modifier          = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp),
@@ -263,75 +238,57 @@ private fun TransactionListRow(
         }
         Spacer(Modifier.width(14.dp))
         Column(modifier = Modifier.weight(1f)) {
-            Text(categoryName, fontSize = 15.sp, fontWeight = FontWeight.Medium, color = TextPrimary)
+            Text(label, fontSize = 15.sp, fontWeight = FontWeight.Medium, color = TextPrimary)
             Spacer(Modifier.height(2.dp))
-            // Nota o fecha
-            Text(
-                text     = if (!transaction.notes.isNullOrBlank()) transaction.notes else formatDate(transaction.date),
-                fontSize = 12.sp,
-                color    = TextSecondary
-            )
-            // Badge fiscal — solo si hay datos IRPF
-            if (hasFiscal) {
+            // Subtitle: issuer name, notes, or date
+            val subtitle = when {
+                isIncome && transaction.issuerName != null -> transaction.issuerName
+                !transaction.notes.isNullOrBlank() -> transaction.notes
+                else -> formatDate(transaction.date)
+            }
+            Text(text = subtitle, fontSize = 12.sp, color = TextSecondary)
+            // Badge fiscal para ingresos con datos
+            if (isIncome && transaction.incomeType != null && transaction.grossAmount != null) {
                 Spacer(Modifier.height(3.dp))
-                FiscalBadge(transaction)
+                IncomeBadge(transaction)
             }
         }
         Column(horizontalAlignment = Alignment.End) {
             val prefix      = if (isIncome) "+" else "−"
             val amountColor = if (isIncome) IncomeGreen else ExpenseRed
-            // Importe neto (el que entra en la cuenta)
-            Text(
-                "$prefix ${maskAmount(formatAmount(transaction.amount), balancesHidden)} €",
-                fontSize   = 14.sp,
-                fontWeight = FontWeight.SemiBold,
-                color      = amountColor
-            )
-            // Bruto si es diferente del neto
-            if (hasFiscal && transaction.grossAmount != null && !balancesHidden) {
-                Text(
-                    "Bruto: ${formatAmount(transaction.grossAmount)} €",
-                    fontSize = 10.sp,
-                    color    = TextSecondary
-                )
+            Text("$prefix ${maskAmount(formatAmount(transaction.amount), balancesHidden)} €", fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = amountColor)
+            if (isIncome && transaction.grossAmount != null && !balancesHidden) {
+                Text("Bruto: ${formatAmount(transaction.grossAmount)} €", fontSize = 10.sp, color = TextSecondary)
             }
             Text(formatDate(transaction.date), fontSize = 11.sp, color = TextSecondary)
-            TextButton(
-                onClick        = onEdit,
-                contentPadding = PaddingValues(horizontal = 4.dp, vertical = 0.dp),
-                modifier       = Modifier.height(20.dp)
-            ) {
+            TextButton(onClick = onEdit, contentPadding = PaddingValues(horizontal = 4.dp, vertical = 0.dp), modifier = Modifier.height(20.dp)) {
                 Text("Editar", fontSize = 10.sp, color = PrimaryDark.copy(alpha = 0.7f))
             }
         }
     }
 }
 
-/** Pastilla informativa con el tipo IRPF y el porcentaje de retención. */
 @Composable
-private fun FiscalBadge(transaction: Transaction) {
-    val taxType = transaction.taxType ?: return
+private fun IncomeBadge(transaction: Transaction) {
+    val incType = transaction.incomeType ?: return
     val pct     = transaction.irpfPercent
 
     Row(
-        modifier          = Modifier
+        modifier = Modifier
             .background(PrimaryDark.copy(alpha = 0.07f), RoundedCornerShape(4.dp))
             .padding(horizontal = 6.dp, vertical = 2.dp),
-        verticalAlignment = Alignment.CenterVertically,
+        verticalAlignment     = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(3.dp)
     ) {
-        Text(taxType.emoji, fontSize = 10.sp)
-        Text(
-            text     = if (pct != null) "${taxType.label} · ${pct.toLong()}% IRPF"
-                       else taxType.label,
-            fontSize = 9.sp,
-            color    = PrimaryDark,
-            fontWeight = FontWeight.Medium
-        )
+        Text(incType.emoji, fontSize = 10.sp)
+        val badgeText = buildString {
+            append(incType.label)
+            if (pct != null && pct > 0) append(" · ${pct.toLong()}% IRPF")
+        }
+        Text(text = badgeText, fontSize = 9.sp, color = PrimaryDark, fontWeight = FontWeight.Medium)
     }
 }
 
-// ─── Empty state ──────────────────────────────────────────────────────────────
 @Composable
 private fun EmptyState(month: String, year: String, isSearch: Boolean = false) {
     val monthName = MONTH_NAMES.getOrElse(month.toIntOrNull()?.minus(1) ?: 0) { month }
@@ -348,7 +305,6 @@ private fun EmptyState(month: String, year: String, isSearch: Boolean = false) {
     }
 }
 
-// ─── Delete dialog ────────────────────────────────────────────────────────────
 @Composable
 private fun DeleteConfirmDialog(onConfirm: () -> Unit, onDismiss: () -> Unit) {
     AlertDialog(

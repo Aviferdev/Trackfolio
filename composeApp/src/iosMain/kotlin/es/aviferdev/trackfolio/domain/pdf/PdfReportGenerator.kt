@@ -37,6 +37,7 @@ import platform.UIKit.UIPopoverPresentationController
 import platform.UIKit.UIViewController
 import platform.UIKit.UIWindow
 import platform.UIKit.UIWindowScene
+import platform.UIKit.popoverPresentationController
 import kotlin.math.abs
 
 @OptIn(ExperimentalForeignApi::class)
@@ -237,7 +238,7 @@ actual class PdfReportGenerator {
             for (item in breakdown) {
                 checkBreak(14.0)
                 val cells  = listOf(
-                    "${item.taxType.emoji} ${item.taxType.label}",
+                    "${item.incomeType.emoji} ${item.incomeType.label}",
                     fmtAmt(item.grossTotal, data.currency),
                     fmtAmt(item.irpfTotal,  data.currency),
                     fmtAmt(item.netTotal,   data.currency),
@@ -247,7 +248,7 @@ actual class PdfReportGenerator {
                 drawTableRow(cells, widths, colors)
             }
             checkBreak(14.0); y += 4.0
-            drawText("Los ingresos sin tipo fiscal asignado se agrupan en 'Sin retención / Otro'.", MARGIN, y, fontNote, colorGray)
+            drawText("Los ingresos sin tipo asignado se agrupan en 'Ingreso exento'.", MARGIN, y, fontNote, colorGray)
             y += 10.0
         }
 
@@ -371,7 +372,7 @@ actual class PdfReportGenerator {
         }
 
         fun formatDate(epochMillis: Long): String {
-            val date      = NSDate(timeIntervalSince1970 = epochMillis / 1000.0)
+            val date      = NSDate(epochMillis / 1000.0)
             val formatter = NSDateFormatter().apply {
                 dateFormat = "dd/MM/yyyy"
                 locale     = NSLocale(localeIdentifier = "es_ES")

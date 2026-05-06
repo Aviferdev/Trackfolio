@@ -76,7 +76,6 @@ actual class PdfReportGenerator(private val context: Context) {
         }
     }
 
-    // ─────────────────────────────────────────────────────────────────────────
     private inner class Renderer(val doc: PdfDocument, val data: FiscalReportData) {
 
         var currentPage: PdfDocument.Page = newPage()
@@ -109,7 +108,6 @@ actual class PdfReportGenerator(private val context: Context) {
             drawPageHeader()
             drawSection("RESUMEN ANUAL")
             drawAnnualSummary()
-            // ── IRPF — solo si hay ingresos clasificados ──────────────────────
             if (data.incomeTaxBreakdown.isNotEmpty()) {
                 drawSection("DESGLOSE FISCAL IRPF ${data.year}")
                 drawIrpfTable()
@@ -161,14 +159,12 @@ actual class PdfReportGenerator(private val context: Context) {
             y += 32f
         }
 
-        // ── Desglose IRPF ─────────────────────────────────────────────────────
         private fun drawIrpfTable() {
             val breakdown = data.incomeTaxBreakdown
             val totalGross = breakdown.sumOf { it.grossTotal }
             val totalIrpf  = breakdown.sumOf { it.irpfTotal }
             val totalNet   = breakdown.sumOf { it.netTotal }
 
-            // Totales globales (3 columnas)
             checkBreak(50f)
             val colW = COL_W / 3f
             val totLabels = listOf("Bruto total", "IRPF retenido", "Neto total")
@@ -182,15 +178,14 @@ actual class PdfReportGenerator(private val context: Context) {
             }
             y += 28f
 
-            // Tabla por tipo
-            val cols   = listOf("Tipo de rendimiento", "Bruto", "IRPF retenido", "Neto", "% Ret.")
+            val cols   = listOf("Tipo de ingreso", "Bruto", "IRPF retenido", "Neto", "% Ret.")
             val widths = listOf(150f, 90f, 90f, 90f, 55f)
             drawTableHeader(cols, widths)
 
             for (item in breakdown) {
                 checkBreak(14f)
                 val cells = listOf(
-                    "${item.taxType.emoji} ${item.taxType.label}",
+                    "${item.incomeType.emoji} ${item.incomeType.label}",
                     fmtAmt(item.grossTotal, data.currency),
                     fmtAmt(item.irpfTotal,  data.currency),
                     fmtAmt(item.netTotal,   data.currency),
@@ -200,11 +195,10 @@ actual class PdfReportGenerator(private val context: Context) {
                 drawTableRow(cells, widths, paints)
             }
 
-            // Nota
             checkBreak(14f)
             y += 4f
             val pNote = Paint(pLabel).apply { textSize = 7f }
-            canvas.drawText("Los ingresos sin tipo fiscal asignado se agrupan en 'Sin retención / Otro'.", MARGIN, y, pNote)
+            canvas.drawText("Los ingresos sin tipo asignado se agrupan en 'Ingreso exento'.", MARGIN, y, pNote)
             y += 10f
         }
 

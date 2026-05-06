@@ -17,7 +17,6 @@ class DatabaseInitializer(
     suspend fun initializeIfNeeded() {
         val categoryCount = categoryDataSource.count().first()
         if (categoryCount == 0L) insertDefaultCategories()
-        // Las cuentas las crea el usuario desde Ajustes
     }
 
     private suspend fun insertDefaultCategories() {
@@ -34,6 +33,9 @@ class DatabaseInitializer(
         }
     }
 
+    /**
+     * Solo categorías de GASTO. Los ingresos ahora usan [IncomeType] (enum fijo).
+     */
     private fun defaultCategories(): List<Category> = listOf(
         Category(id = "cat_exp_01", name = "Alimentación", type = TransactionType.EXPENSE, isDefault = true),
         Category(id = "cat_exp_02", name = "Transporte",   type = TransactionType.EXPENSE, isDefault = true),
@@ -43,11 +45,5 @@ class DatabaseInitializer(
         Category(id = "cat_exp_06", name = "Ropa",         type = TransactionType.EXPENSE, isDefault = true),
         Category(id = "cat_exp_07", name = "Educación",    type = TransactionType.EXPENSE, isDefault = true),
         Category(id = "cat_exp_08", name = "Otros",        type = TransactionType.EXPENSE, isDefault = true),
-        Category(id = "cat_inc_01", name = "Salario",      type = TransactionType.INCOME,  isDefault = true),
-        Category(id = "cat_inc_02", name = "Freelance",    type = TransactionType.INCOME,  isDefault = true),
-        Category(id = "cat_inc_03", name = "Inversiones",  type = TransactionType.INCOME,  isDefault = true),
-        Category(id = "cat_inc_04", name = "Regalo",       type = TransactionType.INCOME,  isDefault = true),
-        Category(id = "cat_inc_05", name = "Reembolso",    type = TransactionType.INCOME,  isDefault = true),
-        Category(id = "cat_inc_06", name = "Otros",        type = TransactionType.INCOME,  isDefault = true),
     )
 }

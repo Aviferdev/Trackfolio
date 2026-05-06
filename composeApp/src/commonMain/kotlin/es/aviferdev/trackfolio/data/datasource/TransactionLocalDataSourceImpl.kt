@@ -95,17 +95,21 @@ class TransactionLocalDataSourceImpl(
         runCatching {
             withContext(Dispatchers.IO) {
                 queries.insert(
-                    id          = entity.id,
-                    accountId   = entity.accountId,
-                    amount      = entity.amount,
-                    type        = entity.type,
-                    categoryId  = entity.categoryId,
-                    date        = entity.date,
-                    notes       = entity.notes,
-                    createdAt   = entity.createdAt,
-                    grossAmount = entity.grossAmount,
-                    irpfPercent = entity.irpfPercent,
-                    taxType     = entity.taxType
+                    id                   = entity.id,
+                    accountId            = entity.accountId,
+                    amount               = entity.amount,
+                    type                 = entity.type,
+                    categoryId           = entity.categoryId,
+                    date                 = entity.date,
+                    notes                = entity.notes,
+                    createdAt            = entity.createdAt,
+                    incomeType           = entity.incomeType,
+                    grossAmount          = entity.grossAmount,
+                    irpfPercent          = entity.irpfPercent,
+                    socialSecurityAmount = entity.socialSecurityAmount,
+                    commissionAmount     = entity.commissionAmount,
+                    issuerId             = entity.issuerId,
+                    issuerName           = entity.issuerName
                 )
             }
         }
@@ -114,16 +118,20 @@ class TransactionLocalDataSourceImpl(
         runCatching {
             withContext(Dispatchers.IO) {
                 queries.update(
-                    accountId   = entity.accountId,
-                    amount      = entity.amount,
-                    type        = entity.type,
-                    categoryId  = entity.categoryId,
-                    date        = entity.date,
-                    notes       = entity.notes,
-                    grossAmount = entity.grossAmount,
-                    irpfPercent = entity.irpfPercent,
-                    taxType     = entity.taxType,
-                    id          = entity.id
+                    accountId            = entity.accountId,
+                    amount               = entity.amount,
+                    type                 = entity.type,
+                    categoryId           = entity.categoryId,
+                    date                 = entity.date,
+                    notes                = entity.notes,
+                    incomeType           = entity.incomeType,
+                    grossAmount          = entity.grossAmount,
+                    irpfPercent          = entity.irpfPercent,
+                    socialSecurityAmount = entity.socialSecurityAmount,
+                    commissionAmount     = entity.commissionAmount,
+                    issuerId             = entity.issuerId,
+                    issuerName           = entity.issuerName,
+                    id                   = entity.id
                 )
             }
         }

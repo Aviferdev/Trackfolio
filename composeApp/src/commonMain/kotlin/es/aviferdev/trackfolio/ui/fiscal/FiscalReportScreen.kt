@@ -114,7 +114,6 @@ fun FiscalReportScreen(onBack: () -> Unit, viewModel: FiscalReportViewModel = ko
     }
 }
 
-// ─── Selector de año ──────────────────────────────────────────────────────────
 @Composable
 private fun YearStepper(year: String, onPrevious: () -> Unit, onNext: () -> Unit) {
     val nowYear = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).year
@@ -130,7 +129,6 @@ private fun YearStepper(year: String, onPrevious: () -> Unit, onNext: () -> Unit
     }
 }
 
-// ─── Resumen anual ────────────────────────────────────────────────────────────
 @Composable
 private fun AnnualSummaryCard(report: FiscalReportData) {
     val s = report.annualSummary
@@ -145,13 +143,14 @@ private fun AnnualSummaryCard(report: FiscalReportData) {
     }
 }
 
-// ─── Desglose IRPF ───────────────────────────────────────────────────────────
 @Composable
 private fun IncomeTaxBreakdownCard(report: FiscalReportData) {
     val breakdown  = report.incomeTaxBreakdown
     val totalGross = breakdown.sumOf { it.grossTotal }
     val totalIrpf  = breakdown.sumOf { it.irpfTotal }
     val totalNet   = breakdown.sumOf { it.netTotal }
+    val totalSS    = breakdown.sumOf { it.socialSecurityTotal }
+    val totalComm  = breakdown.sumOf { it.commissionTotal }
 
     ReportCard(title = "🏛️ Desglose IRPF ${report.year}") {
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -159,12 +158,22 @@ private fun IncomeTaxBreakdownCard(report: FiscalReportData) {
             MetricItem("IRPF retenido", totalIrpf,  report.currency, ExpenseRed,  Modifier.weight(1f))
             MetricItem("Neto total",    totalNet,   report.currency, IncomeGreen, Modifier.weight(1f))
         }
+        if (totalSS > 0 || totalComm > 0) {
+            Spacer(Modifier.height(8.dp))
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                if (totalSS > 0) MetricItem("Seg. Social", totalSS, report.currency, Color(0xFFFF9800), Modifier.weight(1f))
+                if (totalComm > 0) MetricItem("Comisiones", totalComm, report.currency, Color(0xFFFF9800), Modifier.weight(1f))
+                // Rellenar si solo hay uno
+                if (totalSS > 0 && totalComm == 0.0) Spacer(Modifier.weight(1f))
+                if (totalSS == 0.0 && totalComm > 0) Spacer(Modifier.weight(1f))
+            }
+        }
         Spacer(Modifier.height(14.dp))
         HorizontalDivider(color = BorderGray, thickness = 0.5.dp)
         Spacer(Modifier.height(10.dp))
 
         Row(modifier = Modifier.fillMaxWidth()) {
-            Text("Tipo de rendimiento", fontSize = 10.sp, color = TextSecondary, modifier = Modifier.weight(3f))
+            Text("Tipo de ingreso", fontSize = 10.sp, color = TextSecondary, modifier = Modifier.weight(3f))
             Text("Bruto", fontSize = 10.sp, color = TextSecondary, modifier = Modifier.weight(2f), textAlign = TextAlign.End)
             Text("IRPF",  fontSize = 10.sp, color = TextSecondary, modifier = Modifier.weight(2f), textAlign = TextAlign.End)
             Text("Neto",  fontSize = 10.sp, color = TextSecondary, modifier = Modifier.weight(2f), textAlign = TextAlign.End)
@@ -186,21 +195,19 @@ private fun IncomeTaxBreakdownCard(report: FiscalReportData) {
 private fun TaxBreakdownRow(item: FiscalIncomeTaxBreakdown, currency: String) {
     Row(modifier = Modifier.fillMaxWidth().padding(vertical = 7.dp), verticalAlignment = Alignment.CenterVertically) {
         Row(modifier = Modifier.weight(3f), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-            Text(item.taxType.emoji, fontSize = 14.sp)
+            Text(item.incomeType.emoji, fontSize = 14.sp)
             Column {
-                Text(item.taxType.label, fontSize = 11.sp, color = TextPrimary, fontWeight = FontWeight.Medium, lineHeight = 13.sp)
+                Text(item.incomeType.label, fontSize = 11.sp, color = TextPrimary, fontWeight = FontWeight.Medium, lineHeight = 13.sp)
                 Text("${item.count} ingreso${if (item.count != 1) "s" else ""}", fontSize = 9.sp, color = TextSecondary)
             }
         }
         Text(formatAmt(item.grossTotal, currency), fontSize = 11.sp, color = TextPrimary,   modifier = Modifier.weight(2f), textAlign = TextAlign.End)
         Text(formatAmt(item.irpfTotal,  currency), fontSize = 11.sp, color = ExpenseRed,    fontWeight = FontWeight.Medium, modifier = Modifier.weight(2f), textAlign = TextAlign.End)
         Text(formatAmt(item.netTotal,   currency), fontSize = 11.sp, color = IncomeGreen,   fontWeight = FontWeight.Medium, modifier = Modifier.weight(2f), textAlign = TextAlign.End)
-        // FIX: String.format no existe en KMP/iOS → función pura Kotlin
         Text(formatPct(item.avgIrpfPercent),       fontSize = 11.sp, color = TextSecondary, modifier = Modifier.weight(1f), textAlign = TextAlign.End)
     }
 }
 
-// ─── Desglose mensual ─────────────────────────────────────────────────────────
 @Composable
 private fun MonthlyBreakdownCard(report: FiscalReportData) {
     val byMonth = report.monthlyBreakdown.associateBy { it.month.trimStart('0').ifEmpty { "0" }.toInt() }
@@ -234,7 +241,6 @@ private fun MonthlyRow(month: Int, data: MonthlyTotals, currency: String) {
     }
 }
 
-// ─── Deudas ───────────────────────────────────────────────────────────────────
 @Composable
 private fun DebtsCard(report: FiscalReportData) {
     ReportCard(title = "💳 Deudas activas") {
@@ -259,7 +265,6 @@ private fun DebtRow(debt: Debt, currency: String) {
     }
 }
 
-// ─── Portfolio ────────────────────────────────────────────────────────────────
 @Composable
 private fun PortfolioCard(report: FiscalReportData) {
     val positions = report.assetPositions.filter { it.netQuantity > 0 || it.totalBought > 0 || it.totalSold > 0 }
@@ -331,7 +336,6 @@ private fun YearActivityRow(pos: AssetPosition, currency: String) {
     }
 }
 
-// ─── Componentes auxiliares ───────────────────────────────────────────────────
 @Composable
 private fun ReportCard(title: String, content: @Composable ColumnScope.() -> Unit) {
     Card(
@@ -358,12 +362,6 @@ private fun MetricItem(label: String, value: Double, currency: String, color: Co
     }
 }
 
-// ─── Formateo — puro Kotlin, sin String.format (JVM-only) ────────────────────
-
-/**
- * Formatea un Double con separador de miles '.' y decimal ','  (estilo español).
- * No usa String.format para ser compatible con iOS (KMP commonMain).
- */
 private fun formatAmt(value: Double, currency: String): String {
     val sign   = if (value < 0) "-" else ""
     val absVal = abs(value)
@@ -378,20 +376,12 @@ private fun formatAmt(value: Double, currency: String): String {
     return "$sign$eurosStr,${cents.toString().padStart(2, '0')} $currency"
 }
 
-/**
- * Porcentaje con 1 decimal estilo español (coma), sin String.format.
- * Ej: 19.0 → "19,0%"
- */
 private fun formatPct(value: Double): String {
     val intPart  = value.toLong()
     val fracPart = ((value - intPart) * 10 + 0.5).toLong().coerceIn(0, 9)
     return "$intPart,${fracPart}%"
 }
 
-/**
- * Cantidad con hasta 6 decimales significativos, sin notación científica.
- * No usa String.format.
- */
 private fun formatQty(value: Double): String {
     if (value == value.toLong().toDouble()) return value.toLong().toString()
     val sign    = if (value < 0) "-" else ""

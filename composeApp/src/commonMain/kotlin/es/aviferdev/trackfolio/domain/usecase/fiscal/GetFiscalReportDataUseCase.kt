@@ -5,7 +5,7 @@ import es.aviferdev.trackfolio.domain.model.AssetTransaction
 import es.aviferdev.trackfolio.domain.model.AssetTransactionType
 import es.aviferdev.trackfolio.domain.model.FiscalIncomeTaxBreakdown
 import es.aviferdev.trackfolio.domain.model.FiscalReportData
-import es.aviferdev.trackfolio.domain.model.IncomeTaxType
+import es.aviferdev.trackfolio.domain.model.IncomeType
 import es.aviferdev.trackfolio.domain.model.Transaction
 import es.aviferdev.trackfolio.domain.repository.AccountRepository
 import es.aviferdev.trackfolio.domain.repository.AssetCategoryRepository
@@ -37,12 +37,12 @@ class GetFiscalReportDataUseCase(
             transactionRepository.getIncomeByYear(accountId, year)
         ) { account, annual, monthly, debts, incomes ->
             Base(
-                accountName     = account?.name ?: "Cuenta",
-                currency        = account?.currency ?: "EUR",
-                annualSummary   = annual,
-                monthlyBreakdown= monthly,
-                debts           = debts,
-                yearIncomes     = incomes
+                accountName      = account?.name ?: "Cuenta",
+                currency         = account?.currency ?: "EUR",
+                annualSummary    = annual,
+                monthlyBreakdown = monthly,
+                debts            = debts,
+                yearIncomes      = incomes
             )
         }
 
@@ -65,16 +65,13 @@ class GetFiscalReportDataUseCase(
                     )
                 }
 
-                // ── Ganancias/pérdidas patrimoniales del año (ventas de activos) ──
                 val totalRealizedGains  = positions.sumOf { maxOf(0.0, it.realizedPnl) }
                 val totalRealizedLosses = positions.sumOf { minOf(0.0, it.realizedPnl) }
 
-                // Combinar desglose IRPF de transacciones + ganancias patrimoniales
                 val txBreakdown    = buildTaxBreakdown(base.yearIncomes)
                 val assetBreakdown = buildAssetGainsBreakdown(positions)
                 val fullBreakdown  = mergeTaxBreakdowns(txBreakdown, assetBreakdown)
 
-                // Resumen anual ajustado: incluir ganancias realizadas como ingreso
                 val adjustedSummary = base.annualSummary?.let { s ->
                     s.copy(
                         totalIncome  = s.totalIncome + totalRealizedGains,
@@ -83,101 +80,95 @@ class GetFiscalReportDataUseCase(
                 }
 
                 FiscalReportData(
-                    accountName       = base.accountName,
-                    currency          = base.currency,
-                    year              = year,
-                    generatedAt       = Clock.System.now().toEpochMilliseconds(),
-                    annualSummary     = adjustedSummary,
-                    monthlyBreakdown  = base.monthlyBreakdown,
-                    activeDebts       = base.debts,
-                    assetPositions    = positions,
-                    incomeTaxBreakdown= fullBreakdown
+                    accountName        = base.accountName,
+                    currency           = base.currency,
+                    year               = year,
+                    generatedAt        = Clock.System.now().toEpochMilliseconds(),
+                    annualSummary      = adjustedSummary,
+                    monthlyBreakdown   = base.monthlyBreakdown,
+                    activeDebts        = base.debts,
+                    assetPositions     = positions,
+                    incomeTaxBreakdown = fullBreakdown
                 )
             }
         }
     }
 
-    // ── Desglose fiscal por tipo de rendimiento ────────────────────────────────
     private fun buildTaxBreakdown(incomes: List<Transaction>): List<FiscalIncomeTaxBreakdown> {
         if (incomes.isEmpty()) return emptyList()
 
-        // Todos los ingresos: los que no tienen taxType → SIN_RETENCION
         return incomes
-            .groupBy { it.taxType ?: IncomeTaxType.SIN_RETENCION }
-            .map { (taxType, txs) ->
+            .groupBy { it.incomeType ?: IncomeType.EXEMPT_INCOME }
+            .map { (incomeType, txs) ->
                 val grossTotal = txs.sumOf { it.grossAmount ?: it.amount }
                 val netTotal   = txs.sumOf { it.amount }
-                val irpfTotal  = grossTotal - netTotal
+                val irpfTotal  = txs.sumOf { it.irpfAmount ?: 0.0 }
+                val ssTotal    = txs.sumOf { it.socialSecurityAmount ?: 0.0 }
+                val commTotal  = txs.sumOf { it.commissionAmount ?: 0.0 }
                 val avgPct     = if (grossTotal > 0.0) (irpfTotal / grossTotal) * 100.0 else 0.0
                 FiscalIncomeTaxBreakdown(
-                    taxType        = taxType,
-                    count          = txs.size,
-                    grossTotal     = grossTotal,
-                    netTotal       = netTotal,
-                    irpfTotal      = irpfTotal,
-                    avgIrpfPercent = avgPct
+                    incomeType          = incomeType,
+                    count               = txs.size,
+                    grossTotal          = grossTotal,
+                    netTotal            = netTotal,
+                    irpfTotal           = irpfTotal,
+                    socialSecurityTotal = ssTotal,
+                    commissionTotal     = commTotal,
+                    avgIrpfPercent      = avgPct
                 )
             }
-            .sortedBy { it.taxType.ordinal }
+            .sortedBy { it.incomeType.ordinal }
     }
 
-    // ── Ganancias/pérdidas patrimoniales desde posiciones de activos ──────────
     private fun buildAssetGainsBreakdown(positions: List<AssetPosition>): List<FiscalIncomeTaxBreakdown> {
-        // Solo posiciones con actividad realizada en el año
         val withActivity = positions.filter { it.totalSold > 0.0 }
         if (withActivity.isEmpty()) return emptyList()
 
-        val totalSold     = withActivity.sumOf { it.totalSold }
-        val count         = withActivity.size
+        val totalSold = withActivity.sumOf { it.totalSold }
+        val count     = withActivity.size
 
-        // Las ganancias patrimoniales tributan sin retención previa (bruto = neto)
         return listOf(
             FiscalIncomeTaxBreakdown(
-                taxType        = IncomeTaxType.GANANCIAS_PATRIMONIALES,
+                incomeType     = IncomeType.DIVIDEND,  // Ganancias patrimoniales → capital mobiliario
                 count          = count,
                 grossTotal     = totalSold,
                 netTotal       = totalSold,
-                irpfTotal      = 0.0,   // sin retención en origen
+                irpfTotal      = 0.0,
                 avgIrpfPercent = 0.0
             )
         )
     }
 
-    // ── Fusionar desgloses: si dos listas tienen el mismo taxType, sumar ────
     private fun mergeTaxBreakdowns(
         vararg sources: List<FiscalIncomeTaxBreakdown>
     ): List<FiscalIncomeTaxBreakdown> {
         return sources.flatMap { it }
-            .groupBy { it.taxType }
-            .map { (taxType, items) ->
+            .groupBy { it.incomeType }
+            .map { (incomeType, items) ->
                 FiscalIncomeTaxBreakdown(
-                    taxType        = taxType,
-                    count          = items.sumOf { it.count },
-                    grossTotal     = items.sumOf { it.grossTotal },
-                    netTotal       = items.sumOf { it.netTotal },
-                    irpfTotal      = items.sumOf { it.irpfTotal },
-                    avgIrpfPercent = run {
+                    incomeType          = incomeType,
+                    count               = items.sumOf { it.count },
+                    grossTotal          = items.sumOf { it.grossTotal },
+                    netTotal            = items.sumOf { it.netTotal },
+                    irpfTotal           = items.sumOf { it.irpfTotal },
+                    socialSecurityTotal = items.sumOf { it.socialSecurityTotal },
+                    commissionTotal     = items.sumOf { it.commissionTotal },
+                    avgIrpfPercent      = run {
                         val totalGross = items.sumOf { it.grossTotal }
                         val totalIrpf  = items.sumOf { it.irpfTotal }
                         if (totalGross > 0.0) (totalIrpf / totalGross) * 100.0 else 0.0
                     }
                 )
             }
-            .sortedBy { it.taxType.ordinal }
+            .sortedBy { it.incomeType.ordinal }
     }
 
-    // ── FIFO simplificado ─────────────────────────────────────────────────────
     private fun buildPosition(
-        assetId: String,
-        ticker: String,
-        name: String,
-        categoryName: String?,
-        currentPrice: Double?,
-        sortedTxs: List<AssetTransaction>,
-        year: String
+        assetId: String, ticker: String, name: String, categoryName: String?,
+        currentPrice: Double?, sortedTxs: List<AssetTransaction>, year: String
     ): AssetPosition {
         val fifoQueue = ArrayDeque<Pair<Double, Double>>()
-        var realizedPnl   = 0.0
+        var realizedPnl    = 0.0
         var totalBoughtYear = 0.0
         var totalSoldYear   = 0.0
         val yearTxs         = mutableListOf<AssetTransaction>()
@@ -212,31 +203,29 @@ class GetFiscalReportDataUseCase(
         val unrealizedPnl = currentValue?.let { it - totalCost }
 
         return AssetPosition(
-            ticker        = ticker,
-            name          = name,
-            categoryName  = categoryName,
-            netQuantity   = netQuantity,
-            avgCostBasis  = avgCost,
-            totalCost     = totalCost,
-            currentPrice  = currentPrice,
-            currentValue  = currentValue,
-            unrealizedPnl = unrealizedPnl,
-            realizedPnl   = realizedPnl,
-            totalBought   = totalBoughtYear,
-            totalSold     = totalSoldYear,
+            ticker           = ticker,
+            name             = name,
+            categoryName     = categoryName,
+            netQuantity      = netQuantity,
+            avgCostBasis     = avgCost,
+            totalCost        = totalCost,
+            currentPrice     = currentPrice,
+            currentValue     = currentValue,
+            unrealizedPnl    = unrealizedPnl,
+            realizedPnl      = realizedPnl,
+            totalBought      = totalBoughtYear,
+            totalSold        = totalSoldYear,
             yearTransactions = yearTxs
         )
     }
 
     private fun epochMillisToYear(epochMillis: Long): String {
         val daysSinceEpoch = epochMillis / 86_400_000L
-        var year = 1970
-        var days = daysSinceEpoch
+        var year = 1970; var days = daysSinceEpoch
         while (true) {
             val daysInYear = if (isLeap(year)) 366L else 365L
             if (days < daysInYear) break
-            days -= daysInYear
-            year++
+            days -= daysInYear; year++
         }
         return year.toString()
     }

@@ -26,6 +26,7 @@ data class TransactionListUiState(
     val transactions: List<Transaction>         = emptyList(),
     val filteredTransactions: List<Transaction> = emptyList(),
     val totals: MonthlyTotals?                  = null,
+    /** Mapa categoryId → nombre. Solo para gastos. */
     val categoryNames: Map<String, String>      = emptyMap(),
     val year: String                            = "",
     val month: String                           = "",
@@ -51,8 +52,6 @@ class TransactionViewModel(
     private val _searchQuery = MutableStateFlow("")
     val searchQuery: StateFlow<String> = _searchQuery
 
-    // Incluye categorías archivadas para que las transacciones existentes
-    // sigan mostrando el nombre original aunque la categoría haya sido eliminada.
     private val categoryNamesFlow = getAllCategoriesIncludingArchived()
         .map { all -> all.associate { it.id to it.name } }
 
@@ -82,10 +81,11 @@ class TransactionViewModel(
             ) { transactions, totals, categoryNames ->
                 val filtered = if (query.isBlank()) transactions
                 else transactions.filter { t ->
-                    val catName = categoryNames[t.categoryId]?.lowercase() ?: ""
-                    val note    = t.notes?.lowercase() ?: ""
-                    val q       = query.lowercase()
-                    catName.contains(q) || note.contains(q)
+                    val label = resolveLabel(t, categoryNames).lowercase()
+                    val note  = t.notes?.lowercase() ?: ""
+                    val issuer = t.issuerName?.lowercase() ?: ""
+                    val q     = query.lowercase()
+                    label.contains(q) || note.contains(q) || issuer.contains(q)
                 }
                 TransactionListUiState(
                     transactions         = transactions,
@@ -128,5 +128,15 @@ class TransactionViewModel(
 
     fun deleteTransaction(id: String) {
         viewModelScope.launch { deleteTransactionUseCase(id) }
+    }
+
+    companion object {
+        fun resolveLabel(transaction: Transaction, categoryNames: Map<String, String>): String {
+            return if (transaction.isIncome) {
+                transaction.incomeType?.label ?: "Ingreso"
+            } else {
+                transaction.categoryId?.let { categoryNames[it] } ?: "Gasto"
+            }
+        }
     }
 }

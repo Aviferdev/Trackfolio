@@ -9,10 +9,8 @@ import es.aviferdev.trackfolio.domain.usecase.category.GetCategoriesByTypeUseCas
 import es.aviferdev.trackfolio.domain.usecase.home.GetHomeBalanceUseCase
 import es.aviferdev.trackfolio.ui.account.AccountSession
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
@@ -22,6 +20,7 @@ sealed class HomeUiState {
     data object Loading : HomeUiState()
     data class Success(
         val balance: HomeBalance,
+        /** Mapa de categoryId → nombre. Solo para gastos. */
         val categoryNames: Map<String, String>,
         val showInitialBalancePrompt: Boolean
     ) : HomeUiState()
@@ -40,11 +39,9 @@ class HomeViewModel(
         .flatMapLatest { accountId ->
             combine(
                 getHomeBalance(accountId),
-                getCategoriesByType(TransactionType.INCOME),
                 getCategoriesByType(TransactionType.EXPENSE)
-            ) { balance, incomeCategories, expenseCategories ->
-                val categoryNames = (incomeCategories + expenseCategories)
-                    .associate { it.id to it.name }
+            ) { balance, expenseCategories ->
+                val categoryNames = expenseCategories.associate { it.id to it.name }
                 HomeUiState.Success(
                     balance = balance,
                     categoryNames = categoryNames,

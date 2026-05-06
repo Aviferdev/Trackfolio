@@ -39,6 +39,11 @@ import es.aviferdev.trackfolio.domain.usecase.debt.SaveDebtUseCase
 import es.aviferdev.trackfolio.domain.usecase.debt.UpdateDebtUseCase
 import es.aviferdev.trackfolio.domain.usecase.fiscal.GetFiscalReportDataUseCase
 import es.aviferdev.trackfolio.domain.usecase.home.GetHomeBalanceUseCase
+import es.aviferdev.trackfolio.domain.usecase.issuer.ArchiveIssuerUseCase
+import es.aviferdev.trackfolio.domain.usecase.issuer.GetAllIssuersIncludingArchivedUseCase
+import es.aviferdev.trackfolio.domain.usecase.issuer.GetIssuersUseCase
+import es.aviferdev.trackfolio.domain.usecase.issuer.RenameIssuerUseCase
+import es.aviferdev.trackfolio.domain.usecase.issuer.SaveIssuerUseCase
 import es.aviferdev.trackfolio.domain.usecase.platform.ArchivePlatformUseCase
 import es.aviferdev.trackfolio.domain.usecase.platform.GetAllPlatformsIncludingArchivedUseCase
 import es.aviferdev.trackfolio.domain.usecase.platform.GetPlatformsUseCase
@@ -139,19 +144,26 @@ val useCaseModule = module {
     factory { RenamePlatformUseCase(get()) }
     factory { ArchivePlatformUseCase(get()) }
 
-    // ── Category (gastos/ingresos) ────────────────────────────────────────────
+    // ── Category (solo gastos) ────────────────────────────────────────────────
     factory { GetCategoriesByTypeUseCase(get()) }
     factory { GetAllCategoriesIncludingArchivedUseCase(get()) }
+
+    // ── Issuer (entidades emisoras de ingresos) ───────────────────────────────
+    factory { GetIssuersUseCase(get()) }
+    factory { GetAllIssuersIncludingArchivedUseCase(get()) }
+    factory { SaveIssuerUseCase(get()) }
+    factory { RenameIssuerUseCase(get()) }
+    factory { ArchiveIssuerUseCase(get()) }
 
     // ── Fiscal ────────────────────────────────────────────────────────────────
     factory {
         GetFiscalReportDataUseCase(
-            accountRepository         = get(),
-            transactionRepository     = get(),
-            debtRepository            = get(),
-            assetRepository           = get(),
+            accountRepository          = get(),
+            transactionRepository      = get(),
+            debtRepository             = get(),
+            assetRepository            = get(),
             assetTransactionRepository = get(),
-            assetCategoryRepository   = get()
+            assetCategoryRepository    = get()
         )
     }
 
@@ -179,6 +191,8 @@ val useCaseModule = module {
             saveTransaction     = get(),
             updateTransaction   = get(),
             getCategoriesByType = get(),
+            getIssuers          = get(),
+            saveIssuer          = get(),
             session             = get()
         )
     }
@@ -256,7 +270,6 @@ val useCaseModule = module {
     viewModel { BackupViewModel(get()) }
     viewModel { CategoryViewModel(get()) }
 
-    // ── FiscalReportViewModel ─────────────────────────────────────────────────
     viewModel {
         FiscalReportViewModel(
             getFiscalReportData = get(),
