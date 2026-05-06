@@ -8,6 +8,7 @@ import es.aviferdev.trackfolio.domain.model.AssetTransaction
 import es.aviferdev.trackfolio.domain.model.AssetTransactionType
 import es.aviferdev.trackfolio.domain.model.Platform
 import es.aviferdev.trackfolio.domain.portfolio.AssetPosition
+import es.aviferdev.trackfolio.domain.portfolio.FifoBreakdown
 import es.aviferdev.trackfolio.domain.portfolio.PortfolioCalculator
 import es.aviferdev.trackfolio.domain.usecase.account.GetAccountByIdUseCase
 import es.aviferdev.trackfolio.domain.usecase.asset.UpdateAssetCurrentPriceUseCase
@@ -30,6 +31,7 @@ import kotlinx.datetime.Clock
 data class AssetHistoryUiState(
     val asset: Asset?                       = null,
     val position: AssetPosition?            = null,
+    val breakdown: FifoBreakdown?           = null,
     val transactionsDesc: List<AssetTransaction> = emptyList(),
     val transactionsAsc: List<AssetTransaction>  = emptyList(),
     val platforms: List<Platform>           = emptyList(),
@@ -83,10 +85,12 @@ class AssetHistoryViewModel(
         if (asset == null) {
             AssetHistoryUiState(isLoading = false, error = "Activo no encontrado")
         } else {
-            val position = PortfolioCalculator.calculate(txs, asset.currentPrice)
+            val position  = PortfolioCalculator.calculate(txs, asset.currentPrice)
+            val breakdown = PortfolioCalculator.breakdown(txs)
             AssetHistoryUiState(
                 asset                = asset,
                 position             = position,
+                breakdown            = breakdown,
                 transactionsDesc     = txs.sortedWith(compareByDescending<AssetTransaction> { it.date }
                     .thenByDescending { it.createdAt }),
                 transactionsAsc      = txs,

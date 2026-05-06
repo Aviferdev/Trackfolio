@@ -1,5 +1,10 @@
 package es.aviferdev.trackfolio.ui.portfolio
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -11,6 +16,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -26,6 +33,9 @@ import es.aviferdev.trackfolio.domain.model.AssetTransaction
 import es.aviferdev.trackfolio.domain.model.AssetTransactionType
 import es.aviferdev.trackfolio.domain.model.Platform
 import es.aviferdev.trackfolio.domain.portfolio.AssetPosition
+import es.aviferdev.trackfolio.domain.portfolio.FifoBreakdown
+import es.aviferdev.trackfolio.domain.portfolio.FifoOpenLot
+import es.aviferdev.trackfolio.domain.portfolio.FifoSaleMatch
 import es.aviferdev.trackfolio.ui.theme.*
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
@@ -110,6 +120,18 @@ fun AssetHistoryScreen(
                             item {
                                 PositionCard(
                                     position       = pos,
+                                    currencyCode   = state.currencyCode,
+                                    balancesHidden = balancesHidden,
+                                    modifier       = Modifier.padding(horizontal = 20.dp, vertical = 4.dp)
+                                )
+                            }
+                        }
+
+                        // Desglose FIFO (lotes vivos + cierres con trazabilidad)
+                        state.breakdown?.takeIf { it.hasAnyData }?.let { bd ->
+                            item {
+                                FifoBreakdownSection(
+                                    breakdown      = bd,
                                     currencyCode   = state.currencyCode,
                                     balancesHidden = balancesHidden,
                                     modifier       = Modifier.padding(horizontal = 20.dp, vertical = 4.dp)
@@ -707,6 +729,283 @@ private fun EmptyTransactionsCard() {
 }
 
 // ─── Helpers de formato locales ──────────────────────────────────────────────
+
+// ─── Desglose FIFO ──────────────────────────────────────────────────────────────────────
+
+/**
+ * Tarjeta colapsable que muestra el detalle FIFO de un activo:
+ * los lotes vivos (compras aún no consumidas) y, para cada venta, los
+ * lotes contra los que se cruzó con su P&L parcial. Aparece después de
+ * la [PositionCard] siempre que haya algo que mostrar (al menos un lote
+ * vivo o una venta).
+ */
+@Composable
+private fun FifoBreakdownSection(
+    breakdown: FifoBreakdown,
+    currencyCode: String,
+    balancesHidden: Boolean,
+    modifier: Modifier = Modifier
+) {
+    var expanded by remember { mutableStateOf(true) }
+    val symbol = currencySymbol(currencyCode)
+
+    Card(
+        modifier  = modifier.fillMaxWidth(),
+        shape     = RoundedCornerShape(14.dp),
+        colors    = CardDefaults.cardColors(containerColor = SurfaceWhite),
+        elevation = CardDefaults.cardElevation(0.dp),
+        border    = CardDefaults.outlinedCardBorder()
+    ) {
+        Column(modifier = Modifier.fillMaxWidth()) {
+            // Cabecera con toggle
+            Row(
+                modifier              = Modifier
+                    .fillMaxWidth()
+                    .clickable { expanded = !expanded }
+                    .padding(horizontal = 16.dp, vertical = 14.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment     = Alignment.CenterVertically
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text("🧾", fontSize = 16.sp)
+                    Spacer(Modifier.width(8.dp))
+                    Column {
+                        Text(
+                            text       = "Desglose FIFO",
+                            fontSize   = 14.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color      = TextPrimary
+                        )
+                        val openCount = breakdown.openLots.size
+                        val saleCount = breakdown.saleMatches.size
+                        val subtitle = buildString {
+                            if (openCount > 0) {
+                                append("$openCount ")
+                                append(if (openCount == 1) "lote en cartera" else "lotes en cartera")
+                            }
+                            if (openCount > 0 && saleCount > 0) append("  ·  ")
+                            if (saleCount > 0) {
+                                append("$saleCount ")
+                                append(if (saleCount == 1) "cierre" else "cierres")
+                            }
+                        }
+                        Text(subtitle, fontSize = 11.sp, color = TextSecondary)
+                    }
+                }
+                Icon(
+                    if (expanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                    contentDescription = if (expanded) "Colapsar" else "Expandir",
+                    tint     = TextSecondary,
+                    modifier = Modifier.size(20.dp)
+                )
+            }
+
+            AnimatedVisibility(
+                visible = expanded,
+                enter   = expandVertically() + fadeIn(),
+                exit    = shrinkVertically() + fadeOut()
+            ) {
+                Column(modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp)) {
+                    HorizontalDivider(color = TextSecondary.copy(alpha = 0.12f), thickness = 0.5.dp)
+
+                    // Lotes en cartera
+                    if (breakdown.openLots.isNotEmpty()) {
+                        FifoSubHeader(text = "Lotes en cartera")
+                        breakdown.openLots.forEachIndexed { idx, lot ->
+                            FifoOpenLotRow(
+                                index  = idx + 1,
+                                lot    = lot,
+                                symbol = symbol,
+                                masked = balancesHidden
+                            )
+                        }
+                    }
+
+                    // Cierres FIFO
+                    if (breakdown.saleMatches.isNotEmpty()) {
+                        if (breakdown.openLots.isNotEmpty()) {
+                            Spacer(Modifier.height(4.dp))
+                            HorizontalDivider(
+                                modifier  = Modifier.padding(horizontal = 16.dp),
+                                color     = TextSecondary.copy(alpha = 0.10f),
+                                thickness = 0.5.dp
+                            )
+                        }
+                        FifoSubHeader(text = "Cierres FIFO")
+                        breakdown.saleMatches.forEach { sale ->
+                            FifoSaleMatchBlock(
+                                sale   = sale,
+                                symbol = symbol,
+                                masked = balancesHidden
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun FifoSubHeader(text: String) {
+    Text(
+        text       = text.uppercase(),
+        fontSize   = 10.sp,
+        fontWeight = FontWeight.SemiBold,
+        color      = TextSecondary,
+        modifier   = Modifier.padding(start = 16.dp, top = 12.dp, bottom = 6.dp)
+    )
+}
+
+@Composable
+private fun FifoOpenLotRow(
+    index: Int,
+    lot: FifoOpenLot,
+    symbol: String,
+    masked: Boolean
+) {
+    val partial = lot.remainingQuantity < lot.originalQuantity
+    Row(
+        modifier          = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 6.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Box(
+            modifier         = Modifier
+                .size(28.dp)
+                .clip(CircleShape)
+                .background(IncomeGreen.copy(alpha = 0.14f)),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text       = "#$index",
+                fontSize   = 10.sp,
+                fontWeight = FontWeight.Bold,
+                color      = IncomeGreen
+            )
+        }
+        Spacer(Modifier.width(10.dp))
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text       = "${formatQty(lot.remainingQuantity)} u. × ${maskAmount(formatAmount(lot.pricePerUnit), masked)} $symbol",
+                fontSize   = 13.sp,
+                color      = TextPrimary,
+                fontWeight = FontWeight.Medium
+            )
+            val datePart = formatShortDate(lot.purchaseDate)
+            val partialNote = if (partial)
+                "  ·  ${formatQty(lot.remainingQuantity)} de ${formatQty(lot.originalQuantity)} restantes"
+            else ""
+            Text(
+                text     = "Comprado el $datePart$partialNote",
+                fontSize = 11.sp,
+                color    = TextSecondary
+            )
+        }
+        Text(
+            text       = "${maskAmount(formatAmount(lot.remainingCost), masked)} $symbol",
+            fontSize   = 12.sp,
+            color      = TextPrimary,
+            fontWeight = FontWeight.SemiBold
+        )
+    }
+}
+
+@Composable
+private fun FifoSaleMatchBlock(
+    sale: FifoSaleMatch,
+    symbol: String,
+    masked: Boolean
+) {
+    val pnlColor = when {
+        sale.realizedPnL > 0 -> IncomeGreen
+        sale.realizedPnL < 0 -> ExpenseRed
+        else                 -> TextSecondary
+    }
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 12.dp, vertical = 6.dp)
+            .clip(RoundedCornerShape(10.dp))
+            .background(BackgroundGray.copy(alpha = 0.6f))
+            .padding(horizontal = 12.dp, vertical = 10.dp)
+    ) {
+        // Cabecera de la venta
+        Row(
+            modifier              = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment     = Alignment.CenterVertically
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text("↘", fontSize = 14.sp, color = ExpenseRed, fontWeight = FontWeight.Bold)
+                    Spacer(Modifier.width(6.dp))
+                    Text(
+                        text       = "Venta de ${formatQty(sale.saleQuantity)} u.",
+                        fontSize   = 13.sp,
+                        color      = TextPrimary,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
+                Text(
+                    text     = "${formatShortDate(sale.saleDate)}  ·  ${maskAmount(formatAmount(sale.salePrice), masked)} $symbol/u.",
+                    fontSize = 11.sp,
+                    color    = TextSecondary
+                )
+            }
+            Column(horizontalAlignment = Alignment.End) {
+                Text("P&L", fontSize = 9.sp, color = TextSecondary)
+                Text(
+                    text       = if (sale.realizedPnL == 0.0) "—"
+                                 else "${if (sale.realizedPnL >= 0) "+" else "−"} ${maskAmount(formatAmount(abs(sale.realizedPnL)), masked)} $symbol",
+                    fontSize   = 13.sp,
+                    color      = pnlColor,
+                    fontWeight = FontWeight.SemiBold
+                )
+            }
+        }
+
+        // Lotes consumidos
+        if (sale.consumed.isNotEmpty()) {
+            Spacer(Modifier.height(8.dp))
+            sale.consumed.forEach { c ->
+                val cColor = when {
+                    c.pnl > 0 -> IncomeGreen
+                    c.pnl < 0 -> ExpenseRed
+                    else      -> TextSecondary
+                }
+                Row(
+                    modifier              = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 18.dp, top = 3.dp, bottom = 3.dp),
+                    verticalAlignment     = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text     = "↳ ${formatQty(c.quantityConsumed)} u. del lote del ${formatShortDate(c.purchaseDate)}",
+                            fontSize = 11.sp,
+                            color    = TextPrimary
+                        )
+                        Text(
+                            text     = "compra a ${maskAmount(formatAmount(c.purchasePrice), masked)} $symbol/u.",
+                            fontSize = 10.sp,
+                            color    = TextSecondary
+                        )
+                    }
+                    Text(
+                        text       = if (c.pnl == 0.0) "—"
+                                     else "${if (c.pnl >= 0) "+" else "−"} ${maskAmount(formatAmount(abs(c.pnl)), masked)} $symbol",
+                        fontSize   = 11.sp,
+                        color      = cColor,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+            }
+        }
+    }
+}
 
 private fun formatPercent1(value: Double): String {
     val rounded = (value * 10).toLong()

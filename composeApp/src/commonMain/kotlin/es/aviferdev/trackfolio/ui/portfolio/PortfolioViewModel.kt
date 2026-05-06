@@ -69,7 +69,7 @@ data class CategorySlice(
 
 data class PortfolioUiState(
     val groups: List<CategoryGroup>     = emptyList(),         // posiciones abiertas
-    val closedPositions: List<AssetRow> = emptyList(),         // qty==0 && realized!=0 (decisión A)
+    val closedPositions: List<AssetRow> = emptyList(),         // qty==0 y al menos una venta registrada
     val distribution: List<CategorySlice> = emptyList(),
     val totalInvested: Double           = 0.0,
     val totalCurrentValue: Double       = 0.0,
@@ -168,18 +168,21 @@ class PortfolioViewModel(
 
         // Para cada activo, calcular su posición FIFO y separar:
         //  - openRows  → tienen qty > 0 (posiciones vivas)
-        //  - closedRows → qty == 0 pero realizedPnL != 0 (posiciones cerradas
-        //                 con histórico de P&L que el usuario debe poder revisar)
-        //  - silent    → qty == 0 y realizedPnL == 0 (ocultos del portfolio)
+        //  - closedRows → qty == 0 y se ha registrado al menos una venta
+        //                 (incluye P&L = 0; el usuario debe poder revisar
+        //                  la operación aunque haya cerrado a tablas)
+        //  - silent    → qty == 0 y nunca hubo ventas (catálogo en blanco
+        //                 o solo compras sin cerrar — no aplica aquí)
         val openRows   = mutableListOf<AssetRow>()
         val closedRows = mutableListOf<AssetRow>()
         for (asset in assets) {
             val txs = txByAsset[asset.id].orEmpty()
             val pos = PortfolioCalculator.calculate(txs, asset.currentPrice)
+            val hasSales = txs.any { it.type == AssetTransactionType.SELL }
             when {
-                pos.netQuantity > 0.0      -> openRows.add(AssetRow(asset, pos))
-                pos.realizedPnL != 0.0     -> closedRows.add(AssetRow(asset, pos))
-                else                       -> { /* silenciado */ }
+                pos.netQuantity > 0.0  -> openRows.add(AssetRow(asset, pos))
+                hasSales               -> closedRows.add(AssetRow(asset, pos))
+                else                   -> { /* silenciado: catálogo sin ventas */ }
             }
         }
 
