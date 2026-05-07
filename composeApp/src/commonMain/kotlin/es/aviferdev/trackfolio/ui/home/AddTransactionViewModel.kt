@@ -9,12 +9,10 @@ import com.benasher44.uuid.uuid4
 import es.aviferdev.trackfolio.domain.model.Category
 import es.aviferdev.trackfolio.domain.model.IncomeType
 import es.aviferdev.trackfolio.domain.model.Issuer
-import es.aviferdev.trackfolio.domain.model.IssuerType
 import es.aviferdev.trackfolio.domain.model.Transaction
 import es.aviferdev.trackfolio.domain.model.TransactionType
 import es.aviferdev.trackfolio.domain.usecase.category.GetCategoriesByTypeUseCase
 import es.aviferdev.trackfolio.domain.usecase.issuer.GetIssuersUseCase
-import es.aviferdev.trackfolio.domain.usecase.issuer.SaveIssuerUseCase
 import es.aviferdev.trackfolio.domain.usecase.transaction.SaveTransactionUseCase
 import es.aviferdev.trackfolio.domain.usecase.transaction.UpdateTransactionUseCase
 import es.aviferdev.trackfolio.ui.account.AccountSession
@@ -39,7 +37,6 @@ class AddTransactionViewModel(
     private val updateTransaction: UpdateTransactionUseCase,
     private val getCategoriesByType: GetCategoriesByTypeUseCase,
     private val getIssuers: GetIssuersUseCase,
-    private val saveIssuer: SaveIssuerUseCase,
     private val session: AccountSession
 ) : ViewModel() {
 
@@ -56,6 +53,8 @@ class AddTransactionViewModel(
         private set
     var notes by mutableStateOf("")
         private set
+    var dateMillis by mutableStateOf(Clock.System.now().toEpochMilliseconds())
+        private set
 
     // ── Gastos: categorías ────────────────────────────────────────────────────
     var categories by mutableStateOf<List<Category>>(emptyList())
@@ -71,6 +70,10 @@ class AddTransactionViewModel(
     var grossAmount by mutableStateOf("")
         private set
     var irpfPercent by mutableStateOf("")
+        private set
+    var irpfFixedAmount by mutableStateOf("")
+        private set
+    var irpfInputMode by mutableStateOf(IrpfInputMode.PERCENT)
         private set
     var socialSecurityAmount by mutableStateOf("")
         private set
@@ -91,6 +94,32 @@ class AddTransactionViewModel(
 
     // ── Cálculos ──────────────────────────────────────────────────────────────
 
+    /** Calcula la retención IRPF según el modo de entrada (porcentual o fijo). */
+    fun resolveIrpf(gross: Double, ssDeduction: Double = 0.0): Double {
+        return when (irpfInputMode) {
+            IrpfInputMode.PERCENT -> {
+                val pct = irpfPercent.replace(',', '.').toDoubleOrNull() ?: 0.0
+                val base = gross - ssDeduction
+                base * pct / 100.0
+            }
+            IrpfInputMode.AMOUNT -> {
+                irpfFixedAmount.replace(',', '.').toDoubleOrNull() ?: 0.0
+            }
+        }
+    }
+
+    /** Porcentaje efectivo de IRPF (para persistir siempre como %). */
+    fun resolveIrpfPercent(gross: Double, ssDeduction: Double = 0.0): Double {
+        return when (irpfInputMode) {
+            IrpfInputMode.PERCENT -> irpfPercent.replace(',', '.').toDoubleOrNull() ?: 0.0
+            IrpfInputMode.AMOUNT -> {
+                val base = gross - ssDeduction
+                val fixed = irpfFixedAmount.replace(',', '.').toDoubleOrNull() ?: 0.0
+                if (base > 0) (fixed / base) * 100.0 else 0.0
+            }
+        }
+    }
+
     /** Neto calculado según el tipo de ingreso seleccionado. */
     val calculatedNet: Double?
         get() {
@@ -100,23 +129,19 @@ class AddTransactionViewModel(
 
             return when (it) {
                 IncomeType.SALARY -> {
-                    val ss  = socialSecurityAmount.replace(',', '.').toDoubleOrNull() ?: 0.0
-                    val pct = irpfPercent.replace(',', '.').toDoubleOrNull() ?: 0.0
-                    val baseIrpf = gross - ss
-                    val irpf = baseIrpf * pct / 100.0
+                    val ss   = socialSecurityAmount.replace(',', '.').toDoubleOrNull() ?: 0.0
+                    val irpf = resolveIrpf(gross, ssDeduction = ss)
                     gross - ss - irpf
                 }
                 IncomeType.BOND_DEPOSIT -> {
-                    val pct  = irpfPercent.replace(',', '.').toDoubleOrNull() ?: 0.0
                     val comm = commissionAmount.replace(',', '.').toDoubleOrNull() ?: 0.0
-                    val irpf = gross * pct / 100.0
+                    val irpf = resolveIrpf(gross)
                     gross - irpf - comm
                 }
                 IncomeType.EXEMPT_INCOME -> gross  // Sin retenciones
                 else -> {
                     // BANK_INTEREST, DIVIDEND, BONUS_PRIZE: bruto - IRPF
-                    val pct = irpfPercent.replace(',', '.').toDoubleOrNull() ?: 0.0
-                    val irpf = gross * pct / 100.0
+                    val irpf = resolveIrpf(gross)
                     gross - irpf
                 }
             }
@@ -137,14 +162,22 @@ class AddTransactionViewModel(
                 return gross != null && gross > 0
             }
             // Para tipos con IRPF
-            val pct = irpfPercent.replace(',', '.').toDoubleOrNull()
+            val irpfOk = when (irpfInputMode) {
+                IrpfInputMode.PERCENT -> {
+                    val pct = irpfPercent.replace(',', '.').toDoubleOrNull()
+                    pct != null && pct >= 0
+                }
+                IrpfInputMode.AMOUNT -> {
+                    val fixed = irpfFixedAmount.replace(',', '.').toDoubleOrNull()
+                    fixed != null && fixed >= 0
+                }
+            }
             val grossOk = gross != null && gross > 0
-            val pctOk   = pct != null && pct >= 0
             // Emisor requerido si el tipo lo necesita
             val issuerOk = if (incType.issuerType != null) {
-                selectedIssuerId != null || newIssuerName.isNotBlank()
+                selectedIssuerId != null
             } else true
-            return grossOk && pctOk && issuerOk
+            return grossOk && irpfOk && issuerOk
         }
 
     init { loadCategories() }
@@ -168,7 +201,9 @@ class AddTransactionViewModel(
         if (!incomeType.hasSocialSecurity) socialSecurityAmount = ""
         if (!incomeType.hasCommission) commissionAmount = ""
         if (!incomeType.hasIrpf) { irpfPercent = ""; grossAmount = "" }
-        // Sugerir porcentaje por defecto
+        // Resetear modo IRPF y sugerir porcentaje por defecto
+        irpfInputMode = IrpfInputMode.PERCENT
+        irpfFixedAmount = ""
         if (irpfPercent.isBlank() && incomeType.defaultIrpfPercent != null) {
             irpfPercent = incomeType.defaultIrpfPercent.toString().replace('.', ',')
         }
@@ -184,10 +219,20 @@ class AddTransactionViewModel(
     fun onAmountChange(value: String) { amount = filterDecimal(value) }
     fun onGrossAmountChange(value: String) { grossAmount = filterDecimal(value) }
     fun onIrpfPercentChange(value: String) { irpfPercent = filterDecimal(value) }
+    fun onIrpfFixedAmountChange(value: String) { irpfFixedAmount = filterDecimal(value) }
+    fun onIrpfInputModeChange(mode: IrpfInputMode) {
+        irpfInputMode = mode
+        // Limpiar el campo del modo contrario para evitar confusión
+        when (mode) {
+            IrpfInputMode.PERCENT -> irpfFixedAmount = ""
+            IrpfInputMode.AMOUNT  -> irpfPercent = ""
+        }
+    }
     fun onSocialSecurityChange(value: String) { socialSecurityAmount = filterDecimal(value) }
     fun onCommissionChange(value: String) { commissionAmount = filterDecimal(value) }
     fun onCategoryChange(categoryId: String) { selectedCategoryId = categoryId }
     fun onNotesChange(value: String) { notes = value }
+    fun onDateChange(millis: Long) { dateMillis = millis }
 
     fun onIssuerSelected(issuerId: String) {
         selectedIssuerId = issuerId
@@ -208,6 +253,7 @@ class AddTransactionViewModel(
         editingTransaction = transaction
         type  = transaction.type
         notes = transaction.notes ?: ""
+        dateMillis = transaction.date
 
         if (transaction.isIncome) {
             selectedIncomeType       = transaction.incomeType
@@ -231,6 +277,7 @@ class AddTransactionViewModel(
         amount             = ""
         type               = TransactionType.EXPENSE
         notes              = ""
+        dateMillis         = Clock.System.now().toEpochMilliseconds()
         clearIncomeFields()
         loadCategories()
     }
@@ -268,29 +315,12 @@ class AddTransactionViewModel(
     private suspend fun saveIncome(accountId: String, now: Long) {
         val incType = selectedIncomeType!!
 
-        // Resolver emisor (crear nuevo si es necesario)
+        // Resolver emisor
         var finalIssuerId: String? = selectedIssuerId
         var finalIssuerName: String? = null
 
-        if (incType.issuerType != null) {
-            if (showNewIssuerField && newIssuerName.isNotBlank()) {
-                val newId = uuid4().toString()
-                val newIssuer = Issuer(
-                    id        = newId,
-                    accountId = accountId,
-                    name      = newIssuerName.trim(),
-                    type      = incType.issuerType,
-                    createdAt = Clock.System.now().toEpochMilliseconds()
-                )
-                saveIssuer(newIssuer).onFailure {
-                    _uiState.value = AddTransactionUiState.Error("Error al crear emisor: ${it.message}")
-                    return
-                }
-                finalIssuerId   = newId
-                finalIssuerName = newIssuerName.trim()
-            } else {
-                finalIssuerName = issuers.find { it.id == finalIssuerId }?.name
-            }
+        if (incType.issuerType != null && finalIssuerId != null) {
+            finalIssuerName = issuers.find { it.id == finalIssuerId }?.name
         }
 
         val net = calculatedNet ?: run {
@@ -304,7 +334,11 @@ class AddTransactionViewModel(
             now                  = now,
             incomeType           = incType,
             grossAmount          = grossAmount.replace(',', '.').toDoubleOrNull(),
-            irpfPercent          = if (incType.hasIrpf) irpfPercent.replace(',', '.').toDoubleOrNull() else null,
+            irpfPercent          = if (incType.hasIrpf) {
+                val gross = grossAmount.replace(',', '.').toDoubleOrNull() ?: 0.0
+                val ss = if (incType.hasSocialSecurity) socialSecurityAmount.replace(',', '.').toDoubleOrNull() ?: 0.0 else 0.0
+                resolveIrpfPercent(gross, ss)
+            } else null,
             socialSecurityAmount = if (incType.hasSocialSecurity) socialSecurityAmount.replace(',', '.').toDoubleOrNull() else null,
             commissionAmount     = if (incType.hasCommission) commissionAmount.replace(',', '.').toDoubleOrNull() else null,
             issuerId             = finalIssuerId,
@@ -332,7 +366,7 @@ class AddTransactionViewModel(
             amount               = netAmount,
             type                 = type,
             categoryId           = if (type == TransactionType.EXPENSE) selectedCategoryId else null,
-            date                 = existing?.date ?: now,
+            date                 = dateMillis,
             notes                = notes.ifBlank { null },
             createdAt            = existing?.createdAt ?: now,
             incomeType           = incomeType,
@@ -364,6 +398,8 @@ class AddTransactionViewModel(
         selectedIncomeType   = null
         grossAmount          = ""
         irpfPercent          = ""
+        irpfFixedAmount      = ""
+        irpfInputMode        = IrpfInputMode.PERCENT
         socialSecurityAmount = ""
         commissionAmount     = ""
         selectedIssuerId     = null
@@ -407,3 +443,6 @@ class AddTransactionViewModel(
     private fun filterDecimal(value: String): String =
         value.filter { it.isDigit() || it == ',' || it == '.' }
 }
+
+/** Modo de entrada del IRPF: porcentual o importe fijo. */
+enum class IrpfInputMode { PERCENT, AMOUNT }

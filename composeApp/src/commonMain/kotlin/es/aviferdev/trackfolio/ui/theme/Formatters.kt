@@ -27,7 +27,8 @@ fun formatDate(epochMillis: Long): String {
 }
 
 fun formatAmount(amount: Double): String {
-    val abs = if (amount < 0) -amount else amount
+    val negative = amount < 0
+    val abs = if (negative) -amount else amount
     val rounded = (abs * 100).toLong()
     val euros = rounded / 100
     val cents = rounded % 100
@@ -37,7 +38,8 @@ fun formatAmount(amount: Double): String {
             append(c)
         }
     }.reversed()
-    return "$eurosStr,${cents.toString().padStart(2, '0')}"
+    val formatted = "$eurosStr,${cents.toString().padStart(2, '0')}"
+    return if (negative) "-$formatted" else formatted
 }
 
 // ─── Moneda ──────────────────────────────────────────────────────────────────

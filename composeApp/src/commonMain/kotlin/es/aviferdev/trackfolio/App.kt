@@ -21,23 +21,19 @@ fun App() {
     val appLockManager      = koinInject<AppLockManager>()
     val balanceVisibility   = koinInject<BalanceVisibilityManager>()
 
-    // Inicializar con el estado real (persiste entre sesiones via AppSettings)
     var isLocked by remember {
-        appLockManager.onAppStart()   // bloquea al arrancar si biometría activa
+        appLockManager.onAppStart()
         mutableStateOf(appLockManager.isLocked)
     }
 
-    // Observa el flow de visibilidad de saldos para propagarlo a toda la UI
     val balancesHidden by balanceVisibility.balancesHidden.collectAsState()
 
-    // Inicializar BD
     LaunchedEffect(Unit) {
         withContext(Dispatchers.Default) {
             databaseInitializer.initializeIfNeeded()
         }
     }
 
-    // Bloquear al pasar a background
     val lifecycleOwner = LocalLifecycleOwner.current
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
@@ -47,7 +43,6 @@ fun App() {
                     isLocked = appLockManager.isLocked
                 }
                 Lifecycle.Event.ON_START -> {
-                    // Sincronizar por si cambió desde otro hilo
                     isLocked = appLockManager.isLocked
                 }
                 else -> Unit

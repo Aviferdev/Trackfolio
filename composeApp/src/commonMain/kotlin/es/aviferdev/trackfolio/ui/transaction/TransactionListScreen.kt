@@ -45,8 +45,9 @@ fun TransactionListScreen(
 
     Column(modifier = Modifier.fillMaxSize().background(BackgroundGray)) {
         MonthHeader(
-            year      = uiState.year,
-            month     = uiState.month,
+            year       = uiState.year,
+            month      = uiState.month,
+            canGoBack  = uiState.canGoBack,
             onPrevious = { viewModel.previousMonth() },
             onNext     = { viewModel.nextMonth() }
         )
@@ -69,13 +70,23 @@ fun TransactionListScreen(
                     items = uiState.filteredTransactions,
                     key   = { _, t -> t.id }
                 ) { index, transaction ->
-                    SwipeToDeleteContainer(onDelete = { transactionToDelete = transaction }) {
+                    if (transaction.isLinkedToAsset) {
+                        // Movimientos vinculados a portfolio: sin swipe, sin editar
                         TransactionListRow(
                             transaction    = transaction,
                             label          = TransactionViewModel.resolveLabel(transaction, uiState.categoryNames),
                             balancesHidden = balancesHidden,
-                            onEdit         = { transactionToEdit = transaction }
+                            onEdit         = null
                         )
+                    } else {
+                        SwipeToDeleteContainer(onDelete = { transactionToDelete = transaction }) {
+                            TransactionListRow(
+                                transaction    = transaction,
+                                label          = TransactionViewModel.resolveLabel(transaction, uiState.categoryNames),
+                                balancesHidden = balancesHidden,
+                                onEdit         = { transactionToEdit = transaction }
+                            )
+                        }
                     }
                     if (index < uiState.filteredTransactions.lastIndex) {
                         HorizontalDivider(modifier = Modifier.padding(start = 70.dp), color = BorderGray, thickness = 0.5.dp)
@@ -120,7 +131,7 @@ private fun SearchBar(query: String, onChange: (String) -> Unit) {
 }
 
 @Composable
-private fun MonthHeader(year: String, month: String, onPrevious: () -> Unit, onNext: () -> Unit) {
+private fun MonthHeader(year: String, month: String, canGoBack: Boolean, onPrevious: () -> Unit, onNext: () -> Unit) {
     val now           = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
     val isCurrentMonth = year == now.year.toString() && month == now.monthNumber.toString().padStart(2, '0')
     val monthName     = MONTH_NAMES.getOrElse(month.toIntOrNull()?.minus(1) ?: 0) { month }
@@ -136,8 +147,12 @@ private fun MonthHeader(year: String, month: String, onPrevious: () -> Unit, onN
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment     = Alignment.CenterVertically
             ) {
-                IconButton(onClick = onPrevious, modifier = Modifier.size(36.dp).clip(CircleShape).background(BackgroundGray)) {
-                    Text("‹", fontSize = 22.sp, color = TextPrimary, fontWeight = FontWeight.Light)
+                IconButton(
+                    onClick  = onPrevious,
+                    enabled  = canGoBack,
+                    modifier = Modifier.size(36.dp).clip(CircleShape).background(if (canGoBack) BackgroundGray else Color.Transparent)
+                ) {
+                    Text("‹", fontSize = 22.sp, color = if (canGoBack) TextPrimary else TextSecondary.copy(alpha = 0.3f), fontWeight = FontWeight.Light)
                 }
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Text(monthName, fontSize = 17.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary)
@@ -219,12 +234,15 @@ private fun TransactionListRow(
     transaction: Transaction,
     label: String,
     balancesHidden: Boolean,
-    onEdit: () -> Unit
+    onEdit: (() -> Unit)?
 ) {
     val isIncome = transaction.isIncome
-    val bgColor  = if (isIncome) IncomeGreen else ExpenseRed
-    val emoji    = if (isIncome) transaction.incomeType?.emoji else null
-    val initial  = emoji ?: label.firstOrNull()?.uppercaseChar()?.toString() ?: "?"
+    val bgColor  = if (transaction.isLinkedToAsset) PrimaryDark
+                   else if (isIncome) IncomeGreen else ExpenseRed
+    val emoji    = if (transaction.isLinkedToAsset) null
+                   else if (isIncome) transaction.incomeType?.emoji else null
+    val initial  = if (transaction.isLinkedToAsset) "📈"
+                   else emoji ?: label.firstOrNull()?.uppercaseChar()?.toString() ?: "?"
 
     Row(
         modifier          = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp),
@@ -261,8 +279,12 @@ private fun TransactionListRow(
                 Text("Bruto: ${formatAmount(transaction.grossAmount)} €", fontSize = 10.sp, color = TextSecondary)
             }
             Text(formatDate(transaction.date), fontSize = 11.sp, color = TextSecondary)
-            TextButton(onClick = onEdit, contentPadding = PaddingValues(horizontal = 4.dp, vertical = 0.dp), modifier = Modifier.height(20.dp)) {
-                Text("Editar", fontSize = 10.sp, color = PrimaryDark.copy(alpha = 0.7f))
+            if (onEdit != null) {
+                TextButton(onClick = onEdit, contentPadding = PaddingValues(horizontal = 4.dp, vertical = 0.dp), modifier = Modifier.height(20.dp)) {
+                    Text("Editar", fontSize = 10.sp, color = PrimaryDark.copy(alpha = 0.7f))
+                }
+            } else if (transaction.isLinkedToAsset) {
+                Text("Portfolio", fontSize = 10.sp, color = PrimaryDark.copy(alpha = 0.5f))
             }
         }
     }

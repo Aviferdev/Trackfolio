@@ -16,6 +16,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.outlined.Refresh
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -45,6 +46,7 @@ import kotlin.math.abs
 @Composable
 fun PortfolioScreen(
     onAssetClick: (String) -> Unit = {},
+    onNavigateToSettings: () -> Unit = {},
     viewModel: PortfolioViewModel = koinViewModel(),
     catalogViewModel: AssetCatalogViewModel = koinViewModel(),
     platformViewModel: PlatformViewModel = koinViewModel(),
@@ -70,7 +72,7 @@ fun PortfolioScreen(
             modifier       = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(bottom = 100.dp)
         ) {
-            item { PortfolioHeader() }
+            item { PortfolioHeader(onSettingsClick = onNavigateToSettings) }
 
             item {
                 PortfolioSummaryCard(
@@ -198,11 +200,11 @@ fun PortfolioScreen(
                     }
                 )
                 DropdownMenuItem(
-                    text = { Text("Nuevo activo", color = TextPrimary) },
-                    leadingIcon = { Text("📋", fontSize = 16.sp) },
+                    text = { Text("Rendimiento bono/depósito", color = TextPrimary) },
+                    leadingIcon = { Text("📜", fontSize = 16.sp) },
                     onClick = {
                         fabMenuOpen = false
-                        catalogViewModel.openAddSheet()
+                        viewModel.openBondDepositSheet()
                     }
                 )
             }
@@ -250,8 +252,9 @@ fun PortfolioScreen(
             asset        = null,
             categories   = availableCategories,
             currencyCode = state.currencyCode,
-            onSave       = { ticker, name, notes, categoryId, currentPrice ->
-                catalogViewModel.addAsset(ticker, name, notes, categoryId, currentPrice)
+            allPlatforms = state.platforms,
+            onSave       = { ticker, name, notes, categoryId, currentPrice, platformIds ->
+                catalogViewModel.addAsset(ticker, name, notes, categoryId, currentPrice, platformIds)
             },
             onDismiss = { catalogViewModel.closeAddSheet() }
         )
@@ -261,8 +264,10 @@ fun PortfolioScreen(
             asset        = editing,
             categories   = availableCategories,
             currencyCode = state.currencyCode,
-            onSave       = { ticker, name, notes, categoryId, currentPrice ->
-                catalogViewModel.editAsset(editing, ticker, name, notes, categoryId, currentPrice)
+            allPlatforms = state.platforms,
+            linkedPlatformIds = catalogState.editingPlatformIds,
+            onSave       = { ticker, name, notes, categoryId, currentPrice, platformIds ->
+                catalogViewModel.editAsset(editing, ticker, name, notes, categoryId, currentPrice, platformIds)
             },
             onDismiss    = { catalogViewModel.closeEditSheet() }
         )
@@ -274,6 +279,20 @@ fun PortfolioScreen(
             initial   = null,
             onSave    = { name, icon -> platformViewModel.addPlatform(name, icon) },
             onDismiss = { platformViewModel.closeAddSheet() }
+        )
+    }
+
+    // Sheet de bono/depósito (desde FAB)
+    if (state.showBondDepositSheet) {
+        AddBondDepositBottomSheet(
+            allAssets    = state.allAssets,
+            currencyCode = state.currencyCode,
+            onSave       = { assetId, grossAmount, irpfPercent, commission, date ->
+                if (assetId != null) {
+                    viewModel.saveBondDeposit(assetId, grossAmount, irpfPercent, commission, date)
+                }
+            },
+            onDismiss    = { viewModel.closeBondDepositSheet() }
         )
     }
 
@@ -324,13 +343,15 @@ fun PortfolioScreen(
 
 // ─── Cabecera ─────────────────────────────────────────────────────────────────
 @Composable
-private fun PortfolioHeader() {
+private fun PortfolioHeader(onSettingsClick: () -> Unit = {}) {
     Surface(color = SurfaceWhite, shadowElevation = 1.dp) {
-        Box(
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .windowInsetsPadding(WindowInsets.statusBars)
-                .padding(horizontal = 20.dp, vertical = 18.dp)
+                .padding(horizontal = 20.dp, vertical = 18.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment     = Alignment.CenterVertically
         ) {
             Text(
                 text       = "Portfolio",
@@ -338,6 +359,9 @@ private fun PortfolioHeader() {
                 fontWeight = FontWeight.SemiBold,
                 color      = TextPrimary
             )
+            IconButton(onClick = onSettingsClick, modifier = Modifier.size(32.dp)) {
+                Icon(Icons.Outlined.Settings, "Ajustes de portfolio", tint = TextSecondary)
+            }
         }
     }
 }

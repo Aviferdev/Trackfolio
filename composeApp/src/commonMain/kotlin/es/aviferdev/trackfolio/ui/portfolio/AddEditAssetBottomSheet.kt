@@ -14,6 +14,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
@@ -21,26 +22,25 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.trackfolio.domain.model.Asset
 import es.aviferdev.trackfolio.domain.model.AssetCategory
+import es.aviferdev.trackfolio.domain.model.Platform
 import es.aviferdev.trackfolio.ui.theme.*
 
-/**
- * Sheet para crear o editar la **ficha de catálogo** de un activo: ticker,
- * nombre, categoría, precio actual y notas. Las cantidades y precios de
- * compra ya no se piden aquí — eso vive en los movimientos
- * (AddEditAssetTransactionBottomSheet).
- */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddEditAssetBottomSheet(
-    asset: Asset?,                          // null = crear
-    categories: List<AssetCategory>,        // categorías activas disponibles
-    currencyCode: String = "EUR",           // moneda de la cuenta seleccionada
+    asset: Asset?,
+    categories: List<AssetCategory>,
+    currencyCode: String = "EUR",
+    preselectedCategoryId: String? = null,
+    allPlatforms: List<Platform> = emptyList(),
+    linkedPlatformIds: Set<String> = emptySet(),
     onSave: (
         ticker: String,
         name: String,
         notes: String?,
         assetCategoryId: String?,
-        currentPrice: Double?
+        currentPrice: Double?,
+        platformIds: Set<String>
     ) -> Unit,
     onDismiss: () -> Unit
 ) {
@@ -51,12 +51,16 @@ fun AddEditAssetBottomSheet(
     var name          by remember { mutableStateOf(asset?.name ?: "") }
     var currentPrice  by remember { mutableStateOf(asset?.currentPrice?.toString() ?: "") }
     var notes         by remember { mutableStateOf(asset?.notes ?: "") }
-    var selectedCategoryId by remember { mutableStateOf(asset?.assetCategoryId) }
+    var selectedCategoryId by remember {
+        mutableStateOf(asset?.assetCategoryId ?: preselectedCategoryId)
+    }
+    var selectedPlatformIds by remember { mutableStateOf(linkedPlatformIds) }
 
     var tickerError by remember { mutableStateOf(false) }
     var nameError   by remember { mutableStateOf(false) }
 
     val isValid = ticker.isNotBlank() && name.isNotBlank()
+        && selectedCategoryId != null
         && (currentPrice.isBlank() || currentPrice.replace(',', '.').toDoubleOrNull()?.let { it >= 0 } == true)
 
     ModalBottomSheet(
@@ -91,51 +95,40 @@ fun AddEditAssetBottomSheet(
                 modifier   = Modifier.padding(bottom = 4.dp)
             )
             Text(
-                text     = "Define la ficha del activo. Las compras y ventas se registran después como movimientos.",
+                text     = "Define la ficha del activo y las plataformas donde operas.",
                 fontSize = 11.sp,
                 color    = TextSecondary,
                 modifier = Modifier.padding(bottom = 18.dp)
             )
 
-            // ── Selector de categoría ────────────────────────────────────────
-            if (categories.isNotEmpty()) {
-                Text(
-                    text       = "Categoría",
-                    fontSize   = 12.sp,
-                    color      = TextSecondary,
-                    fontWeight = FontWeight.Medium
-                )
-                Spacer(Modifier.height(8.dp))
-                Row(
-                    modifier              = Modifier
-                        .fillMaxWidth()
-                        .horizontalScroll(rememberScrollState()),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
+            // ── Selector de categoría (fijas, obligatorio) ───────────────────
+            Text(
+                text       = "Categoría",
+                fontSize   = 12.sp,
+                color      = TextSecondary,
+                fontWeight = FontWeight.Medium
+            )
+            Spacer(Modifier.height(8.dp))
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .horizontalScroll(rememberScrollState()),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                categories.forEach { cat ->
                     CategoryChip(
-                        icon       = "❔",
-                        label      = "Sin categoría",
-                        isSelected = selectedCategoryId == null,
-                        onClick    = { selectedCategoryId = null }
+                        icon       = cat.icon,
+                        label      = cat.name,
+                        isSelected = selectedCategoryId == cat.id,
+                        onClick    = { selectedCategoryId = cat.id }
                     )
-                    categories.forEach { cat ->
-                        CategoryChip(
-                            icon       = cat.icon,
-                            label      = cat.name,
-                            isSelected = selectedCategoryId == cat.id,
-                            onClick    = { selectedCategoryId = cat.id }
-                        )
-                    }
                 }
-                Spacer(Modifier.height(16.dp))
-            } else {
-                Text(
-                    text     = "💡  Puedes crear categorías de activos desde Ajustes para agruparlas (ej. Cryptos, ETFs).",
-                    fontSize = 11.sp,
-                    color    = TextSecondary,
-                    modifier = Modifier.padding(bottom = 16.dp)
-                )
             }
+            if (selectedCategoryId == null) {
+                Spacer(Modifier.height(4.dp))
+                Text("Selecciona una categoría", fontSize = 11.sp, color = ExpenseRed)
+            }
+            Spacer(Modifier.height(16.dp))
 
             // Ticker
             OutlinedTextField(
@@ -183,7 +176,7 @@ fun AddEditAssetBottomSheet(
                 trailingIcon  = { Text(symbol, color = TextSecondary, modifier = Modifier.padding(end = 12.dp)) },
                 supportingText = {
                     Text(
-                        text     = "Sirve para calcular el valor actual y la revalorización. Lo puedes actualizar después.",
+                        text     = "Sirve para calcular el valor actual y la revalorización.",
                         fontSize = 11.sp,
                         color    = TextSecondary
                     )
@@ -198,6 +191,52 @@ fun AddEditAssetBottomSheet(
                 )
             )
             Spacer(Modifier.height(12.dp))
+
+            // ── Plataformas vinculadas (multi-select) ────────────────────────
+            if (allPlatforms.isNotEmpty()) {
+                Text(
+                    text       = "Plataformas donde operas este activo",
+                    fontSize   = 12.sp,
+                    color      = TextSecondary,
+                    fontWeight = FontWeight.Medium
+                )
+                Spacer(Modifier.height(8.dp))
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .horizontalScroll(rememberScrollState()),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    allPlatforms.forEach { platform ->
+                        val isSelected = platform.id in selectedPlatformIds
+                        PlatformToggleChip(
+                            icon       = platform.icon,
+                            label      = platform.name,
+                            isSelected = isSelected,
+                            onClick    = {
+                                selectedPlatformIds = if (isSelected)
+                                    selectedPlatformIds - platform.id
+                                else
+                                    selectedPlatformIds + platform.id
+                            }
+                        )
+                    }
+                }
+                Spacer(Modifier.height(4.dp))
+                Text(
+                    "Selecciona todas las plataformas donde compras o vendes este activo.",
+                    fontSize = 10.sp,
+                    color = TextSecondary
+                )
+                Spacer(Modifier.height(12.dp))
+            } else {
+                Text(
+                    text     = "💡  Crea plataformas primero desde la sección de abajo para vincularlas.",
+                    fontSize = 11.sp,
+                    color    = TextSecondary,
+                    modifier = Modifier.padding(bottom = 12.dp)
+                )
+            }
 
             // Nota
             OutlinedTextField(
@@ -225,7 +264,8 @@ fun AddEditAssetBottomSheet(
                         name.trim(),
                         notes.ifBlank { null },
                         selectedCategoryId,
-                        curr
+                        curr,
+                        selectedPlatformIds
                     )
                 },
                 enabled  = isValid,
@@ -274,5 +314,40 @@ private fun CategoryChip(
             color      = text,
             fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal
         )
+    }
+}
+
+@Composable
+private fun PlatformToggleChip(
+    icon: String,
+    label: String,
+    isSelected: Boolean,
+    onClick: () -> Unit
+) {
+    val bg     = if (isSelected) PrimaryDark.copy(alpha = 0.12f) else SurfaceElevated
+    val border = if (isSelected) PrimaryDark                      else BorderGray
+    val text   = if (isSelected) PrimaryDark                      else TextPrimary
+
+    Row(
+        modifier = Modifier
+            .clip(RoundedCornerShape(20.dp))
+            .background(bg)
+            .border(if (isSelected) 1.5.dp else 0.5.dp, border, RoundedCornerShape(20.dp))
+            .clickable(onClick = onClick)
+            .padding(horizontal = 12.dp, vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(icon, fontSize = 14.sp)
+        Spacer(Modifier.width(6.dp))
+        Text(
+            text       = label,
+            fontSize   = 13.sp,
+            color      = text,
+            fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal
+        )
+        if (isSelected) {
+            Spacer(Modifier.width(4.dp))
+            Text("✓", fontSize = 12.sp, color = PrimaryDark, fontWeight = FontWeight.Bold)
+        }
     }
 }

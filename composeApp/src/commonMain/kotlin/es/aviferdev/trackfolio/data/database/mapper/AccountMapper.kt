@@ -9,7 +9,7 @@ fun GetComputedBalance.toDomain(): Account = Account(
     name            = name,
     currency        = currency,
     initialBalance  = initialBalance,
-    computedBalance = computedBalance ?: initialBalance,
+    computedBalance = computedBalance,
     createdAt       = createdAt
 )
 
@@ -18,6 +18,6 @@ fun GetAllComputedBalances.toDomain(): Account = Account(
     name            = name,
     currency        = currency,
     initialBalance  = initialBalance,
-    computedBalance = computedBalance ?: initialBalance,
+    computedBalance = computedBalance,
     createdAt       = createdAt
 )

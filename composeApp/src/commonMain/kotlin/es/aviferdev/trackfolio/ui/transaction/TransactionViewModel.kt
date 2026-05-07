@@ -7,6 +7,7 @@ import es.aviferdev.trackfolio.domain.model.Transaction
 import es.aviferdev.trackfolio.domain.usecase.category.GetAllCategoriesIncludingArchivedUseCase
 import es.aviferdev.trackfolio.domain.usecase.transaction.DeleteTransactionUseCase
 import es.aviferdev.trackfolio.domain.usecase.transaction.GetMonthlyTotalsUseCase
+import es.aviferdev.trackfolio.domain.usecase.transaction.GetOldestTransactionDateUseCase
 import es.aviferdev.trackfolio.domain.usecase.transaction.GetTransactionsByMonthUseCase
 import es.aviferdev.trackfolio.ui.account.AccountSession
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -15,6 +16,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -26,12 +28,12 @@ data class TransactionListUiState(
     val transactions: List<Transaction>         = emptyList(),
     val filteredTransactions: List<Transaction> = emptyList(),
     val totals: MonthlyTotals?                  = null,
-    /** Mapa categoryId → nombre. Solo para gastos. */
     val categoryNames: Map<String, String>      = emptyMap(),
     val year: String                            = "",
     val month: String                           = "",
     val searchQuery: String                     = "",
-    val isLoading: Boolean                      = true
+    val isLoading: Boolean                      = true,
+    val canGoBack: Boolean                      = true
 )
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -40,6 +42,7 @@ class TransactionViewModel(
     private val getMonthlyTotals: GetMonthlyTotalsUseCase,
     private val deleteTransactionUseCase: DeleteTransactionUseCase,
     private val getAllCategoriesIncludingArchived: GetAllCategoriesIncludingArchivedUseCase,
+    private val getOldestDate: GetOldestTransactionDateUseCase,
     private val session: AccountSession
 ) : ViewModel() {
 
@@ -52,31 +55,59 @@ class TransactionViewModel(
     private val _searchQuery = MutableStateFlow("")
     val searchQuery: StateFlow<String> = _searchQuery
 
+    /** Año y mes de la transacción más antigua (límite inferior de navegación). */
+    private val _oldestYearMonth = MutableStateFlow<Pair<Int, Int>?>(null)
+
+    init {
+        // Reaccionar al cambio de cuenta para recalcular la fecha más antigua
+        viewModelScope.launch {
+            session.selectedAccountId.flatMapLatest { accountId ->
+                if (accountId == null) flowOf(null)
+                else getOldestDate(accountId)
+            }.collect { epochMillis ->
+                _oldestYearMonth.value = epochMillis?.let {
+                    val ld = kotlinx.datetime.Instant.fromEpochMilliseconds(it)
+                        .toLocalDateTime(TimeZone.currentSystemDefault())
+                    ld.year to ld.monthNumber
+                }
+            }
+        }
+    }
+
     private val categoryNamesFlow = getAllCategoriesIncludingArchived()
         .map { all -> all.associate { it.id to it.name } }
 
     val uiState: StateFlow<TransactionListUiState> = combine(
         session.selectedAccountId,
         _selectedPeriod,
-        _searchQuery
-    ) { accountId, period, query ->
-        Triple(accountId, period, query)
-    }.flatMapLatest { (accountId, period, query) ->
-        val (year, month) = period
-        if (accountId == null) {
+        _searchQuery,
+        _oldestYearMonth
+    ) { accountId, period, query, oldest ->
+        data class Params(val accountId: String?, val period: Pair<String, String>, val query: String, val oldest: Pair<Int, Int>?)
+        Params(accountId, period, query, oldest)
+    }.flatMapLatest { params ->
+        val (year, month) = params.period
+        val query = params.query
+        val oldest = params.oldest
+        // Calcular si se puede retroceder
+        val prevMonth = if (month.toInt() == 1) Pair(year.toInt() - 1, 12) else Pair(year.toInt(), month.toInt() - 1)
+        val canGoBack = oldest == null || prevMonth.first > oldest.first || (prevMonth.first == oldest.first && prevMonth.second >= oldest.second)
+
+        if (params.accountId == null) {
             categoryNamesFlow.map { categoryNames ->
                 TransactionListUiState(
                     categoryNames = categoryNames,
                     year          = year,
                     month         = month,
                     searchQuery   = query,
-                    isLoading     = false
+                    isLoading     = false,
+                    canGoBack     = canGoBack
                 )
             }
         } else {
             combine(
-                getTransactionsByMonth(accountId, year, month),
-                getMonthlyTotals(accountId, year, month),
+                getTransactionsByMonth(params.accountId, year, month),
+                getMonthlyTotals(params.accountId, year, month),
                 categoryNamesFlow
             ) { transactions, totals, categoryNames ->
                 val filtered = if (query.isBlank()) transactions
@@ -95,7 +126,8 @@ class TransactionViewModel(
                     year                 = year,
                     month                = month,
                     searchQuery          = query,
-                    isLoading            = false
+                    isLoading            = false,
+                    canGoBack            = canGoBack
                 )
             }
         }
@@ -113,8 +145,16 @@ class TransactionViewModel(
     fun previousMonth() {
         val (y, m) = _selectedPeriod.value
         val month  = m.toInt(); val year = y.toInt()
-        _selectedPeriod.value = if (month == 1) Pair((year - 1).toString(), "12")
-        else Pair(y, (month - 1).toString().padStart(2, '0'))
+        val target = if (month == 1) Pair((year - 1).toString(), "12")
+                     else Pair(y, (month - 1).toString().padStart(2, '0'))
+        // Limitar al mes más antiguo con datos
+        val oldest = _oldestYearMonth.value
+        if (oldest != null) {
+            val (oYear, oMonth) = oldest
+            val tYear = target.first.toInt(); val tMonth = target.second.toInt()
+            if (tYear < oYear || (tYear == oYear && tMonth < oMonth)) return
+        }
+        _selectedPeriod.value = target
     }
 
     fun nextMonth() {
@@ -132,6 +172,9 @@ class TransactionViewModel(
 
     companion object {
         fun resolveLabel(transaction: Transaction, categoryNames: Map<String, String>): String {
+            if (transaction.isLinkedToAsset) {
+                return transaction.notes ?: "Inversión"
+            }
             return if (transaction.isIncome) {
                 transaction.incomeType?.label ?: "Ingreso"
             } else {

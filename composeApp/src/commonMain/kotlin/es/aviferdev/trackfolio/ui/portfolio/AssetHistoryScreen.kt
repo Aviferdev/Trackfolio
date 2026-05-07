@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.sp
 import es.aviferdev.trackfolio.domain.model.AssetTransaction
 import es.aviferdev.trackfolio.domain.model.AssetTransactionType
 import es.aviferdev.trackfolio.domain.model.Platform
+import es.aviferdev.trackfolio.domain.model.Transaction
 import es.aviferdev.trackfolio.domain.portfolio.AssetPosition
 import es.aviferdev.trackfolio.domain.portfolio.FifoBreakdown
 import es.aviferdev.trackfolio.domain.portfolio.FifoOpenLot
@@ -61,6 +62,7 @@ fun AssetHistoryScreen(
 ) {
     val state by viewModel.uiState.collectAsState()
     val balancesHidden = LocalBalanceHidden.current
+    var fabMenuOpen by remember { mutableStateOf(false) }
 
     Box(
         modifier = Modifier
@@ -168,25 +170,74 @@ fun AssetHistoryScreen(
                                 )
                             }
                         }
+
+                        // Sección de dividendos
+                        if (state.dividends.isNotEmpty()) {
+                            item {
+                                Text(
+                                    text       = "DIVIDENDOS",
+                                    fontSize   = 11.sp,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color      = TextSecondary,
+                                    modifier   = Modifier.padding(start = 24.dp, top = 18.dp, bottom = 8.dp)
+                                )
+                            }
+                            items(
+                                items = state.dividends,
+                                key   = { it.id }
+                            ) { dividend ->
+                                DividendRow(
+                                    dividend       = dividend,
+                                    currencyCode   = state.currencyCode,
+                                    balancesHidden = balancesHidden,
+                                    onDelete       = { viewModel.deleteDividend(dividend.linkedAssetTransactionId ?: dividend.id) },
+                                    modifier       = Modifier.padding(horizontal = 20.dp, vertical = 5.dp)
+                                )
+                            }
+                        }
                     }
                 }
             }
         }
 
-        // FAB para añadir movimiento — solo si el activo cargó correctamente
+        // FAB con menú para añadir movimiento o dividendo
         if (state.asset != null) {
-            FloatingActionButton(
-                onClick   = { viewModel.openAddSheet() },
-                modifier  = Modifier
+            Box(
+                modifier = Modifier
                     .align(Alignment.BottomEnd)
                     .padding(end = 24.dp, bottom = 32.dp)
-                    .size(56.dp),
-                shape          = CircleShape,
-                containerColor = PrimaryDark,
-                contentColor   = Color.White,
-                elevation      = FloatingActionButtonDefaults.elevation(4.dp)
             ) {
-                Text("+", fontSize = 28.sp, fontWeight = FontWeight.Light, color = Color.White)
+                FloatingActionButton(
+                    onClick        = { fabMenuOpen = true },
+                    modifier       = Modifier.size(56.dp),
+                    shape          = CircleShape,
+                    containerColor = PrimaryDark,
+                    contentColor   = Color.White,
+                    elevation      = FloatingActionButtonDefaults.elevation(4.dp)
+                ) {
+                    Text("+", fontSize = 28.sp, fontWeight = FontWeight.Light, color = Color.White)
+                }
+                DropdownMenu(
+                    expanded         = fabMenuOpen,
+                    onDismissRequest = { fabMenuOpen = false },
+                    containerColor   = SurfaceWhite
+                ) {
+                    DropdownMenuItem(
+                        text        = { Text("Nuevo movimiento", color = TextPrimary) },
+                        leadingIcon = { Text("💱", fontSize = 16.sp) },
+                        onClick     = { fabMenuOpen = false; viewModel.openAddSheet() }
+                    )
+                    DropdownMenuItem(
+                        text        = { Text("Registrar dividendo", color = TextPrimary) },
+                        leadingIcon = { Text("📈", fontSize = 16.sp) },
+                        onClick     = { fabMenuOpen = false; viewModel.openDividendSheet() }
+                    )
+                    DropdownMenuItem(
+                        text        = { Text("Rendimiento bono/depósito", color = TextPrimary) },
+                        leadingIcon = { Text("📜", fontSize = 16.sp) },
+                        onClick     = { fabMenuOpen = false; viewModel.openBondDepositSheet() }
+                    )
+                }
             }
         }
     }
@@ -265,6 +316,30 @@ fun AssetHistoryScreen(
                 }
             },
             shape = RoundedCornerShape(16.dp)
+        )
+    }
+
+    // Sheet de dividendo
+    if (state.showDividendSheet && state.asset != null) {
+        AddDividendBottomSheet(
+            fixedAssetName = state.asset!!.name,
+            currencyCode   = state.currencyCode,
+            onSave         = { _, grossAmount, irpfPercent, date ->
+                viewModel.saveDividend(grossAmount, irpfPercent, date)
+            },
+            onDismiss      = { viewModel.closeDividendSheet() }
+        )
+    }
+
+    // Sheet de bono/depósito
+    if (state.showBondDepositSheet && state.asset != null) {
+        AddBondDepositBottomSheet(
+            fixedAssetName = state.asset!!.name,
+            currencyCode   = state.currencyCode,
+            onSave         = { _, grossAmount, irpfPercent, commission, date ->
+                viewModel.saveBondDeposit(grossAmount, irpfPercent, commission, date)
+            },
+            onDismiss      = { viewModel.closeBondDepositSheet() }
         )
     }
 }
@@ -507,25 +582,17 @@ private fun PositionCard(
             }
 
             // ── Desglose realizado / no realizado ─────────────────────────
-            if (position.realizedPnL != 0.0 || position.unrealizedPnL != 0.0) {
+            if (position.realizedPnL != 0.0 || position.unrealizedPnL != 0.0 || position.dividendIncome != 0.0) {
                 Spacer(Modifier.height(10.dp))
                 Row(
                     modifier              = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    PnLChip(
-                        label     = "Realizado",
-                        amount    = position.realizedPnL,
-                        symbol    = symbol,
-                        masked    = balancesHidden
-                    )
-                    PnLChip(
-                        label     = "Latente",
-                        amount    = position.unrealizedPnL,
-                        symbol    = symbol,
-                        masked    = balancesHidden,
-                        unavailable = !position.hasCurrentPrice && isOpen
-                    )
+                    PnLChip(label = "Realizado", amount = position.realizedPnL, symbol = symbol, masked = balancesHidden)
+                    if (position.dividendIncome != 0.0) {
+                        PnLChip(label = "Dividendos", amount = position.dividendIncome, symbol = symbol, masked = balancesHidden)
+                    }
+                    PnLChip(label = "Latente", amount = position.unrealizedPnL, symbol = symbol, masked = balancesHidden, unavailable = !position.hasCurrentPrice && isOpen)
                 }
             }
         }
@@ -1025,4 +1092,84 @@ private fun formatFullDate(epochMillis: Long): String {
     val instant = Instant.fromEpochMilliseconds(epochMillis)
     val ld: LocalDate = instant.toLocalDateTime(TimeZone.currentSystemDefault()).date
     return "${ld.dayOfMonth} de ${months[ld.monthNumber - 1]} de ${ld.year}"
+}
+
+// ─── Fila de dividendo ────────────────────────────────────────────────────────
+
+@Composable
+private fun DividendRow(
+    dividend: Transaction,
+    currencyCode: String,
+    balancesHidden: Boolean,
+    onDelete: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val symbol = currencySymbol(currencyCode)
+    val gross = dividend.grossAmount ?: dividend.amount
+    val irpf = if (dividend.grossAmount != null && dividend.irpfPercent != null)
+        dividend.grossAmount * dividend.irpfPercent / 100.0 else 0.0
+    val net = dividend.amount
+
+    Card(
+        modifier  = modifier.fillMaxWidth(),
+        shape     = RoundedCornerShape(12.dp),
+        colors    = CardDefaults.cardColors(containerColor = SurfaceWhite),
+        elevation = CardDefaults.cardElevation(0.dp),
+        border    = CardDefaults.outlinedCardBorder()
+    ) {
+        Row(
+            modifier          = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 14.dp, vertical = 12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // Icono
+            Box(
+                modifier         = Modifier
+                    .size(38.dp)
+                    .clip(CircleShape)
+                    .background(IncomeGreen.copy(alpha = 0.14f)),
+                contentAlignment = Alignment.Center
+            ) {
+                Text("📈", fontSize = 18.sp)
+            }
+            Spacer(Modifier.width(12.dp))
+
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text       = "Dividendo",
+                    fontSize   = 13.sp,
+                    color      = IncomeGreen,
+                    fontWeight = FontWeight.SemiBold
+                )
+                Spacer(Modifier.height(2.dp))
+                Text(
+                    text     = formatShortDate(dividend.date),
+                    fontSize = 11.sp,
+                    color    = TextSecondary
+                )
+                if (irpf > 0) {
+                    Text(
+                        text     = "Bruto: ${maskAmount(formatAmount(gross), balancesHidden)} $symbol \u00b7 IRPF: ${maskAmount(formatAmount(irpf), balancesHidden)} $symbol",
+                        fontSize = 10.sp,
+                        color    = TextSecondary.copy(alpha = 0.8f)
+                    )
+                }
+            }
+
+            Spacer(Modifier.width(6.dp))
+
+            Column(horizontalAlignment = Alignment.End) {
+                Text(
+                    text       = "+ ${maskAmount(formatAmount(net), balancesHidden)} $symbol",
+                    fontSize   = 13.sp,
+                    color      = IncomeGreen,
+                    fontWeight = FontWeight.SemiBold
+                )
+                IconButton(onClick = onDelete, modifier = Modifier.size(28.dp)) {
+                    Icon(Icons.Default.Delete, null, modifier = Modifier.size(13.dp), tint = ExpenseRed)
+                }
+            }
+        }
+    }
 }

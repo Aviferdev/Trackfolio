@@ -14,6 +14,8 @@ import platform.darwin.dispatch_async
 import platform.darwin.dispatch_get_main_queue
 import platform.posix.memcpy
 
+//TODO Refactorizar y modular clase completa.
+
 private const val TAG = "[BackupManager]"
 
 @OptIn(ExperimentalForeignApi::class)

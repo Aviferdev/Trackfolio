@@ -26,7 +26,12 @@ data class Transaction(
     /** ID de la entidad emisora. Null si no aplica (EXEMPT o gastos). */
     val issuerId: String? = null,
     /** Nombre desnormalizado del emisor para queries rápidas. */
-    val issuerName: String? = null
+    val issuerName: String? = null,
+
+    // ── Vínculo con portfolio ─────────────────────────────────────────────────
+    /** ID de la AssetTransaction vinculada. Si != null, este movimiento es
+     *  de solo lectura — se gestiona desde Portfolio. */
+    val linkedAssetTransactionId: String? = null
 ) {
     /** Importe retenido por IRPF = bruto − cotizaciones − comisiones − neto. */
     val irpfAmount: Double?
@@ -43,6 +48,9 @@ data class Transaction(
 
     val isIncome: Boolean get() = type == TransactionType.INCOME
     val isExpense: Boolean get() = type == TransactionType.EXPENSE
+
+    /** True si este movimiento está vinculado a una inversión del portfolio. */
+    val isLinkedToAsset: Boolean get() = linkedAssetTransactionId != null
 }
 
 enum class TransactionType { INCOME, EXPENSE }

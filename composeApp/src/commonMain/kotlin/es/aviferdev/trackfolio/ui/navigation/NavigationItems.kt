@@ -3,8 +3,6 @@ package es.aviferdev.trackfolio.ui.navigation
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.DateRange
 import androidx.compose.material.icons.outlined.Home
-import androidx.compose.material.icons.outlined.Person
-import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.Star
 
 fun bottomNavItems() = listOf(
@@ -22,10 +20,5 @@ fun bottomNavItems() = listOf(
         screen = Screen.Portfolio,
         label = "Portfolio",
         icon = Icons.Outlined.Star
-    ),
-    BottomNavItem(
-        screen = Screen.Debts,
-        label = "Deudas",
-        icon = Icons.Outlined.Person
     )
 )

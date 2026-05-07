@@ -10,4 +10,5 @@ interface AssetRepository {
     suspend fun updateAsset(asset: Asset): Result<Unit>
     suspend fun updateCurrentPrice(id: String, price: Double, updatedAt: Long): Result<Unit>
     suspend fun deleteAsset(id: String): Result<Unit>
+    fun getOutdatedAssets(accountId: String, thresholdDate: Long): Flow<List<Asset>>
 }

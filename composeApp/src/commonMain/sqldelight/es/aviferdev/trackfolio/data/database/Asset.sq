@@ -57,3 +57,19 @@ WHERE id = :id;
 
 delete:
 DELETE FROM AssetEntity WHERE id = :id;
+
+-- Activos con posiciones abiertas cuyo precio no se ha actualizado
+-- desde :thresholdDate (epoch millis). "Posición abierta" = SUM(BUY) - SUM(SELL) > 0.
+selectOutdatedByAccount:
+SELECT a.* FROM AssetEntity a
+WHERE a.accountId = :accountId
+  AND (
+    SELECT COALESCE(
+      SUM(CASE WHEN t.type = 'BUY' THEN t.quantity ELSE 0 END) -
+      SUM(CASE WHEN t.type = 'SELL' THEN t.quantity ELSE 0 END),
+      0
+    )
+    FROM AssetTransactionEntity t WHERE t.assetId = a.id
+  ) > 0
+  AND (a.currentPriceUpdatedAt IS NULL OR a.currentPriceUpdatedAt < :thresholdDate)
+ORDER BY a.name ASC;

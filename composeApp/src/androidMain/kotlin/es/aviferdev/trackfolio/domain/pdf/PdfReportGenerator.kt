@@ -8,6 +8,10 @@ import android.graphics.Paint
 import android.graphics.pdf.PdfDocument
 import androidx.activity.ComponentActivity
 import androidx.core.content.FileProvider
+import com.tom_roush.pdfbox.android.PDFBoxResourceLoader
+import com.tom_roush.pdfbox.pdmodel.PDDocument
+import com.tom_roush.pdfbox.pdmodel.encryption.AccessPermission
+import com.tom_roush.pdfbox.pdmodel.encryption.StandardProtectionPolicy
 import es.aviferdev.trackfolio.domain.model.AssetPosition
 import es.aviferdev.trackfolio.domain.model.DebtDirection
 import es.aviferdev.trackfolio.domain.model.FiscalIncomeTaxBreakdown
@@ -19,6 +23,8 @@ import java.lang.ref.WeakReference
 import java.text.NumberFormat
 import java.util.Locale
 import kotlin.math.abs
+
+// TODO Refactorizar
 
 actual class PdfReportGenerator(private val context: Context) {
 
@@ -50,18 +56,46 @@ actual class PdfReportGenerator(private val context: Context) {
     private fun fmtQty(v: Double) = NumberFormat.getNumberInstance(Locale("es", "ES"))
         .apply { minimumFractionDigits = 0; maximumFractionDigits = 6 }.format(v)
 
-    actual fun generate(data: FiscalReportData, onResult: (success: Boolean, error: String?) -> Unit) {
+    actual fun generate(
+        data: FiscalReportData,
+        password: String?,
+        onResult: (success: Boolean, error: String?) -> Unit
+    ) {
         val activity = activityRef?.get() ?: run { onResult(false, "La app no está en primer plano"); return }
         try {
+            // 1. Generar PDF sin protección con Android API
             val doc = PdfDocument()
             val renderer = Renderer(doc, data)
             renderer.render()
             doc.finishPage(renderer.currentPage)
 
-            val outFile = File(context.cacheDir, "informe_fiscal_${data.year}.pdf")
-            FileOutputStream(outFile).use { doc.writeTo(it) }
+            val unprotectedFile = File(context.cacheDir, "informe_fiscal_${data.year}_tmp.pdf")
+            FileOutputStream(unprotectedFile).use { doc.writeTo(it) }
             doc.close()
 
+            val outFile = File(context.cacheDir, "informe_fiscal_${data.year}.pdf")
+
+            // 2. Si hay contraseña, proteger con PDFBox
+            if (!password.isNullOrBlank()) {
+                PDFBoxResourceLoader.init(context)
+                val pdDoc = PDDocument.load(unprotectedFile)
+                val permissions = AccessPermission().apply {
+                    setCanPrint(true)
+                    setCanExtractContent(false)
+                    setCanModify(false)
+                }
+                val policy = StandardProtectionPolicy(password, password, permissions)
+                policy.encryptionKeyLength = 128
+                pdDoc.protect(policy)
+                pdDoc.save(outFile)
+                pdDoc.close()
+                unprotectedFile.delete()
+            } else {
+                // Sin contraseña: renombrar directamente
+                unprotectedFile.renameTo(outFile)
+            }
+
+            // 3. Compartir
             val uri = FileProvider.getUriForFile(context, "${context.packageName}.provider", outFile)
             val intent = Intent(Intent.ACTION_SEND).apply {
                 type = "application/pdf"

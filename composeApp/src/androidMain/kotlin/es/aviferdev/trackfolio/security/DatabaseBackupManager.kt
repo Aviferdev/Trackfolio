@@ -10,6 +10,8 @@ import java.io.File
 import java.io.FileOutputStream
 import java.lang.ref.WeakReference
 
+// TODO Refactorizar
+
 actual class DatabaseBackupManager(private val context: Context) {
 
     private val DB_NAME     = "trackfolio.db"

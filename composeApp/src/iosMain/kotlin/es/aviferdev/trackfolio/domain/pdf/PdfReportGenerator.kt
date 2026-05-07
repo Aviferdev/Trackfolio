@@ -40,6 +40,8 @@ import platform.UIKit.UIWindowScene
 import platform.UIKit.popoverPresentationController
 import kotlin.math.abs
 
+//TODO Refactorizar y modular clase completa.
+
 @OptIn(ExperimentalForeignApi::class)
 actual class PdfReportGenerator {
 
@@ -55,10 +57,19 @@ actual class PdfReportGenerator {
     private val colorBgSection = UIColor(red = 235/255.0, green = 240/255.0, blue = 248/255.0, alpha = 1.0)
     private val colorFooterBg  = UIColor(red = 245/255.0, green = 245/255.0, blue = 245/255.0, alpha = 1.0)
 
-    actual fun generate(data: FiscalReportData, onResult: (Boolean, String?) -> Unit) {
+    actual fun generate(data: FiscalReportData, password: String?, onResult: (Boolean, String?) -> Unit) {
         try {
             val pdfData = NSMutableData()
-            UIGraphicsBeginPDFContextToData(pdfData, CGRectMake(0.0, 0.0, PAGE_W, PAGE_H), null)
+
+            // Si hay contraseña, usamos diccionario auxiliar con protección
+            val auxDict: Map<Any?, Any?>? = if (!password.isNullOrBlank()) {
+                mapOf(
+                    "kCGPDFContextUserPassword" to password,
+                    "kCGPDFContextOwnerPassword" to password
+                )
+            } else null
+
+            UIGraphicsBeginPDFContextToData(pdfData, CGRectMake(0.0, 0.0, PAGE_W, PAGE_H), auxDict)
             UIGraphicsBeginPDFPage()
 
             Renderer(data).render()

@@ -2,19 +2,28 @@ package es.aviferdev.trackfolio.ui.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import es.aviferdev.trackfolio.domain.model.Asset
 import es.aviferdev.trackfolio.domain.model.HomeBalance
 import es.aviferdev.trackfolio.domain.model.TransactionType
 import es.aviferdev.trackfolio.domain.usecase.account.SetInitialBalanceUseCase
+import es.aviferdev.trackfolio.domain.usecase.asset.GetOutdatedAssetsUseCase
+import es.aviferdev.trackfolio.domain.usecase.asset.SavePriceReminderShownUseCase
+import es.aviferdev.trackfolio.domain.usecase.asset.ShouldShowPriceReminderUseCase
+import es.aviferdev.trackfolio.domain.usecase.asset.UpdateAssetCurrentPriceUseCase
 import es.aviferdev.trackfolio.domain.usecase.category.GetCategoriesByTypeUseCase
 import es.aviferdev.trackfolio.domain.usecase.home.GetHomeBalanceUseCase
 import es.aviferdev.trackfolio.ui.account.AccountSession
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.datetime.Clock
 
 sealed class HomeUiState {
     data object Loading : HomeUiState()
@@ -27,12 +36,23 @@ sealed class HomeUiState {
     data class Error(val message: String) : HomeUiState()
 }
 
+data class PriceReminderState(
+    val showBanner: Boolean = false,
+    val outdatedAssets: List<Asset> = emptyList(),
+    val updatedAssetIds: Set<String> = emptySet(),
+    val showUpdateSheet: Boolean = false
+)
+
 @OptIn(ExperimentalCoroutinesApi::class)
 class HomeViewModel(
     private val getHomeBalance: GetHomeBalanceUseCase,
     private val getCategoriesByType: GetCategoriesByTypeUseCase,
     private val setInitialBalance: SetInitialBalanceUseCase,
-    private val session: AccountSession
+    private val session: AccountSession,
+    private val shouldShowPriceReminder: ShouldShowPriceReminderUseCase,
+    private val getOutdatedAssets: GetOutdatedAssetsUseCase,
+    private val updateAssetCurrentPrice: UpdateAssetCurrentPriceUseCase,
+    private val savePriceReminderShown: SavePriceReminderShownUseCase
 ) : ViewModel() {
 
     val uiState: StateFlow<HomeUiState> = session.selectedAccountId
@@ -56,6 +76,75 @@ class HomeViewModel(
             started      = SharingStarted.WhileSubscribed(5_000),
             initialValue = HomeUiState.Loading
         )
+
+    private val _priceReminderState = MutableStateFlow(PriceReminderState())
+    val priceReminderState: StateFlow<PriceReminderState> = _priceReminderState.asStateFlow()
+
+    init {
+        checkPriceReminder()
+    }
+
+    private fun checkPriceReminder() {
+        if (!shouldShowPriceReminder()) return
+
+        viewModelScope.launch {
+            session.selectedAccountId
+                .flatMapLatest { accountId ->
+                    accountId?.let {
+                        getOutdatedAssets(it)
+                    } ?: emptyFlow()
+                }
+                .collect { outdated ->
+                    _priceReminderState.value = _priceReminderState.value.copy(
+                        showBanner = outdated.isNotEmpty(),
+                        outdatedAssets = outdated
+                    )
+                }
+        }
+    }
+
+    fun dismissReminder() {
+        _priceReminderState.value = _priceReminderState.value.copy(
+            showBanner = false,
+            showUpdateSheet = false
+        )
+    }
+
+    fun openUpdateSheet() {
+        _priceReminderState.value = _priceReminderState.value.copy(
+            showUpdateSheet = true
+        )
+    }
+
+    fun closeUpdateSheet() {
+        _priceReminderState.value = _priceReminderState.value.copy(
+            showUpdateSheet = false
+        )
+    }
+
+    fun updateAssetPrice(assetId: String, newPrice: Double) {
+        viewModelScope.launch {
+            val now = Clock.System.now().toEpochMilliseconds()
+            val result = updateAssetCurrentPrice(assetId, newPrice, now)
+            if (result.isSuccess) {
+                val current = _priceReminderState.value
+                val newUpdatedIds = current.updatedAssetIds + assetId
+                _priceReminderState.value = current.copy(
+                    updatedAssetIds = newUpdatedIds
+                )
+
+                // Si todos los activos se han actualizado, marcar como completado
+                val allDone = current.outdatedAssets.all { it.id in newUpdatedIds }
+                if (allDone) {
+                    savePriceReminderShown()
+                    _priceReminderState.value = _priceReminderState.value.copy(
+                        showBanner = false,
+                        showUpdateSheet = false
+                    )
+                }
+            }
+        }
+    }
 
     fun setInitialBalance(amount: Double) {
         val accountId = session.selectedAccountId.value ?: return

@@ -6,6 +6,7 @@ import es.aviferdev.trackfolio.domain.model.AnnualSummary
 import es.aviferdev.trackfolio.domain.model.MonthlyTotals
 import es.aviferdev.trackfolio.domain.usecase.transaction.GetAnnualSummaryUseCase
 import es.aviferdev.trackfolio.domain.usecase.transaction.GetMonthlyBreakdownUseCase
+import es.aviferdev.trackfolio.domain.usecase.transaction.GetOldestTransactionDateUseCase
 import es.aviferdev.trackfolio.ui.account.AccountSession
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,6 +16,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
@@ -23,13 +25,15 @@ data class AnnualUiState(
     val summary: AnnualSummary?          = null,
     val monthlyBreakdown: List<MonthlyTotals> = emptyList(),
     val year: String                     = "",
-    val isLoading: Boolean               = true
+    val isLoading: Boolean               = true,
+    val canGoBack: Boolean               = true
 )
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class AnnualViewModel(
     private val getAnnualSummary: GetAnnualSummaryUseCase,
     private val getMonthlyBreakdown: GetMonthlyBreakdownUseCase,
+    private val getOldestDate: GetOldestTransactionDateUseCase,
     private val session: AccountSession
 ) : ViewModel() {
 
@@ -37,13 +41,32 @@ class AnnualViewModel(
     private val _year = MutableStateFlow(now.year.toString())
     val year: StateFlow<String> = _year
 
+    /** Año de la transacción más antigua (límite inferior de navegación). */
+    private val _oldestYear = MutableStateFlow<Int?>(null)
+
+    init {
+        viewModelScope.launch {
+            session.selectedAccountId.flatMapLatest { accountId ->
+                if (accountId == null) flowOf(null)
+                else getOldestDate(accountId)
+            }.collect { epochMillis ->
+                _oldestYear.value = epochMillis?.let {
+                    kotlinx.datetime.Instant.fromEpochMilliseconds(it)
+                        .toLocalDateTime(TimeZone.currentSystemDefault()).year
+                }
+            }
+        }
+    }
+
     val uiState: StateFlow<AnnualUiState> = combine(
         session.selectedAccountId,
-        _year
-    ) { accountId, year -> accountId to year }
-        .flatMapLatest { (accountId, year) ->
+        _year,
+        _oldestYear
+    ) { accountId, year, oldest -> Triple(accountId, year, oldest) }
+        .flatMapLatest { (accountId, year, oldest) ->
+            val canGoBack = oldest == null || (year.toInt() - 1) >= oldest
             if (accountId == null) {
-                flowOf(AnnualUiState(year = year, isLoading = false))
+                flowOf(AnnualUiState(year = year, isLoading = false, canGoBack = canGoBack))
             } else {
                 combine(
                     getAnnualSummary(accountId, year),
@@ -53,7 +76,8 @@ class AnnualViewModel(
                         summary          = summary,
                         monthlyBreakdown = breakdown,
                         year             = year,
-                        isLoading        = false
+                        isLoading        = false,
+                        canGoBack        = canGoBack
                     )
                 }
             }
@@ -65,7 +89,10 @@ class AnnualViewModel(
         )
 
     fun previousYear() {
-        _year.value = (_year.value.toInt() - 1).toString()
+        val target = _year.value.toInt() - 1
+        val oldest = _oldestYear.value
+        if (oldest != null && target < oldest) return
+        _year.value = target.toString()
     }
 
     fun nextYear() {

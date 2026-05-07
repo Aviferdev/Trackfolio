@@ -66,3 +66,8 @@ DELETE FROM AssetTransactionEntity WHERE id = :id;
 
 deleteByAsset:
 DELETE FROM AssetTransactionEntity WHERE assetId = :assetId;
+
+getOldestDateByAccount:
+SELECT MIN(t.date) AS oldestDate FROM AssetTransactionEntity t
+INNER JOIN AssetEntity a ON a.id = t.assetId
+WHERE a.accountId = :accountId;

@@ -1,0 +1,27 @@
+CREATE TABLE AssetPriceHistoryEntity (
+    id         TEXT    NOT NULL PRIMARY KEY,
+    assetId    TEXT    NOT NULL,
+    price      REAL    NOT NULL,
+    recordedAt INTEGER NOT NULL,
+    FOREIGN KEY (assetId) REFERENCES AssetEntity(id) ON DELETE CASCADE
+);
+
+CREATE INDEX idx_price_history_asset ON AssetPriceHistoryEntity(assetId);
+CREATE INDEX idx_price_history_date  ON AssetPriceHistoryEntity(recordedAt);
+
+selectByAsset:
+SELECT * FROM AssetPriceHistoryEntity
+WHERE assetId = :assetId
+ORDER BY recordedAt DESC;
+
+selectByAssetInRange:
+SELECT * FROM AssetPriceHistoryEntity
+WHERE assetId = :assetId AND recordedAt >= :fromDate AND recordedAt <= :toDate
+ORDER BY recordedAt ASC;
+
+insert:
+INSERT INTO AssetPriceHistoryEntity(id, assetId, price, recordedAt)
+VALUES (?, ?, ?, ?);
+
+deleteByAsset:
+DELETE FROM AssetPriceHistoryEntity WHERE assetId = :assetId;

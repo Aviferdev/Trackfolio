@@ -4,19 +4,7 @@ import es.aviferdev.trackfolio.domain.model.AssetTransaction
 import es.aviferdev.trackfolio.domain.model.AssetTransactionType
 
 /**
- * Resumen de la posición agregada de un activo a partir de sus movimientos
- * (FIFO) y de su precio actual centralizado.
- *
- * - `netQuantity`: unidades en cartera tras aplicar todas las compras y ventas.
- * - `averageCostOfRemaining`: precio medio ponderado de las unidades aún en
- *   cartera (no incluye lotes ya consumidos por ventas).
- * - `totalInvestedRemaining`: suma del coste de adquisición de las unidades
- *   que aún quedan (`netQuantity × averageCostOfRemaining`).
- * - `realizedPnL`: ganancia/pérdida acumulada cerrada por las ventas
- *   ejecutadas, calculada lote a lote contra el precio FIFO consumido.
- * - `unrealizedPnL`: ganancia/pérdida latente sobre las unidades que aún
- *   tienes en cartera, valoradas al `currentPrice`. 0 si no hay precio actual.
- * - `totalPnL`: realizedPnL + unrealizedPnL.
+ * Resumen de la posición agregada de un activo.
  */
 data class AssetPosition(
     val netQuantity: Double,
@@ -28,111 +16,77 @@ data class AssetPosition(
     val unrealizedPnLPercent: Double,
     val totalPnL: Double,
     val totalPnLPercent: Double,
-    val hasCurrentPrice: Boolean
+    val hasCurrentPrice: Boolean,
+    val dividendIncome: Double = 0.0
 )
 
-/**
- * Lote vivo en cartera: una compra (o el remanente de una compra) cuya
- * cantidad aún no ha sido consumida por ventas posteriores.
- */
 data class FifoOpenLot(
     val purchaseTransactionId: String,
     val purchaseDate: Long,
     val pricePerUnit: Double,
     val originalQuantity: Double,
-    val remainingQuantity: Double
+    val remainingQuantity: Double,
+    val platformId: String
 ) {
-    /** Coste pendiente del lote (qty restante × precio de compra). */
     val remainingCost: Double get() = remainingQuantity * pricePerUnit
 }
 
-/**
- * Trozo de un lote de compra consumido por una venta concreta. Una venta
- * puede generar varias consumiciones si su cantidad excede la del lote
- * más antiguo y por tanto cruza varios lotes.
- */
 data class FifoLotConsumption(
     val purchaseTransactionId: String,
     val purchaseDate: Long,
     val purchasePrice: Double,
     val quantityConsumed: Double,
-    /** P&L del trozo: (precio venta - precio compra) × cantidad consumida. */
     val pnl: Double
 )
 
-/**
- * Trazabilidad FIFO de una venta: precio y cantidad de la venta y la
- * lista de lotes que se consumieron para satisfacerla, con el P&L parcial
- * de cada uno. La suma de los P&L parciales es el P&L realizado por la
- * venta completa.
- */
 data class FifoSaleMatch(
     val saleTransactionId: String,
     val saleDate: Long,
     val salePrice: Double,
     val saleQuantity: Double,
+    val platformId: String,
     val consumed: List<FifoLotConsumption>,
     val realizedPnL: Double
 )
 
-/**
- * Desglose FIFO completo de un activo: el inventario vivo lote a lote y
- * la trazabilidad de cada venta contra los lotes que consumió. Pensado
- * para mostrar al usuario el detalle fiscal de sus operaciones (decisión
- * 1.B sobre fiscalidad española FIFO).
- */
 data class FifoBreakdown(
-    /** Lotes con remaining > 0; vacío si la posición está cerrada. */
     val openLots: List<FifoOpenLot>,
-    /** Ventas con su trazabilidad. Vacío si nunca hubo ventas. */
     val saleMatches: List<FifoSaleMatch>
 ) {
     val hasAnyData: Boolean get() = openLots.isNotEmpty() || saleMatches.isNotEmpty()
 }
 
 /**
- * Calculadora pura de portfolio basada en FIFO. No tiene dependencias de
- * Compose, Koin ni de la BD: trabaja sobre listas de movimientos ya cargadas.
+ * Calculadora pura de portfolio basada en FIFO **por plataforma**.
  *
- * Decisión 1.B del rediseño: las ventas consumen los lotes en el orden en
- * que se compraron (primero en entrar, primero en salir). Es coherente con
- * la fiscalidad española y permite calcular el P&L realizado correctamente
- * incluso cuando el usuario tiene varias compras a precios distintos.
- *
- * El campo `feeNote` de los movimientos NO se usa aquí: por la decisión 5.C
- * del rediseño, las comisiones son texto informativo y no afectan al cálculo.
+ * Las ventas solo consumen lotes comprados en la misma plataforma.
+ * Si el usuario tiene 3 BTC en Coinbase y 2 BTC en Binance, al vender
+ * 2 BTC en Coinbase solo se consumen lotes de Coinbase.
  */
 object PortfolioCalculator {
 
-    /**
-     * Calcula la posición agregada de un activo a partir de sus movimientos.
-     *
-     * @param transactions movimientos del activo en cualquier orden; se
-     *        reordenarán cronológicamente para aplicar FIFO.
-     * @param currentPrice precio actual del activo (NULL si no se conoce
-     *        todavía → unrealized = 0, total = realized).
-     */
     fun calculate(
         transactions: List<AssetTransaction>,
-        currentPrice: Double?
+        currentPrice: Double?,
+        dividendIncome: Double = 0.0
     ): AssetPosition {
-        val ordered = transactions.sortedWith(
-            compareBy({ it.date }, { it.createdAt })
-        )
+        val ordered = transactions.sortedWith(compareBy({ it.date }, { it.createdAt }))
 
-        // Cola FIFO de lotes pendientes de consumir.
-        val lots = ArrayDeque<Lot>()
+        // Cola FIFO por plataforma
+        val lotsByPlatform = mutableMapOf<String, ArrayDeque<Lot>>()
         var realizedPnL = 0.0
 
         for (tx in ordered) {
+            val lots = lotsByPlatform.getOrPut(tx.platformId) { ArrayDeque() }
             when (tx.type) {
                 AssetTransactionType.BUY  -> lots.addLast(Lot(tx.quantity, tx.pricePerUnit))
                 AssetTransactionType.SELL -> realizedPnL += consumeFifo(lots, tx)
             }
         }
 
-        val netQuantity = lots.sumOf { it.qtyRemaining }
-        val totalInvestedRemaining = lots.sumOf { it.qtyRemaining * it.pricePerUnit }
+        val allLots = lotsByPlatform.values.flatten()
+        val netQuantity = allLots.sumOf { it.qtyRemaining }
+        val totalInvestedRemaining = allLots.sumOf { it.qtyRemaining * it.pricePerUnit }
         val averageCostOfRemaining =
             if (netQuantity > 0.0) totalInvestedRemaining / netQuantity else 0.0
 
@@ -147,10 +101,7 @@ object PortfolioCalculator {
                 ((currentPrice!! - averageCostOfRemaining) / averageCostOfRemaining) * 100.0
             else 0.0
 
-        val totalPnL = realizedPnL + unrealizedPnL
-        // El % total se referencia al total invertido a lo largo de la vida
-        // del activo (suma de todas las compras), porque realizedPnL incluye
-        // ventas que ya no están en `totalInvestedRemaining`.
+        val totalPnL = realizedPnL + unrealizedPnL + dividendIncome
         val grossInvested = ordered
             .filter { it.isBuy }
             .sumOf { it.quantity * it.pricePerUnit }
@@ -167,17 +118,40 @@ object PortfolioCalculator {
             unrealizedPnLPercent   = unrealizedPnLPercent,
             totalPnL               = totalPnL,
             totalPnLPercent        = totalPnLPercent,
-            hasCurrentPrice        = hasPrice
+            hasCurrentPrice        = hasPrice,
+            dividendIncome         = dividendIncome
         )
     }
 
     /**
-     * Cantidad disponible para vender en una fecha concreta a partir del
-     * histórico de movimientos. Útil para validar en la UI que el usuario
-     * no intente vender más unidades de las que posee (decisión 7.A).
-     *
-     * El cálculo es FIFO contra los movimientos cuyas fechas son anteriores
-     * a `asOfDate` (incluida).
+     * Cantidad disponible para vender en una plataforma concreta a una fecha.
+     * Solo cuenta las compras de esa plataforma menos las ventas de esa plataforma.
+     */
+    fun availableQuantityAt(
+        transactions: List<AssetTransaction>,
+        asOfDate: Long,
+        platformId: String,
+        excludingTransactionId: String? = null
+    ): Double {
+        val ordered = transactions
+            .asSequence()
+            .filter { it.id != excludingTransactionId }
+            .filter { it.date <= asOfDate }
+            .filter { it.platformId == platformId }
+            .sortedWith(compareBy({ it.date }, { it.createdAt }))
+            .toList()
+
+        var net = 0.0
+        for (tx in ordered) {
+            net += if (tx.isBuy) tx.quantity else -tx.quantity
+        }
+        return net.coerceAtLeast(0.0)
+    }
+
+    /**
+     * Overload legacy sin filtro de plataforma — devuelve la cantidad global
+     * disponible sumando todas las plataformas. Se mantiene por compatibilidad
+     * con validaciones genéricas.
      */
     fun availableQuantityAt(
         transactions: List<AssetTransaction>,
@@ -199,36 +173,25 @@ object PortfolioCalculator {
     }
 
     /**
-     * Devuelve el desglose FIFO lote a lote: qué lotes siguen vivos en
-     * cartera tras aplicar todas las ventas, y para cada venta contra qué
-     * lotes se cruzó con qué P&L parcial. Es la información que necesita
-     * la vista de detalle del activo para que el usuario entienda el
-     * cálculo de su beneficio o pérdida (especialmente en activos con
-     * varias compras a precios distintos).
-     *
-     * Se mantiene el mismo orden de consumo que [calculate]: cronológico
-     * por (date, createdAt). Es coherente con la decisión 1.B y con la
-     * fiscalidad española.
+     * Desglose FIFO por plataforma: cada lote y venta preserva su platformId.
      */
     fun breakdown(transactions: List<AssetTransaction>): FifoBreakdown {
-        val ordered = transactions.sortedWith(
-            compareBy({ it.date }, { it.createdAt })
-        )
+        val ordered = transactions.sortedWith(compareBy({ it.date }, { it.createdAt }))
 
-        // Lote con trazabilidad: guardamos el id de la compra origen y la
-        // cantidad original para poder mostrar "3 de 5 consumidos" en la UI.
         data class TrackedLot(
             val txId: String,
             val date: Long,
             val pricePerUnit: Double,
             val originalQty: Double,
-            var remaining: Double
+            var remaining: Double,
+            val platformId: String
         )
 
-        val lots  = ArrayDeque<TrackedLot>()
+        val lotsByPlatform = mutableMapOf<String, ArrayDeque<TrackedLot>>()
         val sales = mutableListOf<FifoSaleMatch>()
 
         for (tx in ordered) {
+            val lots = lotsByPlatform.getOrPut(tx.platformId) { ArrayDeque() }
             when (tx.type) {
                 AssetTransactionType.BUY -> lots.addLast(
                     TrackedLot(
@@ -236,7 +199,8 @@ object PortfolioCalculator {
                         date         = tx.date,
                         pricePerUnit = tx.pricePerUnit,
                         originalQty  = tx.quantity,
-                        remaining    = tx.quantity
+                        remaining    = tx.quantity,
+                        platformId   = tx.platformId
                     )
                 )
                 AssetTransactionType.SELL -> {
@@ -267,6 +231,7 @@ object PortfolioCalculator {
                             saleDate          = tx.date,
                             salePrice         = tx.pricePerUnit,
                             saleQuantity      = tx.quantity,
+                            platformId        = tx.platformId,
                             consumed          = consumed,
                             realizedPnL       = realized
                         )
@@ -275,19 +240,21 @@ object PortfolioCalculator {
             }
         }
 
-        val openLots = lots
-            .filter { it.remaining > 0.0 }
-            .map {
-                FifoOpenLot(
-                    purchaseTransactionId = it.txId,
-                    purchaseDate          = it.date,
-                    pricePerUnit          = it.pricePerUnit,
-                    originalQuantity      = it.originalQty,
-                    remainingQuantity     = it.remaining
-                )
-            }
+        val openLots = lotsByPlatform.values.flatMap { platformLots ->
+            platformLots
+                .filter { it.remaining > 0.0 }
+                .map {
+                    FifoOpenLot(
+                        purchaseTransactionId = it.txId,
+                        purchaseDate          = it.date,
+                        pricePerUnit          = it.pricePerUnit,
+                        originalQuantity      = it.originalQty,
+                        remainingQuantity     = it.remaining,
+                        platformId            = it.platformId
+                    )
+                }
+        }
 
-        // Ventas más recientes primero — es lo que más suele consultarse.
         return FifoBreakdown(
             openLots    = openLots,
             saleMatches = sales.sortedByDescending { it.saleDate }
@@ -298,10 +265,6 @@ object PortfolioCalculator {
 
     private data class Lot(var qtyRemaining: Double, val pricePerUnit: Double)
 
-    /** Consume `tx.quantity` desde el frente de la cola de lotes y devuelve
-     *  el P&L realizado. Si la venta excede el inventario disponible, se
-     *  consume todo lo que haya (la UI ya bloquea esto, pero el cálculo es
-     *  defensivo para que un dato corrupto no rompa la app). */
     private fun consumeFifo(lots: ArrayDeque<Lot>, tx: AssetTransaction): Double {
         var toSell = tx.quantity
         var pnl = 0.0

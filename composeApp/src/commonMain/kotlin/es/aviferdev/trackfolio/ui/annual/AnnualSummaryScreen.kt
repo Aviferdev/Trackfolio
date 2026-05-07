@@ -42,7 +42,8 @@ fun AnnualSummaryScreen(
             .background(BackgroundGray)
     ) {
         AnnualHeader(
-            year      = uiState.year,
+            year       = uiState.year,
+            canGoBack  = uiState.canGoBack,
             onPrevious = { viewModel.previousYear() },
             onNext     = { viewModel.nextYear() }
         )
@@ -64,7 +65,7 @@ fun AnnualSummaryScreen(
 }
 
 @Composable
-private fun AnnualHeader(year: String, onPrevious: () -> Unit, onNext: () -> Unit) {
+private fun AnnualHeader(year: String, canGoBack: Boolean, onPrevious: () -> Unit, onNext: () -> Unit) {
     val nowYear       = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).year
     val isCurrentYear = year.toIntOrNull() == nowYear
 
@@ -85,9 +86,18 @@ private fun AnnualHeader(year: String, onPrevious: () -> Unit, onNext: () -> Uni
             ) {
                 IconButton(
                     onClick  = onPrevious,
-                    modifier = Modifier.size(36.dp).clip(CircleShape).background(BackgroundGray)
+                    enabled  = canGoBack,
+                    modifier = Modifier
+                        .size(36.dp)
+                        .clip(CircleShape)
+                        .background(if (canGoBack) BackgroundGray else Color.Transparent)
                 ) {
-                    Text("‹", fontSize = 22.sp, color = TextPrimary, fontWeight = FontWeight.Light)
+                    Text(
+                        "‹",
+                        fontSize   = 22.sp,
+                        color      = if (canGoBack) TextPrimary else TextSecondary.copy(alpha = 0.3f),
+                        fontWeight = FontWeight.Light
+                    )
                 }
                 Text(year, fontSize = 20.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary)
                 IconButton(

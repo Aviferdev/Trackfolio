@@ -20,6 +20,7 @@ import es.aviferdev.trackfolio.domain.usecase.asset.UpdateAssetUseCase
 import es.aviferdev.trackfolio.domain.usecase.assetcategory.GetAllAssetCategoriesIncludingArchivedUseCase
 import es.aviferdev.trackfolio.domain.usecase.assettransaction.GetTransactionsByAccountUseCase
 import es.aviferdev.trackfolio.domain.usecase.assettransaction.SaveAssetTransactionUseCase
+import es.aviferdev.trackfolio.domain.usecase.assettransaction.SyncAssetTransactionToLedgerUseCase
 import es.aviferdev.trackfolio.domain.usecase.platform.GetPlatformsUseCase
 import es.aviferdev.trackfolio.ui.account.AccountSession
 import es.aviferdev.trackfolio.ui.theme.CategoryPalette
@@ -90,7 +91,13 @@ data class PortfolioUiState(
     val pricingAsset: Asset?            = null,
 
     // Sheet de "Nuevo movimiento" desde el FAB del Portfolio
-    val showAddTxSheet: Boolean         = false
+    val showAddTxSheet: Boolean         = false,
+    // Sheet de dividendo desde el FAB del Portfolio
+    val showDividendSheet: Boolean      = false,
+    val dividendAssetId: String?        = null,
+    // Sheet de bono/depósito desde el FAB del Portfolio
+    val showBondDepositSheet: Boolean   = false,
+    val bondDepositAssetId: String?     = null
 )
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -105,6 +112,7 @@ class PortfolioViewModel(
     private val getTransactionsByAccount: GetTransactionsByAccountUseCase,
     private val getPlatforms: GetPlatformsUseCase,
     private val saveAssetTransaction: SaveAssetTransactionUseCase,
+    private val syncToLedger: SyncAssetTransactionToLedgerUseCase,
     private val session: AccountSession
 ) : ViewModel() {
 
@@ -114,6 +122,10 @@ class PortfolioViewModel(
         val showUpdatePriceSheet: Boolean = false,
         val pricingAsset: Asset? = null,
         val showAddTxSheet: Boolean = false,
+        val showDividendSheet: Boolean = false,
+        val dividendAssetId: String? = null,
+        val showBondDepositSheet: Boolean = false,
+        val bondDepositAssetId: String? = null,
         val error: String? = null
     )
 
@@ -138,6 +150,10 @@ class PortfolioViewModel(
                 showUpdatePriceSheet = sheets.showUpdatePriceSheet,
                 pricingAsset         = sheets.pricingAsset,
                 showAddTxSheet       = sheets.showAddTxSheet,
+                showDividendSheet    = sheets.showDividendSheet,
+                dividendAssetId      = sheets.dividendAssetId,
+                showBondDepositSheet = sheets.showBondDepositSheet,
+                bondDepositAssetId   = sheets.bondDepositAssetId,
                 error                = sheets.error
             )
         }
@@ -326,12 +342,97 @@ class PortfolioViewModel(
                 createdAt    = now
             )
             saveAssetTransaction(tx)
-                .onSuccess { closeAddTransactionSheet() }
+                .onSuccess {
+                    // Sincronizar con el libro de liquidez
+                    val asset = portfolioState.value.allAssets.find { it.id == assetId }
+                    if (asset != null) {
+                        syncToLedger.sync(
+                            assetTx   = tx,
+                            accountId = asset.accountId,
+                            assetName = asset.name
+                        )
+                    }
+                    closeAddTransactionSheet()
+                }
                 .onFailure { _sheetState.value = _sheetState.value.copy(error = it.message) }
         }
     }
 
     fun clearError() {
         _sheetState.value = _sheetState.value.copy(error = null)
+    }
+
+    // ── Dividendos ─────────────────────────────────────────────────────
+    fun openDividendSheet() {
+        _sheetState.value = _sheetState.value.copy(showDividendSheet = true, dividendAssetId = null)
+    }
+
+    fun closeDividendSheet() {
+        _sheetState.value = _sheetState.value.copy(showDividendSheet = false, dividendAssetId = null)
+    }
+
+    fun saveDividend(
+        assetId: String,
+        grossAmount: Double,
+        irpfPercent: Double,
+        date: Long
+    ) {
+        viewModelScope.launch {
+            val asset = portfolioState.value.allAssets.find { it.id == assetId }
+            if (asset == null) {
+                _sheetState.value = _sheetState.value.copy(error = "Activo no encontrado")
+                return@launch
+            }
+            val dividendId = "div_${Clock.System.now().toEpochMilliseconds()}_${(0..9999).random()}"
+            val result = syncToLedger.syncDividend(
+                dividendId  = dividendId,
+                accountId   = asset.accountId,
+                assetName   = asset.name,
+                grossAmount = grossAmount,
+                irpfPercent = irpfPercent,
+                date        = date
+            )
+            result
+                .onSuccess { closeDividendSheet() }
+                .onFailure { _sheetState.value = _sheetState.value.copy(error = it.message) }
+        }
+    }
+
+    // ── Bonos / Depósitos ─────────────────────────────────────────
+    fun openBondDepositSheet() {
+        _sheetState.value = _sheetState.value.copy(showBondDepositSheet = true, bondDepositAssetId = null)
+    }
+
+    fun closeBondDepositSheet() {
+        _sheetState.value = _sheetState.value.copy(showBondDepositSheet = false, bondDepositAssetId = null)
+    }
+
+    fun saveBondDeposit(
+        assetId: String,
+        grossAmount: Double,
+        irpfPercent: Double,
+        commissionAmount: Double,
+        date: Long
+    ) {
+        viewModelScope.launch {
+            val asset = portfolioState.value.allAssets.find { it.id == assetId }
+            if (asset == null) {
+                _sheetState.value = _sheetState.value.copy(error = "Activo no encontrado")
+                return@launch
+            }
+            val bondDepositId = "bond_${Clock.System.now().toEpochMilliseconds()}_${(0..9999).random()}"
+            val result = syncToLedger.syncBondDeposit(
+                bondDepositId    = bondDepositId,
+                accountId        = asset.accountId,
+                assetName        = asset.name,
+                grossAmount      = grossAmount,
+                irpfPercent      = irpfPercent,
+                commissionAmount = commissionAmount,
+                date             = date
+            )
+            result
+                .onSuccess { closeBondDepositSheet() }
+                .onFailure { _sheetState.value = _sheetState.value.copy(error = it.message) }
+        }
     }
 }

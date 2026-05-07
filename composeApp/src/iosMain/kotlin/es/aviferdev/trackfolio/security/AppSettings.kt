@@ -3,11 +3,13 @@ package es.aviferdev.trackfolio.security
 import platform.Foundation.NSUserDefaults
 
 actual class AppSettings {
+
     private val defaults = NSUserDefaults.standardUserDefaults
 
     actual fun getBool(key: String, default: Boolean): Boolean =
-        if (defaults.objectForKey(key) != null) defaults.boolForKey(key)
-        else default
+        defaults.objectForKey(key)?.let{
+            defaults.boolForKey(key)
+        } ?: default
 
     actual fun putBool(key: String, value: Boolean) {
         defaults.setBool(value, forKey = key)
@@ -19,6 +21,26 @@ actual class AppSettings {
 
     actual fun putString(key: String, value: String) {
         defaults.setObject(value, forKey = key)
+        defaults.synchronize()
+    }
+
+    actual fun getInt(key: String, default: Int): Int =
+        defaults.objectForKey(key)?.let {
+            defaults.integerForKey(key).toInt()
+        } ?: default
+
+    actual fun putInt(key: String, value: Int) {
+        defaults.setInteger(value.toLong(), forKey = key)
+        defaults.synchronize()
+    }
+
+    actual fun getLong(key: String, default: Long): Long =
+        defaults.objectForKey(key)?.let {
+            defaults.integerForKey(key)
+        } ?: default
+
+    actual fun putLong(key: String, value: Long) {
+        defaults.setInteger(value, forKey = key)
         defaults.synchronize()
     }
 }

@@ -12,8 +12,6 @@ import es.aviferdev.trackfolio.domain.model.AssetTransaction
 import es.aviferdev.trackfolio.domain.model.AssetTransactionType
 import es.aviferdev.trackfolio.domain.model.Platform
 
-// ─── Asset ────────────────────────────────────────────────────────────────────
-
 fun AssetEntity.toDomain(): Asset = Asset(
     id                    = id,
     accountId             = accountId,
@@ -38,8 +36,6 @@ fun Asset.toEntity(): AssetEntity = AssetEntity(
     currentPriceUpdatedAt = currentPriceUpdatedAt
 )
 
-// ─── AssetCategory ────────────────────────────────────────────────────────────
-
 fun AssetCategoryEntity.toDomain(): AssetCategory = AssetCategory(
     id        = id,
     name      = name,
@@ -57,8 +53,6 @@ fun AssetCategory.toEntity(): AssetCategoryEntity = AssetCategoryEntity(
     archived  = if (archived) 1L else 0L,
     createdAt = createdAt
 )
-
-// ─── AssetTag ─────────────────────────────────────────────────────────────────
 
 fun AssetTagEntity.toDomain(): AssetTag = AssetTag(
     id         = id,
@@ -78,8 +72,6 @@ fun AssetTag.toEntity(): AssetTagEntity = AssetTagEntity(
     createdAt  = createdAt
 )
 
-// ─── Platform ─────────────────────────────────────────────────────────────────
-
 fun PlatformEntity.toDomain(): Platform = Platform(
     id        = id,
     name      = name,
@@ -97,8 +89,6 @@ fun Platform.toEntity(): PlatformEntity = PlatformEntity(
     archived  = if (archived) 1L else 0L,
     createdAt = createdAt
 )
-
-// ─── AssetTransaction ─────────────────────────────────────────────────────────
 
 fun AssetTransactionEntity.toDomain(): AssetTransaction = AssetTransaction(
     id           = id,

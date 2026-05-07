@@ -1,0 +1,46 @@
+-- Relación N:M entre activos y plataformas.
+-- Define en qué plataformas el usuario opera cada activo.
+
+CREATE TABLE AssetPlatformEntity (
+    assetId    TEXT NOT NULL,
+    platformId TEXT NOT NULL,
+    createdAt  INTEGER NOT NULL,
+    PRIMARY KEY (assetId, platformId),
+    FOREIGN KEY (assetId)    REFERENCES AssetEntity(id)    ON DELETE CASCADE,
+    FOREIGN KEY (platformId) REFERENCES PlatformEntity(id) ON DELETE CASCADE
+);
+
+CREATE INDEX idx_asset_platform_asset    ON AssetPlatformEntity(assetId);
+CREATE INDEX idx_asset_platform_platform ON AssetPlatformEntity(platformId);
+
+-- ─── Lectura ──────────────────────────────────────────────────────────────────
+
+selectByAsset:
+SELECT p.* FROM PlatformEntity p
+INNER JOIN AssetPlatformEntity ap ON ap.platformId = p.id
+WHERE ap.assetId = :assetId
+ORDER BY p.sortOrder ASC, p.name ASC;
+
+selectByPlatform:
+SELECT a.* FROM AssetEntity a
+INNER JOIN AssetPlatformEntity ap ON ap.assetId = a.id
+WHERE ap.platformId = :platformId
+ORDER BY a.name ASC;
+
+countByAsset:
+SELECT COUNT(*) FROM AssetPlatformEntity WHERE assetId = :assetId;
+
+countByPlatform:
+SELECT COUNT(*) FROM AssetPlatformEntity WHERE platformId = :platformId;
+
+-- ─── Escritura ────────────────────────────────────────────────────────────────
+
+insert:
+INSERT OR IGNORE INTO AssetPlatformEntity(assetId, platformId, createdAt)
+VALUES (?, ?, ?);
+
+delete:
+DELETE FROM AssetPlatformEntity WHERE assetId = :assetId AND platformId = :platformId;
+
+deleteAllByAsset:
+DELETE FROM AssetPlatformEntity WHERE assetId = :assetId;

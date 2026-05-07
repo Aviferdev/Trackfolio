@@ -74,11 +74,13 @@ import org.koin.compose.viewmodel.koinViewModel
 fun HomeScreen(
     onNavigateToTransactions: () -> Unit = {},
     onNavigateToCharts: () -> Unit = {},
+    onNavigateToDebts: () -> Unit = {},
     onNavigateToSettings: () -> Unit = {},
     viewModel: HomeViewModel = koinViewModel(),
     accountViewModel: AccountViewModel = koinViewModel()
 ) {
     val uiState        by viewModel.uiState.collectAsState()
+    val priceReminder  by viewModel.priceReminderState.collectAsState()
     val accountState   by accountViewModel.uiState.collectAsState()
     val selectedId     by accountViewModel.selectedAccountId.collectAsState()
     val balanceVisibility = koinInject<BalanceVisibilityManager>()
@@ -119,7 +121,11 @@ fun HomeScreen(
                     onAccountSelected = { id -> accountViewModel.selectAccount(id) },
                     onNavigateToTransactions = onNavigateToTransactions,
                     onNavigateToCharts = onNavigateToCharts,
-                    onNavigateToSettings = onNavigateToSettings
+                    onNavigateToDebts = onNavigateToDebts,
+                    onNavigateToSettings = onNavigateToSettings,
+                    priceReminderState = priceReminder,
+                    onUpdateNow = { viewModel.openUpdateSheet() },
+                    onRemindLater = { viewModel.dismissReminder() }
                 )
             }
         }
@@ -161,6 +167,15 @@ fun HomeScreen(
             }
         )
     }
+
+    if (priceReminder.showUpdateSheet) {
+        PriceUpdateBottomSheet(
+            outdatedAssets  = priceReminder.outdatedAssets,
+            updatedAssetIds = priceReminder.updatedAssetIds,
+            onUpdatePrice   = { assetId, price -> viewModel.updateAssetPrice(assetId, price) },
+            onDismiss       = { viewModel.closeUpdateSheet() }
+        )
+    }
 }
 
 @Composable
@@ -174,7 +189,11 @@ private fun HomeContent(
     onAccountSelected: (String) -> Unit,
     onNavigateToTransactions: () -> Unit,
     onNavigateToCharts: () -> Unit,
-    onNavigateToSettings: () -> Unit
+    onNavigateToDebts: () -> Unit,
+    onNavigateToSettings: () -> Unit,
+    priceReminderState: PriceReminderState = PriceReminderState(),
+    onUpdateNow: () -> Unit = {},
+    onRemindLater: () -> Unit = {}
 ) {
     Column(
         modifier = Modifier
@@ -243,6 +262,18 @@ private fun HomeContent(
             Spacer(Modifier.height(8.dp))
         }
 
+        // Banner de recordatorio de precios
+        PriceReminderBanner(
+            outdatedCount = priceReminderState.outdatedAssets.size,
+            visible       = priceReminderState.showBanner,
+            onUpdateNow   = onUpdateNow,
+            onRemindLater = onRemindLater,
+            modifier      = Modifier.padding(horizontal = 20.dp)
+        )
+        if (priceReminderState.showBanner) {
+            Spacer(Modifier.height(12.dp))
+        }
+
         HeroCard(
             balance        = balance,
             balancesHidden = balancesHidden,
@@ -263,6 +294,7 @@ private fun HomeContent(
 
         QuickAccessSection(
             onNavigateToCharts = onNavigateToCharts,
+            onNavigateToDebts  = onNavigateToDebts,
             modifier = Modifier.padding(horizontal = 20.dp)
         )
     }
@@ -444,6 +476,9 @@ private fun TransactionRow(transaction: Transaction, categoryName: String, balan
 
 /** Resuelve el nombre a mostrar: para ingresos usa incomeType.label, para gastos usa categoryName. */
 private fun resolveTransactionLabel(transaction: Transaction, categoryNames: Map<String, String>): String {
+    if (transaction.isLinkedToAsset) {
+        return transaction.notes ?: "Inversión"
+    }
     return if (transaction.isIncome) {
         transaction.incomeType?.label ?: "Ingreso"
     } else {
@@ -452,13 +487,13 @@ private fun resolveTransactionLabel(transaction: Transaction, categoryNames: Map
 }
 
 @Composable
-private fun QuickAccessSection(onNavigateToCharts: () -> Unit = {}, modifier: Modifier = Modifier) {
+private fun QuickAccessSection(onNavigateToCharts: () -> Unit = {}, onNavigateToDebts: () -> Unit = {}, modifier: Modifier = Modifier) {
     Column(modifier = modifier) {
         Text("Acceso rápido", fontSize = 16.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary)
         Spacer(Modifier.height(12.dp))
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             QuickAccessCard(label = "Gráficos", icon = "📊", onClick = onNavigateToCharts, modifier = Modifier.weight(1f))
-            Spacer(modifier = Modifier.weight(1f))
+            QuickAccessCard(label = "Deudas", icon = "🤝", onClick = onNavigateToDebts, modifier = Modifier.weight(1f))
         }
     }
 }

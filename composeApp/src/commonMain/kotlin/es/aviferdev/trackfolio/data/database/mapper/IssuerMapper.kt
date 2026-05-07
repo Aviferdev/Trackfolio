@@ -8,8 +8,6 @@ import es.aviferdev.trackfolio.data.database.PromotionPlatformEntity
 import es.aviferdev.trackfolio.domain.model.Issuer
 import es.aviferdev.trackfolio.domain.model.IssuerType
 
-// ── Employer ──────────────────────────────────────────────────────────────────
-
 fun EmployerEntity.toDomain(): Issuer = Issuer(
     id        = id,
     accountId = accountId,
@@ -19,8 +17,6 @@ fun EmployerEntity.toDomain(): Issuer = Issuer(
     archived  = archived != 0L,
     createdAt = createdAt
 )
-
-// ── Bank ──────────────────────────────────────────────────────────────────────
 
 fun BankEntity.toDomain(): Issuer = Issuer(
     id        = id,
@@ -32,8 +28,6 @@ fun BankEntity.toDomain(): Issuer = Issuer(
     createdAt = createdAt
 )
 
-// ── BondIssuer ────────────────────────────────────────────────────────────────
-
 fun BondIssuerEntity.toDomain(): Issuer = Issuer(
     id        = id,
     accountId = accountId,
@@ -44,8 +38,6 @@ fun BondIssuerEntity.toDomain(): Issuer = Issuer(
     createdAt = createdAt
 )
 
-// ── DividendSource ────────────────────────────────────────────────────────────
-
 fun DividendSourceEntity.toDomain(): Issuer = Issuer(
     id        = id,
     accountId = accountId,
@@ -55,8 +47,6 @@ fun DividendSourceEntity.toDomain(): Issuer = Issuer(
     archived  = archived != 0L,
     createdAt = createdAt
 )
-
-// ── PromotionPlatform ─────────────────────────────────────────────────────────
 
 fun PromotionPlatformEntity.toDomain(): Issuer = Issuer(
     id        = id,

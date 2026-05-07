@@ -24,6 +24,7 @@ import es.aviferdev.trackfolio.ui.fiscal.FiscalReportScreen
 import es.aviferdev.trackfolio.ui.home.HomeScreen
 import es.aviferdev.trackfolio.ui.portfolio.AssetHistoryScreen
 import es.aviferdev.trackfolio.ui.portfolio.PortfolioScreen
+import es.aviferdev.trackfolio.ui.portfolio.PortfolioSettingsScreen
 import es.aviferdev.trackfolio.ui.settings.SettingsScreen
 import es.aviferdev.trackfolio.ui.theme.PrimaryDark
 import es.aviferdev.trackfolio.ui.theme.SurfaceElevated
@@ -90,6 +91,9 @@ fun TrackfolioNavHost() {
                     onNavigateToCharts = {
                         navController.navigate(Screen.Charts.route) { launchSingleTop = true }
                     },
+                    onNavigateToDebts = {
+                        navController.navigate(Screen.Debts.route) { launchSingleTop = true }
+                    },
                     onNavigateToSettings = {
                         navController.navigate(Screen.Settings.route) { launchSingleTop = true }
                     }
@@ -102,6 +106,11 @@ fun TrackfolioNavHost() {
                 PortfolioScreen(
                     onAssetClick = { assetId ->
                         navController.navigate(Screen.AssetHistory.buildRoute(assetId)) {
+                            launchSingleTop = true
+                        }
+                    },
+                    onNavigateToSettings = {
+                        navController.navigate(Screen.PortfolioSettings.route) {
                             launchSingleTop = true
                         }
                     }
@@ -121,6 +130,11 @@ fun TrackfolioNavHost() {
             }
             composable(Screen.Charts.route) {
                 AnnualSummaryScreen()
+            }
+            composable(Screen.PortfolioSettings.route) {
+                PortfolioSettingsScreen(
+                    onBack = { navController.popBackStack() }
+                )
             }
             composable(Screen.FiscalReport.route) {
                 FiscalReportScreen(

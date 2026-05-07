@@ -1,20 +1,22 @@
 CREATE TABLE TransactionEntity (
-    id                    TEXT    NOT NULL PRIMARY KEY,
-    accountId             TEXT    NOT NULL,
-    amount                REAL    NOT NULL,
-    type                  TEXT    NOT NULL,
-    categoryId            TEXT,
-    date                  INTEGER NOT NULL,
-    notes                 TEXT,
-    createdAt             INTEGER NOT NULL,
+    id                         TEXT    NOT NULL PRIMARY KEY,
+    accountId                  TEXT    NOT NULL,
+    amount                     REAL    NOT NULL,
+    type                       TEXT    NOT NULL,
+    categoryId                 TEXT,
+    date                       INTEGER NOT NULL,
+    notes                      TEXT,
+    createdAt                  INTEGER NOT NULL,
     -- ── Campos de ingreso ─────────────────────────────────────────────────────
-    incomeType            TEXT,
-    grossAmount           REAL,
-    irpfPercent           REAL,
-    socialSecurityAmount  REAL,
-    commissionAmount      REAL,
-    issuerId              TEXT,
-    issuerName            TEXT,
+    incomeType                 TEXT,
+    grossAmount                REAL,
+    irpfPercent                REAL,
+    socialSecurityAmount       REAL,
+    commissionAmount           REAL,
+    issuerId                   TEXT,
+    issuerName                 TEXT,
+    -- ── Vínculo con portfolio ─────────────────────────────────────────────────
+    linkedAssetTransactionId   TEXT,
     FOREIGN KEY (accountId) REFERENCES AccountEntity(id) ON DELETE CASCADE,
     FOREIGN KEY (categoryId) REFERENCES CategoryEntity(id)
 );
@@ -124,25 +126,43 @@ insert:
 INSERT INTO TransactionEntity(
     id, accountId, amount, type, categoryId, date, notes, createdAt,
     incomeType, grossAmount, irpfPercent, socialSecurityAmount,
-    commissionAmount, issuerId, issuerName
-) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+    commissionAmount, issuerId, issuerName, linkedAssetTransactionId
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 
 update:
 UPDATE TransactionEntity
-SET accountId            = :accountId,
-    amount               = :amount,
-    type                 = :type,
-    categoryId           = :categoryId,
-    date                 = :date,
-    notes                = :notes,
-    incomeType           = :incomeType,
-    grossAmount          = :grossAmount,
-    irpfPercent          = :irpfPercent,
-    socialSecurityAmount = :socialSecurityAmount,
-    commissionAmount     = :commissionAmount,
-    issuerId             = :issuerId,
-    issuerName           = :issuerName
+SET accountId                = :accountId,
+    amount                   = :amount,
+    type                     = :type,
+    categoryId               = :categoryId,
+    date                     = :date,
+    notes                    = :notes,
+    incomeType               = :incomeType,
+    grossAmount              = :grossAmount,
+    irpfPercent              = :irpfPercent,
+    socialSecurityAmount     = :socialSecurityAmount,
+    commissionAmount         = :commissionAmount,
+    issuerId                 = :issuerId,
+    issuerName               = :issuerName,
+    linkedAssetTransactionId = :linkedAssetTransactionId
 WHERE id = :id;
 
 delete:
 DELETE FROM TransactionEntity WHERE id = :id;
+
+-- ─── Portfolio link ───────────────────────────────────────────────────────────
+
+deleteByLinkedAssetTransaction:
+DELETE FROM TransactionEntity WHERE linkedAssetTransactionId = :assetTxId;
+
+selectByLinkedAssetTransaction:
+SELECT * FROM TransactionEntity WHERE linkedAssetTransactionId = :assetTxId LIMIT 1;
+
+getOldestDateByAccount:
+SELECT MIN(date) AS oldestDate FROM TransactionEntity WHERE accountId = :accountId;
+
+getDividendsByAssetId:
+SELECT * FROM TransactionEntity
+WHERE linkedAssetTransactionId LIKE ('div_' || :assetId || '_%')
+  AND incomeType = 'DIVIDEND'
+ORDER BY date DESC;

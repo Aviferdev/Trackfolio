@@ -3,7 +3,7 @@ package es.aviferdev.trackfolio.ui.settings
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import es.aviferdev.trackfolio.data.database.CategoryEntity
-import es.aviferdev.trackfolio.data.datasource.CategoryLocalDataSource
+import es.aviferdev.trackfolio.data.datasource.transaction.TransactionCategoryLocalDataSource
 import es.aviferdev.trackfolio.domain.model.TransactionType
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -24,7 +24,7 @@ data class CategoryListUiState(
 )
 
 class CategoryViewModel(
-    private val dataSource: CategoryLocalDataSource
+    private val dataSource: TransactionCategoryLocalDataSource
 ) : ViewModel() {
 
     private val _showAddSheet  = MutableStateFlow(false)

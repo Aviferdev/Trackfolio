@@ -1,0 +1,14 @@
+-- Migración v11: Tabla de histórico de precios de activos.
+-- Registra cada actualización de currentPrice para poder trazar
+-- la evolución del portfolio a lo largo del tiempo.
+
+CREATE TABLE AssetPriceHistoryEntity (
+    id         TEXT    NOT NULL PRIMARY KEY,
+    assetId    TEXT    NOT NULL,
+    price      REAL    NOT NULL,
+    recordedAt INTEGER NOT NULL,
+    FOREIGN KEY (assetId) REFERENCES AssetEntity(id) ON DELETE CASCADE
+);
+
+CREATE INDEX idx_price_history_asset ON AssetPriceHistoryEntity(assetId);
+CREATE INDEX idx_price_history_date  ON AssetPriceHistoryEntity(recordedAt);

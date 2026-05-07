@@ -16,4 +16,8 @@ interface TransactionRepository {
     suspend fun saveTransaction(transaction: Transaction): Result<Unit>
     suspend fun updateTransaction(transaction: Transaction): Result<Unit>
     suspend fun deleteTransaction(id: String): Result<Unit>
+    suspend fun deleteByLinkedAssetTransaction(assetTransactionId: String): Result<Unit>
+    fun getByLinkedAssetTransaction(assetTransactionId: String): Flow<Transaction?>
+    fun getOldestDate(accountId: String): Flow<Long?>
+    fun getDividendsByAsset(assetId: String): Flow<List<Transaction>>
 }

@@ -20,7 +20,6 @@ private const val PENDING_TAG = "[PendingImport]"
 actual fun applyPendingDatabaseImport(): Boolean {
     val fm = NSFileManager.defaultManager
 
-    // Mismas rutas candidatas que DatabaseBackupManager
     val candidates = mutableListOf<String>()
 
     fun addCandidate(dir: NSSearchPathDirectory, subFolder: String? = null) {

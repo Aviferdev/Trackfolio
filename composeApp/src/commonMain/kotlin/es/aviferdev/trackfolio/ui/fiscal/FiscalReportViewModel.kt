@@ -21,6 +21,7 @@ data class FiscalReportUiState(
     val reportData: FiscalReportData? = null,
     val selectedYear: String        = currentYear(),
     val isGenerating: Boolean       = false,
+    val showPasswordSheet: Boolean  = false,
     val successMessage: String?     = null,
     val errorMessage: String?       = null
 )
@@ -79,10 +80,19 @@ class FiscalReportViewModel(
     }
 
     fun generatePdf() {
-        val data = _uiState.value.reportData ?: return
-        _uiState.value = _uiState.value.copy(isGenerating = true, errorMessage = null)
+        _uiState.value = _uiState.value.copy(showPasswordSheet = true)
+    }
 
-        pdfGenerator.generate(data) { success, error ->
+    fun cancelPasswordSheet() {
+        _uiState.value = _uiState.value.copy(showPasswordSheet = false)
+    }
+
+    fun confirmGeneratePdf(password: String) {
+        val data = _uiState.value.reportData ?: return
+        _uiState.value = _uiState.value.copy(showPasswordSheet = false, isGenerating = true, errorMessage = null)
+
+        val pwd = password.ifBlank { null }
+        pdfGenerator.generate(data, pwd) { success, error ->
             _uiState.value = _uiState.value.copy(
                 isGenerating   = false,
                 successMessage = if (success) "PDF generado. Elige dónde guardarlo o compartirlo." else null,

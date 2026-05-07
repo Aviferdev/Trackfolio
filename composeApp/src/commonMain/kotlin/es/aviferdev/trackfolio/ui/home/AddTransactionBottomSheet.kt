@@ -1,7 +1,10 @@
 package es.aviferdev.trackfolio.ui.home
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -10,12 +13,15 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
+import androidx.compose.material.icons.outlined.CalendarMonth
+import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -32,6 +38,11 @@ import es.aviferdev.trackfolio.domain.model.IncomeType
 import es.aviferdev.trackfolio.domain.model.Issuer
 import es.aviferdev.trackfolio.domain.model.TransactionType
 import es.aviferdev.trackfolio.ui.theme.*
+import kotlinx.datetime.Instant
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.atStartOfDayIn
+import kotlinx.datetime.toLocalDateTime
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -107,6 +118,16 @@ fun AddTransactionBottomSheet(
                 IncomeForm(viewModel)
             }
 
+            // ── Fecha ─────────────────────────────────────────────────────────
+            Spacer(Modifier.height(16.dp))
+            HorizontalDivider(color = BorderGray, thickness = 0.5.dp)
+            Spacer(Modifier.height(16.dp))
+
+            DateSelector(
+                dateMillis     = viewModel.dateMillis,
+                onDateSelected = { viewModel.onDateChange(it) }
+            )
+
             // ── Nota ──────────────────────────────────────────────────────────
             Spacer(Modifier.height(16.dp))
             HorizontalDivider(color = BorderGray, thickness = 0.5.dp)
@@ -162,6 +183,7 @@ fun AddTransactionBottomSheet(
 
 // ─── Formulario de GASTO ─────────────────────────────────────────────────────
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun ExpenseForm(viewModel: AddTransactionViewModel) {
     AmountInput(
@@ -175,17 +197,93 @@ private fun ExpenseForm(viewModel: AddTransactionViewModel) {
     HorizontalDivider(color = BorderGray, thickness = 0.5.dp)
     Spacer(Modifier.height(16.dp))
 
+    // ── Selector de categoría con buscador condicional ─────────────────
     Column(modifier = Modifier.fillMaxWidth()) {
         Text("Categoría", fontSize = 13.sp, color = TextSecondary)
         Spacer(Modifier.height(10.dp))
-        LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            items(viewModel.categories) { category ->
+
+        val allCategories = viewModel.categories
+        var searchQuery by remember { mutableStateOf("") }
+        val showSearch = allCategories.size > 8
+
+        // ── Buscador (solo si hay más de 8 categorías) ────────────────
+        AnimatedVisibility(
+            visible = showSearch,
+            enter   = expandVertically() + fadeIn(),
+            exit    = shrinkVertically() + fadeOut()
+        ) {
+            OutlinedTextField(
+                value         = searchQuery,
+                onValueChange = { searchQuery = it },
+                placeholder   = {
+                    Text(
+                        "Buscar categoría…",
+                        color    = TextSecondary.copy(alpha = 0.5f),
+                        fontSize = 13.sp
+                    )
+                },
+                leadingIcon = {
+                    Icon(
+                        Icons.Outlined.Search,
+                        contentDescription = "Buscar",
+                        modifier           = Modifier.size(18.dp),
+                        tint               = TextSecondary
+                    )
+                },
+                singleLine = true,
+                modifier   = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 10.dp)
+                    .height(48.dp),
+                shape      = RoundedCornerShape(10.dp),
+                textStyle  = TextStyle(fontSize = 13.sp, color = TextPrimary),
+                colors     = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor   = PrimaryDark,
+                    unfocusedBorderColor = BorderGray
+                )
+            )
+        }
+
+        // ── Grid de categorías ────────────────────────────────────────
+        val filtered = if (searchQuery.isBlank()) {
+            allCategories
+        } else {
+            allCategories.filter {
+                it.name.contains(searchQuery, ignoreCase = true)
+            }
+        }
+
+        FlowRow(
+            modifier              = Modifier
+                .fillMaxWidth()
+                .animateContentSize(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement   = Arrangement.spacedBy(8.dp)
+        ) {
+            filtered.forEachIndexed { index, category ->
+                // Buscar índice original para asignar color consistente
+                val originalIndex = allCategories.indexOf(category)
+                val accentColor   = CategoryPalette[originalIndex % CategoryPalette.size]
+
                 CategoryChip(
-                    label    = category.name,
-                    selected = category.id == viewModel.selectedCategoryId,
-                    onClick  = { viewModel.onCategoryChange(category.id) }
+                    label       = category.name,
+                    selected    = category.id == viewModel.selectedCategoryId,
+                    accentColor = accentColor,
+                    onClick     = { viewModel.onCategoryChange(category.id) }
                 )
             }
+        }
+
+        // ── Mensaje si no hay resultados ───────────────────────────────
+        if (filtered.isEmpty() && searchQuery.isNotBlank()) {
+            Spacer(Modifier.height(8.dp))
+            Text(
+                text     = "Sin resultados para \"$searchQuery\"",
+                fontSize = 12.sp,
+                color    = TextSecondary.copy(alpha = 0.6f),
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Center
+            )
         }
     }
 }
@@ -218,8 +316,9 @@ private fun IncomeForm(viewModel: AddTransactionViewModel) {
     // ── Selector de tipo de ingreso ───────────────────────────────────────
     Text("Tipo de ingreso", fontSize = 13.sp, color = TextSecondary)
     Spacer(Modifier.height(10.dp))
+    val homeIncomeTypes = IncomeType.entries.filter { it != IncomeType.DIVIDEND && it != IncomeType.BOND_DEPOSIT }
     Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-        IncomeType.entries.chunked(2).forEach { row ->
+        homeIncomeTypes.chunked(2).forEach { row ->
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 row.forEach { incomeType ->
                     IncomeTypeChip(
@@ -309,13 +408,40 @@ private fun IncomeForm(viewModel: AddTransactionViewModel) {
                     if (selectedType.hasIrpf) {
                         Column(modifier = Modifier.fillMaxWidth()) {
                             Text("Retención IRPF", fontSize = 12.sp, color = TextSecondary)
-                            Spacer(Modifier.height(4.dp))
-                            FiscalTextField(
-                                value         = viewModel.irpfPercent,
-                                onValueChange = { viewModel.onIrpfPercentChange(it) },
-                                placeholder   = "0",
-                                suffix        = "%"
-                            )
+                            Spacer(Modifier.height(6.dp))
+
+                            // ── Selector de modo: % o € ──────────────────────────
+                            Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                                IrpfModeChip(
+                                    label    = "%",
+                                    selected = viewModel.irpfInputMode == IrpfInputMode.PERCENT,
+                                    onClick  = { viewModel.onIrpfInputModeChange(IrpfInputMode.PERCENT) }
+                                )
+                                IrpfModeChip(
+                                    label    = "€",
+                                    selected = viewModel.irpfInputMode == IrpfInputMode.AMOUNT,
+                                    onClick  = { viewModel.onIrpfInputModeChange(IrpfInputMode.AMOUNT) }
+                                )
+                            }
+
+                            Spacer(Modifier.height(6.dp))
+
+                            // ── Campo según modo ─────────────────────────────────
+                            if (viewModel.irpfInputMode == IrpfInputMode.PERCENT) {
+                                FiscalTextField(
+                                    value         = viewModel.irpfPercent,
+                                    onValueChange = { viewModel.onIrpfPercentChange(it) },
+                                    placeholder   = "0",
+                                    suffix        = "%"
+                                )
+                            } else {
+                                FiscalTextField(
+                                    value         = viewModel.irpfFixedAmount,
+                                    onValueChange = { viewModel.onIrpfFixedAmountChange(it) },
+                                    placeholder   = "0,00",
+                                    suffix        = "€"
+                                )
+                            }
                         }
                     }
 
@@ -336,11 +462,9 @@ private fun IncomeForm(viewModel: AddTransactionViewModel) {
                     // Resumen calculado
                     viewModel.calculatedNet?.let { netValue ->
                         val gross = viewModel.grossAmount.replace(',', '.').toDoubleOrNull() ?: 0.0
-                        val irpfPct = viewModel.irpfPercent.replace(',', '.').toDoubleOrNull() ?: 0.0
                         val ss   = if (selectedType.hasSocialSecurity) viewModel.socialSecurityAmount.replace(',', '.').toDoubleOrNull() ?: 0.0 else 0.0
                         val comm = if (selectedType.hasCommission) viewModel.commissionAmount.replace(',', '.').toDoubleOrNull() ?: 0.0 else 0.0
-                        val irpfBase = if (selectedType == IncomeType.SALARY) gross - ss else gross
-                        val irpf = irpfBase * irpfPct / 100.0
+                        val irpf = viewModel.resolveIrpf(gross, ssDeduction = if (selectedType == IncomeType.SALARY) ss else 0.0)
 
                         Surface(
                             shape  = RoundedCornerShape(10.dp),
@@ -370,11 +494,7 @@ private fun IncomeForm(viewModel: AddTransactionViewModel) {
                         issuerTypeLabel = selectedType.issuerType.label,
                         issuers         = viewModel.issuers,
                         selectedId      = viewModel.selectedIssuerId,
-                        onSelect        = { viewModel.onIssuerSelected(it) },
-                        showNewField    = viewModel.showNewIssuerField,
-                        onToggleNew     = { viewModel.onNewIssuerToggle() },
-                        newName         = viewModel.newIssuerName,
-                        onNewNameChange = { viewModel.onNewIssuerNameChange(it) }
+                        onSelect        = { viewModel.onIssuerSelected(it) }
                     )
                 }
             }
@@ -389,11 +509,7 @@ private fun IssuerSection(
     issuerTypeLabel: String,
     issuers: List<Issuer>,
     selectedId: String?,
-    onSelect: (String) -> Unit,
-    showNewField: Boolean,
-    onToggleNew: () -> Unit,
-    newName: String,
-    onNewNameChange: (String) -> Unit
+    onSelect: (String) -> Unit
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(issuerTypeLabel, fontSize = 13.sp, color = TextSecondary, fontWeight = FontWeight.Medium)
@@ -409,55 +525,24 @@ private fun IssuerSection(
                         onClick  = { onSelect(issuer.id) }
                     )
                 }
-                item {
-                    Box(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(50.dp))
-                            .background(if (showNewField) PrimaryDark.copy(alpha = 0.1f) else Color.Transparent)
-                            .border(0.5.dp, if (showNewField) PrimaryDark else BorderGray, RoundedCornerShape(50.dp))
-                            .clickable { onToggleNew() }
-                            .padding(horizontal = 14.dp, vertical = 8.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(Icons.Outlined.Add, "Nuevo", modifier = Modifier.size(16.dp), tint = if (showNewField) PrimaryDark else TextSecondary)
-                            Spacer(Modifier.width(4.dp))
-                            Text("Nuevo", fontSize = 13.sp, color = if (showNewField) PrimaryDark else TextSecondary)
-                        }
-                    }
-                }
             }
         } else {
-            // Sin emisores existentes → mostrar campo directamente
-            if (!showNewField) {
-                OutlinedButton(
-                    onClick = onToggleNew,
-                    shape   = RoundedCornerShape(8.dp),
-                    border  = ButtonDefaults.outlinedButtonBorder,
-                    modifier = Modifier.fillMaxWidth()
+            Surface(
+                shape = RoundedCornerShape(8.dp),
+                color = SurfaceElevated
+            ) {
+                Row(
+                    modifier          = Modifier.fillMaxWidth().padding(12.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(Icons.Outlined.Add, "Nuevo", modifier = Modifier.size(18.dp))
+                    Text("\u2139\uFE0F", fontSize = 14.sp)
                     Spacer(Modifier.width(8.dp))
-                    Text("Añadir $issuerTypeLabel")
+                    Text(
+                        "Sin emisores. A\u00F1\u00E1delos en Ajustes.",
+                        fontSize = 12.sp,
+                        color    = TextSecondary
+                    )
                 }
-            }
-        }
-
-        AnimatedVisibility(
-            visible = showNewField || issuers.isEmpty(),
-            enter   = expandVertically(),
-            exit    = shrinkVertically()
-        ) {
-            Column(modifier = Modifier.padding(top = 10.dp)) {
-                OutlinedTextField(
-                    value         = newName,
-                    onValueChange = onNewNameChange,
-                    placeholder   = { Text("Nombre de $issuerTypeLabel", color = TextSecondary.copy(alpha = 0.6f), fontSize = 14.sp) },
-                    modifier      = Modifier.fillMaxWidth(),
-                    shape         = RoundedCornerShape(8.dp),
-                    colors        = OutlinedTextFieldDefaults.colors(focusedBorderColor = PrimaryDark, unfocusedBorderColor = BorderGray),
-                    singleLine    = true
-                )
             }
         }
     }
@@ -581,17 +666,49 @@ private fun TypeChip(label: String, selected: Boolean, selectedColor: Color, onC
 }
 
 @Composable
-private fun CategoryChip(label: String, selected: Boolean, onClick: () -> Unit) {
+private fun CategoryChip(
+    label: String,
+    selected: Boolean,
+    accentColor: Color,
+    onClick: () -> Unit
+) {
     Box(
         modifier = Modifier
-            .clip(RoundedCornerShape(50.dp))
-            .background(if (selected) SurfaceWhite else Color.Transparent)
-            .border(if (selected) 1.5.dp else 0.5.dp, if (selected) PrimaryDark else BorderGray, RoundedCornerShape(50.dp))
+            .clip(RoundedCornerShape(10.dp))
+            .background(if (selected) SurfaceElevated else Color.Transparent)
+            .border(
+                width = if (selected) 1.5.dp else 0.5.dp,
+                color = if (selected) PrimaryDark else BorderGray,
+                shape = RoundedCornerShape(10.dp)
+            )
             .clickable { onClick() }
-            .padding(horizontal = 14.dp, vertical = 8.dp),
+            .padding(horizontal = 12.dp, vertical = 8.dp),
         contentAlignment = Alignment.Center
     ) {
-        Text(label, fontSize = 13.sp, fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal, color = if (selected) TextPrimary else TextSecondary)
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            // ── Círculo con inicial ───────────────────────────────────
+            Box(
+                modifier = Modifier
+                    .size(24.dp)
+                    .clip(CircleShape)
+                    .background(accentColor.copy(alpha = 0.15f)),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text       = label.firstOrNull()?.uppercase() ?: "?",
+                    fontSize   = 11.sp,
+                    fontWeight = FontWeight.Bold,
+                    color      = accentColor
+                )
+            }
+            Spacer(Modifier.width(8.dp))
+            Text(
+                text       = label,
+                fontSize   = 13.sp,
+                fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal,
+                color      = if (selected) TextPrimary else TextSecondary
+            )
+        }
     }
 }
 
@@ -602,4 +719,120 @@ private fun fmtAmt(v: Double): String {
     val frac   = ((absVal - int_) * 100 + 0.5).toLong().coerceIn(0, 99)
     val intStr = int_.toString().reversed().chunked(3).joinToString(".").reversed()
     return "$sign$intStr,${frac.toString().padStart(2, '0')}"
+}
+
+@Composable
+private fun IrpfModeChip(label: String, selected: Boolean, onClick: () -> Unit) {
+    Box(
+        modifier = Modifier
+            .clip(RoundedCornerShape(8.dp))
+            .background(if (selected) PrimaryDark.copy(alpha = 0.15f) else Color.Transparent)
+            .border(
+                width = if (selected) 1.5.dp else 0.5.dp,
+                color = if (selected) PrimaryDark else BorderGray,
+                shape = RoundedCornerShape(8.dp)
+            )
+            .clickable { onClick() }
+            .padding(horizontal = 14.dp, vertical = 6.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text       = label,
+            fontSize   = 13.sp,
+            fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal,
+            color      = if (selected) PrimaryDark else TextSecondary
+        )
+    }
+}
+
+// ─── Selector de fecha ───────────────────────────────────────────────────────
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun DateSelector(
+    dateMillis: Long,
+    onDateSelected: (Long) -> Unit
+) {
+    var showPicker by remember { mutableStateOf(false) }
+
+    val instant  = Instant.fromEpochMilliseconds(dateMillis)
+    val ld       = instant.toLocalDateTime(TimeZone.currentSystemDefault()).date
+    val months   = listOf(
+        "enero","febrero","marzo","abril","mayo","junio",
+        "julio","agosto","septiembre","octubre","noviembre","diciembre"
+    )
+    val dateText = "${ld.dayOfMonth} de ${months[ld.monthNumber - 1]} de ${ld.year}"
+
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Text("Fecha", fontSize = 13.sp, color = TextSecondary)
+        Spacer(Modifier.height(8.dp))
+
+        OutlinedTextField(
+            value         = dateText,
+            onValueChange = {},
+            readOnly      = true,
+            modifier      = Modifier
+                .fillMaxWidth()
+                .clickable { showPicker = true },
+            shape         = RoundedCornerShape(8.dp),
+            trailingIcon  = {
+                IconButton(onClick = { showPicker = true }) {
+                    Icon(
+                        Icons.Outlined.CalendarMonth,
+                        contentDescription = "Seleccionar fecha",
+                        tint = PrimaryDark,
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
+            },
+            enabled       = false,
+            colors        = OutlinedTextFieldDefaults.colors(
+                disabledTextColor         = TextPrimary,
+                disabledBorderColor       = BorderGray,
+                disabledTrailingIconColor = PrimaryDark,
+                disabledContainerColor    = Color.Transparent
+            )
+        )
+    }
+
+    if (showPicker) {
+        val pickerState = rememberDatePickerState(
+            initialSelectedDateMillis = dateMillis
+        )
+
+        DatePickerDialog(
+            onDismissRequest = { showPicker = false },
+            confirmButton    = {
+                TextButton(onClick = {
+                    pickerState.selectedDateMillis?.let { selectedUtc ->
+                        // DatePicker devuelve millis a medianoche UTC.
+                        // Ajustamos para que represente medianoche en la zona local.
+                        val selectedLocal = Instant.fromEpochMilliseconds(selectedUtc)
+                            .toLocalDateTime(TimeZone.UTC).date
+                        val localInstant = selectedLocal.atStartOfDayIn(TimeZone.currentSystemDefault())
+                        onDateSelected(localInstant.toEpochMilliseconds())
+                    }
+                    showPicker = false
+                }) {
+                    Text("Aceptar", color = PrimaryDark, fontWeight = FontWeight.Medium)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showPicker = false }) {
+                    Text("Cancelar", color = TextSecondary)
+                }
+            },
+            colors = DatePickerDefaults.colors(
+                containerColor = SurfaceWhite
+            )
+        ) {
+            DatePicker(
+                state  = pickerState,
+                colors = DatePickerDefaults.colors(
+                    selectedDayContainerColor = PrimaryDark,
+                    todayDateBorderColor      = PrimaryDark
+                )
+            )
+        }
+    }
 }

@@ -13,8 +13,13 @@ expect class PdfReportGenerator {
 
     /**
      * Genera el PDF a partir de [data] y abre el diálogo de guardar/compartir.
+     * Si [password] no es null, el PDF se protege con esa contraseña.
      * [onResult] se invoca con (success, errorMessage?) cuando la operación
      * concluye (incluyendo el caso en que el usuario cancela el share sheet).
      */
-    fun generate(data: FiscalReportData, onResult: (success: Boolean, error: String?) -> Unit)
+    fun generate(
+        data: FiscalReportData,
+        password: String? = null,
+        onResult: (success: Boolean, error: String?) -> Unit
+    )
 }

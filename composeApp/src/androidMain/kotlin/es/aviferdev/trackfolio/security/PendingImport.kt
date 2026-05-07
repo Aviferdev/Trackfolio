@@ -2,11 +2,11 @@ package es.aviferdev.trackfolio.security
 
 import android.content.Context
 
+// TODO Refactorizar
+
 private const val DB_NAME = "trackfolio.db"
 private const val PENDING_TAG = "[PendingImport]"
 
-// Context se inyecta vía un setter desde TrackfolioApp.onCreate, ya que esta
-// función se llama antes de que el contenedor de DI esté listo.
 private var appContextHolder: Context? = null
 
 fun setAppContextForPendingImport(ctx: Context) {

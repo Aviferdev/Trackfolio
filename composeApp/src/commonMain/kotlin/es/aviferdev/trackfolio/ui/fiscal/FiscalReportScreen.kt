@@ -6,8 +6,11 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -15,6 +18,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -109,6 +115,133 @@ fun FiscalReportScreen(onBack: () -> Unit, viewModel: FiscalReportViewModel = ko
                         }
                     }
                 }
+            }
+        }
+    }
+
+    // ── Sheet de contraseña para proteger el PDF ──────────────────────────────
+    if (state.showPasswordSheet) {
+        PdfPasswordBottomSheet(
+            onConfirm = { password -> viewModel.confirmGeneratePdf(password) },
+            onDismiss = { viewModel.cancelPasswordSheet() }
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun PdfPasswordBottomSheet(
+    onConfirm: (String) -> Unit,
+    onDismiss: () -> Unit
+) {
+    var password        by remember { mutableStateOf("") }
+    var confirmPassword by remember { mutableStateOf("") }
+    var passwordVisible by remember { mutableStateOf(false) }
+    var error           by remember { mutableStateOf<String?>(null) }
+
+    ModalBottomSheet(
+        onDismissRequest = onDismiss,
+        sheetState       = rememberModalBottomSheetState(skipPartiallyExpanded = true),
+        containerColor   = SurfaceWhite
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .imePadding()
+                .padding(horizontal = 24.dp)
+                .padding(bottom = 32.dp)
+        ) {
+            Text(
+                "\uD83D\uDD12 Proteger informe",
+                fontSize   = 18.sp,
+                fontWeight = FontWeight.SemiBold,
+                color      = TextPrimary
+            )
+            Spacer(Modifier.height(6.dp))
+            Text(
+                "Introduce una contraseña para proteger el PDF. Déjala vacía si no quieres protegerlo.",
+                fontSize = 12.sp,
+                color    = TextSecondary
+            )
+            Spacer(Modifier.height(20.dp))
+
+            OutlinedTextField(
+                value           = password,
+                onValueChange   = { password = it; error = null },
+                label           = { Text("Contraseña") },
+                placeholder     = { Text("Opcional") },
+                singleLine      = true,
+                visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                trailingIcon    = {
+                    IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                        Icon(
+                            if (passwordVisible) Icons.Default.VisibilityOff else Icons.Default.Visibility,
+                            contentDescription = null,
+                            tint = TextSecondary
+                        )
+                    }
+                },
+                modifier = Modifier.fillMaxWidth(),
+                shape    = RoundedCornerShape(10.dp),
+                colors   = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor   = PrimaryDark,
+                    unfocusedBorderColor = BorderGray
+                )
+            )
+            Spacer(Modifier.height(12.dp))
+
+            if (password.isNotEmpty()) {
+                OutlinedTextField(
+                    value           = confirmPassword,
+                    onValueChange   = { confirmPassword = it; error = null },
+                    label           = { Text("Confirmar contraseña") },
+                    singleLine      = true,
+                    visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                    isError         = error != null,
+                    modifier        = Modifier.fillMaxWidth(),
+                    shape           = RoundedCornerShape(10.dp),
+                    colors          = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor   = PrimaryDark,
+                        unfocusedBorderColor = BorderGray
+                    )
+                )
+                Spacer(Modifier.height(4.dp))
+            }
+
+            error?.let {
+                Text(it, fontSize = 12.sp, color = ExpenseRed)
+                Spacer(Modifier.height(8.dp))
+            }
+
+            Spacer(Modifier.height(20.dp))
+
+            Button(
+                onClick = {
+                    if (password.isNotEmpty() && password != confirmPassword) {
+                        error = "Las contraseñas no coinciden"
+                        return@Button
+                    }
+                    if (password.isNotEmpty() && password.length < 4) {
+                        error = "La contraseña debe tener al menos 4 caracteres"
+                        return@Button
+                    }
+                    onConfirm(password)
+                },
+                modifier = Modifier.fillMaxWidth().height(52.dp),
+                shape    = RoundedCornerShape(10.dp),
+                colors   = ButtonDefaults.buttonColors(containerColor = PrimaryDark)
+            ) {
+                Text(
+                    if (password.isEmpty()) "Generar sin contraseña" else "Generar con contraseña",
+                    fontSize   = 16.sp,
+                    fontWeight = FontWeight.Medium
+                )
+            }
+            Spacer(Modifier.height(8.dp))
+            TextButton(onClick = onDismiss, modifier = Modifier.fillMaxWidth()) {
+                Text("Cancelar", fontSize = 14.sp, color = TextSecondary)
             }
         }
     }

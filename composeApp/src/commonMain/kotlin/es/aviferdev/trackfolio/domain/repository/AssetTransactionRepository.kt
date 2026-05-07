@@ -13,4 +13,5 @@ interface AssetTransactionRepository {
     suspend fun save(tx: AssetTransaction): Result<Unit>
     suspend fun update(tx: AssetTransaction): Result<Unit>
     suspend fun delete(id: String): Result<Unit>
+    fun getOldestDate(accountId: String): Flow<Long?>
 }
