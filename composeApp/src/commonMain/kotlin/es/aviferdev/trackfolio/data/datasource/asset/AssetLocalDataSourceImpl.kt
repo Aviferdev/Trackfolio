@@ -50,7 +50,8 @@ class AssetLocalDataSourceImpl(
                     createdAt             = e.createdAt,
                     assetCategoryId       = e.assetCategoryId,
                     currentPrice          = e.currentPrice,
-                    currentPriceUpdatedAt = e.currentPriceUpdatedAt
+                    currentPriceUpdatedAt = e.currentPriceUpdatedAt,
+                    maturityDate          = e.maturityDate
                 )
             }
         }
@@ -66,6 +67,7 @@ class AssetLocalDataSourceImpl(
                     assetCategoryId       = e.assetCategoryId,
                     currentPrice          = e.currentPrice,
                     currentPriceUpdatedAt = e.currentPriceUpdatedAt,
+                    maturityDate          = e.maturityDate,
                     id                    = e.id
                 )
             }

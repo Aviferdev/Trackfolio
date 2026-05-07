@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.trackfolio.domain.model.AssetTransaction
 import es.aviferdev.trackfolio.domain.model.AssetTransactionType
+import es.aviferdev.trackfolio.domain.model.FixedIncomeCategories
 import es.aviferdev.trackfolio.domain.model.Platform
 import es.aviferdev.trackfolio.domain.model.Transaction
 import es.aviferdev.trackfolio.domain.portfolio.AssetPosition
@@ -38,6 +39,7 @@ import es.aviferdev.trackfolio.domain.portfolio.FifoBreakdown
 import es.aviferdev.trackfolio.domain.portfolio.FifoOpenLot
 import es.aviferdev.trackfolio.domain.portfolio.FifoSaleMatch
 import es.aviferdev.trackfolio.ui.theme.*
+import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
@@ -100,21 +102,36 @@ fun AssetHistoryScreen(
                 }
 
                 else -> {
+                    val isFixedIncome = FixedIncomeCategories.isFixedIncome(state.asset!!.assetCategoryId)
+
                     LazyColumn(
                         modifier       = Modifier.fillMaxSize(),
                         contentPadding = PaddingValues(bottom = 100.dp)
                     ) {
-                        // Tarjeta de cabecera con precio actual
-                        item {
-                            AssetSummaryCard(
-                                ticker            = state.asset!!.ticker,
-                                name              = state.asset!!.name,
-                                currentPrice      = state.asset!!.currentPrice,
-                                currentPriceUpdatedAt = state.asset!!.currentPriceUpdatedAt,
-                                currencyCode      = state.currencyCode,
-                                onUpdatePrice     = { viewModel.openUpdatePriceSheet() },
-                                modifier          = Modifier.padding(horizontal = 20.dp, vertical = 12.dp)
-                            )
+                        // Tarjeta de cabecera con precio actual (solo activos no de renta fija)
+                        if (!isFixedIncome) {
+                            item {
+                                AssetSummaryCard(
+                                    ticker            = state.asset!!.ticker,
+                                    name              = state.asset!!.name,
+                                    currentPrice      = state.asset!!.currentPrice,
+                                    currentPriceUpdatedAt = state.asset!!.currentPriceUpdatedAt,
+                                    currencyCode      = state.currencyCode,
+                                    onUpdatePrice     = { viewModel.openUpdatePriceSheet() },
+                                    modifier          = Modifier.padding(horizontal = 20.dp, vertical = 12.dp)
+                                )
+                            }
+                        }
+
+                        // Fecha de vencimiento (solo renta fija)
+                        if (isFixedIncome && state.asset!!.maturityDate != null) {
+                            item {
+                                MaturityDateCard(
+                                    maturityDate = state.asset!!.maturityDate!!,
+                                    isBond       = state.asset!!.isBond,
+                                    modifier     = Modifier.padding(horizontal = 20.dp, vertical = 12.dp)
+                                )
+                            }
                         }
 
                         // Tarjeta de posición FIFO
@@ -200,8 +217,12 @@ fun AssetHistoryScreen(
             }
         }
 
-        // FAB con menú para añadir movimiento o dividendo
+        // FAB con menú contextual según tipo de activo
         if (state.asset != null) {
+            val isFixedIncome = FixedIncomeCategories.isFixedIncome(state.asset!!.assetCategoryId)
+            val isBond = state.asset!!.isBond
+            val isDeposit = state.asset!!.isDeposit
+
             Box(
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
@@ -227,16 +248,27 @@ fun AssetHistoryScreen(
                         leadingIcon = { Text("💱", fontSize = 16.sp) },
                         onClick     = { fabMenuOpen = false; viewModel.openAddSheet() }
                     )
-                    DropdownMenuItem(
-                        text        = { Text("Registrar dividendo", color = TextPrimary) },
-                        leadingIcon = { Text("📈", fontSize = 16.sp) },
-                        onClick     = { fabMenuOpen = false; viewModel.openDividendSheet() }
-                    )
-                    DropdownMenuItem(
-                        text        = { Text("Rendimiento bono/depósito", color = TextPrimary) },
-                        leadingIcon = { Text("📜", fontSize = 16.sp) },
-                        onClick     = { fabMenuOpen = false; viewModel.openBondDepositSheet() }
-                    )
+                    if (!isFixedIncome) {
+                        DropdownMenuItem(
+                            text        = { Text("Registrar dividendo", color = TextPrimary) },
+                            leadingIcon = { Text("📈", fontSize = 16.sp) },
+                            onClick     = { fabMenuOpen = false; viewModel.openDividendSheet() }
+                        )
+                    }
+                    if (isBond) {
+                        DropdownMenuItem(
+                            text        = { Text("Registrar cupón", color = TextPrimary) },
+                            leadingIcon = { Text("💰", fontSize = 16.sp) },
+                            onClick     = { fabMenuOpen = false; viewModel.openBondDepositSheet() }
+                        )
+                    }
+                    if (isDeposit) {
+                        DropdownMenuItem(
+                            text        = { Text("Registrar intereses", color = TextPrimary) },
+                            leadingIcon = { Text("🏦", fontSize = 16.sp) },
+                            onClick     = { fabMenuOpen = false; viewModel.openBondDepositSheet() }
+                        )
+                    }
                     if (state.isTransferable) {
                         DropdownMenuItem(
                             text        = { Text("Traspasar fondo", color = TextPrimary) },
@@ -1125,6 +1157,62 @@ private fun FifoSaleMatchBlock(
 private fun formatPercent1(value: Double): String {
     val rounded = (value * 10).toLong()
     return "${rounded / 10},${rounded % 10}"
+}
+
+@Composable
+private fun MaturityDateCard(
+    maturityDate: Long,
+    isBond: Boolean,
+    modifier: Modifier = Modifier
+) {
+    val now = Clock.System.now().toEpochMilliseconds()
+    val isExpired = maturityDate < now
+    val label = if (isBond) "Vencimiento del bono" else "Vencimiento del depósito"
+
+    Card(
+        modifier  = modifier.fillMaxWidth(),
+        shape     = RoundedCornerShape(14.dp),
+        colors    = CardDefaults.cardColors(
+            containerColor = if (isExpired) ExpenseRed.copy(alpha = 0.08f) else SurfaceWhite
+        ),
+        elevation = CardDefaults.cardElevation(0.dp),
+        border    = CardDefaults.outlinedCardBorder()
+    ) {
+        Row(
+            modifier          = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 14.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                if (isExpired) "⏰" else "📅",
+                fontSize = 24.sp
+            )
+            Spacer(Modifier.width(12.dp))
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text       = label,
+                    fontSize   = 11.sp,
+                    color      = TextSecondary
+                )
+                Spacer(Modifier.height(2.dp))
+                Text(
+                    text       = formatFullDate(maturityDate),
+                    fontSize   = 15.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color      = if (isExpired) ExpenseRed else TextPrimary
+                )
+                if (isExpired) {
+                    Text(
+                        text     = "Vencido",
+                        fontSize = 11.sp,
+                        color    = ExpenseRed,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+            }
+        }
+    }
 }
 
 private fun formatShortDate(epochMillis: Long): String {

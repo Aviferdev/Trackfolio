@@ -141,7 +141,8 @@ class AssetCategoryDetailViewModel(
         name: String,
         notes: String?,
         currentPrice: Double?,
-        platformIds: Set<String> = emptySet()
+        platformIds: Set<String> = emptySet(),
+        maturityDate: Long? = null
     ) {
         val accountId = session.selectedAccountId.value ?: run {
             _error.value = "Selecciona primero una cuenta"
@@ -164,7 +165,8 @@ class AssetCategoryDetailViewModel(
                 createdAt       = now,
                 assetCategoryId = categoryId,
                 currentPrice    = currentPrice,
-                currentPriceUpdatedAt = if (currentPrice != null) now else null
+                currentPriceUpdatedAt = if (currentPrice != null) now else null,
+                maturityDate    = maturityDate
             )
             saveAsset(asset)
                 .onSuccess {
@@ -184,7 +186,8 @@ class AssetCategoryDetailViewModel(
         notes: String?,
         assetCategoryId: String?,
         currentPrice: Double?,
-        platformIds: Set<String> = emptySet()
+        platformIds: Set<String> = emptySet(),
+        maturityDate: Long? = null
     ) {
         val tickerTrim = ticker.trim().uppercase()
         val nameTrim   = name.trim()
@@ -205,7 +208,8 @@ class AssetCategoryDetailViewModel(
                     notes                 = notes?.ifBlank { null },
                     assetCategoryId       = assetCategoryId,
                     currentPrice          = currentPrice,
-                    currentPriceUpdatedAt = updatedAt
+                    currentPriceUpdatedAt = updatedAt,
+                    maturityDate          = maturityDate
                 )
             ).onSuccess {
                 assetPlatformRepository.unlinkAllByAsset(original.id)

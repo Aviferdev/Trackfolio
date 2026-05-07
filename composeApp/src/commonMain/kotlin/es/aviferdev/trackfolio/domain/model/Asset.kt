@@ -6,10 +6,12 @@ package es.aviferdev.trackfolio.domain.model
  *
  * `currentPrice` representa la cotización actual editable por el usuario;
  * mientras sea NULL, los cálculos de P&L caen en 0 ("Sin precio actual").
+ * No aplica a renta fija (bonos/depósitos).
  *
- * `archived`: los activos NUNCA se borran, solo se archivan. Un activo
- * archivado no aparece en listados normales pero sus transacciones y
- * P&L histórico se conservan.
+ * `maturityDate` es la fecha de vencimiento en epoch millis. Solo aplica
+ * a bonos y depósitos.
+ *
+ * `archived`: los activos NUNCA se borran, solo se archivan.
  */
 data class Asset(
     val id: String,
@@ -21,7 +23,12 @@ data class Asset(
     val assetCategoryId: String? = null,
     val currentPrice: Double? = null,
     val currentPriceUpdatedAt: Long? = null,
-    val archived: Boolean = false
+    val archived: Boolean = false,
+    val maturityDate: Long? = null
 ) {
     val hasCurrentPrice: Boolean get() = currentPrice != null
+
+    val isFixedIncome: Boolean get() = FixedIncomeCategories.isFixedIncome(assetCategoryId)
+    val isBond: Boolean get() = FixedIncomeCategories.isBond(assetCategoryId)
+    val isDeposit: Boolean get() = FixedIncomeCategories.isDeposit(assetCategoryId)
 }

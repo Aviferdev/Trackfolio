@@ -162,8 +162,8 @@ fun AssetCategoryDetailScreen(
             currencyCode = state.currencyCode,
             preselectedCategoryId = categoryId,
             allPlatforms = state.allPlatforms,
-            onSave = { ticker, name, notes, _, currentPrice, platformIds ->
-                viewModel.addAsset(ticker, name, notes, currentPrice, platformIds)
+            onSave = { ticker, name, notes, _, currentPrice, platformIds, maturityDate ->
+                viewModel.addAsset(ticker, name, notes, currentPrice, platformIds, maturityDate)
             },
             onDismiss = { viewModel.closeAddSheet() }
         )
@@ -176,8 +176,8 @@ fun AssetCategoryDetailScreen(
             currencyCode = state.currencyCode,
             allPlatforms = state.allPlatforms,
             linkedPlatformIds = state.editingPlatformIds,
-            onSave = { ticker, name, notes, catId, currentPrice, platformIds ->
-                viewModel.editAsset(editing, ticker, name, notes, catId, currentPrice, platformIds)
+            onSave = { ticker, name, notes, catId, currentPrice, platformIds, maturityDate ->
+                viewModel.editAsset(editing, ticker, name, notes, catId, currentPrice, platformIds, maturityDate)
             },
             onDismiss = { viewModel.closeEditSheet() }
         )

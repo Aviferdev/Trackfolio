@@ -27,6 +27,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import es.aviferdev.trackfolio.domain.model.FixedIncomeCategories
 import es.aviferdev.trackfolio.ui.account.AccountViewModel
 import es.aviferdev.trackfolio.ui.theme.*
 import org.koin.compose.viewmodel.koinViewModel
@@ -60,7 +61,6 @@ fun PortfolioScreen(
 
     accountViewModel.selectAccount()
 
-    var fabMenuOpen     by remember { mutableStateOf(false) }
     var closedExpanded  by remember { mutableStateOf(false) }
 
     Box(
@@ -170,44 +170,19 @@ fun PortfolioScreen(
             }
         }
 
-        // ── FAB con menú ─────────────────────────────────────────────────────
-        Box(
-            modifier = Modifier
+        // ── FAB: nueva inversión ─────────────────────────────────────────────
+        FloatingActionButton(
+            onClick        = { viewModel.openAddTransactionSheet() },
+            modifier       = Modifier
                 .align(Alignment.BottomEnd)
                 .padding(end = 24.dp, bottom = 32.dp)
+                .size(56.dp),
+            shape          = CircleShape,
+            containerColor = PrimaryDark,
+            contentColor   = Color.White,
+            elevation      = FloatingActionButtonDefaults.elevation(4.dp)
         ) {
-            FloatingActionButton(
-                onClick   = { fabMenuOpen = true },
-                modifier  = Modifier.size(56.dp),
-                shape          = CircleShape,
-                containerColor = PrimaryDark,
-                contentColor   = Color.White,
-                elevation      = FloatingActionButtonDefaults.elevation(4.dp)
-            ) {
-                Text("+", fontSize = 28.sp, fontWeight = FontWeight.Light, color = Color.White)
-            }
-            DropdownMenu(
-                expanded         = fabMenuOpen,
-                onDismissRequest = { fabMenuOpen = false },
-                containerColor   = SurfaceWhite
-            ) {
-                DropdownMenuItem(
-                    text = { Text("Nuevo movimiento", color = TextPrimary) },
-                    leadingIcon = { Text("💱", fontSize = 16.sp) },
-                    onClick = {
-                        fabMenuOpen = false
-                        viewModel.openAddTransactionSheet()
-                    }
-                )
-                DropdownMenuItem(
-                    text = { Text("Rendimiento bono/depósito", color = TextPrimary) },
-                    leadingIcon = { Text("📜", fontSize = 16.sp) },
-                    onClick = {
-                        fabMenuOpen = false
-                        viewModel.openBondDepositSheet()
-                    }
-                )
-            }
+            Text("+", fontSize = 28.sp, fontWeight = FontWeight.Light, color = Color.White)
         }
     }
 
@@ -253,7 +228,7 @@ fun PortfolioScreen(
             categories   = availableCategories,
             currencyCode = state.currencyCode,
             allPlatforms = state.platforms,
-            onSave       = { ticker, name, notes, categoryId, currentPrice, platformIds ->
+            onSave       = { ticker, name, notes, categoryId, currentPrice, platformIds, _ ->
                 catalogViewModel.addAsset(ticker, name, notes, categoryId, currentPrice, platformIds)
             },
             onDismiss = { catalogViewModel.closeAddSheet() }
@@ -266,7 +241,7 @@ fun PortfolioScreen(
             currencyCode = state.currencyCode,
             allPlatforms = state.platforms,
             linkedPlatformIds = catalogState.editingPlatformIds,
-            onSave       = { ticker, name, notes, categoryId, currentPrice, platformIds ->
+            onSave       = { ticker, name, notes, categoryId, currentPrice, platformIds, _ ->
                 catalogViewModel.editAsset(editing, ticker, name, notes, categoryId, currentPrice, platformIds)
             },
             onDismiss    = { catalogViewModel.closeEditSheet() }
@@ -279,20 +254,6 @@ fun PortfolioScreen(
             initial   = null,
             onSave    = { name, icon -> platformViewModel.addPlatform(name, icon) },
             onDismiss = { platformViewModel.closeAddSheet() }
-        )
-    }
-
-    // Sheet de bono/depósito (desde FAB)
-    if (state.showBondDepositSheet) {
-        AddBondDepositBottomSheet(
-            allAssets    = state.allAssets,
-            currencyCode = state.currencyCode,
-            onSave       = { assetId, grossAmount, irpfPercent, commission, date ->
-                if (assetId != null) {
-                    viewModel.saveBondDeposit(assetId, grossAmount, irpfPercent, commission, date)
-                }
-            },
-            onDismiss    = { viewModel.closeBondDepositSheet() }
         )
     }
 
@@ -639,6 +600,7 @@ private fun AssetCard(
     val asset    = row.asset
     val pos      = row.position
     val symbol   = currencySymbol(currencyCode)
+    val isFixedIncome = FixedIncomeCategories.isFixedIncome(asset.assetCategoryId)
     val pnlColor = when {
         pos.totalPnL > 0 -> IncomeGreen
         pos.totalPnL < 0 -> ExpenseRed
@@ -737,14 +699,16 @@ private fun AssetCard(
 
             Spacer(Modifier.width(4.dp))
 
-            // Botón rápido de actualizar precio
-            IconButton(onClick = onUpdatePrice, modifier = Modifier.size(32.dp)) {
-                Icon(
-                    Icons.Outlined.Refresh,
-                    contentDescription = "Actualizar precio",
-                    modifier = Modifier.size(16.dp),
-                    tint     = PrimaryDark
-                )
+            // Botón rápido de actualizar precio (no aplica a renta fija)
+            if (!isFixedIncome) {
+                IconButton(onClick = onUpdatePrice, modifier = Modifier.size(32.dp)) {
+                    Icon(
+                        Icons.Outlined.Refresh,
+                        contentDescription = "Actualizar precio",
+                        modifier = Modifier.size(16.dp),
+                        tint     = PrimaryDark
+                    )
+                }
             }
         }
     }
@@ -882,7 +846,7 @@ private fun EmptyPortfolioState() {
             )
             Spacer(Modifier.height(8.dp))
             Text(
-                "Pulsa + para registrar\ntu primer movimiento",
+                "Pulsa + para registrar\ntu primera inversión",
                 fontSize  = 14.sp,
                 color     = TextSecondary,
                 textAlign = TextAlign.Center

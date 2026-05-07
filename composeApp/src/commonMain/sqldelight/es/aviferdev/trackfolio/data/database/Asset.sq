@@ -1,12 +1,12 @@
--- AssetEntity: catálogo del activo. Los datos de cantidad/precio/fecha de
--- cada compra o venta viven en AssetTransactionEntity. `currentPrice` y
--- `currentPriceUpdatedAt` representan la cotización actual del activo,
--- editable desde la UI; cuando son NULL la app interpreta P&L = 0
--- ("Sin precio actual").
+-- AssetEntity: catálogo del activo.
 --
--- `archived`: los activos NUNCA se borran, solo se archivan. Un activo
--- archivado no aparece en listados normales pero sus transacciones y
--- P&L histórico se conservan.
+-- `currentPrice` / `currentPriceUpdatedAt`: cotización actual editable.
+-- No aplica a renta fija (bonos/depósitos) — se deja NULL.
+--
+-- `maturityDate`: fecha de vencimiento (epoch millis). Solo aplica a
+-- bonos y depósitos bancarios.
+--
+-- `archived`: los activos NUNCA se borran, solo se archivan.
 
 CREATE TABLE AssetEntity (
     id                     TEXT    NOT NULL PRIMARY KEY,
@@ -19,6 +19,7 @@ CREATE TABLE AssetEntity (
     currentPrice           REAL,
     currentPriceUpdatedAt  INTEGER,
     archived               INTEGER NOT NULL DEFAULT 0,
+    maturityDate           INTEGER,
     FOREIGN KEY (accountId)       REFERENCES AccountEntity(id) ON DELETE CASCADE,
     FOREIGN KEY (assetCategoryId) REFERENCES AssetCategoryEntity(id) ON DELETE SET NULL
 );
@@ -27,7 +28,7 @@ CREATE INDEX idx_asset_account  ON AssetEntity(accountId);
 CREATE INDEX idx_asset_category ON AssetEntity(assetCategoryId);
 CREATE INDEX idx_asset_archived ON AssetEntity(archived);
 
--- ─── Lectura (solo activos no archivados por defecto) ─────────────────────────
+-- ─── Lectura ──────────────────────────────────────────────────────────────────
 
 selectAll:
 SELECT * FROM AssetEntity
@@ -55,14 +56,15 @@ SELECT * FROM AssetEntity WHERE id = :id;
 -- ─── Escritura ────────────────────────────────────────────────────────────────
 
 insert:
-INSERT INTO AssetEntity(id, accountId, ticker, name, notes, createdAt, assetCategoryId, currentPrice, currentPriceUpdatedAt, archived)
-VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 0);
+INSERT INTO AssetEntity(id, accountId, ticker, name, notes, createdAt, assetCategoryId, currentPrice, currentPriceUpdatedAt, archived, maturityDate)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 0, ?);
 
 update:
 UPDATE AssetEntity
 SET ticker = :ticker, name = :name, notes = :notes,
     assetCategoryId = :assetCategoryId,
-    currentPrice = :currentPrice, currentPriceUpdatedAt = :currentPriceUpdatedAt
+    currentPrice = :currentPrice, currentPriceUpdatedAt = :currentPriceUpdatedAt,
+    maturityDate = :maturityDate
 WHERE id = :id;
 
 updateCurrentPrice:
@@ -80,11 +82,13 @@ delete:
 DELETE FROM AssetEntity WHERE id = :id;
 
 -- Activos con posiciones abiertas cuyo precio no se ha actualizado
--- desde :thresholdDate (epoch millis). Solo activos no archivados.
+-- desde :thresholdDate. Solo activos no archivados y no de renta fija
+-- (bonos/depósitos no tienen precio actual cotizado).
 selectOutdatedByAccount:
 SELECT a.* FROM AssetEntity a
 WHERE a.accountId = :accountId
   AND a.archived = 0
+  AND a.assetCategoryId NOT IN ('fixed_cat_bonds', 'fixed_cat_deposits')
   AND (
     SELECT COALESCE(
       SUM(CASE WHEN t.type = 'BUY' THEN t.quantity ELSE 0 END) -
