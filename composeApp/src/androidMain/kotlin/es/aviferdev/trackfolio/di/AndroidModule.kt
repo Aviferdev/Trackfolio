@@ -15,7 +15,7 @@ val androidModule = module {
     single { AppSettings(androidContext()) }
     single { BiometricAuthenticator(androidContext()) }
     single { AppLockManager(get()) }
-    single { BalanceVisibilityManager(get()) }
+    single { BalanceVisibilityManager(get(), get(), get()) }
     single { DatabaseBackupManager(androidContext()) }
     single { PdfReportGenerator(androidContext()) }
 }

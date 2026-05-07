@@ -53,6 +53,8 @@ import es.aviferdev.trackfolio.domain.model.HomeBalance
 import es.aviferdev.trackfolio.domain.model.Transaction
 import es.aviferdev.trackfolio.domain.model.TransactionType
 import es.aviferdev.trackfolio.security.BalanceVisibilityManager
+import es.aviferdev.trackfolio.security.BiometricAuthenticator
+import es.aviferdev.trackfolio.security.BiometricResult
 import es.aviferdev.trackfolio.ui.account.AccountSelectorBar
 import es.aviferdev.trackfolio.ui.account.AccountViewModel
 import es.aviferdev.trackfolio.ui.theme.BackgroundGray
@@ -84,9 +86,11 @@ fun HomeScreen(
     val accountState   by accountViewModel.uiState.collectAsState()
     val selectedId     by accountViewModel.selectedAccountId.collectAsState()
     val balanceVisibility = koinInject<BalanceVisibilityManager>()
+    val authenticator: BiometricAuthenticator = koinInject()
     val balancesHidden = LocalBalanceHidden.current
     var showAddTransaction by remember { mutableStateOf(false) }
     var showInitialBalance by remember { mutableStateOf(false) }
+    var biometricError by remember { mutableStateOf<String?>(null) }
 
     Box(
         modifier = Modifier
@@ -117,7 +121,30 @@ fun HomeScreen(
                     accounts = accountState.accounts,
                     selectedAccountId = selectedId,
                     balancesHidden = balancesHidden,
-                    onToggleBalances = { balanceVisibility.toggle() },
+                    onToggleBalances = {
+                        biometricError = null
+                        if (balancesHidden) {
+                            balanceVisibility.requestShow {
+                                authenticator.authenticate(
+                                    title = "Mostrar saldos",
+                                    subtitle = "Confirma tu identidad"
+                                ) { result ->
+                                    when (result) {
+                                        is BiometricResult.Success -> balanceVisibility.onBiometricSuccess()
+                                        is BiometricResult.UserCancelled -> Unit
+                                        is BiometricResult.NotAvailable -> {
+                                            biometricError = "Biometría no disponible"
+                                        }
+                                        is BiometricResult.Error -> {
+                                            biometricError = result.message
+                                        }
+                                    }
+                                }
+                            }
+                        } else {
+                            balanceVisibility.hide()
+                        }
+                    },
                     onAccountSelected = { id -> accountViewModel.selectAccount(id) },
                     onNavigateToTransactions = onNavigateToTransactions,
                     onNavigateToCharts = onNavigateToCharts,

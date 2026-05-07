@@ -14,7 +14,7 @@ val iosModule = module {
     single { AppSettings() }
     single { BiometricAuthenticator() }
     single { AppLockManager(get()) }
-    single { BalanceVisibilityManager(get()) }
+    single { BalanceVisibilityManager(get(), get(), get()) }
     single { DatabaseBackupManager() }
     single { PdfReportGenerator() }
 }
