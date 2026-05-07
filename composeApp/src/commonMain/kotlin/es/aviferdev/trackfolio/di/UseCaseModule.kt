@@ -179,6 +179,11 @@ val useCaseModule = module {
     factory { RenameIssuerUseCase(get()) }
     factory { ArchiveIssuerUseCase(get()) }
 
+    // ── Reconciliation ─────────────────────────────────────────────────────────
+    factory { ReconcileBalanceUseCase(get(), get()) }
+    factory { ShouldShowReconciliationReminderUseCase(get()) }
+    factory { GetReconciliationReminderIntervalUseCase(get()) }
+
     // ── Fiscal ────────────────────────────────────────────────────────────────
     factory {
         GetFiscalReportDataUseCase(
@@ -294,6 +299,7 @@ val useCaseModule = module {
             getAssetById             = get(),
             getTransactionsByAsset   = get(),
             getPlatforms             = get(),
+            platformCategoryRepository = get(),
             assetPlatformRepository  = get(),
             getAccountById           = get(),
             saveAssetTransaction     = get(),
@@ -314,6 +320,8 @@ val useCaseModule = module {
             assetPlatformRepository             = get(),
             getAssetCategoriesIncludingArchived = get(),
             getPlatforms                        = get(),
+            platformCategoryRepository          = get(),
+            platformRepository                  = get(),
             saveAsset                           = get(),
             updateAsset                         = get(),
             archiveAsset                        = get(),

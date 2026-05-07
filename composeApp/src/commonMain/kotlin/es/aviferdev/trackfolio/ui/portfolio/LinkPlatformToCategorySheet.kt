@@ -1,0 +1,259 @@
+package es.aviferdev.trackfolio.ui.portfolio
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import es.aviferdev.trackfolio.domain.model.Platform
+import es.aviferdev.trackfolio.ui.theme.*
+
+/**
+ * Sheet para vincular plataformas a una categoría de activos.
+ *
+ * Muestra las plataformas existentes que aún no están vinculadas a esta
+ * categoría, permitiendo vincularlas con un tap. También permite crear
+ * una plataforma nueva que se vincula automáticamente.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun LinkPlatformToCategorySheet(
+    categoryName: String,
+    linkedPlatforms: List<Platform>,
+    allPlatforms: List<Platform>,
+    onLink: (platformId: String) -> Unit,
+    onUnlink: (platformId: String) -> Unit,
+    onCreate: (name: String, icon: String) -> Unit,
+    onDismiss: () -> Unit
+) {
+    val linkedIds = remember(linkedPlatforms) { linkedPlatforms.map { it.id }.toSet() }
+    val unlinkedPlatforms = remember(allPlatforms, linkedIds) {
+        allPlatforms.filter { it.id !in linkedIds }
+    }
+
+    var showCreateForm by remember { mutableStateOf(false) }
+    var newName by remember { mutableStateOf("") }
+    var newIcon by remember { mutableStateOf("🏦") }
+
+    ModalBottomSheet(
+        onDismissRequest = onDismiss,
+        sheetState       = rememberModalBottomSheetState(skipPartiallyExpanded = true),
+        containerColor   = SurfaceWhite,
+        dragHandle = {
+            Box(
+                modifier = Modifier
+                    .padding(top = 12.dp, bottom = 4.dp)
+                    .width(40.dp).height(4.dp)
+                    .clip(RoundedCornerShape(2.dp))
+                    .background(BorderGray)
+            )
+        }
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .imePadding()
+                .padding(horizontal = 20.dp)
+                .padding(bottom = 32.dp)
+                .verticalScroll(rememberScrollState())
+        ) {
+            Spacer(Modifier.height(4.dp))
+            Text(
+                text = "Plataformas de $categoryName",
+                fontSize = 18.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = TextPrimary
+            )
+            Spacer(Modifier.height(4.dp))
+            Text(
+                text = "Selecciona las plataformas donde operas activos de esta categoría.",
+                fontSize = 12.sp,
+                color = TextSecondary
+            )
+            Spacer(Modifier.height(16.dp))
+
+            // Plataformas ya vinculadas
+            if (linkedPlatforms.isNotEmpty()) {
+                Text(
+                    "VINCULADAS",
+                    fontSize = 11.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = TextSecondary
+                )
+                Spacer(Modifier.height(8.dp))
+                linkedPlatforms.forEach { p ->
+                    PlatformLinkRow(
+                        platform = p,
+                        isLinked = true,
+                        onToggle = { onUnlink(p.id) }
+                    )
+                }
+                Spacer(Modifier.height(16.dp))
+            }
+
+            // Plataformas disponibles para vincular
+            if (unlinkedPlatforms.isNotEmpty()) {
+                Text(
+                    "DISPONIBLES",
+                    fontSize = 11.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = TextSecondary
+                )
+                Spacer(Modifier.height(4.dp))
+                Text(
+                    "Estas plataformas ya existen en otras categorías. Pulsa para vincularlas también aquí.",
+                    fontSize = 11.sp,
+                    color = TextSecondary.copy(alpha = 0.7f)
+                )
+                Spacer(Modifier.height(8.dp))
+                unlinkedPlatforms.forEach { p ->
+                    PlatformLinkRow(
+                        platform = p,
+                        isLinked = false,
+                        onToggle = { onLink(p.id) }
+                    )
+                }
+                Spacer(Modifier.height(16.dp))
+            }
+
+            // Crear nueva plataforma
+            HorizontalDivider(color = BorderGray, thickness = 0.5.dp)
+            Spacer(Modifier.height(16.dp))
+
+            if (!showCreateForm) {
+                OutlinedButton(
+                    onClick = { showCreateForm = true },
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(10.dp),
+                    border = ButtonDefaults.outlinedButtonBorder
+                ) {
+                    Text(
+                        "+ Crear nueva plataforma",
+                        fontSize = 14.sp,
+                        color = PrimaryDark,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+            } else {
+                Text(
+                    "NUEVA PLATAFORMA",
+                    fontSize = 11.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = TextSecondary
+                )
+                Spacer(Modifier.height(8.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    // Icon selector simple
+                    Box(
+                        modifier = Modifier
+                            .size(48.dp)
+                            .clip(RoundedCornerShape(10.dp))
+                            .background(SurfaceElevated)
+                            .border(0.5.dp, BorderGray, RoundedCornerShape(10.dp))
+                            .clickable {
+                                val icons = listOf("🏦", "📊", "💹", "🏛️", "💰", "🔷", "⚡", "🌐")
+                                val idx = icons.indexOf(newIcon)
+                                newIcon = icons[(idx + 1) % icons.size]
+                            },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(newIcon, fontSize = 22.sp)
+                    }
+
+                    OutlinedTextField(
+                        value = newName,
+                        onValueChange = { newName = it },
+                        label = { Text("Nombre") },
+                        placeholder = { Text("Ej. Interactive Brokers") },
+                        modifier = Modifier.weight(1f),
+                        singleLine = true,
+                        shape = RoundedCornerShape(10.dp),
+                        keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = PrimaryDark,
+                            unfocusedBorderColor = BorderGray
+                        )
+                    )
+                }
+
+                Spacer(Modifier.height(12.dp))
+
+                Button(
+                    onClick = {
+                        if (newName.isNotBlank()) {
+                            onCreate(newName, newIcon)
+                            newName = ""
+                            newIcon = "🏦"
+                            showCreateForm = false
+                        }
+                    },
+                    enabled = newName.isNotBlank(),
+                    modifier = Modifier.fillMaxWidth().height(48.dp),
+                    shape = RoundedCornerShape(10.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = PrimaryDark,
+                        disabledContainerColor = PrimaryDark.copy(alpha = 0.38f)
+                    )
+                ) {
+                    Text("Crear y vincular", fontSize = 14.sp, fontWeight = FontWeight.Medium)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun PlatformLinkRow(
+    platform: Platform,
+    isLinked: Boolean,
+    onToggle: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(10.dp))
+            .background(if (isLinked) PrimaryDark.copy(alpha = 0.06f) else SurfaceElevated)
+            .border(
+                0.5.dp,
+                if (isLinked) PrimaryDark.copy(alpha = 0.3f) else BorderGray,
+                RoundedCornerShape(10.dp)
+            )
+            .clickable(onClick = onToggle)
+            .padding(horizontal = 14.dp, vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(platform.icon, fontSize = 18.sp)
+        Spacer(Modifier.width(10.dp))
+        Text(
+            platform.name,
+            fontSize = 14.sp,
+            color = TextPrimary,
+            fontWeight = FontWeight.Medium,
+            modifier = Modifier.weight(1f)
+        )
+        if (isLinked) {
+            Text("✓", fontSize = 16.sp, color = PrimaryDark, fontWeight = FontWeight.Bold)
+        } else {
+            Text("+", fontSize = 18.sp, color = TextSecondary, fontWeight = FontWeight.Light)
+        }
+    }
+    Spacer(Modifier.height(6.dp))
+}

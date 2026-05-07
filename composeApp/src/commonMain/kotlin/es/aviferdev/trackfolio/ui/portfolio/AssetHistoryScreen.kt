@@ -243,38 +243,51 @@ fun AssetHistoryScreen(
                     onDismissRequest = { fabMenuOpen = false },
                     containerColor   = SurfaceWhite
                 ) {
-                    DropdownMenuItem(
-                        text        = { Text("Nuevo movimiento", color = TextPrimary) },
-                        leadingIcon = { Text("💱", fontSize = 16.sp) },
-                        onClick     = { fabMenuOpen = false; viewModel.openAddSheet() }
-                    )
-                    if (!isFixedIncome) {
+                    if (isFixedIncome) {
+                        // Menú específico para bonos y depósitos
+                        DropdownMenuItem(
+                            text        = { Text(if (isBond) "Adquirir bono" else "Contratar depósito", color = TextPrimary) },
+                            leadingIcon = { Text(if (isBond) "📜" else "🏦", fontSize = 16.sp) },
+                            onClick     = { fabMenuOpen = false; viewModel.openAcquireFixedIncomeSheet() }
+                        )
+                        DropdownMenuItem(
+                            text        = { Text(if (isBond) "Liquidar / vender" else "Liquidar / cancelar", color = TextPrimary) },
+                            leadingIcon = { Text("✅", fontSize = 16.sp) },
+                            onClick     = { fabMenuOpen = false; viewModel.openCloseFixedIncomeSheet() }
+                        )
+                        if (isBond) {
+                            DropdownMenuItem(
+                                text        = { Text("Registrar cupón", color = TextPrimary) },
+                                leadingIcon = { Text("💰", fontSize = 16.sp) },
+                                onClick     = { fabMenuOpen = false; viewModel.openBondDepositSheet() }
+                            )
+                        }
+                        if (isDeposit) {
+                            DropdownMenuItem(
+                                text        = { Text("Registrar intereses", color = TextPrimary) },
+                                leadingIcon = { Text("🏦", fontSize = 16.sp) },
+                                onClick     = { fabMenuOpen = false; viewModel.openBondDepositSheet() }
+                            )
+                        }
+                    } else {
+                        // Menú estándar para activos normales
+                        DropdownMenuItem(
+                            text        = { Text("Nuevo movimiento", color = TextPrimary) },
+                            leadingIcon = { Text("💱", fontSize = 16.sp) },
+                            onClick     = { fabMenuOpen = false; viewModel.openAddSheet() }
+                        )
                         DropdownMenuItem(
                             text        = { Text("Registrar dividendo", color = TextPrimary) },
                             leadingIcon = { Text("📈", fontSize = 16.sp) },
                             onClick     = { fabMenuOpen = false; viewModel.openDividendSheet() }
                         )
-                    }
-                    if (isBond) {
-                        DropdownMenuItem(
-                            text        = { Text("Registrar cupón", color = TextPrimary) },
-                            leadingIcon = { Text("💰", fontSize = 16.sp) },
-                            onClick     = { fabMenuOpen = false; viewModel.openBondDepositSheet() }
-                        )
-                    }
-                    if (isDeposit) {
-                        DropdownMenuItem(
-                            text        = { Text("Registrar intereses", color = TextPrimary) },
-                            leadingIcon = { Text("🏦", fontSize = 16.sp) },
-                            onClick     = { fabMenuOpen = false; viewModel.openBondDepositSheet() }
-                        )
-                    }
-                    if (state.isTransferable) {
-                        DropdownMenuItem(
-                            text        = { Text("Traspasar fondo", color = TextPrimary) },
-                            leadingIcon = { Text("🔄", fontSize = 16.sp) },
-                            onClick     = { fabMenuOpen = false; viewModel.openTransferSheet() }
-                        )
+                        if (state.isTransferable) {
+                            DropdownMenuItem(
+                                text        = { Text("Traspasar fondo", color = TextPrimary) },
+                                leadingIcon = { Text("🔄", fontSize = 16.sp) },
+                                onClick     = { fabMenuOpen = false; viewModel.openTransferSheet() }
+                            )
+                        }
                     }
                 }
             }
@@ -399,6 +412,34 @@ fun AssetHistoryScreen(
                 viewModel.executeTransfer(destId, qty, srcPlat, dstPlat, vl, date)
             },
             onDismiss         = { viewModel.closeTransferSheet() }
+        )
+    }
+
+    // Sheet de adquisición de renta fija
+    if (state.showAcquireFixedIncomeSheet && state.asset != null) {
+        AcquireFixedIncomeBottomSheet(
+            asset        = state.asset!!,
+            platforms    = state.platforms,
+            currencyCode = state.currencyCode,
+            onSave       = { qty, nominal, date, platformId, feeNote, notes ->
+                viewModel.saveFixedIncomeAcquisition(qty, nominal, date, platformId, feeNote, notes)
+            },
+            onCreatePlatform = { /* Redirigir a Ajustes */ },
+            onDismiss    = { viewModel.closeAcquireFixedIncomeSheet() }
+        )
+    }
+
+    // Sheet de liquidación / venta secundaria / cancelación anticipada
+    if (state.showCloseFixedIncomeSheet && state.asset != null) {
+        CloseFixedIncomeBottomSheet(
+            asset             = state.asset!!,
+            platforms         = state.platforms,
+            assetTransactions = state.transactionsAsc,
+            currencyCode      = state.currencyCode,
+            onSave            = { closeType, qty, salePrice, grossInterest, irpfPercent, commission, date, platformId, notes ->
+                viewModel.saveFixedIncomeClose(closeType, qty, salePrice, grossInterest, irpfPercent, commission, date, platformId, notes)
+            },
+            onDismiss         = { viewModel.closeCloseFixedIncomeSheet() }
         )
     }
 }

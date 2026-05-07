@@ -20,6 +20,8 @@ import es.aviferdev.trackfolio.data.datasource.asset.AssetPriceHistoryLocalDataS
 import es.aviferdev.trackfolio.data.datasource.asset.AssetPriceHistoryLocalDataSourceImpl
 import es.aviferdev.trackfolio.data.datasource.issuer.IssuerLocalDataSource
 import es.aviferdev.trackfolio.data.datasource.issuer.IssuerLocalDataSourceImpl
+import es.aviferdev.trackfolio.data.datasource.platform.PlatformCategoryLocalDataSource
+import es.aviferdev.trackfolio.data.datasource.platform.PlatformCategoryLocalDataSourceImpl
 import es.aviferdev.trackfolio.data.datasource.platform.PlatformLocalDataSource
 import es.aviferdev.trackfolio.data.datasource.platform.PlatformLocalDataSourceImpl
 import es.aviferdev.trackfolio.data.datasource.transaction.TransactionLocalDataSource
@@ -34,6 +36,7 @@ import es.aviferdev.trackfolio.data.repository.debt.DebtRepositoryImpl
 import es.aviferdev.trackfolio.data.repository.asset.AssetPlatformRepositoryImpl
 import es.aviferdev.trackfolio.data.repository.asset.AssetPriceHistoryRepositoryImpl
 import es.aviferdev.trackfolio.data.repository.issuer.IssuerRepositoryImpl
+import es.aviferdev.trackfolio.data.repository.platform.PlatformCategoryRepositoryImpl
 import es.aviferdev.trackfolio.data.repository.platform.PlatformRepositoryImpl
 import es.aviferdev.trackfolio.data.repository.transaction.TransactionRepositoryImpl
 import es.aviferdev.trackfolio.domain.repository.AccountRepository
@@ -46,6 +49,7 @@ import es.aviferdev.trackfolio.domain.repository.DebtRepository
 import es.aviferdev.trackfolio.domain.repository.AssetPlatformRepository
 import es.aviferdev.trackfolio.domain.repository.AssetPriceHistoryRepository
 import es.aviferdev.trackfolio.domain.repository.IssuerRepository
+import es.aviferdev.trackfolio.domain.repository.PlatformCategoryRepository
 import es.aviferdev.trackfolio.domain.repository.PlatformRepository
 import es.aviferdev.trackfolio.domain.repository.TransactionRepository
 import org.koin.dsl.module
@@ -59,6 +63,7 @@ val repositoryModule = module {
     single<AssetCategoryLocalDataSource>    { AssetCategoryLocalDataSourceImpl(get()) }
     single<AssetTagLocalDataSource>         { AssetTagLocalDataSourceImpl(get()) }
     single<PlatformLocalDataSource>         { PlatformLocalDataSourceImpl(get()) }
+    single<PlatformCategoryLocalDataSource>  { PlatformCategoryLocalDataSourceImpl(get()) }
     single<AssetTransactionLocalDataSource> { AssetTransactionLocalDataSourceImpl(get()) }
     single<AssetPlatformLocalDataSource>    { AssetPlatformLocalDataSourceImpl(get()) }
     single<AssetPriceHistoryLocalDataSource>  { AssetPriceHistoryLocalDataSourceImpl(get()) }
@@ -72,6 +77,7 @@ val repositoryModule = module {
     single<AssetCategoryRepository>    { AssetCategoryRepositoryImpl(get()) }
     single<AssetTagRepository>         { AssetTagRepositoryImpl(get()) }
     single<PlatformRepository>         { PlatformRepositoryImpl(get()) }
+    single<PlatformCategoryRepository>  { PlatformCategoryRepositoryImpl(get()) }
     single<AssetTransactionRepository> { AssetTransactionRepositoryImpl(get()) }
     single<AssetPlatformRepository>    { AssetPlatformRepositoryImpl(get()) }
     single<AssetPriceHistoryRepository>       { AssetPriceHistoryRepositoryImpl(get()) }

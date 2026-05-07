@@ -171,32 +171,73 @@ fun PortfolioScreen(
         }
 
         // ── FAB: nueva inversión ─────────────────────────────────────────────
-        FloatingActionButton(
-            onClick        = { viewModel.openAddTransactionSheet() },
-            modifier       = Modifier
+        var fabMenuOpen by remember { mutableStateOf(false) }
+
+        Box(
+            modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .padding(end = 24.dp, bottom = 32.dp)
-                .size(56.dp),
-            shape          = CircleShape,
-            containerColor = PrimaryDark,
-            contentColor   = Color.White,
-            elevation      = FloatingActionButtonDefaults.elevation(4.dp)
         ) {
-            Text("+", fontSize = 28.sp, fontWeight = FontWeight.Light, color = Color.White)
+            FloatingActionButton(
+                onClick        = { fabMenuOpen = true },
+                modifier       = Modifier.size(56.dp),
+                shape          = CircleShape,
+                containerColor = PrimaryDark,
+                contentColor   = Color.White,
+                elevation      = FloatingActionButtonDefaults.elevation(4.dp)
+            ) {
+                Text("+", fontSize = 28.sp, fontWeight = FontWeight.Light, color = Color.White)
+            }
+            DropdownMenu(
+                expanded         = fabMenuOpen,
+                onDismissRequest = { fabMenuOpen = false },
+                containerColor   = SurfaceWhite
+            ) {
+                DropdownMenuItem(
+                    text        = { Text("Nueva compra", color = TextPrimary) },
+                    leadingIcon = { Text("↗", fontSize = 16.sp) },
+                    onClick     = { fabMenuOpen = false; viewModel.openAddTransactionSheet() }
+                )
+                // Solo mostrar si hay activos de renta fija en el catálogo
+                if (state.allAssets.any { it.isFixedIncome }) {
+                    DropdownMenuItem(
+                        text        = { Text("Adquirir bono / depósito", color = TextPrimary) },
+                        leadingIcon = { Text("📜", fontSize = 16.sp) },
+                        onClick     = {
+                            fabMenuOpen = false
+                            // Si solo hay uno de renta fija, abrirlo directamente
+                            val fixedIncomeAssets = state.allAssets.filter { it.isFixedIncome }
+                            if (fixedIncomeAssets.size == 1) {
+                                viewModel.openAcquireFixedIncomeSheet(fixedIncomeAssets.first())
+                            } else {
+                                // Abrir el sheet genérico filtrado a renta fija
+                                // Por ahora abrimos con el primero; el selector está en la sheet
+                                viewModel.openAcquireFixedIncomeSheet(fixedIncomeAssets.first())
+                            }
+                        }
+                    )
+                }
+                DropdownMenuItem(
+                    text        = { Text("Nuevo activo", color = TextPrimary) },
+                    leadingIcon = { Text("📁", fontSize = 16.sp) },
+                    onClick     = { fabMenuOpen = false; catalogViewModel.openAddSheet() }
+                )
+            }
         }
     }
 
     // ── Sheets y diálogos ────────────────────────────────────────────────────
 
-    // Nuevo movimiento (desde FAB)
+    // Nuevo movimiento (solo compra de activos NO renta fija, desde FAB de Portfolio)
     if (state.showAddTxSheet) {
         AddEditAssetTransactionBottomSheet(
             transaction       = null,
             fixedAsset        = null,
-            allAssets         = state.allAssets,
+            allAssets         = state.allAssets.filter { !it.isFixedIncome },
             platforms         = state.platforms,
-            assetTransactions = emptyList(), // sin asset preseleccionado, no se valida sobreventa hasta elegir
+            assetTransactions = emptyList(),
             currencyCode      = state.currencyCode,
+            buyOnly           = true,
             onSave            = { assetId, type, qty, price, date, platformId, feeNote, notes ->
                 viewModel.addTransaction(assetId, type, qty, price, date, platformId, feeNote, notes)
             },
@@ -208,6 +249,31 @@ fun PortfolioScreen(
                 platformViewModel.openAddSheet()
             },
             onDismiss         = { viewModel.closeAddTransactionSheet() }
+        )
+    }
+
+    // Adquisición de bono/depósito (desde FAB de Portfolio)
+    if (state.showAcquireFixedIncomeSheet && state.acquireFixedIncomeAsset != null) {
+        AcquireFixedIncomeBottomSheet(
+            asset        = state.acquireFixedIncomeAsset!!,
+            platforms    = state.platforms,
+            currencyCode = state.currencyCode,
+            onSave       = { qty, nominal, date, platformId, feeNote, notes ->
+                viewModel.addFixedIncomeAcquisition(
+                    assetId        = state.acquireFixedIncomeAsset!!.id,
+                    quantity       = qty,
+                    nominalPerUnit = nominal,
+                    date           = date,
+                    platformId     = platformId,
+                    feeNote        = feeNote,
+                    notes          = notes
+                )
+            },
+            onCreatePlatform = {
+                viewModel.closeAcquireFixedIncomeSheet()
+                platformViewModel.openAddSheet()
+            },
+            onDismiss    = { viewModel.closeAcquireFixedIncomeSheet() }
         )
     }
 

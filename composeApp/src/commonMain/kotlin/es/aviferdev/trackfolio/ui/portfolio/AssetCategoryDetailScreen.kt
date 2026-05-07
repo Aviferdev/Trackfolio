@@ -112,6 +112,78 @@ fun AssetCategoryDetailScreen(
                 }
             }
 
+            // ── Sección: Plataformas de esta categoría ───────────
+            if (state.category != null) {
+                item { Spacer(Modifier.height(8.dp)) }
+                item {
+                    SectionHeaderWithAction(
+                        title = "PLATAFORMAS",
+                        actionLabel = "Gestionar",
+                        onAction = { viewModel.openLinkPlatformSheet() }
+                    )
+                }
+                item {
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(14.dp),
+                        colors = CardDefaults.cardColors(containerColor = SurfaceWhite),
+                        border = CardDefaults.outlinedCardBorder(),
+                        elevation = CardDefaults.cardElevation(0.dp)
+                    ) {
+                        if (state.categoryPlatforms.isEmpty()) {
+                            Box(
+                                modifier = Modifier.fillMaxWidth().padding(16.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                    Text(
+                                        "Sin plataformas vinculadas",
+                                        fontSize = 13.sp,
+                                        color = TextSecondary
+                                    )
+                                    Spacer(Modifier.height(4.dp))
+                                    TextButton(onClick = { viewModel.openLinkPlatformSheet() }) {
+                                        Text(
+                                            "+ Añadir plataforma",
+                                            fontSize = 13.sp,
+                                            color = PrimaryDark,
+                                            fontWeight = FontWeight.Medium
+                                        )
+                                    }
+                                }
+                            }
+                        } else {
+                            Column {
+                                state.categoryPlatforms.forEachIndexed { index, platform ->
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(horizontal = 16.dp, vertical = 12.dp),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Text(platform.icon, fontSize = 18.sp, modifier = Modifier.size(28.dp))
+                                        Spacer(Modifier.width(12.dp))
+                                        Text(
+                                            platform.name,
+                                            fontSize = 15.sp,
+                                            color = TextPrimary,
+                                            modifier = Modifier.weight(1f)
+                                        )
+                                    }
+                                    if (index < state.categoryPlatforms.lastIndex) {
+                                        HorizontalDivider(
+                                            color = BorderGray,
+                                            thickness = 0.5.dp,
+                                            modifier = Modifier.padding(start = 52.dp)
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
             // ── Activos archivados ──────────────────────────────
             if (state.archivedAssets.isNotEmpty()) {
                 item { Spacer(Modifier.height(8.dp)) }
@@ -155,13 +227,26 @@ fun AssetCategoryDetailScreen(
     }
 
     // ── Sheets y diálogos ────────────────────────────────────────────────────
+    // Sheet de vincular plataformas a la categoría
+    if (state.showLinkPlatformSheet && state.category != null) {
+        LinkPlatformToCategorySheet(
+            categoryName    = state.category!!.name,
+            linkedPlatforms = state.categoryPlatforms,
+            allPlatforms    = state.allPlatforms,
+            onLink          = { viewModel.linkPlatform(it) },
+            onUnlink        = { viewModel.unlinkPlatform(it) },
+            onCreate        = { name, icon -> viewModel.createAndLinkPlatform(name, icon) },
+            onDismiss       = { viewModel.closeLinkPlatformSheet() }
+        )
+    }
+
     if (state.showAddSheet) {
         AddEditAssetBottomSheet(
             asset = null,
             categories = state.allCategories,
             currencyCode = state.currencyCode,
             preselectedCategoryId = categoryId,
-            allPlatforms = state.allPlatforms,
+            allPlatforms = state.categoryPlatforms,
             onSave = { ticker, name, notes, _, currentPrice, platformIds, maturityDate ->
                 viewModel.addAsset(ticker, name, notes, currentPrice, platformIds, maturityDate)
             },
@@ -174,7 +259,7 @@ fun AssetCategoryDetailScreen(
             asset = editing,
             categories = state.allCategories,
             currencyCode = state.currencyCode,
-            allPlatforms = state.allPlatforms,
+            allPlatforms = state.categoryPlatforms,
             linkedPlatformIds = state.editingPlatformIds,
             onSave = { ticker, name, notes, catId, currentPrice, platformIds, maturityDate ->
                 viewModel.editAsset(editing, ticker, name, notes, catId, currentPrice, platformIds, maturityDate)

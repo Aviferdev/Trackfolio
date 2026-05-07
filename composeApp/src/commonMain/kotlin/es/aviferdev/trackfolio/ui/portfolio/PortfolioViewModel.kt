@@ -90,8 +90,11 @@ data class PortfolioUiState(
     val showUpdatePriceSheet: Boolean   = false,
     val pricingAsset: Asset?            = null,
 
-    // Sheet de "Nuevo movimiento" desde el FAB del Portfolio
+    // Sheet de "Nuevo movimiento" desde el FAB del Portfolio (solo activos no renta fija)
     val showAddTxSheet: Boolean         = false,
+    // Sheet de adquisición de renta fija desde el FAB del Portfolio
+    val showAcquireFixedIncomeSheet: Boolean = false,
+    val acquireFixedIncomeAsset: Asset? = null,
     // Sheet de dividendo desde el FAB del Portfolio
     val showDividendSheet: Boolean      = false,
     val dividendAssetId: String?        = null,
@@ -122,6 +125,8 @@ class PortfolioViewModel(
         val showUpdatePriceSheet: Boolean = false,
         val pricingAsset: Asset? = null,
         val showAddTxSheet: Boolean = false,
+        val showAcquireFixedIncomeSheet: Boolean = false,
+        val acquireFixedIncomeAsset: Asset? = null,
         val showDividendSheet: Boolean = false,
         val dividendAssetId: String? = null,
         val showBondDepositSheet: Boolean = false,
@@ -147,14 +152,16 @@ class PortfolioViewModel(
         }
         .combine(_sheetState) { state, sheets ->
             state.copy(
-                showUpdatePriceSheet = sheets.showUpdatePriceSheet,
-                pricingAsset         = sheets.pricingAsset,
-                showAddTxSheet       = sheets.showAddTxSheet,
-                showDividendSheet    = sheets.showDividendSheet,
-                dividendAssetId      = sheets.dividendAssetId,
-                showBondDepositSheet = sheets.showBondDepositSheet,
-                bondDepositAssetId   = sheets.bondDepositAssetId,
-                error                = sheets.error
+                showUpdatePriceSheet        = sheets.showUpdatePriceSheet,
+                pricingAsset                = sheets.pricingAsset,
+                showAddTxSheet              = sheets.showAddTxSheet,
+                showAcquireFixedIncomeSheet = sheets.showAcquireFixedIncomeSheet,
+                acquireFixedIncomeAsset     = sheets.acquireFixedIncomeAsset,
+                showDividendSheet           = sheets.showDividendSheet,
+                dividendAssetId             = sheets.dividendAssetId,
+                showBondDepositSheet        = sheets.showBondDepositSheet,
+                bondDepositAssetId          = sheets.bondDepositAssetId,
+                error                       = sheets.error
             )
         }
         .stateIn(
@@ -315,6 +322,56 @@ class PortfolioViewModel(
 
     fun closeAddTransactionSheet() {
         _sheetState.value = _sheetState.value.copy(showAddTxSheet = false)
+    }
+
+    // ── Sheet de adquisición de renta fija desde Portfolio ─────────────
+    fun openAcquireFixedIncomeSheet(asset: Asset) {
+        _sheetState.value = _sheetState.value.copy(
+            showAcquireFixedIncomeSheet = true,
+            acquireFixedIncomeAsset = asset
+        )
+    }
+
+    fun closeAcquireFixedIncomeSheet() {
+        _sheetState.value = _sheetState.value.copy(
+            showAcquireFixedIncomeSheet = false,
+            acquireFixedIncomeAsset = null
+        )
+    }
+
+    fun addFixedIncomeAcquisition(
+        assetId: String,
+        quantity: Double,
+        nominalPerUnit: Double,
+        date: Long,
+        platformId: String,
+        feeNote: String?,
+        notes: String?
+    ) {
+        viewModelScope.launch {
+            val now = Clock.System.now().toEpochMilliseconds()
+            val tx = AssetTransaction(
+                id           = "tx_${now}_${(0..9999).random()}",
+                assetId      = assetId,
+                type         = AssetTransactionType.BUY,
+                quantity     = quantity,
+                pricePerUnit = nominalPerUnit,
+                date         = date,
+                platformId   = platformId,
+                feeNote      = feeNote?.ifBlank { null },
+                notes        = notes?.ifBlank { null },
+                createdAt    = now
+            )
+            saveAssetTransaction(tx)
+                .onSuccess {
+                    val asset = portfolioState.value.allAssets.find { it.id == assetId }
+                    if (asset != null) {
+                        syncToLedger.sync(assetTx = tx, accountId = asset.accountId, assetName = asset.name)
+                    }
+                    closeAcquireFixedIncomeSheet()
+                }
+                .onFailure { _sheetState.value = _sheetState.value.copy(error = it.message) }
+        }
     }
 
     fun addTransaction(

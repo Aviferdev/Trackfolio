@@ -1,0 +1,55 @@
+-- Relación N:M entre plataformas y categorías de activo.
+-- Define qué plataformas están disponibles para cada categoría.
+-- Una plataforma puede estar en varias categorías (el usuario la vincula
+-- manualmente desde los ajustes de cada categoría).
+
+CREATE TABLE PlatformCategoryEntity (
+    platformId      TEXT    NOT NULL,
+    assetCategoryId TEXT    NOT NULL,
+    createdAt       INTEGER NOT NULL,
+    PRIMARY KEY (platformId, assetCategoryId),
+    FOREIGN KEY (platformId)      REFERENCES PlatformEntity(id)       ON DELETE CASCADE,
+    FOREIGN KEY (assetCategoryId) REFERENCES AssetCategoryEntity(id)  ON DELETE CASCADE
+);
+
+CREATE INDEX idx_platform_category_platform ON PlatformCategoryEntity(platformId);
+CREATE INDEX idx_platform_category_category ON PlatformCategoryEntity(assetCategoryId);
+
+-- ─── Lectura ──────────────────────────────────────────────────────────────────
+
+selectByCategory:
+SELECT p.* FROM PlatformEntity p
+INNER JOIN PlatformCategoryEntity pc ON pc.platformId = p.id
+WHERE pc.assetCategoryId = :assetCategoryId
+  AND p.archived = 0
+ORDER BY p.sortOrder ASC, p.name ASC;
+
+selectByCategoryIncludingArchived:
+SELECT p.* FROM PlatformEntity p
+INNER JOIN PlatformCategoryEntity pc ON pc.platformId = p.id
+WHERE pc.assetCategoryId = :assetCategoryId
+ORDER BY p.archived ASC, p.sortOrder ASC, p.name ASC;
+
+selectCategoriesByPlatform:
+SELECT pc.assetCategoryId FROM PlatformCategoryEntity pc
+WHERE pc.platformId = :platformId;
+
+isLinked:
+SELECT COUNT(*) FROM PlatformCategoryEntity
+WHERE platformId = :platformId AND assetCategoryId = :assetCategoryId;
+
+-- ─── Escritura ────────────────────────────────────────────────────────────────
+
+link:
+INSERT OR IGNORE INTO PlatformCategoryEntity(platformId, assetCategoryId, createdAt)
+VALUES (?, ?, ?);
+
+unlink:
+DELETE FROM PlatformCategoryEntity
+WHERE platformId = :platformId AND assetCategoryId = :assetCategoryId;
+
+unlinkAllByCategory:
+DELETE FROM PlatformCategoryEntity WHERE assetCategoryId = :assetCategoryId;
+
+unlinkAllByPlatform:
+DELETE FROM PlatformCategoryEntity WHERE platformId = :platformId;

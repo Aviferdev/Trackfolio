@@ -137,6 +137,73 @@ fun SettingsScreen(
                 }
             }
 
+            // ── RECONCILIACIÓN DE EFECTIVO ─────────────────────────────────
+            item { SectionHeader(title = "RECONCILIACIÓN") }
+            item {
+                val reconciliationIntervalUseCase = koinInject<es.aviferdev.trackfolio.domain.usecase.reconciliation.GetReconciliationReminderIntervalUseCase>()
+                var selectedReconciliationInterval by remember { mutableIntStateOf(reconciliationIntervalUseCase.get()) }
+
+                SettingsGroupCard {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 14.dp)
+                    ) {
+                        Text(
+                            "Recordatorio de reajuste",
+                            fontSize   = 14.sp,
+                            fontWeight = FontWeight.Medium,
+                            color      = TextPrimary
+                        )
+                        Spacer(Modifier.height(4.dp))
+                        Text(
+                            "Te recordaré verificar el saldo de tus cuentas de efectivo para que coincida con la realidad.",
+                            fontSize = 12.sp,
+                            color    = TextSecondary
+                        )
+                        Spacer(Modifier.height(14.dp))
+                        Row(
+                            modifier              = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            listOf(0 to "Off", 7 to "7d", 15 to "15d", 30 to "30d").forEach { (days, label) ->
+                                val isSelected = selectedReconciliationInterval == days
+                                OutlinedButton(
+                                    onClick = {
+                                        selectedReconciliationInterval = days
+                                        reconciliationIntervalUseCase.set(days)
+                                    },
+                                    shape   = RoundedCornerShape(8.dp),
+                                    colors  = ButtonDefaults.outlinedButtonColors(
+                                        containerColor = if (isSelected) PrimaryDark else Color.Transparent,
+                                        contentColor   = if (isSelected) Color.White else TextPrimary
+                                    ),
+                                    border = BorderStroke(
+                                        width = 1.dp,
+                                        color = if (isSelected) PrimaryDark else BorderGray
+                                    ),
+                                    modifier = Modifier.weight(1f)
+                                ) {
+                                    Text(
+                                        text       = label,
+                                        fontSize   = 13.sp,
+                                        fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal
+                                    )
+                                }
+                            }
+                        }
+                        if (selectedReconciliationInterval == 0) {
+                            Spacer(Modifier.height(6.dp))
+                            Text(
+                                "El recordatorio está desactivado.",
+                                fontSize = 11.sp,
+                                color    = TextSecondary
+                            )
+                        }
+                    }
+                }
+            }
+
             // ── SEGURIDAD ─────────────────────────────────────────────────────
             item { SectionHeader(title = "SEGURIDAD") }
             item {

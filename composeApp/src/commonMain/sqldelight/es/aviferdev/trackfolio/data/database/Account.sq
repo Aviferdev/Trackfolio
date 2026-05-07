@@ -44,8 +44,9 @@ SELECT
     a.createdAt,
     a.accountType,
     COALESCE(a.balance, 0.0)
-        + COALESCE(SUM(CASE WHEN t.type = 'INCOME'  THEN t.amount ELSE 0.0 END), 0.0)
-        - COALESCE(SUM(CASE WHEN t.type = 'EXPENSE' THEN t.amount ELSE 0.0 END), 0.0)
+        + COALESCE(SUM(CASE WHEN t.type = 'INCOME'     THEN t.amount ELSE 0.0 END), 0.0)
+        - COALESCE(SUM(CASE WHEN t.type = 'EXPENSE'    THEN t.amount ELSE 0.0 END), 0.0)
+        + COALESCE(SUM(CASE WHEN t.type = 'ADJUSTMENT'  THEN t.amount ELSE 0.0 END), 0.0)
     AS computedBalance
 FROM AccountEntity a
 LEFT JOIN TransactionEntity t ON t.accountId = a.id
@@ -61,8 +62,9 @@ SELECT
     a.createdAt,
     a.accountType,
     COALESCE(a.balance, 0.0)
-        + COALESCE(SUM(CASE WHEN t.type = 'INCOME'  THEN t.amount ELSE 0.0 END), 0.0)
-        - COALESCE(SUM(CASE WHEN t.type = 'EXPENSE' THEN t.amount ELSE 0.0 END), 0.0)
+        + COALESCE(SUM(CASE WHEN t.type = 'INCOME'     THEN t.amount ELSE 0.0 END), 0.0)
+        - COALESCE(SUM(CASE WHEN t.type = 'EXPENSE'    THEN t.amount ELSE 0.0 END), 0.0)
+        + COALESCE(SUM(CASE WHEN t.type = 'ADJUSTMENT'  THEN t.amount ELSE 0.0 END), 0.0)
     AS computedBalance
 FROM AccountEntity a
 LEFT JOIN TransactionEntity t ON t.accountId = a.id
@@ -75,6 +77,7 @@ SELECT
         COALESCE(a.balance, 0.0)
         + COALESCE(inc.total, 0.0)
         - COALESCE(exp.total, 0.0)
+        + COALESCE(adj.total, 0.0)
     ), 0.0) AS totalBalance
 FROM AccountEntity a
 LEFT JOIN (
@@ -86,4 +89,9 @@ LEFT JOIN (
     SELECT accountId, SUM(amount) AS total
     FROM TransactionEntity WHERE type = 'EXPENSE'
     GROUP BY accountId
-) exp ON exp.accountId = a.id;
+) exp ON exp.accountId = a.id
+LEFT JOIN (
+    SELECT accountId, SUM(amount) AS total
+    FROM TransactionEntity WHERE type = 'ADJUSTMENT'
+    GROUP BY accountId
+) adj ON adj.accountId = a.id;

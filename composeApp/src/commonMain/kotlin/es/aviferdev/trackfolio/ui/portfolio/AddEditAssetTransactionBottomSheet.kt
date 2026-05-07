@@ -37,8 +37,12 @@ import kotlinx.datetime.toLocalDateTime
  *
  * - Plataforma obligatoria (decisión 3.A). Si no hay plataformas creadas,
  *   se muestra un atajo a la pantalla de creación (decisión 8.C).
+ * - Para SELL: solo se muestran habilitadas las plataformas donde el activo
+ *   tiene unidades disponibles. El resto aparece deshabilitado. No se
+ *   preselecciona ninguna — el usuario debe elegir explícitamente.
  * - Bloqueo de sobreventa (decisión 7.A): para una venta, la cantidad no
- *   puede exceder las unidades disponibles a la fecha indicada.
+ *   puede exceder las unidades disponibles en la plataforma seleccionada
+ *   a la fecha indicada.
  * - Fee como texto libre informativo (decisión 5.C): no entra en cálculos.
  *
  * @param assetTransactions movimientos del activo seleccionado, para
@@ -56,6 +60,7 @@ fun AddEditAssetTransactionBottomSheet(
     platforms: List<Platform>,                   // plataformas activas
     assetTransactions: List<AssetTransaction>,   // movimientos del activo seleccionado actual
     currencyCode: String,
+    buyOnly: Boolean = false,                    // si true, no se muestra el toggle y siempre es BUY
     onSave: (
         assetId: String,
         type: AssetTransactionType,
@@ -89,7 +94,7 @@ fun AddEditAssetTransactionBottomSheet(
         mutableStateOf(transaction?.date ?: Clock.System.now().toEpochMilliseconds())
     }
     var platformId by remember(transaction) {
-        mutableStateOf(transaction?.platformId ?: platforms.firstOrNull()?.id)
+        mutableStateOf(transaction?.platformId)
     }
     var feeNote by remember(transaction) {
         mutableStateOf(transaction?.feeNote ?: "")
@@ -99,21 +104,59 @@ fun AddEditAssetTransactionBottomSheet(
     }
     var showDatePicker by remember { mutableStateOf(false) }
 
+    // ── Disponibilidad por plataforma (para ventas) ─────────────────────────
+    val relevantTransactions = remember(selectedAssetId, assetTransactions) {
+        assetTransactions.filter { it.assetId == selectedAssetId }
+    }
+
+    val availableByPlatform: Map<String, Double> = remember(relevantTransactions, dateMillis, transaction) {
+        platforms.associate { p ->
+            p.id to PortfolioCalculator.availableQuantityAt(
+                transactions           = relevantTransactions,
+                asOfDate               = dateMillis,
+                platformId             = p.id,
+                excludingTransactionId = transaction?.id
+            )
+        }
+    }
+
+    val platformsWithStock: Set<String> = remember(availableByPlatform) {
+        availableByPlatform.filterValues { it > 0.0 }.keys
+    }
+
+    // Al cambiar a SELL: limpiar plataforma si la actual no tiene stock
+    LaunchedEffect(type) {
+        if (type == AssetTransactionType.SELL) {
+            if (platformId != null && platformId !in platformsWithStock) {
+                platformId = null
+            }
+        } else if (platformId == null && transaction == null) {
+            // Para BUY sin edición, preseleccionar la primera
+            platformId = platforms.firstOrNull()?.id
+        }
+    }
+
     // ── Validación ───────────────────────────────────────────────────────────
     val parsedQty   = quantity.replace(',', '.').toDoubleOrNull()
     val parsedPrice = pricePerUnit.replace(',', '.').toDoubleOrNull()
     val now         = Clock.System.now().toEpochMilliseconds()
 
-    val availableForSale: Double = if (selectedAssetId != null) {
+    val isSell = type == AssetTransactionType.SELL
+
+    val availableForSale: Double = if (isSell && platformId != null) {
+        availableByPlatform[platformId] ?: 0.0
+    } else if (isSell) {
+        // Sin plataforma seleccionada: mostrar total global como referencia
         PortfolioCalculator.availableQuantityAt(
-            transactions           = assetTransactions.filter { it.assetId == selectedAssetId },
+            transactions           = relevantTransactions,
             asOfDate               = dateMillis,
             excludingTransactionId = transaction?.id
         )
     } else 0.0
 
-    val sellExceeds = type == AssetTransactionType.SELL
-        && parsedQty != null && parsedQty > availableForSale
+    val sellExceeds = isSell
+        && parsedQty != null && platformId != null
+        && parsedQty > (availableByPlatform[platformId] ?: 0.0)
 
     val isValid = selectedAssetId != null
         && parsedQty != null && parsedQty > 0.0
@@ -157,31 +200,33 @@ fun AddEditAssetTransactionBottomSheet(
                 modifier   = Modifier.padding(bottom = 16.dp)
             )
 
-            // ── Tipo BUY/SELL ────────────────────────────────────────────────
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(10.dp))
-                    .background(SurfaceElevated)
-                    .padding(4.dp),
-                horizontalArrangement = Arrangement.spacedBy(4.dp)
-            ) {
-                TypeToggle(
-                    label    = "Compra",
-                    isSel    = type == AssetTransactionType.BUY,
-                    selColor = IncomeGreen,
-                    modifier = Modifier.weight(1f),
-                    onClick  = { type = AssetTransactionType.BUY }
-                )
-                TypeToggle(
-                    label    = "Venta",
-                    isSel    = type == AssetTransactionType.SELL,
-                    selColor = ExpenseRed,
-                    modifier = Modifier.weight(1f),
-                    onClick  = { type = AssetTransactionType.SELL }
-                )
+            // ── Tipo BUY/SELL (oculto en modo buyOnly) ────────────────────────
+            if (!buyOnly) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(10.dp))
+                        .background(SurfaceElevated)
+                        .padding(4.dp),
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    TypeToggle(
+                        label    = "Compra",
+                        isSel    = type == AssetTransactionType.BUY,
+                        selColor = IncomeGreen,
+                        modifier = Modifier.weight(1f),
+                        onClick  = { type = AssetTransactionType.BUY }
+                    )
+                    TypeToggle(
+                        label    = "Venta",
+                        isSel    = type == AssetTransactionType.SELL,
+                        selColor = ExpenseRed,
+                        modifier = Modifier.weight(1f),
+                        onClick  = { type = AssetTransactionType.SELL }
+                    )
+                }
+                Spacer(Modifier.height(16.dp))
             }
-            Spacer(Modifier.height(16.dp))
 
             // ── Selector de activo (oculto si fixedAsset != null) ────────────
             if (fixedAsset == null) {
@@ -240,6 +285,43 @@ fun AddEditAssetTransactionBottomSheet(
                 Spacer(Modifier.height(16.dp))
             }
 
+            // ── Plataforma (obligatoria — antes de cantidad para ventas) ─────
+            Text("Plataforma", fontSize = 12.sp, color = TextSecondary, fontWeight = FontWeight.Medium)
+            if (isSell && platformId == null && platformsWithStock.isNotEmpty()) {
+                Text(
+                    text     = "Selecciona dónde tienes las unidades",
+                    fontSize = 11.sp,
+                    color    = ExpenseRed.copy(alpha = 0.8f)
+                )
+            }
+            Spacer(Modifier.height(8.dp))
+            if (platforms.isEmpty()) {
+                EmptyPlatformsInlineHint(onCreate = onCreatePlatform)
+            } else {
+                Row(
+                    modifier              = Modifier
+                        .fillMaxWidth()
+                        .horizontalScroll(rememberScrollState()),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    platforms.forEach { p ->
+                        val hasStock = platformsWithStock.contains(p.id)
+                        val enabled = !isSell || hasStock
+                        val available = availableByPlatform[p.id] ?: 0.0
+
+                        PlatformChip(
+                            icon       = p.icon,
+                            label      = p.name,
+                            isSelected = platformId == p.id,
+                            enabled    = enabled,
+                            badge      = if (isSell && hasStock) "${formatQty(available)} u." else null,
+                            onClick    = { if (enabled) platformId = p.id }
+                        )
+                    }
+                }
+            }
+            Spacer(Modifier.height(16.dp))
+
             // ── Cantidad + precio ────────────────────────────────────────────
             Row(
                 modifier              = Modifier.fillMaxWidth(),
@@ -276,13 +358,20 @@ fun AddEditAssetTransactionBottomSheet(
                     )
                 )
             }
-            if (type == AssetTransactionType.SELL && selectedAssetId != null) {
+            if (isSell && selectedAssetId != null) {
                 Spacer(Modifier.height(6.dp))
+                val displayAvailable = if (platformId != null)
+                    availableByPlatform[platformId] ?: 0.0
+                else
+                    availableForSale
+                val platformLabel = if (platformId != null)
+                    " en ${platforms.firstOrNull { it.id == platformId }?.name ?: "plataforma"}"
+                else ""
                 Text(
                     text     = if (sellExceeds)
-                        "Solo tienes ${formatQty(availableForSale)} unidades disponibles a esa fecha"
+                        "Solo tienes ${formatQty(displayAvailable)} unidades disponibles$platformLabel a esa fecha"
                     else
-                        "Disponible: ${formatQty(availableForSale)} unidades a esa fecha",
+                        "Disponible: ${formatQty(displayAvailable)} unidades$platformLabel a esa fecha",
                     fontSize = 11.sp,
                     color    = if (sellExceeds) ExpenseRed else TextSecondary
                 )
@@ -305,30 +394,6 @@ fun AddEditAssetTransactionBottomSheet(
                     fontSize = 14.sp,
                     color    = TextPrimary
                 )
-            }
-            Spacer(Modifier.height(12.dp))
-
-            // ── Plataforma (obligatoria) ────────────────────────────────────
-            Text("Plataforma", fontSize = 12.sp, color = TextSecondary, fontWeight = FontWeight.Medium)
-            Spacer(Modifier.height(8.dp))
-            if (platforms.isEmpty()) {
-                EmptyPlatformsInlineHint(onCreate = onCreatePlatform)
-            } else {
-                Row(
-                    modifier              = Modifier
-                        .fillMaxWidth()
-                        .horizontalScroll(rememberScrollState()),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    platforms.forEach { p ->
-                        PlatformChip(
-                            icon       = p.icon,
-                            label      = p.name,
-                            isSelected = platformId == p.id,
-                            onClick    = { platformId = p.id }
-                        )
-                    }
-                }
             }
             Spacer(Modifier.height(12.dp))
 
@@ -511,29 +576,67 @@ private fun PlatformChip(
     icon: String,
     label: String,
     isSelected: Boolean,
+    enabled: Boolean = true,
+    badge: String? = null,
     onClick: () -> Unit
 ) {
-    val bg     = if (isSelected) PrimaryDark    else SurfaceElevated
-    val border = if (isSelected) PrimaryDark    else BorderGray
-    val text   = if (isSelected) Color.White    else TextPrimary
+    val bg = when {
+        !enabled   -> SurfaceElevated.copy(alpha = 0.5f)
+        isSelected -> PrimaryDark
+        else       -> SurfaceElevated
+    }
+    val border = when {
+        !enabled   -> BorderGray.copy(alpha = 0.3f)
+        isSelected -> PrimaryDark
+        else       -> BorderGray
+    }
+    val text = when {
+        !enabled   -> TextSecondary.copy(alpha = 0.4f)
+        isSelected -> Color.White
+        else       -> TextPrimary
+    }
 
-    Row(
-        modifier = Modifier
-            .clip(RoundedCornerShape(20.dp))
-            .background(bg)
-            .border(0.5.dp, border, RoundedCornerShape(20.dp))
-            .clickable(onClick = onClick)
-            .padding(horizontal = 12.dp, vertical = 8.dp),
-        verticalAlignment = Alignment.CenterVertically
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(icon, fontSize = 14.sp)
-        Spacer(Modifier.width(6.dp))
-        Text(
-            text       = label,
-            fontSize   = 13.sp,
-            color      = text,
-            fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal
-        )
+        Row(
+            modifier = Modifier
+                .clip(RoundedCornerShape(20.dp))
+                .background(bg)
+                .border(0.5.dp, border, RoundedCornerShape(20.dp))
+                .then(if (enabled) Modifier.clickable(onClick = onClick) else Modifier)
+                .padding(horizontal = 12.dp, vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                icon,
+                fontSize = 14.sp,
+                color    = if (!enabled) text else Color.Unspecified
+            )
+            Spacer(Modifier.width(6.dp))
+            Text(
+                text       = label,
+                fontSize   = 13.sp,
+                color      = text,
+                fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal
+            )
+        }
+        if (badge != null) {
+            Text(
+                text     = badge,
+                fontSize = 10.sp,
+                color    = if (isSelected) PrimaryDark else TextSecondary,
+                fontWeight = FontWeight.Medium,
+                modifier = Modifier.padding(top = 2.dp)
+            )
+        } else if (!enabled) {
+            Text(
+                text     = "Sin unidades",
+                fontSize = 10.sp,
+                color    = TextSecondary.copy(alpha = 0.5f),
+                modifier = Modifier.padding(top = 2.dp)
+            )
+        }
     }
 }
 

@@ -6,6 +6,8 @@ import es.aviferdev.trackfolio.domain.model.Asset
 import es.aviferdev.trackfolio.domain.model.AssetCategory
 import es.aviferdev.trackfolio.domain.model.Platform
 import es.aviferdev.trackfolio.domain.portfolio.PortfolioCalculator
+import es.aviferdev.trackfolio.domain.repository.PlatformCategoryRepository
+import es.aviferdev.trackfolio.domain.repository.PlatformRepository
 import es.aviferdev.trackfolio.domain.repository.AssetPlatformRepository
 import es.aviferdev.trackfolio.domain.repository.AssetRepository
 import es.aviferdev.trackfolio.domain.repository.AssetTransactionRepository
@@ -32,6 +34,7 @@ data class AssetCategoryDetailUiState(
     val category: AssetCategory?       = null,
     val activeAssets: List<Asset>       = emptyList(),
     val archivedAssets: List<Asset>     = emptyList(),
+    val categoryPlatforms: List<Platform> = emptyList(),
     val allPlatforms: List<Platform>    = emptyList(),
     val allCategories: List<AssetCategory> = emptyList(),
     val currencyCode: String           = "EUR",
@@ -39,6 +42,7 @@ data class AssetCategoryDetailUiState(
     val editing: Asset?                = null,
     val editingPlatformIds: Set<String> = emptySet(),
     val pendingArchive: Asset?         = null,
+    val showLinkPlatformSheet: Boolean = false,
     val error: String?                 = null
 )
 
@@ -50,6 +54,8 @@ class AssetCategoryDetailViewModel(
     private val assetPlatformRepository: AssetPlatformRepository,
     private val getAssetCategoriesIncludingArchived: GetAllAssetCategoriesIncludingArchivedUseCase,
     private val getPlatforms: GetPlatformsUseCase,
+    private val platformCategoryRepository: PlatformCategoryRepository,
+    private val platformRepository: PlatformRepository,
     private val saveAsset: SaveAssetUseCase,
     private val updateAsset: UpdateAssetUseCase,
     private val archiveAsset: ArchiveAssetUseCase,
@@ -62,6 +68,7 @@ class AssetCategoryDetailViewModel(
     private val _editingPlatformIds = MutableStateFlow<Set<String>>(emptySet())
     private val _pendingArchive    = MutableStateFlow<Asset?>(null)
     private val _error             = MutableStateFlow<String?>(null)
+    private val _showLinkPlatformSheet = MutableStateFlow(false)
 
     val uiState: StateFlow<AssetCategoryDetailUiState> = session.selectedAccountId
         .flatMapLatest { accountId ->
@@ -70,24 +77,30 @@ class AssetCategoryDetailViewModel(
                 assetRepository.getAllByAccountIncludingArchived(accountId),
                 getAssetCategoriesIncludingArchived(),
                 getPlatforms(),
+                platformCategoryRepository.getByCategory(categoryId),
                 combine(_showAddSheet, _editing, _editingPlatformIds, _pendingArchive, _error) { show, edit, platIds, arch, err ->
                     SheetState(show, edit, platIds, arch, err)
+                }.combine(_showLinkPlatformSheet) { sheets, linkSheet ->
+                    sheets to linkSheet
                 }
-            ) { allAssets, categories, platforms, sheets ->
+            ) { allAssets, categories, allPlatforms, categoryPlatforms, sheetsAndLink ->
+                val (sheets, linkSheet) = sheetsAndLink
                 val category = categories.firstOrNull { it.id == categoryId }
                 val assetsInCategory = allAssets.filter { it.assetCategoryId == categoryId }
                 AssetCategoryDetailUiState(
-                    category           = category,
-                    activeAssets        = assetsInCategory.filter { !it.archived },
-                    archivedAssets      = assetsInCategory.filter { it.archived },
-                    allPlatforms        = platforms,
-                    allCategories       = categories.filter { !it.archived },
-                    currencyCode        = "EUR",
-                    showAddSheet        = sheets.show,
-                    editing             = sheets.edit,
-                    editingPlatformIds  = sheets.platIds,
-                    pendingArchive      = sheets.arch,
-                    error               = sheets.err
+                    category            = category,
+                    activeAssets         = assetsInCategory.filter { !it.archived },
+                    archivedAssets       = assetsInCategory.filter { it.archived },
+                    categoryPlatforms   = categoryPlatforms,
+                    allPlatforms         = allPlatforms,
+                    allCategories        = categories.filter { !it.archived },
+                    currencyCode         = "EUR",
+                    showAddSheet         = sheets.show,
+                    editing              = sheets.edit,
+                    editingPlatformIds   = sheets.platIds,
+                    pendingArchive       = sheets.arch,
+                    showLinkPlatformSheet = linkSheet,
+                    error                = sheets.err
                 )
             }
         }
@@ -223,6 +236,54 @@ class AssetCategoryDetailViewModel(
     }
 
     fun clearError() { _error.value = null }
+
+    // ── Plataformas de la categoría ───────────────────────────────────
+    fun openLinkPlatformSheet()  { _showLinkPlatformSheet.value = true }
+    fun closeLinkPlatformSheet() { _showLinkPlatformSheet.value = false }
+
+    /** Vincula una plataforma existente a esta categoría. */
+    fun linkPlatform(platformId: String) {
+        viewModelScope.launch {
+            platformCategoryRepository.link(platformId, categoryId)
+                .onFailure { _error.value = it.message }
+        }
+    }
+
+    /** Desvincula una plataforma de esta categoría. */
+    fun unlinkPlatform(platformId: String) {
+        viewModelScope.launch {
+            platformCategoryRepository.unlink(platformId, categoryId)
+                .onFailure { _error.value = it.message }
+        }
+    }
+
+    /** Crea una plataforma nueva y la vincula a esta categoría automáticamente. */
+    fun createAndLinkPlatform(name: String, icon: String) {
+        val trimmed = name.trim()
+        if (trimmed.isBlank()) return
+        if (uiState.value.allPlatforms.any { it.name.equals(trimmed, ignoreCase = true) }) {
+            _error.value = "Ya existe una plataforma con ese nombre"
+            return
+        }
+        viewModelScope.launch {
+            val now = Clock.System.now().toEpochMilliseconds()
+            val nextOrder = (uiState.value.allPlatforms.maxOfOrNull { it.sortOrder } ?: -1) + 1
+            val platform = Platform(
+                id        = "platform_$now",
+                name      = trimmed,
+                icon      = icon.ifBlank { "🏦" },
+                sortOrder = nextOrder,
+                createdAt = now
+            )
+            platformRepository.save(platform)
+                .onSuccess {
+                    platformCategoryRepository.link(platform.id, categoryId)
+                        .onFailure { _error.value = it.message }
+                    _showLinkPlatformSheet.value = false
+                }
+                .onFailure { _error.value = it.message }
+        }
+    }
 
     private data class SheetState(
         val show: Boolean,

@@ -53,12 +53,18 @@ WHERE accountId = :accountId
 ORDER BY date DESC
 LIMIT :limit;
 
+-- ─── Totales de ingresos/gastos REALES ───────────────────────────────────────
+-- Excluyen movimientos vinculados a inversiones (compra/venta de activos,
+-- dividendos, cupones, intereses de depósitos). Solo cuentan ingresos y
+-- gastos reales: salario, intereses de cuentas remuneradas, gastos de vida, etc.
+
 getMonthlyTotalsByAccount:
 SELECT
     COALESCE(SUM(CASE WHEN type = 'INCOME'  THEN amount ELSE 0.0 END), 0.0) AS totalIncome,
     COALESCE(SUM(CASE WHEN type = 'EXPENSE' THEN amount ELSE 0.0 END), 0.0) AS totalExpense
 FROM TransactionEntity
 WHERE accountId = :accountId
+  AND linkedAssetTransactionId IS NULL
   AND strftime('%Y', date / 1000, 'unixepoch') = :year
   AND strftime('%m', date / 1000, 'unixepoch') = :month;
 
@@ -68,6 +74,7 @@ SELECT
     COALESCE(SUM(CASE WHEN type = 'EXPENSE' THEN amount ELSE 0.0 END), 0.0) AS totalExpense
 FROM TransactionEntity
 WHERE accountId = :accountId
+  AND linkedAssetTransactionId IS NULL
   AND strftime('%Y', date / 1000, 'unixepoch') = :year;
 
 getMonthlyBreakdownByAccount:
@@ -77,11 +84,12 @@ SELECT
     COALESCE(SUM(CASE WHEN type = 'EXPENSE' THEN amount ELSE 0.0 END), 0.0) AS totalExpense
 FROM TransactionEntity
 WHERE accountId = :accountId
+  AND linkedAssetTransactionId IS NULL
   AND strftime('%Y', date / 1000, 'unixepoch') = :year
 GROUP BY month
 ORDER BY month ASC;
 
--- ─── Ingresos del año (para informe fiscal) ──────────────────────────────────
+-- ─── Ingresos del año (para informe fiscal — incluye dividendos etc.) ────────
 
 getIncomeByYear:
 SELECT * FROM TransactionEntity
@@ -111,15 +119,17 @@ SELECT
     COALESCE(SUM(CASE WHEN type = 'INCOME' THEN amount ELSE 0 END), 0.0) AS totalIncome,
     COALESCE(SUM(CASE WHEN type = 'EXPENSE' THEN amount ELSE 0 END), 0.0) AS totalExpense
 FROM TransactionEntity
-WHERE strftime('%Y', date / 1000, 'unixepoch') = :year
-AND strftime('%m', date / 1000, 'unixepoch') = :month;
+WHERE linkedAssetTransactionId IS NULL
+  AND strftime('%Y', date / 1000, 'unixepoch') = :year
+  AND strftime('%m', date / 1000, 'unixepoch') = :month;
 
 getAnnualTotals:
 SELECT
     COALESCE(SUM(CASE WHEN type = 'INCOME' THEN amount ELSE 0 END), 0.0) AS totalIncome,
     COALESCE(SUM(CASE WHEN type = 'EXPENSE' THEN amount ELSE 0 END), 0.0) AS totalExpense
 FROM TransactionEntity
-WHERE strftime('%Y', date / 1000, 'unixepoch') = :year;
+WHERE linkedAssetTransactionId IS NULL
+  AND strftime('%Y', date / 1000, 'unixepoch') = :year;
 
 -- ─── CRUD ─────────────────────────────────────────────────────────────────────
 
