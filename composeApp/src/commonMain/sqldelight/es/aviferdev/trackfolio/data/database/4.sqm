@@ -1,7 +1,0 @@
--- Migración v3 → v4
--- Añade soft delete (archived) a CategoryEntity para preservar el vínculo
--- con transacciones cuando el usuario elimina una categoría desde Ajustes.
-
-ALTER TABLE CategoryEntity ADD COLUMN archived INTEGER NOT NULL DEFAULT 0;
-
-CREATE INDEX IF NOT EXISTS idx_category_archived ON CategoryEntity(archived);

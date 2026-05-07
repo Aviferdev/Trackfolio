@@ -12,7 +12,7 @@ import es.aviferdev.trackfolio.domain.model.Platform
 import es.aviferdev.trackfolio.domain.portfolio.AssetPosition
 import es.aviferdev.trackfolio.domain.portfolio.PortfolioCalculator
 import es.aviferdev.trackfolio.domain.usecase.account.GetAccountByIdUseCase
-import es.aviferdev.trackfolio.domain.usecase.asset.DeleteAssetUseCase
+import es.aviferdev.trackfolio.domain.usecase.asset.ArchiveAssetUseCase
 import es.aviferdev.trackfolio.domain.usecase.asset.GetAssetsByAccountUseCase
 import es.aviferdev.trackfolio.domain.usecase.asset.SaveAssetUseCase
 import es.aviferdev.trackfolio.domain.usecase.asset.UpdateAssetCurrentPriceUseCase
@@ -106,7 +106,7 @@ class PortfolioViewModel(
     private val saveAsset: SaveAssetUseCase,
     private val updateAsset: UpdateAssetUseCase,
     private val updateAssetCurrentPrice: UpdateAssetCurrentPriceUseCase,
-    private val deleteAsset: DeleteAssetUseCase,
+    private val archiveAsset: ArchiveAssetUseCase,
     private val getAssetCategoriesIncludingArchived: GetAllAssetCategoriesIncludingArchivedUseCase,
     private val getAccountById: GetAccountByIdUseCase,
     private val getTransactionsByAccount: GetTransactionsByAccountUseCase,

@@ -23,6 +23,8 @@ import es.aviferdev.trackfolio.ui.annual.AnnualSummaryScreen
 import es.aviferdev.trackfolio.ui.debt.DebtListScreen
 import es.aviferdev.trackfolio.ui.fiscal.FiscalReportScreen
 import es.aviferdev.trackfolio.ui.home.HomeScreen
+import es.aviferdev.trackfolio.ui.portfolio.AssetCategoryDetailScreen
+import es.aviferdev.trackfolio.ui.portfolio.AssetDetailScreen
 import es.aviferdev.trackfolio.ui.portfolio.AssetHistoryScreen
 import es.aviferdev.trackfolio.ui.portfolio.PortfolioScreen
 import es.aviferdev.trackfolio.ui.portfolio.PortfolioSettingsScreen
@@ -178,7 +180,12 @@ fun TrackfolioNavHost() {
             }
             composable(Screen.PortfolioSettings.route) {
                 PortfolioSettingsScreen(
-                    onBack = { navController.popBackStack() }
+                    onBack = { navController.popBackStack() },
+                    onNavigateToCategoryDetail = { categoryId ->
+                        navController.navigate(Screen.AssetCategoryDetail.buildRoute(categoryId)) {
+                            launchSingleTop = true
+                        }
+                    }
                 )
             }
             composable(Screen.FiscalReport.route) {
@@ -194,6 +201,35 @@ fun TrackfolioNavHost() {
             ) { backStackEntry ->
                 val assetId = backStackEntry.arguments?.getString(Screen.AssetHistory.ARG_ASSET_ID).orEmpty()
                 AssetHistoryScreen(
+                    assetId = assetId,
+                    onBack  = { navController.popBackStack() }
+                )
+            }
+            composable(
+                route     = Screen.AssetCategoryDetail.route,
+                arguments = listOf(
+                    navArgument(Screen.AssetCategoryDetail.ARG_CATEGORY_ID) { type = NavType.StringType }
+                )
+            ) { backStackEntry ->
+                val categoryId = backStackEntry.arguments?.getString(Screen.AssetCategoryDetail.ARG_CATEGORY_ID).orEmpty()
+                AssetCategoryDetailScreen(
+                    categoryId   = categoryId,
+                    onBack       = { navController.popBackStack() },
+                    onAssetClick = { assetId ->
+                        navController.navigate(Screen.AssetDetail.buildRoute(assetId)) {
+                            launchSingleTop = true
+                        }
+                    }
+                )
+            }
+            composable(
+                route     = Screen.AssetDetail.route,
+                arguments = listOf(
+                    navArgument(Screen.AssetDetail.ARG_ASSET_ID) { type = NavType.StringType }
+                )
+            ) { backStackEntry ->
+                val assetId = backStackEntry.arguments?.getString(Screen.AssetDetail.ARG_ASSET_ID).orEmpty()
+                AssetDetailScreen(
                     assetId = assetId,
                     onBack  = { navController.popBackStack() }
                 )

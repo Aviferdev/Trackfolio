@@ -34,11 +34,15 @@ class SyncAssetTransactionToLedgerUseCase(
         val txType = when (assetTx.type) {
             AssetTransactionType.BUY  -> TransactionType.EXPENSE
             AssetTransactionType.SELL -> TransactionType.INCOME
+            // Los traspasos entre fondos no generan movimiento de liquidez
+            AssetTransactionType.TRANSFER_OUT,
+            AssetTransactionType.TRANSFER_IN  -> return Result.success(Unit)
         }
         val amount = assetTx.grossAmount
         val label  = when (assetTx.type) {
             AssetTransactionType.BUY  -> "Compra: ${fmtQty(assetTx.quantity)} uds. de $assetName"
             AssetTransactionType.SELL -> "Venta: ${fmtQty(assetTx.quantity)} uds. de $assetName"
+            else -> return Result.success(Unit) // Nunca llega aquí, pero el compilador lo requiere
         }
 
         // Buscar si ya existe una Transaction vinculada

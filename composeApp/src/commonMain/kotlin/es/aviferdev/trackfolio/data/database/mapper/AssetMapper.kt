@@ -21,7 +21,8 @@ fun AssetEntity.toDomain(): Asset = Asset(
     createdAt             = createdAt,
     assetCategoryId       = assetCategoryId,
     currentPrice          = currentPrice,
-    currentPriceUpdatedAt = currentPriceUpdatedAt
+    currentPriceUpdatedAt = currentPriceUpdatedAt,
+    archived              = archived != 0L
 )
 
 fun Asset.toEntity(): AssetEntity = AssetEntity(
@@ -33,7 +34,8 @@ fun Asset.toEntity(): AssetEntity = AssetEntity(
     createdAt             = createdAt,
     assetCategoryId       = assetCategoryId,
     currentPrice          = currentPrice,
-    currentPriceUpdatedAt = currentPriceUpdatedAt
+    currentPriceUpdatedAt = currentPriceUpdatedAt,
+    archived              = if (archived) 1L else 0L
 )
 
 fun AssetCategoryEntity.toDomain(): AssetCategory = AssetCategory(

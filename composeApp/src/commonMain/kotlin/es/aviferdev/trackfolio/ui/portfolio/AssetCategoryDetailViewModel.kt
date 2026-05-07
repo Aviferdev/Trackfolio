@@ -4,15 +4,17 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import es.aviferdev.trackfolio.domain.model.Asset
 import es.aviferdev.trackfolio.domain.model.AssetCategory
-import es.aviferdev.trackfolio.domain.repository.AssetPlatformRepository
-import es.aviferdev.trackfolio.domain.repository.AssetTransactionRepository
+import es.aviferdev.trackfolio.domain.model.Platform
 import es.aviferdev.trackfolio.domain.portfolio.PortfolioCalculator
+import es.aviferdev.trackfolio.domain.repository.AssetPlatformRepository
+import es.aviferdev.trackfolio.domain.repository.AssetRepository
+import es.aviferdev.trackfolio.domain.repository.AssetTransactionRepository
 import es.aviferdev.trackfolio.domain.usecase.asset.ArchiveAssetUseCase
-import es.aviferdev.trackfolio.domain.usecase.asset.UnarchiveAssetUseCase
-import es.aviferdev.trackfolio.domain.usecase.asset.GetAssetsByAccountUseCase
 import es.aviferdev.trackfolio.domain.usecase.asset.SaveAssetUseCase
+import es.aviferdev.trackfolio.domain.usecase.asset.UnarchiveAssetUseCase
 import es.aviferdev.trackfolio.domain.usecase.asset.UpdateAssetUseCase
 import es.aviferdev.trackfolio.domain.usecase.assetcategory.GetAllAssetCategoriesIncludingArchivedUseCase
+import es.aviferdev.trackfolio.domain.usecase.platform.GetPlatformsUseCase
 import es.aviferdev.trackfolio.ui.account.AccountSession
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,78 +24,84 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 
-data class AssetCatalogUiState(
-    val assets: List<Asset>             = emptyList(),
-    val categories: List<AssetCategory> = emptyList(),
-    val showAddSheet: Boolean           = false,
-    val addForCategoryId: String?       = null,
-    val editing: Asset?                 = null,
+data class AssetCategoryDetailUiState(
+    val category: AssetCategory?       = null,
+    val activeAssets: List<Asset>       = emptyList(),
+    val archivedAssets: List<Asset>     = emptyList(),
+    val allPlatforms: List<Platform>    = emptyList(),
+    val allCategories: List<AssetCategory> = emptyList(),
+    val currencyCode: String           = "EUR",
+    val showAddSheet: Boolean          = false,
+    val editing: Asset?                = null,
     val editingPlatformIds: Set<String> = emptySet(),
-    val pendingArchive: Asset?          = null,
-    val error: String?                  = null
+    val pendingArchive: Asset?         = null,
+    val error: String?                 = null
 )
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class AssetCatalogViewModel(
-    private val getAssetsByAccount: GetAssetsByAccountUseCase,
+class AssetCategoryDetailViewModel(
+    private val categoryId: String,
+    private val assetRepository: AssetRepository,
+    private val assetTransactionRepository: AssetTransactionRepository,
+    private val assetPlatformRepository: AssetPlatformRepository,
+    private val getAssetCategoriesIncludingArchived: GetAllAssetCategoriesIncludingArchivedUseCase,
+    private val getPlatforms: GetPlatformsUseCase,
     private val saveAsset: SaveAssetUseCase,
     private val updateAsset: UpdateAssetUseCase,
     private val archiveAsset: ArchiveAssetUseCase,
     private val unarchiveAsset: UnarchiveAssetUseCase,
-    private val assetTransactionRepository: AssetTransactionRepository,
-    private val getAssetCategoriesIncludingArchived: GetAllAssetCategoriesIncludingArchivedUseCase,
-    private val assetPlatformRepository: AssetPlatformRepository,
     private val session: AccountSession
 ) : ViewModel() {
 
     private val _showAddSheet      = MutableStateFlow(false)
-    private val _addForCategoryId  = MutableStateFlow<String?>(null)
     private val _editing           = MutableStateFlow<Asset?>(null)
     private val _editingPlatformIds = MutableStateFlow<Set<String>>(emptySet())
     private val _pendingArchive    = MutableStateFlow<Asset?>(null)
     private val _error             = MutableStateFlow<String?>(null)
 
-    val uiState: StateFlow<AssetCatalogUiState> = combine(
-        session.selectedAccountId.flatMapLatest { id ->
-            if (id == null) flowOf(emptyList()) else getAssetsByAccount(id)
-        },
-        getAssetCategoriesIncludingArchived().map { it.filter { c -> !c.archived } },
-        combine(_showAddSheet, _addForCategoryId, _editing, _editingPlatformIds, _pendingArchive) { show, catId, edit, platIds, arch ->
-            SheetState(show, catId, edit, platIds, arch)
-        },
-        _error
-    ) { assets, categories, sheets, error ->
-        AssetCatalogUiState(
-            assets             = assets,
-            categories         = categories,
-            showAddSheet       = sheets.show,
-            addForCategoryId   = sheets.catId,
-            editing            = sheets.edit,
-            editingPlatformIds = sheets.platIds,
-            pendingArchive     = sheets.arch,
-            error              = error
+    val uiState: StateFlow<AssetCategoryDetailUiState> = session.selectedAccountId
+        .flatMapLatest { accountId ->
+            if (accountId == null) flowOf(AssetCategoryDetailUiState())
+            else combine(
+                assetRepository.getAllByAccountIncludingArchived(accountId),
+                getAssetCategoriesIncludingArchived(),
+                getPlatforms(),
+                combine(_showAddSheet, _editing, _editingPlatformIds, _pendingArchive, _error) { show, edit, platIds, arch, err ->
+                    SheetState(show, edit, platIds, arch, err)
+                }
+            ) { allAssets, categories, platforms, sheets ->
+                val category = categories.firstOrNull { it.id == categoryId }
+                val assetsInCategory = allAssets.filter { it.assetCategoryId == categoryId }
+                AssetCategoryDetailUiState(
+                    category           = category,
+                    activeAssets        = assetsInCategory.filter { !it.archived },
+                    archivedAssets      = assetsInCategory.filter { it.archived },
+                    allPlatforms        = platforms,
+                    allCategories       = categories.filter { !it.archived },
+                    currencyCode        = "EUR",
+                    showAddSheet        = sheets.show,
+                    editing             = sheets.edit,
+                    editingPlatformIds  = sheets.platIds,
+                    pendingArchive      = sheets.arch,
+                    error               = sheets.err
+                )
+            }
+        }
+        .stateIn(
+            scope        = viewModelScope,
+            started      = SharingStarted.WhileSubscribed(5_000),
+            initialValue = AssetCategoryDetailUiState()
         )
-    }.stateIn(
-        scope        = viewModelScope,
-        started      = SharingStarted.WhileSubscribed(5_000),
-        initialValue = AssetCatalogUiState()
-    )
 
-    fun openAddSheet()  { _showAddSheet.value = true; _addForCategoryId.value = null }
-    fun openAddSheetForCategory(categoryId: String) {
-        _addForCategoryId.value = categoryId
-        _showAddSheet.value = true
-    }
-    fun closeAddSheet() { _showAddSheet.value = false; _addForCategoryId.value = null }
+    fun openAddSheet()  { _showAddSheet.value = true }
+    fun closeAddSheet() { _showAddSheet.value = false }
 
     fun openEditSheet(asset: Asset) {
         _editing.value = asset
-        // Cargar las plataformas vinculadas
         viewModelScope.launch {
             val platforms = assetPlatformRepository.getPlatformsByAsset(asset.id).first()
             _editingPlatformIds.value = platforms.map { it.id }.toSet()
@@ -106,19 +114,32 @@ class AssetCatalogViewModel(
             val txs = assetTransactionRepository.getByAsset(asset.id).first()
             val position = PortfolioCalculator.calculate(txs, asset.currentPrice)
             if (position.netQuantity > 0.0) {
-                _error.value = "No se puede archivar «${asset.ticker}» porque tiene posiciones abiertas (${formatQtySimple(position.netQuantity)} uds.). Cierra o traspasa las posiciones primero."
+                _error.value = "No se puede archivar «${asset.ticker}» porque tiene posiciones abiertas. Cierra o traspasa las posiciones primero."
             } else {
                 _pendingArchive.value = asset
             }
         }
     }
-    fun cancelArchive()              { _pendingArchive.value = null }
+    fun cancelArchive() { _pendingArchive.value = null }
+
+    fun confirmArchive() {
+        val asset = _pendingArchive.value ?: return
+        viewModelScope.launch {
+            archiveAsset(asset.id).onFailure { _error.value = it.message }
+            _pendingArchive.value = null
+        }
+    }
+
+    fun restoreAsset(assetId: String) {
+        viewModelScope.launch {
+            unarchiveAsset(assetId).onFailure { _error.value = it.message }
+        }
+    }
 
     fun addAsset(
         ticker: String,
         name: String,
         notes: String?,
-        assetCategoryId: String?,
         currentPrice: Double?,
         platformIds: Set<String> = emptySet()
     ) {
@@ -132,12 +153,6 @@ class AssetCatalogViewModel(
             _error.value = "Ticker y nombre son obligatorios"
             return
         }
-        if (uiState.value.assets.any {
-            it.ticker.equals(tickerTrim, ignoreCase = true) && it.accountId == accountId
-        }) {
-            _error.value = "Ya existe un activo con el ticker $tickerTrim en esta cuenta"
-            return
-        }
         viewModelScope.launch {
             val now = Clock.System.now().toEpochMilliseconds()
             val asset = Asset(
@@ -147,20 +162,18 @@ class AssetCatalogViewModel(
                 name            = nameTrim,
                 notes           = notes?.ifBlank { null },
                 createdAt       = now,
-                assetCategoryId = assetCategoryId,
+                assetCategoryId = categoryId,
                 currentPrice    = currentPrice,
                 currentPriceUpdatedAt = if (currentPrice != null) now else null
             )
             saveAsset(asset)
                 .onSuccess {
-                    // Vincular plataformas
                     platformIds.forEach { platId ->
                         assetPlatformRepository.link(asset.id, platId)
                     }
                 }
                 .onFailure { _error.value = it.message }
             _showAddSheet.value = false
-            _addForCategoryId.value = null
         }
     }
 
@@ -195,7 +208,6 @@ class AssetCatalogViewModel(
                     currentPriceUpdatedAt = updatedAt
                 )
             ).onSuccess {
-                // Actualizar plataformas: borrar todas y recrear
                 assetPlatformRepository.unlinkAllByAsset(original.id)
                 platformIds.forEach { platId ->
                     assetPlatformRepository.link(original.id, platId)
@@ -206,32 +218,13 @@ class AssetCatalogViewModel(
         }
     }
 
-    fun confirmArchive() {
-        val asset = _pendingArchive.value ?: return
-        viewModelScope.launch {
-            archiveAsset(asset.id).onFailure { _error.value = it.message }
-            _pendingArchive.value = null
-        }
-    }
-
-    fun restoreAsset(assetId: String) {
-        viewModelScope.launch {
-            unarchiveAsset(assetId).onFailure { _error.value = it.message }
-        }
-    }
-
     fun clearError() { _error.value = null }
-
-    private fun formatQtySimple(v: Double): String {
-        return if (v == v.toLong().toDouble()) v.toLong().toString()
-        else v.toString().replace('.', ',')
-    }
 
     private data class SheetState(
         val show: Boolean,
-        val catId: String?,
         val edit: Asset?,
         val platIds: Set<String>,
-        val arch: Asset?
+        val arch: Asset?,
+        val err: String?
     )
 }

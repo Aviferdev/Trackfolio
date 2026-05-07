@@ -22,4 +22,14 @@ sealed class Screen(val route: String) {
         const val ARG_ASSET_ID = "assetId"
         fun buildRoute(assetId: String): String = "asset_history/$assetId"
     }
+
+    data object AssetCategoryDetail : Screen("portfolio_category/{categoryId}") {
+        const val ARG_CATEGORY_ID = "categoryId"
+        fun buildRoute(categoryId: String): String = "portfolio_category/$categoryId"
+    }
+
+    data object AssetDetail : Screen("portfolio_asset/{assetId}") {
+        const val ARG_ASSET_ID = "assetId"
+        fun buildRoute(assetId: String): String = "portfolio_asset/$assetId"
+    }
 }

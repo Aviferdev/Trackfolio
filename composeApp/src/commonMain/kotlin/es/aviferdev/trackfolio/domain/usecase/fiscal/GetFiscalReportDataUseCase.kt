@@ -176,9 +176,9 @@ class GetFiscalReportDataUseCase(
         for (tx in sortedTxs) {
             val isThisYear = epochMillisToYear(tx.date) == year
             when (tx.type) {
-                AssetTransactionType.BUY -> {
+                AssetTransactionType.BUY, AssetTransactionType.TRANSFER_IN -> {
                     fifoQueue.addLast(tx.quantity to tx.pricePerUnit)
-                    if (isThisYear) totalBoughtYear += tx.grossAmount
+                    if (isThisYear && tx.isBuy) totalBoughtYear += tx.grossAmount
                 }
                 AssetTransactionType.SELL -> {
                     var remaining = tx.quantity
@@ -191,6 +191,17 @@ class GetFiscalReportDataUseCase(
                         else fifoQueue[0] = (lotQty - consumed) to lotPrice
                     }
                     if (isThisYear) totalSoldYear += tx.grossAmount
+                }
+                AssetTransactionType.TRANSFER_OUT -> {
+                    // Consume lotes sin generar P&L (traspaso fiscal neutro)
+                    var remaining = tx.quantity
+                    while (remaining > 0.0 && fifoQueue.isNotEmpty()) {
+                        val (lotQty, lotPrice) = fifoQueue.first()
+                        val consumed = minOf(lotQty, remaining)
+                        remaining -= consumed
+                        if (consumed >= lotQty) fifoQueue.removeFirst()
+                        else fifoQueue[0] = (lotQty - consumed) to lotPrice
+                    }
                 }
             }
             if (isThisYear) yearTxs.add(tx)

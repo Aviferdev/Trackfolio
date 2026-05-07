@@ -12,6 +12,9 @@ class AssetRepositoryImpl(
     override fun getAssetsByAccount(accountId: String): Flow<List<Asset>> =
         dataSource.getByAccount(accountId)
 
+    override fun getAllByAccountIncludingArchived(accountId: String): Flow<List<Asset>> =
+        dataSource.getAllByAccountIncludingArchived(accountId)
+
     override fun getAssetById(id: String): Flow<Asset?> =
         dataSource.getById(id)
 
@@ -23,6 +26,12 @@ class AssetRepositoryImpl(
 
     override suspend fun updateCurrentPrice(id: String, price: Double, updatedAt: Long): Result<Unit> =
         dataSource.updateCurrentPrice(id, price, updatedAt)
+
+    override suspend fun archiveAsset(id: String): Result<Unit> =
+        dataSource.archive(id)
+
+    override suspend fun unarchiveAsset(id: String): Result<Unit> =
+        dataSource.unarchive(id)
 
     override suspend fun deleteAsset(id: String): Result<Unit> =
         dataSource.delete(id)

@@ -1,7 +1,7 @@
 package es.aviferdev.trackfolio.domain.model
 
-/** Tipo de movimiento de portfolio: compra (BUY) o venta (SELL). */
-enum class AssetTransactionType { BUY, SELL }
+/** Tipo de movimiento de portfolio: compra (BUY), venta (SELL) o traspaso entre fondos. */
+enum class AssetTransactionType { BUY, SELL, TRANSFER_OUT, TRANSFER_IN }
 
 /**
  * Movimiento individual de un activo: una compra o venta puntual.
@@ -31,6 +31,17 @@ data class AssetTransaction(
     /** Importe total del movimiento sin comisiones (cantidad × precio unitario). */
     val grossAmount: Double get() = quantity * pricePerUnit
 
-    val isBuy: Boolean  get() = type == AssetTransactionType.BUY
-    val isSell: Boolean get() = type == AssetTransactionType.SELL
+    val isBuy: Boolean         get() = type == AssetTransactionType.BUY
+    val isSell: Boolean        get() = type == AssetTransactionType.SELL
+    val isTransferOut: Boolean get() = type == AssetTransactionType.TRANSFER_OUT
+    val isTransferIn: Boolean  get() = type == AssetTransactionType.TRANSFER_IN
+    val isTransfer: Boolean    get() = isTransferOut || isTransferIn
+
+    /**
+     * ID del traspaso al que pertenece este movimiento (tanto el OUT como el IN
+     * comparten el mismo transferGroupId). Null si no es un traspaso.
+     * Se almacena en [notes] con prefijo "TRANSFER:" para no añadir columna a BBDD.
+     */
+    val transferGroupId: String?
+        get() = notes?.takeIf { it.startsWith("TRANSFER:") }?.removePrefix("TRANSFER:")
 }

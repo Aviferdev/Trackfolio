@@ -6,6 +6,10 @@ package es.aviferdev.trackfolio.domain.model
  *
  * `currentPrice` representa la cotización actual editable por el usuario;
  * mientras sea NULL, los cálculos de P&L caen en 0 ("Sin precio actual").
+ *
+ * `archived`: los activos NUNCA se borran, solo se archivan. Un activo
+ * archivado no aparece en listados normales pero sus transacciones y
+ * P&L histórico se conservan.
  */
 data class Asset(
     val id: String,
@@ -16,7 +20,8 @@ data class Asset(
     val createdAt: Long,
     val assetCategoryId: String? = null,
     val currentPrice: Double? = null,
-    val currentPriceUpdatedAt: Long? = null
+    val currentPriceUpdatedAt: Long? = null,
+    val archived: Boolean = false
 ) {
     val hasCurrentPrice: Boolean get() = currentPrice != null
 }

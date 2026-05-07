@@ -237,6 +237,13 @@ fun AssetHistoryScreen(
                         leadingIcon = { Text("📜", fontSize = 16.sp) },
                         onClick     = { fabMenuOpen = false; viewModel.openBondDepositSheet() }
                     )
+                    if (state.isTransferable) {
+                        DropdownMenuItem(
+                            text        = { Text("Traspasar fondo", color = TextPrimary) },
+                            leadingIcon = { Text("🔄", fontSize = 16.sp) },
+                            onClick     = { fabMenuOpen = false; viewModel.openTransferSheet() }
+                        )
+                    }
                 }
             }
         }
@@ -270,13 +277,14 @@ fun AssetHistoryScreen(
     }
 
     state.pendingDelete?.let { tx ->
+        val isTransfer = tx.isTransfer
         AlertDialog(
             onDismissRequest = { viewModel.cancelDelete() },
             containerColor   = SurfaceWhite,
             icon             = { Text("⚠️", fontSize = 28.sp) },
             title = {
                 Text(
-                    "Eliminar movimiento",
+                    if (isTransfer) "Eliminar traspaso" else "Eliminar movimiento",
                     fontSize   = 17.sp,
                     fontWeight = FontWeight.SemiBold,
                     color      = TextPrimary
@@ -284,7 +292,11 @@ fun AssetHistoryScreen(
             },
             text = {
                 Text(
-                    text     = "Se eliminará el movimiento del ${formatFullDate(tx.date)}. " +
+                    text     = if (isTransfer)
+                        "Se eliminarán ambas patas del traspaso (salida y entrada). " +
+                        "El P&L de ambos fondos se recalculará. Esta acción no se puede deshacer."
+                    else
+                        "Se eliminará el movimiento del ${formatFullDate(tx.date)}. " +
                         "El P&L del activo se recalculará. Esta acción no se puede deshacer.",
                     fontSize = 14.sp,
                     color    = TextSecondary
@@ -340,6 +352,21 @@ fun AssetHistoryScreen(
                 viewModel.saveBondDeposit(grossAmount, irpfPercent, commission, date)
             },
             onDismiss      = { viewModel.closeBondDepositSheet() }
+        )
+    }
+
+    // Sheet de traspaso entre fondos
+    if (state.showTransferSheet && state.asset != null) {
+        TransferFundBottomSheet(
+            sourceAsset       = state.asset!!,
+            destinations      = state.transferableDestinations,
+            platforms         = state.allPlatforms,
+            assetTransactions = state.transactionsAsc,
+            currencyCode      = state.currencyCode,
+            onExecuteTransfer = { destId, qty, srcPlat, dstPlat, vl, date ->
+                viewModel.executeTransfer(destId, qty, srcPlat, dstPlat, vl, date)
+            },
+            onDismiss         = { viewModel.closeTransferSheet() }
         )
     }
 }
@@ -660,9 +687,28 @@ private fun TransactionRow(
 ) {
     val symbol  = currencySymbol(currencyCode)
     val isBuy   = tx.type == AssetTransactionType.BUY
-    val sideColor = if (isBuy) IncomeGreen else ExpenseRed
-    val sideLabel = if (isBuy) "Compra"     else "Venta"
-    val sign      = if (isBuy) "+"          else "−"
+    val isTransferOut = tx.type == AssetTransactionType.TRANSFER_OUT
+    val isTransferIn  = tx.type == AssetTransactionType.TRANSFER_IN
+    val sideColor = when {
+        isBuy || isTransferIn  -> IncomeGreen
+        else                   -> ExpenseRed
+    }
+    val sideLabel = when (tx.type) {
+        AssetTransactionType.BUY          -> "Compra"
+        AssetTransactionType.SELL         -> "Venta"
+        AssetTransactionType.TRANSFER_OUT -> "Traspaso salida"
+        AssetTransactionType.TRANSFER_IN  -> "Traspaso entrada"
+    }
+    val sign = when {
+        isBuy || isTransferIn  -> "+"
+        else                   -> "−"
+    }
+    val sideIcon = when (tx.type) {
+        AssetTransactionType.BUY          -> "↗"
+        AssetTransactionType.SELL         -> "↘"
+        AssetTransactionType.TRANSFER_OUT -> "→"
+        AssetTransactionType.TRANSFER_IN  -> "←"
+    }
 
     Card(
         modifier  = modifier.fillMaxWidth(),
@@ -686,7 +732,7 @@ private fun TransactionRow(
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text       = if (isBuy) "↗" else "↘",
+                    text       = sideIcon,
                     fontSize   = 18.sp,
                     color      = sideColor,
                     fontWeight = FontWeight.Bold
@@ -752,8 +798,10 @@ private fun TransactionRow(
                     fontWeight = FontWeight.SemiBold
                 )
                 Row {
-                    IconButton(onClick = onEdit, modifier = Modifier.size(28.dp)) {
-                        Icon(Icons.Default.Edit, null, modifier = Modifier.size(13.dp), tint = TextSecondary)
+                    if (!tx.isTransfer) {
+                        IconButton(onClick = onEdit, modifier = Modifier.size(28.dp)) {
+                            Icon(Icons.Default.Edit, null, modifier = Modifier.size(13.dp), tint = TextSecondary)
+                        }
                     }
                     IconButton(onClick = onDelete, modifier = Modifier.size(28.dp)) {
                         Icon(Icons.Default.Delete, null, modifier = Modifier.size(13.dp), tint = ExpenseRed)

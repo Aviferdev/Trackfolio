@@ -79,8 +79,10 @@ object PortfolioCalculator {
         for (tx in ordered) {
             val lots = lotsByPlatform.getOrPut(tx.platformId) { ArrayDeque() }
             when (tx.type) {
-                AssetTransactionType.BUY  -> lots.addLast(Lot(tx.quantity, tx.pricePerUnit))
-                AssetTransactionType.SELL -> realizedPnL += consumeFifo(lots, tx)
+                AssetTransactionType.BUY         -> lots.addLast(Lot(tx.quantity, tx.pricePerUnit))
+                AssetTransactionType.SELL        -> realizedPnL += consumeFifo(lots, tx)
+                AssetTransactionType.TRANSFER_OUT -> consumeFifoNoRealize(lots, tx.quantity)
+                AssetTransactionType.TRANSFER_IN  -> lots.addLast(Lot(tx.quantity, tx.pricePerUnit))
             }
         }
 
@@ -103,7 +105,7 @@ object PortfolioCalculator {
 
         val totalPnL = realizedPnL + unrealizedPnL + dividendIncome
         val grossInvested = ordered
-            .filter { it.isBuy }
+            .filter { it.isBuy || it.isTransferIn }
             .sumOf { it.quantity * it.pricePerUnit }
         val totalPnLPercent =
             if (grossInvested > 0.0) (totalPnL / grossInvested) * 100.0 else 0.0
@@ -143,7 +145,10 @@ object PortfolioCalculator {
 
         var net = 0.0
         for (tx in ordered) {
-            net += if (tx.isBuy) tx.quantity else -tx.quantity
+            net += when (tx.type) {
+                AssetTransactionType.BUY, AssetTransactionType.TRANSFER_IN -> tx.quantity
+                AssetTransactionType.SELL, AssetTransactionType.TRANSFER_OUT -> -tx.quantity
+            }
         }
         return net.coerceAtLeast(0.0)
     }
@@ -167,7 +172,10 @@ object PortfolioCalculator {
 
         var net = 0.0
         for (tx in ordered) {
-            net += if (tx.isBuy) tx.quantity else -tx.quantity
+            net += when (tx.type) {
+                AssetTransactionType.BUY, AssetTransactionType.TRANSFER_IN -> tx.quantity
+                AssetTransactionType.SELL, AssetTransactionType.TRANSFER_OUT -> -tx.quantity
+            }
         }
         return net.coerceAtLeast(0.0)
     }
@@ -193,7 +201,7 @@ object PortfolioCalculator {
         for (tx in ordered) {
             val lots = lotsByPlatform.getOrPut(tx.platformId) { ArrayDeque() }
             when (tx.type) {
-                AssetTransactionType.BUY -> lots.addLast(
+                AssetTransactionType.BUY, AssetTransactionType.TRANSFER_IN -> lots.addLast(
                     TrackedLot(
                         txId         = tx.id,
                         date         = tx.date,
@@ -203,6 +211,17 @@ object PortfolioCalculator {
                         platformId   = tx.platformId
                     )
                 )
+                AssetTransactionType.TRANSFER_OUT -> {
+                    // Consume lotes FIFO sin generar P&L (traspaso fiscal neutro)
+                    var toTransfer = tx.quantity
+                    while (toTransfer > 0.0 && lots.isNotEmpty()) {
+                        val lot = lots.first()
+                        val consumed = minOf(toTransfer, lot.remaining)
+                        toTransfer -= consumed
+                        if (consumed >= lot.remaining) lots.removeFirst()
+                        else lot.remaining -= consumed
+                    }
+                }
                 AssetTransactionType.SELL -> {
                     var toSell = tx.quantity
                     val consumed = mutableListOf<FifoLotConsumption>()
@@ -280,5 +299,70 @@ object PortfolioCalculator {
             }
         }
         return pnl
+    }
+
+    /**
+     * Consume lotes FIFO sin generar P&L realizado.
+     * Se usa para TRANSFER_OUT: las participaciones salen, pero el coste
+     * base se arrastra al fondo destino (sin hecho imponible).
+     */
+    private fun consumeFifoNoRealize(lots: ArrayDeque<Lot>, quantity: Double) {
+        var remaining = quantity
+        while (remaining > 0.0 && lots.isNotEmpty()) {
+            val lot = lots.first()
+            val consumed = minOf(remaining, lot.qtyRemaining)
+            remaining -= consumed
+            if (consumed >= lot.qtyRemaining) {
+                lots.removeFirst()
+            } else {
+                lot.qtyRemaining -= consumed
+            }
+        }
+    }
+
+    /**
+     * Calcula el coste medio ponderado de los lotes FIFO que se consumirían
+     * al traspasar [quantity] unidades de un activo.
+     *
+     * Se usa para determinar el `pricePerUnit` del TRANSFER_IN en el
+     * fondo destino, arrastrando el coste fiscal original.
+     *
+     * @return coste medio por unidad de las participaciones traspasadas.
+     */
+    fun weightedCostBasisForTransfer(
+        transactions: List<AssetTransaction>,
+        platformId: String,
+        quantity: Double
+    ): Double {
+        val ordered = transactions.sortedWith(compareBy({ it.date }, { it.createdAt }))
+
+        // Reconstruir cola FIFO de la plataforma
+        val lots = ArrayDeque<Lot>()
+        for (tx in ordered) {
+            if (tx.platformId != platformId) continue
+            when (tx.type) {
+                AssetTransactionType.BUY, AssetTransactionType.TRANSFER_IN ->
+                    lots.addLast(Lot(tx.quantity, tx.pricePerUnit))
+                AssetTransactionType.SELL, AssetTransactionType.TRANSFER_OUT ->
+                    consumeFifoNoRealize(lots, tx.quantity)
+            }
+        }
+
+        // Ahora simular el consumo para obtener el coste medio ponderado
+        var remaining = quantity
+        var totalCost = 0.0
+        var totalQty = 0.0
+        val snapshot = lots.map { Lot(it.qtyRemaining, it.pricePerUnit) }
+        val q = ArrayDeque(snapshot)
+        while (remaining > 0.0 && q.isNotEmpty()) {
+            val lot = q.first()
+            val consumed = minOf(remaining, lot.qtyRemaining)
+            totalCost += consumed * lot.pricePerUnit
+            totalQty += consumed
+            remaining -= consumed
+            if (consumed >= lot.qtyRemaining) q.removeFirst()
+            else lot.qtyRemaining -= consumed
+        }
+        return if (totalQty > 0.0) totalCost / totalQty else 0.0
     }
 }

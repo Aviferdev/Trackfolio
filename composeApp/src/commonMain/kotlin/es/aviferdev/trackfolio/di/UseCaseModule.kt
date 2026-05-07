@@ -6,7 +6,8 @@ import es.aviferdev.trackfolio.domain.usecase.account.GetAccountsUseCase
 import es.aviferdev.trackfolio.domain.usecase.account.SaveAccountUseCase
 import es.aviferdev.trackfolio.domain.usecase.account.SetInitialBalanceUseCase
 import es.aviferdev.trackfolio.domain.usecase.account.UpdateAccountUseCase
-import es.aviferdev.trackfolio.domain.usecase.asset.DeleteAssetUseCase
+import es.aviferdev.trackfolio.domain.usecase.asset.ArchiveAssetUseCase
+import es.aviferdev.trackfolio.domain.usecase.asset.UnarchiveAssetUseCase
 import es.aviferdev.trackfolio.domain.usecase.asset.GetAssetsByAccountUseCase
 import es.aviferdev.trackfolio.domain.usecase.asset.GetOutdatedAssetsUseCase
 import es.aviferdev.trackfolio.domain.usecase.asset.GetPriceReminderIntervalUseCase
@@ -28,6 +29,7 @@ import es.aviferdev.trackfolio.domain.usecase.assettag.RemoveAssetTagAssignmentU
 import es.aviferdev.trackfolio.domain.usecase.assettag.RenameAssetTagUseCase
 import es.aviferdev.trackfolio.domain.usecase.assettag.SaveAssetTagUseCase
 import es.aviferdev.trackfolio.domain.usecase.assettag.UpsertAssetTagAssignmentUseCase
+import es.aviferdev.trackfolio.domain.usecase.assettransaction.ExecuteFundTransferUseCase
 import es.aviferdev.trackfolio.domain.usecase.assettransaction.DeleteAssetTransactionUseCase
 import es.aviferdev.trackfolio.domain.usecase.assettransaction.GetTransactionsByAccountUseCase
 import es.aviferdev.trackfolio.domain.usecase.assettransaction.GetTransactionsByAssetDescUseCase
@@ -70,6 +72,8 @@ import es.aviferdev.trackfolio.ui.fiscal.FiscalReportViewModel
 import es.aviferdev.trackfolio.ui.home.AddTransactionViewModel
 import es.aviferdev.trackfolio.ui.home.HomeViewModel
 import es.aviferdev.trackfolio.ui.portfolio.AssetCatalogViewModel
+import es.aviferdev.trackfolio.ui.portfolio.AssetCategoryDetailViewModel
+import es.aviferdev.trackfolio.ui.portfolio.AssetDetailViewModel
 import es.aviferdev.trackfolio.ui.portfolio.AssetCategoryViewModel
 import es.aviferdev.trackfolio.ui.portfolio.AssetHistoryViewModel
 import es.aviferdev.trackfolio.ui.portfolio.PlatformViewModel
@@ -118,7 +122,8 @@ val useCaseModule = module {
     factory { SaveAssetUseCase(get()) }
     factory { UpdateAssetUseCase(get()) }
     factory { UpdateAssetCurrentPriceUseCase(get(), get()) }
-    factory { DeleteAssetUseCase(get()) }
+    factory { ArchiveAssetUseCase(get()) }
+    factory { UnarchiveAssetUseCase(get()) }
     factory { GetOutdatedAssetsUseCase(get(), get()) }
     factory { ShouldShowPriceReminderUseCase(get()) }
     factory { SavePriceReminderShownUseCase(get()) }
@@ -132,6 +137,7 @@ val useCaseModule = module {
     factory { UpdateAssetTransactionUseCase(get()) }
     factory { DeleteAssetTransactionUseCase(get()) }
     factory { SyncAssetTransactionToLedgerUseCase(get()) }
+    factory { ExecuteFundTransferUseCase(get()) }
 
     // ── Asset Category ────────────────────────────────────────────────────────
     factory { GetAssetCategoriesUseCase(get()) }
@@ -237,7 +243,7 @@ val useCaseModule = module {
             saveAsset                           = get(),
             updateAsset                         = get(),
             updateAssetCurrentPrice             = get(),
-            deleteAsset                         = get(),
+            archiveAsset                        = get(),
             getAssetCategoriesIncludingArchived = get(),
             getAccountById                      = get(),
             getTransactionsByAccount            = get(),
@@ -252,7 +258,9 @@ val useCaseModule = module {
             getAssetsByAccount                  = get(),
             saveAsset                           = get(),
             updateAsset                         = get(),
-            deleteAsset                         = get(),
+            archiveAsset                        = get(),
+            unarchiveAsset                      = get(),
+            assetTransactionRepository          = get(),
             getAssetCategoriesIncludingArchived = get(),
             assetPlatformRepository             = get(),
             session                             = get()
@@ -287,7 +295,33 @@ val useCaseModule = module {
             deleteAssetTransaction   = get(),
             updateAssetCurrentPrice  = get(),
             syncToLedger             = get(),
-            transactionRepository    = get()
+            transactionRepository    = get(),
+            executeFundTransfer      = get(),
+            assetRepository          = get()
+        )
+    }
+    viewModel { (categoryId: String) ->
+        AssetCategoryDetailViewModel(
+            categoryId                          = categoryId,
+            assetRepository                     = get(),
+            assetTransactionRepository          = get(),
+            assetPlatformRepository             = get(),
+            getAssetCategoriesIncludingArchived = get(),
+            getPlatforms                        = get(),
+            saveAsset                           = get(),
+            updateAsset                         = get(),
+            archiveAsset                        = get(),
+            unarchiveAsset                      = get(),
+            session                             = get()
+        )
+    }
+    viewModel { (assetId: String) ->
+        AssetDetailViewModel(
+            assetId                 = assetId,
+            assetRepository         = get(),
+            assetPlatformRepository = get(),
+            getPlatforms            = get(),
+            savePlatform            = get()
         )
     }
     viewModel { BackupViewModel(get()) }

@@ -25,6 +25,12 @@ class AssetLocalDataSourceImpl(
             .mapToList(Dispatchers.IO)
             .map { list -> list.map { it.toDomain() } }
 
+    override fun getAllByAccountIncludingArchived(accountId: String): Flow<List<Asset>> =
+        queries.selectAllByAccountIncludingArchived(accountId)
+            .asFlow()
+            .mapToList(Dispatchers.IO)
+            .map { list -> list.map { it.toDomain() } }
+
     override fun getById(id: String): Flow<Asset?> =
         queries.selectById(id)
             .asFlow()
@@ -74,6 +80,16 @@ class AssetLocalDataSourceImpl(
                     id                    = id
                 )
             }
+        }
+
+    override suspend fun archive(id: String): Result<Unit> =
+        runCatching {
+            withContext(Dispatchers.IO) { queries.archive(id) }
+        }
+
+    override suspend fun unarchive(id: String): Result<Unit> =
+        runCatching {
+            withContext(Dispatchers.IO) { queries.unarchive(id) }
         }
 
     override suspend fun delete(id: String): Result<Unit> =
