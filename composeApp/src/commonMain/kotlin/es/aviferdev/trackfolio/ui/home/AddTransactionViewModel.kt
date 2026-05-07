@@ -174,9 +174,7 @@ class AddTransactionViewModel(
             }
             val grossOk = gross != null && gross > 0
             // Emisor requerido si el tipo lo necesita
-            val issuerOk = if (incType.issuerType != null) {
-                selectedIssuerId != null
-            } else true
+            val issuerOk = selectedIssuerId != null
             return grossOk && irpfOk && issuerOk
         }
 
@@ -315,11 +313,10 @@ class AddTransactionViewModel(
     private suspend fun saveIncome(accountId: String, now: Long) {
         val incType = selectedIncomeType!!
 
-        // Resolver emisor
-        var finalIssuerId: String? = selectedIssuerId
+        val finalIssuerId: String? = selectedIssuerId
         var finalIssuerName: String? = null
 
-        if (incType.issuerType != null && finalIssuerId != null) {
+        if (finalIssuerId != null) {
             finalIssuerName = issuers.find { it.id == finalIssuerId }?.name
         }
 
@@ -423,21 +420,18 @@ class AddTransactionViewModel(
     }
 
     private fun loadIssuersForType(incomeType: IncomeType) {
-        val issuerType = incomeType.issuerType ?: run {
-            issuers = emptyList()
-            return
-        }
-        val accountId = session.selectedAccountId.value ?: return
-        issuerJob?.cancel()
-        issuerJob = getIssuers(accountId, issuerType)
-            .onEach { list ->
-                issuers = list
-                // Auto-seleccionar si la edición tiene issuerId
-                if (selectedIssuerId != null && list.none { it.id == selectedIssuerId }) {
-                    selectedIssuerId = null
+        session.selectedAccountId.value?.let { selectedAccountNotNull ->
+            issuerJob?.cancel()
+            issuerJob = getIssuers(selectedAccountNotNull, incomeType.issuerType)
+                .onEach { list ->
+                    issuers = list
+                    // Auto-seleccionar si la edición tiene issuerId
+                    if (selectedIssuerId != null && list.none { it.id == selectedIssuerId }) {
+                        selectedIssuerId = null
+                    }
                 }
-            }
-            .launchIn(viewModelScope)
+                .launchIn(viewModelScope)
+        }
     }
 
     private fun filterDecimal(value: String): String =

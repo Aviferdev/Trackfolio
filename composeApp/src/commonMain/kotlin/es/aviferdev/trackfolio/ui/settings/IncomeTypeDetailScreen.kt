@@ -31,7 +31,7 @@ fun IncomeTypeDetailScreen(
     issuerViewModel: IssuerViewModel = koinViewModel()
 ) {
     val issuerState by issuerViewModel.uiState.collectAsState()
-    val issuerType = incomeType.issuerType ?: return
+    val issuerType = incomeType.issuerType
     val issuers = issuerState.issuersByType[issuerType] ?: emptyList()
 
     Column(

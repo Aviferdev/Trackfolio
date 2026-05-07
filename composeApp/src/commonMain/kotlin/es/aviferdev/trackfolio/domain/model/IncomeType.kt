@@ -19,7 +19,7 @@ enum class IncomeType(
     /** Si este tipo tiene campo de comisiones. */
     val hasCommission: Boolean,
     /** Tipo de entidad emisora asociada. */
-    val issuerType: IssuerType?
+    val issuerType: IssuerType
 ) {
     SALARY(
         label              = "Salario",

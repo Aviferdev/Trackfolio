@@ -488,15 +488,13 @@ private fun IncomeForm(viewModel: AddTransactionViewModel) {
                 }
 
                 // ── Emisor ────────────────────────────────────────────────────
-                if (selectedType.issuerType != null) {
-                    HorizontalDivider(color = BorderGray, thickness = 0.5.dp)
-                    IssuerSection(
-                        issuerTypeLabel = selectedType.issuerType.label,
-                        issuers         = viewModel.issuers,
-                        selectedId      = viewModel.selectedIssuerId,
-                        onSelect        = { viewModel.onIssuerSelected(it) }
-                    )
-                }
+                HorizontalDivider(color = BorderGray, thickness = 0.5.dp)
+                IssuerSection(
+                    issuerTypeLabel = selectedType.issuerType.label,
+                    issuers         = viewModel.issuers,
+                    selectedId      = viewModel.selectedIssuerId,
+                    onSelect        = { viewModel.onIssuerSelected(it) }
+                )
             }
         }
     }
