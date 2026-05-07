@@ -1,0 +1,38 @@
+CREATE TABLE ExemptSourceEntity (
+    id        TEXT    NOT NULL PRIMARY KEY,
+    accountId TEXT    NOT NULL,
+    name      TEXT    NOT NULL,
+    icon      TEXT    NOT NULL DEFAULT '📋',
+    archived  INTEGER NOT NULL DEFAULT 0,
+    createdAt INTEGER NOT NULL,
+    FOREIGN KEY (accountId) REFERENCES AccountEntity(id) ON DELETE CASCADE
+);
+
+CREATE INDEX idx_exempt_source_account  ON ExemptSourceEntity(accountId);
+CREATE INDEX idx_exempt_source_archived ON ExemptSourceEntity(archived);
+
+selectByAccount:
+SELECT * FROM ExemptSourceEntity
+WHERE accountId = :accountId AND archived = 0
+ORDER BY name ASC;
+
+selectAllByAccount:
+SELECT * FROM ExemptSourceEntity
+WHERE accountId = :accountId
+ORDER BY archived ASC, name ASC;
+
+selectById:
+SELECT * FROM ExemptSourceEntity WHERE id = :id;
+
+insert:
+INSERT OR IGNORE INTO ExemptSourceEntity(id, accountId, name, icon, archived, createdAt)
+VALUES (?, ?, ?, ?, 0, ?);
+
+updateName:
+UPDATE ExemptSourceEntity SET name = :name, icon = :icon WHERE id = :id;
+
+archive:
+UPDATE ExemptSourceEntity SET archived = 1 WHERE id = :id;
+
+unarchive:
+UPDATE ExemptSourceEntity SET archived = 0 WHERE id = :id;

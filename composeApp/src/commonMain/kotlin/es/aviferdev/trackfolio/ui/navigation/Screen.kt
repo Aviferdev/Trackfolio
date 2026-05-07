@@ -10,6 +10,15 @@ sealed class Screen(val route: String) {
     data object PortfolioSettings : Screen("portfolio_settings")
     data object FiscalReport: Screen("fiscal_report")
 
+    data object ExpenseSettings : Screen("settings_expense")
+    data object IncomeSettings  : Screen("settings_income")
+
+    /** Subpantallas de detalle por tipo de ingreso (listado de emisores). */
+    data object IncomeTypeDetail : Screen("settings_income/{incomeTypeName}") {
+        const val ARG_INCOME_TYPE = "incomeTypeName"
+        fun buildRoute(incomeTypeName: String): String = "settings_income/$incomeTypeName"
+    }
+
     data object AssetHistory : Screen("asset_history/{assetId}") {
         const val ARG_ASSET_ID = "assetId"
         fun buildRoute(assetId: String): String = "asset_history/$assetId"

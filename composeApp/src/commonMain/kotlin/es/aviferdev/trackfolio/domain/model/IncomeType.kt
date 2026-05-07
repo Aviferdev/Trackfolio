@@ -18,7 +18,7 @@ enum class IncomeType(
     val hasSocialSecurity: Boolean,
     /** Si este tipo tiene campo de comisiones. */
     val hasCommission: Boolean,
-    /** Tipo de entidad emisora asociada. Null para EXEMPT que no requiere emisor. */
+    /** Tipo de entidad emisora asociada. */
     val issuerType: IssuerType?
 ) {
     SALARY(
@@ -73,7 +73,7 @@ enum class IncomeType(
         hasIrpf            = false,
         hasSocialSecurity  = false,
         hasCommission      = false,
-        issuerType         = null
+        issuerType         = IssuerType.EXEMPT_SOURCE
     );
 
     companion object {

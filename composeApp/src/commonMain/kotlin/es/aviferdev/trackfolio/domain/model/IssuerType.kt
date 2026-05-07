@@ -9,5 +9,6 @@ enum class IssuerType(val label: String) {
     BANK("Entidad bancaria"),
     BOND_ISSUER("Emisor del bono / depósito"),
     DIVIDEND_SOURCE("Acción"),
-    PROMOTION_PLATFORM("Plataforma")
+    PROMOTION_PLATFORM("Plataforma"),
+    EXEMPT_SOURCE("Fuente de ingreso")
 }

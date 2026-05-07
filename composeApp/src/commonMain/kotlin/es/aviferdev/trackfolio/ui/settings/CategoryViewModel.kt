@@ -14,10 +14,8 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 
 data class CategoryListUiState(
-    val incomeCategories: List<CategoryEntity>  = emptyList(),
     val expenseCategories: List<CategoryEntity> = emptyList(),
     val showAddSheet: Boolean                   = false,
-    val addType: TransactionType                = TransactionType.EXPENSE,
     val editing: CategoryEntity?                = null,
     val pendingDelete: CategoryEntity?          = null,
     val error: String?                          = null
@@ -28,27 +26,22 @@ class CategoryViewModel(
 ) : ViewModel() {
 
     private val _showAddSheet  = MutableStateFlow(false)
-    private val _addType       = MutableStateFlow(TransactionType.EXPENSE)
     private val _editing       = MutableStateFlow<CategoryEntity?>(null)
     private val _pendingDelete = MutableStateFlow<CategoryEntity?>(null)
     private val _error         = MutableStateFlow<String?>(null)
 
     val uiState: StateFlow<CategoryListUiState> = combine(
-        // Listado mostrado en Ajustes: solo activas
-        dataSource.getByType(TransactionType.INCOME.name),
         dataSource.getByType(TransactionType.EXPENSE.name),
-        combine(_showAddSheet, _addType, _editing, _pendingDelete, _error) { s, t, e, p, err ->
-            Quintuple(s, t, e, p, err)
+        combine(_showAddSheet, _editing, _pendingDelete, _error) { s, e, p, err ->
+            Quadruple(s, e, p, err)
         }
-    ) { income, expense, q ->
+    ) { expense, q ->
         CategoryListUiState(
-            incomeCategories  = income,
             expenseCategories = expense,
             showAddSheet      = q.a,
-            addType           = q.b,
-            editing           = q.c,
-            pendingDelete     = q.d,
-            error             = q.e
+            editing           = q.b,
+            pendingDelete     = q.c,
+            error             = q.d
         )
     }.stateIn(
         scope        = viewModelScope,
@@ -57,32 +50,28 @@ class CategoryViewModel(
     )
 
     // ── Añadir ────────────────────────────────────────────────────────────────
-    fun openAddSheet(type: TransactionType) {
-        _addType.value      = type
+    fun openAddSheet() {
         _showAddSheet.value = true
     }
 
     fun closeAddSheet() { _showAddSheet.value = false }
 
-    fun addCategory(name: String, type: TransactionType) {
+    fun addCategory(name: String) {
         val trimmed = name.trim()
         if (trimmed.isBlank()) return
 
-        // Evitar duplicados (case-insensitive) entre activas del mismo tipo
-        val existing = if (type == TransactionType.INCOME)
-            uiState.value.incomeCategories else uiState.value.expenseCategories
-        if (existing.any { it.name.equals(trimmed, ignoreCase = true) }) {
+        if (uiState.value.expenseCategories.any { it.name.equals(trimmed, ignoreCase = true) }) {
             _error.value = "Ya existe una categoría con ese nombre"
             return
         }
 
         viewModelScope.launch {
-            val id = "cat_${type.name.lowercase()}_${Clock.System.now().toEpochMilliseconds()}"
+            val id = "cat_expense_${Clock.System.now().toEpochMilliseconds()}"
             dataSource.insert(
                 CategoryEntity(
                     id        = id,
                     name      = trimmed,
-                    type      = type.name,
+                    type      = TransactionType.EXPENSE.name,
                     isDefault = 0L,
                     archived  = 0L
                 )
@@ -99,10 +88,7 @@ class CategoryViewModel(
         val trimmed = newName.trim()
         if (trimmed.isBlank()) return
 
-        val type = _editing.value?.type ?: return
-        val list = if (type == TransactionType.INCOME.name)
-            uiState.value.incomeCategories else uiState.value.expenseCategories
-        if (list.any { it.id != id && it.name.equals(trimmed, ignoreCase = true) }) {
+        if (uiState.value.expenseCategories.any { it.id != id && it.name.equals(trimmed, ignoreCase = true) }) {
             _error.value = "Ya existe una categoría con ese nombre"
             return
         }
@@ -127,8 +113,7 @@ class CategoryViewModel(
 
     fun clearError() { _error.value = null }
 
-    // Helper privado para combinar 5 flows
-    private data class Quintuple<A, B, C, D, E>(
-        val a: A, val b: B, val c: C, val d: D, val e: E
+    private data class Quadruple<A, B, C, D>(
+        val a: A, val b: B, val c: C, val d: D
     )
 }

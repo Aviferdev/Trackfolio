@@ -21,4 +21,5 @@ private fun defaultIconFor(type: IssuerType): String = when (type) {
     IssuerType.BOND_ISSUER        -> "📜"
     IssuerType.DIVIDEND_SOURCE    -> "📈"
     IssuerType.PROMOTION_PLATFORM -> "🎁"
+    IssuerType.EXEMPT_SOURCE      -> "📋"
 }

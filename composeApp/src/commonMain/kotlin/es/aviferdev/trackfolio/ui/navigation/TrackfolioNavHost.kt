@@ -18,6 +18,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import es.aviferdev.trackfolio.domain.model.IncomeType
 import es.aviferdev.trackfolio.ui.annual.AnnualSummaryScreen
 import es.aviferdev.trackfolio.ui.debt.DebtListScreen
 import es.aviferdev.trackfolio.ui.fiscal.FiscalReportScreen
@@ -25,6 +26,9 @@ import es.aviferdev.trackfolio.ui.home.HomeScreen
 import es.aviferdev.trackfolio.ui.portfolio.AssetHistoryScreen
 import es.aviferdev.trackfolio.ui.portfolio.PortfolioScreen
 import es.aviferdev.trackfolio.ui.portfolio.PortfolioSettingsScreen
+import es.aviferdev.trackfolio.ui.settings.ExpenseSettingsScreen
+import es.aviferdev.trackfolio.ui.settings.IncomeSettingsScreen
+import es.aviferdev.trackfolio.ui.settings.IncomeTypeDetailScreen
 import es.aviferdev.trackfolio.ui.settings.SettingsScreen
 import es.aviferdev.trackfolio.ui.theme.PrimaryDark
 import es.aviferdev.trackfolio.ui.theme.SurfaceElevated
@@ -125,8 +129,49 @@ fun TrackfolioNavHost() {
                         navController.navigate(Screen.FiscalReport.route) {
                             launchSingleTop = true
                         }
+                    },
+                    onNavigateToExpenseSettings = {
+                        navController.navigate(Screen.ExpenseSettings.route) {
+                            launchSingleTop = true
+                        }
+                    },
+                    onNavigateToIncomeSettings = {
+                        navController.navigate(Screen.IncomeSettings.route) {
+                            launchSingleTop = true
+                        }
                     }
                 )
+            }
+            composable(Screen.ExpenseSettings.route) {
+                ExpenseSettingsScreen(
+                    onBack = { navController.popBackStack() }
+                )
+            }
+            composable(Screen.IncomeSettings.route) {
+                IncomeSettingsScreen(
+                    onBack = { navController.popBackStack() },
+                    onNavigateToIncomeTypeDetail = { incomeType ->
+                        navController.navigate(Screen.IncomeTypeDetail.buildRoute(incomeType.name)) {
+                            launchSingleTop = true
+                        }
+                    }
+                )
+            }
+            composable(
+                route     = Screen.IncomeTypeDetail.route,
+                arguments = listOf(
+                    navArgument(Screen.IncomeTypeDetail.ARG_INCOME_TYPE) { type = NavType.StringType }
+                )
+            ) { backStackEntry ->
+                val incomeTypeName = backStackEntry.arguments
+                    ?.getString(Screen.IncomeTypeDetail.ARG_INCOME_TYPE).orEmpty()
+                val incomeType = IncomeType.fromName(incomeTypeName)
+                if (incomeType != null) {
+                    IncomeTypeDetailScreen(
+                        incomeType = incomeType,
+                        onBack     = { navController.popBackStack() }
+                    )
+                }
             }
             composable(Screen.Charts.route) {
                 AnnualSummaryScreen()

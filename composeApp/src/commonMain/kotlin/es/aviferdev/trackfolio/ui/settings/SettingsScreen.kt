@@ -44,16 +44,14 @@ import androidx.compose.ui.text.input.ImeAction
 @Composable
 fun SettingsScreen(
     onNavigateToFiscalReport: () -> Unit = {},
-    accountViewModel:        AccountViewModel        = koinViewModel(),
-    backupViewModel:         BackupViewModel         = koinViewModel(),
-    categoryViewModel:       CategoryViewModel       = koinViewModel(),
-    issuerViewModel:         IssuerViewModel         = koinViewModel()
+    onNavigateToExpenseSettings: () -> Unit = {},
+    onNavigateToIncomeSettings: () -> Unit = {},
+    accountViewModel:  AccountViewModel  = koinViewModel(),
+    backupViewModel:   BackupViewModel   = koinViewModel()
 ) {
-    val accountState       by accountViewModel.uiState.collectAsState()
-    val selectedId         by accountViewModel.selectedAccountId.collectAsState()
-    val backupState        by backupViewModel.state.collectAsState()
-    val categoryState      by categoryViewModel.uiState.collectAsState()
-    val issuerState        by issuerViewModel.uiState.collectAsState()
+    val accountState by accountViewModel.uiState.collectAsState()
+    val selectedId   by accountViewModel.selectedAccountId.collectAsState()
+    val backupState  by backupViewModel.state.collectAsState()
 
     val authenticator: BiometricAuthenticator = koinInject()
     val lockManager: AppLockManager           = koinInject()
@@ -102,156 +100,26 @@ fun SettingsScreen(
                 }
             }
 
-            // ── CATEGORÍAS ────────────────────────────────────────────────────
+            // ── CATEGORÍAS (navegación a subpantallas) ────────────────────────
             item { Spacer(Modifier.height(4.dp)) }
-            item {
-                Row(
-                    modifier              = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment     = Alignment.CenterVertically
-                ) {
-                    Text("CATEGORÍAS", fontSize = 11.sp, fontWeight = FontWeight.SemiBold, color = TextSecondary)
-                }
-            }
-
-            item {
-                SectionHeader(
-                    title       = "Gastos",
-                    actionLabel = "+ Nueva",
-                    onAction    = { categoryViewModel.openAddSheet(TransactionType.EXPENSE) }
-                )
-            }
+            item { SectionHeader(title = "CATEGORÍAS") }
             item {
                 SettingsGroupCard {
-                    if (categoryState.expenseCategories.isEmpty()) {
-                        Box(
-                            modifier        = Modifier.fillMaxWidth().padding(16.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text("Sin categorías de gastos", fontSize = 13.sp, color = TextSecondary)
-                        }
-                    } else {
-                        categoryState.expenseCategories.forEachIndexed { index, cat ->
-                            Row(
-                                modifier          = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Box(modifier = Modifier.size(8.dp).clip(CircleShape).background(ExpenseRed))
-                                Spacer(Modifier.width(12.dp))
-                                Text(text = cat.name, fontSize = 14.sp, color = TextPrimary, modifier = Modifier.weight(1f))
-                                IconButton(onClick = { categoryViewModel.openEditSheet(cat) }, modifier = Modifier.size(28.dp)) {
-                                    Icon(Icons.Default.Edit, "Editar", modifier = Modifier.size(14.dp), tint = TextSecondary)
-                                }
-                                IconButton(onClick = { categoryViewModel.requestDelete(cat) }, modifier = Modifier.size(28.dp)) {
-                                    Icon(Icons.Default.Delete, "Eliminar", modifier = Modifier.size(14.dp), tint = ExpenseRed)
-                                }
-                            }
-                            if (index < categoryState.expenseCategories.lastIndex) {
-                                HorizontalDivider(color = BorderGray, thickness = 0.5.dp, modifier = Modifier.padding(start = 36.dp))
-                            }
-                        }
-                    }
-                }
-            }
-
-            item {
-                SectionHeader(
-                    title       = "Ingresos",
-                    actionLabel = "+ Nueva",
-                    onAction    = { categoryViewModel.openAddSheet(TransactionType.INCOME) }
-                )
-            }
-            item {
-                SettingsGroupCard {
-                    if (categoryState.incomeCategories.isEmpty()) {
-                        Box(
-                            modifier        = Modifier.fillMaxWidth().padding(16.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text("Sin categorías de ingresos", fontSize = 13.sp, color = TextSecondary)
-                        }
-                    } else {
-                        categoryState.incomeCategories.forEachIndexed { index, cat ->
-                            Row(
-                                modifier          = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Box(modifier = Modifier.size(8.dp).clip(CircleShape).background(IncomeGreen))
-                                Spacer(Modifier.width(12.dp))
-                                Text(text = cat.name, fontSize = 14.sp, color = TextPrimary, modifier = Modifier.weight(1f))
-                                IconButton(onClick = { categoryViewModel.openEditSheet(cat) }, modifier = Modifier.size(28.dp)) {
-                                    Icon(Icons.Default.Edit, "Editar", modifier = Modifier.size(14.dp), tint = TextSecondary)
-                                }
-                                IconButton(onClick = { categoryViewModel.requestDelete(cat) }, modifier = Modifier.size(28.dp)) {
-                                    Icon(Icons.Default.Delete, "Eliminar", modifier = Modifier.size(14.dp), tint = ExpenseRed)
-                                }
-                            }
-                            if (index < categoryState.incomeCategories.lastIndex) {
-                                HorizontalDivider(color = BorderGray, thickness = 0.5.dp, modifier = Modifier.padding(start = 36.dp))
-                            }
-                        }
-                    }
-                }
-            }
-
-            // ── EMISORES ─────────────────────────────────────────────────────
-            item { Spacer(Modifier.height(4.dp)) }
-            item {
-                Row(
-                    modifier              = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment     = Alignment.CenterVertically
-                ) {
-                    Text("EMISORES", fontSize = 11.sp, fontWeight = FontWeight.SemiBold, color = TextSecondary)
-                }
-            }
-
-            val settingsIssuerTypes = listOf(
-                IssuerType.EMPLOYER,
-                IssuerType.BANK,
-                IssuerType.BOND_ISSUER
-            )
-
-            settingsIssuerTypes.forEach { issuerType ->
-                val issuersForType = issuerState.issuersByType[issuerType] ?: emptyList()
-                item {
-                    SectionHeader(
-                        title       = issuerType.label,
-                        actionLabel = "+ Nuevo",
-                        onAction    = { issuerViewModel.openAddSheet(issuerType) }
+                    NavigableSettingsRow(
+                        icon    = "\uD83D\uDCC9",
+                        label   = "Gastos",
+                        onClick = onNavigateToExpenseSettings
                     )
-                }
-                item {
-                    SettingsGroupCard {
-                        if (issuersForType.isEmpty()) {
-                            Box(
-                                modifier         = Modifier.fillMaxWidth().padding(16.dp),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Text("Sin emisores de tipo ${issuerType.label.lowercase()}", fontSize = 13.sp, color = TextSecondary)
-                            }
-                        } else {
-                            issuersForType.forEachIndexed { index, issuer ->
-                                Row(
-                                    modifier          = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp),
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Text(issuer.icon, fontSize = 18.sp, modifier = Modifier.size(28.dp))
-                                    Spacer(Modifier.width(8.dp))
-                                    Text(text = issuer.name, fontSize = 14.sp, color = TextPrimary, modifier = Modifier.weight(1f))
-                                    IconButton(onClick = { issuerViewModel.openEditSheet(issuer) }, modifier = Modifier.size(28.dp)) {
-                                        Icon(Icons.Default.Edit, "Editar", modifier = Modifier.size(14.dp), tint = TextSecondary)
-                                    }
-                                    IconButton(onClick = { issuerViewModel.requestDelete(issuer) }, modifier = Modifier.size(28.dp)) {
-                                        Icon(Icons.Default.Delete, "Eliminar", modifier = Modifier.size(14.dp), tint = ExpenseRed)
-                                    }
-                                }
-                                if (index < issuersForType.lastIndex) {
-                                    HorizontalDivider(color = BorderGray, thickness = 0.5.dp, modifier = Modifier.padding(start = 36.dp))
-                                }
-                            }
-                        }
-                    }
+                    HorizontalDivider(
+                        color     = BorderGray,
+                        thickness = 0.5.dp,
+                        modifier  = Modifier.padding(start = 52.dp)
+                    )
+                    NavigableSettingsRow(
+                        icon    = "\uD83D\uDCC8",
+                        label   = "Ingresos",
+                        onClick = onNavigateToIncomeSettings
+                    )
                 }
             }
 
@@ -260,7 +128,7 @@ fun SettingsScreen(
             item { SectionHeader(title = "PREFERENCIAS") }
             item {
                 SettingsGroupCard {
-                    SettingsRow(icon = "\uD83C\uDF0D", label = "Idioma", value = "Espa\u00F1ol")
+                    SettingsRow(icon = "\uD83C\uDF0D", label = "Idioma", value = "Español")
                     HorizontalDivider(color = BorderGray, thickness = 0.5.dp, modifier = Modifier.padding(start = 52.dp))
                     SettingsRow(icon = "\uD83D\uDCB1", label = "Moneda por defecto", value = "EUR")
                 }
@@ -278,7 +146,7 @@ fun SettingsScreen(
                             biometricError = null
                             if (shouldEnable) {
                                 authenticator.authenticate(
-                                    title    = "Activar bloqueo biom\u00E9trico",
+                                    title    = "Activar bloqueo biométrico",
                                     subtitle = "Confirma tu identidad"
                                 ) { result ->
                                     when (result) {
@@ -287,7 +155,7 @@ fun SettingsScreen(
                                             biometricEnabled = true
                                         }
                                         is BiometricResult.NotAvailable ->
-                                            biometricError = "Biometr\u00EDa no disponible en este dispositivo"
+                                            biometricError = "Biometría no disponible en este dispositivo"
                                         is BiometricResult.Error ->
                                             biometricError = result.message
                                         else -> Unit
@@ -322,9 +190,9 @@ fun SettingsScreen(
             item { SectionHeader(title = "ACERCA DE") }
             item {
                 SettingsGroupCard {
-                    SettingsRow(icon = "\uD83D\uDCF1", label = "Versi\u00F3n", value = "1.0.0")
+                    SettingsRow(icon = "\uD83D\uDCF1", label = "Versión", value = "1.0.0")
                     HorizontalDivider(color = BorderGray, thickness = 0.5.dp, modifier = Modifier.padding(start = 52.dp))
-                    SettingsRow(icon = "\u2696\uFE0F", label = "Privacidad y t\u00E9rminos", value = "")
+                    SettingsRow(icon = "\u2696\uFE0F", label = "Privacidad y términos", value = "")
                 }
             }
 
@@ -332,7 +200,7 @@ fun SettingsScreen(
         }
     }
 
-    // ── Sheets y di\u00E1logos ────────────────────────────────────────────────────
+    // ── Sheets y diálogos ────────────────────────────────────────────────────
 
     if (accountState.showAddSheet) {
         AddEditAccountBottomSheet(
@@ -369,7 +237,7 @@ fun SettingsScreen(
             title = { Text("Eliminar cuenta", fontSize = 17.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary) },
             text  = {
                 Text(
-                    "Se eliminar\u00E1 \u00AB${accountState.accountToDelete!!.name}\u00BB y todos sus movimientos y deudas. Esta acci\u00F3n no se puede deshacer.",
+                    "Se eliminará «${accountState.accountToDelete!!.name}» y todos sus movimientos y deudas. Esta acción no se puede deshacer.",
                     fontSize = 14.sp, color = TextSecondary
                 )
             },
@@ -399,107 +267,12 @@ fun SettingsScreen(
             onDismiss = { backupViewModel.dismiss() }
         )
     }
-
-    if (categoryState.showAddSheet) {
-        AddCategorySheet(
-            type      = categoryState.addType,
-            onSave    = { name -> categoryViewModel.addCategory(name, categoryState.addType) },
-            onDismiss = { categoryViewModel.closeAddSheet() }
-        )
-    }
-
-    categoryState.editing?.let { editing ->
-        EditCategorySheet(
-            currentName = editing.name,
-            type        = TransactionType.valueOf(editing.type),
-            onSave      = { newName -> categoryViewModel.renameCategory(editing.id, newName) },
-            onDismiss   = { categoryViewModel.closeEditSheet() }
-        )
-    }
-
-    categoryState.pendingDelete?.let { pending ->
-        AlertDialog(
-            onDismissRequest = { categoryViewModel.cancelDelete() },
-            containerColor   = SurfaceWhite,
-            icon             = { Text("\uD83D\uDDC2\uFE0F", fontSize = 28.sp) },
-            title = { Text("Eliminar categor\u00EDa", fontSize = 17.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary) },
-            text  = {
-                Text(
-                    "Se eliminar\u00E1 \u00AB${pending.name}\u00BB del listado. Los movimientos que ya tengan asignada esta categor\u00EDa conservar\u00E1n su nombre y no se perder\u00E1n datos.",
-                    fontSize = 14.sp, color = TextSecondary
-                )
-            },
-            confirmButton = { TextButton(onClick = { categoryViewModel.confirmDelete() }) { Text("Eliminar", color = ExpenseRed, fontWeight = FontWeight.Medium) } },
-            dismissButton = { TextButton(onClick = { categoryViewModel.cancelDelete() }) { Text("Cancelar", color = PrimaryDark, fontWeight = FontWeight.Medium) } },
-            shape = RoundedCornerShape(16.dp)
-        )
-    }
-
-    categoryState.error?.let { msg ->
-        AlertDialog(
-            onDismissRequest = { categoryViewModel.clearError() },
-            containerColor   = SurfaceWhite,
-            title = { Text("Error", fontSize = 17.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary) },
-            text  = { Text(msg, fontSize = 14.sp, color = TextSecondary) },
-            confirmButton = { TextButton(onClick = { categoryViewModel.clearError() }) { Text("Aceptar", color = PrimaryDark, fontWeight = FontWeight.Medium) } },
-            shape = RoundedCornerShape(16.dp)
-        )
-    }
-
-    // ── Issuer sheets y di\u00E1logos ───────────────────────────────────────────
-
-    if (issuerState.showAddSheet) {
-        AddEditIssuerSheet(
-            initial   = null,
-            type      = issuerState.addType,
-            onSave    = { name, icon -> issuerViewModel.addIssuer(name, icon, issuerState.addType) },
-            onDismiss = { issuerViewModel.closeAddSheet() }
-        )
-    }
-
-    issuerState.editing?.let { editing ->
-        AddEditIssuerSheet(
-            initial   = editing,
-            type      = editing.type,
-            onSave    = { name, icon -> issuerViewModel.rename(editing.id, name, icon, editing.type) },
-            onDismiss = { issuerViewModel.closeEditSheet() }
-        )
-    }
-
-    issuerState.pendingDelete?.let { pending ->
-        AlertDialog(
-            onDismissRequest = { issuerViewModel.cancelDelete() },
-            containerColor   = SurfaceWhite,
-            icon             = { Text(pending.icon, fontSize = 28.sp) },
-            title = { Text("Archivar emisor", fontSize = 17.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary) },
-            text  = {
-                Text(
-                    "Se archivar\u00E1 \u00AB${pending.name}\u00BB. No aparecer\u00E1 en los selectores de ingresos nuevos, pero los movimientos hist\u00F3ricos conservar\u00E1n la referencia.",
-                    fontSize = 14.sp, color = TextSecondary
-                )
-            },
-            confirmButton = { TextButton(onClick = { issuerViewModel.confirmDelete() }) { Text("Archivar", color = ExpenseRed, fontWeight = FontWeight.Medium) } },
-            dismissButton = { TextButton(onClick = { issuerViewModel.cancelDelete() }) { Text("Cancelar", color = PrimaryDark, fontWeight = FontWeight.Medium) } },
-            shape = RoundedCornerShape(16.dp)
-        )
-    }
-
-    issuerState.error?.let { msg ->
-        AlertDialog(
-            onDismissRequest = { issuerViewModel.clearError() },
-            containerColor   = SurfaceWhite,
-            title = { Text("Error", fontSize = 17.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary) },
-            text  = { Text(msg, fontSize = 14.sp, color = TextSecondary) },
-            confirmButton = { TextButton(onClick = { issuerViewModel.clearError() }) { Text("Aceptar", color = PrimaryDark, fontWeight = FontWeight.Medium) } },
-            shape = RoundedCornerShape(16.dp)
-        )
-    }
 }
 
 // ── AddCategorySheet ─────────────────────────────────────────────────────────
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun AddCategorySheet(type: TransactionType, onSave: (name: String) -> Unit, onDismiss: () -> Unit) {
+internal fun AddCategorySheet(type: TransactionType, onSave: (name: String) -> Unit, onDismiss: () -> Unit) {
     var name      by remember { mutableStateOf("") }
     var nameError by remember { mutableStateOf(false) }
     val color     = if (type == TransactionType.INCOME) IncomeGreen else ExpenseRed
@@ -518,12 +291,12 @@ private fun AddCategorySheet(type: TransactionType, onSave: (name: String) -> Un
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Box(modifier = Modifier.size(10.dp).clip(CircleShape).background(color))
                 Spacer(Modifier.width(10.dp))
-                Text("Nueva categor\u00EDa de $typeLabel", fontSize = 18.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary)
+                Text("Nueva categoría de $typeLabel", fontSize = 18.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary)
             }
             Spacer(Modifier.height(24.dp))
             OutlinedTextField(
                 value = name, onValueChange = { name = it; nameError = false },
-                label = { Text("Nombre de la categor\u00EDa") },
+                label = { Text("Nombre de la categoría") },
                 placeholder = { Text("Ej. Mascotas, Gimnasio\u2026") },
                 isError = nameError,
                 supportingText = if (nameError) {{ Text("El nombre es obligatorio") }} else null,
@@ -538,7 +311,7 @@ private fun AddCategorySheet(type: TransactionType, onSave: (name: String) -> Un
                 modifier = Modifier.fillMaxWidth().height(52.dp),
                 shape = RoundedCornerShape(10.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = PrimaryDark)
-            ) { Text("Crear categor\u00EDa", fontSize = 16.sp, fontWeight = FontWeight.Medium) }
+            ) { Text("Crear categoría", fontSize = 16.sp, fontWeight = FontWeight.Medium) }
             Spacer(Modifier.height(8.dp))
             TextButton(onClick = onDismiss, modifier = Modifier.fillMaxWidth()) {
                 Text("Cancelar", fontSize = 14.sp, color = TextSecondary)
@@ -550,7 +323,7 @@ private fun AddCategorySheet(type: TransactionType, onSave: (name: String) -> Un
 // ── EditCategorySheet ────────────────────────────────────────────────────────
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun EditCategorySheet(currentName: String, type: TransactionType, onSave: (String) -> Unit, onDismiss: () -> Unit) {
+internal fun EditCategorySheet(currentName: String, type: TransactionType, onSave: (String) -> Unit, onDismiss: () -> Unit) {
     var name      by remember { mutableStateOf(currentName) }
     var nameError by remember { mutableStateOf(false) }
     val color     = if (type == TransactionType.INCOME) IncomeGreen else ExpenseRed
@@ -569,12 +342,12 @@ private fun EditCategorySheet(currentName: String, type: TransactionType, onSave
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Box(modifier = Modifier.size(10.dp).clip(CircleShape).background(color))
                 Spacer(Modifier.width(10.dp))
-                Text("Editar categor\u00EDa de $typeLabel", fontSize = 18.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary)
+                Text("Editar categoría de $typeLabel", fontSize = 18.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary)
             }
             Spacer(Modifier.height(24.dp))
             OutlinedTextField(
                 value = name, onValueChange = { name = it; nameError = false },
-                label = { Text("Nombre de la categor\u00EDa") },
+                label = { Text("Nombre de la categoría") },
                 isError = nameError,
                 supportingText = if (nameError) {{ Text("El nombre es obligatorio") }} else null,
                 modifier = Modifier.fillMaxWidth(), singleLine = true,
@@ -600,7 +373,7 @@ private fun EditCategorySheet(currentName: String, type: TransactionType, onSave
 // ── AddEditIssuerSheet ──────────────────────────────────────────────────────
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun AddEditIssuerSheet(
+internal fun AddEditIssuerSheet(
     initial: es.aviferdev.trackfolio.domain.model.Issuer?,
     type: IssuerType,
     onSave: (String, String) -> Unit,
@@ -681,12 +454,13 @@ private fun AddEditIssuerSheet(
     }
 }
 
-private fun defaultIconForType(type: IssuerType): String = when (type) {
+internal fun defaultIconForType(type: IssuerType): String = when (type) {
     IssuerType.EMPLOYER           -> "\uD83C\uDFE2"
     IssuerType.BANK               -> "\uD83C\uDFE6"
     IssuerType.BOND_ISSUER        -> "\uD83D\uDCDC"
     IssuerType.DIVIDEND_SOURCE    -> "\uD83D\uDCC8"
     IssuerType.PROMOTION_PLATFORM -> "\uD83C\uDF81"
+    IssuerType.EXEMPT_SOURCE      -> "\uD83D\uDCCB"
 }
 
 // ── SettingsAccountCard ──────────────────────────────────────────────────────
@@ -737,7 +511,7 @@ private fun SettingsAccountCard(
 
 // ── Componentes auxiliares ───────────────────────────────────────────────────
 @Composable
-private fun SectionHeader(title: String, actionLabel: String? = null, onAction: (() -> Unit)? = null) {
+internal fun SectionHeader(title: String, actionLabel: String? = null, onAction: (() -> Unit)? = null) {
     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
         Text(title, fontSize = 11.sp, fontWeight = FontWeight.SemiBold, color = TextSecondary)
         if (actionLabel != null && onAction != null) {
@@ -749,7 +523,7 @@ private fun SectionHeader(title: String, actionLabel: String? = null, onAction: 
 }
 
 @Composable
-private fun SettingsGroupCard(content: @Composable ColumnScope.() -> Unit) {
+internal fun SettingsGroupCard(content: @Composable ColumnScope.() -> Unit) {
     Card(modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(14.dp), colors = CardDefaults.cardColors(containerColor = SurfaceWhite), border = BorderStroke(0.5.dp, BorderGray), elevation = CardDefaults.cardElevation(0.dp)) { Column(content = content) }
 }
 
@@ -761,6 +535,21 @@ private fun SettingsRow(icon: String, label: String, value: String) {
         Text(label, fontSize = 15.sp, color = TextPrimary, modifier = Modifier.weight(1f))
         if (value.isNotEmpty()) Text(value, fontSize = 13.sp, color = TextSecondary)
         else Text("\u203A", fontSize = 18.sp, color = TextSecondary)
+    }
+}
+
+@Composable
+private fun NavigableSettingsRow(icon: String, label: String, onClick: () -> Unit) {
+    Row(
+        modifier = Modifier.fillMaxWidth()
+            .clickable(onClick = onClick)
+            .padding(horizontal = 16.dp, vertical = 14.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(icon, fontSize = 18.sp, modifier = Modifier.size(28.dp))
+        Spacer(Modifier.width(12.dp))
+        Text(label, fontSize = 15.sp, color = TextPrimary, modifier = Modifier.weight(1f))
+        Text("\u203A", fontSize = 18.sp, color = TextSecondary)
     }
 }
 
@@ -781,7 +570,7 @@ private fun BiometricToggleRow(enabled: Boolean, isAvailable: Boolean, error: St
             Text("\uD83D\uDD12", fontSize = 18.sp, modifier = Modifier.size(28.dp))
             Spacer(Modifier.width(12.dp))
             Column(modifier = Modifier.weight(1f)) {
-                Text("Bloqueo con biometr\u00EDa", fontSize = 15.sp, color = if (isAvailable) TextPrimary else TextSecondary)
+                Text("Bloqueo con biometría", fontSize = 15.sp, color = if (isAvailable) TextPrimary else TextSecondary)
                 if (!isAvailable) Text("No disponible en este dispositivo", fontSize = 11.sp, color = TextSecondary)
             }
             Switch(checked = enabled, onCheckedChange = { if (isAvailable) onToggle(it) }, enabled = isAvailable, colors = SwitchDefaults.colors(checkedThumbColor = SurfaceWhite, checkedTrackColor = PrimaryDark, uncheckedThumbColor = SurfaceWhite, uncheckedTrackColor = BorderGray))
@@ -796,14 +585,14 @@ private fun EmptyAccountsCard(onAdd: () -> Unit) {
         Column(modifier = Modifier.fillMaxWidth().padding(24.dp), horizontalAlignment = Alignment.CenterHorizontally) {
             Text("\uD83C\uDFE6", fontSize = 32.sp)
             Spacer(Modifier.height(8.dp))
-            Text("Sin cuentas todav\u00EDa", fontSize = 15.sp, fontWeight = FontWeight.Medium, color = TextPrimary)
+            Text("Sin cuentas todavía", fontSize = 15.sp, fontWeight = FontWeight.Medium, color = TextPrimary)
             Spacer(Modifier.height(4.dp))
             Text("Crea tu primera cuenta para empezar", fontSize = 13.sp, color = TextSecondary)
             Spacer(Modifier.height(16.dp))
             OutlinedButton(onClick = onAdd, shape = RoundedCornerShape(10.dp), border = BorderStroke(1.dp, PrimaryDark)) {
                 Icon(Icons.Default.Add, null, modifier = Modifier.size(16.dp), tint = PrimaryDark)
                 Spacer(Modifier.width(6.dp))
-                Text("A\u00F1adir cuenta", color = PrimaryDark, fontSize = 14.sp)
+                Text("Añadir cuenta", color = PrimaryDark, fontSize = 14.sp)
             }
         }
     }
