@@ -13,7 +13,6 @@ sealed class Screen(val route: String) {
     data object ExpenseSettings : Screen("settings_expense")
     data object IncomeSettings  : Screen("settings_income")
 
-    /** Subpantallas de detalle por tipo de ingreso (listado de emisores). */
     data object IncomeTypeDetail : Screen("settings_income/{incomeTypeName}") {
         const val ARG_INCOME_TYPE = "incomeTypeName"
         fun buildRoute(incomeTypeName: String): String = "settings_income/$incomeTypeName"

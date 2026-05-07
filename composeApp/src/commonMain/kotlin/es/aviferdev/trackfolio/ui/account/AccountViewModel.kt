@@ -49,7 +49,7 @@ class AccountViewModel(
             getAccounts().collect { accounts ->
                 _uiState.value = _uiState.value.copy(accounts = accounts)
                 if (session.selectedAccountId.value == null && accounts.isNotEmpty()) {
-                    // Auto-selecciona solo si la cuenta tiene saldo configurado
+                    // Autoselecciona solo si la cuenta tiene saldo configurado
                     val ready = accounts.firstOrNull { !it.needsInitialBalance }
                     ready?.let { session.selectAccount(it.id) }
                 }

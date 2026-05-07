@@ -74,7 +74,7 @@ import es.aviferdev.trackfolio.ui.portfolio.AssetCategoryViewModel
 import es.aviferdev.trackfolio.ui.portfolio.AssetHistoryViewModel
 import es.aviferdev.trackfolio.ui.portfolio.PlatformViewModel
 import es.aviferdev.trackfolio.ui.portfolio.PortfolioViewModel
-import es.aviferdev.trackfolio.ui.settings.BackupViewModel
+import es.aviferdev.trackfolio.ui.settings.backup.BackupViewModel
 import es.aviferdev.trackfolio.ui.settings.CategoryViewModel
 import es.aviferdev.trackfolio.ui.settings.IssuerViewModel
 import es.aviferdev.trackfolio.ui.transaction.TransactionViewModel

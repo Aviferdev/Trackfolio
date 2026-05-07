@@ -27,7 +27,6 @@ import es.aviferdev.trackfolio.ui.theme.*
 fun SetInitialBalanceBottomSheet(
     accountName: String = "",
     currency: String = "€",
-    onDismiss: () -> Unit,   // llamado al pulsar fuera — no descarta si no hay importe
     onConfirm: (Double) -> Unit
 ) {
     var amount by remember { mutableStateOf("") }

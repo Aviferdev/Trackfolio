@@ -40,6 +40,9 @@ import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.text.input.ImeAction
+import es.aviferdev.trackfolio.ui.settings.backup.BackupAction
+import es.aviferdev.trackfolio.ui.settings.backup.BackupPasswordSheet
+import es.aviferdev.trackfolio.ui.settings.backup.BackupViewModel
 
 @Composable
 fun SettingsScreen(
@@ -47,7 +50,7 @@ fun SettingsScreen(
     onNavigateToExpenseSettings: () -> Unit = {},
     onNavigateToIncomeSettings: () -> Unit = {},
     accountViewModel:  AccountViewModel  = koinViewModel(),
-    backupViewModel:   BackupViewModel   = koinViewModel()
+    backupViewModel: BackupViewModel = koinViewModel()
 ) {
     val accountState by accountViewModel.uiState.collectAsState()
     val selectedId   by accountViewModel.selectedAccountId.collectAsState()
@@ -215,7 +218,6 @@ fun SettingsScreen(
             accountName = pending.name,
             currency    = pending.currency,
             onConfirm   = { amount -> accountViewModel.confirmInitialBalance(amount) },
-            onDismiss   = {}
         )
     }
 
@@ -257,10 +259,10 @@ fun SettingsScreen(
 
     if (backupState.action != BackupAction.NONE) {
         BackupPasswordSheet(
-            state                   = backupState,
-            onPasswordChange        = backupViewModel::onPasswordChange,
+            state = backupState,
+            onPasswordChange = backupViewModel::onPasswordChange,
             onConfirmPasswordChange = backupViewModel::onConfirmPasswordChange,
-            onConfirm               = {
+            onConfirm = {
                 if (backupState.action == BackupAction.EXPORT) backupViewModel.confirmExport()
                 else backupViewModel.confirmImport()
             },

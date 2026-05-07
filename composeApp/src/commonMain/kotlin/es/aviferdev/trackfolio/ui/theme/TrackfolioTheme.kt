@@ -44,14 +44,14 @@ val TextSecondary  = Color(0xFF9AA0AC)
  * se cicla. El gris se reserva para "Sin categoría".
  */
 val CategoryPalette: List<Color> = listOf(
-    Color(0xFF3D6EAD), // azul (PrimaryDark)
-    Color(0xFFE0A458), // naranja cálido
-    Color(0xFF66BB6A), // verde
-    Color(0xFFB66DCB), // púrpura
-    Color(0xFF4FC3D7), // turquesa
-    Color(0xFFEF7A85), // coral
-    Color(0xFFD4C04F), // amarillo apagado
-    Color(0xFF8FA3B0)  // gris azulado
+    Color(0xFF3D6EAD),
+    Color(0xFFE0A458),
+    Color(0xFF66BB6A),
+    Color(0xFFB66DCB),
+    Color(0xFF4FC3D7),
+    Color(0xFFEF7A85),
+    Color(0xFFD4C04F),
+    Color(0xFF8FA3B0)
 )
 
 /** Color reservado para activos sin categoría asignada. */

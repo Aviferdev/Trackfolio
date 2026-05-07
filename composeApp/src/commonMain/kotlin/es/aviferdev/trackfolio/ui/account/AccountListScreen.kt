@@ -88,7 +88,6 @@ fun AccountListScreen(
             accountName = pending.name,
             currency    = pending.currency,
             onConfirm   = { amount -> viewModel.confirmInitialBalance(amount) },
-            onDismiss   = { /* bloqueado */ }
         )
     }
 

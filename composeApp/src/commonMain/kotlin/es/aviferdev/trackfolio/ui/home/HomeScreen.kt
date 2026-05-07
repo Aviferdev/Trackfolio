@@ -160,7 +160,6 @@ fun HomeScreen(
         SetInitialBalanceBottomSheet(
             accountName = (uiState as? HomeUiState.Success)?.balance?.selectedAccount?.name ?: "",
             currency    = (uiState as? HomeUiState.Success)?.balance?.selectedAccount?.currency ?: "€",
-            onDismiss = { /* bloqueado */ },
             onConfirm = { amount ->
                 viewModel.setInitialBalance(amount)
                 showInitialBalance = false
