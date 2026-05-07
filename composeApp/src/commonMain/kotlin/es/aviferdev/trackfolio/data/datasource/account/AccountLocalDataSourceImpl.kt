@@ -45,11 +45,12 @@ class AccountLocalDataSourceImpl(
     override suspend fun insertAccount(account: Account) {
         withContext(Dispatchers.IO) {
             queries.insert(
-                id        = account.id,
-                name      = account.name,
-                currency  = account.currency,
-                balance   = account.initialBalance,
-                createdAt = account.createdAt
+                id          = account.id,
+                name        = account.name,
+                currency    = account.currency,
+                balance     = account.initialBalance,
+                createdAt   = account.createdAt,
+                accountType = account.accountType.name
             )
         }
     }
@@ -57,9 +58,10 @@ class AccountLocalDataSourceImpl(
     override suspend fun updateAccount(account: Account) {
         withContext(Dispatchers.IO) {
             queries.update(
-                name     = account.name,
-                currency = account.currency,
-                id       = account.id
+                name        = account.name,
+                currency   = account.currency,
+                accountType = account.accountType.name,
+                id         = account.id
             )
         }
     }
@@ -68,6 +70,10 @@ class AccountLocalDataSourceImpl(
         withContext(Dispatchers.IO) {
             queries.updateInitialBalance(balance = amount, id = accountId)
         }
+    }
+
+    override suspend fun updateAccountType(accountId: String, accountType: String) {
+        // No-op: accountType se persistirá vía migrations en futuro
     }
 
     override suspend fun deleteAccount(accountId: String) {

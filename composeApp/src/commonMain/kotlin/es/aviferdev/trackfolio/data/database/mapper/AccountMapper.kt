@@ -3,6 +3,7 @@ package es.aviferdev.trackfolio.data.database.mapper
 import es.aviferdev.trackfolio.data.database.GetAllComputedBalances
 import es.aviferdev.trackfolio.data.database.GetComputedBalance
 import es.aviferdev.trackfolio.domain.model.Account
+import es.aviferdev.trackfolio.domain.model.AccountType
 
 fun GetComputedBalance.toDomain(): Account = Account(
     id              = id,
@@ -10,7 +11,8 @@ fun GetComputedBalance.toDomain(): Account = Account(
     currency        = currency,
     initialBalance  = initialBalance,
     computedBalance = computedBalance,
-    createdAt       = createdAt
+    createdAt       = createdAt,
+    accountType     = AccountType.fromName(accountType)
 )
 
 fun GetAllComputedBalances.toDomain(): Account = Account(
@@ -19,5 +21,6 @@ fun GetAllComputedBalances.toDomain(): Account = Account(
     currency        = currency,
     initialBalance  = initialBalance,
     computedBalance = computedBalance,
-    createdAt       = createdAt
+    createdAt       = createdAt,
+    accountType     = AccountType.fromName(accountType)
 )

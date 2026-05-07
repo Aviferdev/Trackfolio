@@ -3,6 +3,7 @@ package es.aviferdev.trackfolio.ui.account
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import es.aviferdev.trackfolio.domain.model.Account
+import es.aviferdev.trackfolio.domain.model.AccountType
 import es.aviferdev.trackfolio.domain.usecase.account.DeleteAccountUseCase
 import es.aviferdev.trackfolio.domain.usecase.account.GetAccountsUseCase
 import es.aviferdev.trackfolio.domain.usecase.account.SaveAccountUseCase
@@ -49,7 +50,6 @@ class AccountViewModel(
             getAccounts().collect { accounts ->
                 _uiState.value = _uiState.value.copy(accounts = accounts)
                 if (session.selectedAccountId.value == null && accounts.isNotEmpty()) {
-                    // Autoselecciona solo si la cuenta tiene saldo configurado
                     val ready = accounts.firstOrNull { !it.needsInitialBalance }
                     ready?.let { session.selectAccount(it.id) }
                 }
@@ -106,20 +106,20 @@ class AccountViewModel(
         _uiState.value = _uiState.value.copy(showDeleteConfirm = false, accountToDelete = null)
     }
 
-    fun addAccount(name: String, currency: String) {
+    fun addAccount(name: String, currency: String, accountType: AccountType = AccountType.GENERAL) {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true)
             val newAccount = Account(
                 id              = generateId(),
                 name            = name,
                 currency        = currency,
-                initialBalance  = 0.0,   // siempre 0 — se configura en el paso siguiente
+                initialBalance  = 0.0,
                 computedBalance = 0.0,
-                createdAt       = Clock.System.now().toEpochMilliseconds()
+                createdAt       = Clock.System.now().toEpochMilliseconds(),
+                accountType     = accountType
             )
             saveAccount(newAccount)
                 .onSuccess {
-                    // No seleccionamos todavía: primero hay que configurar el saldo inicial
                     _uiState.value = _uiState.value.copy(
                         isLoading    = false,
                         showAddSheet = false,
@@ -141,10 +141,15 @@ class AccountViewModel(
         }
     }
 
-    fun editAccount(account: Account, newName: String, newCurrency: String) {
+    fun editAccount(account: Account, newName: String, newCurrency: String, accountType: AccountType? = null) {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true)
-            updateAccount(account.copy(name = newName, currency = newCurrency))
+            val updated = account.copy(
+                name        = newName,
+                currency    = newCurrency,
+                accountType = accountType ?: account.accountType
+            )
+            updateAccount(updated)
                 .onSuccess {
                     _uiState.value = _uiState.value.copy(
                         isLoading = false, showEditSheet = false, editingAccount = null

@@ -3,7 +3,8 @@ package es.aviferdev.trackfolio.domain.model
 data class Transaction(
     val id: String,
     val accountId: String,
-    /** Importe neto (lo que entra/sale realmente de la cuenta). */
+    /** Importe neto (lo que entra/sale realmente de la cuenta).
+     *  Para ADJUSTMENT: positivo = saldo real mayor, negativo = saldo real menor. */
     val amount: Double,
     val type: TransactionType,
     /** Categoría de gasto. Null para ingresos (usan [incomeType]). */
@@ -31,7 +32,11 @@ data class Transaction(
     // ── Vínculo con portfolio ─────────────────────────────────────────────────
     /** ID de la AssetTransaction vinculada. Si != null, este movimiento es
      *  de solo lectura — se gestiona desde Portfolio. */
-    val linkedAssetTransactionId: String? = null
+    val linkedAssetTransactionId: String? = null,
+
+    // ── Reconciliación ────────────────────────────────────────────────────────
+    /** Si true, esta transacción se excluye del informe fiscal (IRPF). */
+    val excludeFromFiscal: Boolean = false
 ) {
     /** Importe retenido por IRPF = bruto − cotizaciones − comisiones − neto. */
     val irpfAmount: Double?
@@ -48,9 +53,10 @@ data class Transaction(
 
     val isIncome: Boolean get() = type == TransactionType.INCOME
     val isExpense: Boolean get() = type == TransactionType.EXPENSE
+    val isAdjustment: Boolean get() = type == TransactionType.ADJUSTMENT
 
     /** True si este movimiento está vinculado a una inversión del portfolio. */
     val isLinkedToAsset: Boolean get() = linkedAssetTransactionId != null
 }
 
-enum class TransactionType { INCOME, EXPENSE }
+enum class TransactionType { INCOME, EXPENSE, ADJUSTMENT }

@@ -12,6 +12,9 @@ class DatabaseInitializer(
 ) {
     companion object {
 
+        /** ID fijo de la categoría de ajuste de saldo. Usado por ReconcileBalanceUseCase. */
+        const val ADJUSTMENT_CATEGORY_ID = "cat_adj_reconciliation"
+
         val DEFAULT_ASSET_CATEGORIES = listOf(
             AssetCategory(id = "fixed_cat_stocks",       name = "Acciones",              icon = "📊", sortOrder = 0, createdAt = 0),
             AssetCategory(id = "fixed_cat_etfs",         name = "ETFs",                  icon = "📈", sortOrder = 1, createdAt = 0),
@@ -35,15 +38,25 @@ class DatabaseInitializer(
             CategoryEntity(id = "cat_exp_08", name = "Otros",        type = TransactionType.EXPENSE.name, isDefault = 1L, archived = 0L),
         )
 
+        /** Categoría especial para transacciones de ajuste / reconciliación. */
+        val ADJUSTMENT_CATEGORY = CategoryEntity(
+            id        = ADJUSTMENT_CATEGORY_ID,
+            name      = "Ajuste de saldo",
+            type      = TransactionType.ADJUSTMENT.name,
+            isDefault = 1L,
+            archived  = 0L
+        )
     }
 
     suspend fun initializeIfNeeded() {
         if (transactionCategoryDataSource.count().firstOrNull() == 0L) {
             DEFAULT_EXPENSE_CATEGORIES.forEach { transactionCategoryDataSource.insert(it) }
         }
+        // Siempre intentar insertar la categoría de ajuste (INSERT OR IGNORE)
+        transactionCategoryDataSource.insert(ADJUSTMENT_CATEGORY)
+
         if (assetCategoryDataSource.count().firstOrNull() == 0L) {
             DEFAULT_ASSET_CATEGORIES.forEach { assetCategoryDataSource.insert(it) }
         }
     }
-
 }

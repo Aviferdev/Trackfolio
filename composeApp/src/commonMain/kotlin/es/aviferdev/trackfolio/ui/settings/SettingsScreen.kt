@@ -208,7 +208,7 @@ fun SettingsScreen(
     if (accountState.showAddSheet) {
         AddEditAccountBottomSheet(
             account   = null,
-            onSave    = { name, currency -> accountViewModel.addAccount(name, currency) },
+            onSave    = { name, currency, type -> accountViewModel.addAccount(name, currency, type) },
             onDismiss = { accountViewModel.closeAddSheet() }
         )
     }
@@ -224,8 +224,8 @@ fun SettingsScreen(
     if (accountState.showEditSheet && accountState.editingAccount != null) {
         AddEditAccountBottomSheet(
             account   = accountState.editingAccount,
-            onSave    = { name, currency ->
-                accountViewModel.editAccount(accountState.editingAccount!!, name, currency)
+            onSave    = { name, currency, type ->
+                accountViewModel.editAccount(accountState.editingAccount!!, name, currency, type)
             },
             onDismiss = { accountViewModel.closeEditSheet() }
         )

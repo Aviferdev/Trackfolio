@@ -3,7 +3,8 @@ CREATE TABLE AccountEntity (
     name        TEXT    NOT NULL,
     currency    TEXT    NOT NULL DEFAULT 'EUR',
     balance     REAL    NOT NULL DEFAULT 0.0,
-    createdAt   INTEGER NOT NULL
+    createdAt   INTEGER NOT NULL,
+    accountType TEXT    NOT NULL DEFAULT 'GENERAL'
 );
 
 -- ─── Queries básicas ──────────────────────────────────────────────────────────
@@ -15,16 +16,19 @@ selectById:
 SELECT * FROM AccountEntity WHERE id = :id;
 
 insert:
-INSERT OR REPLACE INTO AccountEntity(id, name, currency, balance, createdAt)
-VALUES (?, ?, ?, ?, ?);
+INSERT OR REPLACE INTO AccountEntity(id, name, currency, balance, createdAt, accountType)
+VALUES (?, ?, ?, ?, ?, ?);
 
 update:
 UPDATE AccountEntity
-SET name = :name, currency = :currency
+SET name = :name, currency = :currency, accountType = :accountType
 WHERE id = :id;
 
 updateInitialBalance:
 UPDATE AccountEntity SET balance = :balance WHERE id = :id;
+
+updateAccountType:
+UPDATE AccountEntity SET accountType = :accountType WHERE id = :id;
 
 delete:
 DELETE FROM AccountEntity WHERE id = :id;
@@ -38,6 +42,7 @@ SELECT
     a.currency,
     a.balance AS initialBalance,
     a.createdAt,
+    a.accountType,
     COALESCE(a.balance, 0.0)
         + COALESCE(SUM(CASE WHEN t.type = 'INCOME'  THEN t.amount ELSE 0.0 END), 0.0)
         - COALESCE(SUM(CASE WHEN t.type = 'EXPENSE' THEN t.amount ELSE 0.0 END), 0.0)
@@ -54,6 +59,7 @@ SELECT
     a.currency,
     a.balance AS initialBalance,
     a.createdAt,
+    a.accountType,
     COALESCE(a.balance, 0.0)
         + COALESCE(SUM(CASE WHEN t.type = 'INCOME'  THEN t.amount ELSE 0.0 END), 0.0)
         - COALESCE(SUM(CASE WHEN t.type = 'EXPENSE' THEN t.amount ELSE 0.0 END), 0.0)

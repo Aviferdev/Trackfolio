@@ -7,6 +7,7 @@ CREATE TABLE TransactionEntity (
     date                       INTEGER NOT NULL,
     notes                      TEXT,
     createdAt                  INTEGER NOT NULL,
+    excludeFromFiscal          INTEGER NOT NULL DEFAULT 0,
     -- ── Campos de ingreso ─────────────────────────────────────────────────────
     incomeType                 TEXT,
     grossAmount                REAL,
@@ -125,9 +126,10 @@ WHERE strftime('%Y', date / 1000, 'unixepoch') = :year;
 insert:
 INSERT INTO TransactionEntity(
     id, accountId, amount, type, categoryId, date, notes, createdAt,
+    excludeFromFiscal,
     incomeType, grossAmount, irpfPercent, socialSecurityAmount,
     commissionAmount, issuerId, issuerName, linkedAssetTransactionId
-) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 
 update:
 UPDATE TransactionEntity
@@ -137,6 +139,7 @@ SET accountId                = :accountId,
     categoryId               = :categoryId,
     date                     = :date,
     notes                    = :notes,
+    excludeFromFiscal        = :excludeFromFiscal,
     incomeType               = :incomeType,
     grossAmount              = :grossAmount,
     irpfPercent              = :irpfPercent,

@@ -4,28 +4,31 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import es.aviferdev.trackfolio.domain.model.AccountType
 import es.aviferdev.trackfolio.ui.theme.*
 
 /**
  * Bottom sheet para crear o editar una cuenta.
- * En creación solo pide nombre y moneda — el saldo inicial se configura
+ * En creación solo pide nombre, moneda y tipo — el saldo inicial se configura
  * en un paso posterior obligatorio (SetInitialBalanceBottomSheet).
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddEditAccountBottomSheet(
     account: es.aviferdev.trackfolio.domain.model.Account?,  // null = crear
-    onSave: (name: String, currency: String) -> Unit,
+    onSave: (name: String, currency: String, accountType: AccountType) -> Unit,
     onDismiss: () -> Unit
 ) {
     val isEditing = account != null
 
     var name             by remember { mutableStateOf(account?.name ?: "") }
     var currency         by remember { mutableStateOf(account?.currency ?: "EUR") }
+    var isCash           by remember { mutableStateOf(account?.accountType == AccountType.CASH) }
     var nameError        by remember { mutableStateOf(false) }
     var expandedCurrency by remember { mutableStateOf(false) }
 
@@ -103,6 +106,38 @@ fun AddEditAccountBottomSheet(
                 }
             }
 
+            Spacer(Modifier.height(16.dp))
+
+            // Tipo de cuenta: efectivo
+            Row(
+                modifier          = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text       = "\uD83D\uDCB5 Cuenta de efectivo",
+                        fontSize   = 15.sp,
+                        color      = TextPrimary,
+                        fontWeight = FontWeight.Medium
+                    )
+                    Text(
+                        text     = "Permite reconciliar el saldo con el efectivo real",
+                        fontSize = 12.sp,
+                        color    = TextSecondary
+                    )
+                }
+                Switch(
+                    checked         = isCash,
+                    onCheckedChange = { isCash = it },
+                    colors          = SwitchDefaults.colors(
+                        checkedThumbColor   = SurfaceWhite,
+                        checkedTrackColor   = PrimaryDark,
+                        uncheckedThumbColor = SurfaceWhite,
+                        uncheckedTrackColor = BorderGray
+                    )
+                )
+            }
+
             if (!isEditing) {
                 Spacer(Modifier.height(12.dp))
                 Text(
@@ -117,7 +152,8 @@ fun AddEditAccountBottomSheet(
             Button(
                 onClick = {
                     if (name.isBlank()) { nameError = true; return@Button }
-                    onSave(name.trim(), currency)
+                    val type = if (isCash) AccountType.CASH else AccountType.GENERAL
+                    onSave(name.trim(), currency, type)
                 },
                 modifier = Modifier.fillMaxWidth().height(52.dp),
                 shape    = RoundedCornerShape(10.dp),

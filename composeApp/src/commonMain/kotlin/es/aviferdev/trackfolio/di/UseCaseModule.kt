@@ -44,6 +44,10 @@ import es.aviferdev.trackfolio.domain.usecase.debt.GetActiveDebtsUseCase
 import es.aviferdev.trackfolio.domain.usecase.debt.MarkDebtAsPaidUseCase
 import es.aviferdev.trackfolio.domain.usecase.debt.SaveDebtUseCase
 import es.aviferdev.trackfolio.domain.usecase.debt.UpdateDebtUseCase
+import es.aviferdev.trackfolio.domain.usecase.reconciliation.BalanceAlreadyMatchesException
+import es.aviferdev.trackfolio.domain.usecase.reconciliation.GetReconciliationReminderIntervalUseCase
+import es.aviferdev.trackfolio.domain.usecase.reconciliation.ReconcileBalanceUseCase
+import es.aviferdev.trackfolio.domain.usecase.reconciliation.ShouldShowReconciliationReminderUseCase
 import es.aviferdev.trackfolio.domain.usecase.fiscal.GetFiscalReportDataUseCase
 import es.aviferdev.trackfolio.domain.usecase.home.GetHomeBalanceUseCase
 import es.aviferdev.trackfolio.domain.usecase.issuer.ArchiveIssuerUseCase
@@ -78,6 +82,7 @@ import es.aviferdev.trackfolio.ui.portfolio.AssetCategoryViewModel
 import es.aviferdev.trackfolio.ui.portfolio.AssetHistoryViewModel
 import es.aviferdev.trackfolio.ui.portfolio.PlatformViewModel
 import es.aviferdev.trackfolio.ui.portfolio.PortfolioViewModel
+import es.aviferdev.trackfolio.ui.reconciliation.ReconciliationViewModel
 import es.aviferdev.trackfolio.ui.settings.backup.BackupViewModel
 import es.aviferdev.trackfolio.ui.settings.CategoryViewModel
 import es.aviferdev.trackfolio.ui.settings.IssuerViewModel
@@ -229,6 +234,7 @@ val useCaseModule = module {
         )
     }
     viewModel { DebtViewModel(get(), get(), get(), get(), get(), get()) }
+    viewModel { ReconciliationViewModel(get(), get(), get(), get()) }
     viewModel {
         AnnualViewModel(
             getAnnualSummary    = get(),

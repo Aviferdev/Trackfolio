@@ -236,13 +236,26 @@ private fun TransactionListRow(
     balancesHidden: Boolean,
     onEdit: (() -> Unit)?
 ) {
-    val isIncome = transaction.isIncome
-    val bgColor  = if (transaction.isLinkedToAsset) PrimaryDark
-                   else if (isIncome) IncomeGreen else ExpenseRed
-    val emoji    = if (transaction.isLinkedToAsset) null
-                   else if (isIncome) transaction.incomeType?.emoji else null
-    val initial  = if (transaction.isLinkedToAsset) "📈"
-                   else emoji ?: label.firstOrNull()?.uppercaseChar()?.toString() ?: "?"
+    val isIncome     = transaction.isIncome
+    val isAdjustment = transaction.isAdjustment
+    val bgColor = when {
+        isAdjustment               -> PrimaryDark
+        transaction.isLinkedToAsset -> PrimaryDark
+        isIncome                   -> IncomeGreen
+        else                       -> ExpenseRed
+    }
+    val emoji = when {
+        isAdjustment               -> null
+        transaction.isLinkedToAsset -> null
+        isIncome                   -> transaction.incomeType?.emoji
+        else                       -> null
+    }
+    val initial = when {
+        isAdjustment               -> "⚖"
+        transaction.isLinkedToAsset -> "📈"
+        emoji != null              -> emoji
+        else                       -> label.firstOrNull()?.uppercaseChar()?.toString() ?: "?"
+    }
 
     Row(
         modifier          = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp),
@@ -272,9 +285,19 @@ private fun TransactionListRow(
             }
         }
         Column(horizontalAlignment = Alignment.End) {
-            val prefix      = if (isIncome) "+" else "−"
-            val amountColor = if (isIncome) IncomeGreen else ExpenseRed
-            Text("$prefix ${maskAmount(formatAmount(transaction.amount), balancesHidden)} €", fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = amountColor)
+            val prefix = when {
+                isAdjustment && transaction.amount >= 0 -> "+"
+                isAdjustment -> "−"
+                isIncome     -> "+"
+                else         -> "−"
+            }
+            val amountColor = when {
+                isAdjustment -> PrimaryDark
+                isIncome     -> IncomeGreen
+                else         -> ExpenseRed
+            }
+            val displayAmount = if (isAdjustment) kotlin.math.abs(transaction.amount) else transaction.amount
+            Text("$prefix ${maskAmount(formatAmount(displayAmount), balancesHidden)} €", fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = amountColor)
             if (isIncome && transaction.grossAmount != null && !balancesHidden) {
                 Text("Bruto: ${formatAmount(transaction.grossAmount)} €", fontSize = 10.sp, color = TextSecondary)
             }

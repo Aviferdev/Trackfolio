@@ -57,6 +57,9 @@ import es.aviferdev.trackfolio.security.BiometricAuthenticator
 import es.aviferdev.trackfolio.security.BiometricResult
 import es.aviferdev.trackfolio.ui.account.AccountSelectorBar
 import es.aviferdev.trackfolio.ui.account.AccountViewModel
+import es.aviferdev.trackfolio.ui.reconciliation.ReconciliationReminderBanner
+import es.aviferdev.trackfolio.ui.reconciliation.ReconciliationViewModel
+import es.aviferdev.trackfolio.ui.reconciliation.ReconcileBalanceBottomSheet
 import es.aviferdev.trackfolio.ui.theme.BackgroundGray
 import es.aviferdev.trackfolio.ui.theme.BorderGray
 import es.aviferdev.trackfolio.ui.theme.ExpenseRed
@@ -79,12 +82,14 @@ fun HomeScreen(
     onNavigateToDebts: () -> Unit = {},
     onNavigateToSettings: () -> Unit = {},
     viewModel: HomeViewModel = koinViewModel(),
-    accountViewModel: AccountViewModel = koinViewModel()
+    accountViewModel: AccountViewModel = koinViewModel(),
+    reconciliationViewModel: ReconciliationViewModel = koinViewModel()
 ) {
     val uiState        by viewModel.uiState.collectAsState()
     val priceReminder  by viewModel.priceReminderState.collectAsState()
     val accountState   by accountViewModel.uiState.collectAsState()
     val selectedId     by accountViewModel.selectedAccountId.collectAsState()
+    val reconciliationState by reconciliationViewModel.uiState.collectAsState()
     val balanceVisibility = koinInject<BalanceVisibilityManager>()
     val authenticator: BiometricAuthenticator = koinInject()
     val balancesHidden = LocalBalanceHidden.current
@@ -114,6 +119,13 @@ fun HomeScreen(
             is HomeUiState.Success -> {
                 if (state.showInitialBalancePrompt && !showAddTransaction) {
                     LaunchedEffect(state) { showInitialBalance = true }
+                }
+                // Check reconciliation reminder when account is CASH
+                val currentAccount = state.balance.selectedAccount
+                LaunchedEffect(currentAccount) {
+                    if (currentAccount?.isCash == true) {
+                        reconciliationViewModel.checkReminder()
+                    }
                 }
                 HomeContent(
                     balance = state.balance,
@@ -152,7 +164,12 @@ fun HomeScreen(
                     onNavigateToSettings = onNavigateToSettings,
                     priceReminderState = priceReminder,
                     onUpdateNow = { viewModel.openUpdateSheet() },
-                    onRemindLater = { viewModel.dismissReminder() }
+                    onRemindLater = { viewModel.dismissReminder() },
+                    showReconciliationBanner = reconciliationState.showBanner && currentAccount?.isCash == true,
+                    onReconcileNow = {
+                        reconciliationViewModel.openBottomSheet(state.balance.selectedAccountBalance)
+                    },
+                    onReconcileRemindLater = { reconciliationViewModel.dismissBanner() }
                 )
             }
         }
@@ -202,6 +219,15 @@ fun HomeScreen(
             onDismiss       = { viewModel.closeUpdateSheet() }
         )
     }
+
+    if (reconciliationState.showBottomSheet) {
+        val currency = (uiState as? HomeUiState.Success)?.balance?.selectedAccount?.currency ?: "EUR"
+        ReconcileBalanceBottomSheet(
+            viewModel = reconciliationViewModel,
+            currency  = currency,
+            onDismiss = { reconciliationViewModel.closeBottomSheet() }
+        )
+    }
 }
 
 @Composable
@@ -219,7 +245,10 @@ private fun HomeContent(
     onNavigateToSettings: () -> Unit,
     priceReminderState: PriceReminderState = PriceReminderState(),
     onUpdateNow: () -> Unit = {},
-    onRemindLater: () -> Unit = {}
+    onRemindLater: () -> Unit = {},
+    showReconciliationBanner: Boolean = false,
+    onReconcileNow: () -> Unit = {},
+    onReconcileRemindLater: () -> Unit = {}
 ) {
     Column(
         modifier = Modifier
@@ -297,6 +326,17 @@ private fun HomeContent(
             modifier      = Modifier.padding(horizontal = 20.dp)
         )
         if (priceReminderState.showBanner) {
+            Spacer(Modifier.height(12.dp))
+        }
+
+        // Banner de recordatorio de reconciliación (solo cuentas CASH)
+        ReconciliationReminderBanner(
+            visible          = showReconciliationBanner,
+            onReconcileNow   = onReconcileNow,
+            onRemindLater    = onReconcileRemindLater,
+            modifier         = Modifier.padding(horizontal = 20.dp)
+        )
+        if (showReconciliationBanner) {
             Spacer(Modifier.height(12.dp))
         }
 
@@ -467,10 +507,19 @@ private fun TransactionRow(transaction: Transaction, categoryName: String, balan
         modifier          = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        val isIncome = transaction.isIncome
-        val bgColor  = if (isIncome) IncomeGreen else ExpenseRed
+        val isIncome    = transaction.isIncome
+        val isAdjustment = transaction.isAdjustment
+        val bgColor = when {
+            isAdjustment -> PrimaryDark
+            isIncome     -> IncomeGreen
+            else         -> ExpenseRed
+        }
         val emoji    = if (isIncome) transaction.incomeType?.emoji else null
-        val initial  = emoji ?: categoryName.firstOrNull()?.uppercaseChar()?.toString() ?: "?"
+        val initial  = when {
+            isAdjustment -> "⚖"
+            emoji != null -> emoji
+            else -> categoryName.firstOrNull()?.uppercaseChar()?.toString() ?: "?"
+        }
 
         Box(
             modifier        = Modifier.size(42.dp).clip(CircleShape).background(bgColor),
@@ -489,10 +538,20 @@ private fun TransactionRow(transaction: Transaction, categoryName: String, balan
             }
             Text(text = subtitle, fontSize = 12.sp, color = TextSecondary)
         }
-        val prefix      = if (isIncome) "+" else "−"
-        val amountColor = if (isIncome) IncomeGreen else ExpenseRed
+        val prefix = when {
+            isAdjustment && transaction.amount >= 0 -> "+"
+            isAdjustment -> "−"
+            isIncome     -> "+"
+            else         -> "−"
+        }
+        val amountColor = when {
+            isAdjustment -> PrimaryDark
+            isIncome     -> IncomeGreen
+            else         -> ExpenseRed
+        }
+        val displayAmount = if (isAdjustment) kotlin.math.abs(transaction.amount) else transaction.amount
         Text(
-            text       = "$prefix ${maskAmount(formatAmount(transaction.amount), balancesHidden)} €",
+            text       = "$prefix ${maskAmount(formatAmount(displayAmount), balancesHidden)} €",
             fontSize   = 14.sp,
             fontWeight = FontWeight.SemiBold,
             color      = amountColor
@@ -504,6 +563,9 @@ private fun TransactionRow(transaction: Transaction, categoryName: String, balan
 private fun resolveTransactionLabel(transaction: Transaction, categoryNames: Map<String, String>): String {
     if (transaction.isLinkedToAsset) {
         return transaction.notes ?: "Inversión"
+    }
+    if (transaction.isAdjustment) {
+        return "Ajuste de saldo"
     }
     return if (transaction.isIncome) {
         transaction.incomeType?.label ?: "Ingreso"
