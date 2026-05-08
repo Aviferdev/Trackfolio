@@ -20,6 +20,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.trackfolio.domain.model.Asset
+import es.aviferdev.trackfolio.domain.model.AssetCategory
 import es.aviferdev.trackfolio.domain.model.AssetTransaction
 import es.aviferdev.trackfolio.domain.model.AssetTransactionType
 import es.aviferdev.trackfolio.domain.model.Platform
@@ -35,8 +36,8 @@ import kotlinx.datetime.toLocalDateTime
  * Sheet para registrar (o editar) un movimiento de compra/venta sobre un
  * activo. Validaciones:
  *
- * - Plataforma obligatoria (decisión 3.A). Si no hay plataformas creadas,
- *   se muestra un atajo a la pantalla de creación (decisión 8.C).
+ * - Plataforma obligatoria (decisión 3.A). Las plataformas deben crearse
+ *   previamente desde Ajustes › Portfolio › Plataformas.
  * - Para SELL: solo se muestran habilitadas las plataformas donde el activo
  *   tiene unidades disponibles. El resto aparece deshabilitado. No se
  *   preselecciona ninguna — el usuario debe elegir explícitamente.
@@ -47,9 +48,6 @@ import kotlinx.datetime.toLocalDateTime
  *
  * @param assetTransactions movimientos del activo seleccionado, para
  *        validar la sobreventa con FIFO.
- * @param onCreatePlatform invocado cuando el usuario pulsa "Crear plataforma"
- *        en el atajo inline. La sheet se cerrará y el caller debe abrir
- *        AddEditPlatformSheet.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -57,7 +55,9 @@ fun AddEditAssetTransactionBottomSheet(
     transaction: AssetTransaction?,             // null = crear
     fixedAsset: Asset?,                          // si != null, no se permite cambiar de activo
     allAssets: List<Asset>,                      // catálogo (para el selector)
-    platforms: List<Platform>,                   // plataformas activas
+    platforms: List<Platform>,                   // plataformas activas (todas)
+    platformsByAsset: Map<String, List<Platform>>, // plataformas vinculadas por activo
+    categories: List<AssetCategory>,             // categorías para filtrar
     assetTransactions: List<AssetTransaction>,   // movimientos del activo seleccionado actual
     currencyCode: String,
     buyOnly: Boolean = false,                    // si true, no se muestra el toggle y siempre es BUY
@@ -71,7 +71,6 @@ fun AddEditAssetTransactionBottomSheet(
         feeNote: String?,
         notes: String?
     ) -> Unit,
-    onCreatePlatform: () -> Unit,
     onDismiss: () -> Unit
 ) {
     val isEditing = transaction != null
@@ -103,14 +102,66 @@ fun AddEditAssetTransactionBottomSheet(
         mutableStateOf(transaction?.notes ?: "")
     }
     var showDatePicker by remember { mutableStateOf(false) }
+    var selectedCategoryId by remember { mutableStateOf<String?>(null) }
+
+    // Filtrar activos por categoría seleccionada
+    val filteredAssets = remember(selectedCategoryId, allAssets) {
+        if (selectedCategoryId == null) allAssets
+        else allAssets.filter { it.assetCategoryId == selectedCategoryId }
+    }
+
+    // Resetear selectedAssetId si el activo actual no pertenece a la nueva categoría
+    LaunchedEffect(selectedCategoryId, allAssets) {
+        if (selectedAssetId != null) {
+            val currentAsset = allAssets.firstOrNull { it.id == selectedAssetId }
+            if (currentAsset != null && selectedCategoryId != null && currentAsset.assetCategoryId != selectedCategoryId) {
+                selectedAssetId = filteredAssets.firstOrNull()?.id
+            }
+        }
+    }
 
     // ── Disponibilidad por plataforma (para ventas) ─────────────────────────
     val relevantTransactions = remember(selectedAssetId, assetTransactions) {
         assetTransactions.filter { it.assetId == selectedAssetId }
     }
 
-    val availableByPlatform: Map<String, Double> = remember(relevantTransactions, dateMillis, transaction) {
-        platforms.associate { p ->
+    // Plataformas vinculadas al activo seleccionado o a los activos de la categoría seleccionada
+    val visiblePlatforms: List<Platform> = remember(selectedAssetId, selectedCategoryId, platformsByAsset, platforms, filteredAssets) {
+        // Primero obtener las plataformas de los activos filtrados por categoría
+        val categoryAssetIds = if (selectedCategoryId != null) {
+            filteredAssets.map { it.id }.toSet()
+        } else {
+            emptySet()
+        }
+
+        val platformsForFilteredAssets = if (categoryAssetIds.isNotEmpty()) {
+            categoryAssetIds.mapNotNull { platformsByAsset[it] }.flatten().distinctBy { it.id }
+        } else {
+            emptyList()
+        }
+
+        // Si hay un activo seleccionado específicamente, usar sus plataformas
+        val linked = selectedAssetId?.let { platformsByAsset[it] }
+
+        when {
+            // Si hay activo seleccionado con plataformas vinculadas, usar esas
+            linked != null && linked.isNotEmpty() -> linked
+            // Si hay activos filtrados con plataformas vinculadas, usar esas
+            platformsForFilteredAssets.isNotEmpty() -> platformsForFilteredAssets
+            // Si no hay categoría seleccionada ni activo con plataformas, mostrar todas
+            else -> platforms
+        }
+    }
+    val hasLinkedPlatforms: Boolean = remember(selectedAssetId, selectedCategoryId, platformsByAsset, filteredAssets) {
+        when {
+            selectedAssetId != null -> platformsByAsset[selectedAssetId]?.isNotEmpty() ?: false
+            selectedCategoryId != null -> filteredAssets.any { platformsByAsset[it.id]?.isNotEmpty() == true }
+            else -> false
+        }
+    }
+
+    val availableByPlatform: Map<String, Double> = remember(relevantTransactions, dateMillis, transaction, visiblePlatforms) {
+        visiblePlatforms.associate { p ->
             p.id to PortfolioCalculator.availableQuantityAt(
                 transactions           = relevantTransactions,
                 asOfDate               = dateMillis,
@@ -131,8 +182,15 @@ fun AddEditAssetTransactionBottomSheet(
                 platformId = null
             }
         } else if (platformId == null && transaction == null) {
-            // Para BUY sin edición, preseleccionar la primera
-            platformId = platforms.firstOrNull()?.id
+            // Para BUY sin edición, preseleccionar la primera de las visibles
+            platformId = visiblePlatforms.firstOrNull()?.id
+        }
+    }
+
+    // Al cambiar de categoría, limpiar plataforma si ya no está en las visibles
+    LaunchedEffect(visiblePlatforms) {
+        if (platformId != null && visiblePlatforms.none { it.id == platformId }) {
+            platformId = visiblePlatforms.firstOrNull()?.id
         }
     }
 
@@ -230,10 +288,45 @@ fun AddEditAssetTransactionBottomSheet(
 
             // ── Selector de activo (oculto si fixedAsset != null) ────────────
             if (fixedAsset == null) {
+                // Filtro de categorías
+                if (categories.isNotEmpty()) {
+                    Text("Categoría", fontSize = 12.sp, color = TextSecondary, fontWeight = FontWeight.Medium)
+                    Spacer(Modifier.height(6.dp))
+                    Row(
+                        modifier              = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        CategoryFilterChip(
+                            label    = "Todos",
+                            isSelected = selectedCategoryId == null,
+                            onClick  = { selectedCategoryId = null }
+                        )
+                        categories.forEach { category ->
+                            CategoryFilterChip(
+                                label    = category.name,
+                                icon     = category.icon,
+                                isSelected = selectedCategoryId == category.id,
+                                onClick  = { selectedCategoryId = category.id }
+                            )
+                        }
+                    }
+                    Spacer(Modifier.height(12.dp))
+                }
+
                 Text("Activo", fontSize = 12.sp, color = TextSecondary, fontWeight = FontWeight.Medium)
                 Spacer(Modifier.height(8.dp))
-                if (allAssets.isEmpty()) {
-                    EmptyAssetsHint()
+                if (filteredAssets.isEmpty()) {
+                    if (selectedCategoryId != null && allAssets.isNotEmpty()) {
+                        Text(
+                            text     = "No hay activos en esta categoría",
+                            fontSize = 12.sp,
+                            color    = TextSecondary
+                        )
+                    } else {
+                        EmptyAssetsHint()
+                    }
                 } else {
                     Row(
                         modifier              = Modifier
@@ -241,7 +334,7 @@ fun AddEditAssetTransactionBottomSheet(
                             .horizontalScroll(rememberScrollState()),
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        allAssets.forEach { asset ->
+                        filteredAssets.forEach { asset ->
                             AssetChip(
                                 ticker     = asset.ticker,
                                 name       = asset.name,
@@ -295,16 +388,25 @@ fun AddEditAssetTransactionBottomSheet(
                 )
             }
             Spacer(Modifier.height(8.dp))
-            if (platforms.isEmpty()) {
-                EmptyPlatformsInlineHint(onCreate = onCreatePlatform)
+            if (visiblePlatforms.isEmpty()) {
+                EmptyPlatformsInlineHint()
             } else {
+                // Hint cuando el activo no tiene plataformas vinculadas
+                if (!hasLinkedPlatforms && selectedAssetId != null) {
+                    Text(
+                        text     = "Este activo no tiene plataformas asignadas. Vincula una desde Ajustes.",
+                        fontSize = 11.sp,
+                        color    = TextSecondary,
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+                }
                 Row(
                     modifier              = Modifier
                         .fillMaxWidth()
                         .horizontalScroll(rememberScrollState()),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    platforms.forEach { p ->
+                    visiblePlatforms.forEach { p ->
                         val hasStock = platformsWithStock.contains(p.id)
                         val enabled = !isSell || hasStock
                         val available = availableByPlatform[p.id] ?: 0.0
@@ -537,6 +639,43 @@ private fun TypeToggle(
 }
 
 @Composable
+private fun CategoryFilterChip(
+    label: String,
+    icon: String? = null,
+    isSelected: Boolean,
+    onClick: () -> Unit
+) {
+    val bg     = if (isSelected) PrimaryDark    else SurfaceElevated
+    val border = if (isSelected) PrimaryDark    else BorderGray
+    val text   = if (isSelected) Color.White    else TextPrimary
+
+    Row(
+        modifier = Modifier
+            .clip(RoundedCornerShape(20.dp))
+            .background(bg)
+            .border(0.5.dp, border, RoundedCornerShape(20.dp))
+            .clickable(onClick = onClick)
+            .padding(horizontal = 12.dp, vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        if (icon != null) {
+            Text(
+                text       = icon,
+                fontSize   = 12.sp,
+                color      = if (isSelected) Color.White else Color.Unspecified
+            )
+            Spacer(Modifier.width(4.dp))
+        }
+        Text(
+            text       = label,
+            fontSize   = 12.sp,
+            color      = text,
+            fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal
+        )
+    }
+}
+
+@Composable
 private fun AssetChip(
     ticker: String,
     name: String,
@@ -659,7 +798,7 @@ private fun EmptyAssetsHint() {
 }
 
 @Composable
-private fun EmptyPlatformsInlineHint(onCreate: () -> Unit) {
+private fun EmptyPlatformsInlineHint() {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -668,17 +807,10 @@ private fun EmptyPlatformsInlineHint(onCreate: () -> Unit) {
             .padding(14.dp)
     ) {
         Text(
-            text     = "Aún no tienes plataformas. Crea la primera para asociar este movimiento (broker, exchange, banco…).",
+            text     = "No hay plataformas creadas. Ve a Ajustes › Portfolio › Plataformas para crear una.",
             fontSize = 12.sp,
             color    = TextSecondary
         )
-        Spacer(Modifier.height(8.dp))
-        TextButton(
-            onClick        = onCreate,
-            contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp)
-        ) {
-            Text("+ Crear plataforma", fontSize = 13.sp, color = PrimaryDark, fontWeight = FontWeight.Medium)
-        }
     }
 }
 

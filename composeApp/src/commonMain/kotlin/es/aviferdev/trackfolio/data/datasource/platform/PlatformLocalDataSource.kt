@@ -10,7 +10,7 @@ interface PlatformLocalDataSource {
     fun count(): Flow<Long>
 
     suspend fun insert(platform: Platform): Result<Unit>
-    suspend fun rename(id: String, newName: String, newIcon: String): Result<Unit>
+    suspend fun rename(id: String, newName: String, newIcon: String, notes: String?): Result<Unit>
     suspend fun updateSortOrder(id: String, sortOrder: Int): Result<Unit>
     suspend fun archive(id: String): Result<Unit>
     suspend fun unarchive(id: String): Result<Unit>

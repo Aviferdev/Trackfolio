@@ -261,6 +261,7 @@ val useCaseModule = module {
             getPlatforms                        = get(),
             saveAssetTransaction                = get(),
             syncToLedger                        = get(),
+            assetPlatformRepository             = get(),
             session                             = get()
         )
     }
@@ -302,6 +303,7 @@ val useCaseModule = module {
             platformCategoryRepository = get(),
             assetPlatformRepository  = get(),
             getAccountById           = get(),
+            getAssetCategoriesIncludingArchived = get(),
             saveAssetTransaction     = get(),
             updateAssetTransaction   = get(),
             deleteAssetTransaction   = get(),

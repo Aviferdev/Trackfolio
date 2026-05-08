@@ -8,7 +8,8 @@ CREATE TABLE PlatformEntity (
     icon      TEXT    NOT NULL DEFAULT '🏦',
     sortOrder INTEGER NOT NULL DEFAULT 0,
     archived  INTEGER NOT NULL DEFAULT 0,
-    createdAt INTEGER NOT NULL
+    createdAt INTEGER NOT NULL,
+    notes     TEXT
 );
 
 CREATE INDEX idx_platform_archived ON PlatformEntity(archived);
@@ -33,12 +34,17 @@ SELECT COUNT(*) FROM PlatformEntity WHERE archived = 0;
 -- ─── Escritura ────────────────────────────────────────────────────────────────
 
 insert:
-INSERT OR IGNORE INTO PlatformEntity(id, name, icon, sortOrder, archived, createdAt)
-VALUES (?, ?, ?, ?, 0, ?);
+INSERT OR IGNORE INTO PlatformEntity(id, name, icon, sortOrder, archived, createdAt, notes)
+VALUES (?, ?, ?, ?, 0, ?, ?);
 
 updateNameAndIcon:
 UPDATE PlatformEntity
 SET name = :name, icon = :icon
+WHERE id = :id;
+
+updateNotes:
+UPDATE PlatformEntity
+SET notes = :notes
 WHERE id = :id;
 
 updateSortOrder:

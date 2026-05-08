@@ -41,14 +41,18 @@ class PlatformLocalDataSourceImpl(
                 name      = platform.name,
                 icon      = platform.icon,
                 sortOrder = platform.sortOrder.toLong(),
-                createdAt = platform.createdAt
+                createdAt = platform.createdAt,
+                notes     = platform.notes
             )
         }
     }
 
-    override suspend fun rename(id: String, newName: String, newIcon: String): Result<Unit> = runCatching {
+    override suspend fun rename(id: String, newName: String, newIcon: String, notes: String?): Result<Unit> = runCatching {
         withContext(Dispatchers.IO) {
             queries.updateNameAndIcon(name = newName, icon = newIcon, id = id)
+            if (notes != null) {
+                queries.updateNotes(notes = notes, id = id)
+            }
         }
     }
 

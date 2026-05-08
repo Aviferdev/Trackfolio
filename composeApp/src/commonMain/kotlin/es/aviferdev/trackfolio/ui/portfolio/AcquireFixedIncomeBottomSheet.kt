@@ -53,7 +53,6 @@ fun AcquireFixedIncomeBottomSheet(
         feeNote: String?,
         notes: String?
     ) -> Unit,
-    onCreatePlatform: () -> Unit,
     onDismiss: () -> Unit
 ) {
     val symbol = currencySymbol(currencyCode)
@@ -217,7 +216,7 @@ fun AcquireFixedIncomeBottomSheet(
             Text("Entidad / Plataforma", fontSize = 12.sp, color = TextSecondary, fontWeight = FontWeight.Medium)
             Spacer(Modifier.height(8.dp))
             if (platforms.isEmpty()) {
-                EmptyPlatformsHintLocal(onCreate = onCreatePlatform)
+                EmptyPlatformsHintLocal()
             } else {
                 Row(
                     modifier = Modifier
@@ -363,7 +362,7 @@ private fun PlatformChipLocal(
 }
 
 @Composable
-private fun EmptyPlatformsHintLocal(onCreate: () -> Unit) {
+private fun EmptyPlatformsHintLocal() {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -372,16 +371,9 @@ private fun EmptyPlatformsHintLocal(onCreate: () -> Unit) {
             .padding(14.dp)
     ) {
         Text(
-            "Crea una plataforma para asociar esta operación (banco, bróker…).",
+            "No hay plataformas creadas. Ve a Ajustes › Portfolio › Plataformas para crear una.",
             fontSize = 12.sp,
             color = TextSecondary
         )
-        Spacer(Modifier.height(8.dp))
-        TextButton(
-            onClick = onCreate,
-            contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp)
-        ) {
-            Text("+ Crear plataforma", fontSize = 13.sp, color = PrimaryDark, fontWeight = FontWeight.Medium)
-        }
     }
 }

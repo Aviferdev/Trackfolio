@@ -32,13 +32,14 @@ import es.aviferdev.trackfolio.ui.theme.*
 @Composable
 fun AddEditPlatformSheet(
     initial: Platform?,
-    onSave: (name: String, icon: String) -> Unit,
+    onSave: (name: String, icon: String, notes: String?) -> Unit,
     onDismiss: () -> Unit
 ) {
     val isEditing = initial != null
 
     var name      by remember { mutableStateOf(initial?.name ?: "") }
     var icon      by remember { mutableStateOf(initial?.icon ?: "🏦") }
+    var notes     by remember { mutableStateOf(initial?.notes ?: "") }
     var nameError by remember { mutableStateOf(false) }
 
     // Iconos sugeridos para plataformas. El usuario puede pegar cualquier emoji.
@@ -136,12 +137,35 @@ fun AddEditPlatformSheet(
                 )
             )
 
+            Spacer(Modifier.height(12.dp))
+
+            // ── Notas ─────────────────────────────────────────────────────
+            OutlinedTextField(
+                value         = notes,
+                onValueChange = { if (it.length <= 200) notes = it },
+                label         = { Text("Notas (opcional)") },
+                placeholder   = { Text("Ej: Guardado en caja fuerte") },
+                supportingText = { Text("${notes.length}/200") },
+                modifier      = Modifier.fillMaxWidth(),
+                singleLine    = true,
+                shape         = RoundedCornerShape(10.dp),
+                keyboardOptions = KeyboardOptions(
+                    capitalization = KeyboardCapitalization.Sentences,
+                    imeAction      = ImeAction.Done
+                ),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor   = PrimaryDark,
+                    unfocusedBorderColor = BorderGray
+                )
+            )
+
             Spacer(Modifier.height(28.dp))
 
             Button(
                 onClick = {
                     if (name.isBlank()) { nameError = true; return@Button }
-                    onSave(name.trim(), icon)
+                    val notesValue = notes.trim().ifBlank { null }
+                    onSave(name.trim(), icon, notesValue)
                 },
                 modifier = Modifier.fillMaxWidth().height(52.dp),
                 shape    = RoundedCornerShape(10.dp),

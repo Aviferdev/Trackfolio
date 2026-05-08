@@ -235,7 +235,7 @@ fun AssetCategoryDetailScreen(
             allPlatforms    = state.allPlatforms,
             onLink          = { viewModel.linkPlatform(it) },
             onUnlink        = { viewModel.unlinkPlatform(it) },
-            onCreate        = { name, icon -> viewModel.createAndLinkPlatform(name, icon) },
+            onCreate        = { name, icon, notes -> viewModel.createAndLinkPlatform(name, icon, notes) },
             onDismiss       = { viewModel.closeLinkPlatformSheet() }
         )
     }

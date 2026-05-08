@@ -11,5 +11,6 @@ data class Platform(
     val icon: String      = "🏦",
     val sortOrder: Int    = 0,
     val archived: Boolean = false,
-    val createdAt: Long
+    val createdAt: Long,
+    val notes: String?    = null
 )

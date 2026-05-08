@@ -9,6 +9,7 @@ import es.aviferdev.trackfolio.domain.model.AssetCategory
 import es.aviferdev.trackfolio.domain.model.AssetTransaction
 import es.aviferdev.trackfolio.domain.model.AssetTransactionType
 import es.aviferdev.trackfolio.domain.model.Platform
+import es.aviferdev.trackfolio.domain.repository.AssetPlatformRepository
 import es.aviferdev.trackfolio.domain.portfolio.AssetPosition
 import es.aviferdev.trackfolio.domain.portfolio.PortfolioCalculator
 import es.aviferdev.trackfolio.domain.usecase.account.GetAccountByIdUseCase
@@ -83,6 +84,7 @@ data class PortfolioUiState(
     /** Activos del catálogo (incluso sin movimientos) — para el selector. */
     val allAssets: List<Asset>          = emptyList(),
     val platforms: List<Platform>       = emptyList(),
+    val platformsByAsset: Map<String, List<Platform>> = emptyMap(),
     val isLoading: Boolean              = true,
     val error: String?                  = null,
 
@@ -116,6 +118,7 @@ class PortfolioViewModel(
     private val getPlatforms: GetPlatformsUseCase,
     private val saveAssetTransaction: SaveAssetTransactionUseCase,
     private val syncToLedger: SyncAssetTransactionToLedgerUseCase,
+    private val assetPlatformRepository: AssetPlatformRepository,
     private val session: AccountSession
 ) : ViewModel() {
 
@@ -134,6 +137,14 @@ class PortfolioViewModel(
         val error: String? = null
     )
 
+    private data class BasicPortfolioData(
+        val assets: List<Asset>,
+        val categories: List<AssetCategory>,
+        val account: Account?,
+        val transactions: List<AssetTransaction>,
+        val platforms: List<Platform>
+    )
+
     val portfolioState: StateFlow<PortfolioUiState> = session.selectedAccountId
         .flatMapLatest { accountId ->
             if (accountId == null) {
@@ -146,7 +157,16 @@ class PortfolioViewModel(
                     getTransactionsByAccount(accountId),
                     getPlatforms(),
                 ) { assets, categories, account, txs, platforms ->
-                    buildState(assets, categories, account, txs, platforms)
+                    BasicPortfolioData(assets, categories, account, txs, platforms)
+                }.flatMapLatest { basicData ->
+                    val assetIds = basicData.assets.map { it.id }
+                    if (assetIds.isEmpty()) {
+                        flowOf(buildState(basicData.assets, basicData.categories, basicData.account, basicData.transactions, basicData.platforms, emptyMap()))
+                    } else {
+                        assetPlatformRepository.getPlatformsByAssets(assetIds).map { platformsByAsset ->
+                            buildState(basicData.assets, basicData.categories, basicData.account, basicData.transactions, basicData.platforms, platformsByAsset)
+                        }
+                    }
                 }
             }
         }
@@ -183,7 +203,8 @@ class PortfolioViewModel(
         categories: List<AssetCategory>,
         account: Account?,
         transactions: List<AssetTransaction>,
-        platforms: List<Platform>
+        platforms: List<Platform>,
+        platformsByAsset: Map<String, List<Platform>>
     ): PortfolioUiState {
         // Agrupar movimientos por activo.
         val txByAsset: Map<String, List<AssetTransaction>> =
@@ -287,6 +308,7 @@ class PortfolioViewModel(
             currencyCode       = account?.currency ?: "EUR",
             allAssets          = assets,
             platforms          = platforms,
+            platformsByAsset  = platformsByAsset,
             isLoading          = false
         )
     }

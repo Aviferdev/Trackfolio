@@ -300,14 +300,14 @@ fun AssetHistoryScreen(
             transaction       = state.editing,
             fixedAsset        = state.asset,
             allAssets         = listOfNotNull(state.asset),
-            platforms         = state.platforms,
+            platforms         = state.allPlatforms,
+            platformsByAsset  = state.platformsByAsset,
+            categories       = state.categories,
             assetTransactions = state.transactionsAsc,
             currencyCode      = state.currencyCode,
             onSave            = { _, type, qty, price, date, platformId, feeNote, notes ->
                 viewModel.saveTransaction(type, qty, price, date, platformId, feeNote, notes)
             },
-            onCreatePlatform  = { /* desde la pantalla de historial no permitimos crear plataformas inline:
-                                     redirigimos al usuario a Ajustes */ },
             onDismiss         = { viewModel.closeAddSheet() }
         )
     }
@@ -424,7 +424,6 @@ fun AssetHistoryScreen(
             onSave       = { qty, nominal, date, platformId, feeNote, notes ->
                 viewModel.saveFixedIncomeAcquisition(qty, nominal, date, platformId, feeNote, notes)
             },
-            onCreatePlatform = { /* Redirigir a Ajustes */ },
             onDismiss    = { viewModel.closeAcquireFixedIncomeSheet() }
         )
     }

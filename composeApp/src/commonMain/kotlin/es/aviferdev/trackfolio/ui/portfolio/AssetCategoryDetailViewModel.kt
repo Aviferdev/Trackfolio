@@ -258,13 +258,14 @@ class AssetCategoryDetailViewModel(
     }
 
     /** Crea una plataforma nueva y la vincula a esta categoría automáticamente. */
-    fun createAndLinkPlatform(name: String, icon: String) {
+    fun createAndLinkPlatform(name: String, icon: String, notes: String?) {
         val trimmed = name.trim()
         if (trimmed.isBlank()) return
         if (uiState.value.allPlatforms.any { it.name.equals(trimmed, ignoreCase = true) }) {
             _error.value = "Ya existe una plataforma con ese nombre"
             return
         }
+        val validatedNotes = notes?.take(200)?.ifBlank { null }
         viewModelScope.launch {
             val now = Clock.System.now().toEpochMilliseconds()
             val nextOrder = (uiState.value.allPlatforms.maxOfOrNull { it.sortOrder } ?: -1) + 1
@@ -273,7 +274,8 @@ class AssetCategoryDetailViewModel(
                 name      = trimmed,
                 icon      = icon.ifBlank { "🏦" },
                 sortOrder = nextOrder,
-                createdAt = now
+                createdAt = now,
+                notes     = validatedNotes
             )
             platformRepository.save(platform)
                 .onSuccess {

@@ -82,7 +82,8 @@ fun PlatformEntity.toDomain(): Platform = Platform(
     icon      = icon,
     sortOrder = sortOrder.toInt(),
     archived  = archived != 0L,
-    createdAt = createdAt
+    createdAt = createdAt,
+    notes     = notes
 )
 
 fun Platform.toEntity(): PlatformEntity = PlatformEntity(
@@ -91,7 +92,8 @@ fun Platform.toEntity(): PlatformEntity = PlatformEntity(
     icon      = icon,
     sortOrder = sortOrder.toLong(),
     archived  = if (archived) 1L else 0L,
-    createdAt = createdAt
+    createdAt = createdAt,
+    notes     = notes
 )
 
 fun AssetTransactionEntity.toDomain(): AssetTransaction = AssetTransaction(

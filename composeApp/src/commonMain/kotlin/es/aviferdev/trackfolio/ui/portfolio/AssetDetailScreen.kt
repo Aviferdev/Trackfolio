@@ -152,29 +152,12 @@ fun AssetDetailScreen(
 
                         Spacer(Modifier.height(12.dp))
 
-                        // Botón crear nueva plataforma
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clip(RoundedCornerShape(10.dp))
-                                .clickable { viewModel.openAddPlatformSheet() }
-                                .padding(vertical = 8.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Icon(
-                                Icons.Default.Add,
-                                contentDescription = null,
-                                tint = PrimaryDark,
-                                modifier = Modifier.size(18.dp)
-                            )
-                            Spacer(Modifier.width(8.dp))
-                            Text(
-                                "Crear nueva plataforma",
-                                fontSize = 13.sp,
-                                color = PrimaryDark,
-                                fontWeight = FontWeight.Medium
-                            )
-                        }
+                        Text(
+                            "Para vincular plataformas, ve a Ajustes › Portfolio › Plataformas.",
+                            fontSize = 12.sp,
+                            color = TextSecondary,
+                            modifier = Modifier.padding(vertical = 8.dp)
+                        )
                     }
                 }
             }
@@ -242,7 +225,7 @@ fun AssetDetailScreen(
     if (state.showAddPlatformSheet) {
         AddEditPlatformSheet(
             initial = null,
-            onSave = { name, icon -> viewModel.createAndLinkPlatform(name, icon) },
+            onSave = { name, icon, notes -> viewModel.createAndLinkPlatform(name, icon, notes) },
             onDismiss = { viewModel.closeAddPlatformSheet() }
         )
     }

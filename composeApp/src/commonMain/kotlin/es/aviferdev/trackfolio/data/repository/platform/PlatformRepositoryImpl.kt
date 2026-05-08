@@ -16,8 +16,8 @@ class PlatformRepositoryImpl(
 
     override suspend fun save(platform: Platform): Result<Unit> = dataSource.insert(platform)
 
-    override suspend fun rename(id: String, newName: String, newIcon: String): Result<Unit> =
-        dataSource.rename(id, newName, newIcon)
+    override suspend fun rename(id: String, newName: String, newIcon: String, notes: String?): Result<Unit> =
+        dataSource.rename(id, newName, newIcon, notes)
 
     override suspend fun reorder(id: String, sortOrder: Int): Result<Unit> =
         dataSource.updateSortOrder(id, sortOrder)

@@ -60,13 +60,14 @@ class PlatformViewModel(
     fun openEditSheet(platform: Platform) { _editing.value = platform }
     fun closeEditSheet()                  { _editing.value = null }
 
-    fun addPlatform(name: String, icon: String) {
+    fun addPlatform(name: String, icon: String, notes: String?) {
         val trimmed = name.trim()
         if (trimmed.isBlank()) return
         if (uiState.value.platforms.any { it.name.equals(trimmed, ignoreCase = true) }) {
             _error.value = "Ya existe una plataforma con ese nombre"
             return
         }
+        val validatedNotes = notes?.take(200)?.ifBlank { null }
         viewModelScope.launch {
             val now = Clock.System.now().toEpochMilliseconds()
             val nextOrder = (uiState.value.platforms.maxOfOrNull { it.sortOrder } ?: -1) + 1
@@ -76,22 +77,24 @@ class PlatformViewModel(
                     name      = trimmed,
                     icon      = icon.ifBlank { "🏦" },
                     sortOrder = nextOrder,
-                    createdAt = now
+                    createdAt = now,
+                    notes     = validatedNotes
                 )
             ).onFailure { _error.value = it.message }
             _showAddSheet.value = false
         }
     }
 
-    fun renamePlatform(id: String, newName: String, newIcon: String) {
+    fun renamePlatform(id: String, newName: String, newIcon: String, notes: String?) {
         val trimmed = newName.trim()
         if (trimmed.isBlank()) return
         if (uiState.value.platforms.any { it.id != id && it.name.equals(trimmed, ignoreCase = true) }) {
             _error.value = "Ya existe una plataforma con ese nombre"
             return
         }
+        val validatedNotes = notes?.take(200)?.ifBlank { null }
         viewModelScope.launch {
-            renamePlatform.invoke(id, trimmed, newIcon.ifBlank { "🏦" })
+            renamePlatform.invoke(id, trimmed, newIcon.ifBlank { "🏦" }, validatedNotes)
                 .onFailure { _error.value = it.message }
             _editing.value = null
         }

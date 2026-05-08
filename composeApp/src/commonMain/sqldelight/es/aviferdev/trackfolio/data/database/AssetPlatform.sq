@@ -15,6 +15,13 @@ CREATE INDEX idx_asset_platform_platform ON AssetPlatformEntity(platformId);
 
 -- ─── Lectura ──────────────────────────────────────────────────────────────────
 
+selectAllByAssets:
+SELECT ap.assetId, p.id, p.name, p.icon, p.sortOrder, p.createdAt
+FROM PlatformEntity p
+INNER JOIN AssetPlatformEntity ap ON ap.platformId = p.id
+WHERE ap.assetId IN :assetIds
+ORDER BY ap.assetId, p.sortOrder ASC, p.name ASC;
+
 selectByAsset:
 SELECT p.* FROM PlatformEntity p
 INNER JOIN AssetPlatformEntity ap ON ap.platformId = p.id

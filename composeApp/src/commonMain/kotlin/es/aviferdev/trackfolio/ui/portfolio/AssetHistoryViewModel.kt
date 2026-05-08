@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import es.aviferdev.trackfolio.domain.model.Account
 import es.aviferdev.trackfolio.domain.model.Asset
+import es.aviferdev.trackfolio.domain.model.AssetCategory
 import es.aviferdev.trackfolio.domain.model.AssetTransaction
 import es.aviferdev.trackfolio.domain.model.AssetTransactionType
 import es.aviferdev.trackfolio.domain.model.Platform
@@ -12,6 +13,7 @@ import es.aviferdev.trackfolio.domain.portfolio.AssetPosition
 import es.aviferdev.trackfolio.domain.portfolio.FifoBreakdown
 import es.aviferdev.trackfolio.domain.portfolio.PortfolioCalculator
 import es.aviferdev.trackfolio.domain.usecase.account.GetAccountByIdUseCase
+import es.aviferdev.trackfolio.domain.usecase.assetcategory.GetAllAssetCategoriesIncludingArchivedUseCase
 import es.aviferdev.trackfolio.domain.usecase.asset.UpdateAssetCurrentPriceUseCase
 import es.aviferdev.trackfolio.domain.usecase.assettransaction.DeleteAssetTransactionUseCase
 import es.aviferdev.trackfolio.domain.usecase.assettransaction.ExecuteFundTransferUseCase
@@ -42,6 +44,8 @@ data class AssetHistoryUiState(
     val dividends: List<Transaction>        = emptyList(),
     val platforms: List<Platform>           = emptyList(),
     val allPlatforms: List<Platform>        = emptyList(),
+    val platformsByAsset: Map<String, List<Platform>> = emptyMap(),
+    val categories: List<AssetCategory>    = emptyList(),
     val currencyCode: String                = "EUR",
     val isLoading: Boolean                  = true,
     val error: String?                      = null,
@@ -79,6 +83,7 @@ class AssetHistoryViewModel(
     private val platformCategoryRepository: es.aviferdev.trackfolio.domain.repository.PlatformCategoryRepository,
     private val assetPlatformRepository: es.aviferdev.trackfolio.domain.repository.AssetPlatformRepository,
     private val getAccountById: GetAccountByIdUseCase,
+    private val getAssetCategoriesIncludingArchived: GetAllAssetCategoriesIncludingArchivedUseCase,
     private val saveAssetTransaction: SaveAssetTransactionUseCase,
     private val updateAssetTransaction: UpdateAssetTransactionUseCase,
     private val deleteAssetTransaction: DeleteAssetTransactionUseCase,
@@ -164,20 +169,38 @@ class AssetHistoryViewModel(
     private val coreDataFlow = getAssetById.getAssetById(assetId)
         .flatMapLatest { asset ->
             if (asset == null) {
-                flowOf(CoreData(null, emptyList(), emptyList(), emptyList(), emptyList()))
+                flowOf(CoreData(null, emptyList(), emptyList(), emptyList(), emptyList(), emptyMap(), emptyList()))
             } else {
                 val categoryPlatformsFlow = if (asset.assetCategoryId != null)
                     platformCategoryRepository.getByCategory(asset.assetCategoryId)
                 else
                     getPlatforms()
-                combine(
+                // combine solo acepta hasta 5 flows, así que anidamos
+                val firstPart = combine(
                     flowOf(asset),
                     getTransactionsByAsset(assetId),
                     assetPlatformRepository.getPlatformsByAsset(assetId),
                     transactionRepository.getDividendsByAsset(assetId),
                     categoryPlatformsFlow
                 ) { a, txs, assetPlatforms, dividends, catPlatforms ->
-                    CoreData(a, txs, assetPlatforms, catPlatforms, dividends)
+                    object { val a = a; val txs = txs; val assetPlatforms = assetPlatforms; val dividends = dividends; val catPlatforms = catPlatforms }
+                }
+                val secondPart = combine(
+                    assetPlatformRepository.getPlatformsByAssets(listOf(assetId)),
+                    getAssetCategoriesIncludingArchived()
+                ) { platformsByAsset, categories ->
+                    object { val platformsByAsset = platformsByAsset; val categories = categories }
+                }
+                combine(firstPart, secondPart) { first, second ->
+                    CoreData(
+                        first.a,
+                        first.txs,
+                        first.assetPlatforms,
+                        first.catPlatforms,
+                        first.dividends,
+                        second.platformsByAsset,
+                        second.categories
+                    )
                 }
             }
         }
@@ -187,7 +210,9 @@ class AssetHistoryViewModel(
         val txs: List<AssetTransaction>,
         val assetPlatforms: List<Platform>,
         val globalPlatforms: List<Platform>,
-        val dividends: List<Transaction>
+        val dividends: List<Transaction>,
+        val platformsByAsset: Map<String, List<Platform>>,
+        val categories: List<AssetCategory>
     )
 
     val uiState: StateFlow<AssetHistoryUiState> = combine(
@@ -212,6 +237,8 @@ class AssetHistoryViewModel(
                 dividends            = core.dividends.sortedByDescending { it.date },
                 platforms            = core.assetPlatforms,
                 allPlatforms         = core.globalPlatforms,
+                platformsByAsset     = core.platformsByAsset,
+                categories           = core.categories,
                 currencyCode         = "EUR",
                 isLoading            = false,
                 showAddSheet         = sheets.showAdd,

@@ -217,11 +217,7 @@ fun PortfolioScreen(
                         }
                     )
                 }
-                DropdownMenuItem(
-                    text        = { Text("Nuevo activo", color = TextPrimary) },
-                    leadingIcon = { Text("📁", fontSize = 16.sp) },
-                    onClick     = { fabMenuOpen = false; catalogViewModel.openAddSheet() }
-                )
+                
             }
         }
     }
@@ -235,18 +231,13 @@ fun PortfolioScreen(
             fixedAsset        = null,
             allAssets         = state.allAssets.filter { !it.isFixedIncome },
             platforms         = state.platforms,
+            platformsByAsset  = state.platformsByAsset,
+            categories        = availableCategories,
             assetTransactions = emptyList(),
             currencyCode      = state.currencyCode,
             buyOnly           = true,
             onSave            = { assetId, type, qty, price, date, platformId, feeNote, notes ->
                 viewModel.addTransaction(assetId, type, qty, price, date, platformId, feeNote, notes)
-            },
-            onCreatePlatform  = {
-                // Cierra la sheet de movimiento y abre la de creación de plataforma.
-                // El usuario podrá crear la plataforma y luego volverá a abrir
-                // el sheet de movimiento manualmente desde el FAB.
-                viewModel.closeAddTransactionSheet()
-                platformViewModel.openAddSheet()
             },
             onDismiss         = { viewModel.closeAddTransactionSheet() }
         )
@@ -268,10 +259,6 @@ fun PortfolioScreen(
                     feeNote        = feeNote,
                     notes          = notes
                 )
-            },
-            onCreatePlatform = {
-                viewModel.closeAcquireFixedIncomeSheet()
-                platformViewModel.openAddSheet()
             },
             onDismiss    = { viewModel.closeAcquireFixedIncomeSheet() }
         )
@@ -318,7 +305,7 @@ fun PortfolioScreen(
     if (platformState.showAddSheet) {
         AddEditPlatformSheet(
             initial   = null,
-            onSave    = { name, icon -> platformViewModel.addPlatform(name, icon) },
+            onSave    = { name, icon, notes -> platformViewModel.addPlatform(name, icon, notes) },
             onDismiss = { platformViewModel.closeAddSheet() }
         )
     }

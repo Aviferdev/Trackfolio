@@ -80,9 +80,10 @@ class AssetDetailViewModel(
     /**
      * Crea una nueva plataforma global y la vincula automáticamente al activo.
      */
-    fun createAndLinkPlatform(name: String, icon: String) {
+    fun createAndLinkPlatform(name: String, icon: String, notes: String?) {
         val trimmed = name.trim()
         if (trimmed.isBlank()) return
+        val validatedNotes = notes?.take(200)?.ifBlank { null }
         viewModelScope.launch {
             val now = Clock.System.now().toEpochMilliseconds()
             val allPlats = uiState.value.allPlatforms
@@ -92,7 +93,8 @@ class AssetDetailViewModel(
                 name      = trimmed,
                 icon      = icon.ifBlank { "🏦" },
                 sortOrder = nextOrder,
-                createdAt = now
+                createdAt = now,
+                notes     = validatedNotes
             )
             savePlatform(platform)
                 .onSuccess {

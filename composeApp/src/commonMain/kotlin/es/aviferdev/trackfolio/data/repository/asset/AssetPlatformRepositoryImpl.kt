@@ -4,6 +4,9 @@ import es.aviferdev.trackfolio.data.datasource.asset.AssetPlatformLocalDataSourc
 import es.aviferdev.trackfolio.domain.model.Platform
 import es.aviferdev.trackfolio.domain.repository.AssetPlatformRepository
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
 
 class AssetPlatformRepositoryImpl(
     private val dataSource: AssetPlatformLocalDataSource
@@ -11,6 +14,20 @@ class AssetPlatformRepositoryImpl(
 
     override fun getPlatformsByAsset(assetId: String): Flow<List<Platform>> =
         dataSource.getPlatformsByAsset(assetId)
+
+    override fun getPlatformsByAssets(assetIds: List<String>): Flow<Map<String, List<Platform>>> {
+        if (assetIds.isEmpty()) return flowOf(emptyMap())
+
+        val flows = assetIds.map { assetId ->
+            getPlatformsByAsset(assetId).map { platforms ->
+                assetId to platforms
+            }
+        }
+
+        return combine(flows) { pairs ->
+            pairs.toMap()
+        }
+    }
 
     override fun countByAsset(assetId: String): Flow<Long> =
         dataSource.countByAsset(assetId)

@@ -17,8 +17,8 @@ class SavePlatformUseCase(private val repository: PlatformRepository) {
 }
 
 class RenamePlatformUseCase(private val repository: PlatformRepository) {
-    suspend operator fun invoke(id: String, newName: String, newIcon: String): Result<Unit> =
-        repository.rename(id, newName, newIcon)
+    suspend operator fun invoke(id: String, newName: String, newIcon: String, notes: String?): Result<Unit> =
+        repository.rename(id, newName, newIcon, notes)
 }
 
 class ArchivePlatformUseCase(private val repository: PlatformRepository) {

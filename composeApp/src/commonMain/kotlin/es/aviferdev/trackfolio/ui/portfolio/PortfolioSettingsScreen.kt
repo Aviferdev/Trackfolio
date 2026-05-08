@@ -10,6 +10,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import es.aviferdev.trackfolio.domain.model.Platform
 import es.aviferdev.trackfolio.domain.usecase.asset.GetPriceReminderIntervalUseCase
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,9 +26,12 @@ import org.koin.compose.koinInject
 fun PortfolioSettingsScreen(
     onBack: () -> Unit,
     onNavigateToCategoryDetail: (String) -> Unit,
-    assetCatalogViewModel: AssetCatalogViewModel = koinViewModel()
+    onNavigateToPlatformDetail: (Platform) -> Unit,
+    assetCatalogViewModel: AssetCatalogViewModel = koinViewModel(),
+    platformViewModel: PlatformViewModel = koinViewModel()
 ) {
     val assetCatalogState by assetCatalogViewModel.uiState.collectAsState()
+    val platformState by platformViewModel.uiState.collectAsState()
 
     val reminderIntervalUseCase = koinInject<GetPriceReminderIntervalUseCase>()
     var selectedInterval by remember { mutableIntStateOf(reminderIntervalUseCase.get()) }
