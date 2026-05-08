@@ -286,11 +286,16 @@ class AssetHistoryViewModel(
                     createdAt    = now
                 )
                 saveAssetTransaction(tx).also { r ->
-                    if (r.isSuccess) syncToLedger.sync(
-                        assetTx   = tx,
-                        accountId = uiState.value.asset!!.accountId,
-                        assetName = uiState.value.asset!!.name
-                    )
+                    if (r.isSuccess) {
+                        syncToLedger.sync(
+                            assetTx   = tx,
+                            accountId = uiState.value.asset!!.accountId,
+                            assetName = uiState.value.asset!!.name
+                        )
+                        if (type == AssetTransactionType.BUY && isSameDay(date, now)) {
+                            updateAssetCurrentPrice(assetId, pricePerUnit, now)
+                        }
+                    }
                 }
             } else {
                 val updated = current.copy(
@@ -565,5 +570,11 @@ class AssetHistoryViewModel(
                 .onSuccess { closeTransferSheet() }
                 .onFailure { _error.value = it.message }
         }
+    }
+
+    private fun isSameDay(timestamp1: Long, timestamp2: Long): Boolean {
+        val day1 = timestamp1 / (24 * 60 * 60 * 1000)
+        val day2 = timestamp2 / (24 * 60 * 60 * 1000)
+        return day1 == day2
     }
 }

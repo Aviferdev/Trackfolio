@@ -408,6 +408,9 @@ class PortfolioViewModel(
                             accountId = asset.accountId,
                             assetName = asset.name
                         )
+                        if (type == AssetTransactionType.BUY && isSameDay(date, now)) {
+                            updateAssetCurrentPrice(assetId, pricePerUnit, now)
+                        }
                     }
                     closeAddTransactionSheet()
                 }
@@ -491,5 +494,11 @@ class PortfolioViewModel(
                 .onSuccess { closeBondDepositSheet() }
                 .onFailure { _sheetState.value = _sheetState.value.copy(error = it.message) }
         }
+    }
+
+    private fun isSameDay(timestamp1: Long, timestamp2: Long): Boolean {
+        val day1 = timestamp1 / (24 * 60 * 60 * 1000)
+        val day2 = timestamp2 / (24 * 60 * 60 * 1000)
+        return day1 == day2
     }
 }
