@@ -1,0 +1,33 @@
+-- AssetRegionDistributionEntity: distribución geográfica por activo con porcentaje.
+
+CREATE TABLE AssetRegionDistributionEntity (
+    assetId  TEXT NOT NULL,
+    regionId TEXT NOT NULL,
+    percent  INTEGER NOT NULL,
+    PRIMARY KEY (assetId, regionId),
+    FOREIGN KEY (assetId)  REFERENCES AssetEntity(id) ON DELETE CASCADE,
+    FOREIGN KEY (regionId) REFERENCES AssetRegionEntity(id) ON DELETE CASCADE
+);
+
+-- ─── Lectura ──────────────────────────────────────────────────────────────────
+
+selectByAsset:
+SELECT * FROM AssetRegionDistributionEntity WHERE assetId = :assetId;
+
+selectByRegion:
+SELECT * FROM AssetRegionDistributionEntity WHERE regionId = :regionId;
+
+selectAllByAssets:
+SELECT * FROM AssetRegionDistributionEntity WHERE assetId IN :assetIds;
+
+-- ─── Escritura ──────────────────────────────────────────────────────────────────
+
+insert:
+INSERT OR REPLACE INTO AssetRegionDistributionEntity(assetId, regionId, percent)
+VALUES (:assetId, :regionId, :percent);
+
+deleteByAsset:
+DELETE FROM AssetRegionDistributionEntity WHERE assetId = :assetId;
+
+deleteAll:
+DELETE FROM AssetRegionDistributionEntity WHERE assetId = :assetId AND regionId = :regionId;

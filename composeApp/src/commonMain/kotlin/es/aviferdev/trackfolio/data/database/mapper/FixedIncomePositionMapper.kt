@@ -6,6 +6,7 @@ import es.aviferdev.trackfolio.domain.model.*
 fun FixedIncomePositionEntity.toDomain(): FixedIncomePosition = FixedIncomePosition(
     id                = id,
     accountId         = accountId,
+    assetCategoryId   = assetCategoryId,
     name              = name,
     ticker            = ticker,
     type              = FixedIncomeType.valueOf(type),
@@ -30,6 +31,7 @@ fun FixedIncomePositionEntity.toDomain(): FixedIncomePosition = FixedIncomePosit
 fun FixedIncomePosition.toEntity(): FixedIncomePositionEntity = FixedIncomePositionEntity(
     id                = id,
     accountId         = accountId,
+    assetCategoryId   = assetCategoryId,
     name              = name,
     ticker            = ticker,
     type              = type.name,

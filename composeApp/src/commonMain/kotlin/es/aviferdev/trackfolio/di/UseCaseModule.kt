@@ -294,6 +294,7 @@ val useCaseModule = module {
             saveAssetTransaction                = get(),
             syncToLedger                        = get(),
             assetPlatformRepository             = get(),
+            assetMetadataRepository            = get(),
             session                             = get(),
             getFixedIncomeSummary               = get(),
             getNearMaturityPositions            = get(),
@@ -310,6 +311,7 @@ val useCaseModule = module {
             assetTransactionRepository          = get(),
             getAssetCategoriesIncludingArchived = get(),
             assetPlatformRepository             = get(),
+            assetMetadataRepository            = get(),
             session                             = get()
         )
     }
@@ -355,6 +357,7 @@ val useCaseModule = module {
             assetRepository                     = get(),
             assetTransactionRepository          = get(),
             assetPlatformRepository             = get(),
+            assetMetadataRepository            = get(),
             getAssetCategoriesIncludingArchived = get(),
             getPlatforms                        = get(),
             platformCategoryRepository          = get(),
@@ -363,6 +366,8 @@ val useCaseModule = module {
             updateAsset                         = get(),
             archiveAsset                        = get(),
             unarchiveAsset                      = get(),
+            fixedIncomeRepository               = get(),
+            fixedIncomeEventRepository          = get(),
             session                             = get()
         )
     }

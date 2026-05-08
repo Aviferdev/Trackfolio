@@ -1,12 +1,22 @@
 package es.aviferdev.trackfolio.data.database.mapper
 
 import es.aviferdev.trackfolio.data.database.AssetCategoryEntity
+import es.aviferdev.trackfolio.data.database.AssetCompositionEntity
 import es.aviferdev.trackfolio.data.database.AssetEntity
+import es.aviferdev.trackfolio.data.database.AssetRegionDistributionEntity
+import es.aviferdev.trackfolio.data.database.AssetRegionEntity
+import es.aviferdev.trackfolio.data.database.AssetSectorEntity
+import es.aviferdev.trackfolio.data.database.AssetSectorRelationEntity
 import es.aviferdev.trackfolio.data.database.AssetTagEntity
 import es.aviferdev.trackfolio.data.database.AssetTransactionEntity
 import es.aviferdev.trackfolio.data.database.PlatformEntity
 import es.aviferdev.trackfolio.domain.model.Asset
 import es.aviferdev.trackfolio.domain.model.AssetCategory
+import es.aviferdev.trackfolio.domain.model.AssetComposition
+import es.aviferdev.trackfolio.domain.model.AssetRegion
+import es.aviferdev.trackfolio.domain.model.AssetRegionDistribution
+import es.aviferdev.trackfolio.domain.model.AssetSector
+import es.aviferdev.trackfolio.domain.model.AssetSectorRelation
 import es.aviferdev.trackfolio.domain.model.AssetTag
 import es.aviferdev.trackfolio.domain.model.AssetTransaction
 import es.aviferdev.trackfolio.domain.model.AssetTransactionType
@@ -120,4 +130,64 @@ fun AssetTransaction.toEntity(): AssetTransactionEntity = AssetTransactionEntity
     feeNote      = feeNote,
     notes        = notes,
     createdAt    = createdAt
+)
+
+fun AssetCompositionEntity.toDomain(): AssetComposition = AssetComposition(
+    assetId = assetId,
+    fixedIncomePercent = fixedIncomePercent.toInt(),
+    createdAt = createdAt
+)
+
+fun AssetComposition.toEntity(): AssetCompositionEntity = AssetCompositionEntity(
+    assetId = assetId,
+    fixedIncomePercent = fixedIncomePercent.toLong(),
+    createdAt = createdAt
+)
+
+fun AssetSectorEntity.toDomain(): AssetSector = AssetSector(
+    id = id,
+    name = name,
+    icon = icon,
+    createdAt = createdAt
+)
+
+fun AssetSector.toEntity(): AssetSectorEntity = AssetSectorEntity(
+    id = id,
+    name = name,
+    icon = icon,
+    createdAt = createdAt
+)
+
+fun AssetSectorRelationEntity.toDomain(): AssetSectorRelation = AssetSectorRelation(
+    assetId = assetId,
+    sectorId = sectorId
+)
+
+fun AssetSectorRelation.toEntity(): AssetSectorRelationEntity = AssetSectorRelationEntity(
+    assetId = assetId,
+    sectorId = sectorId
+)
+
+fun AssetRegionEntity.toDomain(): AssetRegion = AssetRegion(
+    id = id,
+    name = name,
+    createdAt = createdAt
+)
+
+fun AssetRegion.toEntity(): AssetRegionEntity = AssetRegionEntity(
+    id = id,
+    name = name,
+    createdAt = createdAt
+)
+
+fun AssetRegionDistributionEntity.toDomain(): AssetRegionDistribution = AssetRegionDistribution(
+    assetId = assetId,
+    regionId = regionId,
+    percent = percent.toInt()
+)
+
+fun AssetRegionDistribution.toEntity(): AssetRegionDistributionEntity = AssetRegionDistributionEntity(
+    assetId = assetId,
+    regionId = regionId,
+    percent = percent.toLong()
 )

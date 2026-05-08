@@ -46,7 +46,8 @@ fun AddEditAssetBottomSheet(
         assetCategoryId: String?,
         currentPrice: Double?,
         platformIds: Set<String>,
-        maturityDate: Long?
+        maturityDate: Long?,
+        fixedIncomePercent: Int
     ) -> Unit,
     onDismiss: () -> Unit
 ) {
@@ -61,6 +62,7 @@ fun AddEditAssetBottomSheet(
         mutableStateOf(asset?.assetCategoryId ?: preselectedCategoryId)
     }
     var selectedPlatformIds by remember { mutableStateOf(linkedPlatformIds) }
+    var fixedIncomePercent by remember { mutableStateOf(0) }
 
     var tickerError by remember { mutableStateOf(false) }
     var nameError   by remember { mutableStateOf(false) }
@@ -179,6 +181,58 @@ fun AddEditAssetBottomSheet(
             )
             Spacer(Modifier.height(12.dp))
 
+            // ── Composición RF/RV ─────────────────────────────────────────
+            Text(
+                text       = "Composición RF / RV",
+                fontSize   = 12.sp,
+                color      = TextSecondary,
+                fontWeight = FontWeight.Medium
+            )
+            Spacer(Modifier.height(8.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Slider(
+                    value     = fixedIncomePercent.toFloat(),
+                    onValueChange = { fixedIncomePercent = it.toInt() },
+                    valueRange = 0f..100f,
+                    steps     = 3,
+                    modifier  = Modifier.weight(1f),
+                    colors    = SliderDefaults.colors(
+                        thumbColor   = PrimaryDark,
+                        activeTrackColor = PrimaryDark
+                    )
+                )
+                Spacer(Modifier.width(12.dp))
+                Text(
+                    text       = "${fixedIncomePercent}%",
+                    fontSize   = 16.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color      = PrimaryDark,
+                    modifier   = Modifier.width(50.dp)
+                )
+            }
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(top = 2.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                listOf(0, 25, 50, 75, 100).forEach { pct ->
+                    Text(
+                        text     = "$pct%",
+                        fontSize = 9.sp,
+                        color    = if (pct == fixedIncomePercent) PrimaryDark else TextSecondary
+                    )
+                }
+            }
+            Text(
+                text     = "RF: Renta Fija (${100 - fixedIncomePercent}% RV: Renta Variable)",
+                fontSize = 10.sp,
+                color    = TextSecondary,
+                modifier = Modifier.padding(top = 4.dp)
+            )
+            Spacer(Modifier.height(12.dp))
+
             // ── Precio actual ──────
             OutlinedTextField(
                 value         = currentPrice,
@@ -278,7 +332,8 @@ fun AddEditAssetBottomSheet(
                         selectedCategoryId,
                         curr,
                         selectedPlatformIds,
-                        asset?.maturityDate
+                        asset?.maturityDate,
+                        fixedIncomePercent
                     )
                 },
                 enabled  = isValid,

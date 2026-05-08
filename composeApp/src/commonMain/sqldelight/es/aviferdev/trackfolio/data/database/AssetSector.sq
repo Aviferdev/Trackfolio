@@ -1,0 +1,40 @@
+-- AssetSectorEntity: catálogo de sectores para clasificar activos.
+-- Definidos por el usuario.
+
+CREATE TABLE AssetSectorEntity (
+    id        TEXT    NOT NULL PRIMARY KEY,
+    name      TEXT    NOT NULL,
+    icon      TEXT    NOT NULL DEFAULT '🏭',
+    createdAt INTEGER NOT NULL
+);
+
+-- ─── Lectura ──────────────────────────────────────────────────────────────────
+
+selectAll:
+SELECT * FROM AssetSectorEntity ORDER BY name ASC;
+
+selectById:
+SELECT * FROM AssetSectorEntity WHERE id = :id;
+
+-- ─── Escritura ──────────────────────────────────────────────────────────────────
+
+insert:
+INSERT OR IGNORE INTO AssetSectorEntity(id, name, icon, createdAt)
+VALUES (?, ?, ?, ?);
+
+insertAll:
+INSERT OR IGNORE INTO AssetSectorEntity(id, name, icon, createdAt)
+VALUES 
+    (?, ?, ?, ?),
+    (?, ?, ?, ?),
+    (?, ?, ?, ?),
+    (?, ?, ?, ?),
+    (?, ?, ?, ?),
+    (?, ?, ?, ?),
+    (?, ?, ?, ?),
+    (?, ?, ?, ?),
+    (?, ?, ?, ?),
+    (?, ?, ?, ?);
+
+delete:
+DELETE FROM AssetSectorEntity WHERE id = :id;

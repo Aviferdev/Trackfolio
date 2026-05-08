@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.sp
 import es.aviferdev.trackfolio.ui.account.AccountViewModel
 import es.aviferdev.trackfolio.ui.fixedincome.CreateFixedIncomeBottomSheet
 import es.aviferdev.trackfolio.ui.fixedincome.FixedIncomeSection
+import es.aviferdev.trackfolio.ui.fixedincome.FixedIncomePositionCard
 import es.aviferdev.trackfolio.ui.theme.*
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.math.abs
@@ -45,6 +46,7 @@ import kotlin.math.abs
  * @param onAssetClick callback que dispara la navegación al historial del
  *        activo. Lo proporciona el NavHost.
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PortfolioScreen(
     onAssetClick: (String) -> Unit = {},
@@ -91,25 +93,47 @@ fun PortfolioScreen(
                 )
             }
 
-            val fiSummary = state.fixedIncomeSummary
-            if (fiSummary != null && fiSummary.positions.isNotEmpty()) {
-                item {
-                    FixedIncomeSection(
-                        summary       = fiSummary,
-                        onPositionClick = onFixedIncomeClick,
-                        currencyCode  = state.currencyCode,
-                        balancesHidden = balancesHidden,
-                        modifier      = Modifier.padding(vertical = 8.dp)
-                    )
-                }
+            // ── Selector de vista de distribución ──────────────────────────
+            val currentDistribution = when (state.selectedDistributionView) {
+                DistributionView.CATEGORY    -> state.distribution
+                DistributionView.COMPOSITION -> state.compositionDistribution
+                DistributionView.REGION      -> state.regionDistribution
+                DistributionView.SECTOR      -> state.sectorDistribution
             }
 
-            // ── Donut chart de distribución por categoría ────────────────────
-            if (state.distribution.isNotEmpty()) {
+            // ── Donut chart de distribución ────────────────────────────────
+            if (state.distribution.isNotEmpty() || state.compositionDistribution.isNotEmpty() || state.regionDistribution.isNotEmpty() || state.sectorDistribution.isNotEmpty()) {
                 item {
+                    // ── Tabs de selección de vista ──────────────────────────
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 20.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        DistributionView.entries.forEach { view ->
+                            FilterChip(
+                                selected = state.selectedDistributionView == view,
+                                onClick = { viewModel.selectDistributionView(view) },
+                                label = {
+                                    Text(
+                                        text = view.displayName,
+                                        fontSize = 12.sp
+                                    )
+                                },
+                                colors = FilterChipDefaults.filterChipColors(
+                                    selectedContainerColor = PrimaryDark,
+                                    selectedLabelColor = Color.White
+                                )
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
                     PortfolioDistributionCard(
-                        slices            = state.distribution,
-                        totalCurrentValue = state.totalCurrentValue,
+                        slices            = currentDistribution,
+                        totalCurrentValue = state.combinedCurrentValue,
                         currencyCode      = state.currencyCode,
                         balancesHidden    = balancesHidden,
                         modifier          = Modifier.padding(horizontal = 20.dp, vertical = 8.dp)
@@ -150,6 +174,20 @@ fun PortfolioScreen(
                             onUpdatePrice  = { viewModel.openUpdatePriceSheet(row.asset) },
                             modifier       = Modifier.padding(horizontal = 20.dp, vertical = 6.dp)
                         )
+                    }
+                    if (group.fixedIncomeRows.isNotEmpty()) {
+                        items(
+                            items = group.fixedIncomeRows,
+                            key = { "fi_${it.position.id}" }
+                        ) { fiRow ->
+                            FixedIncomePositionCard(
+                                row = fiRow,
+                                currencyCode = state.currencyCode,
+                                balancesHidden = balancesHidden,
+                                onClick = { onFixedIncomeClick(fiRow.position.id) },
+                                modifier = Modifier.padding(horizontal = 20.dp, vertical = 6.dp)
+                            )
+                        }
                     }
                 }
 
@@ -247,6 +285,7 @@ fun PortfolioScreen(
     if (state.showCreateFixedIncomeSheet && state.currentAccountId != null) {
         CreateFixedIncomeBottomSheet(
             platforms = state.platforms,
+            categories = availableCategories,
             accountId = state.currentAccountId!!,
             onSave    = { position, event -> viewModel.saveFixedIncomePosition(position, event) },
             onDismiss = { viewModel.closeCreateFixedIncomeSheet() }
@@ -270,8 +309,8 @@ fun PortfolioScreen(
             categories   = availableCategories,
             currencyCode = state.currencyCode,
             allPlatforms = state.platforms,
-            onSave       = { ticker, name, notes, categoryId, currentPrice, platformIds, _ ->
-                catalogViewModel.addAsset(ticker, name, notes, categoryId, currentPrice, platformIds)
+            onSave       = { ticker, name, notes, categoryId, currentPrice, platformIds, _, fixedPct ->
+                catalogViewModel.addAsset(ticker, name, notes, categoryId, currentPrice, platformIds, fixedPct)
             },
             onDismiss = { catalogViewModel.closeAddSheet() }
         )
@@ -283,8 +322,8 @@ fun PortfolioScreen(
             currencyCode = state.currencyCode,
             allPlatforms = state.platforms,
             linkedPlatformIds = catalogState.editingPlatformIds,
-            onSave       = { ticker, name, notes, categoryId, currentPrice, platformIds, _ ->
-                catalogViewModel.editAsset(editing, ticker, name, notes, categoryId, currentPrice, platformIds)
+            onSave       = { ticker, name, notes, categoryId, currentPrice, platformIds, _, fixedPct ->
+                catalogViewModel.editAsset(editing, ticker, name, notes, categoryId, currentPrice, platformIds, fixedPct)
             },
             onDismiss    = { catalogViewModel.closeEditSheet() }
         )
@@ -583,7 +622,7 @@ private fun CategoryGroupHeader(
                 )
                 Spacer(Modifier.width(8.dp))
                 Text(
-                    text     = "(${group.rows.size})",
+                    text     = "(${group.rowCount})",
                     fontSize = 12.sp,
                     color    = TextSecondary
                 )

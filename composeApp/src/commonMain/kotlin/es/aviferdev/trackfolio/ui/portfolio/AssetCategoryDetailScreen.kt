@@ -20,6 +20,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.trackfolio.domain.model.Asset
+import es.aviferdev.trackfolio.ui.fixedincome.FixedIncomePositionCard
 import es.aviferdev.trackfolio.ui.theme.*
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -29,6 +30,7 @@ fun AssetCategoryDetailScreen(
     categoryId: String,
     onBack: () -> Unit,
     onAssetClick: (String) -> Unit,
+    onFixedIncomeClick: (String) -> Unit = {},
     viewModel: AssetCategoryDetailViewModel = koinViewModel(parameters = { parametersOf(categoryId) })
 ) {
     val state by viewModel.uiState.collectAsState()
@@ -104,6 +106,45 @@ fun AssetCategoryDetailScreen(
                                         color = BorderGray,
                                         thickness = 0.5.dp,
                                         modifier = Modifier.padding(start = 56.dp)
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // ── Sección: Renta Fija ───────────────────────────────
+            if (state.activeFixedIncome.isNotEmpty()) {
+                item { Spacer(Modifier.height(8.dp)) }
+                item {
+                    SectionHeaderWithAction(
+                        title = "RENTA FIJA",
+                        actionLabel = "(${state.activeFixedIncome.size})",
+                        onAction = { }
+                    )
+                }
+                item {
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(14.dp),
+                        colors = CardDefaults.cardColors(containerColor = SurfaceWhite),
+                        border = CardDefaults.outlinedCardBorder(),
+                        elevation = CardDefaults.cardElevation(0.dp)
+                    ) {
+                        Column {
+                            state.activeFixedIncome.forEachIndexed { index, fiRow ->
+                                FixedIncomePositionCard(
+                                    row = fiRow,
+                                    currencyCode = state.currencyCode,
+                                    balancesHidden = false,
+                                    onClick = { onFixedIncomeClick(fiRow.position.id) }
+                                )
+                                if (index < state.activeFixedIncome.lastIndex) {
+                                    HorizontalDivider(
+                                        color = BorderGray,
+                                        thickness = 0.5.dp,
+                                        modifier = Modifier.padding(start = 20.dp)
                                     )
                                 }
                             }
@@ -247,8 +288,8 @@ fun AssetCategoryDetailScreen(
             currencyCode = state.currencyCode,
             preselectedCategoryId = categoryId,
             allPlatforms = state.categoryPlatforms,
-            onSave = { ticker, name, notes, _, currentPrice, platformIds, maturityDate ->
-                viewModel.addAsset(ticker, name, notes, currentPrice, platformIds, maturityDate)
+            onSave = { ticker, name, notes, _, currentPrice, platformIds, maturityDate, fixedPct ->
+                viewModel.addAsset(ticker, name, notes, currentPrice, platformIds, maturityDate, fixedPct)
             },
             onDismiss = { viewModel.closeAddSheet() }
         )
@@ -261,8 +302,8 @@ fun AssetCategoryDetailScreen(
             currencyCode = state.currencyCode,
             allPlatforms = state.categoryPlatforms,
             linkedPlatformIds = state.editingPlatformIds,
-            onSave = { ticker, name, notes, catId, currentPrice, platformIds, maturityDate ->
-                viewModel.editAsset(editing, ticker, name, notes, catId, currentPrice, platformIds, maturityDate)
+            onSave = { ticker, name, notes, catId, currentPrice, platformIds, maturityDate, fixedPct ->
+                viewModel.editAsset(editing, ticker, name, notes, catId, currentPrice, platformIds, maturityDate, fixedPct)
             },
             onDismiss = { viewModel.closeEditSheet() }
         )

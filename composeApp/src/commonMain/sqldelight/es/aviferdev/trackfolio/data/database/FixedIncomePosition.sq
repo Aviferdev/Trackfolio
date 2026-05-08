@@ -5,6 +5,7 @@
 CREATE TABLE FixedIncomePositionEntity (
     id                  TEXT    NOT NULL PRIMARY KEY,
     accountId           TEXT    NOT NULL,
+    assetCategoryId     TEXT,
     name                TEXT    NOT NULL,
     ticker              TEXT    NOT NULL DEFAULT '',
     type                TEXT    NOT NULL,
@@ -25,12 +26,14 @@ CREATE TABLE FixedIncomePositionEntity (
     feeNote             TEXT,
     createdAt           INTEGER NOT NULL,
     FOREIGN KEY (accountId)  REFERENCES AccountEntity(id)  ON DELETE CASCADE,
-    FOREIGN KEY (platformId) REFERENCES PlatformEntity(id) ON DELETE RESTRICT
+    FOREIGN KEY (platformId) REFERENCES PlatformEntity(id) ON DELETE RESTRICT,
+    FOREIGN KEY (assetCategoryId) REFERENCES AssetCategoryEntity(id) ON DELETE SET NULL
 );
 
 CREATE INDEX idx_fi_account  ON FixedIncomePositionEntity(accountId);
 CREATE INDEX idx_fi_archived ON FixedIncomePositionEntity(archived);
 CREATE INDEX idx_fi_maturity ON FixedIncomePositionEntity(maturityDate);
+CREATE INDEX idx_fi_category ON FixedIncomePositionEntity(assetCategoryId);
 
 -- ─── Lectura ──────────────────────────────────────────────────────────────────
 
@@ -60,20 +63,25 @@ WHERE accountId = :accountId
   AND archived = 0
 ORDER BY maturityDate ASC;
 
+selectByAccountAndCategory:
+SELECT * FROM FixedIncomePositionEntity
+WHERE accountId = :accountId AND assetCategoryId = :categoryId AND archived = 0
+ORDER BY maturityDate ASC;
+
 -- ─── Escritura ────────────────────────────────────────────────────────────────
 
 insert:
 INSERT INTO FixedIncomePositionEntity(
-    id, accountId, name, ticker, type, notes, principal, quantity,
+    id, accountId, assetCategoryId, name, ticker, type, notes, principal, quantity,
     nominalPerUnit, interestRate, interestFrequency, startDate, maturityDate,
     platformId, issuerId, autoRenew, archived, closedAt, closeType, feeNote, createdAt
 ) VALUES (
-    ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, NULL, NULL, ?, ?
+    ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, NULL, NULL, ?, ?
 );
 
 update:
 UPDATE FixedIncomePositionEntity
-SET name = :name, ticker = :ticker, type = :type, notes = :notes,
+SET assetCategoryId = :assetCategoryId, name = :name, ticker = :ticker, type = :type, notes = :notes,
     principal = :principal, quantity = :quantity, nominalPerUnit = :nominalPerUnit,
     interestRate = :interestRate, interestFrequency = :interestFrequency,
     startDate = :startDate, maturityDate = :maturityDate,

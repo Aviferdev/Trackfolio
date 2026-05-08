@@ -1,0 +1,29 @@
+-- AssetCompositionEntity: porcentaje de renta fija vs variable por activo.
+-- Relación 1:1 con AssetEntity.
+
+CREATE TABLE AssetCompositionEntity (
+    assetId TEXT NOT NULL PRIMARY KEY,
+    fixedIncomePercent INTEGER NOT NULL DEFAULT 0,
+    createdAt INTEGER NOT NULL,
+    FOREIGN KEY (assetId) REFERENCES AssetEntity(id) ON DELETE CASCADE
+);
+
+-- ─── Lectura ──────────────────────────────────────────────────────────────────
+
+selectByAsset:
+SELECT * FROM AssetCompositionEntity WHERE assetId = :assetId;
+
+selectAll:
+SELECT * FROM AssetCompositionEntity;
+
+selectByAssets:
+SELECT * FROM AssetCompositionEntity WHERE assetId IN :assetIds;
+
+-- ─── Escritura ──────────────────────────────────────────────────────────────────
+
+insertOrUpdate:
+INSERT OR REPLACE INTO AssetCompositionEntity(assetId, fixedIncomePercent, createdAt)
+VALUES (:assetId, :fixedIncomePercent, :createdAt);
+
+delete:
+DELETE FROM AssetCompositionEntity WHERE assetId = :assetId;

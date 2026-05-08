@@ -21,6 +21,9 @@ class FixedIncomeRepositoryImpl(
     override fun getNearMaturity(accountId: String, thresholdDate: Long): Flow<List<FixedIncomePosition>> =
         localDataSource.getNearMaturity(accountId, thresholdDate)
 
+    override fun getByAccountAndCategory(accountId: String, categoryId: String): Flow<List<FixedIncomePosition>> =
+        localDataSource.getByAccountAndCategory(accountId, categoryId)
+
     override suspend fun insert(position: FixedIncomePosition): Result<Unit> =
         localDataSource.insert(position)
 

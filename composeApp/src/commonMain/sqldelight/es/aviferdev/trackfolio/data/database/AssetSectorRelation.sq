@@ -1,0 +1,32 @@
+-- AssetSectorRelationEntity: relación muchos:a muchos entre activos y sectores.
+
+CREATE TABLE AssetSectorRelationEntity (
+    assetId  TEXT NOT NULL,
+    sectorId TEXT NOT NULL,
+    PRIMARY KEY (assetId, sectorId),
+    FOREIGN KEY (assetId)  REFERENCES AssetEntity(id) ON DELETE CASCADE,
+    FOREIGN KEY (sectorId) REFERENCES AssetSectorEntity(id) ON DELETE CASCADE
+);
+
+-- ─── Lectura ──────────────────────────────────────────────────────────────────
+
+selectByAsset:
+SELECT * FROM AssetSectorRelationEntity WHERE assetId = :assetId;
+
+selectBySector:
+SELECT * FROM AssetSectorRelationEntity WHERE sectorId = :sectorId;
+
+selectAllByAssets:
+SELECT * FROM AssetSectorRelationEntity WHERE assetId IN :assetIds;
+
+-- ─── Escritura ──────────────────────────────────────────────────────────────────
+
+insert:
+INSERT OR IGNORE INTO AssetSectorRelationEntity(assetId, sectorId)
+VALUES (:assetId, :sectorId);
+
+deleteByAsset:
+DELETE FROM AssetSectorRelationEntity WHERE assetId = :assetId;
+
+deleteRelation:
+DELETE FROM AssetSectorRelationEntity WHERE assetId = :assetId AND sectorId = :sectorId;

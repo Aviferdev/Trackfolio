@@ -18,6 +18,8 @@ import es.aviferdev.trackfolio.data.datasource.asset.AssetPlatformLocalDataSourc
 import es.aviferdev.trackfolio.data.datasource.asset.AssetPlatformLocalDataSourceImpl
 import es.aviferdev.trackfolio.data.datasource.asset.AssetPriceHistoryLocalDataSource
 import es.aviferdev.trackfolio.data.datasource.asset.AssetPriceHistoryLocalDataSourceImpl
+import es.aviferdev.trackfolio.data.datasource.assetmetadata.AssetMetadataLocalDataSource
+import es.aviferdev.trackfolio.data.datasource.assetmetadata.AssetMetadataLocalDataSourceImpl
 import es.aviferdev.trackfolio.data.datasource.fixedincome.FixedIncomeEventLocalDataSource
 import es.aviferdev.trackfolio.data.datasource.fixedincome.FixedIncomeEventLocalDataSourceImpl
 import es.aviferdev.trackfolio.data.datasource.fixedincome.FixedIncomeLocalDataSource
@@ -32,6 +34,7 @@ import es.aviferdev.trackfolio.data.datasource.transaction.TransactionLocalDataS
 import es.aviferdev.trackfolio.data.datasource.transaction.TransactionLocalDataSourceImpl
 import es.aviferdev.trackfolio.data.repository.account.AccountRepositoryImpl
 import es.aviferdev.trackfolio.data.repository.asset.AssetCategoryRepositoryImpl
+import es.aviferdev.trackfolio.data.repository.asset.AssetMetadataRepositoryImpl
 import es.aviferdev.trackfolio.data.repository.asset.AssetRepositoryImpl
 import es.aviferdev.trackfolio.data.repository.asset.AssetTagRepositoryImpl
 import es.aviferdev.trackfolio.data.repository.asset.AssetTransactionRepositoryImpl
@@ -47,6 +50,7 @@ import es.aviferdev.trackfolio.data.repository.platform.PlatformRepositoryImpl
 import es.aviferdev.trackfolio.data.repository.transaction.TransactionRepositoryImpl
 import es.aviferdev.trackfolio.domain.repository.AccountRepository
 import es.aviferdev.trackfolio.domain.repository.AssetCategoryRepository
+import es.aviferdev.trackfolio.domain.repository.AssetMetadataRepository
 import es.aviferdev.trackfolio.domain.repository.AssetRepository
 import es.aviferdev.trackfolio.domain.repository.AssetTagRepository
 import es.aviferdev.trackfolio.domain.repository.AssetTransactionRepository
@@ -75,6 +79,7 @@ val repositoryModule = module {
     single<AssetTransactionLocalDataSource> { AssetTransactionLocalDataSourceImpl(get()) }
     single<AssetPlatformLocalDataSource>    { AssetPlatformLocalDataSourceImpl(get()) }
     single<AssetPriceHistoryLocalDataSource>  { AssetPriceHistoryLocalDataSourceImpl(get()) }
+    single<AssetMetadataLocalDataSource>   { AssetMetadataLocalDataSourceImpl(get()) }
     single<IssuerLocalDataSource>           { IssuerLocalDataSourceImpl(get()) }
     single<FixedIncomeLocalDataSource>      { FixedIncomeLocalDataSourceImpl(get()) }
     single<FixedIncomeEventLocalDataSource> { FixedIncomeEventLocalDataSourceImpl(get()) }
@@ -85,6 +90,7 @@ val repositoryModule = module {
     single<DebtRepository>             { DebtRepositoryImpl(get()) }
     single<AssetRepository>            { AssetRepositoryImpl(get()) }
     single<AssetCategoryRepository>    { AssetCategoryRepositoryImpl(get()) }
+    single<AssetMetadataRepository> { AssetMetadataRepositoryImpl(get()) }
     single<AssetTagRepository>         { AssetTagRepositoryImpl(get()) }
     single<PlatformRepository>         { PlatformRepositoryImpl(get()) }
     single<PlatformCategoryRepository>  { PlatformCategoryRepositoryImpl(get()) }

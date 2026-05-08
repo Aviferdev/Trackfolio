@@ -1,0 +1,35 @@
+-- AssetRegionEntity: catálogo de regiones geográficas predefinidas.
+
+CREATE TABLE AssetRegionEntity (
+    id        TEXT    NOT NULL PRIMARY KEY,
+    name      TEXT    NOT NULL,
+    createdAt INTEGER NOT NULL
+);
+
+-- ─── Lectura ──────────────────────────────────────────────────────────────────
+
+selectAll:
+SELECT * FROM AssetRegionEntity ORDER BY name ASC;
+
+selectById:
+SELECT * FROM AssetRegionEntity WHERE id = :id;
+
+-- ─── Escritura ──────────────────────────────────────────────────────────────────
+
+insert:
+INSERT OR IGNORE INTO AssetRegionEntity(id, name, createdAt)
+VALUES (?, ?, ?);
+
+insertAll:
+INSERT OR IGNORE INTO AssetRegionEntity(id, name, createdAt)
+VALUES 
+    (?, ?, ?),
+    (?, ?, ?),
+    (?, ?, ?),
+    (?, ?, ?),
+    (?, ?, ?),
+    (?, ?, ?),
+    (?, ?, ?);
+
+delete:
+DELETE FROM AssetRegionEntity WHERE id = :id;

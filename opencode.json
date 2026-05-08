@@ -1,0 +1,15 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "agent": {
+    "analista": {
+      "description": "Analiza requisitos y crea especificaciones técnicas",
+      "model": "deepseek/deepseek-v4-pro",
+      "prompt": "Eres un analista técnico. Analiza requisitos y crea especificaciones detalladas."
+    },
+    "desarrollador": {
+      "description": "Desarrolla código según especificaciones",
+      "model": "minimax/minimax-m2.5",
+      "prompt": "Eres un desarrollador. Escribe código según las especificaciones proporcionadas."
+    }
+  }
+}

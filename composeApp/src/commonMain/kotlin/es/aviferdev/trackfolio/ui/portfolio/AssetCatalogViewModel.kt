@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import es.aviferdev.trackfolio.domain.model.Asset
 import es.aviferdev.trackfolio.domain.model.AssetCategory
+import es.aviferdev.trackfolio.domain.repository.AssetMetadataRepository
 import es.aviferdev.trackfolio.domain.repository.AssetPlatformRepository
 import es.aviferdev.trackfolio.domain.repository.AssetTransactionRepository
 import es.aviferdev.trackfolio.domain.portfolio.PortfolioCalculator
@@ -48,6 +49,7 @@ class AssetCatalogViewModel(
     private val assetTransactionRepository: AssetTransactionRepository,
     private val getAssetCategoriesIncludingArchived: GetAllAssetCategoriesIncludingArchivedUseCase,
     private val assetPlatformRepository: AssetPlatformRepository,
+    private val assetMetadataRepository: AssetMetadataRepository,
     private val session: AccountSession
 ) : ViewModel() {
 
@@ -120,7 +122,8 @@ class AssetCatalogViewModel(
         notes: String?,
         assetCategoryId: String?,
         currentPrice: Double?,
-        platformIds: Set<String> = emptySet()
+        platformIds: Set<String> = emptySet(),
+        fixedIncomePercent: Int = 0
     ) {
         val accountId = session.selectedAccountId.value ?: run {
             _error.value = "Selecciona primero una cuenta"
@@ -153,6 +156,16 @@ class AssetCatalogViewModel(
             )
             saveAsset(asset)
                 .onSuccess {
+                    // Guardar composición RF/RV
+                    if (fixedIncomePercent > 0) {
+                        assetMetadataRepository.saveComposition(
+                            es.aviferdev.trackfolio.domain.model.AssetComposition(
+                                assetId = asset.id,
+                                fixedIncomePercent = fixedIncomePercent,
+                                createdAt = now
+                            )
+                        )
+                    }
                     // Vincular plataformas
                     platformIds.forEach { platId ->
                         assetPlatformRepository.link(asset.id, platId)
@@ -171,7 +184,8 @@ class AssetCatalogViewModel(
         notes: String?,
         assetCategoryId: String?,
         currentPrice: Double?,
-        platformIds: Set<String> = emptySet()
+        platformIds: Set<String> = emptySet(),
+        fixedIncomePercent: Int = 0
     ) {
         val tickerTrim = ticker.trim().uppercase()
         val nameTrim   = name.trim()
@@ -195,6 +209,16 @@ class AssetCatalogViewModel(
                     currentPriceUpdatedAt = updatedAt
                 )
             ).onSuccess {
+                // Guardar composición RF/RV
+                if (fixedIncomePercent > 0) {
+                    assetMetadataRepository.saveComposition(
+                        es.aviferdev.trackfolio.domain.model.AssetComposition(
+                            assetId = original.id,
+                            fixedIncomePercent = fixedIncomePercent,
+                            createdAt = Clock.System.now().toEpochMilliseconds()
+                        )
+                    )
+                }
                 // Actualizar plataformas: borrar todas y recrear
                 assetPlatformRepository.unlinkAllByAsset(original.id)
                 platformIds.forEach { platId ->

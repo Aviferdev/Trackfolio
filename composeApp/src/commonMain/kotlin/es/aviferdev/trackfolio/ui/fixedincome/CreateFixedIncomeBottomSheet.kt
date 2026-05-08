@@ -8,20 +8,25 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import es.aviferdev.trackfolio.domain.model.*
 import es.aviferdev.trackfolio.ui.theme.*
 import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreateFixedIncomeBottomSheet(
     platforms: List<es.aviferdev.trackfolio.domain.model.Platform>,
+    categories: List<es.aviferdev.trackfolio.domain.model.AssetCategory>,
     accountId: String,
     onSave: (FixedIncomePosition, FixedIncomeEvent) -> Unit,
     onDismiss: () -> Unit
@@ -32,18 +37,27 @@ fun CreateFixedIncomeBottomSheet(
     var principalStr by remember { mutableStateOf("") }
     var nominalPerUnitStr by remember { mutableStateOf("") }
     var interestRateStr by remember { mutableStateOf("") }
-    var selectedFrequency by remember { mutableStateOf(InterestFrequency.AT_MATURITY) }
     var startDateMillis by remember { mutableStateOf(Clock.System.now().toEpochMilliseconds()) }
     var maturityDateMillis by remember { mutableStateOf(Clock.System.now().toEpochMilliseconds() + 365L * 24 * 60 * 60 * 1000) }
-    var selectedPlatformId by remember { mutableStateOf(platforms.firstOrNull()?.id ?: "") }
-    var autoRenew by remember { mutableStateOf(false) }
+    var entityName by remember { mutableStateOf("") }
     var feeNote by remember { mutableStateOf("") }
     var notes by remember { mutableStateOf("") }
+    var showDatePicker by remember { mutableStateOf(false) }
+
+    fun parseInterestRate(input: String): Double? {
+        val normalized = input.replace(",", ".")
+        return normalized.toDoubleOrNull()
+    }
 
     val isValid = name.isNotBlank() &&
-                  principalStr.toDoubleOrNull() != null &&
-                  interestRateStr.toDoubleOrNull() != null &&
-                  selectedPlatformId.isNotBlank()
+            principalStr.toDoubleOrNull() != null &&
+            parseInterestRate(interestRateStr) != null &&
+            entityName.isNotBlank()
+
+    val entityLabel = when (selectedType) {
+        FixedIncomeType.DEPOSIT -> "Entidad financiera"
+        FixedIncomeType.BOND -> "Emisor (Estado/Empresa)"
+    }
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
@@ -136,91 +150,34 @@ fun CreateFixedIncomeBottomSheet(
 
             OutlinedTextField(
                 value = interestRateStr,
-                onValueChange = { interestRateStr = it.filter { c -> c.isDigit() || c == '.' } },
+                onValueChange = { interestRateStr = it.filter { c -> c.isDigit() || c == '.' || c == ',' } },
                 label = { Text("TAE (%)") },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                 colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = PrimaryDark)
             )
 
             Spacer(Modifier.height(16.dp))
 
-            Text("Frecuencia de interés", fontSize = 13.sp, color = TextSecondary)
-            Spacer(Modifier.height(8.dp))
-            Column {
-                InterestFrequency.entries.forEach { freq ->
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable { selectedFrequency = freq }
-                            .padding(vertical = 8.dp)
-                    ) {
-                        RadioButton(
-                            selected = selectedFrequency == freq,
-                            onClick = { selectedFrequency = freq },
-                            colors = RadioButtonDefaults.colors(selectedColor = PrimaryDark)
-                        )
-                        Text(
-                            text = freq.label,
-                            fontSize = 14.sp,
-                            color = TextPrimary,
-                            modifier = Modifier.padding(start = 8.dp)
-                        )
-                    }
-                }
-            }
+            OutlinedTextField(
+                value = entityName,
+                onValueChange = { entityName = it },
+                label = { Text(entityLabel) },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = PrimaryDark)
+            )
 
-            if (selectedType == FixedIncomeType.DEPOSIT) {
-                Spacer(Modifier.height(12.dp))
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Checkbox(
-                        checked = autoRenew,
-                        onCheckedChange = { autoRenew = it },
-                        colors = CheckboxDefaults.colors(checkedColor = PrimaryDark)
-                    )
-                    Text(
-                        text = "Renovación automática al vencimiento",
-                        fontSize = 14.sp,
-                        color = TextPrimary,
-                        modifier = Modifier.padding(start = 8.dp)
-                    )
-                }
-            }
-
-            Spacer(Modifier.height(16.dp))
+            Spacer(Modifier.height(12.dp))
 
             OutlinedTextField(
-                value = selectedPlatformId,
+                value = formatDate(maturityDateMillis),
                 onValueChange = { },
-                label = { Text("Plataforma / Broker") },
-                modifier = Modifier.fillMaxWidth(),
+                label = { Text("Fecha de vencimiento") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { showDatePicker = true },
                 readOnly = true,
-                trailingIcon = {
-                    var expanded by remember { mutableStateOf(false) }
-                    Box {
-                        IconButton(onClick = { expanded = true }) {
-                            Text("▼", fontSize = 12.sp)
-                        }
-                        DropdownMenu(
-                            expanded = expanded,
-                            onDismissRequest = { expanded = false }
-                        ) {
-                            platforms.forEach { platform ->
-                                DropdownMenuItem(
-                                    text = { Text(platform.name) },
-                                    onClick = {
-                                        selectedPlatformId = platform.id
-                                        expanded = false
-                                    }
-                                )
-                            }
-                        }
-                    }
-                },
                 colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = PrimaryDark)
             )
 
@@ -241,7 +198,7 @@ fun CreateFixedIncomeBottomSheet(
                 onClick = {
                     val principal = principalStr.toDoubleOrNull() ?: 0.0
                     val nominal = nominalPerUnitStr.toDoubleOrNull() ?: principal
-                    val rate = interestRateStr.toDoubleOrNull() ?: 0.0
+                    val rate = parseInterestRate(interestRateStr) ?: 0.0
                     val now = Clock.System.now().toEpochMilliseconds()
                     val positionId = "fi_${now}"
                     val eventId = "fie_${now}"
@@ -249,6 +206,7 @@ fun CreateFixedIncomeBottomSheet(
                     val position = FixedIncomePosition(
                         id                = positionId,
                         accountId         = accountId,
+                        assetCategoryId   = null,
                         name              = name,
                         ticker            = ticker,
                         type              = selectedType,
@@ -257,12 +215,12 @@ fun CreateFixedIncomeBottomSheet(
                         quantity          = 1.0,
                         nominalPerUnit    = nominal,
                         interestRate      = rate,
-                        interestFrequency = selectedFrequency,
+                        interestFrequency = InterestFrequency.AT_MATURITY,
                         startDate         = startDateMillis,
                         maturityDate      = maturityDateMillis,
-                        platformId        = selectedPlatformId,
-                        issuerId          = null,
-                        autoRenew         = autoRenew,
+                        platformId        = "",
+                        issuerId          = entityName.ifBlank { null },
+                        autoRenew         = false,
                         archived          = false,
                         closedAt          = null,
                         closeType         = null,
@@ -294,6 +252,30 @@ fun CreateFixedIncomeBottomSheet(
             }
 
             Spacer(Modifier.height(16.dp))
+        }
+    }
+
+    if (showDatePicker) {
+        val datePickerState = rememberDatePickerState(
+            initialSelectedDateMillis = maturityDateMillis
+        )
+        DatePickerDialog(
+            onDismissRequest = { showDatePicker = false },
+            confirmButton = {
+                TextButton(onClick = {
+                    datePickerState.selectedDateMillis?.let { maturityDateMillis = it }
+                    showDatePicker = false
+                }) {
+                    Text("Aceptar", color = PrimaryDark)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDatePicker = false }) {
+                    Text("Cancelar", color = TextSecondary)
+                }
+            }
+        ) {
+            DatePicker(state = datePickerState)
         }
     }
 }

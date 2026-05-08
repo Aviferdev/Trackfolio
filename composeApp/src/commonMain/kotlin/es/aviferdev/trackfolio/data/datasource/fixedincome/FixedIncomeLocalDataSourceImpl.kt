@@ -43,6 +43,12 @@ class FixedIncomeLocalDataSourceImpl(
             .mapToList(Dispatchers.IO)
             .map { list -> list.map { it.toDomain() } }
 
+    override fun getByAccountAndCategory(accountId: String, categoryId: String): Flow<List<FixedIncomePosition>> =
+        queries.selectByAccountAndCategory(accountId, categoryId)
+            .asFlow()
+            .mapToList(Dispatchers.IO)
+            .map { list -> list.map { it.toDomain() } }
+
     override suspend fun insert(position: FixedIncomePosition): Result<Unit> =
         runCatching {
             withContext(Dispatchers.IO) {
@@ -50,6 +56,7 @@ class FixedIncomeLocalDataSourceImpl(
                 queries.insert(
                     id                = e.id,
                     accountId         = e.accountId,
+                    assetCategoryId   = e.assetCategoryId,
                     name              = e.name,
                     ticker            = e.ticker,
                     type              = e.type,
@@ -76,6 +83,7 @@ class FixedIncomeLocalDataSourceImpl(
                 val e = position.toEntity()
                 queries.update(
                     id                = e.id,
+                    assetCategoryId   = e.assetCategoryId,
                     name              = e.name,
                     ticker            = e.ticker,
                     type              = e.type,

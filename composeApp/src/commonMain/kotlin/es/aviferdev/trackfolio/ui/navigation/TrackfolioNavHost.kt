@@ -228,6 +228,11 @@ fun TrackfolioNavHost() {
                         navController.navigate(Screen.AssetDetail.buildRoute(assetId)) {
                             launchSingleTop = true
                         }
+                    },
+                    onFixedIncomeClick = { positionId ->
+                        navController.navigate(Screen.FixedIncomeDetail.buildRoute(positionId)) {
+                            launchSingleTop = true
+                        }
                     }
                 )
             }

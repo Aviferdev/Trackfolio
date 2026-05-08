@@ -10,8 +10,11 @@ import es.aviferdev.trackfolio.domain.model.AssetTransaction
 import es.aviferdev.trackfolio.domain.model.AssetTransactionType
 import es.aviferdev.trackfolio.domain.model.FixedIncomeEvent
 import es.aviferdev.trackfolio.domain.model.FixedIncomePosition
+import es.aviferdev.trackfolio.domain.model.FixedIncomeRow
 import es.aviferdev.trackfolio.domain.model.FixedIncomeSummary
+import es.aviferdev.trackfolio.domain.portfolio.FixedIncomeCalculator
 import es.aviferdev.trackfolio.domain.model.Platform
+import es.aviferdev.trackfolio.domain.repository.AssetMetadataRepository
 import es.aviferdev.trackfolio.domain.repository.AssetPlatformRepository
 import es.aviferdev.trackfolio.domain.portfolio.AssetPosition
 import es.aviferdev.trackfolio.domain.portfolio.PortfolioCalculator
@@ -53,6 +56,7 @@ data class AssetRow(
 data class CategoryGroup(
     val category: AssetCategory?,
     val rows: List<AssetRow>,
+    val fixedIncomeRows: List<FixedIncomeRow> = emptyList(),
     val totalInvested: Double,           // coste de las unidades aún en cartera
     val totalCurrentValue: Double,       // valor actual de mercado
     val totalUnrealizedPnL: Double,      // P&L latente
@@ -63,6 +67,7 @@ data class CategoryGroup(
     val displayName: String   get() = category?.name ?: "Sin categoría"
     val displayIcon: String   get() = category?.icon ?: "❔"
     val sortKey: Int          get() = category?.sortOrder ?: Int.MAX_VALUE
+    val rowCount: Int get() = rows.size + fixedIncomeRows.size
 }
 
 data class CategorySlice(
@@ -74,10 +79,29 @@ data class CategorySlice(
     val color: Color
 )
 
+enum class DistributionView {
+    CATEGORY,    // Distribución por categoría (default)
+    COMPOSITION, // RF/RV composición
+    REGION,      // Distribución por región
+    SECTOR;      // Distribución por sector
+
+    val displayName: String
+        get() = when (this) {
+            CATEGORY    -> "Categoría"
+            COMPOSITION -> "Composición"
+            REGION      -> "Región"
+            SECTOR      -> "Sector"
+        }
+}
+
 data class PortfolioUiState(
     val groups: List<CategoryGroup>     = emptyList(),         // posiciones abiertas
     val closedPositions: List<AssetRow> = emptyList(),         // qty==0 y al menos una venta registrada
     val distribution: List<CategorySlice> = emptyList(),
+    val compositionDistribution: List<CategorySlice> = emptyList(),
+    val regionDistribution: List<CategorySlice> = emptyList(),
+    val sectorDistribution: List<CategorySlice> = emptyList(),
+    val selectedDistributionView: DistributionView = DistributionView.CATEGORY,
     val totalInvested: Double           = 0.0,
     val totalCurrentValue: Double       = 0.0,
     val totalRealizedPnL: Double        = 0.0,
@@ -130,13 +154,15 @@ class PortfolioViewModel(
     private val saveAssetTransaction: SaveAssetTransactionUseCase,
     private val syncToLedger: SyncAssetTransactionToLedgerUseCase,
     private val assetPlatformRepository: AssetPlatformRepository,
+    private val assetMetadataRepository: AssetMetadataRepository,
     private val session: AccountSession,
-    private val getFixedIncomeSummary: GetFixedIncomeSummaryUseCase? = null,
+    private val getFixedIncomeSummary: GetFixedIncomeSummaryUseCase,
     private val getNearMaturityPositions: es.aviferdev.trackfolio.domain.usecase.fixedincome.GetNearMaturityPositionsUseCase? = null,
     private val createFixedIncomePosition: CreateFixedIncomePositionUseCase? = null
 ) : ViewModel() {
 
     private val _sheetState = MutableStateFlow(SheetState())
+    private val _selectedDistributionView = MutableStateFlow(DistributionView.CATEGORY)
 
     private data class SheetState(
         val showUpdatePriceSheet: Boolean = false,
@@ -171,9 +197,7 @@ class PortfolioViewModel(
             if (accountId == null) {
                 flowOf(PortfolioUiState(isLoading = false))
             } else {
-                val fiFlow = if (getFixedIncomeSummary != null) {
-                    getFixedIncomeSummary(accountId)
-                } else flowOf(null)
+                val fiFlow = getFixedIncomeSummary(accountId)
 
                 val nearMaturityFlow = if (getNearMaturityPositions != null) {
                     getNearMaturityPositions(accountId)
@@ -214,7 +238,10 @@ class PortfolioViewModel(
                             accountId = basicData.account?.id
                         ))
                     } else {
-                        assetPlatformRepository.getPlatformsByAssets(assetIds).map { platformsByAsset ->
+                        combine(
+                            assetPlatformRepository.getPlatformsByAssets(assetIds),
+                            assetMetadataRepository.getAllCompositions()
+                        ) { platformsByAsset, compositions ->
                             buildState(
                                 assets = basicData.assets,
                                 categories = basicData.categories,
@@ -224,7 +251,8 @@ class PortfolioViewModel(
                                 platformsByAsset = platformsByAsset,
                                 fiSummary = basicData.fiSummary,
                                 nearMaturityPositions = basicData.nearMaturityPositions,
-                                accountId = basicData.account?.id
+                                accountId = basicData.account?.id,
+                                compositions = compositions
                             )
                         }
                     }
@@ -241,6 +269,9 @@ class PortfolioViewModel(
                 showCreateFixedIncomeSheet  = sheets.showCreateFixedIncomeSheet,
                 error                       = sheets.error
             )
+        }
+        .combine(_selectedDistributionView) { state, view ->
+            state.copy(selectedDistributionView = view)
         }
         .stateIn(
             scope        = viewModelScope,
@@ -265,11 +296,17 @@ class PortfolioViewModel(
         platformsByAsset: Map<String, List<Platform>>,
         fiSummary: FixedIncomeSummary?,
         nearMaturityPositions: List<es.aviferdev.trackfolio.domain.model.FixedIncomePosition>,
-        accountId: String? = null
+        accountId: String? = null,
+        compositions: List<es.aviferdev.trackfolio.domain.model.AssetComposition> = emptyList()
     ): PortfolioUiState {
         // Agrupar movimientos por activo.
         val txByAsset: Map<String, List<AssetTransaction>> =
             transactions.groupBy { it.assetId }
+
+        // Group fixed income by category
+        val fiRows = fiSummary?.positions ?: emptyList()
+        val fiByCategory = fiRows.groupBy { it.position.assetCategoryId }
+        val categoryById = categories.associateBy { it.id }
 
         // Para cada activo, calcular su posición FIFO y separar:
         //  - openRows  → tienen qty > 0 (posiciones vivas)
@@ -303,15 +340,23 @@ class PortfolioViewModel(
                 val realized  = groupRows.sumOf { it.position.realizedPnL }
                 val unrealized = groupRows.sumOf { it.position.unrealizedPnL }
                 val total     = realized + unrealized
+
+                // Include fixed income for this category
+                val fiRowsForCat = fiByCategory[categoryId].orEmpty()
+                val fiInvested = fiRowsForCat.sumOf { it.position.principal }
+                val fiCurrent = fiRowsForCat.sumOf { it.currentValue }
+                val fiProfit = fiRowsForCat.sumOf { it.totalProfit }
+
                 CategoryGroup(
                     category           = cat,
                     rows               = groupRows.sortedByDescending { it.position.currentValue },
-                    totalInvested      = invested,
-                    totalCurrentValue  = current,
+                    fixedIncomeRows   = fiRowsForCat,
+                    totalInvested      = invested + fiInvested,
+                    totalCurrentValue  = current + fiCurrent,
                     totalUnrealizedPnL = unrealized,
                     totalRealizedPnL   = realized,
-                    totalPnL           = total,
-                    totalPnLPercent    = if (invested > 0.0) (total / invested) * 100.0 else 0.0
+                    totalPnL           = total + fiProfit,
+                    totalPnLPercent    = if (invested + fiInvested > 0.0) ((total + fiProfit) / (invested + fiInvested)) * 100.0 else 0.0
                 )
             }
             .sortedWith(
@@ -322,13 +367,44 @@ class PortfolioViewModel(
                 )
             )
 
-        val totalInvested      = groups.sumOf { it.totalInvested }
-        val totalCurrentValue  = groups.sumOf { it.totalCurrentValue }
+        // Create groups for categories that have only fixed income (no stocks)
+        val stockCategoryIds = grouped.keys
+        val fiOnlyCategoryIds = fiByCategory.keys - stockCategoryIds
+        val fiOnlyGroups = fiOnlyCategoryIds.mapNotNull { categoryId ->
+            val fiRowsForCat = fiByCategory[categoryId].orEmpty()
+            if (fiRowsForCat.isEmpty()) return@mapNotNull null
+            val cat = categoryId?.let { categoryById[it] }
+            val fiInvested = fiRowsForCat.sumOf { it.position.principal }
+            val fiCurrent = fiRowsForCat.sumOf { it.currentValue }
+            val fiProfit = fiRowsForCat.sumOf { it.totalProfit }
+            CategoryGroup(
+                category           = cat,
+                rows               = emptyList(),
+                fixedIncomeRows   = fiRowsForCat,
+                totalInvested      = fiInvested,
+                totalCurrentValue  = fiCurrent,
+                totalUnrealizedPnL = 0.0,
+                totalRealizedPnL   = 0.0,
+                totalPnL           = fiProfit,
+                totalPnLPercent    = if (fiInvested > 0.0) (fiProfit / fiInvested) * 100.0 else 0.0
+            )
+        }
+
+        val allGroups = (groups + fiOnlyGroups).sortedWith(
+            compareBy(
+                { if (it.category == null) 1 else 0 },
+                { it.sortKey },
+                { it.displayName }
+            )
+        )
+
+        val totalInvested      = allGroups.sumOf { it.totalInvested }
+        val totalCurrentValue  = allGroups.sumOf { it.totalCurrentValue }
         // El P&L realizado SUMA tanto el de las posiciones abiertas (ventas
         // parciales) como el de las cerradas (vendidas por completo).
-        val totalRealizedPnL   = groups.sumOf { it.totalRealizedPnL } +
+        val totalRealizedPnL   = allGroups.sumOf { it.totalRealizedPnL } +
                                  closedRows.sumOf { it.position.realizedPnL }
-        val totalUnrealizedPnL = groups.sumOf { it.totalUnrealizedPnL }
+        val totalUnrealizedPnL = allGroups.sumOf { it.totalUnrealizedPnL }
         val totalPnL           = totalRealizedPnL + totalUnrealizedPnL
 
         val fiTotalPrincipal    = fiSummary?.totalPrincipal ?: 0.0
@@ -343,22 +419,7 @@ class PortfolioViewModel(
         val distribution: List<CategorySlice> = if (combinedCurrentValue <= 0.0) {
             emptyList()
         } else {
-            val slices = mutableListOf<CategorySlice>()
-
-            if (fiTotalCurrentValue > 0.0) {
-                slices.add(
-                    CategorySlice(
-                        categoryId = "fixed_income",
-                        name       = "Renta fija",
-                        icon       = "🏦",
-                        value      = fiTotalCurrentValue,
-                        percent    = (fiTotalCurrentValue / combinedCurrentValue) * 100.0,
-                        color      = Color(0xFF4CAF50)
-                    )
-                )
-            }
-
-            groups
+            allGroups
                 .filter { it.totalCurrentValue > 0.0 }
                 .mapIndexed { idx, g ->
                     CategorySlice(
@@ -370,15 +431,27 @@ class PortfolioViewModel(
                         color      = colorForGroup(g, idx)
                     )
                 }
-                .let { slices.addAll(it) }
-
-            slices.sortedByDescending { it.percent }
+                .sortedByDescending { it.percent }
         }
 
+        // ── Distribución por composición RF/RV ─────────────────────────
+        val compositionByAsset = compositions.associateBy { it.assetId }
+        val compositionSlices = buildCompositionDistribution(allGroups, compositionByAsset, combinedCurrentValue)
+
+        // ── Distribución por región ────────────────────────────────────
+        val regionSlices: List<CategorySlice> = emptyList()
+
+        // ── Distribución por sector ────────────────────────────────────
+        val sectorSlices: List<CategorySlice> = emptyList()
+
         return PortfolioUiState(
-            groups             = groups,
+            groups             = allGroups,
             closedPositions    = closedRows.sortedByDescending { it.position.realizedPnL },
             distribution       = distribution,
+            compositionDistribution = compositionSlices,
+            regionDistribution       = regionSlices,
+            sectorDistribution       = sectorSlices,
+            selectedDistributionView  = DistributionView.CATEGORY,
             totalInvested      = totalInvested,
             totalCurrentValue  = totalCurrentValue,
             totalRealizedPnL   = totalRealizedPnL,
@@ -409,6 +482,57 @@ class PortfolioViewModel(
         return CategoryPalette[idx % CategoryPalette.size]
     }
 
+    private fun buildCompositionDistribution(
+        groups: List<CategoryGroup>,
+        compositionByAsset: Map<String, es.aviferdev.trackfolio.domain.model.AssetComposition>,
+        totalValue: Double
+    ): List<CategorySlice> {
+        if (totalValue <= 0.0) return emptyList()
+
+        data class CompositionBucket(val label: String, val icon: String, val min: Int, val max: Int)
+
+        val buckets = listOf(
+            CompositionBucket("100% RF", "🔵", 100, 100),
+            CompositionBucket("75% RF / 25% RV", "🟢", 75, 99),
+            CompositionBucket("50% RF / 50% RV", "🟡", 50, 74),
+            CompositionBucket("25% RF / 75% RV", "🟠", 25, 49),
+            CompositionBucket("100% RV", "🔴", 0, 24)
+        )
+
+        val bucketValues = mutableMapOf<CompositionBucket, Double>()
+        buckets.forEach { bucketValues[it] = 0.0 }
+
+        for (group in groups) {
+            for (row in group.rows) {
+                val assetId = row.asset.id
+                val comp = compositionByAsset[assetId]
+                val pct = comp?.fixedIncomePercent ?: 0
+                val value = row.position.currentValue
+                val bucket = buckets.first { pct in it.min..it.max }
+                bucketValues[bucket] = (bucketValues[bucket] ?: 0.0) + value
+            }
+            for (fiRow in group.fixedIncomeRows) {
+                val value = fiRow.currentValue
+                val bucket = buckets.first { 100 in it.min..it.max }
+                bucketValues[bucket] = (bucketValues[bucket] ?: 0.0) + value
+            }
+        }
+
+        return buckets
+            .filter { (bucketValues[it] ?: 0.0) > 0 }
+            .mapIndexed { idx, bucket ->
+                val value = bucketValues[bucket] ?: 0.0
+                CategorySlice(
+                    categoryId = null,
+                    name = bucket.label,
+                    icon = bucket.icon,
+                    value = value,
+                    percent = (value / totalValue) * 100.0,
+                    color = CategoryPalette[idx % CategoryPalette.size]
+                )
+            }
+    }
+
     // ── Sheet rápido de actualización de precio ──────────────────────────────
     fun openUpdatePriceSheet(asset: Asset) {
         _sheetState.value = _sheetState.value.copy(showUpdatePriceSheet = true, pricingAsset = asset)
@@ -416,6 +540,10 @@ class PortfolioViewModel(
 
     fun closeUpdatePriceSheet() {
         _sheetState.value = _sheetState.value.copy(showUpdatePriceSheet = false, pricingAsset = null)
+    }
+
+    fun selectDistributionView(view: DistributionView) {
+        _selectedDistributionView.value = view
     }
 
     fun refreshCurrentPrice(asset: Asset, newPrice: Double) {

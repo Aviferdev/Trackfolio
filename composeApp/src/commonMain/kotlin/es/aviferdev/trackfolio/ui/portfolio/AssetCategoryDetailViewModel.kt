@@ -4,13 +4,18 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import es.aviferdev.trackfolio.domain.model.Asset
 import es.aviferdev.trackfolio.domain.model.AssetCategory
+import es.aviferdev.trackfolio.domain.model.FixedIncomeRow
 import es.aviferdev.trackfolio.domain.model.Platform
+import es.aviferdev.trackfolio.domain.portfolio.FixedIncomeCalculator
 import es.aviferdev.trackfolio.domain.portfolio.PortfolioCalculator
 import es.aviferdev.trackfolio.domain.repository.PlatformCategoryRepository
 import es.aviferdev.trackfolio.domain.repository.PlatformRepository
+import es.aviferdev.trackfolio.domain.repository.AssetMetadataRepository
 import es.aviferdev.trackfolio.domain.repository.AssetPlatformRepository
 import es.aviferdev.trackfolio.domain.repository.AssetRepository
 import es.aviferdev.trackfolio.domain.repository.AssetTransactionRepository
+import es.aviferdev.trackfolio.domain.repository.FixedIncomeRepository
+import es.aviferdev.trackfolio.domain.repository.FixedIncomeEventRepository
 import es.aviferdev.trackfolio.domain.usecase.asset.ArchiveAssetUseCase
 import es.aviferdev.trackfolio.domain.usecase.asset.SaveAssetUseCase
 import es.aviferdev.trackfolio.domain.usecase.asset.UnarchiveAssetUseCase
@@ -34,6 +39,7 @@ data class AssetCategoryDetailUiState(
     val category: AssetCategory?       = null,
     val activeAssets: List<Asset>       = emptyList(),
     val archivedAssets: List<Asset>     = emptyList(),
+    val activeFixedIncome: List<FixedIncomeRow> = emptyList(),
     val categoryPlatforms: List<Platform> = emptyList(),
     val allPlatforms: List<Platform>    = emptyList(),
     val allCategories: List<AssetCategory> = emptyList(),
@@ -52,6 +58,7 @@ class AssetCategoryDetailViewModel(
     private val assetRepository: AssetRepository,
     private val assetTransactionRepository: AssetTransactionRepository,
     private val assetPlatformRepository: AssetPlatformRepository,
+    private val assetMetadataRepository: AssetMetadataRepository,
     private val getAssetCategoriesIncludingArchived: GetAllAssetCategoriesIncludingArchivedUseCase,
     private val getPlatforms: GetPlatformsUseCase,
     private val platformCategoryRepository: PlatformCategoryRepository,
@@ -60,6 +67,8 @@ class AssetCategoryDetailViewModel(
     private val updateAsset: UpdateAssetUseCase,
     private val archiveAsset: ArchiveAssetUseCase,
     private val unarchiveAsset: UnarchiveAssetUseCase,
+    private val fixedIncomeRepository: FixedIncomeRepository,
+    private val fixedIncomeEventRepository: FixedIncomeEventRepository,
     private val session: AccountSession
 ) : ViewModel() {
 
@@ -73,35 +82,59 @@ class AssetCategoryDetailViewModel(
     val uiState: StateFlow<AssetCategoryDetailUiState> = session.selectedAccountId
         .flatMapLatest { accountId ->
             if (accountId == null) flowOf(AssetCategoryDetailUiState())
-            else combine(
-                assetRepository.getAllByAccountIncludingArchived(accountId),
-                getAssetCategoriesIncludingArchived(),
-                getPlatforms(),
-                platformCategoryRepository.getByCategory(categoryId),
-                combine(_showAddSheet, _editing, _editingPlatformIds, _pendingArchive, _error) { show, edit, platIds, arch, err ->
-                    SheetState(show, edit, platIds, arch, err)
-                }.combine(_showLinkPlatformSheet) { sheets, linkSheet ->
-                    sheets to linkSheet
+            else {
+                val fiPositionsFlow = fixedIncomeRepository.getByAccountAndCategory(accountId, categoryId)
+                val fiEventsFlow = fixedIncomeEventRepository.getByAccount(accountId)
+                val fiRowsFlow = combine(fiPositionsFlow, fiEventsFlow) { fiPositions, fiEvents ->
+                    val eventsByPosition = fiEvents.groupBy { ev -> ev.positionId }
+                    fiPositions.map { pos ->
+                        val events = eventsByPosition[pos.id] ?: emptyList()
+                        FixedIncomeCalculator.calculatePosition(pos, events)
+                    }
                 }
-            ) { allAssets, categories, allPlatforms, categoryPlatforms, sheetsAndLink ->
-                val (sheets, linkSheet) = sheetsAndLink
-                val category = categories.firstOrNull { it.id == categoryId }
-                val assetsInCategory = allAssets.filter { it.assetCategoryId == categoryId }
-                AssetCategoryDetailUiState(
-                    category            = category,
-                    activeAssets         = assetsInCategory.filter { !it.archived },
-                    archivedAssets       = assetsInCategory.filter { it.archived },
-                    categoryPlatforms   = categoryPlatforms,
-                    allPlatforms         = allPlatforms,
-                    allCategories        = categories.filter { !it.archived },
-                    currencyCode         = "EUR",
-                    showAddSheet         = sheets.show,
-                    editing              = sheets.edit,
-                    editingPlatformIds   = sheets.platIds,
-                    pendingArchive       = sheets.arch,
-                    showLinkPlatformSheet = linkSheet,
-                    error                = sheets.err
-                )
+
+                val assetsAndCategoriesFlow = combine(
+                    assetRepository.getAllByAccountIncludingArchived(accountId),
+                    getAssetCategoriesIncludingArchived()
+                ) { assets, categories -> assets to categories }
+
+                val platformsFlow = combine(
+                    getPlatforms(),
+                    platformCategoryRepository.getByCategory(categoryId)
+                ) { allPlats, catPlats -> allPlats to catPlats }
+
+                val sheetsFlow = combine(
+                    _showAddSheet,
+                    _editing,
+                    _editingPlatformIds,
+                    _pendingArchive,
+                    _error
+                ) { show, edit, platIds, arch, err -> SheetState(show, edit, platIds, arch, err) }
+                    .combine(_showLinkPlatformSheet) { sheets, linkSheet -> sheets to linkSheet }
+
+                combine(assetsAndCategoriesFlow, platformsFlow, fiRowsFlow, sheetsFlow) { data, platforms, fiRows, sheetsAndLink ->
+                    val (allAssets, categories) = data
+                    val (allPlatforms, categoryPlatforms) = platforms
+                    val (sheets, linkSheet) = sheetsAndLink
+                    val category = categories.firstOrNull { c -> c.id == categoryId }
+                    val assetsInCategory = allAssets.filter { a -> a.assetCategoryId == categoryId }
+                    AssetCategoryDetailUiState(
+                        category            = category,
+                        activeAssets         = assetsInCategory.filter { a -> !a.archived },
+                        archivedAssets       = assetsInCategory.filter { a -> a.archived },
+                        activeFixedIncome   = fiRows,
+                        categoryPlatforms   = categoryPlatforms,
+                        allPlatforms         = allPlatforms,
+                        allCategories        = categories.filter { c -> !c.archived },
+                        currencyCode         = "EUR",
+                        showAddSheet         = sheets.show,
+                        editing              = sheets.edit,
+                        editingPlatformIds   = sheets.platIds,
+                        pendingArchive       = sheets.arch,
+                        showLinkPlatformSheet = linkSheet,
+                        error                = sheets.err
+                    )
+                }
             }
         }
         .stateIn(
@@ -155,7 +188,8 @@ class AssetCategoryDetailViewModel(
         notes: String?,
         currentPrice: Double?,
         platformIds: Set<String> = emptySet(),
-        maturityDate: Long? = null
+        maturityDate: Long? = null,
+        fixedIncomePercent: Int = 0
     ) {
         val accountId = session.selectedAccountId.value ?: run {
             _error.value = "Selecciona primero una cuenta"
@@ -183,6 +217,15 @@ class AssetCategoryDetailViewModel(
             )
             saveAsset(asset)
                 .onSuccess {
+                    if (fixedIncomePercent > 0) {
+                        assetMetadataRepository.saveComposition(
+                            es.aviferdev.trackfolio.domain.model.AssetComposition(
+                                assetId = asset.id,
+                                fixedIncomePercent = fixedIncomePercent,
+                                createdAt = now
+                            )
+                        )
+                    }
                     platformIds.forEach { platId ->
                         assetPlatformRepository.link(asset.id, platId)
                     }
@@ -200,7 +243,8 @@ class AssetCategoryDetailViewModel(
         assetCategoryId: String?,
         currentPrice: Double?,
         platformIds: Set<String> = emptySet(),
-        maturityDate: Long? = null
+        maturityDate: Long? = null,
+        fixedIncomePercent: Int = 0
     ) {
         val tickerTrim = ticker.trim().uppercase()
         val nameTrim   = name.trim()
@@ -225,6 +269,15 @@ class AssetCategoryDetailViewModel(
                     maturityDate          = maturityDate
                 )
             ).onSuccess {
+                if (fixedIncomePercent > 0) {
+                    assetMetadataRepository.saveComposition(
+                        es.aviferdev.trackfolio.domain.model.AssetComposition(
+                            assetId = original.id,
+                            fixedIncomePercent = fixedIncomePercent,
+                            createdAt = Clock.System.now().toEpochMilliseconds()
+                        )
+                    )
+                }
                 assetPlatformRepository.unlinkAllByAsset(original.id)
                 platformIds.forEach { platId ->
                     assetPlatformRepository.link(original.id, platId)
