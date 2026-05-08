@@ -31,7 +31,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.trackfolio.domain.model.AssetTransaction
 import es.aviferdev.trackfolio.domain.model.AssetTransactionType
-import es.aviferdev.trackfolio.domain.model.FixedIncomeCategories
 import es.aviferdev.trackfolio.domain.model.Platform
 import es.aviferdev.trackfolio.domain.model.Transaction
 import es.aviferdev.trackfolio.domain.portfolio.AssetPosition
@@ -102,36 +101,21 @@ fun AssetHistoryScreen(
                 }
 
                 else -> {
-                    val isFixedIncome = FixedIncomeCategories.isFixedIncome(state.asset!!.assetCategoryId)
-
                     LazyColumn(
                         modifier       = Modifier.fillMaxSize(),
                         contentPadding = PaddingValues(bottom = 100.dp)
                     ) {
-                        // Tarjeta de cabecera con precio actual (solo activos no de renta fija)
-                        if (!isFixedIncome) {
-                            item {
-                                AssetSummaryCard(
-                                    ticker            = state.asset!!.ticker,
-                                    name              = state.asset!!.name,
-                                    currentPrice      = state.asset!!.currentPrice,
-                                    currentPriceUpdatedAt = state.asset!!.currentPriceUpdatedAt,
-                                    currencyCode      = state.currencyCode,
-                                    onUpdatePrice     = { viewModel.openUpdatePriceSheet() },
-                                    modifier          = Modifier.padding(horizontal = 20.dp, vertical = 12.dp)
-                                )
-                            }
-                        }
-
-                        // Fecha de vencimiento (solo renta fija)
-                        if (isFixedIncome && state.asset!!.maturityDate != null) {
-                            item {
-                                MaturityDateCard(
-                                    maturityDate = state.asset!!.maturityDate!!,
-                                    isBond       = state.asset!!.isBond,
-                                    modifier     = Modifier.padding(horizontal = 20.dp, vertical = 12.dp)
-                                )
-                            }
+                        // Tarjeta de cabecera con precio actual
+                        item {
+                            AssetSummaryCard(
+                                ticker            = state.asset!!.ticker,
+                                name              = state.asset!!.name,
+                                currentPrice      = state.asset!!.currentPrice,
+                                currentPriceUpdatedAt = state.asset!!.currentPriceUpdatedAt,
+                                currencyCode      = state.currencyCode,
+                                onUpdatePrice     = { viewModel.openUpdatePriceSheet() },
+                                modifier          = Modifier.padding(horizontal = 20.dp, vertical = 12.dp)
+                            )
                         }
 
                         // Tarjeta de posición FIFO
@@ -219,9 +203,6 @@ fun AssetHistoryScreen(
 
         // FAB con menú contextual según tipo de activo
         if (state.asset != null) {
-            val isFixedIncome = FixedIncomeCategories.isFixedIncome(state.asset!!.assetCategoryId)
-            val isBond = state.asset!!.isBond
-            val isDeposit = state.asset!!.isDeposit
 
             Box(
                 modifier = Modifier
@@ -243,51 +224,22 @@ fun AssetHistoryScreen(
                     onDismissRequest = { fabMenuOpen = false },
                     containerColor   = SurfaceWhite
                 ) {
-                    if (isFixedIncome) {
-                        // Menú específico para bonos y depósitos
+                    DropdownMenuItem(
+                        text        = { Text("Nuevo movimiento", color = TextPrimary) },
+                        leadingIcon = { Text("💱", fontSize = 16.sp) },
+                        onClick     = { fabMenuOpen = false; viewModel.openAddSheet() }
+                    )
+                    DropdownMenuItem(
+                        text        = { Text("Registrar dividendo", color = TextPrimary) },
+                        leadingIcon = { Text("📈", fontSize = 16.sp) },
+                        onClick     = { fabMenuOpen = false; viewModel.openDividendSheet() }
+                    )
+                    if (state.isTransferable) {
                         DropdownMenuItem(
-                            text        = { Text(if (isBond) "Adquirir bono" else "Contratar depósito", color = TextPrimary) },
-                            leadingIcon = { Text(if (isBond) "📜" else "🏦", fontSize = 16.sp) },
-                            onClick     = { fabMenuOpen = false; viewModel.openAcquireFixedIncomeSheet() }
+                            text        = { Text("Traspasar fondo", color = TextPrimary) },
+                            leadingIcon = { Text("🔄", fontSize = 16.sp) },
+                            onClick     = { fabMenuOpen = false; viewModel.openTransferSheet() }
                         )
-                        DropdownMenuItem(
-                            text        = { Text(if (isBond) "Liquidar / vender" else "Liquidar / cancelar", color = TextPrimary) },
-                            leadingIcon = { Text("✅", fontSize = 16.sp) },
-                            onClick     = { fabMenuOpen = false; viewModel.openCloseFixedIncomeSheet() }
-                        )
-                        if (isBond) {
-                            DropdownMenuItem(
-                                text        = { Text("Registrar cupón", color = TextPrimary) },
-                                leadingIcon = { Text("💰", fontSize = 16.sp) },
-                                onClick     = { fabMenuOpen = false; viewModel.openBondDepositSheet() }
-                            )
-                        }
-                        if (isDeposit) {
-                            DropdownMenuItem(
-                                text        = { Text("Registrar intereses", color = TextPrimary) },
-                                leadingIcon = { Text("🏦", fontSize = 16.sp) },
-                                onClick     = { fabMenuOpen = false; viewModel.openBondDepositSheet() }
-                            )
-                        }
-                    } else {
-                        // Menú estándar para activos normales
-                        DropdownMenuItem(
-                            text        = { Text("Nuevo movimiento", color = TextPrimary) },
-                            leadingIcon = { Text("💱", fontSize = 16.sp) },
-                            onClick     = { fabMenuOpen = false; viewModel.openAddSheet() }
-                        )
-                        DropdownMenuItem(
-                            text        = { Text("Registrar dividendo", color = TextPrimary) },
-                            leadingIcon = { Text("📈", fontSize = 16.sp) },
-                            onClick     = { fabMenuOpen = false; viewModel.openDividendSheet() }
-                        )
-                        if (state.isTransferable) {
-                            DropdownMenuItem(
-                                text        = { Text("Traspasar fondo", color = TextPrimary) },
-                                leadingIcon = { Text("🔄", fontSize = 16.sp) },
-                                onClick     = { fabMenuOpen = false; viewModel.openTransferSheet() }
-                            )
-                        }
                     }
                 }
             }
@@ -388,18 +340,6 @@ fun AssetHistoryScreen(
         )
     }
 
-    // Sheet de bono/depósito
-    if (state.showBondDepositSheet && state.asset != null) {
-        AddBondDepositBottomSheet(
-            fixedAssetName = state.asset!!.name,
-            currencyCode   = state.currencyCode,
-            onSave         = { _, grossAmount, irpfPercent, commission, date ->
-                viewModel.saveBondDeposit(grossAmount, irpfPercent, commission, date)
-            },
-            onDismiss      = { viewModel.closeBondDepositSheet() }
-        )
-    }
-
     // Sheet de traspaso entre fondos
     if (state.showTransferSheet && state.asset != null) {
         TransferFundBottomSheet(
@@ -415,32 +355,6 @@ fun AssetHistoryScreen(
         )
     }
 
-    // Sheet de adquisición de renta fija
-    if (state.showAcquireFixedIncomeSheet && state.asset != null) {
-        AcquireFixedIncomeBottomSheet(
-            asset        = state.asset!!,
-            platforms    = state.platforms,
-            currencyCode = state.currencyCode,
-            onSave       = { qty, nominal, date, platformId, feeNote, notes ->
-                viewModel.saveFixedIncomeAcquisition(qty, nominal, date, platformId, feeNote, notes)
-            },
-            onDismiss    = { viewModel.closeAcquireFixedIncomeSheet() }
-        )
-    }
-
-    // Sheet de liquidación / venta secundaria / cancelación anticipada
-    if (state.showCloseFixedIncomeSheet && state.asset != null) {
-        CloseFixedIncomeBottomSheet(
-            asset             = state.asset!!,
-            platforms         = state.platforms,
-            assetTransactions = state.transactionsAsc,
-            currencyCode      = state.currencyCode,
-            onSave            = { closeType, qty, salePrice, grossInterest, irpfPercent, commission, date, platformId, notes ->
-                viewModel.saveFixedIncomeClose(closeType, qty, salePrice, grossInterest, irpfPercent, commission, date, platformId, notes)
-            },
-            onDismiss         = { viewModel.closeCloseFixedIncomeSheet() }
-        )
-    }
 }
 
 // ─── Cabecera ────────────────────────────────────────────────────────────────

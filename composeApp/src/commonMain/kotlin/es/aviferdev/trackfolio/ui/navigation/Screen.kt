@@ -32,4 +32,9 @@ sealed class Screen(val route: String) {
         const val ARG_ASSET_ID = "assetId"
         fun buildRoute(assetId: String): String = "portfolio_asset/$assetId"
     }
+
+    data object FixedIncomeDetail : Screen("fixed_income_detail/{positionId}") {
+        const val ARG_POSITION_ID = "positionId"
+        fun buildRoute(positionId: String): String = "fixed_income_detail/$positionId"
+    }
 }

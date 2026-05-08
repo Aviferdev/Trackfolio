@@ -8,6 +8,9 @@ import es.aviferdev.trackfolio.domain.model.Asset
 import es.aviferdev.trackfolio.domain.model.AssetCategory
 import es.aviferdev.trackfolio.domain.model.AssetTransaction
 import es.aviferdev.trackfolio.domain.model.AssetTransactionType
+import es.aviferdev.trackfolio.domain.model.FixedIncomeEvent
+import es.aviferdev.trackfolio.domain.model.FixedIncomePosition
+import es.aviferdev.trackfolio.domain.model.FixedIncomeSummary
 import es.aviferdev.trackfolio.domain.model.Platform
 import es.aviferdev.trackfolio.domain.repository.AssetPlatformRepository
 import es.aviferdev.trackfolio.domain.portfolio.AssetPosition
@@ -22,6 +25,8 @@ import es.aviferdev.trackfolio.domain.usecase.assetcategory.GetAllAssetCategorie
 import es.aviferdev.trackfolio.domain.usecase.assettransaction.GetTransactionsByAccountUseCase
 import es.aviferdev.trackfolio.domain.usecase.assettransaction.SaveAssetTransactionUseCase
 import es.aviferdev.trackfolio.domain.usecase.assettransaction.SyncAssetTransactionToLedgerUseCase
+import es.aviferdev.trackfolio.domain.usecase.fixedincome.CreateFixedIncomePositionUseCase
+import es.aviferdev.trackfolio.domain.usecase.fixedincome.GetFixedIncomeSummaryUseCase
 import es.aviferdev.trackfolio.domain.usecase.platform.GetPlatformsUseCase
 import es.aviferdev.trackfolio.ui.account.AccountSession
 import es.aviferdev.trackfolio.ui.theme.CategoryPalette
@@ -81,6 +86,14 @@ data class PortfolioUiState(
     val totalPnLPercent: Double         = 0.0,
     val openPositionsCount: Int         = 0,
     val currencyCode: String            = "EUR",
+    val fixedIncomeSummary: FixedIncomeSummary? = null,
+    val nearMaturityPositions: List<es.aviferdev.trackfolio.domain.model.FixedIncomePosition> = emptyList(),
+    val combinedInvested: Double         = 0.0,
+    val combinedCurrentValue: Double     = 0.0,
+    val combinedPnL: Double             = 0.0,
+    val combinedPnLPercent: Double       = 0.0,
+    val combinedRealizedPnL: Double      = 0.0,
+    val combinedUnrealizedPnL: Double    = 0.0,
     /** Activos del catálogo (incluso sin movimientos) — para el selector. */
     val allAssets: List<Asset>          = emptyList(),
     val platforms: List<Platform>       = emptyList(),
@@ -94,15 +107,13 @@ data class PortfolioUiState(
 
     // Sheet de "Nuevo movimiento" desde el FAB del Portfolio (solo activos no renta fija)
     val showAddTxSheet: Boolean         = false,
-    // Sheet de adquisición de renta fija desde el FAB del Portfolio
-    val showAcquireFixedIncomeSheet: Boolean = false,
-    val acquireFixedIncomeAsset: Asset? = null,
     // Sheet de dividendo desde el FAB del Portfolio
     val showDividendSheet: Boolean      = false,
     val dividendAssetId: String?        = null,
-    // Sheet de bono/depósito desde el FAB del Portfolio
-    val showBondDepositSheet: Boolean   = false,
-    val bondDepositAssetId: String?     = null
+
+    // Sheet de nueva posición de renta fija
+    val showCreateFixedIncomeSheet: Boolean = false,
+    val currentAccountId: String?           = null
 )
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -119,7 +130,10 @@ class PortfolioViewModel(
     private val saveAssetTransaction: SaveAssetTransactionUseCase,
     private val syncToLedger: SyncAssetTransactionToLedgerUseCase,
     private val assetPlatformRepository: AssetPlatformRepository,
-    private val session: AccountSession
+    private val session: AccountSession,
+    private val getFixedIncomeSummary: GetFixedIncomeSummaryUseCase? = null,
+    private val getNearMaturityPositions: es.aviferdev.trackfolio.domain.usecase.fixedincome.GetNearMaturityPositionsUseCase? = null,
+    private val createFixedIncomePosition: CreateFixedIncomePositionUseCase? = null
 ) : ViewModel() {
 
     private val _sheetState = MutableStateFlow(SheetState())
@@ -128,12 +142,9 @@ class PortfolioViewModel(
         val showUpdatePriceSheet: Boolean = false,
         val pricingAsset: Asset? = null,
         val showAddTxSheet: Boolean = false,
-        val showAcquireFixedIncomeSheet: Boolean = false,
-        val acquireFixedIncomeAsset: Asset? = null,
         val showDividendSheet: Boolean = false,
         val dividendAssetId: String? = null,
-        val showBondDepositSheet: Boolean = false,
-        val bondDepositAssetId: String? = null,
+        val showCreateFixedIncomeSheet: Boolean = false,
         val error: String? = null
     )
 
@@ -145,26 +156,76 @@ class PortfolioViewModel(
         val platforms: List<Platform>
     )
 
+    private data class BasicPortfolioDataWithFI(
+        val assets: List<Asset>,
+        val categories: List<AssetCategory>,
+        val account: Account?,
+        val transactions: List<AssetTransaction>,
+        val platforms: List<Platform>,
+        val fiSummary: FixedIncomeSummary?,
+        val nearMaturityPositions: List<es.aviferdev.trackfolio.domain.model.FixedIncomePosition>
+    )
+
     val portfolioState: StateFlow<PortfolioUiState> = session.selectedAccountId
         .flatMapLatest { accountId ->
             if (accountId == null) {
                 flowOf(PortfolioUiState(isLoading = false))
             } else {
-                combine(
+                val fiFlow = if (getFixedIncomeSummary != null) {
+                    getFixedIncomeSummary(accountId)
+                } else flowOf(null)
+
+                val nearMaturityFlow = if (getNearMaturityPositions != null) {
+                    getNearMaturityPositions(accountId)
+                } else flowOf(emptyList())
+
+                val baseDataFlow = combine(
                     getAssetsByAccount(accountId),
                     getAssetCategoriesIncludingArchived(),
                     getAccountById(accountId),
                     getTransactionsByAccount(accountId),
-                    getPlatforms(),
+                    getPlatforms()
                 ) { assets, categories, account, txs, platforms ->
                     BasicPortfolioData(assets, categories, account, txs, platforms)
+                }
+
+                combine(baseDataFlow, fiFlow, nearMaturityFlow) { baseData, fiSummary, nearMaturity ->
+                    BasicPortfolioDataWithFI(
+                        assets = baseData.assets,
+                        categories = baseData.categories,
+                        account = baseData.account,
+                        transactions = baseData.transactions,
+                        platforms = baseData.platforms,
+                        fiSummary = fiSummary,
+                        nearMaturityPositions = nearMaturity
+                    )
                 }.flatMapLatest { basicData ->
                     val assetIds = basicData.assets.map { it.id }
                     if (assetIds.isEmpty()) {
-                        flowOf(buildState(basicData.assets, basicData.categories, basicData.account, basicData.transactions, basicData.platforms, emptyMap()))
+                        flowOf(buildState(
+                            assets = basicData.assets,
+                            categories = basicData.categories,
+                            account = basicData.account,
+                            transactions = basicData.transactions,
+                            platforms = basicData.platforms,
+                            platformsByAsset = emptyMap(),
+                            fiSummary = basicData.fiSummary,
+                            nearMaturityPositions = basicData.nearMaturityPositions,
+                            accountId = basicData.account?.id
+                        ))
                     } else {
                         assetPlatformRepository.getPlatformsByAssets(assetIds).map { platformsByAsset ->
-                            buildState(basicData.assets, basicData.categories, basicData.account, basicData.transactions, basicData.platforms, platformsByAsset)
+                            buildState(
+                                assets = basicData.assets,
+                                categories = basicData.categories,
+                                account = basicData.account,
+                                transactions = basicData.transactions,
+                                platforms = basicData.platforms,
+                                platformsByAsset = platformsByAsset,
+                                fiSummary = basicData.fiSummary,
+                                nearMaturityPositions = basicData.nearMaturityPositions,
+                                accountId = basicData.account?.id
+                            )
                         }
                     }
                 }
@@ -175,12 +236,9 @@ class PortfolioViewModel(
                 showUpdatePriceSheet        = sheets.showUpdatePriceSheet,
                 pricingAsset                = sheets.pricingAsset,
                 showAddTxSheet              = sheets.showAddTxSheet,
-                showAcquireFixedIncomeSheet = sheets.showAcquireFixedIncomeSheet,
-                acquireFixedIncomeAsset     = sheets.acquireFixedIncomeAsset,
                 showDividendSheet           = sheets.showDividendSheet,
                 dividendAssetId             = sheets.dividendAssetId,
-                showBondDepositSheet        = sheets.showBondDepositSheet,
-                bondDepositAssetId          = sheets.bondDepositAssetId,
+                showCreateFixedIncomeSheet  = sheets.showCreateFixedIncomeSheet,
                 error                       = sheets.error
             )
         }
@@ -204,7 +262,10 @@ class PortfolioViewModel(
         account: Account?,
         transactions: List<AssetTransaction>,
         platforms: List<Platform>,
-        platformsByAsset: Map<String, List<Platform>>
+        platformsByAsset: Map<String, List<Platform>>,
+        fiSummary: FixedIncomeSummary?,
+        nearMaturityPositions: List<es.aviferdev.trackfolio.domain.model.FixedIncomePosition>,
+        accountId: String? = null
     ): PortfolioUiState {
         // Agrupar movimientos por activo.
         val txByAsset: Map<String, List<AssetTransaction>> =
@@ -270,9 +331,33 @@ class PortfolioViewModel(
         val totalUnrealizedPnL = groups.sumOf { it.totalUnrealizedPnL }
         val totalPnL           = totalRealizedPnL + totalUnrealizedPnL
 
-        val distribution: List<CategorySlice> = if (totalCurrentValue <= 0.0) {
+        val fiTotalPrincipal    = fiSummary?.totalPrincipal ?: 0.0
+        val fiTotalCurrentValue = fiSummary?.totalCurrentValue ?: 0.0
+        val fiTotalNetProfit    = fiSummary?.totalNetProfit ?: 0.0
+
+        val combinedInvested     = totalInvested + fiTotalPrincipal
+        val combinedCurrentValue = totalCurrentValue + fiTotalCurrentValue
+        val combinedPnL          = totalPnL + fiTotalNetProfit
+        val combinedPnLPercent    = if (combinedInvested > 0.0) (combinedPnL / combinedInvested) * 100.0 else 0.0
+
+        val distribution: List<CategorySlice> = if (combinedCurrentValue <= 0.0) {
             emptyList()
         } else {
+            val slices = mutableListOf<CategorySlice>()
+
+            if (fiTotalCurrentValue > 0.0) {
+                slices.add(
+                    CategorySlice(
+                        categoryId = "fixed_income",
+                        name       = "Renta fija",
+                        icon       = "🏦",
+                        value      = fiTotalCurrentValue,
+                        percent    = (fiTotalCurrentValue / combinedCurrentValue) * 100.0,
+                        color      = Color(0xFF4CAF50)
+                    )
+                )
+            }
+
             groups
                 .filter { it.totalCurrentValue > 0.0 }
                 .mapIndexed { idx, g ->
@@ -281,18 +366,14 @@ class PortfolioViewModel(
                         name       = g.displayName,
                         icon       = g.displayIcon,
                         value      = g.totalCurrentValue,
-                        percent    = (g.totalCurrentValue / totalCurrentValue) * 100.0,
+                        percent    = (g.totalCurrentValue / combinedCurrentValue) * 100.0,
                         color      = colorForGroup(g, idx)
                     )
                 }
-                .sortedByDescending { it.percent }
-        }
+                .let { slices.addAll(it) }
 
-        // Para el % total tomamos como base el invertido remanente — es lo
-        // que el usuario tiene "vivo". Si solo quedan posiciones cerradas y
-        // todo se vendió, mostramos el % sobre el bruto invertido histórico.
-        val pnlBase = if (totalInvested > 0.0) totalInvested
-                      else closedRows.sumOf { row -> row.position.realizedPnL.let { 0.0 } } // fallback noop
+            slices.sortedByDescending { it.percent }
+        }
 
         return PortfolioUiState(
             groups             = groups,
@@ -309,7 +390,16 @@ class PortfolioViewModel(
             allAssets          = assets,
             platforms          = platforms,
             platformsByAsset  = platformsByAsset,
-            isLoading          = false
+            isLoading          = false,
+            fixedIncomeSummary = fiSummary,
+            nearMaturityPositions = nearMaturityPositions,
+            combinedInvested   = combinedInvested,
+            combinedCurrentValue = combinedCurrentValue,
+            combinedPnL        = combinedPnL,
+            combinedPnLPercent = combinedPnLPercent,
+            combinedRealizedPnL = totalRealizedPnL + (fiSummary?.totalCollectedInterest ?: 0.0),
+            combinedUnrealizedPnL = totalUnrealizedPnL + (fiSummary?.totalAccruedInterest ?: 0.0),
+            currentAccountId = accountId
         )
     }
 
@@ -346,56 +436,6 @@ class PortfolioViewModel(
         _sheetState.value = _sheetState.value.copy(showAddTxSheet = false)
     }
 
-    // ── Sheet de adquisición de renta fija desde Portfolio ─────────────
-    fun openAcquireFixedIncomeSheet(asset: Asset) {
-        _sheetState.value = _sheetState.value.copy(
-            showAcquireFixedIncomeSheet = true,
-            acquireFixedIncomeAsset = asset
-        )
-    }
-
-    fun closeAcquireFixedIncomeSheet() {
-        _sheetState.value = _sheetState.value.copy(
-            showAcquireFixedIncomeSheet = false,
-            acquireFixedIncomeAsset = null
-        )
-    }
-
-    fun addFixedIncomeAcquisition(
-        assetId: String,
-        quantity: Double,
-        nominalPerUnit: Double,
-        date: Long,
-        platformId: String,
-        feeNote: String?,
-        notes: String?
-    ) {
-        viewModelScope.launch {
-            val now = Clock.System.now().toEpochMilliseconds()
-            val tx = AssetTransaction(
-                id           = "tx_${now}_${(0..9999).random()}",
-                assetId      = assetId,
-                type         = AssetTransactionType.BUY,
-                quantity     = quantity,
-                pricePerUnit = nominalPerUnit,
-                date         = date,
-                platformId   = platformId,
-                feeNote      = feeNote?.ifBlank { null },
-                notes        = notes?.ifBlank { null },
-                createdAt    = now
-            )
-            saveAssetTransaction(tx)
-                .onSuccess {
-                    val asset = portfolioState.value.allAssets.find { it.id == assetId }
-                    if (asset != null) {
-                        syncToLedger.sync(assetTx = tx, accountId = asset.accountId, assetName = asset.name)
-                    }
-                    closeAcquireFixedIncomeSheet()
-                }
-                .onFailure { _sheetState.value = _sheetState.value.copy(error = it.message) }
-        }
-    }
-
     fun addTransaction(
         assetId: String,
         type: AssetTransactionType,
@@ -422,7 +462,6 @@ class PortfolioViewModel(
             )
             saveAssetTransaction(tx)
                 .onSuccess {
-                    // Sincronizar con el libro de liquidez
                     val asset = portfolioState.value.allAssets.find { it.id == assetId }
                     if (asset != null) {
                         syncToLedger.sync(
@@ -480,41 +519,21 @@ class PortfolioViewModel(
         }
     }
 
-    // ── Bonos / Depósitos ─────────────────────────────────────────
-    fun openBondDepositSheet() {
-        _sheetState.value = _sheetState.value.copy(showBondDepositSheet = true, bondDepositAssetId = null)
+    // ── Renta fija: nueva posición ──────────────────────────────────────
+    fun openCreateFixedIncomeSheet() {
+        _sheetState.value = _sheetState.value.copy(showCreateFixedIncomeSheet = true)
     }
 
-    fun closeBondDepositSheet() {
-        _sheetState.value = _sheetState.value.copy(showBondDepositSheet = false, bondDepositAssetId = null)
+    fun closeCreateFixedIncomeSheet() {
+        _sheetState.value = _sheetState.value.copy(showCreateFixedIncomeSheet = false)
     }
 
-    fun saveBondDeposit(
-        assetId: String,
-        grossAmount: Double,
-        irpfPercent: Double,
-        commissionAmount: Double,
-        date: Long
-    ) {
+    fun saveFixedIncomePosition(position: FixedIncomePosition, event: FixedIncomeEvent) {
         viewModelScope.launch {
-            val asset = portfolioState.value.allAssets.find { it.id == assetId }
-            if (asset == null) {
-                _sheetState.value = _sheetState.value.copy(error = "Activo no encontrado")
-                return@launch
-            }
-            val bondDepositId = "bond_${Clock.System.now().toEpochMilliseconds()}_${(0..9999).random()}"
-            val result = syncToLedger.syncBondDeposit(
-                bondDepositId    = bondDepositId,
-                accountId        = asset.accountId,
-                assetName        = asset.name,
-                grossAmount      = grossAmount,
-                irpfPercent      = irpfPercent,
-                commissionAmount = commissionAmount,
-                date             = date
-            )
-            result
-                .onSuccess { closeBondDepositSheet() }
-                .onFailure { _sheetState.value = _sheetState.value.copy(error = it.message) }
+            createFixedIncomePosition?.invoke(position, event)
+                ?.onSuccess { closeCreateFixedIncomeSheet() }
+                ?.onFailure { _sheetState.value = _sheetState.value.copy(error = it.message) }
+                ?: run { _sheetState.value = _sheetState.value.copy(error = "Error al crear posición de renta fija") }
         }
     }
 

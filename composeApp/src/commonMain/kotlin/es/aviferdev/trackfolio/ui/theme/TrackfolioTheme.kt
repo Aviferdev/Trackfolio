@@ -16,8 +16,14 @@ val PrimaryDark    = Color(0xFF3D6EAD)
 /** Verde para ingresos / valores positivos. */
 val IncomeGreen    = Color(0xFF66BB6A)
 
+/** Alias para PositiveGreen (compatibilidad). */
+val PositiveGreen = IncomeGreen
+
 /** Rojo para gastos / errores / acciones destructivas. */
 val ExpenseRed     = Color(0xFFEF5350)
+
+/** Alias para NegativeRed (compatibilidad). */
+val NegativeRed = ExpenseRed
 
 /** Fondo principal de pantallas. */
 val BackgroundGray = Color(0xFF111318)

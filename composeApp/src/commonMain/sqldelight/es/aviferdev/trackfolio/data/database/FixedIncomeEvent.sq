@@ -1,0 +1,53 @@
+-- FixedIncomeEventEntity: eventos/movimientos de renta fija.
+-- Reemplaza AssetTransactionEntity para bonos/depósitos y las Transaction de rendimiento.
+
+CREATE TABLE FixedIncomeEventEntity (
+    id               TEXT    NOT NULL PRIMARY KEY,
+    positionId       TEXT    NOT NULL,
+    type             TEXT    NOT NULL,
+    grossAmount      REAL    NOT NULL,
+    irpfPercent      REAL    NOT NULL DEFAULT 0.0,
+    commissionAmount REAL    NOT NULL DEFAULT 0.0,
+    netAmount        REAL    NOT NULL,
+    date             INTEGER NOT NULL,
+    notes            TEXT,
+    createdAt        INTEGER NOT NULL,
+    FOREIGN KEY (positionId) REFERENCES FixedIncomePositionEntity(id) ON DELETE CASCADE
+);
+
+CREATE INDEX idx_fie_position ON FixedIncomeEventEntity(positionId);
+CREATE INDEX idx_fie_date     ON FixedIncomeEventEntity(date);
+
+-- ─── Lectura ──────────────────────────────────────────────────────────────────
+
+selectByPosition:
+SELECT * FROM FixedIncomeEventEntity
+WHERE positionId = :positionId
+ORDER BY date DESC;
+
+selectByAccount:
+SELECT e.* FROM FixedIncomeEventEntity e
+INNER JOIN FixedIncomePositionEntity p ON p.id = e.positionId
+WHERE p.accountId = :accountId
+ORDER BY e.date DESC;
+
+totalCollectedByPosition:
+SELECT COALESCE(SUM(netAmount), 0.0) FROM FixedIncomeEventEntity
+WHERE positionId = :positionId
+  AND type IN ('COUPON', 'MATURITY_SETTLEMENT');
+
+-- ─── Escritura ────────────────────────────────────────────────────────────────
+
+insert:
+INSERT INTO FixedIncomeEventEntity(id, positionId, type, grossAmount, irpfPercent, commissionAmount, netAmount, date, notes, createdAt)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+update:
+UPDATE FixedIncomeEventEntity
+SET type = :type, grossAmount = :grossAmount, irpfPercent = :irpfPercent,
+    commissionAmount = :commissionAmount, netAmount = :netAmount,
+    date = :date, notes = :notes
+WHERE id = :id;
+
+delete:
+DELETE FROM FixedIncomeEventEntity WHERE id = :id;

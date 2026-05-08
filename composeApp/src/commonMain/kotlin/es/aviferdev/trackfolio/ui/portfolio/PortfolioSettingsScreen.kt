@@ -179,8 +179,96 @@ fun PortfolioSettingsScreen(
                 }
             }
 
+            // ── Sección: Plataformas ───────────────────────────────────────
+            item { Spacer(Modifier.height(8.dp)) }
+            item {
+                SectionHeader(
+                    title       = "PLATAFORMAS",
+                    actionLabel = "Añadir",
+                    onAction    = { platformViewModel.openAddSheet() }
+                )
+            }
+            item {
+                SettingsGroupCard {
+                    if (platformState.platforms.isEmpty()) {
+                        Text(
+                            "Sin plataformas. Añade brokers, exchanges o bancos para asociarlos a tus movimientos.",
+                            fontSize    = 13.sp,
+                            color       = TextSecondary,
+                            modifier    = Modifier.padding(horizontal = 16.dp, vertical = 18.dp)
+                        )
+                    } else {
+                        platformState.platforms.forEachIndexed { index, platform ->
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clickable { platformViewModel.openEditSheet(platform) }
+                                    .padding(horizontal = 16.dp, vertical = 14.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(platform.icon, fontSize = 18.sp, modifier = Modifier.size(28.dp))
+                                Spacer(Modifier.width(12.dp))
+                                Column(modifier = Modifier.weight(1f)) {
+                                    Text(
+                                        text     = platform.name,
+                                        fontSize = 15.sp,
+                                        color    = TextPrimary
+                                    )
+                                    if (!platform.notes.isNullOrBlank()) {
+                                        Text(
+                                            text     = platform.notes!!,
+                                            fontSize = 11.sp,
+                                            color    = TextSecondary,
+                                            maxLines = 1
+                                        )
+                                    }
+                                }
+                                Text("›", fontSize = 18.sp, color = TextSecondary)
+                            }
+                            if (index < platformState.platforms.lastIndex) {
+                                HorizontalDivider(
+                                    color     = BorderGray,
+                                    thickness = 0.5.dp,
+                                    modifier  = Modifier.padding(start = 52.dp)
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+
             item { Spacer(Modifier.height(20.dp)) }
         }
+    }
+
+    // ── Sheets de plataforma ────────────────────────────────────────────────
+    if (platformState.showAddSheet) {
+        AddEditPlatformSheet(
+            initial   = null,
+            onSave    = { name, icon, notes -> platformViewModel.addPlatform(name, icon, notes) },
+            onDismiss = { platformViewModel.closeAddSheet() }
+        )
+    }
+    platformState.editing?.let { platform ->
+        AddEditPlatformSheet(
+            initial   = platform,
+            onSave    = { name, icon, notes -> platformViewModel.renamePlatform(platform.id, name, icon, notes) },
+            onDismiss = { platformViewModel.closeEditSheet() }
+        )
+    }
+    platformState.error?.let { msg ->
+        AlertDialog(
+            onDismissRequest = { platformViewModel.clearError() },
+            containerColor   = SurfaceWhite,
+            title = { Text("Error", fontSize = 17.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary) },
+            text  = { Text(msg, fontSize = 14.sp, color = TextSecondary) },
+            confirmButton = {
+                TextButton(onClick = { platformViewModel.clearError() }) {
+                    Text("Aceptar", color = PrimaryDark, fontWeight = FontWeight.Medium)
+                }
+            },
+            shape = RoundedCornerShape(16.dp)
+        )
     }
 }
 

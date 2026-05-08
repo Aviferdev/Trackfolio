@@ -16,9 +16,21 @@ actual class DatabaseDriverFactory(private val context: Context) {
                     val schemaVersion = TrackfolioDatabase.Schema.version
                     if (existingVersion != schemaVersion) {
                         context.deleteDatabase(dbName)
+                        val parent = dbFile.parentFile
+                        if (parent != null) {
+                            listOf("$dbName-wal", "$dbName-shm", "$dbName-journal").forEach { name ->
+                                java.io.File(parent, name).delete()
+                            }
+                        }
                     }
                 } catch (_: Exception) {
                     context.deleteDatabase(dbName)
+                    val parent = dbFile.parentFile
+                    if (parent != null) {
+                        listOf("$dbName-wal", "$dbName-shm", "$dbName-journal").forEach { name ->
+                            java.io.File(parent, name).delete()
+                        }
+                    }
                 }
             }
         }

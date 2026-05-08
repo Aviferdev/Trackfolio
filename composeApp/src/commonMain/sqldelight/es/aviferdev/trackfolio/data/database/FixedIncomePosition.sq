@@ -1,0 +1,90 @@
+-- FixedIncomePositionEntity: posiciones de renta fija (bonos y depósitos).
+-- Reemplaza el uso de AssetEntity para renta fija.
+-- Nunca se borran, solo se archivan.
+
+CREATE TABLE FixedIncomePositionEntity (
+    id                  TEXT    NOT NULL PRIMARY KEY,
+    accountId           TEXT    NOT NULL,
+    name                TEXT    NOT NULL,
+    ticker              TEXT    NOT NULL DEFAULT '',
+    type                TEXT    NOT NULL,
+    notes               TEXT,
+    principal           REAL    NOT NULL,
+    quantity            REAL    NOT NULL DEFAULT 1.0,
+    nominalPerUnit      REAL    NOT NULL,
+    interestRate        REAL    NOT NULL,
+    interestFrequency   TEXT    NOT NULL DEFAULT 'AT_MATURITY',
+    startDate           INTEGER NOT NULL,
+    maturityDate        INTEGER NOT NULL,
+    platformId          TEXT    NOT NULL,
+    issuerId            TEXT,
+    autoRenew           INTEGER NOT NULL DEFAULT 0,
+    archived            INTEGER NOT NULL DEFAULT 0,
+    closedAt            INTEGER,
+    closeType           TEXT,
+    feeNote             TEXT,
+    createdAt           INTEGER NOT NULL,
+    FOREIGN KEY (accountId)  REFERENCES AccountEntity(id)  ON DELETE CASCADE,
+    FOREIGN KEY (platformId) REFERENCES PlatformEntity(id) ON DELETE RESTRICT
+);
+
+CREATE INDEX idx_fi_account  ON FixedIncomePositionEntity(accountId);
+CREATE INDEX idx_fi_archived ON FixedIncomePositionEntity(archived);
+CREATE INDEX idx_fi_maturity ON FixedIncomePositionEntity(maturityDate);
+
+-- ─── Lectura ──────────────────────────────────────────────────────────────────
+
+selectAll:
+SELECT * FROM FixedIncomePositionEntity
+WHERE archived = 0
+ORDER BY createdAt DESC;
+
+selectByAccount:
+SELECT * FROM FixedIncomePositionEntity
+WHERE accountId = :accountId AND archived = 0
+ORDER BY maturityDate ASC;
+
+selectOpenByAccount:
+SELECT * FROM FixedIncomePositionEntity
+WHERE accountId = :accountId AND archived = 0 AND closedAt IS NULL
+ORDER BY maturityDate ASC;
+
+selectById:
+SELECT * FROM FixedIncomePositionEntity WHERE id = :id;
+
+selectNearMaturity:
+SELECT * FROM FixedIncomePositionEntity
+WHERE accountId = :accountId
+  AND closedAt IS NULL
+  AND maturityDate <= :thresholdDate
+  AND archived = 0
+ORDER BY maturityDate ASC;
+
+-- ─── Escritura ────────────────────────────────────────────────────────────────
+
+insert:
+INSERT INTO FixedIncomePositionEntity(
+    id, accountId, name, ticker, type, notes, principal, quantity,
+    nominalPerUnit, interestRate, interestFrequency, startDate, maturityDate,
+    platformId, issuerId, autoRenew, archived, closedAt, closeType, feeNote, createdAt
+) VALUES (
+    ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, NULL, NULL, ?, ?
+);
+
+update:
+UPDATE FixedIncomePositionEntity
+SET name = :name, ticker = :ticker, type = :type, notes = :notes,
+    principal = :principal, quantity = :quantity, nominalPerUnit = :nominalPerUnit,
+    interestRate = :interestRate, interestFrequency = :interestFrequency,
+    startDate = :startDate, maturityDate = :maturityDate,
+    platformId = :platformId, issuerId = :issuerId,
+    autoRenew = :autoRenew, feeNote = :feeNote
+WHERE id = :id;
+
+close:
+UPDATE FixedIncomePositionEntity
+SET closedAt = :closedAt, closeType = :closeType
+WHERE id = :id;
+
+archive:
+UPDATE FixedIncomePositionEntity SET archived = 1 WHERE id = :id;

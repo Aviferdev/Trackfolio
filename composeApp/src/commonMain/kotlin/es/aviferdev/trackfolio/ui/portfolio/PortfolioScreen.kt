@@ -27,8 +27,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import es.aviferdev.trackfolio.domain.model.FixedIncomeCategories
 import es.aviferdev.trackfolio.ui.account.AccountViewModel
+import es.aviferdev.trackfolio.ui.fixedincome.CreateFixedIncomeBottomSheet
+import es.aviferdev.trackfolio.ui.fixedincome.FixedIncomeSection
 import es.aviferdev.trackfolio.ui.theme.*
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.math.abs
@@ -48,6 +49,7 @@ import kotlin.math.abs
 fun PortfolioScreen(
     onAssetClick: (String) -> Unit = {},
     onNavigateToSettings: () -> Unit = {},
+    onFixedIncomeClick: (String) -> Unit = {},
     viewModel: PortfolioViewModel = koinViewModel(),
     catalogViewModel: AssetCatalogViewModel = koinViewModel(),
     platformViewModel: PlatformViewModel = koinViewModel(),
@@ -87,6 +89,19 @@ fun PortfolioScreen(
                     balancesHidden     = balancesHidden,
                     modifier           = Modifier.padding(horizontal = 20.dp, vertical = 8.dp)
                 )
+            }
+
+            val fiSummary = state.fixedIncomeSummary
+            if (fiSummary != null && fiSummary.positions.isNotEmpty()) {
+                item {
+                    FixedIncomeSection(
+                        summary       = fiSummary,
+                        onPositionClick = onFixedIncomeClick,
+                        currencyCode  = state.currencyCode,
+                        balancesHidden = balancesHidden,
+                        modifier      = Modifier.padding(vertical = 8.dp)
+                    )
+                }
             }
 
             // ── Donut chart de distribución por categoría ────────────────────
@@ -198,26 +213,11 @@ fun PortfolioScreen(
                     leadingIcon = { Text("↗", fontSize = 16.sp) },
                     onClick     = { fabMenuOpen = false; viewModel.openAddTransactionSheet() }
                 )
-                // Solo mostrar si hay activos de renta fija en el catálogo
-                if (state.allAssets.any { it.isFixedIncome }) {
-                    DropdownMenuItem(
-                        text        = { Text("Adquirir bono / depósito", color = TextPrimary) },
-                        leadingIcon = { Text("📜", fontSize = 16.sp) },
-                        onClick     = {
-                            fabMenuOpen = false
-                            // Si solo hay uno de renta fija, abrirlo directamente
-                            val fixedIncomeAssets = state.allAssets.filter { it.isFixedIncome }
-                            if (fixedIncomeAssets.size == 1) {
-                                viewModel.openAcquireFixedIncomeSheet(fixedIncomeAssets.first())
-                            } else {
-                                // Abrir el sheet genérico filtrado a renta fija
-                                // Por ahora abrimos con el primero; el selector está en la sheet
-                                viewModel.openAcquireFixedIncomeSheet(fixedIncomeAssets.first())
-                            }
-                        }
-                    )
-                }
-                
+                DropdownMenuItem(
+                    text        = { Text("Nuevo bono/depósito", color = TextPrimary) },
+                    leadingIcon = { Text("🏦", fontSize = 16.sp) },
+                    onClick     = { fabMenuOpen = false; viewModel.openCreateFixedIncomeSheet() }
+                )
             }
         }
     }
@@ -229,7 +229,7 @@ fun PortfolioScreen(
         AddEditAssetTransactionBottomSheet(
             transaction       = null,
             fixedAsset        = null,
-            allAssets         = state.allAssets.filter { !it.isFixedIncome },
+            allAssets         = state.allAssets,
             platforms         = state.platforms,
             platformsByAsset  = state.platformsByAsset,
             categories        = availableCategories,
@@ -243,24 +243,13 @@ fun PortfolioScreen(
         )
     }
 
-    // Adquisición de bono/depósito (desde FAB de Portfolio)
-    if (state.showAcquireFixedIncomeSheet && state.acquireFixedIncomeAsset != null) {
-        AcquireFixedIncomeBottomSheet(
-            asset        = state.acquireFixedIncomeAsset!!,
-            platforms    = state.platforms,
-            currencyCode = state.currencyCode,
-            onSave       = { qty, nominal, date, platformId, feeNote, notes ->
-                viewModel.addFixedIncomeAcquisition(
-                    assetId        = state.acquireFixedIncomeAsset!!.id,
-                    quantity       = qty,
-                    nominalPerUnit = nominal,
-                    date           = date,
-                    platformId     = platformId,
-                    feeNote        = feeNote,
-                    notes          = notes
-                )
-            },
-            onDismiss    = { viewModel.closeAcquireFixedIncomeSheet() }
+    // Sheet de nueva posición de renta fija
+    if (state.showCreateFixedIncomeSheet && state.currentAccountId != null) {
+        CreateFixedIncomeBottomSheet(
+            platforms = state.platforms,
+            accountId = state.currentAccountId!!,
+            onSave    = { position, event -> viewModel.saveFixedIncomePosition(position, event) },
+            onDismiss = { viewModel.closeCreateFixedIncomeSheet() }
         )
     }
 
@@ -653,7 +642,6 @@ private fun AssetCard(
     val asset    = row.asset
     val pos      = row.position
     val symbol   = currencySymbol(currencyCode)
-    val isFixedIncome = FixedIncomeCategories.isFixedIncome(asset.assetCategoryId)
     val pnlColor = when {
         pos.totalPnL > 0 -> IncomeGreen
         pos.totalPnL < 0 -> ExpenseRed
@@ -752,16 +740,13 @@ private fun AssetCard(
 
             Spacer(Modifier.width(4.dp))
 
-            // Botón rápido de actualizar precio (no aplica a renta fija)
-            if (!isFixedIncome) {
-                IconButton(onClick = onUpdatePrice, modifier = Modifier.size(32.dp)) {
-                    Icon(
-                        Icons.Outlined.Refresh,
-                        contentDescription = "Actualizar precio",
-                        modifier = Modifier.size(16.dp),
-                        tint     = PrimaryDark
-                    )
-                }
+            IconButton(onClick = onUpdatePrice, modifier = Modifier.size(32.dp)) {
+                Icon(
+                    Icons.Outlined.Refresh,
+                    contentDescription = "Actualizar precio",
+                    modifier = Modifier.size(16.dp),
+                    tint     = PrimaryDark
+                )
             }
         }
     }

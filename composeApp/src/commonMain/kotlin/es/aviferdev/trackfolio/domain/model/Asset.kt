@@ -27,8 +27,4 @@ data class Asset(
     val maturityDate: Long? = null
 ) {
     val hasCurrentPrice: Boolean get() = currentPrice != null
-
-    val isFixedIncome: Boolean get() = FixedIncomeCategories.isFixedIncome(assetCategoryId)
-    val isBond: Boolean get() = FixedIncomeCategories.isBond(assetCategoryId)
-    val isDeposit: Boolean get() = FixedIncomeCategories.isDeposit(assetCategoryId)
 }

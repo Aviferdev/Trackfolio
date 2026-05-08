@@ -20,9 +20,7 @@ class DatabaseInitializer(
             AssetCategory(id = "fixed_cat_etfs",         name = "ETFs",                  icon = "📈", sortOrder = 1, createdAt = 0),
             AssetCategory(id = "fixed_cat_funds",        name = "Fondos de inversión",   icon = "💼", sortOrder = 2, createdAt = 0),
             AssetCategory(id = "fixed_cat_crypto",       name = "Criptomonedas",         icon = "₿",  sortOrder = 3, createdAt = 0),
-            AssetCategory(id = "fixed_cat_bonds",        name = "Bonos / Deuda pública", icon = "📜", sortOrder = 4, createdAt = 0),
-            AssetCategory(id = "fixed_cat_deposits",     name = "Depósitos bancarios",   icon = "🏦", sortOrder = 5, createdAt = 0),
-            AssetCategory(id = "fixed_cat_pensions",     name = "Planes de pensiones",   icon = "🛡", sortOrder = 6, createdAt = 0),
+            AssetCategory(id = "fixed_cat_pensions",     name = "Planes de pensiones",   icon = "🛡", sortOrder = 4, createdAt = 0),
             AssetCategory(id = "fixed_cat_commodities",  name = "Materias primas",       icon = "🪙", sortOrder = 7, createdAt = 0),
             AssetCategory(id = "fixed_cat_crowdlending", name = "Crowdlending",          icon = "🤝", sortOrder = 8, createdAt = 0),
         )

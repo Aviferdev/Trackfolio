@@ -22,6 +22,7 @@ import es.aviferdev.trackfolio.domain.model.IncomeType
 import es.aviferdev.trackfolio.ui.annual.AnnualSummaryScreen
 import es.aviferdev.trackfolio.ui.debt.DebtListScreen
 import es.aviferdev.trackfolio.ui.fiscal.FiscalReportScreen
+import es.aviferdev.trackfolio.ui.fixedincome.FixedIncomeDetailScreen
 import es.aviferdev.trackfolio.ui.home.HomeScreen
 import es.aviferdev.trackfolio.ui.portfolio.AssetCategoryDetailScreen
 import es.aviferdev.trackfolio.ui.portfolio.AssetDetailScreen
@@ -119,6 +120,11 @@ fun TrackfolioNavHost() {
                         navController.navigate(Screen.PortfolioSettings.route) {
                             launchSingleTop = true
                         }
+                    },
+                    onFixedIncomeClick = { positionId ->
+                        navController.navigate(Screen.FixedIncomeDetail.buildRoute(positionId)) {
+                            launchSingleTop = true
+                        }
                     }
                 )
             }
@@ -185,6 +191,9 @@ fun TrackfolioNavHost() {
                         navController.navigate(Screen.AssetCategoryDetail.buildRoute(categoryId)) {
                             launchSingleTop = true
                         }
+                    },
+                    onNavigateToPlatformDetail = { platform ->
+                        // TODO: Implementar navegación a detalle de plataforma
                     }
                 )
             }
@@ -232,6 +241,18 @@ fun TrackfolioNavHost() {
                 AssetDetailScreen(
                     assetId = assetId,
                     onBack  = { navController.popBackStack() }
+                )
+            }
+            composable(
+                route     = Screen.FixedIncomeDetail.route,
+                arguments = listOf(
+                    navArgument(Screen.FixedIncomeDetail.ARG_POSITION_ID) { type = NavType.StringType }
+                )
+            ) { backStackEntry ->
+                val positionId = backStackEntry.arguments?.getString(Screen.FixedIncomeDetail.ARG_POSITION_ID).orEmpty()
+                FixedIncomeDetailScreen(
+                    positionId = positionId,
+                    onBack     = { navController.popBackStack() }
                 )
             }
         }

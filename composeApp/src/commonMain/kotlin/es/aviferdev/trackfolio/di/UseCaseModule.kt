@@ -48,6 +48,7 @@ import es.aviferdev.trackfolio.domain.usecase.reconciliation.BalanceAlreadyMatch
 import es.aviferdev.trackfolio.domain.usecase.reconciliation.GetReconciliationReminderIntervalUseCase
 import es.aviferdev.trackfolio.domain.usecase.reconciliation.ReconcileBalanceUseCase
 import es.aviferdev.trackfolio.domain.usecase.reconciliation.ShouldShowReconciliationReminderUseCase
+import es.aviferdev.trackfolio.domain.usecase.fixedincome.*
 import es.aviferdev.trackfolio.domain.usecase.fiscal.GetFiscalReportDataUseCase
 import es.aviferdev.trackfolio.domain.usecase.home.GetHomeBalanceUseCase
 import es.aviferdev.trackfolio.domain.usecase.issuer.ArchiveIssuerUseCase
@@ -73,6 +74,7 @@ import es.aviferdev.trackfolio.ui.account.AccountViewModel
 import es.aviferdev.trackfolio.ui.annual.AnnualViewModel
 import es.aviferdev.trackfolio.ui.debt.DebtViewModel
 import es.aviferdev.trackfolio.ui.fiscal.FiscalReportViewModel
+import es.aviferdev.trackfolio.ui.fixedincome.FixedIncomeDetailViewModel
 import es.aviferdev.trackfolio.ui.home.AddTransactionViewModel
 import es.aviferdev.trackfolio.ui.home.HomeViewModel
 import es.aviferdev.trackfolio.ui.portfolio.AssetCatalogViewModel
@@ -179,10 +181,23 @@ val useCaseModule = module {
     factory { RenameIssuerUseCase(get()) }
     factory { ArchiveIssuerUseCase(get()) }
 
-    // ── Reconciliation ─────────────────────────────────────────────────────────
+    // ── Reconciliation ──────────────────────────────────────────────────────────
     factory { ReconcileBalanceUseCase(get(), get()) }
     factory { ShouldShowReconciliationReminderUseCase(get()) }
     factory { GetReconciliationReminderIntervalUseCase(get()) }
+
+    // ── Fixed Income ────────────────────────────────────────────────────────────
+    factory { CreateLedgerTransactionUseCase(get()) }
+    factory { CreateFixedIncomePositionUseCase(get(), get(), get()) }
+    factory { RegisterCouponUseCase(get(), get()) }
+    factory { CloseFixedIncomeUseCase(get(), get(), get()) }
+    factory { GetFixedIncomeSummaryUseCase(get(), get()) }
+    factory { GetFixedIncomePositionDetailUseCase(get(), get()) }
+    factory { GetNearMaturityPositionsUseCase(get()) }
+    factory { GetCouponScheduleUseCase() }
+    factory { UpdateFixedIncomePositionUseCase(get()) }
+    factory { ArchiveFixedIncomePositionUseCase(get()) }
+    factory { DeleteFixedIncomeEventUseCase(get(), get()) }
 
     // ── Fiscal ────────────────────────────────────────────────────────────────
     factory {
@@ -262,7 +277,10 @@ val useCaseModule = module {
             saveAssetTransaction                = get(),
             syncToLedger                        = get(),
             assetPlatformRepository             = get(),
-            session                             = get()
+            session                             = get(),
+            getFixedIncomeSummary               = get(),
+            getNearMaturityPositions            = get(),
+            createFixedIncomePosition           = get()
         )
     }
     viewModel {
@@ -357,6 +375,19 @@ val useCaseModule = module {
             getFiscalReportData = get(),
             pdfGenerator        = get(),
             session             = get()
+        )
+    }
+    viewModel { (positionId: String) ->
+        FixedIncomeDetailViewModel(
+            positionId                    = positionId,
+            getPositionDetail             = get(),
+            getCouponSchedule             = get(),
+            registerCoupon                = get(),
+            closeFixedIncome              = get(),
+            deleteFixedIncomeEvent        = get(),
+            updatePosition                = get(),
+            archivePosition               = get(),
+            transactionRepository          = get()
         )
     }
 }

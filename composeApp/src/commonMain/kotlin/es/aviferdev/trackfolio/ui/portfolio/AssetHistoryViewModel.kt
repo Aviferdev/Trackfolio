@@ -59,13 +59,6 @@ data class AssetHistoryUiState(
     // Sheet de dividendo
     val showDividendSheet: Boolean          = false,
     val editingDividendId: String?          = null,
-    // Sheet de bono/depósito (cupones/intereses intermedios)
-    val showBondDepositSheet: Boolean       = false,
-    val editingBondDepositId: String?       = null,
-    // Sheet de adquisición de renta fija
-    val showAcquireFixedIncomeSheet: Boolean = false,
-    // Sheet de liquidación/venta secundaria/cancelación anticipada
-    val showCloseFixedIncomeSheet: Boolean  = false,
     // Sheet de traspaso entre fondos
     val showTransferSheet: Boolean          = false,
     // ¿Este activo admite traspasos?
@@ -101,11 +94,7 @@ class AssetHistoryViewModel(
     private val _error                = MutableStateFlow<String?>(null)
     private val _showDividendSheet    = MutableStateFlow(false)
     private val _editingDividendId   = MutableStateFlow<String?>(null)
-    private val _showBondDepositSheet = MutableStateFlow(false)
-    private val _editingBondDepositId = MutableStateFlow<String?>(null)
     private val _showTransferSheet    = MutableStateFlow(false)
-    private val _showAcquireFixedIncomeSheet = MutableStateFlow(false)
-    private val _showCloseFixedIncomeSheet   = MutableStateFlow(false)
 
     private data class Sheets(
         val showAdd: Boolean,
@@ -115,11 +104,7 @@ class AssetHistoryViewModel(
         val error: String?,
         val showDividend: Boolean,
         val editingDividendId: String?,
-        val showBondDeposit: Boolean,
-        val editingBondDepositId: String?,
-        val showTransfer: Boolean,
-        val showAcquireFixedIncome: Boolean,
-        val showCloseFixedIncome: Boolean
+        val showTransfer: Boolean
     )
 
     private val sheetsFlow = combine(
@@ -137,31 +122,21 @@ class AssetHistoryViewModel(
             error           = err,
             showDividend        = false,
             editingDividendId   = null,
-            showBondDeposit     = false,
-            editingBondDepositId = null,
-            showTransfer        = false,
-            showAcquireFixedIncome = false,
-            showCloseFixedIncome   = false
+            showTransfer        = false
         )
     }.combine(
-        combine(_showDividendSheet, _editingDividendId, _showBondDepositSheet, _editingBondDepositId) { div, divId, bond, bondId ->
-            object { val showDiv = div; val divId = divId; val showBond = bond; val bondId = bondId }
+        combine(_showDividendSheet, _editingDividendId) { div, divId ->
+            object { val showDiv = div; val divId = divId }
         }.combine(
-            combine(_showTransferSheet, _showAcquireFixedIncomeSheet, _showCloseFixedIncomeSheet) { transfer, acquire, close ->
-                object { val showTransfer = transfer; val showAcquire = acquire; val showClose = close }
-            }
-        ) { extra, fi ->
-            object { val showDiv = extra.showDiv; val divId = extra.divId; val showBond = extra.showBond; val bondId = extra.bondId; val showTransfer = fi.showTransfer; val showAcquire = fi.showAcquire; val showClose = fi.showClose }
+            _showTransferSheet
+        ) { extra, transfer ->
+            object { val showDiv = extra.showDiv; val divId = extra.divId; val showTransfer = transfer }
         }
     ) { base, extra ->
         base.copy(
             showDividend         = extra.showDiv,
             editingDividendId    = extra.divId,
-            showBondDeposit      = extra.showBond,
-            editingBondDepositId = extra.bondId,
-            showTransfer         = extra.showTransfer,
-            showAcquireFixedIncome = extra.showAcquire,
-            showCloseFixedIncome   = extra.showClose
+            showTransfer         = extra.showTransfer
         )
     }
 
@@ -248,11 +223,7 @@ class AssetHistoryViewModel(
                 error                = sheets.error,
                 showDividendSheet    = sheets.showDividend,
                 editingDividendId    = sheets.editingDividendId,
-                showBondDepositSheet = sheets.showBondDeposit,
-                editingBondDepositId = sheets.editingBondDepositId,
                 showTransferSheet    = sheets.showTransfer,
-                showAcquireFixedIncomeSheet = sheets.showAcquireFixedIncome,
-                showCloseFixedIncomeSheet   = sheets.showCloseFixedIncome,
                 isTransferable       = isTransferable
             )
         }
@@ -422,148 +393,9 @@ class AssetHistoryViewModel(
         }
     }
 
-    // ── Bonos / Depósitos ───────────────────────────────────────────
-    fun openBondDepositSheet()  { _showBondDepositSheet.value = true; _editingBondDepositId.value = null }
-    fun closeBondDepositSheet() { _showBondDepositSheet.value = false; _editingBondDepositId.value = null }
-
-    fun saveBondDeposit(
-        grossAmount: Double,
-        irpfPercent: Double,
-        commissionAmount: Double,
-        date: Long
-    ) {
-        viewModelScope.launch {
-            val asset = uiState.value.asset ?: return@launch
-            val bondDepositId = _editingBondDepositId.value ?: "bond_${Clock.System.now().toEpochMilliseconds()}_${(0..9999).random()}"
-
-            val result = syncToLedger.syncBondDeposit(
-                bondDepositId    = bondDepositId,
-                accountId        = asset.accountId,
-                assetName        = asset.name,
-                grossAmount      = grossAmount,
-                irpfPercent      = irpfPercent,
-                commissionAmount = commissionAmount,
-                date             = date
-            )
-            result
-                .onSuccess { closeBondDepositSheet() }
-                .onFailure { _error.value = it.message }
-        }
-    }
-
     // ── Traspaso entre fondos ───────────────────────────────────────────
     fun openTransferSheet()  { _showTransferSheet.value = true }
     fun closeTransferSheet() { _showTransferSheet.value = false }
-
-    // ── Adquisición de renta fija ───────────────────────────────────────
-    fun openAcquireFixedIncomeSheet()  { _showAcquireFixedIncomeSheet.value = true }
-    fun closeAcquireFixedIncomeSheet() { _showAcquireFixedIncomeSheet.value = false }
-
-    fun saveFixedIncomeAcquisition(
-        quantity: Double,
-        nominalPerUnit: Double,
-        date: Long,
-        platformId: String,
-        feeNote: String?,
-        notes: String?
-    ) {
-        viewModelScope.launch {
-            val now = Clock.System.now().toEpochMilliseconds()
-            val tx = AssetTransaction(
-                id           = "tx_${now}_${(0..9999).random()}",
-                assetId      = assetId,
-                type         = AssetTransactionType.BUY,
-                quantity     = quantity,
-                pricePerUnit = nominalPerUnit,
-                date         = date,
-                platformId   = platformId,
-                feeNote      = feeNote,
-                notes        = notes,
-                createdAt    = now
-            )
-            saveAssetTransaction(tx)
-                .onSuccess {
-                    syncToLedger.sync(
-                        assetTx   = tx,
-                        accountId = uiState.value.asset!!.accountId,
-                        assetName = uiState.value.asset!!.name
-                    )
-                    closeAcquireFixedIncomeSheet()
-                }
-                .onFailure { _error.value = it.message }
-        }
-    }
-
-    // ── Liquidación / venta secundaria / cancelación anticipada ──────────
-    fun openCloseFixedIncomeSheet()  { _showCloseFixedIncomeSheet.value = true }
-    fun closeCloseFixedIncomeSheet() { _showCloseFixedIncomeSheet.value = false }
-
-    fun saveFixedIncomeClose(
-        closeType: FixedIncomeCloseType,
-        quantity: Double,
-        salePrice: Double,
-        grossInterest: Double,
-        irpfPercent: Double,
-        commissionAmount: Double,
-        date: Long,
-        platformId: String,
-        notes: String?
-    ) {
-        viewModelScope.launch {
-            val asset = uiState.value.asset ?: return@launch
-            val now = Clock.System.now().toEpochMilliseconds()
-
-            // 1) Registrar la venta/liquidación como SELL en AssetTransaction
-            val closeNote = when (closeType) {
-                FixedIncomeCloseType.MATURITY -> "Vencimiento"
-                FixedIncomeCloseType.SECONDARY_SALE -> "Venta secundario"
-                FixedIncomeCloseType.EARLY_CANCELLATION -> "Cancelación anticipada"
-            }
-            val fullNote = listOfNotNull(closeNote, notes).joinToString(" · ")
-
-            val sellTx = AssetTransaction(
-                id           = "tx_${now}_${(0..9999).random()}",
-                assetId      = assetId,
-                type         = AssetTransactionType.SELL,
-                quantity     = quantity,
-                pricePerUnit = salePrice,
-                date         = date,
-                platformId   = platformId,
-                feeNote      = null,
-                notes        = fullNote,
-                createdAt    = now
-            )
-
-            val sellResult = saveAssetTransaction(sellTx)
-            if (sellResult.isFailure) {
-                _error.value = sellResult.exceptionOrNull()?.message
-                return@launch
-            }
-
-            // Sync la venta al ledger (devuelve capital a la cuenta)
-            syncToLedger.sync(
-                assetTx   = sellTx,
-                accountId = asset.accountId,
-                assetName = asset.name
-            )
-
-            // 2) Si hay intereses, registrarlos como rendimiento de bono/depósito
-            if (grossInterest > 0.0) {
-                val interestId = "close_interest_${now}_${(0..9999).random()}"
-                syncToLedger.syncBondDeposit(
-                    bondDepositId    = interestId,
-                    accountId        = asset.accountId,
-                    assetName        = asset.name,
-                    grossAmount      = grossInterest,
-                    irpfPercent      = irpfPercent,
-                    commissionAmount = commissionAmount,
-                    date             = date
-                ).onFailure { _error.value = it.message; return@launch }
-            }
-
-            closeCloseFixedIncomeSheet()
-        }
-    }
 
     /**
      * Ejecuta un traspaso del fondo actual a otro fondo destino.

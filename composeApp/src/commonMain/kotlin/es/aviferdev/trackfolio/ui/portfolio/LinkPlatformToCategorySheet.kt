@@ -36,7 +36,7 @@ fun LinkPlatformToCategorySheet(
     allPlatforms: List<Platform>,
     onLink: (platformId: String) -> Unit,
     onUnlink: (platformId: String) -> Unit,
-    onCreate: (name: String, icon: String) -> Unit,
+    onCreate: (name: String, icon: String, notes: String?) -> Unit,
     onDismiss: () -> Unit
 ) {
     val linkedIds = remember(linkedPlatforms) { linkedPlatforms.map { it.id }.toSet() }

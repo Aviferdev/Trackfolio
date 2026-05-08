@@ -18,6 +18,10 @@ import es.aviferdev.trackfolio.data.datasource.asset.AssetPlatformLocalDataSourc
 import es.aviferdev.trackfolio.data.datasource.asset.AssetPlatformLocalDataSourceImpl
 import es.aviferdev.trackfolio.data.datasource.asset.AssetPriceHistoryLocalDataSource
 import es.aviferdev.trackfolio.data.datasource.asset.AssetPriceHistoryLocalDataSourceImpl
+import es.aviferdev.trackfolio.data.datasource.fixedincome.FixedIncomeEventLocalDataSource
+import es.aviferdev.trackfolio.data.datasource.fixedincome.FixedIncomeEventLocalDataSourceImpl
+import es.aviferdev.trackfolio.data.datasource.fixedincome.FixedIncomeLocalDataSource
+import es.aviferdev.trackfolio.data.datasource.fixedincome.FixedIncomeLocalDataSourceImpl
 import es.aviferdev.trackfolio.data.datasource.issuer.IssuerLocalDataSource
 import es.aviferdev.trackfolio.data.datasource.issuer.IssuerLocalDataSourceImpl
 import es.aviferdev.trackfolio.data.datasource.platform.PlatformCategoryLocalDataSource
@@ -35,6 +39,8 @@ import es.aviferdev.trackfolio.data.repository.category.CategoryRepositoryImpl
 import es.aviferdev.trackfolio.data.repository.debt.DebtRepositoryImpl
 import es.aviferdev.trackfolio.data.repository.asset.AssetPlatformRepositoryImpl
 import es.aviferdev.trackfolio.data.repository.asset.AssetPriceHistoryRepositoryImpl
+import es.aviferdev.trackfolio.data.repository.fixedincome.FixedIncomeEventRepositoryImpl
+import es.aviferdev.trackfolio.data.repository.fixedincome.FixedIncomeRepositoryImpl
 import es.aviferdev.trackfolio.data.repository.issuer.IssuerRepositoryImpl
 import es.aviferdev.trackfolio.data.repository.platform.PlatformCategoryRepositoryImpl
 import es.aviferdev.trackfolio.data.repository.platform.PlatformRepositoryImpl
@@ -48,6 +54,8 @@ import es.aviferdev.trackfolio.domain.repository.CategoryRepository
 import es.aviferdev.trackfolio.domain.repository.DebtRepository
 import es.aviferdev.trackfolio.domain.repository.AssetPlatformRepository
 import es.aviferdev.trackfolio.domain.repository.AssetPriceHistoryRepository
+import es.aviferdev.trackfolio.domain.repository.FixedIncomeEventRepository
+import es.aviferdev.trackfolio.domain.repository.FixedIncomeRepository
 import es.aviferdev.trackfolio.domain.repository.IssuerRepository
 import es.aviferdev.trackfolio.domain.repository.PlatformCategoryRepository
 import es.aviferdev.trackfolio.domain.repository.PlatformRepository
@@ -68,6 +76,8 @@ val repositoryModule = module {
     single<AssetPlatformLocalDataSource>    { AssetPlatformLocalDataSourceImpl(get()) }
     single<AssetPriceHistoryLocalDataSource>  { AssetPriceHistoryLocalDataSourceImpl(get()) }
     single<IssuerLocalDataSource>           { IssuerLocalDataSourceImpl(get()) }
+    single<FixedIncomeLocalDataSource>      { FixedIncomeLocalDataSourceImpl(get()) }
+    single<FixedIncomeEventLocalDataSource> { FixedIncomeEventLocalDataSourceImpl(get()) }
 
     single<AccountRepository>          { AccountRepositoryImpl(get()) }
     single<TransactionRepository>      { TransactionRepositoryImpl(get()) }
@@ -82,4 +92,6 @@ val repositoryModule = module {
     single<AssetPlatformRepository>    { AssetPlatformRepositoryImpl(get()) }
     single<AssetPriceHistoryRepository>       { AssetPriceHistoryRepositoryImpl(get()) }
     single<IssuerRepository>           { IssuerRepositoryImpl(get()) }
+    single<FixedIncomeRepository>      { FixedIncomeRepositoryImpl(get()) }
+    single<FixedIncomeEventRepository> { FixedIncomeEventRepositoryImpl(get()) }
 }

@@ -22,7 +22,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.trackfolio.domain.model.Asset
 import es.aviferdev.trackfolio.domain.model.AssetCategory
-import es.aviferdev.trackfolio.domain.model.FixedIncomeCategories
 import es.aviferdev.trackfolio.domain.model.Platform
 import es.aviferdev.trackfolio.ui.theme.*
 import kotlinx.datetime.Clock
@@ -62,17 +61,13 @@ fun AddEditAssetBottomSheet(
         mutableStateOf(asset?.assetCategoryId ?: preselectedCategoryId)
     }
     var selectedPlatformIds by remember { mutableStateOf(linkedPlatformIds) }
-    var maturityDateMillis by remember { mutableStateOf(asset?.maturityDate) }
-    var showMaturityDatePicker by remember { mutableStateOf(false) }
 
     var tickerError by remember { mutableStateOf(false) }
     var nameError   by remember { mutableStateOf(false) }
 
-    val isFixedIncome = FixedIncomeCategories.isFixedIncome(selectedCategoryId)
-
     val isValid = ticker.isNotBlank() && name.isNotBlank()
         && selectedCategoryId != null
-        && (isFixedIncome || currentPrice.isBlank() || currentPrice.replace(',', '.').toDoubleOrNull()?.let { it >= 0 } == true)
+        && (currentPrice.isBlank() || currentPrice.replace(',', '.').toDoubleOrNull()?.let { it >= 0 } == true)
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
@@ -149,7 +144,7 @@ fun AddEditAssetBottomSheet(
                 onValueChange = { ticker = it.uppercase(); tickerError = false },
                 label         = { Text("Ticker / Símbolo") },
                 placeholder   = {
-                    Text(if (isFixedIncome) "Ej. ISIN, referencia" else "Ej. AAPL, BTC, IAG.MC")
+                    Text("Ej. AAPL, BTC, IAG.MC")
                 },
                 isError       = tickerError,
                 supportingText = if (tickerError) {{ Text("Obligatorio") }} else null,
@@ -170,13 +165,7 @@ fun AddEditAssetBottomSheet(
                 onValueChange = { name = it; nameError = false },
                 label         = { Text("Nombre del activo") },
                 placeholder   = {
-                    Text(
-                        when {
-                            FixedIncomeCategories.isBond(selectedCategoryId) -> "Ej. Bono Estado 3Y, Letras Tesoro 12M"
-                            FixedIncomeCategories.isDeposit(selectedCategoryId) -> "Ej. Depósito MyInvestor 12M"
-                            else -> "Ej. Apple Inc., Bitcoin"
-                        }
-                    )
+                    Text("Ej. Apple Inc., Bitcoin")
                 },
                 isError       = nameError,
                 supportingText = if (nameError) {{ Text("Obligatorio") }} else null,
@@ -190,67 +179,30 @@ fun AddEditAssetBottomSheet(
             )
             Spacer(Modifier.height(12.dp))
 
-            // ── Precio actual (solo para activos que no son renta fija) ──────
-            if (!isFixedIncome) {
-                OutlinedTextField(
-                    value         = currentPrice,
-                    onValueChange = { currentPrice = it.filter { c -> c.isDigit() || c == ',' || c == '.' } },
-                    label         = { Text("Precio actual (opcional)") },
-                    placeholder   = { Text("0,00") },
-                    trailingIcon  = { Text(symbol, color = TextSecondary, modifier = Modifier.padding(end = 12.dp)) },
-                    supportingText = {
-                        Text(
-                            text     = "Sirve para calcular el valor actual y la revalorización.",
-                            fontSize = 11.sp,
-                            color    = TextSecondary
-                        )
-                    },
-                    modifier      = Modifier.fillMaxWidth(),
-                    singleLine    = true,
-                    shape         = RoundedCornerShape(10.dp),
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                    colors        = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor   = PrimaryDark,
-                        unfocusedBorderColor = BorderGray
-                    )
-                )
-                Spacer(Modifier.height(12.dp))
-            }
-
-            // ── Fecha de vencimiento (solo renta fija) ──────────────────────
-            if (isFixedIncome) {
-                Text(
-                    text       = "Fecha de vencimiento",
-                    fontSize   = 12.sp,
-                    color      = TextSecondary,
-                    fontWeight = FontWeight.Medium
-                )
-                Spacer(Modifier.height(6.dp))
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(10.dp))
-                        .border(0.5.dp, BorderGray, RoundedCornerShape(10.dp))
-                        .clickable { showMaturityDatePicker = true }
-                        .padding(horizontal = 14.dp, vertical = 14.dp)
-                ) {
+            // ── Precio actual ──────
+            OutlinedTextField(
+                value         = currentPrice,
+                onValueChange = { currentPrice = it.filter { c -> c.isDigit() || c == ',' || c == '.' } },
+                label         = { Text("Precio actual (opcional)") },
+                placeholder   = { Text("0,00") },
+                trailingIcon  = { Text(symbol, color = TextSecondary, modifier = Modifier.padding(end = 12.dp)) },
+                supportingText = {
                     Text(
-                        text = maturityDateMillis?.let { formatFullDate(it) } ?: "Seleccionar fecha",
-                        fontSize = 14.sp,
-                        color = if (maturityDateMillis != null) TextPrimary else TextSecondary
+                        text     = "Sirve para calcular el valor actual y la revalorización.",
+                        fontSize = 11.sp,
+                        color    = TextSecondary
                     )
-                }
-                Spacer(Modifier.height(4.dp))
-                Text(
-                    text = when {
-                        FixedIncomeCategories.isBond(selectedCategoryId) -> "Fecha en la que vence el bono y se reintegra el nominal."
-                        else -> "Fecha en la que vence el depósito y se recupera el capital."
-                    },
-                    fontSize = 11.sp,
-                    color    = TextSecondary
+                },
+                modifier      = Modifier.fillMaxWidth(),
+                singleLine    = true,
+                shape         = RoundedCornerShape(10.dp),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                colors        = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor   = PrimaryDark,
+                    unfocusedBorderColor = BorderGray
                 )
-                Spacer(Modifier.height(12.dp))
-            }
+            )
+            Spacer(Modifier.height(12.dp))
 
             // ── Plataformas vinculadas (multi-select) ────────────────────────
             if (allPlatforms.isNotEmpty()) {
@@ -318,8 +270,7 @@ fun AddEditAssetBottomSheet(
                 onClick = {
                     if (ticker.isBlank()) { tickerError = true; return@Button }
                     if (name.isBlank())   { nameError = true; return@Button }
-                    val curr = if (isFixedIncome) null
-                               else currentPrice.replace(',', '.').toDoubleOrNull()
+                    val curr = currentPrice.replace(',', '.').toDoubleOrNull()
                     onSave(
                         ticker.trim(),
                         name.trim(),
@@ -327,7 +278,7 @@ fun AddEditAssetBottomSheet(
                         selectedCategoryId,
                         curr,
                         selectedPlatformIds,
-                        maturityDateMillis
+                        asset?.maturityDate
                     )
                 },
                 enabled  = isValid,
@@ -344,36 +295,6 @@ fun AddEditAssetBottomSheet(
                     fontWeight = FontWeight.Medium
                 )
             }
-        }
-    }
-
-    // ── Date picker para fecha de vencimiento ────────────────────────────────
-    if (showMaturityDatePicker) {
-        val pickerState = rememberDatePickerState(
-            initialSelectedDateMillis = maturityDateMillis
-        )
-        DatePickerDialog(
-            onDismissRequest = { showMaturityDatePicker = false },
-            confirmButton = {
-                TextButton(onClick = {
-                    pickerState.selectedDateMillis?.let { maturityDateMillis = it }
-                    showMaturityDatePicker = false
-                }) { Text("Aceptar", color = PrimaryDark) }
-            },
-            dismissButton = {
-                TextButton(onClick = { showMaturityDatePicker = false }) {
-                    Text("Cancelar", color = TextSecondary)
-                }
-            },
-            colors = DatePickerDefaults.colors(containerColor = SurfaceWhite)
-        ) {
-            DatePicker(
-                state = pickerState,
-                colors = DatePickerDefaults.colors(
-                    selectedDayContainerColor = PrimaryDark,
-                    todayDateBorderColor      = PrimaryDark
-                )
-            )
         }
     }
 }
