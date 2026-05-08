@@ -6,6 +6,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -50,7 +51,7 @@ fun FixedIncomeDetailScreen(
                 },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Volver")
+                        Icon(Icons.AutoMirrored.Default.ArrowBack, contentDescription = "Volver")
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -59,6 +60,42 @@ fun FixedIncomeDetailScreen(
                     navigationIconContentColor = Color.White
                 )
             )
+        },
+        floatingActionButton = {
+            if (state.row?.position?.isOpen == true) {
+                var fabMenuOpen by remember { mutableStateOf(false) }
+                Box {
+                    FloatingActionButton(
+                        onClick = { fabMenuOpen = true },
+                        containerColor = PrimaryDark,
+                        contentColor = Color.White
+                    ) {
+                        Text("⚡", fontSize = 20.sp)
+                    }
+                    DropdownMenu(
+                        expanded = fabMenuOpen,
+                        onDismissRequest = { fabMenuOpen = false },
+                        containerColor = SurfaceWhite
+                    ) {
+                        DropdownMenuItem(
+                            text = { Text("Registrar cupón", color = TextPrimary) },
+                            leadingIcon = { Text("💰", fontSize = 16.sp) },
+                            onClick = {
+                                fabMenuOpen = false
+                                viewModel.showRegisterCouponSheet()
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("Liquidar posición", color = TextPrimary) },
+                            leadingIcon = { Text("🔒", fontSize = 16.sp) },
+                            onClick = {
+                                fabMenuOpen = false
+                                viewModel.showCloseSheet()
+                            }
+                        )
+                    }
+                }
+            }
         }
     ) { padding ->
         if (state.isLoading) {
@@ -150,6 +187,26 @@ fun FixedIncomeDetailScreen(
                 }
             },
             shape = RoundedCornerShape(16.dp)
+        )
+    }
+
+    if (state.showRegisterCouponSheet && state.row != null) {
+        RegisterCouponBottomSheet(
+            positionName = state.row!!.position.name,
+            onSave = { event ->
+                viewModel.registerCouponEvent(event.copy(positionId = state.row!!.position.id))
+            },
+            onDismiss = { viewModel.hideRegisterCouponSheet() }
+        )
+    }
+
+    if (state.showCloseSheet && state.row != null) {
+        CloseFixedIncomeBottomSheet(
+            position = state.row!!.position,
+            onSave = { closeType, closeDate, event ->
+                viewModel.closePosition(closeType, closeDate, event)
+            },
+            onDismiss = { viewModel.hideCloseSheet() }
         )
     }
 }
@@ -316,6 +373,59 @@ private fun FixedIncomeDetailHeader(
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Medium,
                         color = Color.White
+                    )
+                }
+            }
+
+            // TAE efectiva real (solo para posiciones cerradas)
+            if (!position.isOpen && position.closedAt != null) {
+                Spacer(Modifier.height(12.dp))
+                val elapsedDays = position.elapsedDays
+                val effectiveTae = if (elapsedDays > 0) {
+                    (row.totalProfit / position.principal) * (365.0 / elapsedDays) * 100.0
+                } else 0.0
+                
+                HorizontalDivider(color = Color.White.copy(alpha = 0.15f), thickness = 0.5.dp)
+                Spacer(Modifier.height(12.dp))
+                
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column {
+                        Text("TAE nominal", fontSize = 11.sp, color = Color.White.copy(alpha = 0.6f))
+                        Text(
+                            text = "${formatPercent1(position.interestRate)}%",
+                            fontSize = 13.sp,
+                            color = Color.White.copy(alpha = 0.8f)
+                        )
+                    }
+                    Column(horizontalAlignment = Alignment.End) {
+                        Text("TAE efectiva real", fontSize = 11.sp, color = Color.White.copy(alpha = 0.6f))
+                        val effectiveColor = when {
+                            effectiveTae > position.interestRate -> Color(0xFF66BB6A)
+                            effectiveTae < position.interestRate -> Color(0xFFFF9800)
+                            else -> Color.White
+                        }
+                        Text(
+                            text = "${formatPercent1(effectiveTae)}%",
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = effectiveColor
+                        )
+                    }
+                }
+                
+                if (effectiveTae != position.interestRate) {
+                    Spacer(Modifier.height(4.dp))
+                    Text(
+                        text = if (effectiveTae > position.interestRate) 
+                            "✓ Mejor rendimiento de lo esperado" 
+                        else 
+                            "⚠️ Inferior al TAE nominal por comisiones/impuestos",
+                        fontSize = 10.sp,
+                        color = Color.White.copy(alpha = 0.6f)
                     )
                 }
             }

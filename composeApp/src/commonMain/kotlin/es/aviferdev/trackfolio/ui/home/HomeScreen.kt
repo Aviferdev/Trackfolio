@@ -87,6 +87,7 @@ fun HomeScreen(
 ) {
     val uiState        by viewModel.uiState.collectAsState()
     val priceReminder  by viewModel.priceReminderState.collectAsState()
+    val nearMaturity   by viewModel.nearMaturityState.collectAsState()
     val accountState   by accountViewModel.uiState.collectAsState()
     val selectedId     by accountViewModel.selectedAccountId.collectAsState()
     val reconciliationState by reconciliationViewModel.uiState.collectAsState()
@@ -165,6 +166,8 @@ fun HomeScreen(
                     priceReminderState = priceReminder,
                     onUpdateNow = { viewModel.openUpdateSheet() },
                     onRemindLater = { viewModel.dismissReminder() },
+                    nearMaturityState = nearMaturity,
+                    onDismissNearMaturity = { viewModel.dismissNearMaturityBanner() },
                     showReconciliationBanner = reconciliationState.showBanner && currentAccount?.isCash == true,
                     onReconcileNow = {
                         reconciliationViewModel.openBottomSheet(state.balance.selectedAccountBalance)
@@ -246,6 +249,8 @@ private fun HomeContent(
     priceReminderState: PriceReminderState = PriceReminderState(),
     onUpdateNow: () -> Unit = {},
     onRemindLater: () -> Unit = {},
+    nearMaturityState: NearMaturityState = NearMaturityState(),
+    onDismissNearMaturity: () -> Unit = {},
     showReconciliationBanner: Boolean = false,
     onReconcileNow: () -> Unit = {},
     onReconcileRemindLater: () -> Unit = {}
@@ -337,6 +342,18 @@ private fun HomeContent(
             modifier         = Modifier.padding(horizontal = 20.dp)
         )
         if (showReconciliationBanner) {
+            Spacer(Modifier.height(12.dp))
+        }
+
+        // Banner de vencimientos próximos
+        MaturityReminderBanner(
+            positions   = nearMaturityState.positions,
+            visible     = nearMaturityState.showBanner,
+            onDismiss   = onDismissNearMaturity,
+            onViewDetails = { /* TODO: Navigate to fixed income detail */ },
+            modifier    = Modifier.padding(horizontal = 20.dp)
+        )
+        if (nearMaturityState.showBanner) {
             Spacer(Modifier.height(12.dp))
         }
 

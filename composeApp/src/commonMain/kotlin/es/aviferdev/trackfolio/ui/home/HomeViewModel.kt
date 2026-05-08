@@ -3,8 +3,10 @@ package es.aviferdev.trackfolio.ui.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import es.aviferdev.trackfolio.domain.model.Asset
+import es.aviferdev.trackfolio.domain.model.FixedIncomePosition
 import es.aviferdev.trackfolio.domain.model.HomeBalance
 import es.aviferdev.trackfolio.domain.model.TransactionType
+import es.aviferdev.trackfolio.domain.usecase.fixedincome.GetNearMaturityPositionsUseCase
 import es.aviferdev.trackfolio.domain.usecase.account.SetInitialBalanceUseCase
 import es.aviferdev.trackfolio.domain.usecase.asset.GetOutdatedAssetsUseCase
 import es.aviferdev.trackfolio.domain.usecase.asset.SavePriceReminderShownUseCase
@@ -43,6 +45,11 @@ data class PriceReminderState(
     val showUpdateSheet: Boolean = false
 )
 
+data class NearMaturityState(
+    val showBanner: Boolean = false,
+    val positions: List<FixedIncomePosition> = emptyList()
+)
+
 @OptIn(ExperimentalCoroutinesApi::class)
 class HomeViewModel(
     private val getHomeBalance: GetHomeBalanceUseCase,
@@ -52,7 +59,8 @@ class HomeViewModel(
     private val shouldShowPriceReminder: ShouldShowPriceReminderUseCase,
     private val getOutdatedAssets: GetOutdatedAssetsUseCase,
     private val updateAssetCurrentPrice: UpdateAssetCurrentPriceUseCase,
-    private val savePriceReminderShown: SavePriceReminderShownUseCase
+    private val savePriceReminderShown: SavePriceReminderShownUseCase,
+    private val getNearMaturityPositions: GetNearMaturityPositionsUseCase? = null
 ) : ViewModel() {
 
     val uiState: StateFlow<HomeUiState> = session.selectedAccountId
@@ -80,8 +88,12 @@ class HomeViewModel(
     private val _priceReminderState = MutableStateFlow(PriceReminderState())
     val priceReminderState: StateFlow<PriceReminderState> = _priceReminderState.asStateFlow()
 
+    private val _nearMaturityState = MutableStateFlow(NearMaturityState())
+    val nearMaturityState: StateFlow<NearMaturityState> = _nearMaturityState.asStateFlow()
+
     init {
         checkPriceReminder()
+        loadNearMaturityPositions()
     }
 
     private fun checkPriceReminder() {
@@ -101,6 +113,29 @@ class HomeViewModel(
                     )
                 }
         }
+    }
+
+    private fun loadNearMaturityPositions() {
+        if (getNearMaturityPositions == null) return
+
+        viewModelScope.launch {
+            session.selectedAccountId
+                .flatMapLatest { accountId ->
+                    accountId?.let {
+                        getNearMaturityPositions(it)
+                    } ?: emptyFlow()
+                }
+                .collect { positions ->
+                    _nearMaturityState.value = _nearMaturityState.value.copy(
+                        showBanner = positions.isNotEmpty(),
+                        positions = positions
+                    )
+                }
+        }
+    }
+
+    fun dismissNearMaturityBanner() {
+        _nearMaturityState.value = _nearMaturityState.value.copy(showBanner = false)
     }
 
     fun dismissReminder() {

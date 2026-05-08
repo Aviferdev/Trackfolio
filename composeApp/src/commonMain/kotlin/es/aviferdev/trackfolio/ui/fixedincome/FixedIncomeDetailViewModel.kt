@@ -111,7 +111,7 @@ class FixedIncomeDetailViewModel(
                 _error.value = "Posición no encontrada"
                 return@launch
             }
-            registerCoupon(event)
+            registerCoupon(event, position.accountId)
                 .onSuccess {
                     _showRegisterCouponSheet.value = false
                 }
@@ -123,7 +123,12 @@ class FixedIncomeDetailViewModel(
 
     fun closePosition(closeType: es.aviferdev.trackfolio.domain.model.FixedIncomeCloseType, closeDate: Long, settlementEvent: FixedIncomeEvent) {
         viewModelScope.launch {
-            closeFixedIncome(positionId, closeType, closeDate, settlementEvent)
+            val position = uiState.value.row?.position
+            if (position == null) {
+                _error.value = "Posición no encontrada"
+                return@launch
+            }
+            closeFixedIncome(positionId, closeType, closeDate, settlementEvent, position.accountId)
                 .onSuccess { _showCloseSheet.value = false }
                 .onFailure { _error.value = it.message }
         }

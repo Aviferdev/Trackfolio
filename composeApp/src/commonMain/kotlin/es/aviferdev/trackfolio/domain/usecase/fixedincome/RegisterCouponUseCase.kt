@@ -11,12 +11,12 @@ class RegisterCouponUseCase(
     private val eventRepository: FixedIncomeEventRepository,
     private val recordIncomeTransactionUseCase: RecordIncomeTransactionUseCase
 ) {
-    suspend operator fun invoke(event: FixedIncomeEvent): Result<Unit> {
+    suspend operator fun invoke(event: FixedIncomeEvent, accountId: String): Result<Unit> {
         val eventResult = eventRepository.insert(event)
         if (eventResult.isFailure) return eventResult
 
         val ledgerResult = recordIncomeTransactionUseCase(
-            accountId    = "",
+            accountId    = accountId,
             amount       = event.netAmount,
             date         = event.date,
             notes        = event.notes ?: "Cupón / Interés",

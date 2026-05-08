@@ -20,7 +20,8 @@ class CloseFixedIncomeUseCase(
         positionId: String,
         closeType: FixedIncomeCloseType,
         closeDate: Long,
-        settlementEvent: FixedIncomeEvent
+        settlementEvent: FixedIncomeEvent,
+        accountId: String
     ): Result<Unit> {
         val closeResult = positionRepository.close(positionId, closeDate, closeType.name)
         if (closeResult.isFailure) return closeResult
@@ -29,7 +30,7 @@ class CloseFixedIncomeUseCase(
         if (eventResult.isFailure) return eventResult
 
         val ledgerResult = recordSettlementTransactionUseCase(
-            accountId    = "",
+            accountId    = accountId,
             amount       = settlementEvent.netAmount,
             date         = settlementEvent.date,
             notes        = "Liquidación renta fija: ${settlementEvent.type.label}",
