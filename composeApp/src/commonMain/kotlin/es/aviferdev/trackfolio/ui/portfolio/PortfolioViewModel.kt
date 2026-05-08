@@ -137,7 +137,11 @@ data class PortfolioUiState(
 
     // Sheet de nueva posición de renta fija
     val showCreateFixedIncomeSheet: Boolean = false,
-    val currentAccountId: String?           = null
+    val currentAccountId: String?           = null,
+
+    // Sectores y regiones para sheets de activos
+    val allSectors: List<es.aviferdev.trackfolio.domain.model.AssetSector> = emptyList(),
+    val allRegions: List<es.aviferdev.trackfolio.domain.model.AssetRegion> = emptyList()
 )
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -163,6 +167,14 @@ class PortfolioViewModel(
 
     private val _sheetState = MutableStateFlow(SheetState())
     private val _selectedDistributionView = MutableStateFlow(DistributionView.CATEGORY)
+
+    private val allSectors: StateFlow<List<es.aviferdev.trackfolio.domain.model.AssetSector>> =
+        assetMetadataRepository.getAllSectors()
+            .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
+
+    private val allRegions: StateFlow<List<es.aviferdev.trackfolio.domain.model.AssetRegion>> =
+        assetMetadataRepository.getAllRegions()
+            .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     private data class SheetState(
         val showUpdatePriceSheet: Boolean = false,
@@ -240,8 +252,10 @@ class PortfolioViewModel(
                     } else {
                         combine(
                             assetPlatformRepository.getPlatformsByAssets(assetIds),
-                            assetMetadataRepository.getAllCompositions()
-                        ) { platformsByAsset, compositions ->
+                            assetMetadataRepository.getAllCompositions(),
+                            assetMetadataRepository.getSectorsByAssetIds(assetIds),
+                            assetMetadataRepository.getRegionDistributionsByAssetIds(assetIds)
+                        ) { platformsByAsset, compositions, sectorRelations, regionDistributions ->
                             buildState(
                                 assets = basicData.assets,
                                 categories = basicData.categories,
@@ -252,7 +266,9 @@ class PortfolioViewModel(
                                 fiSummary = basicData.fiSummary,
                                 nearMaturityPositions = basicData.nearMaturityPositions,
                                 accountId = basicData.account?.id,
-                                compositions = compositions
+                                compositions = compositions,
+                                sectorRelations = sectorRelations,
+                                regionDistributions = regionDistributions
                             )
                         }
                     }
@@ -297,8 +313,12 @@ class PortfolioViewModel(
         fiSummary: FixedIncomeSummary?,
         nearMaturityPositions: List<es.aviferdev.trackfolio.domain.model.FixedIncomePosition>,
         accountId: String? = null,
-        compositions: List<es.aviferdev.trackfolio.domain.model.AssetComposition> = emptyList()
+        compositions: List<es.aviferdev.trackfolio.domain.model.AssetComposition> = emptyList(),
+        sectorRelations: List<es.aviferdev.trackfolio.domain.model.AssetSectorRelation> = emptyList(),
+        regionDistributions: List<es.aviferdev.trackfolio.domain.model.AssetRegionDistribution> = emptyList()
     ): PortfolioUiState {
+        val allSectorsList = allSectors.value
+        val allRegionsList = allRegions.value
         // Agrupar movimientos por activo.
         val txByAsset: Map<String, List<AssetTransaction>> =
             transactions.groupBy { it.assetId }
@@ -439,10 +459,59 @@ class PortfolioViewModel(
         val compositionSlices = buildCompositionDistribution(allGroups, compositionByAsset, combinedCurrentValue)
 
         // ── Distribución por región ────────────────────────────────────
-        val regionSlices: List<CategorySlice> = emptyList()
+        val assetCurrentValues = openRows.associate { it.asset.id to it.position.currentValue }
+        val regionById = allRegionsList.associateBy { it.id }
+        val regionValues = mutableMapOf<String, Double>()
+        for (dist in regionDistributions) {
+            val assetValue = assetCurrentValues[dist.assetId] ?: continue
+            val weight = dist.percent / 100.0
+            regionValues[dist.regionId] = (regionValues[dist.regionId] ?: 0.0) + (assetValue * weight)
+        }
+        val regionSlices: List<CategorySlice> = if (combinedCurrentValue > 0.0 && regionValues.isNotEmpty()) {
+            regionValues.map { (regionId, value) ->
+                val region = regionById[regionId]
+                CategorySlice(
+                    categoryId = regionId,
+                    name = region?.name ?: regionId,
+                    icon = "🌍",
+                    value = value,
+                    percent = (value / combinedCurrentValue) * 100.0,
+                    color = CategoryPalette[regionValues.keys.indexOf(regionId) % CategoryPalette.size]
+                )
+            }.sortedByDescending { it.percent }
+        } else {
+            emptyList()
+        }
 
         // ── Distribución por sector ────────────────────────────────────
-        val sectorSlices: List<CategorySlice> = emptyList()
+        val sectorById = allSectorsList.associateBy { it.id }
+        val sectorValues = mutableMapOf<String, Double>()
+        val sectorsByAsset = sectorRelations.groupBy { it.assetId }
+        for ((assetId, relations) in sectorsByAsset) {
+            val assetValue = assetCurrentValues[assetId] ?: continue
+            val sectorCount = relations.size
+            if (sectorCount > 0) {
+                val valuePerSector = assetValue / sectorCount
+                for (rel in relations) {
+                    sectorValues[rel.sectorId] = (sectorValues[rel.sectorId] ?: 0.0) + valuePerSector
+                }
+            }
+        }
+        val sectorSlices: List<CategorySlice> = if (combinedCurrentValue > 0.0 && sectorValues.isNotEmpty()) {
+            sectorValues.map { (sectorId, value) ->
+                val sector = sectorById[sectorId]
+                CategorySlice(
+                    categoryId = sectorId,
+                    name = sector?.name ?: sectorId,
+                    icon = sector?.icon ?: "📊",
+                    value = value,
+                    percent = (value / combinedCurrentValue) * 100.0,
+                    color = CategoryPalette[sectorValues.keys.indexOf(sectorId) % CategoryPalette.size]
+                )
+            }.sortedByDescending { it.percent }
+        } else {
+            emptyList()
+        }
 
         return PortfolioUiState(
             groups             = allGroups,
@@ -472,7 +541,9 @@ class PortfolioViewModel(
             combinedPnLPercent = combinedPnLPercent,
             combinedRealizedPnL = totalRealizedPnL + (fiSummary?.totalCollectedInterest ?: 0.0),
             combinedUnrealizedPnL = totalUnrealizedPnL + (fiSummary?.totalAccruedInterest ?: 0.0),
-            currentAccountId = accountId
+            currentAccountId = accountId,
+            allSectors = allSectorsList,
+            allRegions = allRegionsList
         )
     }
 

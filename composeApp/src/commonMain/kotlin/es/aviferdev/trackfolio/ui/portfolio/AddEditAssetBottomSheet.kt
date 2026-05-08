@@ -4,17 +4,40 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.BottomSheetDefaults
+import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderDefaults
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
@@ -23,8 +46,14 @@ import androidx.compose.ui.unit.sp
 import es.aviferdev.trackfolio.domain.model.Asset
 import es.aviferdev.trackfolio.domain.model.AssetCategory
 import es.aviferdev.trackfolio.domain.model.Platform
-import es.aviferdev.trackfolio.ui.theme.*
-import kotlinx.datetime.Clock
+import es.aviferdev.trackfolio.ui.theme.BorderGray
+import es.aviferdev.trackfolio.ui.theme.ExpenseRed
+import es.aviferdev.trackfolio.ui.theme.PrimaryDark
+import es.aviferdev.trackfolio.ui.theme.SurfaceWhite
+import es.aviferdev.trackfolio.ui.theme.SurfaceElevated
+import es.aviferdev.trackfolio.ui.theme.TextPrimary
+import es.aviferdev.trackfolio.ui.theme.TextSecondary
+import es.aviferdev.trackfolio.ui.theme.currencySymbol
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
@@ -39,6 +68,10 @@ fun AddEditAssetBottomSheet(
     preselectedCategoryId: String? = null,
     allPlatforms: List<Platform> = emptyList(),
     linkedPlatformIds: Set<String> = emptySet(),
+    allSectors: List<es.aviferdev.trackfolio.domain.model.AssetSector> = emptyList(),
+    linkedSectorIds: Set<String> = emptySet(),
+    allRegions: List<es.aviferdev.trackfolio.domain.model.AssetRegion> = emptyList(),
+    linkedRegionPercents: Map<String, Int> = emptyMap(),
     onSave: (
         ticker: String,
         name: String,
@@ -47,7 +80,9 @@ fun AddEditAssetBottomSheet(
         currentPrice: Double?,
         platformIds: Set<String>,
         maturityDate: Long?,
-        fixedIncomePercent: Int
+        fixedIncomePercent: Int,
+        sectorIds: Set<String>,
+        regionPercents: Map<String, Int>
     ) -> Unit,
     onDismiss: () -> Unit
 ) {
@@ -61,30 +96,30 @@ fun AddEditAssetBottomSheet(
     var selectedCategoryId by remember {
         mutableStateOf(asset?.assetCategoryId ?: preselectedCategoryId)
     }
+
     var selectedPlatformIds by remember { mutableStateOf(linkedPlatformIds) }
     var fixedIncomePercent by remember { mutableStateOf(0) }
+    var selectedSectorIds by remember { mutableStateOf(linkedSectorIds) }
+    var regionPercents by remember(allRegions) { mutableStateOf(linkedRegionPercents.ifEmpty { emptyMap() }) }
+
+    // Ensure all regions are in the map
+    LaunchedEffect(allRegions) {
+        val updated = allRegions.associate { it.id to (regionPercents[it.id] ?: 0) }
+        regionPercents = updated
+    }
 
     var tickerError by remember { mutableStateOf(false) }
     var nameError   by remember { mutableStateOf(false) }
 
     val isValid = ticker.isNotBlank() && name.isNotBlank()
-        && selectedCategoryId != null
-        && (currentPrice.isBlank() || currentPrice.replace(',', '.').toDoubleOrNull()?.let { it >= 0 } == true)
+
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
-        sheetState       = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-        containerColor   = SurfaceWhite,
-        dragHandle = {
-            Box(
-                modifier = Modifier
-                    .padding(top = 12.dp, bottom = 4.dp)
-                    .width(40.dp)
-                    .height(4.dp)
-                    .clip(RoundedCornerShape(2.dp))
-                    .background(BorderGray)
-            )
-        }
+        sheetState = sheetState,
+        containerColor = SurfaceWhite,
+        dragHandle = { BottomSheetDefaults.DragHandle() }
     ) {
         Column(
             modifier = Modifier
@@ -304,6 +339,103 @@ fun AddEditAssetBottomSheet(
                 )
             }
 
+            // ── Sectores (multi-select) ─────────────────────────────────────
+            if (allSectors.isNotEmpty()) {
+                Spacer(Modifier.height(12.dp))
+                Text(
+                    text       = "Sectores",
+                    fontSize   = 12.sp,
+                    color      = TextSecondary,
+                    fontWeight = FontWeight.Medium
+                )
+                Spacer(Modifier.height(8.dp))
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .horizontalScroll(rememberScrollState()),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    allSectors.forEach { sector ->
+                        val isSelected = sector.id in selectedSectorIds
+                        SectorToggleChip(
+                            icon       = sector.icon,
+                            label      = sector.name,
+                            isSelected = isSelected,
+                            onClick    = {
+                                selectedSectorIds = if (isSelected)
+                                    selectedSectorIds - sector.id
+                                else
+                                    selectedSectorIds + sector.id
+                            }
+                        )
+                    }
+                }
+                Spacer(Modifier.height(4.dp))
+                Text(
+                    "Clasifica el activo en uno o varios sectores.",
+                    fontSize = 10.sp,
+                    color = TextSecondary
+                )
+            }
+
+            // ── Distribución regional (sliders) ───────────────────────────────
+            if (allRegions.isNotEmpty()) {
+                Spacer(Modifier.height(12.dp))
+                Text(
+                    text       = "Distribución regional",
+                    fontSize   = 12.sp,
+                    color      = TextSecondary,
+                    fontWeight = FontWeight.Medium
+                )
+                Spacer(Modifier.height(4.dp))
+                Text(
+                    "Asigna el porcentaje de inversión por región (opcional)",
+                    fontSize = 10.sp,
+                    color = TextSecondary
+                )
+                Spacer(Modifier.height(8.dp))
+                allRegions.forEach { region ->
+                    val currentValue = regionPercents[region.id] ?: 0
+                    Row(
+                        modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = region.name,
+                            fontSize = 12.sp,
+                            color = TextPrimary,
+                            modifier = Modifier.width(100.dp)
+                        )
+                        Slider(
+                            value = currentValue.toFloat(),
+                            onValueChange = { newValue ->
+                                regionPercents = regionPercents + (region.id to newValue.toInt())
+                            },
+                            valueRange = 0f..100f,
+                            modifier = Modifier.weight(1f),
+                            colors = SliderDefaults.colors(
+                                thumbColor = PrimaryDark,
+                                activeTrackColor = PrimaryDark
+                            )
+                        )
+                        Text(
+                            text = "${currentValue}%",
+                            fontSize = 11.sp,
+                            color = TextPrimary,
+                            modifier = Modifier.width(40.dp)
+                        )
+                    }
+                }
+                val totalPercent = regionPercents.values.sum()
+                val totalColor = if (totalPercent > 100) ExpenseRed else TextSecondary
+                Text(
+                    text = "Total: $totalPercent% (debe ser ≤ 100%)",
+                    fontSize = 10.sp,
+                    color = totalColor,
+                    modifier = Modifier.padding(top = 4.dp)
+                )
+            }
+
             // Nota
             OutlinedTextField(
                 value         = notes,
@@ -325,6 +457,7 @@ fun AddEditAssetBottomSheet(
                     if (ticker.isBlank()) { tickerError = true; return@Button }
                     if (name.isBlank())   { nameError = true; return@Button }
                     val curr = currentPrice.replace(',', '.').toDoubleOrNull()
+                    val regionsToSave = regionPercents.filter { it.value > 0 }
                     onSave(
                         ticker.trim(),
                         name.trim(),
@@ -333,7 +466,9 @@ fun AddEditAssetBottomSheet(
                         curr,
                         selectedPlatformIds,
                         asset?.maturityDate,
-                        fixedIncomePercent
+                        fixedIncomePercent,
+                        selectedSectorIds,
+                        regionsToSave
                     )
                 },
                 enabled  = isValid,
@@ -352,7 +487,8 @@ fun AddEditAssetBottomSheet(
             }
         }
     }
-}
+    }
+
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -397,6 +533,41 @@ private fun CategoryChip(
 
 @Composable
 private fun PlatformToggleChip(
+    icon: String,
+    label: String,
+    isSelected: Boolean,
+    onClick: () -> Unit
+) {
+    val bg     = if (isSelected) PrimaryDark.copy(alpha = 0.12f) else SurfaceElevated
+    val border = if (isSelected) PrimaryDark                      else BorderGray
+    val text   = if (isSelected) PrimaryDark                      else TextPrimary
+
+    Row(
+        modifier = Modifier
+            .clip(RoundedCornerShape(20.dp))
+            .background(bg)
+            .border(if (isSelected) 1.5.dp else 0.5.dp, border, RoundedCornerShape(20.dp))
+            .clickable(onClick = onClick)
+            .padding(horizontal = 12.dp, vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(icon, fontSize = 14.sp)
+        Spacer(Modifier.width(6.dp))
+        Text(
+            text       = label,
+            fontSize   = 13.sp,
+            color      = text,
+            fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal
+        )
+        if (isSelected) {
+            Spacer(Modifier.width(4.dp))
+            Text("✓", fontSize = 12.sp, color = PrimaryDark, fontWeight = FontWeight.Bold)
+        }
+    }
+}
+
+@Composable
+private fun SectorToggleChip(
     icon: String,
     label: String,
     isSelected: Boolean,

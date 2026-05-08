@@ -1,7 +1,7 @@
 ---
 description: Desarrolla código según las especificaciones definidas por el analista
 mode: primary
-model: minimax/minimax-m2.5
+model: opencode-go/minimax-m2.5
 temperature: 0.2
 permission:
   read: allow

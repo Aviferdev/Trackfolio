@@ -288,8 +288,12 @@ fun AssetCategoryDetailScreen(
             currencyCode = state.currencyCode,
             preselectedCategoryId = categoryId,
             allPlatforms = state.categoryPlatforms,
-            onSave = { ticker, name, notes, _, currentPrice, platformIds, maturityDate, fixedPct ->
-                viewModel.addAsset(ticker, name, notes, currentPrice, platformIds, maturityDate, fixedPct)
+            allSectors = state.allSectors,
+            linkedSectorIds = emptySet(),
+            allRegions = state.allRegions,
+            linkedRegionPercents = emptyMap(),
+            onSave = { ticker, name, notes, _, currentPrice, platformIds, maturityDate, fixedPct, sectorIds, regionPercents ->
+                viewModel.addAsset(ticker, name, notes, currentPrice, platformIds, maturityDate, fixedPct, sectorIds, regionPercents)
             },
             onDismiss = { viewModel.closeAddSheet() }
         )
@@ -302,8 +306,12 @@ fun AssetCategoryDetailScreen(
             currencyCode = state.currencyCode,
             allPlatforms = state.categoryPlatforms,
             linkedPlatformIds = state.editingPlatformIds,
-            onSave = { ticker, name, notes, catId, currentPrice, platformIds, maturityDate, fixedPct ->
-                viewModel.editAsset(editing, ticker, name, notes, catId, currentPrice, platformIds, maturityDate, fixedPct)
+            allSectors = state.allSectors,
+            linkedSectorIds = state.editingSectorIds,
+            allRegions = state.allRegions,
+            linkedRegionPercents = state.editingRegionPercents,
+            onSave = { ticker, name, notes, catId, currentPrice, platformIds, maturityDate, fixedPct, sectorIds, regionPercents ->
+                viewModel.editAsset(editing, ticker, name, notes, catId, currentPrice, platformIds, maturityDate, fixedPct, sectorIds, regionPercents)
             },
             onDismiss = { viewModel.closeEditSheet() }
         )

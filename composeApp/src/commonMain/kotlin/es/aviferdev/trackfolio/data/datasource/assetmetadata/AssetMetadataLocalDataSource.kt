@@ -28,6 +28,7 @@ interface AssetMetadataLocalDataSource {
     fun getAllRegions(): Flow<List<AssetRegion>>
     fun getRegionById(regionId: String): Flow<AssetRegion?>
     suspend fun insertRegion(region: AssetRegion): Result<Unit>
+    suspend fun deleteRegion(regionId: String): Result<Unit>
 
     fun getRegionsByAsset(assetId: String): Flow<List<AssetRegionDistribution>>
     fun getRegionsByAssets(assetIds: List<String>): Flow<List<AssetRegionDistribution>>

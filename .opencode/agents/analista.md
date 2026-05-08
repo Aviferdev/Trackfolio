@@ -1,7 +1,7 @@
 ---
 description: Analiza requisitos y crea especificaciones técnicas antes del desarrollo
 mode: primary
-model: deepseek/deepseek-v4-pro
+model: opencode-go/deepseek-v4-pro
 temperature: 0.3
 permission:
   read: allow

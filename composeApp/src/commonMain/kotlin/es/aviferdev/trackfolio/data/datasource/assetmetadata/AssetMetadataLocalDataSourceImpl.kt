@@ -139,6 +139,11 @@ class AssetMetadataLocalDataSourceImpl(
             }
         }
 
+    override suspend fun deleteRegion(regionId: String): Result<Unit> =
+        runCatching {
+            withContext(Dispatchers.IO) { regionQueries.delete(regionId) }
+        }
+
     override fun getRegionById(regionId: String): Flow<AssetRegion?> =
         regionQueries.selectById(regionId)
             .asFlow()

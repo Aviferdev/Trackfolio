@@ -47,9 +47,13 @@ data class AssetCategoryDetailUiState(
     val showAddSheet: Boolean          = false,
     val editing: Asset?                = null,
     val editingPlatformIds: Set<String> = emptySet(),
+    val editingSectorIds: Set<String>   = emptySet(),
+    val editingRegionPercents: Map<String, Int> = emptyMap(),
     val pendingArchive: Asset?         = null,
     val showLinkPlatformSheet: Boolean = false,
-    val error: String?                 = null
+    val error: String?                 = null,
+    val allSectors: List<es.aviferdev.trackfolio.domain.model.AssetSector> = emptyList(),
+    val allRegions: List<es.aviferdev.trackfolio.domain.model.AssetRegion> = emptyList()
 )
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -78,6 +82,16 @@ class AssetCategoryDetailViewModel(
     private val _pendingArchive    = MutableStateFlow<Asset?>(null)
     private val _error             = MutableStateFlow<String?>(null)
     private val _showLinkPlatformSheet = MutableStateFlow(false)
+    private val _editingSectorIds   = MutableStateFlow<Set<String>>(emptySet())
+    private val _editingRegionPercents = MutableStateFlow<Map<String, Int>>(emptyMap())
+
+    private val allSectors: StateFlow<List<es.aviferdev.trackfolio.domain.model.AssetSector>> =
+        assetMetadataRepository.getAllSectors()
+            .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
+
+    private val allRegions: StateFlow<List<es.aviferdev.trackfolio.domain.model.AssetRegion>> =
+        assetMetadataRepository.getAllRegions()
+            .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     val uiState: StateFlow<AssetCategoryDetailUiState> = session.selectedAccountId
         .flatMapLatest { accountId ->
@@ -103,16 +117,26 @@ class AssetCategoryDetailViewModel(
                     platformCategoryRepository.getByCategory(categoryId)
                 ) { allPlats, catPlats -> allPlats to catPlats }
 
-                val sheetsFlow = combine(
+                val sheetsFlowPart1 = combine(
                     _showAddSheet,
                     _editing,
-                    _editingPlatformIds,
+                    _editingPlatformIds
+                ) { show, edit, platIds -> SheetPart1(show, edit, platIds) }
+
+                val sheetsFlowPart2 = combine(
+                    _editingSectorIds,
+                    _editingRegionPercents,
                     _pendingArchive,
                     _error
-                ) { show, edit, platIds, arch, err -> SheetState(show, edit, platIds, arch, err) }
-                    .combine(_showLinkPlatformSheet) { sheets, linkSheet -> sheets to linkSheet }
+                ) { sectIds, regPerc, arch, err -> SheetPart2(sectIds, regPerc, arch, err) }
 
-                combine(assetsAndCategoriesFlow, platformsFlow, fiRowsFlow, sheetsFlow) { data, platforms, fiRows, sheetsAndLink ->
+                val sheetsFlow = combine(sheetsFlowPart1, sheetsFlowPart2) { part1, part2 ->
+                    SheetState(part1.show, part1.edit, part1.platIds, part2.sectIds, part2.regPerc, part2.arch, part2.err)
+                }.combine(_showLinkPlatformSheet) { sheets, linkSheet -> sheets to linkSheet }
+
+                val sectorsRegionsFlow = combine(allSectors, allRegions) { sectors, regions -> sectors to regions }
+
+                combine(assetsAndCategoriesFlow, platformsFlow, fiRowsFlow, sheetsFlow, sectorsRegionsFlow) { data, platforms, fiRows, sheetsAndLink, sectorsRegions ->
                     val (allAssets, categories) = data
                     val (allPlatforms, categoryPlatforms) = platforms
                     val (sheets, linkSheet) = sheetsAndLink
@@ -130,9 +154,13 @@ class AssetCategoryDetailViewModel(
                         showAddSheet         = sheets.show,
                         editing              = sheets.edit,
                         editingPlatformIds   = sheets.platIds,
+                        editingSectorIds     = sheets.sectIds,
+                        editingRegionPercents = sheets.regPerc,
                         pendingArchive       = sheets.arch,
                         showLinkPlatformSheet = linkSheet,
-                        error                = sheets.err
+                        error                = sheets.err,
+                        allSectors           = sectorsRegions.first,
+                        allRegions           = sectorsRegions.second
                     )
                 }
             }
@@ -151,9 +179,20 @@ class AssetCategoryDetailViewModel(
         viewModelScope.launch {
             val platforms = assetPlatformRepository.getPlatformsByAsset(asset.id).first()
             _editingPlatformIds.value = platforms.map { it.id }.toSet()
+
+            val sectors = assetMetadataRepository.getSectorsByAssetId(asset.id).first()
+            _editingSectorIds.value = sectors.map { it.id }.toSet()
+
+            val regions = assetMetadataRepository.getRegionDistributionsByAssetId(asset.id).first()
+            _editingRegionPercents.value = regions.associate { it.regionId to it.percent }
         }
     }
-    fun closeEditSheet() { _editing.value = null; _editingPlatformIds.value = emptySet() }
+    fun closeEditSheet() {
+        _editing.value = null
+        _editingPlatformIds.value = emptySet()
+        _editingSectorIds.value = emptySet()
+        _editingRegionPercents.value = emptyMap()
+    }
 
     fun requestArchive(asset: Asset) {
         viewModelScope.launch {
@@ -189,7 +228,9 @@ class AssetCategoryDetailViewModel(
         currentPrice: Double?,
         platformIds: Set<String> = emptySet(),
         maturityDate: Long? = null,
-        fixedIncomePercent: Int = 0
+        fixedIncomePercent: Int = 0,
+        sectorIds: Set<String> = emptySet(),
+        regionPercents: Map<String, Int> = emptyMap()
     ) {
         val accountId = session.selectedAccountId.value ?: run {
             _error.value = "Selecciona primero una cuenta"
@@ -226,6 +267,25 @@ class AssetCategoryDetailViewModel(
                             )
                         )
                     }
+                    sectorIds.forEach { sectorId ->
+                        assetMetadataRepository.saveSectorRelation(
+                            es.aviferdev.trackfolio.domain.model.AssetSectorRelation(
+                                assetId = asset.id,
+                                sectorId = sectorId
+                            )
+                        )
+                    }
+                    regionPercents.forEach { (regionId, percent) ->
+                        if (percent > 0) {
+                            assetMetadataRepository.saveRegionDistribution(
+                                es.aviferdev.trackfolio.domain.model.AssetRegionDistribution(
+                                    assetId = asset.id,
+                                    regionId = regionId,
+                                    percent = percent
+                                )
+                            )
+                        }
+                    }
                     platformIds.forEach { platId ->
                         assetPlatformRepository.link(asset.id, platId)
                     }
@@ -244,7 +304,9 @@ class AssetCategoryDetailViewModel(
         currentPrice: Double?,
         platformIds: Set<String> = emptySet(),
         maturityDate: Long? = null,
-        fixedIncomePercent: Int = 0
+        fixedIncomePercent: Int = 0,
+        sectorIds: Set<String> = emptySet(),
+        regionPercents: Map<String, Int> = emptyMap()
     ) {
         val tickerTrim = ticker.trim().uppercase()
         val nameTrim   = name.trim()
@@ -277,6 +339,27 @@ class AssetCategoryDetailViewModel(
                             createdAt = Clock.System.now().toEpochMilliseconds()
                         )
                     )
+                }
+                assetMetadataRepository.deleteAllSectorLinks(original.id)
+                sectorIds.forEach { sectorId ->
+                    assetMetadataRepository.saveSectorRelation(
+                        es.aviferdev.trackfolio.domain.model.AssetSectorRelation(
+                            assetId = original.id,
+                            sectorId = sectorId
+                        )
+                    )
+                }
+                assetMetadataRepository.deleteAllRegionDistributions(original.id)
+                regionPercents.forEach { (regionId, percent) ->
+                    if (percent > 0) {
+                        assetMetadataRepository.saveRegionDistribution(
+                            es.aviferdev.trackfolio.domain.model.AssetRegionDistribution(
+                                assetId = original.id,
+                                regionId = regionId,
+                                percent = percent
+                            )
+                        )
+                    }
                 }
                 assetPlatformRepository.unlinkAllByAsset(original.id)
                 platformIds.forEach { platId ->
@@ -340,10 +423,25 @@ class AssetCategoryDetailViewModel(
         }
     }
 
+    private data class SheetPart1(
+        val show: Boolean,
+        val edit: Asset?,
+        val platIds: Set<String>
+    )
+
+    private data class SheetPart2(
+        val sectIds: Set<String>,
+        val regPerc: Map<String, Int>,
+        val arch: Asset?,
+        val err: String?
+    )
+
     private data class SheetState(
         val show: Boolean,
         val edit: Asset?,
         val platIds: Set<String>,
+        val sectIds: Set<String>,
+        val regPerc: Map<String, Int>,
         val arch: Asset?,
         val err: String?
     )

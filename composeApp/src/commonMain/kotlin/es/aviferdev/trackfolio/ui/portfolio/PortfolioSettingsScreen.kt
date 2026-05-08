@@ -33,6 +33,9 @@ fun PortfolioSettingsScreen(
     val assetCatalogState by assetCatalogViewModel.uiState.collectAsState()
     val platformState by platformViewModel.uiState.collectAsState()
 
+    var showSectorSheet by remember { mutableStateOf(false) }
+    var showRegionSheet by remember { mutableStateOf(false) }
+
     val reminderIntervalUseCase = koinInject<GetPriceReminderIntervalUseCase>()
     var selectedInterval by remember { mutableIntStateOf(reminderIntervalUseCase.get()) }
 
@@ -237,6 +240,46 @@ fun PortfolioSettingsScreen(
                 }
             }
 
+            // ── Sección: Sectores ────────────────────────────────────────────
+            item { Spacer(Modifier.height(8.dp)) }
+            item {
+                SectionHeader(
+                    title       = "SECTORES",
+                    actionLabel = "Gestionar",
+                    onAction    = { showSectorSheet = true }
+                )
+            }
+            item {
+                SettingsGroupCard {
+                    Text(
+                        "Clasifica tus activos por sectores (Tecnologia, Salud, Energia...) para analizar tu exposicion por industria.",
+                        fontSize    = 13.sp,
+                        color       = TextSecondary,
+                        modifier    = Modifier.padding(horizontal = 16.dp, vertical = 18.dp)
+                    )
+                }
+            }
+
+            // ── Sección: Regiones ────────────────────────────────────────────
+            item { Spacer(Modifier.height(8.dp)) }
+            item {
+                SectionHeader(
+                    title       = "REGIONES",
+                    actionLabel = "Gestionar",
+                    onAction    = { showRegionSheet = true }
+                )
+            }
+            item {
+                SettingsGroupCard {
+                    Text(
+                        "Define la distribucion geografica de tus activos por region (EE.UU., Europa, Asia...) para analizar tu exposicion internacional.",
+                        fontSize    = 13.sp,
+                        color       = TextSecondary,
+                        modifier    = Modifier.padding(horizontal = 16.dp, vertical = 18.dp)
+                    )
+                }
+            }
+
             item { Spacer(Modifier.height(20.dp)) }
         }
     }
@@ -268,6 +311,18 @@ fun PortfolioSettingsScreen(
                 }
             },
             shape = RoundedCornerShape(16.dp)
+        )
+    }
+
+    // ── Sheets de sectores y regiones ─────────────────────────────────────────
+    if (showSectorSheet) {
+        SectorManagementSheet(
+            onDismiss = { showSectorSheet = false }
+        )
+    }
+    if (showRegionSheet) {
+        RegionManagementSheet(
+            onDismiss = { showRegionSheet = false }
         )
     }
 }

@@ -309,8 +309,12 @@ fun PortfolioScreen(
             categories   = availableCategories,
             currencyCode = state.currencyCode,
             allPlatforms = state.platforms,
-            onSave       = { ticker, name, notes, categoryId, currentPrice, platformIds, _, fixedPct ->
-                catalogViewModel.addAsset(ticker, name, notes, categoryId, currentPrice, platformIds, fixedPct)
+            allSectors   = state.allSectors,
+            linkedSectorIds = emptySet(),
+            allRegions   = state.allRegions,
+            linkedRegionPercents = emptyMap(),
+            onSave       = { ticker, name, notes, categoryId, currentPrice, platformIds, _, fixedPct, sectorIds, regionPercents ->
+                catalogViewModel.addAsset(ticker, name, notes, categoryId, currentPrice, platformIds, fixedPct, sectorIds, regionPercents)
             },
             onDismiss = { catalogViewModel.closeAddSheet() }
         )
@@ -322,8 +326,12 @@ fun PortfolioScreen(
             currencyCode = state.currencyCode,
             allPlatforms = state.platforms,
             linkedPlatformIds = catalogState.editingPlatformIds,
-            onSave       = { ticker, name, notes, categoryId, currentPrice, platformIds, _, fixedPct ->
-                catalogViewModel.editAsset(editing, ticker, name, notes, categoryId, currentPrice, platformIds, fixedPct)
+            allSectors   = state.allSectors,
+            linkedSectorIds = catalogState.editingSectorIds,
+            allRegions   = state.allRegions,
+            linkedRegionPercents = catalogState.editingRegionPercents,
+            onSave       = { ticker, name, notes, categoryId, currentPrice, platformIds, _, fixedPct, sectorIds, regionPercents ->
+                catalogViewModel.editAsset(editing, ticker, name, notes, categoryId, currentPrice, platformIds, fixedPct, sectorIds, regionPercents)
             },
             onDismiss    = { catalogViewModel.closeEditSheet() }
         )

@@ -31,6 +31,9 @@ class AssetMetadataRepositoryImpl(
     override fun getSectorsByAssetId(assetId: String): Flow<List<AssetSector>> =
         localDataSource.getSectorsByAsset(assetId)
 
+    override fun getSectorsByAssetIds(assetIds: List<String>): Flow<List<AssetSectorRelation>> =
+        localDataSource.getSectorsByAssets(assetIds)
+
     override fun getAllRegions(): Flow<List<AssetRegion>> =
         localDataSource.getAllRegions()
 
@@ -49,12 +52,27 @@ class AssetMetadataRepositoryImpl(
     override suspend fun saveSector(sector: AssetSector): Result<Unit> =
         localDataSource.insertSector(sector)
 
+    override suspend fun deleteSector(sectorId: String): Result<Unit> =
+        localDataSource.deleteSector(sectorId)
+
     override suspend fun saveSectorRelation(relation: AssetSectorRelation): Result<Unit> =
         localDataSource.linkSector(relation.assetId, relation.sectorId)
 
     override suspend fun deleteSectorRelation(assetId: String, sectorId: String): Result<Unit> =
         localDataSource.unlinkSector(assetId, sectorId)
 
+    override suspend fun deleteAllSectorLinks(assetId: String): Result<Unit> =
+        localDataSource.deleteAllSectorLinks(assetId)
+
+    override suspend fun saveRegion(region: AssetRegion): Result<Unit> =
+        localDataSource.insertRegion(region)
+
+    override suspend fun deleteRegion(regionId: String): Result<Unit> =
+        localDataSource.deleteRegion(regionId)
+
     override suspend fun saveRegionDistribution(distribution: AssetRegionDistribution): Result<Unit> =
         localDataSource.saveRegionDistribution(distribution)
+
+    override suspend fun deleteAllRegionDistributions(assetId: String): Result<Unit> =
+        localDataSource.deleteAllRegionDistributions(assetId)
 }

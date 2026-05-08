@@ -21,6 +21,12 @@ import es.aviferdev.trackfolio.domain.usecase.assetcategory.GetAllAssetCategorie
 import es.aviferdev.trackfolio.domain.usecase.assetcategory.GetAssetCategoriesUseCase
 import es.aviferdev.trackfolio.domain.usecase.assetcategory.RenameAssetCategoryUseCase
 import es.aviferdev.trackfolio.domain.usecase.assetcategory.SaveAssetCategoryUseCase
+import es.aviferdev.trackfolio.domain.usecase.assetmetadata.DeleteRegionUseCase
+import es.aviferdev.trackfolio.domain.usecase.assetmetadata.DeleteSectorUseCase
+import es.aviferdev.trackfolio.domain.usecase.assetmetadata.GetRegionsUseCase
+import es.aviferdev.trackfolio.domain.usecase.assetmetadata.GetSectorsUseCase
+import es.aviferdev.trackfolio.domain.usecase.assetmetadata.SaveRegionUseCase
+import es.aviferdev.trackfolio.domain.usecase.assetmetadata.SaveSectorUseCase
 import es.aviferdev.trackfolio.domain.usecase.assettag.ArchiveAssetTagUseCase
 import es.aviferdev.trackfolio.domain.usecase.assettag.GetAssetTagAssignmentsUseCase
 import es.aviferdev.trackfolio.domain.usecase.assettag.GetAssetTagsByCategoryUseCase
@@ -175,6 +181,14 @@ val useCaseModule = module {
     factory { GetAssetTagAssignmentsUseCase(get()) }
     factory { UpsertAssetTagAssignmentUseCase(get()) }
     factory { RemoveAssetTagAssignmentUseCase(get()) }
+
+    // ── Asset Metadata (Sectors & Regions) ─────────────────────────────────────
+    factory { GetSectorsUseCase(get()) }
+    factory { SaveSectorUseCase(get()) }
+    factory { DeleteSectorUseCase(get()) }
+    factory { GetRegionsUseCase(get()) }
+    factory { SaveRegionUseCase(get()) }
+    factory { DeleteRegionUseCase(get()) }
 
     // ── Platform ──────────────────────────────────────────────────────────────
     factory { GetPlatformsUseCase(get()) }
