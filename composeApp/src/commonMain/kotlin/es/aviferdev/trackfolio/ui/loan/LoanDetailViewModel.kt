@@ -23,7 +23,8 @@ data class LoanDetailUiState(
     val loan: Loan? = null,
     val schedule: List<AmortizationEntry> = emptyList(),
     val rateChanges: List<LoanRateChange> = emptyList(),
-    val isLoading: Boolean = true
+    val isLoading: Boolean = true,
+    val showEditSheet: Boolean = false
 )
 
 class LoanDetailViewModel(
@@ -36,25 +37,30 @@ class LoanDetailViewModel(
     private val rateChangeRepository: LoanRateChangeRepository
 ) : ViewModel() {
 
+    private val _showRateSheet = MutableStateFlow(false)
+    val showRateSheet: StateFlow<Boolean> = _showRateSheet.asStateFlow()
+
+    private val _showEditSheet = MutableStateFlow(false)
+    val showEditSheet: StateFlow<Boolean> = _showEditSheet.asStateFlow()
+
     val uiState: StateFlow<LoanDetailUiState> = combine(
         loanRepository.getById(loanId),
         getAmortizationSchedule(loanId),
-        rateChangeRepository.getByLoan(loanId)
-    ) { loan, schedule, rateChanges ->
+        rateChangeRepository.getByLoan(loanId),
+        _showEditSheet
+    ) { loan, schedule, rateChanges, showEdit ->
         LoanDetailUiState(
             loan        = loan,
             schedule    = schedule,
             rateChanges = rateChanges,
-            isLoading   = false
+            isLoading   = false,
+            showEditSheet = showEdit
         )
     }.stateIn(
         scope        = viewModelScope,
         started      = SharingStarted.WhileSubscribed(5_000),
         initialValue = LoanDetailUiState()
     )
-
-    private val _showRateSheet = MutableStateFlow(false)
-    val showRateSheet: StateFlow<Boolean> = _showRateSheet.asStateFlow()
 
     fun openRateSheet() { _showRateSheet.value = true }
     fun closeRateSheet() { _showRateSheet.value = false }
