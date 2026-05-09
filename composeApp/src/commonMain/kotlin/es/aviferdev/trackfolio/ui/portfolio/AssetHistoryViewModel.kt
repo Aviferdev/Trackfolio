@@ -291,7 +291,7 @@ class AssetHistoryViewModel(
                             assetName = uiState.value.asset!!.name
                         )
                         if (type == AssetTransactionType.BUY && isSameDay(date, now)) {
-                            updateAssetCurrentPrice(assetId, pricePerUnit, now)
+                            updateAssetCurrentPrice(assetId, pricePerUnit, now, uiState.value.asset!!.assetCategoryId)
                         }
                     }
                 }
@@ -351,7 +351,7 @@ class AssetHistoryViewModel(
     fun refreshCurrentPrice(newPrice: Double) {
         viewModelScope.launch {
             val now = Clock.System.now().toEpochMilliseconds()
-            updateAssetCurrentPrice(assetId, newPrice, now)
+            updateAssetCurrentPrice(assetId, newPrice, now, uiState.value.asset?.assetCategoryId)
                 .onSuccess { closeUpdatePriceSheet() }
                 .onFailure { _error.value = it.message }
         }

@@ -310,6 +310,7 @@ fun AssetCategoryDetailScreen(
             linkedSectorIds = state.editingSectorIds,
             allRegions = state.allRegions,
             linkedRegionPercents = state.editingRegionPercents,
+            linkedFixedIncomePercent = state.editingFixedIncomePercent,
             onSave = { ticker, name, notes, catId, currentPrice, platformIds, maturityDate, fixedPct, sectorIds, regionPercents ->
                 viewModel.editAsset(editing, ticker, name, notes, catId, currentPrice, platformIds, maturityDate, fixedPct, sectorIds, regionPercents)
             },

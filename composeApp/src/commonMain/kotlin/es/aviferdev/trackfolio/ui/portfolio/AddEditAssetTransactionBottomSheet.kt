@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.trackfolio.domain.model.Asset
 import es.aviferdev.trackfolio.domain.model.AssetCategory
+import es.aviferdev.trackfolio.domain.model.AssetCategoryType
 import es.aviferdev.trackfolio.domain.model.AssetTransaction
 import es.aviferdev.trackfolio.domain.model.AssetTransactionType
 import es.aviferdev.trackfolio.domain.model.Platform
@@ -104,10 +105,12 @@ fun AddEditAssetTransactionBottomSheet(
     var showDatePicker by remember { mutableStateOf(false) }
     var selectedCategoryId by remember { mutableStateOf<String?>(null) }
 
-    // Filtrar activos por categoría seleccionada
+    // Filtrar activos por categoría seleccionada (excluir Renta Fija - no admiten compra/venta)
     val filteredAssets = remember(selectedCategoryId, allAssets) {
-        if (selectedCategoryId == null) allAssets
+        val baseAssets = if (selectedCategoryId == null) allAssets
         else allAssets.filter { it.assetCategoryId == selectedCategoryId }
+        // Excluir activos de Renta Fija de la lista de compra/venta
+        baseAssets.filter { !AssetCategoryType.isFixedIncome(it.assetCategoryId) }
     }
 
     // Resetear selectedAssetId si el activo actual no pertenece a la nueva categoría
@@ -288,8 +291,11 @@ fun AddEditAssetTransactionBottomSheet(
 
             // ── Selector de activo (oculto si fixedAsset != null) ────────────
             if (fixedAsset == null) {
-                // Filtro de categorías
-                if (categories.isNotEmpty()) {
+                // Filtro de categorías (excluir Renta Fija - no admiten compra/venta)
+                val investmentCategories = remember(categories) {
+                    categories.filter { !AssetCategoryType.isFixedIncome(it.id) }
+                }
+                if (investmentCategories.isNotEmpty()) {
                     Text("Categoría", fontSize = 12.sp, color = TextSecondary, fontWeight = FontWeight.Medium)
                     Spacer(Modifier.height(6.dp))
                     Row(
@@ -303,7 +309,7 @@ fun AddEditAssetTransactionBottomSheet(
                             isSelected = selectedCategoryId == null,
                             onClick  = { selectedCategoryId = null }
                         )
-                        categories.forEach { category ->
+                        investmentCategories.forEach { category ->
                             CategoryFilterChip(
                                 label    = category.name,
                                 icon     = category.icon,

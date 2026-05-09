@@ -160,7 +160,9 @@ class HomeViewModel(
     fun updateAssetPrice(assetId: String, newPrice: Double) {
         viewModelScope.launch {
             val now = Clock.System.now().toEpochMilliseconds()
-            val result = updateAssetCurrentPrice(assetId, newPrice, now)
+            // Obtener el activo para pasar su categoryId
+            val asset = _priceReminderState.value.outdatedAssets.find { it.id == assetId }
+            val result = updateAssetCurrentPrice(assetId, newPrice, now, asset?.assetCategoryId)
             if (result.isSuccess) {
                 val current = _priceReminderState.value
                 val newUpdatedIds = current.updatedAssetIds + assetId

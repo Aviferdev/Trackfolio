@@ -85,6 +85,7 @@ class DatabaseInitializer(
             CategoryEntity(id = "cat_exp_06", name = "Ropa",         type = TransactionType.EXPENSE.name, isDefault = 1L, archived = 0L),
             CategoryEntity(id = "cat_exp_07", name = "Educación",    type = TransactionType.EXPENSE.name, isDefault = 1L, archived = 0L),
             CategoryEntity(id = "cat_exp_08", name = "Otros",        type = TransactionType.EXPENSE.name, isDefault = 1L, archived = 0L),
+            CategoryEntity(id = "cat_exp_loan", name = "Cuota préstamo", type = TransactionType.EXPENSE.name, isDefault = 1L, archived = 0L),
         )
 
         /** Categoría especial para transacciones de ajuste / reconciliación. */
@@ -367,7 +368,8 @@ class DatabaseInitializer(
         commissionAmount = commissionAmount,
         issuerId = issuerId,
         issuerName = issuerName,
-        linkedAssetTransactionId = linkedAssetTransactionId
+        linkedAssetTransactionId = linkedAssetTransactionId,
+        linkedLoanId = linkedLoanId
     )
 
     private fun Debt.toEntity(): DebtEntity = DebtEntity(

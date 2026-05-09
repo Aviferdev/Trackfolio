@@ -18,8 +18,11 @@ CREATE TABLE TransactionEntity (
     issuerName                 TEXT,
     -- ── Vínculo con portfolio ─────────────────────────────────────────────────
     linkedAssetTransactionId   TEXT,
+    -- ── Vínculo con préstamo ──────────────────────────────────────────────────
+    linkedLoanId               TEXT,
     FOREIGN KEY (accountId) REFERENCES AccountEntity(id) ON DELETE CASCADE,
-    FOREIGN KEY (categoryId) REFERENCES CategoryEntity(id)
+    FOREIGN KEY (categoryId) REFERENCES CategoryEntity(id),
+    FOREIGN KEY (linkedLoanId) REFERENCES LoanEntity(id) ON DELETE SET NULL
 );
 
 CREATE INDEX idx_transaction_account ON TransactionEntity(accountId);
@@ -138,8 +141,9 @@ INSERT INTO TransactionEntity(
     id, accountId, amount, type, categoryId, date, notes, createdAt,
     excludeFromFiscal,
     incomeType, grossAmount, irpfPercent, socialSecurityAmount,
-    commissionAmount, issuerId, issuerName, linkedAssetTransactionId
-) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+    commissionAmount, issuerId, issuerName, linkedAssetTransactionId,
+    linkedLoanId
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 
 update:
 UPDATE TransactionEntity
@@ -157,7 +161,8 @@ SET accountId                = :accountId,
     commissionAmount         = :commissionAmount,
     issuerId                 = :issuerId,
     issuerName               = :issuerName,
-    linkedAssetTransactionId = :linkedAssetTransactionId
+    linkedAssetTransactionId = :linkedAssetTransactionId,
+    linkedLoanId             = :linkedLoanId
 WHERE id = :id;
 
 delete:

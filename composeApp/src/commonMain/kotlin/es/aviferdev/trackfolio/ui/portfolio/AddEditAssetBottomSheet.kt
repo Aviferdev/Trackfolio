@@ -19,10 +19,15 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDefaults
+import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.BottomSheetDefaults
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -45,6 +50,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.trackfolio.domain.model.Asset
 import es.aviferdev.trackfolio.domain.model.AssetCategory
+import es.aviferdev.trackfolio.domain.model.AssetCategoryType
 import es.aviferdev.trackfolio.domain.model.Platform
 import es.aviferdev.trackfolio.ui.theme.BorderGray
 import es.aviferdev.trackfolio.ui.theme.ExpenseRed
@@ -54,6 +60,7 @@ import es.aviferdev.trackfolio.ui.theme.SurfaceElevated
 import es.aviferdev.trackfolio.ui.theme.TextPrimary
 import es.aviferdev.trackfolio.ui.theme.TextSecondary
 import es.aviferdev.trackfolio.ui.theme.currencySymbol
+import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
@@ -72,6 +79,7 @@ fun AddEditAssetBottomSheet(
     linkedSectorIds: Set<String> = emptySet(),
     allRegions: List<es.aviferdev.trackfolio.domain.model.AssetRegion> = emptyList(),
     linkedRegionPercents: Map<String, Int> = emptyMap(),
+    linkedFixedIncomePercent: Int = 0,
     onSave: (
         ticker: String,
         name: String,
@@ -98,9 +106,23 @@ fun AddEditAssetBottomSheet(
     }
 
     var selectedPlatformIds by remember { mutableStateOf(linkedPlatformIds) }
-    var fixedIncomePercent by remember { mutableStateOf(0) }
+    var fixedIncomePercent by remember { mutableStateOf(linkedFixedIncomePercent) }
     var selectedSectorIds by remember { mutableStateOf(linkedSectorIds) }
     var regionPercents by remember(allRegions) { mutableStateOf(linkedRegionPercents.ifEmpty { emptyMap() }) }
+
+    // Estado para fecha de vencimiento (solo para Renta Fija)
+    var maturityDateMillis by remember {
+        mutableStateOf(
+            asset?.maturityDate
+                ?: (Clock.System.now().toEpochMilliseconds() + 365L * 24 * 60 * 60 * 1000)
+        )
+    }
+    var showMaturityDatePicker by remember { mutableStateOf(false) }
+
+    // Computed: ¿La categoría actual permite análisis (sectores, regiones, composición)?
+    val isAnalyzable = AssetCategoryType.isAnalyzable(selectedCategoryId)
+    // Computed: ¿La categoría actual es de renta fija?
+    val isFixedIncome = AssetCategoryType.isFixedIncome(selectedCategoryId)
 
     // Ensure all regions are in the map
     LaunchedEffect(allRegions) {
@@ -214,84 +236,107 @@ fun AddEditAssetBottomSheet(
                     unfocusedBorderColor = BorderGray
                 )
             )
-            Spacer(Modifier.height(12.dp))
+Spacer(Modifier.height(12.dp))
 
-            // ── Composición RF/RV ─────────────────────────────────────────
-            Text(
-                text       = "Composición RF / RV",
-                fontSize   = 12.sp,
-                color      = TextSecondary,
-                fontWeight = FontWeight.Medium
-            )
-            Spacer(Modifier.height(8.dp))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Slider(
-                    value     = fixedIncomePercent.toFloat(),
-                    onValueChange = { fixedIncomePercent = it.toInt() },
-                    valueRange = 0f..100f,
-                    steps     = 3,
-                    modifier  = Modifier.weight(1f),
-                    colors    = SliderDefaults.colors(
-                        thumbColor   = PrimaryDark,
-                        activeTrackColor = PrimaryDark
-                    )
-                )
-                Spacer(Modifier.width(12.dp))
+            // ── Composición RF / RV (solo para Acciones, ETFs, Fondos) ───────
+            if (isAnalyzable) {
                 Text(
-                    text       = "${fixedIncomePercent}%",
-                    fontSize   = 16.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    color      = PrimaryDark,
-                    modifier   = Modifier.width(50.dp)
+                    text       = "Composición RF / RV",
+                    fontSize   = 12.sp,
+                    color      = TextSecondary,
+                    fontWeight = FontWeight.Medium
                 )
-            }
-            Row(
-                modifier = Modifier.fillMaxWidth().padding(top = 2.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                listOf(0, 25, 50, 75, 100).forEach { pct ->
+                Spacer(Modifier.height(8.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Slider(
+                        value     = fixedIncomePercent.toFloat(),
+                        onValueChange = { fixedIncomePercent = it.toInt() },
+                        valueRange = 0f..100f,
+                        steps     = 3,
+                        modifier  = Modifier.weight(1f),
+                        colors    = SliderDefaults.colors(
+                            thumbColor   = PrimaryDark,
+                            activeTrackColor = PrimaryDark
+                        )
+                    )
+                    Spacer(Modifier.width(12.dp))
                     Text(
-                        text     = "$pct%",
-                        fontSize = 9.sp,
-                        color    = if (pct == fixedIncomePercent) PrimaryDark else TextSecondary
+                        text       = "${fixedIncomePercent}%",
+                        fontSize   = 16.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color      = PrimaryDark,
+                        modifier   = Modifier.width(50.dp)
                     )
                 }
-            }
-            Text(
-                text     = "RF: Renta Fija (${100 - fixedIncomePercent}% RV: Renta Variable)",
-                fontSize = 10.sp,
-                color    = TextSecondary,
-                modifier = Modifier.padding(top = 4.dp)
-            )
-            Spacer(Modifier.height(12.dp))
-
-            // ── Precio actual ──────
-            OutlinedTextField(
-                value         = currentPrice,
-                onValueChange = { currentPrice = it.filter { c -> c.isDigit() || c == ',' || c == '.' } },
-                label         = { Text("Precio actual (opcional)") },
-                placeholder   = { Text("0,00") },
-                trailingIcon  = { Text(symbol, color = TextSecondary, modifier = Modifier.padding(end = 12.dp)) },
-                supportingText = {
-                    Text(
-                        text     = "Sirve para calcular el valor actual y la revalorización.",
-                        fontSize = 11.sp,
-                        color    = TextSecondary
-                    )
-                },
-                modifier      = Modifier.fillMaxWidth(),
-                singleLine    = true,
-                shape         = RoundedCornerShape(10.dp),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                colors        = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor   = PrimaryDark,
-                    unfocusedBorderColor = BorderGray
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(top = 2.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    listOf(0, 25, 50, 75, 100).forEach { pct ->
+                        Text(
+                            text     = "$pct%",
+                            fontSize = 9.sp,
+                            color    = if (pct == fixedIncomePercent) PrimaryDark else TextSecondary
+                        )
+                    }
+                }
+                Text(
+                    text     = "RF: Renta Fija (${100 - fixedIncomePercent}% RV: Renta Variable)",
+                    fontSize = 10.sp,
+                    color    = TextSecondary,
+                    modifier = Modifier.padding(top = 4.dp)
                 )
-            )
-            Spacer(Modifier.height(12.dp))
+                Spacer(Modifier.height(12.dp))
+            }
+
+            // ── Precio actual (no disponible para Renta Fija) ───────────────
+            if (isFixedIncome) {
+                Text(
+                    text     = "Precio de mercado",
+                    fontSize = 12.sp,
+                    color    = TextSecondary,
+                    fontWeight = FontWeight.Medium
+                )
+                Spacer(Modifier.height(8.dp))
+                Text(
+                    text     = "Los activos de renta fija no utilizan precio de mercado. Use el sistema de posiciones de renta fija para registrar estos activos.",
+                    fontSize = 11.sp,
+                    color    = TextSecondary,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(10.dp))
+                        .background(SurfaceElevated)
+                        .padding(12.dp)
+                )
+                Spacer(Modifier.height(12.dp))
+            } else {
+                OutlinedTextField(
+                    value         = currentPrice,
+                    onValueChange = { currentPrice = it.filter { c -> c.isDigit() || c == ',' || c == '.' } },
+                    label         = { Text("Precio actual (opcional)") },
+                    placeholder   = { Text("0,00") },
+                    trailingIcon  = { Text(symbol, color = TextSecondary, modifier = Modifier.padding(end = 12.dp)) },
+                    supportingText = {
+                        Text(
+                            text     = "Sirve para calcular el valor actual y la revalorización.",
+                            fontSize = 11.sp,
+                            color    = TextSecondary
+                        )
+                    },
+                    modifier      = Modifier.fillMaxWidth(),
+                    singleLine    = true,
+                    shape         = RoundedCornerShape(10.dp),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                    colors        = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor   = PrimaryDark,
+                        unfocusedBorderColor = BorderGray
+                    )
+                )
+                Spacer(Modifier.height(12.dp))
+            }
 
             // ── Plataformas vinculadas (multi-select) ────────────────────────
             if (allPlatforms.isNotEmpty()) {
@@ -339,8 +384,8 @@ fun AddEditAssetBottomSheet(
                 )
             }
 
-            // ── Sectores (multi-select) ─────────────────────────────────────
-            if (allSectors.isNotEmpty()) {
+            // ── Sectores (solo para Acciones, ETFs, Fondos) ────────────────────
+            if (isAnalyzable && allSectors.isNotEmpty()) {
                 Spacer(Modifier.height(12.dp))
                 Text(
                     text       = "Sectores",
@@ -378,8 +423,8 @@ fun AddEditAssetBottomSheet(
                 )
             }
 
-            // ── Distribución regional (sliders) ───────────────────────────────
-            if (allRegions.isNotEmpty()) {
+            // ── Distribución regional (solo para Acciones, ETFs, Fondos) ────────
+            if (isAnalyzable && allRegions.isNotEmpty()) {
                 Spacer(Modifier.height(12.dp))
                 Text(
                     text       = "Distribución regional",
@@ -436,6 +481,35 @@ fun AddEditAssetBottomSheet(
                 )
             }
 
+            // ── Fecha de vencimiento (solo para Renta Fija) ─────────────────────
+            if (isFixedIncome) {
+                Spacer(Modifier.height(12.dp))
+                Text(
+                    text       = "Fecha de vencimiento",
+                    fontSize   = 12.sp,
+                    color      = TextSecondary,
+                    fontWeight = FontWeight.Medium
+                )
+                Spacer(Modifier.height(8.dp))
+                Text(
+                    text     = formatFullDate(maturityDateMillis),
+                    fontSize = 14.sp,
+                    color    = TextPrimary,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(10.dp))
+                        .border(0.5.dp, BorderGray, RoundedCornerShape(10.dp))
+                        .clickable { showMaturityDatePicker = true }
+                        .padding(horizontal = 14.dp, vertical = 14.dp)
+                )
+                Spacer(Modifier.height(4.dp))
+                Text(
+                    "Toca para seleccionar la fecha de vencimiento del activo.",
+                    fontSize = 10.sp,
+                    color = TextSecondary
+                )
+            }
+
             // Nota
             OutlinedTextField(
                 value         = notes,
@@ -456,8 +530,11 @@ fun AddEditAssetBottomSheet(
                 onClick = {
                     if (ticker.isBlank()) { tickerError = true; return@Button }
                     if (name.isBlank())   { nameError = true; return@Button }
-                    val curr = currentPrice.replace(',', '.').toDoubleOrNull()
-                    val regionsToSave = regionPercents.filter { it.value > 0 }
+                    val curr = if (isFixedIncome) null else currentPrice.replace(',', '.').toDoubleOrNull()
+                    val regionsToSave = if (isAnalyzable) regionPercents.filter { it.value > 0 } else emptyMap()
+                    val sectorsToSave = if (isAnalyzable) selectedSectorIds else emptySet()
+                    val compositionToSave = if (isAnalyzable) fixedIncomePercent else 0
+                    val maturityToSave = if (isFixedIncome) maturityDateMillis else null
                     onSave(
                         ticker.trim(),
                         name.trim(),
@@ -465,9 +542,9 @@ fun AddEditAssetBottomSheet(
                         selectedCategoryId,
                         curr,
                         selectedPlatformIds,
-                        asset?.maturityDate,
-                        fixedIncomePercent,
-                        selectedSectorIds,
+                        maturityToSave,
+                        compositionToSave,
+                        sectorsToSave,
                         regionsToSave
                     )
                 },
@@ -487,7 +564,40 @@ fun AddEditAssetBottomSheet(
             }
         }
     }
+
+    // ── DatePicker para fecha de vencimiento ─────────────────────────────
+    if (showMaturityDatePicker) {
+        val pickerState = rememberDatePickerState(
+            initialSelectedDateMillis = maturityDateMillis
+        )
+        DatePickerDialog(
+            onDismissRequest = { showMaturityDatePicker = false },
+            confirmButton = {
+                TextButton(onClick = {
+                    val selected = pickerState.selectedDateMillis
+                    if (selected != null && selected > Clock.System.now().toEpochMilliseconds()) {
+                        maturityDateMillis = selected
+                    }
+                    showMaturityDatePicker = false
+                }) { Text("Aceptar", color = PrimaryDark) }
+            },
+            dismissButton = {
+                TextButton(onClick = { showMaturityDatePicker = false }) {
+                    Text("Cancelar", color = TextSecondary)
+                }
+            },
+            colors = DatePickerDefaults.colors(containerColor = SurfaceWhite)
+        ) {
+            DatePicker(
+                state = pickerState,
+                colors = DatePickerDefaults.colors(
+                    selectedDayContainerColor = PrimaryDark,
+                    todayDateBorderColor = PrimaryDark
+                )
+            )
+        }
     }
+}
 
 
 // ── Helpers ──────────────────────────────────────────────────────────────────

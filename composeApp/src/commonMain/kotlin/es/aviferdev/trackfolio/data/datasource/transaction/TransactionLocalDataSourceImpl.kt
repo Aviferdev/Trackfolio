@@ -111,7 +111,8 @@ class TransactionLocalDataSourceImpl(
                     commissionAmount         = entity.commissionAmount,
                     issuerId                 = entity.issuerId,
                     issuerName               = entity.issuerName,
-                    linkedAssetTransactionId = entity.linkedAssetTransactionId
+                    linkedAssetTransactionId = entity.linkedAssetTransactionId,
+                    linkedLoanId             = entity.linkedLoanId
                 )
             }
         }
@@ -135,6 +136,7 @@ class TransactionLocalDataSourceImpl(
                     issuerId                 = entity.issuerId,
                     issuerName               = entity.issuerName,
                     linkedAssetTransactionId = entity.linkedAssetTransactionId,
+                    linkedLoanId             = entity.linkedLoanId,
                     id                       = entity.id
                 )
             }

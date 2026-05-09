@@ -23,6 +23,8 @@ import es.aviferdev.trackfolio.ui.annual.AnnualSummaryScreen
 import es.aviferdev.trackfolio.ui.debt.DebtListScreen
 import es.aviferdev.trackfolio.ui.fiscal.FiscalReportScreen
 import es.aviferdev.trackfolio.ui.fixedincome.FixedIncomeDetailScreen
+import es.aviferdev.trackfolio.ui.loan.LoanDetailScreen
+import es.aviferdev.trackfolio.ui.networth.NetWorthScreen
 import es.aviferdev.trackfolio.ui.home.HomeScreen
 import es.aviferdev.trackfolio.ui.portfolio.AssetCategoryDetailScreen
 import es.aviferdev.trackfolio.ui.portfolio.AssetDetailScreen
@@ -123,6 +125,15 @@ fun TrackfolioNavHost() {
                     },
                     onFixedIncomeClick = { positionId ->
                         navController.navigate(Screen.FixedIncomeDetail.buildRoute(positionId)) {
+                            launchSingleTop = true
+                        }
+                    }
+                )
+            }
+            composable(Screen.NetWorth.route) {
+                NetWorthScreen(
+                    onLoanClick = { loanId ->
+                        navController.navigate(Screen.LoanDetail.buildRoute(loanId)) {
                             launchSingleTop = true
                         }
                     }
@@ -258,6 +269,18 @@ fun TrackfolioNavHost() {
                 FixedIncomeDetailScreen(
                     positionId = positionId,
                     onBack     = { navController.popBackStack() }
+                )
+            }
+            composable(
+                route     = Screen.LoanDetail.route,
+                arguments = listOf(
+                    navArgument(Screen.LoanDetail.ARG_LOAN_ID) { type = NavType.StringType }
+                )
+            ) { backStackEntry ->
+                val loanId = backStackEntry.arguments?.getString(Screen.LoanDetail.ARG_LOAN_ID).orEmpty()
+                LoanDetailScreen(
+                    loanId = loanId,
+                    onBack = { navController.popBackStack() }
                 )
             }
         }

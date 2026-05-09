@@ -1,0 +1,91 @@
+CREATE TABLE LoanEntity (
+    id                    TEXT    NOT NULL PRIMARY KEY,
+    accountId             TEXT    NOT NULL,
+    name                  TEXT    NOT NULL,
+    type                  TEXT    NOT NULL,
+    totalAmount           REAL    NOT NULL,
+    outstandingPrincipal  REAL    NOT NULL,
+    currentInterestRate   REAL    NOT NULL,
+    monthlyPayment        REAL    NOT NULL,
+    totalInstallments     INTEGER NOT NULL,
+    paidInstallments      INTEGER NOT NULL DEFAULT 0,
+    startDate             INTEGER NOT NULL,
+    endDate               INTEGER NOT NULL,
+    lenderName            TEXT,
+    notes                 TEXT,
+    archived              INTEGER NOT NULL DEFAULT 0,
+    createdAt             INTEGER NOT NULL,
+    FOREIGN KEY (accountId) REFERENCES AccountEntity(id) ON DELETE CASCADE
+);
+
+CREATE INDEX idx_loan_account  ON LoanEntity(accountId);
+CREATE INDEX idx_loan_archived ON LoanEntity(archived);
+
+-- ─── Lectura ──────────────────────────────────────────────────────────────────
+
+selectByAccount:
+SELECT * FROM LoanEntity
+WHERE accountId = :accountId AND archived = 0
+ORDER BY createdAt DESC;
+
+selectActiveByAccount:
+SELECT * FROM LoanEntity
+WHERE accountId = :accountId AND archived = 0
+ORDER BY endDate ASC;
+
+selectById:
+SELECT * FROM LoanEntity WHERE id = :id;
+
+selectAll:
+SELECT * FROM LoanEntity
+WHERE archived = 0
+ORDER BY createdAt DESC;
+
+getTotalOutstandingByAccount:
+SELECT COALESCE(SUM(outstandingPrincipal), 0.0) AS total
+FROM LoanEntity
+WHERE accountId = :accountId AND archived = 0;
+
+-- ─── Escritura ────────────────────────────────────────────────────────────────
+
+insert:
+INSERT INTO LoanEntity(
+    id, accountId, name, type, totalAmount, outstandingPrincipal,
+    currentInterestRate, monthlyPayment, totalInstallments, paidInstallments,
+    startDate, endDate, lenderName, notes, archived, createdAt
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, ?);
+
+update:
+UPDATE LoanEntity
+SET name                  = :name,
+    type                  = :type,
+    totalAmount           = :totalAmount,
+    outstandingPrincipal  = :outstandingPrincipal,
+    currentInterestRate   = :currentInterestRate,
+    monthlyPayment        = :monthlyPayment,
+    totalInstallments     = :totalInstallments,
+    paidInstallments      = :paidInstallments,
+    startDate             = :startDate,
+    endDate               = :endDate,
+    lenderName            = :lenderName,
+    notes                 = :notes
+WHERE id = :id;
+
+updateRate:
+UPDATE LoanEntity
+SET currentInterestRate  = :newRate,
+    monthlyPayment       = :newMonthlyPayment,
+    outstandingPrincipal = :outstandingPrincipal
+WHERE id = :id;
+
+incrementPaidInstallments:
+UPDATE LoanEntity
+SET paidInstallments     = paidInstallments + 1,
+    outstandingPrincipal = :newOutstanding
+WHERE id = :id;
+
+archive:
+UPDATE LoanEntity SET archived = 1 WHERE id = :id;
+
+delete:
+DELETE FROM LoanEntity WHERE id = :id;

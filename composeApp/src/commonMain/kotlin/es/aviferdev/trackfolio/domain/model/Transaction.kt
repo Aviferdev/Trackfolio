@@ -34,6 +34,10 @@ data class Transaction(
      *  de solo lectura — se gestiona desde Portfolio. */
     val linkedAssetTransactionId: String? = null,
 
+    // ── Vínculo con préstamo ────────────────────────────────────────────────────
+    /** ID del préstamo vinculado. Si != null, este gasto es una cuota de préstamo. */
+    val linkedLoanId: String? = null,
+
     // ── Reconciliación ────────────────────────────────────────────────────────
     /** Si true, esta transacción se excluye del informe fiscal (IRPF). */
     val excludeFromFiscal: Boolean = false
@@ -57,6 +61,9 @@ data class Transaction(
 
     /** True si este movimiento está vinculado a una inversión del portfolio. */
     val isLinkedToAsset: Boolean get() = linkedAssetTransactionId != null
+
+    /** True si este gasto está vinculado a un préstamo. */
+    val isLinkedToLoan: Boolean get() = linkedLoanId != null
 }
 
 enum class TransactionType { INCOME, EXPENSE, ADJUSTMENT }

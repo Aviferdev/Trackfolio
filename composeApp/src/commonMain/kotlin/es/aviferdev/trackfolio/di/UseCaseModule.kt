@@ -59,6 +59,13 @@ import es.aviferdev.trackfolio.domain.usecase.fixedincome.CreateLedgerTransactio
 import es.aviferdev.trackfolio.domain.usecase.fixedincome.CloseFixedIncomeUseCase
 import es.aviferdev.trackfolio.domain.usecase.fixedincome.DeleteFixedIncomeEventUseCase
 import es.aviferdev.trackfolio.domain.usecase.fixedincome.DeleteLinkedTransactionUseCase
+import es.aviferdev.trackfolio.domain.usecase.loan.ArchiveLoanUseCase
+import es.aviferdev.trackfolio.domain.usecase.loan.GetAmortizationScheduleUseCase
+import es.aviferdev.trackfolio.domain.usecase.loan.GetLoansByAccountUseCase
+import es.aviferdev.trackfolio.domain.usecase.loan.SaveLoanUseCase
+import es.aviferdev.trackfolio.domain.usecase.loan.UpdateLoanRateUseCase
+import es.aviferdev.trackfolio.domain.usecase.loan.UpdateLoanUseCase
+import es.aviferdev.trackfolio.domain.usecase.networth.GetNetWorthDataUseCase
 import es.aviferdev.trackfolio.domain.usecase.fixedincome.GetCouponScheduleUseCase
 import es.aviferdev.trackfolio.domain.usecase.fixedincome.GetFixedIncomePositionDetailUseCase
 import es.aviferdev.trackfolio.domain.usecase.fixedincome.GetFixedIncomeSummaryUseCase
@@ -94,6 +101,8 @@ import es.aviferdev.trackfolio.ui.annual.AnnualViewModel
 import es.aviferdev.trackfolio.ui.debt.DebtViewModel
 import es.aviferdev.trackfolio.ui.fiscal.FiscalReportViewModel
 import es.aviferdev.trackfolio.ui.fixedincome.FixedIncomeDetailViewModel
+import es.aviferdev.trackfolio.ui.loan.LoanDetailViewModel
+import es.aviferdev.trackfolio.ui.networth.NetWorthViewModel
 import es.aviferdev.trackfolio.ui.home.AddTransactionViewModel
 import es.aviferdev.trackfolio.ui.home.HomeViewModel
 import es.aviferdev.trackfolio.ui.portfolio.AssetCatalogViewModel
@@ -424,6 +433,37 @@ val useCaseModule = module {
             updatePosition                = get(),
             archivePosition               = get(),
             transactionRepository          = get()
+        )
+    }
+
+    // ── Loan ─────────────────────────────────────────────────────────────────────
+    factory { SaveLoanUseCase(get()) }
+    factory { UpdateLoanUseCase(get()) }
+    factory { UpdateLoanRateUseCase(get(), get()) }
+    factory { GetLoansByAccountUseCase(get()) }
+    factory { GetAmortizationScheduleUseCase(get(), get()) }
+    factory { ArchiveLoanUseCase(get()) }
+
+    // ── Net Worth ────────────────────────────────────────────────────────────────
+    factory { GetNetWorthDataUseCase(get(), get(), get(), get(), get(), get()) }
+
+    // ── ViewModels (Loan / NetWorth) ─────────────────────────────────────────────
+    viewModel {
+        NetWorthViewModel(
+            getNetWorthData      = get(),
+            getLoansByAccount    = get(),
+            session              = get()
+        )
+    }
+    viewModel { (loanId: String) ->
+        LoanDetailViewModel(
+            loanId                    = loanId,
+            loanRepository            = get(),
+            getAmortizationSchedule   = get(),
+            updateLoanRate            = get(),
+            updateLoan                = get(),
+            archiveLoan               = get(),
+            rateChangeRepository      = get()
         )
     }
 }

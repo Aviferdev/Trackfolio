@@ -49,6 +49,7 @@ data class AssetCategoryDetailUiState(
     val editingPlatformIds: Set<String> = emptySet(),
     val editingSectorIds: Set<String>   = emptySet(),
     val editingRegionPercents: Map<String, Int> = emptyMap(),
+    val editingFixedIncomePercent: Int = 0,
     val pendingArchive: Asset?         = null,
     val showLinkPlatformSheet: Boolean = false,
     val error: String?                 = null,
@@ -84,6 +85,7 @@ class AssetCategoryDetailViewModel(
     private val _showLinkPlatformSheet = MutableStateFlow(false)
     private val _editingSectorIds   = MutableStateFlow<Set<String>>(emptySet())
     private val _editingRegionPercents = MutableStateFlow<Map<String, Int>>(emptyMap())
+    private val _editingFixedIncomePercent = MutableStateFlow(0)
 
     private val allSectors: StateFlow<List<es.aviferdev.trackfolio.domain.model.AssetSector>> =
         assetMetadataRepository.getAllSectors()
@@ -126,12 +128,13 @@ class AssetCategoryDetailViewModel(
                 val sheetsFlowPart2 = combine(
                     _editingSectorIds,
                     _editingRegionPercents,
+                    _editingFixedIncomePercent,
                     _pendingArchive,
                     _error
-                ) { sectIds, regPerc, arch, err -> SheetPart2(sectIds, regPerc, arch, err) }
+                ) { sectIds, regPerc, fixedIncPct, arch, err -> SheetPart2(sectIds, regPerc, fixedIncPct, arch, err) }
 
                 val sheetsFlow = combine(sheetsFlowPart1, sheetsFlowPart2) { part1, part2 ->
-                    SheetState(part1.show, part1.edit, part1.platIds, part2.sectIds, part2.regPerc, part2.arch, part2.err)
+                    SheetState(part1.show, part1.edit, part1.platIds, part2.sectIds, part2.regPerc, part2.fixedIncPct, part2.arch, part2.err)
                 }.combine(_showLinkPlatformSheet) { sheets, linkSheet -> sheets to linkSheet }
 
                 val sectorsRegionsFlow = combine(allSectors, allRegions) { sectors, regions -> sectors to regions }
@@ -156,6 +159,7 @@ class AssetCategoryDetailViewModel(
                         editingPlatformIds   = sheets.platIds,
                         editingSectorIds     = sheets.sectIds,
                         editingRegionPercents = sheets.regPerc,
+                        editingFixedIncomePercent = sheets.fixedIncPct,
                         pendingArchive       = sheets.arch,
                         showLinkPlatformSheet = linkSheet,
                         error                = sheets.err,
@@ -185,6 +189,9 @@ class AssetCategoryDetailViewModel(
 
             val regions = assetMetadataRepository.getRegionDistributionsByAssetId(asset.id).first()
             _editingRegionPercents.value = regions.associate { it.regionId to it.percent }
+
+            val composition = assetMetadataRepository.getCompositionByAssetId(asset.id).first()
+            _editingFixedIncomePercent.value = composition?.fixedIncomePercent ?: 0
         }
     }
     fun closeEditSheet() {
@@ -192,6 +199,7 @@ class AssetCategoryDetailViewModel(
         _editingPlatformIds.value = emptySet()
         _editingSectorIds.value = emptySet()
         _editingRegionPercents.value = emptyMap()
+        _editingFixedIncomePercent.value = 0
     }
 
     fun requestArchive(asset: Asset) {
@@ -432,6 +440,7 @@ class AssetCategoryDetailViewModel(
     private data class SheetPart2(
         val sectIds: Set<String>,
         val regPerc: Map<String, Int>,
+        val fixedIncPct: Int,
         val arch: Asset?,
         val err: String?
     )
@@ -442,6 +451,7 @@ class AssetCategoryDetailViewModel(
         val platIds: Set<String>,
         val sectIds: Set<String>,
         val regPerc: Map<String, Int>,
+        val fixedIncPct: Int,
         val arch: Asset?,
         val err: String?
     )

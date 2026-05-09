@@ -88,7 +88,7 @@ selectOutdatedByAccount:
 SELECT a.* FROM AssetEntity a
 WHERE a.accountId = :accountId
   AND a.archived = 0
-  AND a.assetCategoryId NOT IN ('fixed_cat_bonds', 'fixed_cat_deposits')
+  AND a.assetCategoryId NOT IN ('fixed_cat_fixedincome')
   AND (
     SELECT COALESCE(
       SUM(CASE WHEN t.type = 'BUY' THEN t.quantity ELSE 0 END) -

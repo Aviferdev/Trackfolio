@@ -7,6 +7,7 @@ sealed class Screen(val route: String) {
     data object Debts       : Screen("debts")
     data object Settings    : Screen("settings")
     data object Charts      : Screen("charts")
+    data object NetWorth    : Screen("net_worth")
     data object PortfolioSettings : Screen("portfolio_settings")
     data object FiscalReport: Screen("fiscal_report")
 
@@ -36,5 +37,10 @@ sealed class Screen(val route: String) {
     data object FixedIncomeDetail : Screen("fixed_income_detail/{positionId}") {
         const val ARG_POSITION_ID = "positionId"
         fun buildRoute(positionId: String): String = "fixed_income_detail/$positionId"
+    }
+
+    data object LoanDetail : Screen("loan_detail/{loanId}") {
+        const val ARG_LOAN_ID = "loanId"
+        fun buildRoute(loanId: String): String = "loan_detail/$loanId"
     }
 }

@@ -29,6 +29,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import es.aviferdev.trackfolio.domain.model.AssetCategoryType
 import es.aviferdev.trackfolio.domain.model.AssetTransaction
 import es.aviferdev.trackfolio.domain.model.AssetTransactionType
 import es.aviferdev.trackfolio.domain.model.Platform
@@ -113,9 +114,23 @@ fun AssetHistoryScreen(
                                 currentPrice      = state.asset!!.currentPrice,
                                 currentPriceUpdatedAt = state.asset!!.currentPriceUpdatedAt,
                                 currencyCode      = state.currencyCode,
+                                showUpdatePrice   = !AssetCategoryType.isFixedIncome(state.asset!!.assetCategoryId),
                                 onUpdatePrice     = { viewModel.openUpdatePriceSheet() },
                                 modifier          = Modifier.padding(horizontal = 20.dp, vertical = 12.dp)
                             )
+                        }
+
+                        // Tarjeta de fecha de vencimiento (solo para Renta Fija)
+                        state.asset!!.maturityDate?.let { maturityDate ->
+                            if (AssetCategoryType.isFixedIncome(state.asset!!.assetCategoryId)) {
+                                item {
+                                    MaturityDateCard(
+                                        maturityDate = maturityDate,
+                                        isBond = false,
+                                        modifier = Modifier.padding(horizontal = 20.dp, vertical = 4.dp)
+                                    )
+                                }
+                            }
                         }
 
                         // Tarjeta de posición FIFO
@@ -203,6 +218,7 @@ fun AssetHistoryScreen(
 
         // FAB con menú contextual según tipo de activo
         if (state.asset != null) {
+            val isFixedIncome = AssetCategoryType.isFixedIncome(state.asset!!.assetCategoryId)
 
             Box(
                 modifier = Modifier
@@ -224,16 +240,22 @@ fun AssetHistoryScreen(
                     onDismissRequest = { fabMenuOpen = false },
                     containerColor   = SurfaceWhite
                 ) {
-                    DropdownMenuItem(
-                        text        = { Text("Nuevo movimiento", color = TextPrimary) },
-                        leadingIcon = { Text("💱", fontSize = 16.sp) },
-                        onClick     = { fabMenuOpen = false; viewModel.openAddSheet() }
-                    )
-                    DropdownMenuItem(
-                        text        = { Text("Registrar dividendo", color = TextPrimary) },
-                        leadingIcon = { Text("📈", fontSize = 16.sp) },
-                        onClick     = { fabMenuOpen = false; viewModel.openDividendSheet() }
-                    )
+                    // Nuevo movimiento (solo para activos de inversión, no Renta Fija)
+                    if (!isFixedIncome) {
+                        DropdownMenuItem(
+                            text        = { Text("Nuevo movimiento", color = TextPrimary) },
+                            leadingIcon = { Text("💱", fontSize = 16.sp) },
+                            onClick     = { fabMenuOpen = false; viewModel.openAddSheet() }
+                        )
+                    }
+                    // Dividendos (solo para activos de inversión, no Renta Fija)
+                    if (!isFixedIncome) {
+                        DropdownMenuItem(
+                            text        = { Text("Registrar dividendo", color = TextPrimary) },
+                            leadingIcon = { Text("📈", fontSize = 16.sp) },
+                            onClick     = { fabMenuOpen = false; viewModel.openDividendSheet() }
+                        )
+                    }
                     if (state.isTransferable) {
                         DropdownMenuItem(
                             text        = { Text("Traspasar fondo", color = TextPrimary) },
@@ -411,6 +433,7 @@ private fun AssetSummaryCard(
     currentPrice: Double?,
     currentPriceUpdatedAt: Long?,
     currencyCode: String,
+    showUpdatePrice: Boolean = true,
     onUpdatePrice: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -473,20 +496,22 @@ private fun AssetSummaryCard(
                 }
             }
 
-            // Botón actualizar precio
-            OutlinedButton(
-                onClick        = onUpdatePrice,
-                shape          = RoundedCornerShape(10.dp),
-                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)
-            ) {
-                Icon(
-                    Icons.Outlined.Refresh,
-                    contentDescription = null,
-                    modifier = Modifier.size(14.dp),
-                    tint     = PrimaryDark
-                )
-                Spacer(Modifier.width(4.dp))
-                Text("Actualizar", fontSize = 12.sp, color = PrimaryDark)
+            // Botón actualizar precio (solo para activos de inversión, no renta fija)
+            if (showUpdatePrice) {
+                OutlinedButton(
+                    onClick        = onUpdatePrice,
+                    shape          = RoundedCornerShape(10.dp),
+                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)
+                ) {
+                    Icon(
+                        Icons.Outlined.Refresh,
+                        contentDescription = null,
+                        modifier = Modifier.size(14.dp),
+                        tint     = PrimaryDark
+                    )
+                    Spacer(Modifier.width(4.dp))
+                    Text("Actualizar", fontSize = 12.sp, color = PrimaryDark)
+                }
             }
         }
     }

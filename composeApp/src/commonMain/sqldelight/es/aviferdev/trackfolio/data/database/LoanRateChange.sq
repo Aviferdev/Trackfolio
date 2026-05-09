@@ -1,0 +1,31 @@
+CREATE TABLE LoanRateChangeEntity (
+    id            TEXT    NOT NULL PRIMARY KEY,
+    loanId        TEXT    NOT NULL,
+    newRate        REAL    NOT NULL,
+    previousRate   REAL    NOT NULL,
+    effectiveDate  INTEGER NOT NULL,
+    createdAt      INTEGER NOT NULL,
+    FOREIGN KEY (loanId) REFERENCES LoanEntity(id) ON DELETE CASCADE
+);
+
+CREATE INDEX idx_loan_rate_change_loan ON LoanRateChangeEntity(loanId);
+
+-- ─── Lectura ──────────────────────────────────────────────────────────────────
+
+selectByLoan:
+SELECT * FROM LoanRateChangeEntity
+WHERE loanId = :loanId
+ORDER BY effectiveDate DESC;
+
+selectById:
+SELECT * FROM LoanRateChangeEntity WHERE id = :id;
+
+-- ─── Escritura ────────────────────────────────────────────────────────────────
+
+insert:
+INSERT INTO LoanRateChangeEntity(
+    id, loanId, newRate, previousRate, effectiveDate, createdAt
+) VALUES (?, ?, ?, ?, ?, ?);
+
+deleteByLoan:
+DELETE FROM LoanRateChangeEntity WHERE loanId = :loanId;

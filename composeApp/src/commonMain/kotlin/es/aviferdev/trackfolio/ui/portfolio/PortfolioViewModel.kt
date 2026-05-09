@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import es.aviferdev.trackfolio.domain.model.Account
 import es.aviferdev.trackfolio.domain.model.Asset
 import es.aviferdev.trackfolio.domain.model.AssetCategory
+import es.aviferdev.trackfolio.domain.model.AssetCategoryType
 import es.aviferdev.trackfolio.domain.model.AssetTransaction
 import es.aviferdev.trackfolio.domain.model.AssetTransactionType
 import es.aviferdev.trackfolio.domain.model.FixedIncomeEvent
@@ -620,7 +621,7 @@ class PortfolioViewModel(
     fun refreshCurrentPrice(asset: Asset, newPrice: Double) {
         viewModelScope.launch {
             val now = Clock.System.now().toEpochMilliseconds()
-            updateAssetCurrentPrice(asset.id, newPrice, now)
+            updateAssetCurrentPrice(asset.id, newPrice, now, asset.assetCategoryId)
                 .onSuccess { closeUpdatePriceSheet() }
                 .onFailure { _sheetState.value = _sheetState.value.copy(error = it.message) }
         }
@@ -646,6 +647,13 @@ class PortfolioViewModel(
         notes: String?
     ) {
         viewModelScope.launch {
+            // Validar que el activo no sea de Renta Fija
+            val asset = portfolioState.value.allAssets.find { it.id == assetId }
+            if (asset != null && AssetCategoryType.isFixedIncome(asset.assetCategoryId)) {
+                _sheetState.value = _sheetState.value.copy(error = "Los activos de Renta Fija no admiten movimientos de compra/venta")
+                return@launch
+            }
+
             val now = Clock.System.now().toEpochMilliseconds()
             val tx = AssetTransaction(
                 id           = "tx_${now}_${(0..9999).random()}",
@@ -669,7 +677,7 @@ class PortfolioViewModel(
                             assetName = asset.name
                         )
                         if (type == AssetTransactionType.BUY && isSameDay(date, now)) {
-                            updateAssetCurrentPrice(assetId, pricePerUnit, now)
+                            updateAssetCurrentPrice(assetId, pricePerUnit, now, asset.assetCategoryId)
                         }
                     }
                     closeAddTransactionSheet()

@@ -27,6 +27,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import es.aviferdev.trackfolio.domain.model.AssetCategoryType
 import es.aviferdev.trackfolio.ui.account.AccountViewModel
 import es.aviferdev.trackfolio.ui.fixedincome.CreateFixedIncomeBottomSheet
 import es.aviferdev.trackfolio.ui.fixedincome.FixedIncomeSection
@@ -330,6 +331,7 @@ fun PortfolioScreen(
             linkedSectorIds = catalogState.editingSectorIds,
             allRegions   = state.allRegions,
             linkedRegionPercents = catalogState.editingRegionPercents,
+            linkedFixedIncomePercent = catalogState.editingFixedIncomePercent,
             onSave       = { ticker, name, notes, categoryId, currentPrice, platformIds, _, fixedPct, sectorIds, regionPercents ->
                 catalogViewModel.editAsset(editing, ticker, name, notes, categoryId, currentPrice, platformIds, fixedPct, sectorIds, regionPercents)
             },
@@ -787,13 +789,16 @@ private fun AssetCard(
 
             Spacer(Modifier.width(4.dp))
 
-            IconButton(onClick = onUpdatePrice, modifier = Modifier.size(32.dp)) {
-                Icon(
-                    Icons.Outlined.Refresh,
-                    contentDescription = "Actualizar precio",
-                    modifier = Modifier.size(16.dp),
-                    tint     = PrimaryDark
-                )
+            // Botón actualizar precio (no disponible para renta fija)
+            if (!AssetCategoryType.isFixedIncome(asset.assetCategoryId)) {
+                IconButton(onClick = onUpdatePrice, modifier = Modifier.size(32.dp)) {
+                    Icon(
+                        Icons.Outlined.Refresh,
+                        contentDescription = "Actualizar precio",
+                        modifier = Modifier.size(16.dp),
+                        tint     = PrimaryDark
+                    )
+                }
             }
         }
     }
