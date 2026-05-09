@@ -77,24 +77,24 @@ fun AnnualSummaryScreen(
                 }
                 AnnualTab.GASTOS -> {
                     DonutChartCard(
-                        title        = "Gastos por categoría",
-                        subtitle     = "Año ${uiState.year}",
-                        slices       = uiState.expensesByCategory,
-                        totalAmount  = uiState.summary?.totalExpense ?: 0.0,
-                        currencyCode = uiState.currencyCode,
+                        title          = "Gastos por categoría",
+                        subtitle       = "Año ${uiState.year}",
+                        slices         = uiState.expensesByCategory,
+                        totalAmount    = uiState.summary?.totalExpense ?: 0.0,
+                        currencyCode   = uiState.currencyCode,
                         balancesHidden = balancesHidden,
-                        modifier = Modifier.padding(horizontal = 20.dp, vertical = 16.dp)
+                        modifier       = Modifier.padding(horizontal = 20.dp, vertical = 16.dp)
                     )
                 }
                 AnnualTab.INGRESOS -> {
                     DonutChartCard(
-                        title        = "Ingresos por tipo",
-                        subtitle     = "Año ${uiState.year}",
-                        slices       = uiState.incomeByType,
-                        totalAmount  = uiState.summary?.totalIncome ?: 0.0,
-                        currencyCode = uiState.currencyCode,
+                        title          = "Ingresos por tipo",
+                        subtitle       = "Año ${uiState.year}",
+                        slices         = uiState.incomeByType,
+                        totalAmount    = uiState.summary?.totalIncome ?: 0.0,
+                        currencyCode   = uiState.currencyCode,
                         balancesHidden = balancesHidden,
-                        modifier = Modifier.padding(horizontal = 20.dp, vertical = 16.dp)
+                        modifier       = Modifier.padding(horizontal = 20.dp, vertical = 16.dp)
                     )
                 }
                 AnnualTab.INVERSIONES -> {

@@ -121,7 +121,7 @@ fun DonutChartCard(
                     verticalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
                     slices.forEach { slice ->
-                        DonutLegendRow(slice = slice, balancesHidden = balancesHidden)
+                        DonutLegendRow(slice = slice, currencyCode = currencyCode, balancesHidden = balancesHidden)
                     }
                 }
             }
@@ -162,7 +162,7 @@ private fun DonutCanvas(
 }
 
 @Composable
-private fun DonutLegendRow(slice: DonutSlice, balancesHidden: Boolean) {
+private fun DonutLegendRow(slice: DonutSlice, currencyCode: String, balancesHidden: Boolean) {
     Row(
         modifier          = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
@@ -187,11 +187,19 @@ private fun DonutLegendRow(slice: DonutSlice, balancesHidden: Boolean) {
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
+Text(
+                            text       = maskAmount(formatAmountWithCurrency(slice.amount, currencyCode), balancesHidden),
+                            fontSize   = 11.sp,
+                            color      = TextSecondary,
+                            fontWeight = FontWeight.Normal,
+                            modifier   = Modifier.wrapContentSize()
+                        )
+        Spacer(Modifier.width(6.dp))
         Text(
-            text       = "${formatPercentLegend(slice.percent)}%",
-            fontSize   = 12.sp,
-            color      = TextSecondary,
-            fontWeight = FontWeight.SemiBold,
+            text       = "(${formatPercentLegend(slice.percent)}%)",
+            fontSize   = 11.sp,
+            color      = TextSecondary.copy(alpha = 0.7f),
+            fontWeight = FontWeight.Normal,
             modifier   = Modifier.wrapContentSize()
         )
     }

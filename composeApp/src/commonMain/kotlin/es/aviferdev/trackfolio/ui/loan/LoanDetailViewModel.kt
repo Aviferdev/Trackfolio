@@ -65,6 +65,9 @@ class LoanDetailViewModel(
     fun openRateSheet() { _showRateSheet.value = true }
     fun closeRateSheet() { _showRateSheet.value = false }
 
+    fun openEditSheet() { _showEditSheet.value = true }
+    fun closeEditSheet() { _showEditSheet.value = false }
+
     fun updateRate(newRate: Double, effectiveDate: Long) {
         viewModelScope.launch {
             updateLoanRate(loanId, newRate, effectiveDate)

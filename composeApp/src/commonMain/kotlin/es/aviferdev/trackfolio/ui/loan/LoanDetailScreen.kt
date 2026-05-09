@@ -51,6 +51,9 @@ fun LoanDetailScreen(
                     }
                 },
                 actions = {
+                    IconButton(onClick = { viewModel.openEditSheet() }) {
+                        Icon(Icons.Outlined.Edit, "Editar", tint = PrimaryDark)
+                    }
                     IconButton(onClick = { viewModel.openRateSheet() }) {
                         Icon(Icons.Outlined.Edit, "Cambiar tipo", tint = PrimaryDark)
                     }
@@ -157,6 +160,14 @@ fun LoanDetailScreen(
                 }
             },
             shape = RoundedCornerShape(16.dp)
+        )
+    }
+
+    // ── Sheet de edición de préstamo ────────────────────────────────────────
+    if (uiState.showEditSheet && uiState.loan != null) {
+        AddEditLoanBottomSheet(
+            loan = uiState.loan,
+            onDismiss = { viewModel.closeEditSheet() }
         )
     }
 }

@@ -54,18 +54,22 @@ import org.koin.compose.koinInject
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddEditLoanBottomSheet(
+    loan: Loan? = null,
     onDismiss: () -> Unit,
     saveLoanUseCase: SaveLoanUseCase = koinInject(),
+    updateLoanUseCase: es.aviferdev.trackfolio.domain.usecase.loan.UpdateLoanUseCase = koinInject(),
     session: AccountSession = koinInject()
 ) {
-    var name by remember { mutableStateOf("") }
-    var selectedType by remember { mutableStateOf(LoanType.MORTGAGE) }
-    var totalAmountText by remember { mutableStateOf("") }
-    var interestRateText by remember { mutableStateOf("") }
-    var totalInstallmentsText by remember { mutableStateOf("") }
-    var lenderName by remember { mutableStateOf("") }
-    var notes by remember { mutableStateOf("") }
-    var startDateMillis by remember { mutableStateOf(Clock.System.now().toEpochMilliseconds()) }
+    val isEditing = loan != null
+
+    var name by remember { mutableStateOf(loan?.name ?: "") }
+    var selectedType by remember { mutableStateOf(loan?.type ?: LoanType.MORTGAGE) }
+    var totalAmountText by remember { mutableStateOf(loan?.totalAmount?.toString() ?: "") }
+    var interestRateText by remember { mutableStateOf(loan?.currentInterestRate?.toString() ?: "") }
+    var totalInstallmentsText by remember { mutableStateOf(loan?.totalInstallments?.toString() ?: "") }
+    var lenderName by remember { mutableStateOf(loan?.lenderName ?: "") }
+    var notes by remember { mutableStateOf(loan?.notes ?: "") }
+    var startDateMillis by remember { mutableStateOf(loan?.startDate ?: Clock.System.now().toEpochMilliseconds()) }
     var showStartDatePicker by remember { mutableStateOf(false) }
     var isLoading by remember { mutableStateOf(false) }
 
@@ -102,7 +106,7 @@ fun AddEditLoanBottomSheet(
                 .padding(horizontal = 20.dp, vertical = 12.dp)
         ) {
             Text(
-                "Nuevo préstamo",
+                if (isEditing) "Editar préstamo" else "Nuevo préstamo",
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
                 color = PrimaryDark
@@ -310,26 +314,45 @@ fun AddEditLoanBottomSheet(
                         totalAmount
                     }
 
-                    val loan = Loan(
-                        id                   = uuid4().toString(),
-                        accountId            = accountId,
-                        name                 = name.trim(),
-                        type                 = selectedType,
-                        totalAmount          = totalAmount,
-                        outstandingPrincipal = outstandingPrincipal,
-                        currentInterestRate  = interestRate,
-                        monthlyPayment       = monthlyPayment,
-                        totalInstallments    = totalInstallments,
-                        paidInstallments     = paidInstallments,
-                        startDate            = startDateMillis,
-                        endDate              = endDate,
-                        lenderName           = lenderName.ifBlank { null },
-                        notes                = notes.ifBlank { null },
-                        archived             = false,
-                        createdAt            = now
-                    )
+                    val loan = if (isEditing) {
+                        // Para edición, mantener los valores originales de cuotas pagadas y capital pendiente
+                        // solo actualizar los datos editables
+                        loan!!.copy(
+                            name                 = name.trim(),
+                            type                 = selectedType,
+                            currentInterestRate  = interestRate,
+                            monthlyPayment       = monthlyPayment,
+                            startDate            = startDateMillis,
+                            endDate              = endDate,
+                            lenderName           = lenderName.ifBlank { null },
+                            notes                = notes.ifBlank { null }
+                        )
+                    } else {
+                        Loan(
+                            id                   = uuid4().toString(),
+                            accountId            = accountId,
+                            name                 = name.trim(),
+                            type                 = selectedType,
+                            totalAmount          = totalAmount,
+                            outstandingPrincipal = outstandingPrincipal,
+                            currentInterestRate  = interestRate,
+                            monthlyPayment       = monthlyPayment,
+                            totalInstallments    = totalInstallments,
+                            paidInstallments     = paidInstallments,
+                            startDate            = startDateMillis,
+                            endDate              = endDate,
+                            lenderName           = lenderName.ifBlank { null },
+                            notes                = notes.ifBlank { null },
+                            archived             = false,
+                            createdAt            = now
+                        )
+                    }
                     scope.launch {
-                        saveLoanUseCase(loan)
+                        if (isEditing) {
+                            updateLoanUseCase(loan)
+                        } else {
+                            saveLoanUseCase(loan)
+                        }
                         onDismiss()
                     }
                 },
@@ -345,7 +368,7 @@ fun AddEditLoanBottomSheet(
                         strokeWidth = 2.dp
                     )
                 } else {
-                    Text("Guardar préstamo", fontSize = 16.sp)
+                    Text(if (isEditing) "Guardar cambios" else "Guardar préstamo", fontSize = 16.sp)
                 }
             }
 
