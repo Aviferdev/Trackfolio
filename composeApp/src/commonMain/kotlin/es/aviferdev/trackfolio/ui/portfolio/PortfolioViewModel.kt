@@ -32,6 +32,8 @@ import es.aviferdev.trackfolio.domain.usecase.assettransaction.SyncAssetTransact
 import es.aviferdev.trackfolio.domain.usecase.fixedincome.CreateFixedIncomePositionUseCase
 import es.aviferdev.trackfolio.domain.usecase.fixedincome.GetFixedIncomeSummaryUseCase
 import es.aviferdev.trackfolio.domain.usecase.platform.GetPlatformsUseCase
+import es.aviferdev.trackfolio.domain.usecase.portfolio.GetPortfolioValueHistoryUseCase
+import es.aviferdev.trackfolio.domain.model.PortfolioValuePoint
 import es.aviferdev.trackfolio.ui.account.AccountSession
 import es.aviferdev.trackfolio.ui.theme.CategoryPalette
 import es.aviferdev.trackfolio.ui.theme.UncategorizedColor
@@ -163,11 +165,25 @@ class PortfolioViewModel(
     private val session: AccountSession,
     private val getFixedIncomeSummary: GetFixedIncomeSummaryUseCase,
     private val getNearMaturityPositions: es.aviferdev.trackfolio.domain.usecase.fixedincome.GetNearMaturityPositionsUseCase? = null,
-    private val createFixedIncomePosition: CreateFixedIncomePositionUseCase? = null
+    private val createFixedIncomePosition: CreateFixedIncomePositionUseCase? = null,
+    private val getPortfolioValueHistory: GetPortfolioValueHistoryUseCase
 ) : ViewModel() {
 
     private val _sheetState = MutableStateFlow(SheetState())
     private val _selectedDistributionView = MutableStateFlow(DistributionView.CATEGORY)
+
+    /** Historial de valor mensual del portfolio (inversiones + renta fija). */
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val portfolioValueHistory: StateFlow<List<PortfolioValuePoint>> = session.selectedAccountId
+        .flatMapLatest { accountId ->
+            if (accountId == null) flowOf(emptyList())
+            else getPortfolioValueHistory(accountId)
+        }
+        .stateIn(
+            scope        = viewModelScope,
+            started      = SharingStarted.WhileSubscribed(5_000),
+            initialValue = emptyList()
+        )
 
     private val allSectors: StateFlow<List<es.aviferdev.trackfolio.domain.model.AssetSector>> =
         assetMetadataRepository.getAllSectors()

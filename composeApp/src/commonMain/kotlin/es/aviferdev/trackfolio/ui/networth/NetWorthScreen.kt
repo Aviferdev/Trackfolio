@@ -20,8 +20,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.trackfolio.domain.model.Loan
 import es.aviferdev.trackfolio.domain.model.NetWorthData
+import es.aviferdev.trackfolio.domain.model.NetWorthHistoryPoint
 import es.aviferdev.trackfolio.ui.loan.AddEditLoanBottomSheet
+import es.aviferdev.trackfolio.ui.common.DonutSlice
+import es.aviferdev.trackfolio.ui.common.LineChartCard
+import es.aviferdev.trackfolio.ui.annual.DonutChartCard
 import es.aviferdev.trackfolio.ui.theme.*
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toInstant
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.math.abs
 
@@ -53,9 +60,11 @@ fun NetWorthScreen(
         }
         is NetWorthUiState.Success -> {
             NetWorthContent(
-                data        = state.data,
-                onLoanClick = onLoanClick,
-                onAddLoan   = { viewModel.openAddLoanSheet() }
+                data              = state.data,
+                netWorthHistory   = state.netWorthHistory,
+                assetDistribution = state.assetDistribution,
+                onLoanClick       = onLoanClick,
+                onAddLoan         = { viewModel.openAddLoanSheet() }
             )
         }
     }
@@ -64,9 +73,13 @@ fun NetWorthScreen(
 @Composable
 private fun NetWorthContent(
     data: NetWorthData,
+    netWorthHistory: List<NetWorthHistoryPoint>,
+    assetDistribution: List<DonutSlice>,
     onLoanClick: (String) -> Unit,
     onAddLoan: () -> Unit
 ) {
+    val balancesHidden = LocalBalanceHidden.current
+
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(16.dp),
@@ -86,6 +99,33 @@ private fun NetWorthContent(
             NetWorthSummaryCard(data)
         }
 
+        // ── Gráfico de evolución del patrimonio ──────────────────────────────
+        if (netWorthHistory.size >= 2) {
+            item {
+                LineChartCard(
+                    title          = "Evolución del patrimonio",
+                    subtitle       = "Patrimonio neto mensual",
+                    points         = netWorthHistory.map { point ->
+                        val parts = point.yearMonth.split("-")
+                        val year = parts[0].toInt()
+                        val month = parts[1].toInt()
+                        val lastDay = when (month) {
+                            2 -> if (year % 4 == 0 && (year % 100 != 0 || year % 400 == 0)) 29 else 28
+                            4, 6, 9, 11 -> 30
+                            else -> 31
+                        }
+                        val instant = LocalDateTime(
+                            year, month, lastDay, 23, 59, 59
+                        ).toInstant(TimeZone.currentSystemDefault())
+                        instant.toEpochMilliseconds() to point.netWorth
+                    },
+                    lineColor      = PrimaryDark,
+                    currencyCode   = "EUR",
+                    balancesHidden = balancesHidden
+                )
+            }
+        }
+
         // ── Sección Activos ──────────────────────────────────────────────────
         item {
             Text(
@@ -95,6 +135,20 @@ private fun NetWorthContent(
                 color = PrimaryDark,
                 modifier = Modifier.padding(top = 8.dp)
             )
+        }
+
+        // ── Donut de distribución de activos ─────────────────────────────────
+        if (assetDistribution.isNotEmpty()) {
+            item {
+                DonutChartCard(
+                    title          = "Distribución de activos",
+                    subtitle       = "Composición del patrimonio",
+                    slices         = assetDistribution,
+                    totalAmount    = data.totalAssets,
+                    currencyCode   = "EUR",
+                    balancesHidden = balancesHidden
+                )
+            }
         }
 
         item {

@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.trackfolio.domain.model.AssetCategoryType
 import es.aviferdev.trackfolio.ui.account.AccountViewModel
+import es.aviferdev.trackfolio.ui.common.LineChartCard
 import es.aviferdev.trackfolio.ui.fixedincome.CreateFixedIncomeBottomSheet
 import es.aviferdev.trackfolio.ui.fixedincome.FixedIncomeSection
 import es.aviferdev.trackfolio.ui.fixedincome.FixedIncomePositionCard
@@ -62,6 +63,7 @@ fun PortfolioScreen(
     val catalogState        by catalogViewModel.uiState.collectAsState()
     val platformState       by platformViewModel.uiState.collectAsState()
     val availableCategories by viewModel.availableCategories.collectAsState()
+    val valueHistory        by viewModel.portfolioValueHistory.collectAsState()
     val balancesHidden = LocalBalanceHidden.current
 
     accountViewModel.selectAccount()
@@ -138,6 +140,21 @@ fun PortfolioScreen(
                         currencyCode      = state.currencyCode,
                         balancesHidden    = balancesHidden,
                         modifier          = Modifier.padding(horizontal = 20.dp, vertical = 8.dp)
+                    )
+                }
+            }
+
+            // ── Gráfico de evolución del valor del portfolio ─────────────
+            if (valueHistory.isNotEmpty()) {
+                item {
+                    LineChartCard(
+                        title          = "Evolución del valor",
+                        subtitle       = "Valor mensual del portfolio",
+                        points         = valueHistory.map { it.date to it.value },
+                        lineColor      = PrimaryDark,
+                        currencyCode   = state.currencyCode,
+                        balancesHidden = balancesHidden,
+                        modifier       = Modifier.padding(horizontal = 20.dp, vertical = 8.dp)
                     )
                 }
             }

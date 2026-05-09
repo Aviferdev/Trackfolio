@@ -1,15 +1,5 @@
 package es.aviferdev.trackfolio.ui.annual
 
-import androidx.compose.ui.graphics.Color
-
-/**
- * Representa una porción del gráfico donut.
- * Se usa para gráficos de gastos por categoría e ingresos por tipo.
- */
-data class DonutSlice(
-    val name: String,
-    val icon: String,
-    val amount: Double,
-    val percent: Double,
-    val color: Color
-)
+// Re-export desde ui.common para compatibilidad con código existente.
+// Usar es.aviferdev.trackfolio.ui.common.DonutSlice en código nuevo.
+typealias DonutSlice = es.aviferdev.trackfolio.ui.common.DonutSlice

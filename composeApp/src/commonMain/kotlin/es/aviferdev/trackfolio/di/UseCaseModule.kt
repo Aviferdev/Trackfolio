@@ -66,6 +66,8 @@ import es.aviferdev.trackfolio.domain.usecase.loan.SaveLoanUseCase
 import es.aviferdev.trackfolio.domain.usecase.loan.UpdateLoanRateUseCase
 import es.aviferdev.trackfolio.domain.usecase.loan.UpdateLoanUseCase
 import es.aviferdev.trackfolio.domain.usecase.networth.GetNetWorthDataUseCase
+import es.aviferdev.trackfolio.domain.usecase.networth.GetNetWorthHistoryUseCase
+import es.aviferdev.trackfolio.domain.usecase.portfolio.GetPortfolioValueHistoryUseCase
 import es.aviferdev.trackfolio.domain.usecase.fixedincome.GetCouponScheduleUseCase
 import es.aviferdev.trackfolio.domain.usecase.fixedincome.GetFixedIncomePositionDetailUseCase
 import es.aviferdev.trackfolio.domain.usecase.fixedincome.GetFixedIncomeSummaryUseCase
@@ -332,7 +334,8 @@ val useCaseModule = module {
             session                             = get(),
             getFixedIncomeSummary               = get(),
             getNearMaturityPositions            = get(),
-            createFixedIncomePosition           = get()
+            createFixedIncomePosition           = get(),
+            getPortfolioValueHistory            = get()
         )
     }
     viewModel {
@@ -457,12 +460,15 @@ val useCaseModule = module {
 
     // ── Net Worth ────────────────────────────────────────────────────────────────
     factory { GetNetWorthDataUseCase(get(), get(), get(), get(), get(), get()) }
+    factory { GetPortfolioValueHistoryUseCase(get(), get(), get(), get()) }
+    factory { GetNetWorthHistoryUseCase(get(), get(), get(), get(), get()) }
 
     // ── ViewModels (Loan / NetWorth) ─────────────────────────────────────────────
     viewModel {
         NetWorthViewModel(
             getNetWorthData      = get(),
             getLoansByAccount    = get(),
+            getNetWorthHistory   = get(),
             session              = get()
         )
     }
