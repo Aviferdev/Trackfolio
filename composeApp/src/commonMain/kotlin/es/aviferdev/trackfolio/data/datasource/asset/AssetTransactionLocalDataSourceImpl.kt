@@ -8,6 +8,7 @@ import es.aviferdev.trackfolio.data.database.TrackfolioDatabase
 import es.aviferdev.trackfolio.data.database.mapper.toDomain
 import es.aviferdev.trackfolio.data.database.mapper.toEntity
 import es.aviferdev.trackfolio.domain.model.AssetTransaction
+import es.aviferdev.trackfolio.domain.model.MonthlyInvestment
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
@@ -80,4 +81,18 @@ class AssetTransactionLocalDataSourceImpl(
     override fun getOldestDate(accountId: String): Flow<Long?> =
         queries.getOldestDateByAccount(accountId).asFlow().mapToOneOrNull(Dispatchers.IO)
             .map { it?.oldestDate }
+
+    override fun getMonthlyInvestmentsByYear(accountId: String, year: String): Flow<List<MonthlyInvestment>> =
+        queries.getMonthlyInvestmentsByYear(accountId, year)
+            .asFlow()
+            .mapToList(Dispatchers.IO)
+            .map { rows ->
+                rows.map { row ->
+                    MonthlyInvestment(
+                        year  = year,
+                        month = row.month ?: "01",
+                        amount = row.totalInvested ?: 0.0
+                    )
+                }
+            }
 }

@@ -89,12 +89,15 @@ import es.aviferdev.trackfolio.domain.usecase.platform.RenamePlatformUseCase
 import es.aviferdev.trackfolio.domain.usecase.platform.SavePlatformUseCase
 import es.aviferdev.trackfolio.domain.usecase.transaction.DeleteTransactionUseCase
 import es.aviferdev.trackfolio.domain.usecase.transaction.GetAnnualSummaryUseCase
+import es.aviferdev.trackfolio.domain.usecase.transaction.GetExpensesByCategoryUseCase
+import es.aviferdev.trackfolio.domain.usecase.transaction.GetIncomeByTypeUseCase
 import es.aviferdev.trackfolio.domain.usecase.transaction.GetMonthlyBreakdownUseCase
 import es.aviferdev.trackfolio.domain.usecase.transaction.GetMonthlyTotalsUseCase
 import es.aviferdev.trackfolio.domain.usecase.transaction.GetOldestTransactionDateUseCase
 import es.aviferdev.trackfolio.domain.usecase.transaction.GetTransactionsByMonthUseCase
 import es.aviferdev.trackfolio.domain.usecase.transaction.SaveTransactionUseCase
 import es.aviferdev.trackfolio.domain.usecase.transaction.UpdateTransactionUseCase
+import es.aviferdev.trackfolio.domain.usecase.assettransaction.GetMonthlyInvestmentsUseCase
 import es.aviferdev.trackfolio.ui.account.AccountSession
 import es.aviferdev.trackfolio.ui.account.AccountViewModel
 import es.aviferdev.trackfolio.ui.annual.AnnualViewModel
@@ -141,6 +144,11 @@ val useCaseModule = module {
     factory { GetAnnualSummaryUseCase(get()) }
     factory { GetMonthlyBreakdownUseCase(get()) }
     factory { GetOldestTransactionDateUseCase(get()) }
+    factory { GetExpensesByCategoryUseCase(get()) }
+    factory { GetIncomeByTypeUseCase(get()) }
+
+    // ── Asset Transaction (inversiones) ─────────────────────────────────────
+    factory { GetMonthlyInvestmentsUseCase(get()) }
 
     // ── Home ──────────────────────────────────────────────────────────────────
     factory { GetHomeBalanceUseCase(get(), get(), get()) }
@@ -297,10 +305,13 @@ val useCaseModule = module {
     viewModel { ReconciliationViewModel(get(), get(), get(), get()) }
     viewModel {
         AnnualViewModel(
-            getAnnualSummary    = get(),
-            getMonthlyBreakdown = get(),
-            getOldestDate       = get(),
-            session             = get()
+            getAnnualSummary       = get(),
+            getMonthlyBreakdown    = get(),
+            getOldestDate          = get(),
+            getExpensesByCategory  = get(),
+            getIncomeByType        = get(),
+            getMonthlyInvestments  = get(),
+            session                = get()
         )
     }
     viewModel {

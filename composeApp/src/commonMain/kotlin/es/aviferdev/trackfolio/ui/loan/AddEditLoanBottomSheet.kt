@@ -281,17 +281,46 @@ fun AddEditLoanBottomSheet(
                     val now = Clock.System.now().toEpochMilliseconds()
                     val endDate = startDateMillis + totalInstallments.toLong() * 30L * 24 * 60 * 60 * 1000
 
+                    // Calcular la cuota mensual
+                    val monthlyPayment = if (totalAmount > 0 && totalInstallments > 0 && interestRate >= 0) {
+                        FrenchAmortizationCalculator.calculateMonthlyPayment(totalAmount, interestRate, totalInstallments)
+                    } else 0.0
+
+                    // Calcular cuotas pagadas basándose en la fecha de inicio
+                    val monthsSinceStart = if (startDateMillis < now) {
+                        val diffMillis = now - startDateMillis
+                        val diffDays = diffMillis / (24L * 60 * 60 * 1000)
+                        (diffDays / 30).toInt()
+                    } else 0
+
+                    val paidInstallments = monthsSinceStart.coerceIn(0, totalInstallments)
+
+                    // Calcular capital pendiente usando el cuadro de amortización
+                    val outstandingPrincipal = if (paidInstallments > 0 && monthlyPayment > 0) {
+                        val schedule = FrenchAmortizationCalculator.generateSchedule(
+                            totalAmount, interestRate, totalInstallments, startDateMillis
+                        )
+                        // Obtener el capital pendiente después de las cuotas pagadas
+                        if (paidInstallments < schedule.size) {
+                            schedule[paidInstallments].outstandingBalance
+                        } else {
+                            0.0
+                        }
+                    } else {
+                        totalAmount
+                    }
+
                     val loan = Loan(
                         id                   = uuid4().toString(),
                         accountId            = accountId,
                         name                 = name.trim(),
                         type                 = selectedType,
                         totalAmount          = totalAmount,
-                        outstandingPrincipal = totalAmount,
+                        outstandingPrincipal = outstandingPrincipal,
                         currentInterestRate  = interestRate,
-                        monthlyPayment       = 0.0, // Será calculado por SaveLoanUseCase
+                        monthlyPayment       = monthlyPayment,
                         totalInstallments    = totalInstallments,
-                        paidInstallments     = 0,
+                        paidInstallments     = paidInstallments,
                         startDate            = startDateMillis,
                         endDate              = endDate,
                         lenderName           = lenderName.ifBlank { null },

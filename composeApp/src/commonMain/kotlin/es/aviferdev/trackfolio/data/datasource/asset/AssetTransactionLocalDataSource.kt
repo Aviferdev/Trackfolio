@@ -1,6 +1,7 @@
 package es.aviferdev.trackfolio.data.datasource.asset
 
 import es.aviferdev.trackfolio.domain.model.AssetTransaction
+import es.aviferdev.trackfolio.domain.model.MonthlyInvestment
 import kotlinx.coroutines.flow.Flow
 
 interface AssetTransactionLocalDataSource {
@@ -9,6 +10,8 @@ interface AssetTransactionLocalDataSource {
     fun getByAccount(accountId: String): Flow<List<AssetTransaction>>
     fun getById(id: String): Flow<AssetTransaction?>
     fun countByPlatform(platformId: String): Flow<Long>
+    /** Inversión mensual (compras) para un año. */
+    fun getMonthlyInvestmentsByYear(accountId: String, year: String): Flow<List<MonthlyInvestment>>
 
     suspend fun insert(tx: AssetTransaction): Result<Unit>
     suspend fun update(tx: AssetTransaction): Result<Unit>

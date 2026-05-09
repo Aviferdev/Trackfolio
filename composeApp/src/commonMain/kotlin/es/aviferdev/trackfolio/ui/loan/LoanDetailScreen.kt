@@ -31,42 +31,30 @@ import org.koin.core.parameter.parametersOf
 import kotlin.math.abs
 
 @OptIn(ExperimentalMaterial3Api::class)
+
 @Composable
 fun LoanDetailScreen(
     loanId: String,
     onBack: () -> Unit,
-    viewModel: LoanDetailViewModel = koinViewModel { parametersOf(loanId) }
+    viewModel: LoanDetailViewModel = koinViewModel(parameters = { parametersOf(loanId) })
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    val showRateSheet by viewModel.showRateSheet.collectAsState()
-
-    if (showRateSheet && uiState.loan != null) {
-        UpdateLoanRateSheet(
-            currentRate = uiState.loan!!.currentInterestRate,
-            onDismiss   = { viewModel.closeRateSheet() },
-            onConfirm   = { newRate, effectiveDate ->
-                viewModel.updateRate(newRate, effectiveDate)
-            }
-        )
-    }
+    var showArchiveConfirmation by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(uiState.loan?.name ?: "Detalle préstamo", maxLines = 1) },
+                title = { Text(uiState.loan?.name ?: "Detalle préstamo", maxLines = 1, fontWeight = FontWeight.SemiBold) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Outlined.ArrowBack, "Volver")
+                        Icon(Icons.AutoMirrored.Outlined.ArrowBack, "Volver", tint = PrimaryDark)
                     }
                 },
                 actions = {
                     IconButton(onClick = { viewModel.openRateSheet() }) {
                         Icon(Icons.Outlined.Edit, "Cambiar tipo", tint = PrimaryDark)
                     }
-                    IconButton(onClick = {
-                        viewModel.archive()
-                        onBack()
-                    }) {
+                    IconButton(onClick = { showArchiveConfirmation = true }) {
                         Icon(Icons.Outlined.Delete, "Archivar", tint = Color(0xFFEF5350))
                     }
                 },
@@ -132,6 +120,45 @@ fun LoanDetailScreen(
             }
         }
     }
+
+    // ── Diálogo de confirmación de archivado ─────────────────────────────────
+    if (showArchiveConfirmation && uiState.loan != null) {
+        AlertDialog(
+            onDismissRequest = { showArchiveConfirmation = false },
+            containerColor = SurfaceWhite,
+            icon = { Text("⚠️", fontSize = 28.sp) },
+            title = {
+                Text(
+                    "Archivar préstamo",
+                    fontSize = 17.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = TextPrimary
+                )
+            },
+            text = {
+                Text(
+                    "¿Estás seguro de que quieres archivar \"${uiState.loan!!.name}\"? El préstamo desaparecerá de la pantalla principal pero sus datos se mantendrán en el histórico.",
+                    fontSize = 14.sp,
+                    color = TextSecondary
+                )
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    viewModel.archive()
+                    showArchiveConfirmation = false
+                    onBack()
+                }) {
+                    Text("Archivar", color = Color(0xFFEF5350), fontWeight = FontWeight.Medium)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showArchiveConfirmation = false }) {
+                    Text("Cancelar", color = PrimaryDark, fontWeight = FontWeight.Medium)
+                }
+            },
+            shape = RoundedCornerShape(16.dp)
+        )
+    }
 }
 
 @Composable
@@ -154,43 +181,73 @@ private fun LoanSummarySection(loan: Loan) {
 
             Spacer(Modifier.height(12.dp))
 
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Column {
+                    Text("Capital pendiente", fontSize = 11.sp, color = TextSecondary)
+                    Text(
+                        "${formatAmount(loan.outstandingPrincipal)} €",
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = PrimaryDark
+                    )
+                }
+                Column(horizontalAlignment = Alignment.End) {
+                    Text("Cuota mensual", fontSize = 11.sp, color = TextSecondary)
+                    Text(
+                        "${formatAmount(loan.monthlyPayment)} €",
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = PrimaryDark
+                    )
+                }
+            }
+
+            Spacer(Modifier.height(12.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                DetailRow("Total", "${formatAmount(loan.totalAmount)} €")
+                DetailRow("Interés", "${formatPercent(loan.currentInterestRate)}%")
+                DetailRow("Plazo", "${loan.totalInstallments} meses")
+            }
+
+            Spacer(Modifier.height(12.dp))
+
             // Progreso
-            LinearProgressIndicator(
-                progress = { loan.progressPercent },
-                modifier = Modifier.fillMaxWidth().height(8.dp).clip(RoundedCornerShape(4.dp)),
-                color = PrimaryDark,
-                trackColor = TextSecondary.copy(alpha = 0.15f)
-            )
-
-            Spacer(Modifier.height(8.dp))
-
-            Text(
-                "${loan.paidInstallments} de ${loan.totalInstallments} cuotas pagadas (${(loan.progressPercent * 100).toInt()}%)",
-                fontSize = 12.sp,
-                color = TextSecondary
-            )
-
-            HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp), color = TextSecondary.copy(alpha = 0.15f))
-
-            DetailRow("Capital total", formatCurrency(loan.totalAmount))
-            DetailRow("Capital pendiente", formatCurrency(loan.outstandingPrincipal))
-            DetailRow("Cuota mensual", formatCurrency(loan.monthlyPayment))
-            DetailRow("Tipo de interés", "${loan.currentInterestRate}%")
-            DetailRow("Intereses estimados", formatCurrency(loan.totalEstimatedInterest))
-            DetailRow("Inicio", formatDate(loan.startDate))
-            DetailRow("Fin", formatDate(loan.endDate))
+            Column {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text("Progreso", fontSize = 11.sp, color = TextSecondary)
+                    Text(
+                        "${loan.paidInstallments}/${loan.totalInstallments} cuotas (${(loan.progressPercent * 100).toInt()}%)",
+                        fontSize = 11.sp,
+                        color = TextSecondary
+                    )
+                }
+                Spacer(Modifier.height(4.dp))
+                LinearProgressIndicator(
+                    progress = { loan.progressPercent },
+                    modifier = Modifier.fillMaxWidth().height(6.dp).clip(RoundedCornerShape(3.dp)),
+                    color = PrimaryDark,
+                    trackColor = BorderGray
+                )
+            }
         }
     }
 }
 
 @Composable
 private fun DetailRow(label: String, value: String) {
-    Row(
-        modifier = Modifier.fillMaxWidth().padding(vertical = 3.dp),
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        Text(label, fontSize = 13.sp, color = TextSecondary)
-        Text(value, fontSize = 13.sp, fontWeight = FontWeight.Medium, color = PrimaryDark)
+    Column {
+        Text(label, fontSize = 11.sp, color = TextSecondary)
+        Text(value, fontSize = 13.sp, color = TextPrimary, fontWeight = FontWeight.Medium)
     }
 }
 
@@ -199,7 +256,7 @@ private fun RateChangeRow(change: LoanRateChange) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(8.dp),
-        colors = CardDefaults.cardColors(containerColor = SurfaceElevated)
+        colors = CardDefaults.cardColors(containerColor = SurfaceWhite)
     ) {
         Row(
             modifier = Modifier.fillMaxWidth().padding(12.dp),
@@ -209,21 +266,16 @@ private fun RateChangeRow(change: LoanRateChange) {
             Column {
                 Text(formatDate(change.effectiveDate), fontSize = 12.sp, color = TextSecondary)
                 Text(
-                    "${change.previousRate}% → ${change.newRate}%",
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = PrimaryDark
+                    "${formatCurrency(change.previousRate - change.newRate)}%",
+                    fontSize = 11.sp,
+                    color = TextSecondary
                 )
             }
-            val diff = change.newRate - change.previousRate
-            val color = if (diff > 0) Color(0xFFEF5350) else Color(0xFF4CAF50)
-            val diffStr = formatDiff(diff)
-            Text(
-                "${if (diff > 0) "+" else ""}$diffStr%",
-                fontSize = 13.sp,
-                fontWeight = FontWeight.Medium,
-                color = color
-            )
+            Column(horizontalAlignment = Alignment.End) {
+                Text("${formatPercent(change.previousRate)}%", fontSize = 12.sp, color = TextSecondary)
+                Text("→", fontSize = 12.sp, color = TextSecondary)
+                Text("${formatPercent(change.newRate)}%", fontSize = 12.sp, color = PrimaryDark, fontWeight = FontWeight.Medium)
+            }
         }
     }
 }
@@ -231,44 +283,48 @@ private fun RateChangeRow(change: LoanRateChange) {
 @Composable
 private fun AmortizationHeader() {
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(8.dp))
-            .background(PrimaryDark)
-            .padding(horizontal = 8.dp, vertical = 10.dp)
+        modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+        horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Text("#", Modifier.weight(0.8f), fontSize = 11.sp, color = Color.White, fontWeight = FontWeight.Medium, textAlign = TextAlign.Center)
-        Text("Fecha", Modifier.weight(1.5f), fontSize = 11.sp, color = Color.White, fontWeight = FontWeight.Medium, textAlign = TextAlign.Center)
-        Text("Cuota", Modifier.weight(1.3f), fontSize = 11.sp, color = Color.White, fontWeight = FontWeight.Medium, textAlign = TextAlign.End)
-        Text("Capital", Modifier.weight(1.3f), fontSize = 11.sp, color = Color.White, fontWeight = FontWeight.Medium, textAlign = TextAlign.End)
-        Text("Intereses", Modifier.weight(1.3f), fontSize = 11.sp, color = Color.White, fontWeight = FontWeight.Medium, textAlign = TextAlign.End)
-        Text("Pendiente", Modifier.weight(1.5f), fontSize = 11.sp, color = Color.White, fontWeight = FontWeight.Medium, textAlign = TextAlign.End)
+        Text("#", fontSize = 10.sp, color = TextSecondary, modifier = Modifier.weight(0.5f), textAlign = TextAlign.Center)
+        Text("Fecha", fontSize = 10.sp, color = TextSecondary, modifier = Modifier.weight(1.5f), textAlign = TextAlign.Center)
+        Text("Cuota", fontSize = 10.sp, color = TextSecondary, modifier = Modifier.weight(1.3f), textAlign = TextAlign.End)
+        Text("Interés", fontSize = 10.sp, color = TextSecondary, modifier = Modifier.weight(1.3f), textAlign = TextAlign.End)
+        Text("Capital", fontSize = 10.sp, color = TextSecondary, modifier = Modifier.weight(1.3f), textAlign = TextAlign.End)
+        Text("Pendiente", fontSize = 10.sp, color = TextSecondary, modifier = Modifier.weight(1.5f), textAlign = TextAlign.End)
     }
 }
 
 @Composable
 private fun AmortizationRow(entry: AmortizationEntry, paidInstallments: Int) {
-    val isPaid = entry.installmentNumber <= paidInstallments
-    val bgColor = if (isPaid) Color(0xFF4CAF50).copy(alpha = 0.08f) else Color.Transparent
+    val isPast = entry.installmentNumber <= paidInstallments
+    val textColor = if (isPast) TextPrimary else TextSecondary
 
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(bgColor)
-            .padding(horizontal = 8.dp, vertical = 6.dp)
+            .background(if (entry.installmentNumber == paidInstallments + 1) SurfaceElevated else Color.Transparent)
+            .padding(vertical = 6.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
             entry.installmentNumber.toString(),
-            Modifier.weight(0.8f),
             fontSize = 11.sp,
-            color = if (isPaid) Color(0xFF4CAF50) else TextSecondary,
-            fontWeight = if (isPaid) FontWeight.Medium else FontWeight.Normal,
+            color = textColor,
+            modifier = Modifier.weight(0.5f),
             textAlign = TextAlign.Center
         )
-        Text(formatDateShort(entry.date), Modifier.weight(1.5f), fontSize = 11.sp, color = TextSecondary, textAlign = TextAlign.Center)
-        Text(formatCurrencyShort(entry.monthlyPayment), Modifier.weight(1.3f), fontSize = 11.sp, color = PrimaryDark, textAlign = TextAlign.End)
-        Text(formatCurrencyShort(entry.principalPortion), Modifier.weight(1.3f), fontSize = 11.sp, color = PrimaryDark, textAlign = TextAlign.End)
-        Text(formatCurrencyShort(entry.interestPortion), Modifier.weight(1.3f), fontSize = 11.sp, color = TextSecondary, textAlign = TextAlign.End)
+        Text(
+            formatDateShort(entry.date),
+            fontSize = 11.sp,
+            color = textColor,
+            modifier = Modifier.weight(1.5f),
+            textAlign = TextAlign.Center
+        )
+        Text(formatCurrencyShort(entry.monthlyPayment), Modifier.weight(1.3f), fontSize = 11.sp, color = textColor, textAlign = TextAlign.End)
+        Text(formatCurrencyShort(entry.interestPortion), Modifier.weight(1.3f), fontSize = 11.sp, color = textColor, textAlign = TextAlign.End)
+        Text(formatCurrencyShort(entry.principalPortion), Modifier.weight(1.3f), fontSize = 11.sp, color = textColor, textAlign = TextAlign.End)
         Text(formatCurrencyShort(entry.outstandingBalance), Modifier.weight(1.5f), fontSize = 11.sp, color = PrimaryDark, fontWeight = FontWeight.Medium, textAlign = TextAlign.End)
     }
 
@@ -296,7 +352,7 @@ private fun formatDateShort(millis: Long): String {
     return "${dt.monthNumber.toString().padStart(2, '0')}/${dt.year}"
 }
 
-private fun formatDiff(value: Double): String {
+private fun formatPercent(value: Double): String {
     val rounded = (value * 100).toLong() / 100.0
     val intPart = rounded.toLong()
     val decPart = ((rounded - intPart) * 100).toInt()

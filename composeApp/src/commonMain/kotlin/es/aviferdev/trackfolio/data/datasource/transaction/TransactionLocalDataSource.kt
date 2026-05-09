@@ -2,6 +2,8 @@ package es.aviferdev.trackfolio.data.datasource.transaction
 
 import es.aviferdev.trackfolio.data.database.TransactionEntity
 import es.aviferdev.trackfolio.domain.model.AnnualSummary
+import es.aviferdev.trackfolio.domain.model.CategoryBreakdown
+import es.aviferdev.trackfolio.domain.model.IncomeTypeBreakdown
 import es.aviferdev.trackfolio.domain.model.MonthlyTotals
 import es.aviferdev.trackfolio.domain.model.Transaction
 import kotlinx.coroutines.flow.Flow
@@ -14,6 +16,10 @@ interface TransactionLocalDataSource {
     fun getMonthlyBreakdown(accountId: String, year: String): Flow<List<MonthlyTotals>>
     /** Todos los ingresos del año indicado para el informe fiscal. */
     fun getIncomeByYear(accountId: String, year: String): Flow<List<Transaction>>
+    /** Desglose de gastos por categoría para un año. */
+    fun getExpensesByCategoryPerYear(accountId: String, year: String): Flow<List<CategoryBreakdown>>
+    /** Desglose de ingresos por tipo para un año. */
+    fun getIncomeByTypePerYear(accountId: String, year: String): Flow<List<IncomeTypeBreakdown>>
     // CRUD
     suspend fun insert(entity: TransactionEntity): Result<Unit>
     suspend fun update(entity: TransactionEntity): Result<Unit>

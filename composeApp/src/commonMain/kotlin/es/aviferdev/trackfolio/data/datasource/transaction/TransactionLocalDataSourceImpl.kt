@@ -7,6 +7,9 @@ import es.aviferdev.trackfolio.data.database.TrackfolioDatabase
 import es.aviferdev.trackfolio.data.database.TransactionEntity
 import es.aviferdev.trackfolio.data.database.mapper.toDomain
 import es.aviferdev.trackfolio.domain.model.AnnualSummary
+import es.aviferdev.trackfolio.domain.model.CategoryBreakdown
+import es.aviferdev.trackfolio.domain.model.IncomeTypeBreakdown
+import es.aviferdev.trackfolio.domain.model.IncomeType
 import es.aviferdev.trackfolio.domain.model.MonthlyTotals
 import es.aviferdev.trackfolio.domain.model.Transaction
 import kotlinx.coroutines.Dispatchers
@@ -173,4 +176,34 @@ class TransactionLocalDataSourceImpl(
             .asFlow()
             .mapToList(Dispatchers.IO)
             .map { list -> list.map { it.toDomain() } }
+
+    override fun getExpensesByCategoryPerYear(accountId: String, year: String): Flow<List<CategoryBreakdown>> =
+        queries.getExpensesByCategoryPerYear(accountId, year)
+            .asFlow()
+            .mapToList(Dispatchers.IO)
+            .map { rows ->
+                rows.map { row ->
+                    CategoryBreakdown(
+                        categoryId   = row.categoryId,
+                        categoryName = row.categoryName ?: "Sin categoría",
+                        amount       = row.totalAmount ?: 0.0
+                    )
+                }
+            }
+
+    override fun getIncomeByTypePerYear(accountId: String, year: String): Flow<List<IncomeTypeBreakdown>> =
+        queries.getIncomeByTypePerYear(accountId, year)
+            .asFlow()
+            .mapToList(Dispatchers.IO)
+            .map { rows ->
+                rows.map { row ->
+                    val incomeType = IncomeType.fromName(row.incomeType)
+                    IncomeTypeBreakdown(
+                        incomeType = row.incomeType ?: "UNKNOWN",
+                        label      = incomeType?.label ?: "Otro",
+                        emoji      = incomeType?.emoji ?: "💰",
+                        amount     = row.totalAmount ?: 0.0
+                    )
+                }
+            }
 }

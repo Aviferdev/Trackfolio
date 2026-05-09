@@ -2,6 +2,7 @@ package es.aviferdev.trackfolio.data.repository.asset
 
 import es.aviferdev.trackfolio.data.datasource.asset.AssetTransactionLocalDataSource
 import es.aviferdev.trackfolio.domain.model.AssetTransaction
+import es.aviferdev.trackfolio.domain.model.MonthlyInvestment
 import es.aviferdev.trackfolio.domain.repository.AssetTransactionRepository
 import kotlinx.coroutines.flow.Flow
 
@@ -23,6 +24,9 @@ class AssetTransactionRepositoryImpl(
 
     override fun countByPlatform(platformId: String): Flow<Long> =
         dataSource.countByPlatform(platformId)
+
+    override fun getMonthlyInvestmentsByYear(accountId: String, year: String): Flow<List<MonthlyInvestment>> =
+        dataSource.getMonthlyInvestmentsByYear(accountId, year)
 
     override suspend fun save(tx: AssetTransaction): Result<Unit> = dataSource.insert(tx)
     override suspend fun update(tx: AssetTransaction): Result<Unit> = dataSource.update(tx)

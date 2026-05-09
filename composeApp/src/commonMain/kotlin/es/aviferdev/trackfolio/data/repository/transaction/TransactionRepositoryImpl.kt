@@ -3,6 +3,8 @@ package es.aviferdev.trackfolio.data.repository.transaction
 import es.aviferdev.trackfolio.data.database.mapper.toEntity
 import es.aviferdev.trackfolio.data.datasource.transaction.TransactionLocalDataSource
 import es.aviferdev.trackfolio.domain.model.AnnualSummary
+import es.aviferdev.trackfolio.domain.model.CategoryBreakdown
+import es.aviferdev.trackfolio.domain.model.IncomeTypeBreakdown
 import es.aviferdev.trackfolio.domain.model.MonthlyTotals
 import es.aviferdev.trackfolio.domain.model.Transaction
 import es.aviferdev.trackfolio.domain.repository.TransactionRepository
@@ -37,6 +39,12 @@ class TransactionRepositoryImpl(
 
     override fun getIncomeByYear(accountId: String, year: String): Flow<List<Transaction>> =
         dataSource.getIncomeByYear(accountId, year)
+
+    override fun getExpensesByCategoryPerYear(accountId: String, year: String): Flow<List<CategoryBreakdown>> =
+        dataSource.getExpensesByCategoryPerYear(accountId, year)
+
+    override fun getIncomeByTypePerYear(accountId: String, year: String): Flow<List<IncomeTypeBreakdown>> =
+        dataSource.getIncomeByTypePerYear(accountId, year)
 
     override suspend fun saveTransaction(transaction: Transaction): Result<Unit> =
         dataSource.insert(transaction.toEntity())

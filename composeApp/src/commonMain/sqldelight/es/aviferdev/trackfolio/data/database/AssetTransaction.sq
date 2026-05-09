@@ -71,3 +71,16 @@ getOldestDateByAccount:
 SELECT MIN(t.date) AS oldestDate FROM AssetTransactionEntity t
 INNER JOIN AssetEntity a ON a.id = t.assetId
 WHERE a.accountId = :accountId;
+
+-- ─── Inversión mensual (compras) por año ──────────────────────────────────────
+getMonthlyInvestmentsByYear:
+SELECT
+    strftime('%m', t.date / 1000, 'unixepoch') AS month,
+    SUM(t.quantity * t.pricePerUnit) AS totalInvested
+FROM AssetTransactionEntity t
+INNER JOIN AssetEntity a ON a.id = t.assetId
+WHERE a.accountId = :accountId
+  AND t.type = 'BUY'
+  AND strftime('%Y', t.date / 1000, 'unixepoch') = :year
+GROUP BY month
+ORDER BY month ASC;

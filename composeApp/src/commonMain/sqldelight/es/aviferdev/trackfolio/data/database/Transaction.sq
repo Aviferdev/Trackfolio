@@ -184,3 +184,33 @@ SELECT * FROM TransactionEntity
 WHERE linkedAssetTransactionId LIKE ('div_' || :assetId || '_%')
   AND incomeType = 'DIVIDEND'
 ORDER BY date DESC;
+
+-- ─── Desglose de gastos por categoría (año) ────────────────────────────────────
+-- Excluye movimientos vinculados a inversiones (dividendos, ventas, etc.)
+getExpensesByCategoryPerYear:
+SELECT
+    t.categoryId,
+    COALESCE(c.name, 'Sin categoría') AS categoryName,
+    SUM(t.amount) AS totalAmount
+FROM TransactionEntity t
+LEFT JOIN CategoryEntity c ON t.categoryId = c.id
+WHERE t.accountId = :accountId
+  AND t.type = 'EXPENSE'
+  AND t.linkedAssetTransactionId IS NULL
+  AND strftime('%Y', t.date / 1000, 'unixepoch') = :year
+GROUP BY t.categoryId
+ORDER BY totalAmount DESC;
+
+-- ─── Desglose de ingresos por tipo (año) ─────────────────────────────────────
+-- Excluye movimientos vinculados a inversiones
+getIncomeByTypePerYear:
+SELECT
+    t.incomeType,
+    SUM(t.amount) AS totalAmount
+FROM TransactionEntity t
+WHERE t.accountId = :accountId
+  AND t.type = 'INCOME'
+  AND t.linkedAssetTransactionId IS NULL
+  AND strftime('%Y', t.date / 1000, 'unixepoch') = :year
+GROUP BY t.incomeType
+ORDER BY totalAmount DESC;

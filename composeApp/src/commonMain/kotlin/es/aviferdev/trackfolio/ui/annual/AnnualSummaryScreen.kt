@@ -1,6 +1,7 @@
 package es.aviferdev.trackfolio.ui.annual
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -29,12 +30,17 @@ private val MONTH_LABELS = listOf(
     "E", "F", "M", "A", "M", "J", "J", "A", "S", "O", "N", "D"
 )
 
+enum class AnnualTab {
+    RESUMEN, GASTOS, INGRESOS, INVERSIONES
+}
+
 @Composable
 fun AnnualSummaryScreen(
     viewModel: AnnualViewModel = koinViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val balancesHidden = LocalBalanceHidden.current
+    var selectedTab by remember { mutableStateOf(AnnualTab.RESUMEN) }
 
     Column(
         modifier = Modifier
@@ -48,20 +54,117 @@ fun AnnualSummaryScreen(
             onNext     = { viewModel.nextYear() }
         )
 
+        // Tabs
+        AnnualTabs(
+            selectedTab = selectedTab,
+            onTabSelected = { selectedTab = it }
+        )
+
         if (uiState.isLoading) {
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 CircularProgressIndicator(color = PrimaryDark)
             }
         } else {
-            uiState.summary?.let { summary ->
-                AnnualContent(
-                    summary        = summary,
-                    breakdown      = uiState.monthlyBreakdown,
-                    balancesHidden = balancesHidden
-                )
-            } ?: EmptyYearState()
+            when (selectedTab) {
+                AnnualTab.RESUMEN -> {
+                    uiState.summary?.let { summary ->
+                        AnnualContent(
+                            summary        = summary,
+                            breakdown      = uiState.monthlyBreakdown,
+                            balancesHidden = balancesHidden
+                        )
+                    } ?: EmptyYearState()
+                }
+                AnnualTab.GASTOS -> {
+                    DonutChartCard(
+                        title        = "Gastos por categoría",
+                        subtitle     = "Año ${uiState.year}",
+                        slices       = uiState.expensesByCategory,
+                        totalAmount  = uiState.summary?.totalExpense ?: 0.0,
+                        currencyCode = uiState.currencyCode,
+                        balancesHidden = balancesHidden,
+                        modifier = Modifier.padding(horizontal = 20.dp, vertical = 16.dp)
+                    )
+                }
+                AnnualTab.INGRESOS -> {
+                    DonutChartCard(
+                        title        = "Ingresos por tipo",
+                        subtitle     = "Año ${uiState.year}",
+                        slices       = uiState.incomeByType,
+                        totalAmount  = uiState.summary?.totalIncome ?: 0.0,
+                        currencyCode = uiState.currencyCode,
+                        balancesHidden = balancesHidden,
+                        modifier = Modifier.padding(horizontal = 20.dp, vertical = 16.dp)
+                    )
+                }
+                AnnualTab.INVERSIONES -> {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .verticalScroll(rememberScrollState())
+                            .padding(horizontal = 20.dp)
+                            .padding(top = 16.dp, bottom = 40.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        InvestmentBarChart(
+                            investments    = uiState.monthlyInvestments,
+                            year           = uiState.year,
+                            currencyCode   = uiState.currencyCode,
+                            balancesHidden = balancesHidden
+                        )
+                    }
+                }
+            }
         }
     }
+}
+
+@Composable
+private fun AnnualTabs(
+    selectedTab: AnnualTab,
+    onTabSelected: (AnnualTab) -> Unit
+) {
+    Surface(color = SurfaceWhite, shadowElevation = 1.dp) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            AnnualTab.entries.forEach { tab ->
+                val isSelected = tab == selectedTab
+                Column(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(8.dp))
+                        .clickable { onTabSelected(tab) }
+                        .padding(horizontal = 12.dp, vertical = 8.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text    = tab.displayName(),
+                        fontSize = 13.sp,
+                        color   = if (isSelected) PrimaryDark else TextSecondary,
+                        fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal
+                    )
+                    Spacer(Modifier.height(4.dp))
+                    Box(
+                        modifier = Modifier
+                            .height(2.dp)
+                            .width(24.dp)
+                            .clip(RoundedCornerShape(1.dp))
+                            .background(if (isSelected) PrimaryDark else Color.Transparent)
+                    )
+                }
+            }
+        }
+    }
+}
+
+private fun AnnualTab.displayName(): String = when (this) {
+    AnnualTab.RESUMEN    -> "Resumen"
+    AnnualTab.GASTOS     -> "Gastos"
+    AnnualTab.INGRESOS   -> "Ingresos"
+    AnnualTab.INVERSIONES -> "Inversiones"
 }
 
 @Composable

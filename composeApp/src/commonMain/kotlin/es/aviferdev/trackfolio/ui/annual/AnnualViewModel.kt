@@ -1,13 +1,21 @@
 package es.aviferdev.trackfolio.ui.annual
 
+import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import es.aviferdev.trackfolio.domain.model.AnnualSummary
+import es.aviferdev.trackfolio.domain.model.CategoryBreakdown
+import es.aviferdev.trackfolio.domain.model.IncomeTypeBreakdown
+import es.aviferdev.trackfolio.domain.model.MonthlyInvestment
 import es.aviferdev.trackfolio.domain.model.MonthlyTotals
+import es.aviferdev.trackfolio.domain.usecase.assettransaction.GetMonthlyInvestmentsUseCase
 import es.aviferdev.trackfolio.domain.usecase.transaction.GetAnnualSummaryUseCase
+import es.aviferdev.trackfolio.domain.usecase.transaction.GetExpensesByCategoryUseCase
+import es.aviferdev.trackfolio.domain.usecase.transaction.GetIncomeByTypeUseCase
 import es.aviferdev.trackfolio.domain.usecase.transaction.GetMonthlyBreakdownUseCase
 import es.aviferdev.trackfolio.domain.usecase.transaction.GetOldestTransactionDateUseCase
 import es.aviferdev.trackfolio.ui.account.AccountSession
+import es.aviferdev.trackfolio.ui.theme.CategoryPalette
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -15,6 +23,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
@@ -26,7 +35,12 @@ data class AnnualUiState(
     val monthlyBreakdown: List<MonthlyTotals> = emptyList(),
     val year: String                     = "",
     val isLoading: Boolean               = true,
-    val canGoBack: Boolean               = true
+    val canGoBack: Boolean               = true,
+    // Nuevos datos para gráficos
+    val expensesByCategory: List<DonutSlice> = emptyList(),
+    val incomeByType: List<DonutSlice>       = emptyList(),
+    val monthlyInvestments: List<MonthlyInvestment> = emptyList(),
+    val currencyCode: String              = "EUR"
 )
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -34,6 +48,9 @@ class AnnualViewModel(
     private val getAnnualSummary: GetAnnualSummaryUseCase,
     private val getMonthlyBreakdown: GetMonthlyBreakdownUseCase,
     private val getOldestDate: GetOldestTransactionDateUseCase,
+    private val getExpensesByCategory: GetExpensesByCategoryUseCase,
+    private val getIncomeByType: GetIncomeByTypeUseCase,
+    private val getMonthlyInvestments: GetMonthlyInvestmentsUseCase,
     private val session: AccountSession
 ) : ViewModel() {
 
@@ -70,14 +87,44 @@ class AnnualViewModel(
             } else {
                 combine(
                     getAnnualSummary(accountId, year),
-                    getMonthlyBreakdown(accountId, year)
-                ) { summary, breakdown ->
+                    getMonthlyBreakdown(accountId, year),
+                    getExpensesByCategory(accountId, year),
+                    getIncomeByType(accountId, year),
+                    getMonthlyInvestments(accountId, year)
+                ) { summary, breakdown, expenses, income, investments ->
+                    val totalExpense = summary?.totalExpense ?: 0.0
+                    val totalIncome = summary?.totalIncome ?: 0.0
+
+                    val expenseSlices = expenses.mapIndexed { idx, item ->
+                        DonutSlice(
+                            name   = item.categoryName,
+                            icon   = "💰",
+                            amount = item.amount,
+                            percent = if (totalExpense > 0) (item.amount / totalExpense) * 100 else 0.0,
+                            color  = CategoryPalette[idx % CategoryPalette.size]
+                        )
+                    }
+
+                    val incomeSlices = income.mapIndexed { idx, item ->
+                        DonutSlice(
+                            name   = item.label,
+                            icon   = item.emoji,
+                            amount = item.amount,
+                            percent = if (totalIncome > 0) (item.amount / totalIncome) * 100 else 0.0,
+                            color  = CategoryPalette[idx % CategoryPalette.size]
+                        )
+                    }
+
                     AnnualUiState(
-                        summary          = summary,
-                        monthlyBreakdown = breakdown,
-                        year             = year,
-                        isLoading        = false,
-                        canGoBack        = canGoBack
+                        summary            = summary,
+                        monthlyBreakdown   = breakdown,
+                        year               = year,
+                        isLoading          = false,
+                        canGoBack          = canGoBack,
+                        expensesByCategory = expenseSlices,
+                        incomeByType       = incomeSlices,
+                        monthlyInvestments = investments,
+                        currencyCode       = "EUR"
                     )
                 }
             }
