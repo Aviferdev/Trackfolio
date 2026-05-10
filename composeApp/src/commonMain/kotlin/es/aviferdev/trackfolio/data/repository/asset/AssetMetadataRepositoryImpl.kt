@@ -49,6 +49,9 @@ class AssetMetadataRepositoryImpl(
     override suspend fun saveComposition(composition: AssetComposition): Result<Unit> =
         localDataSource.saveComposition(composition)
 
+    override suspend fun deleteComposition(assetId: String): Result<Unit> =
+        localDataSource.deleteComposition(assetId)
+
     override suspend fun saveSector(sector: AssetSector): Result<Unit> =
         localDataSource.insertSector(sector)
 

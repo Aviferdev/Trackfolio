@@ -4,7 +4,8 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.*
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -12,6 +13,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.trackfolio.domain.model.Account
+import es.aviferdev.trackfolio.ui.theme.BorderGray
+import es.aviferdev.trackfolio.ui.theme.PrimaryAlpha
+import es.aviferdev.trackfolio.ui.theme.PrimaryDark
+import es.aviferdev.trackfolio.ui.theme.SurfaceElevated
+import es.aviferdev.trackfolio.ui.theme.TextDisabled
+import es.aviferdev.trackfolio.ui.theme.TextSecondary
 
 @Composable
 fun AccountSelectorBar(
@@ -27,16 +34,15 @@ fun AccountSelectorBar(
         modifier = modifier
             .fillMaxWidth()
             .horizontalScroll(rememberScrollState())
-            .padding(horizontal = 16.dp, vertical = 8.dp),
+            .padding(horizontal = 16.dp, vertical = 4.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment     = Alignment.CenterVertically
     ) {
         accounts.forEach { account ->
             AccountChip(
-                account     = account,
-                isSelected  = account.id == selectedAccountId,
-                showBalance = showBalance,
-                onClick     = { onAccountSelected(account.id) }
+                account    = account,
+                isSelected = account.id == selectedAccountId,
+                onClick    = { onAccountSelected(account.id) }
             )
         }
     }
@@ -46,38 +52,35 @@ fun AccountSelectorBar(
 private fun AccountChip(
     account: Account,
     isSelected: Boolean,
-    showBalance: Boolean,
     onClick: () -> Unit
 ) {
-    val containerColor = if (isSelected)
-        MaterialTheme.colorScheme.primaryContainer
-    else
-        MaterialTheme.colorScheme.surfaceVariant
-
-    val contentColor = if (isSelected)
-        MaterialTheme.colorScheme.onPrimaryContainer
-    else
-        MaterialTheme.colorScheme.onSurfaceVariant
+    val bg      = if (isSelected) PrimaryAlpha      else SurfaceElevated
+    val border  = if (isSelected) PrimaryDark       else BorderGray
+    val txtColor = if (isSelected) PrimaryDark      else TextSecondary
 
     Surface(
-        onClick        = onClick,
-        shape          = RoundedCornerShape(50),
-        color          = containerColor,
-        contentColor   = contentColor,
-        tonalElevation = if (isSelected) 4.dp else 0.dp
+        onClick      = onClick,
+        shape        = RoundedCornerShape(20.dp),
+        color        = bg,
+        border       = androidx.compose.foundation.BorderStroke(
+            width = if (isSelected) 1.dp else 0.5.dp,
+            color = border
+        ),
+        tonalElevation = 0.dp
     ) {
         Row(
-            modifier          = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
+            modifier          = Modifier.padding(horizontal = 14.dp, vertical = 7.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
                 text       = account.name,
-                style      = MaterialTheme.typography.labelLarge,
-                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
+                fontSize   = 12.sp,
+                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                color      = txtColor
             )
             if (account.needsInitialBalance) {
                 Spacer(Modifier.width(4.dp))
-                Text("⚠️", fontSize = 12.sp)
+                Text("⚠️", fontSize = 11.sp)
             }
         }
     }

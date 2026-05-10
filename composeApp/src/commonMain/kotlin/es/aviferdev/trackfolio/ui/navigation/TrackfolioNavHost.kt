@@ -103,6 +103,9 @@ fun TrackfolioNavHost() {
                     onNavigateToDebts = {
                         navController.navigate(Screen.Debts.route) { launchSingleTop = true }
                     },
+                    onNavigateToFiscalReport = {
+                        navController.navigate(Screen.FiscalReport.route) { launchSingleTop = true }
+                    },
                     onNavigateToSettings = {
                         navController.navigate(Screen.Settings.route) { launchSingleTop = true }
                     }
@@ -144,11 +147,6 @@ fun TrackfolioNavHost() {
             }
             composable(Screen.Settings.route) {
                 SettingsScreen(
-                    onNavigateToFiscalReport = {
-                        navController.navigate(Screen.FiscalReport.route) {
-                            launchSingleTop = true
-                        }
-                    },
                     onNavigateToExpenseSettings = {
                         navController.navigate(Screen.ExpenseSettings.route) {
                             launchSingleTop = true

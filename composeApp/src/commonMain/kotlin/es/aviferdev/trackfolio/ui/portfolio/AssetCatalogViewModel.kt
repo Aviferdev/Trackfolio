@@ -297,6 +297,8 @@ class AssetCatalogViewModel(
                             createdAt = Clock.System.now().toEpochMilliseconds()
                         )
                     )
+                } else {
+                    assetMetadataRepository.deleteComposition(original.id)
                 }
                 // Actualizar sectores: borrar todos y recrear
                 assetMetadataRepository.deleteAllSectorLinks(original.id)

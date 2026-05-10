@@ -21,6 +21,7 @@ interface AssetMetadataRepository {
     fun getRegionDistributionsByAssetIds(assetIds: List<String>): Flow<List<AssetRegionDistribution>>
 
     suspend fun saveComposition(composition: AssetComposition): Result<Unit>
+    suspend fun deleteComposition(assetId: String): Result<Unit>
     suspend fun saveSector(sector: AssetSector): Result<Unit>
     suspend fun deleteSector(sectorId: String): Result<Unit>
     suspend fun saveSectorRelation(relation: AssetSectorRelation): Result<Unit>

@@ -21,10 +21,10 @@ import androidx.compose.ui.unit.sp
 import es.aviferdev.trackfolio.domain.model.Loan
 import es.aviferdev.trackfolio.domain.model.NetWorthData
 import es.aviferdev.trackfolio.domain.model.NetWorthHistoryPoint
-import es.aviferdev.trackfolio.ui.loan.AddEditLoanBottomSheet
+import es.aviferdev.trackfolio.ui.annual.DonutChartCard
 import es.aviferdev.trackfolio.ui.common.DonutSlice
 import es.aviferdev.trackfolio.ui.common.LineChartCard
-import es.aviferdev.trackfolio.ui.annual.DonutChartCard
+import es.aviferdev.trackfolio.ui.loan.AddEditLoanBottomSheet
 import es.aviferdev.trackfolio.ui.theme.*
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
@@ -32,41 +32,36 @@ import kotlinx.datetime.toInstant
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.math.abs
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NetWorthScreen(
     onLoanClick: (String) -> Unit = {},
     viewModel: NetWorthViewModel = koinViewModel()
 ) {
-    val uiState by viewModel.uiState.collectAsState()
+    val uiState          by viewModel.uiState.collectAsState()
     val showAddLoanSheet by viewModel.showAddLoanSheet.collectAsState()
 
     if (showAddLoanSheet) {
-        AddEditLoanBottomSheet(
-            onDismiss = { viewModel.closeAddLoanSheet() }
-        )
+        AddEditLoanBottomSheet(onDismiss = { viewModel.closeAddLoanSheet() })
     }
 
     when (val state = uiState) {
-        is NetWorthUiState.Loading -> {
-            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator(color = PrimaryDark)
-            }
-        }
-        is NetWorthUiState.Error -> {
-            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text(state.message, color = Color.Red)
-            }
-        }
-        is NetWorthUiState.Success -> {
-            NetWorthContent(
-                data              = state.data,
-                netWorthHistory   = state.netWorthHistory,
-                assetDistribution = state.assetDistribution,
-                onLoanClick       = onLoanClick,
-                onAddLoan         = { viewModel.openAddLoanSheet() }
-            )
-        }
+        is NetWorthUiState.Loading -> Box(
+            Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) { CircularProgressIndicator(color = PrimaryDark) }
+
+        is NetWorthUiState.Error -> Box(
+            Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) { Text(state.message, color = ExpenseRed) }
+
+        is NetWorthUiState.Success -> NetWorthContent(
+            data              = state.data,
+            netWorthHistory   = state.netWorthHistory,
+            assetDistribution = state.assetDistribution,
+            onLoanClick       = onLoanClick,
+            onAddLoan         = { viewModel.openAddLoanSheet() }
+        )
     }
 }
 
@@ -81,43 +76,45 @@ private fun NetWorthContent(
     val balancesHidden = LocalBalanceHidden.current
 
     LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        modifier        = Modifier
+            .fillMaxSize()
+            .background(BackgroundGray),
+        contentPadding  = PaddingValues(16.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        // ── Tarjeta de patrimonio neto ────────────────────────────────────────
+        // ── Título ────────────────────────────────────────────────────────────
         item {
+            Spacer(Modifier.height(4.dp))
             Text(
-                text = "Patrimonio",
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold,
-                color = PrimaryDark
+                "Patrimonio",
+                fontSize      = 20.sp,
+                fontWeight    = FontWeight.Bold,
+                color         = TextPrimary,
+                letterSpacing = (-0.3).sp
             )
         }
 
-        item {
-            NetWorthSummaryCard(data)
-        }
+        // ── Hero patrimonio neto ──────────────────────────────────────────────
+        item { NetWorthHeroCard(data = data, balancesHidden = balancesHidden) }
 
-        // ── Gráfico de evolución del patrimonio ──────────────────────────────
+        // ── Gráfico evolución ─────────────────────────────────────────────────
         if (netWorthHistory.size >= 2) {
             item {
                 LineChartCard(
                     title          = "Evolución del patrimonio",
                     subtitle       = "Patrimonio neto mensual",
                     points         = netWorthHistory.map { point ->
-                        val parts = point.yearMonth.split("-")
-                        val year = parts[0].toInt()
-                        val month = parts[1].toInt()
+                        val parts   = point.yearMonth.split("-")
+                        val year    = parts[0].toInt()
+                        val month   = parts[1].toInt()
                         val lastDay = when (month) {
-                            2 -> if (year % 4 == 0 && (year % 100 != 0 || year % 400 == 0)) 29 else 28
-                            4, 6, 9, 11 -> 30
-                            else -> 31
+                            2        -> if (year % 4 == 0 && (year % 100 != 0 || year % 400 == 0)) 29 else 28
+                            4,6,9,11 -> 30
+                            else     -> 31
                         }
-                        val instant = LocalDateTime(
-                            year, month, lastDay, 23, 59, 59
-                        ).toInstant(TimeZone.currentSystemDefault())
-                        instant.toEpochMilliseconds() to point.netWorth
+                        LocalDateTime(year, month, lastDay, 23, 59, 59)
+                            .toInstant(TimeZone.currentSystemDefault())
+                            .toEpochMilliseconds() to point.netWorth
                     },
                     lineColor      = PrimaryDark,
                     currencyCode   = "EUR",
@@ -126,18 +123,9 @@ private fun NetWorthContent(
             }
         }
 
-        // ── Sección Activos ──────────────────────────────────────────────────
-        item {
-            Text(
-                text = "Activos",
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Medium,
-                color = PrimaryDark,
-                modifier = Modifier.padding(top = 8.dp)
-            )
-        }
+        // ── Sección activos ───────────────────────────────────────────────────
+        item { SectionLabel("Activos") }
 
-        // ── Donut de distribución de activos ─────────────────────────────────
         if (assetDistribution.isNotEmpty()) {
             item {
                 DonutChartCard(
@@ -151,28 +139,28 @@ private fun NetWorthContent(
             }
         }
 
-        item {
-            AssetsSummaryCard(data)
-        }
+        item { AssetsSummaryCard(data = data, balancesHidden = balancesHidden) }
 
-        // ── Sección Pasivos ──────────────────────────────────────────────────
+        // ── Sección pasivos ───────────────────────────────────────────────────
         item {
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier              = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment     = Alignment.CenterVertically
             ) {
-                Text(
-                    text = "Pasivos",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = PrimaryDark
-                )
-                IconButton(onClick = onAddLoan) {
+                SectionLabel("Pasivos")
+                IconButton(
+                    onClick  = onAddLoan,
+                    modifier = Modifier
+                        .size(32.dp)
+                        .clip(RoundedCornerShape(9.dp))
+                        .background(PrimaryAlpha)
+                ) {
                     Icon(
                         Icons.Outlined.Add,
                         contentDescription = "Añadir préstamo",
-                        tint = PrimaryDark
+                        tint               = PrimaryDark,
+                        modifier           = Modifier.size(17.dp)
                     )
                 }
             }
@@ -184,241 +172,275 @@ private fun NetWorthContent(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(12.dp))
-                        .background(SurfaceElevated)
+                        .background(SurfaceWhite)
                         .padding(24.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text(
-                        text = "Sin pasivos registrados",
-                        color = TextSecondary,
-                        fontSize = 14.sp
-                    )
+                    Text("Sin pasivos registrados", color = TextTertiary, fontSize = 13.sp)
                 }
             }
         }
 
-        // Deudas cotidianas
         if (data.totalDebtsOwing > 0.0) {
-            item {
-                DebtsSummaryRow(data.totalDebtsOwing)
-            }
+            item { EverydayDebtsRow(amount = data.totalDebtsOwing, balancesHidden = balancesHidden) }
         }
 
-        // Préstamos
         items(data.loans, key = { it.id }) { loan ->
-            LoanCard(
-                loan = loan,
-                onClick = { onLoanClick(loan.id) }
-            )
+            LoanCard(loan = loan, onClick = { onLoanClick(loan.id) })
         }
+
+        item { Spacer(Modifier.height(80.dp)) }
     }
 }
 
+// ─── Hero card ────────────────────────────────────────────────────────────────
 @Composable
-private fun NetWorthSummaryCard(data: NetWorthData) {
+private fun NetWorthHeroCard(data: NetWorthData, balancesHidden: Boolean) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = PrimaryDark)
+        modifier  = Modifier.fillMaxWidth(),
+        shape     = RoundedCornerShape(16.dp),
+        colors    = CardDefaults.cardColors(containerColor = PrimaryDark),
+        elevation = CardDefaults.cardElevation(0.dp)
     ) {
         Column(
-            modifier = Modifier.fillMaxWidth().padding(20.dp),
+            modifier            = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp, vertical = 20.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "Patrimonio neto",
-                fontSize = 14.sp,
-                color = Color.White.copy(alpha = 0.7f)
+                "Patrimonio neto",
+                fontSize = 12.sp,
+                color    = Color.White.copy(alpha = 0.55f)
             )
-            Spacer(Modifier.height(4.dp))
+            Spacer(Modifier.height(6.dp))
             Text(
-                text = formatCurrency(data.netWorth),
-                fontSize = 28.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.White
+                maskAmount(formatCurrency(data.netWorth), balancesHidden),
+                fontSize      = 32.sp,
+                fontWeight    = FontWeight.Bold,
+                color         = Color.White,
+                letterSpacing = (-1).sp
             )
-            Spacer(Modifier.height(16.dp))
+            Spacer(Modifier.height(18.dp))
+            HorizontalDivider(color = Color.White.copy(alpha = 0.12f), thickness = 0.5.dp)
+            Spacer(Modifier.height(14.dp))
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier              = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text("Activos", fontSize = 12.sp, color = Color.White.copy(alpha = 0.6f))
-                    Text(
-                        formatCurrency(data.totalAssets),
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Medium,
-                        color = Color(0xFF4CAF50)
-                    )
-                }
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text("Pasivos", fontSize = 12.sp, color = Color.White.copy(alpha = 0.6f))
-                    Text(
-                        formatCurrency(data.totalLiabilities),
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Medium,
-                        color = Color(0xFFEF5350)
-                    )
-                }
+                NetWorthMetric(
+                    label          = "Activos",
+                    value          = maskAmount(formatCurrency(data.totalAssets), balancesHidden),
+                    color          = Color(0xFF86EFAC)
+                )
+                Box(
+                    Modifier
+                        .width(0.5.dp)
+                        .height(36.dp)
+                        .background(Color.White.copy(alpha = 0.12f))
+                        .align(Alignment.CenterVertically)
+                )
+                NetWorthMetric(
+                    label          = "Pasivos",
+                    value          = maskAmount(formatCurrency(data.totalLiabilities), balancesHidden),
+                    color          = Color(0xFFFCA5A5)
+                )
             }
         }
     }
 }
 
 @Composable
-private fun AssetsSummaryCard(data: NetWorthData) {
+private fun NetWorthMetric(label: String, value: String, color: Color) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Text(label, fontSize = 11.sp, color = Color.White.copy(alpha = 0.5f))
+        Spacer(Modifier.height(3.dp))
+        Text(value, fontSize = 15.sp, fontWeight = FontWeight.Bold, color = color)
+    }
+}
+
+// ─── Assets summary card ──────────────────────────────────────────────────────
+@Composable
+private fun AssetsSummaryCard(data: NetWorthData, balancesHidden: Boolean) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = SurfaceElevated)
+        modifier  = Modifier.fillMaxWidth(),
+        shape     = RoundedCornerShape(12.dp),
+        colors    = CardDefaults.cardColors(containerColor = SurfaceWhite),
+        elevation = CardDefaults.cardElevation(0.dp)
     ) {
         Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
-            SummaryRow("Balance cuentas", data.totalAccountBalance)
+            AssetRow("Balance cuentas", data.totalAccountBalance, balancesHidden)
             if (data.totalPortfolioValue > 0) {
-                Spacer(Modifier.height(8.dp))
-                SummaryRow("Portfolio inversiones", data.totalPortfolioValue)
+                Spacer(Modifier.height(10.dp))
+                HorizontalDivider(color = BorderGray, thickness = 0.5.dp)
+                Spacer(Modifier.height(10.dp))
+                AssetRow("Portfolio inversiones", data.totalPortfolioValue, balancesHidden)
             }
             if (data.totalFixedIncomeValue > 0) {
-                Spacer(Modifier.height(8.dp))
-                SummaryRow("Renta fija", data.totalFixedIncomeValue)
+                Spacer(Modifier.height(10.dp))
+                HorizontalDivider(color = BorderGray, thickness = 0.5.dp)
+                Spacer(Modifier.height(10.dp))
+                AssetRow("Renta fija", data.totalFixedIncomeValue, balancesHidden)
             }
             HorizontalDivider(
-                modifier = Modifier.padding(vertical = 12.dp),
-                color = TextSecondary.copy(alpha = 0.2f)
+                modifier  = Modifier.padding(vertical = 12.dp),
+                color     = BorderGray2,
+                thickness = 0.5.dp
             )
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier              = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text("Total activos", fontWeight = FontWeight.Medium, fontSize = 14.sp, color = PrimaryDark)
-                Text(formatCurrency(data.totalAssets), fontWeight = FontWeight.Medium, fontSize = 14.sp, color = PrimaryDark)
+                Text("Total activos", fontWeight = FontWeight.SemiBold, fontSize = 13.sp, color = PrimaryDark)
+                Text(
+                    maskAmount(formatCurrency(data.totalAssets), balancesHidden),
+                    fontWeight = FontWeight.Bold,
+                    fontSize   = 13.sp,
+                    color      = PrimaryDark
+                )
             }
         }
     }
 }
 
 @Composable
-private fun DebtsSummaryRow(amount: Double) {
+private fun AssetRow(label: String, amount: Double, balancesHidden: Boolean) {
+    Row(
+        modifier              = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(label, fontSize = 13.sp, color = TextSecondary)
+        Text(
+            maskAmount(formatCurrency(amount), balancesHidden),
+            fontSize   = 13.sp,
+            color      = TextPrimary,
+            fontWeight = FontWeight.SemiBold
+        )
+    }
+}
+
+// ─── Everyday debts row ───────────────────────────────────────────────────────
+@Composable
+private fun EverydayDebtsRow(amount: Double, balancesHidden: Boolean) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = SurfaceElevated)
+        modifier  = Modifier.fillMaxWidth(),
+        shape     = RoundedCornerShape(12.dp),
+        colors    = CardDefaults.cardColors(containerColor = SurfaceWhite),
+        elevation = CardDefaults.cardElevation(0.dp)
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth().padding(16.dp),
+            modifier              = Modifier.fillMaxWidth().padding(16.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment     = Alignment.CenterVertically
         ) {
-            Text("Deudas cotidianas", fontSize = 14.sp, color = TextSecondary)
+            Text("Deudas cotidianas", fontSize = 13.sp, color = TextSecondary)
             Text(
-                formatCurrency(amount),
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Medium,
-                color = Color(0xFFEF5350)
+                "−${maskAmount(formatCurrency(amount), balancesHidden)}",
+                fontSize   = 13.sp,
+                fontWeight = FontWeight.Bold,
+                color      = ExpenseRed
             )
         }
     }
 }
 
+// ─── Loan card ────────────────────────────────────────────────────────────────
 @Composable
-private fun LoanCard(
-    loan: Loan,
-    onClick: () -> Unit
-) {
+private fun LoanCard(loan: Loan, onClick: () -> Unit) {
     Card(
-        modifier = Modifier.fillMaxWidth().clickable(onClick = onClick),
-        shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = SurfaceElevated)
+        modifier  = Modifier.fillMaxWidth().clickable(onClick = onClick),
+        shape     = RoundedCornerShape(12.dp),
+        colors    = CardDefaults.cardColors(containerColor = SurfaceWhite),
+        elevation = CardDefaults.cardElevation(0.dp)
     ) {
         Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier              = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment     = Alignment.CenterVertically
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(loan.type.emoji, fontSize = 20.sp)
-                    Spacer(Modifier.width(8.dp))
+                    Spacer(Modifier.width(10.dp))
                     Column {
                         Text(
                             loan.name,
-                            fontWeight = FontWeight.Medium,
-                            fontSize = 14.sp,
-                            color = PrimaryDark
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize   = 14.sp,
+                            color      = TextPrimary
                         )
                         loan.lenderName?.let {
-                            Text(it, fontSize = 12.sp, color = TextSecondary)
+                            Text(it, fontSize = 11.sp, color = TextTertiary)
                         }
                     }
                 }
                 Column(horizontalAlignment = Alignment.End) {
                     Text(
-                        formatCurrency(loan.outstandingPrincipal),
-                        fontWeight = FontWeight.Medium,
-                        fontSize = 14.sp,
-                        color = Color(0xFFEF5350)
+                        "−${formatCurrency(loan.outstandingPrincipal)}",
+                        fontWeight = FontWeight.Bold,
+                        fontSize   = 13.sp,
+                        color      = ExpenseRed
                     )
                     Text(
                         "de ${formatCurrency(loan.totalAmount)}",
-                        fontSize = 11.sp,
-                        color = TextSecondary
+                        fontSize = 10.sp,
+                        color    = TextTertiary
                     )
                 }
             }
 
             Spacer(Modifier.height(12.dp))
 
-            // Barra de progreso
             LinearProgressIndicator(
-                progress = { loan.progressPercent },
-                modifier = Modifier
+                progress     = { loan.progressPercent },
+                modifier     = Modifier
                     .fillMaxWidth()
-                    .height(6.dp)
-                    .clip(RoundedCornerShape(3.dp)),
-                color = PrimaryDark,
-                trackColor = TextSecondary.copy(alpha = 0.15f)
+                    .height(4.dp)
+                    .clip(RoundedCornerShape(2.dp)),
+                color        = PrimaryDark,
+                trackColor   = BorderGray2
             )
 
             Spacer(Modifier.height(8.dp))
 
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier              = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
                     "${loan.paidInstallments}/${loan.totalInstallments} cuotas",
-                    fontSize = 11.sp,
-                    color = TextSecondary
+                    fontSize = 10.sp,
+                    color    = TextTertiary
                 )
                 Text(
-                    "Cuota: ${formatCurrency(loan.monthlyPayment)}/mes",
-                    fontSize = 11.sp,
-                    color = TextSecondary
+                    "${formatCurrency(loan.monthlyPayment)}/mes",
+                    fontSize = 10.sp,
+                    color    = TextTertiary
                 )
                 Text(
                     "${loan.currentInterestRate}%",
-                    fontSize = 11.sp,
-                    color = TextSecondary
+                    fontSize = 10.sp,
+                    color    = TextTertiary
                 )
             }
         }
     }
 }
 
+// ─── Helpers ─────────────────────────────────────────────────────────────────
 @Composable
-private fun SummaryRow(label: String, amount: Double) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        Text(label, fontSize = 13.sp, color = TextSecondary)
-        Text(formatCurrency(amount), fontSize = 13.sp, color = PrimaryDark)
-    }
+private fun SectionLabel(text: String) {
+    Text(
+        text          = text.uppercase(),
+        fontSize      = 10.sp,
+        fontWeight    = FontWeight.Bold,
+        color         = TextTertiary,
+        letterSpacing = 0.7.sp
+    )
 }
 
 private fun formatCurrency(amount: Double): String {
-    val absVal = abs(amount)
-    val formatted = formatAmount(absVal)
-    val prefix = if (amount < 0) "-" else ""
-    return "$prefix$formatted €"
+    val absVal  = abs(amount)
+    val prefix  = if (amount < 0) "-" else ""
+    return "$prefix${formatAmount(absVal)} €"
 }

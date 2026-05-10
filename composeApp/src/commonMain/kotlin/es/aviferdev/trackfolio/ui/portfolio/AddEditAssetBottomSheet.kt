@@ -105,10 +105,15 @@ fun AddEditAssetBottomSheet(
         mutableStateOf(asset?.assetCategoryId ?: preselectedCategoryId)
     }
 
-    var selectedPlatformIds by remember { mutableStateOf(linkedPlatformIds) }
-    var fixedIncomePercent by remember { mutableStateOf(linkedFixedIncomePercent) }
-    var selectedSectorIds by remember { mutableStateOf(linkedSectorIds) }
-    var regionPercents by remember(allRegions) { mutableStateOf(linkedRegionPercents.ifEmpty { emptyMap() }) }
+    var selectedPlatformIds by remember(linkedPlatformIds) { mutableStateOf(linkedPlatformIds) }
+    var fixedIncomePercent by remember(linkedFixedIncomePercent) { mutableStateOf(linkedFixedIncomePercent) }
+    var selectedSectorIds by remember(linkedSectorIds) { mutableStateOf(linkedSectorIds) }
+    var regionPercents by remember(allRegions, linkedRegionPercents) {
+        mutableStateOf(
+            if (linkedRegionPercents.isNotEmpty()) linkedRegionPercents.toMap()
+            else allRegions.associate { it.id to 0 }
+        )
+    }
 
     // Estado para fecha de vencimiento (solo para Renta Fija)
     var maturityDateMillis by remember {

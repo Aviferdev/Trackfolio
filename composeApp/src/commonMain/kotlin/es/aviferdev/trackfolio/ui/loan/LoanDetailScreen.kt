@@ -31,7 +31,6 @@ import org.koin.core.parameter.parametersOf
 import kotlin.math.abs
 
 @OptIn(ExperimentalMaterial3Api::class)
-
 @Composable
 fun LoanDetailScreen(
     loanId: String,
@@ -39,32 +38,43 @@ fun LoanDetailScreen(
     viewModel: LoanDetailViewModel = koinViewModel(parameters = { parametersOf(loanId) })
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    var showArchiveConfirmation by remember { mutableStateOf(false) }
+    var showArchiveConfirm by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(uiState.loan?.name ?: "Detalle préstamo", maxLines = 1, fontWeight = FontWeight.SemiBold) },
+                title = {
+                    Text(
+                        uiState.loan?.name ?: "Detalle préstamo",
+                        maxLines      = 1,
+                        fontWeight    = FontWeight.Bold,
+                        fontSize      = 17.sp,
+                        letterSpacing = (-0.3).sp
+                    )
+                },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Outlined.ArrowBack, "Volver", tint = PrimaryDark)
+                        Icon(Icons.AutoMirrored.Outlined.ArrowBack, "Volver", tint = TextPrimary)
                     }
                 },
                 actions = {
                     IconButton(onClick = { viewModel.openEditSheet() }) {
-                        Icon(Icons.Outlined.Edit, "Editar", tint = PrimaryDark)
+                        Icon(Icons.Outlined.Edit, "Editar", tint = TextSecondary)
                     }
                     IconButton(onClick = { viewModel.openRateSheet() }) {
-                        Icon(Icons.Outlined.Edit, "Cambiar tipo", tint = PrimaryDark)
+                        Icon(Icons.Outlined.Edit, "Cambiar tipo", tint = TextSecondary)
                     }
-                    IconButton(onClick = { showArchiveConfirmation = true }) {
-                        Icon(Icons.Outlined.Delete, "Archivar", tint = Color(0xFFEF5350))
+                    IconButton(onClick = { showArchiveConfirm = true }) {
+                        Icon(Icons.Outlined.Delete, "Archivar", tint = ExpenseRed)
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = SurfaceWhite)
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = SurfaceWhite,
+                    titleContentColor = TextPrimary
+                )
             )
         },
-        containerColor = SurfaceWhite
+        containerColor = BackgroundGray
     ) { padding ->
         if (uiState.isLoading) {
             Box(Modifier.fillMaxSize().padding(padding), contentAlignment = Alignment.Center) {
@@ -76,296 +86,294 @@ fun LoanDetailScreen(
         val loan = uiState.loan
         if (loan == null) {
             Box(Modifier.fillMaxSize().padding(padding), contentAlignment = Alignment.Center) {
-                Text("Préstamo no encontrado", color = TextSecondary)
+                Text("Préstamo no encontrado", color = TextTertiary, fontSize = 13.sp)
             }
             return@Scaffold
         }
 
         LazyColumn(
-            modifier = Modifier.fillMaxSize().padding(padding),
-            contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            modifier        = Modifier.fillMaxSize().padding(padding),
+            contentPadding  = PaddingValues(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            // ── Resumen ──────────────────────────────────────────────────────
-            item { LoanSummarySection(loan) }
+            // ── Hero card ─────────────────────────────────────────────────────
+            item { LoanHeroCard(loan = loan) }
 
-            // ── Historial de cambios de tipo ─────────────────────────────────
+            // ── Details grid ──────────────────────────────────────────────────
+            item { LoanDetailsGrid(loan = loan) }
+
+            // ── Rate history ──────────────────────────────────────────────────
             if (uiState.rateChanges.isNotEmpty()) {
-                item {
-                    Text(
-                        "Historial de tipo de interés",
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Medium,
-                        color = PrimaryDark
-                    )
-                }
+                item { SectionLabel("Historial de tipo de interés") }
                 items(uiState.rateChanges, key = { it.id }) { change ->
                     RateChangeRow(change)
                 }
             }
 
-            // ── Cuadro de amortización ───────────────────────────────────────
-            item {
-                Text(
-                    "Cuadro de amortización",
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = PrimaryDark,
-                    modifier = Modifier.padding(top = 8.dp)
-                )
-            }
-
-            // Cabecera de tabla
+            // ── Amortization table ────────────────────────────────────────────
+            item { SectionLabel("Cuadro de amortización") }
             item { AmortizationHeader() }
-
             items(uiState.schedule, key = { it.installmentNumber }) { entry ->
-                AmortizationRow(entry, loan.paidInstallments)
+                AmortizationRow(entry = entry, paidInstallments = loan.paidInstallments)
             }
+
+            item { Spacer(Modifier.height(24.dp)) }
         }
     }
 
-    // ── Diálogo de confirmación de archivado ─────────────────────────────────
-    if (showArchiveConfirmation && uiState.loan != null) {
+    // ── Archive dialog ────────────────────────────────────────────────────────
+    if (showArchiveConfirm && uiState.loan != null) {
         AlertDialog(
-            onDismissRequest = { showArchiveConfirmation = false },
-            containerColor = SurfaceWhite,
-            icon = { Text("⚠️", fontSize = 28.sp) },
+            onDismissRequest = { showArchiveConfirm = false },
+            containerColor   = SurfaceWhite,
+            icon             = { Text("⚠️", fontSize = 26.sp) },
             title = {
                 Text(
                     "Archivar préstamo",
-                    fontSize = 17.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    color = TextPrimary
+                    fontSize = 16.sp, fontWeight = FontWeight.Bold, color = TextPrimary
                 )
             },
             text = {
                 Text(
-                    "¿Estás seguro de que quieres archivar \"${uiState.loan!!.name}\"? El préstamo desaparecerá de la pantalla principal pero sus datos se mantendrán en el histórico.",
-                    fontSize = 14.sp,
-                    color = TextSecondary
+                    "¿Estás seguro de que quieres archivar «${uiState.loan!!.name}»? Desaparecerá de la pantalla principal pero sus datos se mantendrán.",
+                    fontSize = 13.sp, color = TextSecondary
                 )
             },
             confirmButton = {
-                TextButton(onClick = {
-                    viewModel.archive()
-                    showArchiveConfirmation = false
-                    onBack()
-                }) {
-                    Text("Archivar", color = Color(0xFFEF5350), fontWeight = FontWeight.Medium)
+                TextButton(onClick = { viewModel.archive(); showArchiveConfirm = false; onBack() }) {
+                    Text("Archivar", color = ExpenseRed, fontWeight = FontWeight.SemiBold)
                 }
             },
             dismissButton = {
-                TextButton(onClick = { showArchiveConfirmation = false }) {
-                    Text("Cancelar", color = PrimaryDark, fontWeight = FontWeight.Medium)
+                TextButton(onClick = { showArchiveConfirm = false }) {
+                    Text("Cancelar", color = PrimaryDark)
                 }
             },
             shape = RoundedCornerShape(16.dp)
         )
     }
 
-    // ── Sheet de edición de préstamo ────────────────────────────────────────
+    // ── Edit sheet ────────────────────────────────────────────────────────────
     if (uiState.showEditSheet && uiState.loan != null) {
-        AddEditLoanBottomSheet(
-            loan = uiState.loan,
-            onDismiss = { viewModel.closeEditSheet() }
-        )
+        AddEditLoanBottomSheet(loan = uiState.loan, onDismiss = { viewModel.closeEditSheet() })
     }
 }
 
+// ─── Hero card ────────────────────────────────────────────────────────────────
 @Composable
-private fun LoanSummarySection(loan: Loan) {
+private fun LoanHeroCard(loan: Loan) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = SurfaceElevated)
+        modifier  = Modifier.fillMaxWidth(),
+        shape     = RoundedCornerShape(16.dp),
+        colors    = CardDefaults.cardColors(containerColor = PrimaryDark),
+        elevation = CardDefaults.cardElevation(0.dp)
     ) {
-        Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
+        Column(modifier = Modifier.fillMaxWidth().padding(20.dp)) {
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+                Modifier.fillMaxWidth(),
+                Arrangement.SpaceBetween,
+                Alignment.CenterVertically
             ) {
-                Text("${loan.type.emoji} ${loan.type.label}", fontSize = 13.sp, color = TextSecondary)
-                loan.lenderName?.let {
-                    Text(it, fontSize = 13.sp, color = TextSecondary)
-                }
+                Text("${loan.type.emoji} ${loan.type.label}", fontSize = 12.sp, color = Color.White.copy(.5f))
+                loan.lenderName?.let { Text(it, fontSize = 12.sp, color = Color.White.copy(.5f)) }
+            }
+            Spacer(Modifier.height(10.dp))
+
+            // Saldo pendiente
+            Text("Capital pendiente", fontSize = 11.sp, color = Color.White.copy(.5f))
+            Text(
+                "−${formatAmount(loan.outstandingPrincipal)} €",
+                fontSize      = 30.sp,
+                fontWeight    = FontWeight.Bold,
+                color         = Color.White,
+                letterSpacing = (-1).sp
+            )
+
+            Spacer(Modifier.height(16.dp))
+            HorizontalDivider(color = Color.White.copy(.12f), thickness = .5.dp)
+            Spacer(Modifier.height(14.dp))
+
+            Row(Modifier.fillMaxWidth(), Arrangement.SpaceBetween) {
+                HeroMetric("Cuota/mes", "${formatAmount(loan.monthlyPayment)} €")
+                HeroMetric("TIN",       "${formatPercent(loan.currentInterestRate)}%")
+                HeroMetric("Plazo",     "${loan.totalInstallments} meses")
             }
 
-            Spacer(Modifier.height(12.dp))
+            Spacer(Modifier.height(14.dp))
+            HorizontalDivider(color = Color.White.copy(.12f), thickness = .5.dp)
+            Spacer(Modifier.height(10.dp))
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Column {
-                    Text("Capital pendiente", fontSize = 11.sp, color = TextSecondary)
-                    Text(
-                        "${formatAmount(loan.outstandingPrincipal)} €",
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = PrimaryDark
-                    )
-                }
-                Column(horizontalAlignment = Alignment.End) {
-                    Text("Cuota mensual", fontSize = 11.sp, color = TextSecondary)
-                    Text(
-                        "${formatAmount(loan.monthlyPayment)} €",
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = PrimaryDark
-                    )
-                }
-            }
-
-            Spacer(Modifier.height(12.dp))
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                DetailRow("Total", "${formatAmount(loan.totalAmount)} €")
-                DetailRow("Interés", "${formatPercent(loan.currentInterestRate)}%")
-                DetailRow("Plazo", "${loan.totalInstallments} meses")
-            }
-
-            Spacer(Modifier.height(12.dp))
-
-            // Progreso
-            Column {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text("Progreso", fontSize = 11.sp, color = TextSecondary)
-                    Text(
-                        "${loan.paidInstallments}/${loan.totalInstallments} cuotas (${(loan.progressPercent * 100).toInt()}%)",
-                        fontSize = 11.sp,
-                        color = TextSecondary
-                    )
-                }
-                Spacer(Modifier.height(4.dp))
-                LinearProgressIndicator(
-                    progress = { loan.progressPercent },
-                    modifier = Modifier.fillMaxWidth().height(6.dp).clip(RoundedCornerShape(3.dp)),
-                    color = PrimaryDark,
-                    trackColor = BorderGray
+            // Progress bar
+            Row(Modifier.fillMaxWidth(), Arrangement.SpaceBetween) {
+                Text("Progreso", fontSize = 10.sp, color = Color.White.copy(.45f))
+                Text(
+                    "${loan.paidInstallments}/${loan.totalInstallments} cuotas · ${(loan.progressPercent * 100).toInt()}%",
+                    fontSize = 10.sp, color = Color.White.copy(.45f)
                 )
             }
+            Spacer(Modifier.height(6.dp))
+            LinearProgressIndicator(
+                progress   = { loan.progressPercent },
+                modifier   = Modifier.fillMaxWidth().height(4.dp).clip(RoundedCornerShape(2.dp)),
+                color      = Color.White.copy(.9f),
+                trackColor = Color.White.copy(.2f)
+            )
         }
     }
 }
 
 @Composable
-private fun DetailRow(label: String, value: String) {
-    Column {
-        Text(label, fontSize = 11.sp, color = TextSecondary)
-        Text(value, fontSize = 13.sp, color = TextPrimary, fontWeight = FontWeight.Medium)
+private fun HeroMetric(label: String, value: String) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Text(label, fontSize = 10.sp, color = Color.White.copy(.45f))
+        Spacer(Modifier.height(3.dp))
+        Text(value, fontSize = 13.sp, fontWeight = FontWeight.Bold, color = Color.White)
     }
 }
 
+// ─── Details grid ─────────────────────────────────────────────────────────────
+@Composable
+private fun LoanDetailsGrid(loan: Loan) {
+    val items = listOf(
+        Triple("Capital inicial", "${formatAmount(loan.totalAmount)} €",                "💰"),
+        Triple("Tipo",            "${loan.type.emoji} ${loan.type.label}",              "📋"),
+        Triple("Amortización",    "Francés",                                            "📊"),
+        Triple("Entidad",         loan.lenderName ?: "—",                              "🏦"),
+    )
+    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        items.chunked(2).forEach { col ->
+            Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                col.forEach { (label, value, _) ->
+                    Card(
+                        modifier  = Modifier.fillMaxWidth(),
+                        shape     = RoundedCornerShape(12.dp),
+                        colors    = CardDefaults.cardColors(containerColor = SurfaceWhite),
+                        elevation = CardDefaults.cardElevation(0.dp)
+                    ) {
+                        Column(Modifier.padding(12.dp)) {
+                            Text(
+                                label.uppercase(),
+                                fontSize      = 9.sp,
+                                fontWeight    = FontWeight.Bold,
+                                color         = TextTertiary,
+                                letterSpacing = .5.sp
+                            )
+                            Spacer(Modifier.height(4.dp))
+                            Text(value, fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary)
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+// ─── Rate change row ──────────────────────────────────────────────────────────
 @Composable
 private fun RateChangeRow(change: LoanRateChange) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(8.dp),
-        colors = CardDefaults.cardColors(containerColor = SurfaceWhite)
+        modifier  = Modifier.fillMaxWidth(),
+        shape     = RoundedCornerShape(11.dp),
+        colors    = CardDefaults.cardColors(containerColor = SurfaceWhite),
+        elevation = CardDefaults.cardElevation(0.dp)
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth().padding(12.dp),
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 14.dp, vertical = 12.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment     = Alignment.CenterVertically
         ) {
             Column {
                 Text(formatDate(change.effectiveDate), fontSize = 12.sp, color = TextSecondary)
                 Text(
-                    "${formatCurrency(change.previousRate - change.newRate)}%",
-                    fontSize = 11.sp,
-                    color = TextSecondary
+                    "Δ ${if (change.newRate > change.previousRate) "+" else ""}${
+                        formatPercent(change.newRate - change.previousRate)}%",
+                    fontSize = 10.sp,
+                    color    = if (change.newRate > change.previousRate) ExpenseRed else IncomeGreen
                 )
             }
-            Column(horizontalAlignment = Alignment.End) {
-                Text("${formatPercent(change.previousRate)}%", fontSize = 12.sp, color = TextSecondary)
-                Text("→", fontSize = 12.sp, color = TextSecondary)
-                Text("${formatPercent(change.newRate)}%", fontSize = 12.sp, color = PrimaryDark, fontWeight = FontWeight.Medium)
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                Text("${formatPercent(change.previousRate)}%", fontSize = 13.sp, color = TextSecondary)
+                Text("→", fontSize = 13.sp, color = TextTertiary)
+                Text("${formatPercent(change.newRate)}%", fontSize = 13.sp, color = PrimaryDark, fontWeight = FontWeight.Bold)
             }
         }
     }
 }
 
+// ─── Amortization table ───────────────────────────────────────────────────────
 @Composable
 private fun AmortizationHeader() {
     Row(
-        modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+        modifier = Modifier.fillMaxWidth().padding(vertical = 6.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Text("#", fontSize = 10.sp, color = TextSecondary, modifier = Modifier.weight(0.5f), textAlign = TextAlign.Center)
-        Text("Fecha", fontSize = 10.sp, color = TextSecondary, modifier = Modifier.weight(1.5f), textAlign = TextAlign.Center)
-        Text("Cuota", fontSize = 10.sp, color = TextSecondary, modifier = Modifier.weight(1.3f), textAlign = TextAlign.End)
-        Text("Interés", fontSize = 10.sp, color = TextSecondary, modifier = Modifier.weight(1.3f), textAlign = TextAlign.End)
-        Text("Capital", fontSize = 10.sp, color = TextSecondary, modifier = Modifier.weight(1.3f), textAlign = TextAlign.End)
-        Text("Pendiente", fontSize = 10.sp, color = TextSecondary, modifier = Modifier.weight(1.5f), textAlign = TextAlign.End)
+        listOf("#" to .4f, "Fecha" to 1.4f, "Cuota" to 1.2f, "Interés" to 1.2f, "Capital" to 1.2f, "Pendiente" to 1.4f).forEach { (h, w) ->
+            Text(
+                h,
+                fontSize  = 9.sp,
+                fontWeight = FontWeight.Bold,
+                color     = TextTertiary,
+                letterSpacing = .4.sp,
+                modifier  = Modifier.weight(w),
+                textAlign = if (h == "#" || h == "Fecha") TextAlign.Start else TextAlign.End
+            )
+        }
     }
+    HorizontalDivider(color = BorderGray, thickness = .5.dp)
 }
 
 @Composable
 private fun AmortizationRow(entry: AmortizationEntry, paidInstallments: Int) {
-    val isPast = entry.installmentNumber <= paidInstallments
-    val textColor = if (isPast) TextPrimary else TextSecondary
+    val isPaid   = entry.installmentNumber <= paidInstallments
+    val isNext   = entry.installmentNumber == paidInstallments + 1
+    val txtColor = if (isPaid) TextPrimary else TextTertiary
 
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(if (entry.installmentNumber == paidInstallments + 1) SurfaceElevated else Color.Transparent)
+            .background(if (isNext) PrimaryAlpha else Color.Transparent)
             .padding(vertical = 6.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment     = Alignment.CenterVertically
     ) {
-        Text(
-            entry.installmentNumber.toString(),
-            fontSize = 11.sp,
-            color = textColor,
-            modifier = Modifier.weight(0.5f),
-            textAlign = TextAlign.Center
-        )
-        Text(
-            formatDateShort(entry.date),
-            fontSize = 11.sp,
-            color = textColor,
-            modifier = Modifier.weight(1.5f),
-            textAlign = TextAlign.Center
-        )
-        Text(formatCurrencyShort(entry.monthlyPayment), Modifier.weight(1.3f), fontSize = 11.sp, color = textColor, textAlign = TextAlign.End)
-        Text(formatCurrencyShort(entry.interestPortion), Modifier.weight(1.3f), fontSize = 11.sp, color = textColor, textAlign = TextAlign.End)
-        Text(formatCurrencyShort(entry.principalPortion), Modifier.weight(1.3f), fontSize = 11.sp, color = textColor, textAlign = TextAlign.End)
-        Text(formatCurrencyShort(entry.outstandingBalance), Modifier.weight(1.5f), fontSize = 11.sp, color = PrimaryDark, fontWeight = FontWeight.Medium, textAlign = TextAlign.End)
+        Text(entry.installmentNumber.toString(), fontSize = 10.sp, color = txtColor, modifier = Modifier.weight(.4f))
+        Text(formatDateShort(entry.date),        fontSize = 10.sp, color = txtColor, modifier = Modifier.weight(1.4f))
+        Text(formatCurrencyShort(entry.monthlyPayment),  fontSize = 10.sp, color = txtColor,    textAlign = TextAlign.End, modifier = Modifier.weight(1.2f))
+        Text(formatCurrencyShort(entry.interestPortion), fontSize = 10.sp, color = ExpenseRed.copy(if (isPaid) 1f else .5f), textAlign = TextAlign.End, modifier = Modifier.weight(1.2f))
+        Text(formatCurrencyShort(entry.principalPortion),fontSize = 10.sp, color = IncomeGreen.copy(if (isPaid) 1f else .5f),textAlign = TextAlign.End, modifier = Modifier.weight(1.2f))
+        Text(formatCurrencyShort(entry.outstandingBalance), fontSize = 10.sp, color = if (isPaid) PrimaryDark else TextTertiary, fontWeight = if (isPaid) FontWeight.SemiBold else FontWeight.Normal, textAlign = TextAlign.End, modifier = Modifier.weight(1.4f))
     }
-
-    HorizontalDivider(color = TextSecondary.copy(alpha = 0.08f))
+    HorizontalDivider(color = BorderGray, thickness = .3.dp)
 }
 
-private fun formatCurrency(amount: Double): String {
-    val formatted = formatAmount(kotlin.math.abs(amount))
-    val prefix = if (amount < 0) "-" else ""
-    return "$prefix$formatted €"
+// ─── Helpers ─────────────────────────────────────────────────────────────────
+@Composable
+private fun SectionLabel(text: String) {
+    Text(
+        text.uppercase(),
+        fontSize      = 10.sp,
+        fontWeight    = FontWeight.Bold,
+        color         = TextTertiary,
+        letterSpacing = .7.sp,
+        modifier      = Modifier.padding(top = 4.dp)
+    )
 }
 
-private fun formatCurrencyShort(amount: Double): String =
-    formatAmount(amount)
+private fun formatCurrencyShort(amount: Double): String = formatAmount(amount)
 
 private fun formatDate(millis: Long): String {
-    val dt = Instant.fromEpochMilliseconds(millis)
-        .toLocalDateTime(TimeZone.currentSystemDefault())
-    return "${dt.dayOfMonth.toString().padStart(2, '0')}/${dt.monthNumber.toString().padStart(2, '0')}/${dt.year}"
+    val dt = Instant.fromEpochMilliseconds(millis).toLocalDateTime(TimeZone.currentSystemDefault())
+    return "${dt.dayOfMonth.toString().padStart(2,'0')}/${dt.monthNumber.toString().padStart(2,'0')}/${dt.year}"
 }
 
 private fun formatDateShort(millis: Long): String {
-    val dt = Instant.fromEpochMilliseconds(millis)
-        .toLocalDateTime(TimeZone.currentSystemDefault())
-    return "${dt.monthNumber.toString().padStart(2, '0')}/${dt.year}"
+    val dt = Instant.fromEpochMilliseconds(millis).toLocalDateTime(TimeZone.currentSystemDefault())
+    return "${dt.monthNumber.toString().padStart(2,'0')}/${dt.year}"
 }
 
 private fun formatPercent(value: Double): String {
     val rounded = (value * 100).toLong() / 100.0
-    val intPart = rounded.toLong()
-    val decPart = ((rounded - intPart) * 100).toInt()
-    return "$intPart,${decPart.toString().padStart(2, '0')}"
+    val i = rounded.toLong()
+    val d = ((rounded - i) * 100).toInt()
+    return "$i,${d.toString().padStart(2,'0')}"
 }

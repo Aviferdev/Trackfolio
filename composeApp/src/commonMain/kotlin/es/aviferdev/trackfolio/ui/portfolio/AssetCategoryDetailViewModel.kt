@@ -347,6 +347,8 @@ class AssetCategoryDetailViewModel(
                             createdAt = Clock.System.now().toEpochMilliseconds()
                         )
                     )
+                } else {
+                    assetMetadataRepository.deleteComposition(original.id)
                 }
                 assetMetadataRepository.deleteAllSectorLinks(original.id)
                 sectorIds.forEach { sectorId ->

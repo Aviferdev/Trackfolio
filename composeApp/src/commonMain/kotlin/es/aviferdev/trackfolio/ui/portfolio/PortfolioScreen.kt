@@ -10,7 +10,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
@@ -31,23 +30,11 @@ import es.aviferdev.trackfolio.domain.model.AssetCategoryType
 import es.aviferdev.trackfolio.ui.account.AccountViewModel
 import es.aviferdev.trackfolio.ui.common.LineChartCard
 import es.aviferdev.trackfolio.ui.fixedincome.CreateFixedIncomeBottomSheet
-import es.aviferdev.trackfolio.ui.fixedincome.FixedIncomeSection
 import es.aviferdev.trackfolio.ui.fixedincome.FixedIncomePositionCard
 import es.aviferdev.trackfolio.ui.theme.*
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.math.abs
 
-/**
- * Pantalla principal de portfolio. Muestra resumen agregado, distribución
- * por categorías, listado de posiciones abiertas agrupadas, y posiciones
- * cerradas en sección colapsable (decisión A).
- *
- * El FAB ofrece dos acciones: registrar un movimiento (lo más frecuente) o
- * dar de alta un activo nuevo en el catálogo.
- *
- * @param onAssetClick callback que dispara la navegación al historial del
- *        activo. Lo proporciona el NavHost.
- */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PortfolioScreen(
@@ -64,11 +51,12 @@ fun PortfolioScreen(
     val platformState       by platformViewModel.uiState.collectAsState()
     val availableCategories by viewModel.availableCategories.collectAsState()
     val valueHistory        by viewModel.portfolioValueHistory.collectAsState()
-    val balancesHidden = LocalBalanceHidden.current
+    val balancesHidden       = LocalBalanceHidden.current
 
     accountViewModel.selectAccount()
 
-    var closedExpanded  by remember { mutableStateOf(false) }
+    var closedExpanded by remember { mutableStateOf(false) }
+    var fabMenuOpen    by remember { mutableStateOf(false) }
 
     Box(
         modifier = Modifier
@@ -79,8 +67,10 @@ fun PortfolioScreen(
             modifier       = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(bottom = 100.dp)
         ) {
-            item { PortfolioHeader(onSettingsClick = onNavigateToSettings) }
+            // ── Header ────────────────────────────────────────────────────────
+            item { PortfolioTopBar(onSettingsClick = onNavigateToSettings) }
 
+            // ── Summary card ──────────────────────────────────────────────────
             item {
                 PortfolioSummaryCard(
                     totalInvested      = state.totalInvested,
@@ -92,11 +82,11 @@ fun PortfolioScreen(
                     positionsCount     = state.openPositionsCount,
                     currencyCode       = state.currencyCode,
                     balancesHidden     = balancesHidden,
-                    modifier           = Modifier.padding(horizontal = 20.dp, vertical = 8.dp)
+                    modifier           = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                 )
             }
 
-            // ── Gráfico de evolución del valor del portfolio ─────────────
+            // ── Line chart ────────────────────────────────────────────────────
             if (valueHistory.isNotEmpty()) {
                 item {
                     LineChartCard(
@@ -106,133 +96,140 @@ fun PortfolioScreen(
                         lineColor      = PrimaryDark,
                         currencyCode   = state.currencyCode,
                         balancesHidden = balancesHidden,
-                        modifier       = Modifier.padding(horizontal = 20.dp, vertical = 8.dp)
+                        modifier       = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
                     )
                 }
             }
 
-            // ── Selector de vista de distribución ──────────────────────────
-            val currentDistribution = when (state.selectedDistributionView) {
-                DistributionView.CATEGORY    -> state.distribution
-                DistributionView.COMPOSITION -> state.compositionDistribution
-                DistributionView.REGION      -> state.regionDistribution
-                DistributionView.SECTOR      -> state.sectorDistribution
-            }
+            // ── Distribution tabs + donut ─────────────────────────────────────
+            val hasDistribution = state.distribution.isNotEmpty()
+                    || state.compositionDistribution.isNotEmpty()
+                    || state.regionDistribution.isNotEmpty()
+                    || state.sectorDistribution.isNotEmpty()
 
-            // ── Donut chart de distribución ────────────────────────────────
-            if (state.distribution.isNotEmpty() || state.compositionDistribution.isNotEmpty() || state.regionDistribution.isNotEmpty() || state.sectorDistribution.isNotEmpty()) {
+            if (hasDistribution) {
                 item {
-                    // ── Tabs de selección de vista ──────────────────────────
+                    // Tabs
                     Row(
-                        modifier = Modifier
+                        modifier              = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 20.dp),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            .padding(horizontal = 16.dp),
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
                     ) {
                         DistributionView.entries.forEach { view ->
+                            val selected = state.selectedDistributionView == view
                             FilterChip(
-                                selected = state.selectedDistributionView == view,
-                                onClick = { viewModel.selectDistributionView(view) },
-                                label = {
+                                selected = selected,
+                                onClick  = { viewModel.selectDistributionView(view) },
+                                label    = {
                                     Text(
-                                        text = view.displayName,
-                                        fontSize = 12.sp
+                                        view.displayName,
+                                        fontSize = 11.sp,
+                                        fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal
                                     )
                                 },
                                 colors = FilterChipDefaults.filterChipColors(
                                     selectedContainerColor = PrimaryDark,
-                                    selectedLabelColor = Color.White
+                                    selectedLabelColor     = Color.White,
+                                    containerColor         = SurfaceWhite,
+                                    labelColor             = TextSecondary
+                                ),
+                                border = FilterChipDefaults.filterChipBorder(
+                                    borderColor         = BorderGray,
+                                    selectedBorderColor = PrimaryDark,
+                                    enabled             = true,
+                                    selected            = selected
                                 )
                             )
                         }
                     }
+                    Spacer(Modifier.height(8.dp))
 
-                    Spacer(modifier = Modifier.height(8.dp))
-
+                    val currentDist = when (state.selectedDistributionView) {
+                        DistributionView.CATEGORY    -> state.distribution
+                        DistributionView.COMPOSITION -> state.compositionDistribution
+                        DistributionView.REGION      -> state.regionDistribution
+                        DistributionView.SECTOR      -> state.sectorDistribution
+                    }
                     PortfolioDistributionCard(
-                        slices            = currentDistribution,
+                        slices            = currentDist,
                         totalCurrentValue = state.combinedCurrentValue,
                         currencyCode      = state.currencyCode,
                         balancesHidden    = balancesHidden,
-                        modifier          = Modifier.padding(horizontal = 20.dp, vertical = 8.dp)
+                        modifier          = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
                     )
                 }
             }
 
-            // ── Lista de grupos abiertos ─────────────────────────────────────
-            if (state.isLoading) {
-                item {
+            // ── Asset groups ──────────────────────────────────────────────────
+            when {
+                state.isLoading -> item {
                     Box(
-                        modifier         = Modifier.fillMaxWidth().height(200.dp),
+                        Modifier.fillMaxWidth().height(200.dp),
                         contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator(color = PrimaryDark)
-                    }
-                }
-            } else if (state.groups.isEmpty() && state.closedPositions.isEmpty()) {
-                item { EmptyPortfolioState() }
-            } else {
-                state.groups.forEach { group ->
-                    item(key = "header_${group.category?.id ?: "none"}") {
-                        CategoryGroupHeader(
-                            group          = group,
-                            currencyCode   = state.currencyCode,
-                            balancesHidden = balancesHidden
-                        )
-                    }
-                    items(
-                        items = group.rows,
-                        key   = { row -> "open_${row.asset.id}" }
-                    ) { row ->
-                        AssetCard(
-                            row            = row,
-                            currencyCode   = state.currencyCode,
-                            balancesHidden = balancesHidden,
-                            onClick        = { onAssetClick(row.asset.id) },
-                            onUpdatePrice  = { viewModel.openUpdatePriceSheet(row.asset) },
-                            modifier       = Modifier.padding(horizontal = 20.dp, vertical = 6.dp)
-                        )
-                    }
-                    if (group.fixedIncomeRows.isNotEmpty()) {
-                        items(
-                            items = group.fixedIncomeRows,
-                            key = { "fi_${it.position.id}" }
-                        ) { fiRow ->
-                            FixedIncomePositionCard(
-                                row = fiRow,
-                                currencyCode = state.currencyCode,
-                                balancesHidden = balancesHidden,
-                                onClick = { onFixedIncomeClick(fiRow.position.id) },
-                                modifier = Modifier.padding(horizontal = 20.dp, vertical = 6.dp)
-                            )
-                        }
-                    }
+                    ) { CircularProgressIndicator(color = PrimaryDark) }
                 }
 
-                // ── Sección colapsable de posiciones cerradas ───────────────
-                if (state.closedPositions.isNotEmpty()) {
-                    item(key = "closed_header") {
-                        ClosedPositionsHeader(
-                            count    = state.closedPositions.size,
-                            expanded = closedExpanded,
-                            onToggle = { closedExpanded = !closedExpanded }
-                        )
+                state.groups.isEmpty() && state.closedPositions.isEmpty() -> item {
+                    EmptyPortfolioState()
+                }
+
+                else -> {
+                    state.groups.forEach { group ->
+                        item(key = "hdr_${group.category?.id ?: "none"}") {
+                            CategoryGroupHeader(
+                                group          = group,
+                                currencyCode   = state.currencyCode,
+                                balancesHidden = balancesHidden
+                            )
+                        }
+                        items(group.rows, key = { "open_${it.asset.id}" }) { row ->
+                            AssetCard(
+                                row            = row,
+                                currencyCode   = state.currencyCode,
+                                balancesHidden = balancesHidden,
+                                onClick        = { onAssetClick(row.asset.id) },
+                                onUpdatePrice  = { viewModel.openUpdatePriceSheet(row.asset) },
+                                modifier       = Modifier.padding(horizontal = 16.dp, vertical = 5.dp)
+                            )
+                        }
+                        if (group.fixedIncomeRows.isNotEmpty()) {
+                            items(group.fixedIncomeRows, key = { "fi_${it.position.id}" }) { fiRow ->
+                                FixedIncomePositionCard(
+                                    row            = fiRow,
+                                    currencyCode   = state.currencyCode,
+                                    balancesHidden = balancesHidden,
+                                    onClick        = { onFixedIncomeClick(fiRow.position.id) },
+                                    modifier       = Modifier.padding(horizontal = 16.dp, vertical = 5.dp)
+                                )
+                            }
+                        }
                     }
-                    item(key = "closed_list") {
-                        AnimatedVisibility(
-                            visible = closedExpanded,
-                            enter   = expandVertically() + fadeIn(),
-                            exit    = shrinkVertically() + fadeOut()
-                        ) {
-                            Column {
-                                state.closedPositions.forEach { row ->
-                                    ClosedAssetCard(
-                                        row            = row,
-                                        currencyCode   = state.currencyCode,
-                                        balancesHidden = balancesHidden,
-                                        onClick        = { onAssetClick(row.asset.id) },
-                                        modifier       = Modifier.padding(horizontal = 20.dp, vertical = 6.dp)
-                                    )
+
+                    if (state.closedPositions.isNotEmpty()) {
+                        item(key = "closed_hdr") {
+                            ClosedPositionsHeader(
+                                count    = state.closedPositions.size,
+                                expanded = closedExpanded,
+                                onToggle = { closedExpanded = !closedExpanded }
+                            )
+                        }
+                        item(key = "closed_list") {
+                            AnimatedVisibility(
+                                visible = closedExpanded,
+                                enter   = expandVertically() + fadeIn(),
+                                exit    = shrinkVertically() + fadeOut()
+                            ) {
+                                Column {
+                                    state.closedPositions.forEach { row ->
+                                        ClosedAssetCard(
+                                            row            = row,
+                                            currencyCode   = state.currencyCode,
+                                            balancesHidden = balancesHidden,
+                                            onClick        = { onAssetClick(row.asset.id) },
+                                            modifier       = Modifier.padding(horizontal = 16.dp, vertical = 5.dp)
+                                        )
+                                    }
                                 }
                             }
                         }
@@ -241,23 +238,21 @@ fun PortfolioScreen(
             }
         }
 
-        // ── FAB: nueva inversión ─────────────────────────────────────────────
-        var fabMenuOpen by remember { mutableStateOf(false) }
-
+        // ── FAB ───────────────────────────────────────────────────────────────
         Box(
             modifier = Modifier
                 .align(Alignment.BottomEnd)
-                .padding(end = 24.dp, bottom = 32.dp)
+                .padding(end = 20.dp, bottom = 28.dp)
         ) {
             FloatingActionButton(
                 onClick        = { fabMenuOpen = true },
-                modifier       = Modifier.size(56.dp),
-                shape          = CircleShape,
+                modifier       = Modifier.size(52.dp),
+                shape          = RoundedCornerShape(16.dp),
                 containerColor = PrimaryDark,
                 contentColor   = Color.White,
                 elevation      = FloatingActionButtonDefaults.elevation(4.dp)
             ) {
-                Text("+", fontSize = 28.sp, fontWeight = FontWeight.Light, color = Color.White)
+                Text("+", fontSize = 26.sp, fontWeight = FontWeight.Light, color = Color.White)
             }
             DropdownMenu(
                 expanded         = fabMenuOpen,
@@ -265,73 +260,53 @@ fun PortfolioScreen(
                 containerColor   = SurfaceWhite
             ) {
                 DropdownMenuItem(
-                    text        = { Text("Nueva compra", color = TextPrimary) },
-                    leadingIcon = { Text("↗", fontSize = 16.sp) },
+                    text        = { Text("Nueva compra", color = TextPrimary, fontSize = 14.sp) },
+                    leadingIcon = { Text("↗", fontSize = 15.sp) },
                     onClick     = { fabMenuOpen = false; viewModel.openAddTransactionSheet() }
                 )
                 DropdownMenuItem(
-                    text        = { Text("Nuevo bono/depósito", color = TextPrimary) },
-                    leadingIcon = { Text("🏦", fontSize = 16.sp) },
+                    text        = { Text("Nuevo bono/depósito", color = TextPrimary, fontSize = 14.sp) },
+                    leadingIcon = { Text("🏦", fontSize = 14.sp) },
                     onClick     = { fabMenuOpen = false; viewModel.openCreateFixedIncomeSheet() }
                 )
             }
         }
     }
 
-    // ── Sheets y diálogos ────────────────────────────────────────────────────
-
-    // Nuevo movimiento (solo compra de activos NO renta fija, desde FAB de Portfolio)
+    // ── Sheets & dialogs (lógica intacta) ─────────────────────────────────────
     if (state.showAddTxSheet) {
         AddEditAssetTransactionBottomSheet(
-            transaction       = null,
-            fixedAsset        = null,
-            allAssets         = state.allAssets,
-            platforms         = state.platforms,
-            platformsByAsset  = state.platformsByAsset,
-            categories        = availableCategories,
-            assetTransactions = emptyList(),
-            currencyCode      = state.currencyCode,
-            buyOnly           = true,
-            onSave            = { assetId, type, qty, price, date, platformId, feeNote, notes ->
+            transaction = null, fixedAsset = null,
+            allAssets = state.allAssets, platforms = state.platforms,
+            platformsByAsset = state.platformsByAsset, categories = availableCategories,
+            assetTransactions = emptyList(), currencyCode = state.currencyCode, buyOnly = true,
+            onSave = { assetId, type, qty, price, date, platformId, feeNote, notes ->
                 viewModel.addTransaction(assetId, type, qty, price, date, platformId, feeNote, notes)
             },
-            onDismiss         = { viewModel.closeAddTransactionSheet() }
+            onDismiss = { viewModel.closeAddTransactionSheet() }
         )
     }
-
-    // Sheet de nueva posición de renta fija
     if (state.showCreateFixedIncomeSheet && state.currentAccountId != null) {
         CreateFixedIncomeBottomSheet(
-            platforms = state.platforms,
-            categories = availableCategories,
+            platforms = state.platforms, categories = availableCategories,
             accountId = state.currentAccountId!!,
             onSave    = { position, event -> viewModel.saveFixedIncomePosition(position, event) },
             onDismiss = { viewModel.closeCreateFixedIncomeSheet() }
         )
     }
-
-    // Sheet rápido de actualizar precio
     if (state.showUpdatePriceSheet && state.pricingAsset != null) {
         UpdateCurrentPriceSheet(
-            asset        = state.pricingAsset!!,
-            currencyCode = state.currencyCode,
-            onConfirm    = { newPrice -> viewModel.refreshCurrentPrice(state.pricingAsset!!, newPrice) },
-            onDismiss    = { viewModel.closeUpdatePriceSheet() }
+            asset = state.pricingAsset!!, currencyCode = state.currencyCode,
+            onConfirm = { newPrice -> viewModel.refreshCurrentPrice(state.pricingAsset!!, newPrice) },
+            onDismiss = { viewModel.closeUpdatePriceSheet() }
         )
     }
-
-    // Sheet de catálogo: nuevo activo / editar
     if (catalogState.showAddSheet) {
         AddEditAssetBottomSheet(
-            asset        = null,
-            categories   = availableCategories,
-            currencyCode = state.currencyCode,
-            allPlatforms = state.platforms,
-            allSectors   = state.allSectors,
-            linkedSectorIds = emptySet(),
-            allRegions   = state.allRegions,
-            linkedRegionPercents = emptyMap(),
-            onSave       = { ticker, name, notes, categoryId, currentPrice, platformIds, _, fixedPct, sectorIds, regionPercents ->
+            asset = null, categories = availableCategories, currencyCode = state.currencyCode,
+            allPlatforms = state.platforms, allSectors = state.allSectors, linkedSectorIds = emptySet(),
+            allRegions = state.allRegions, linkedRegionPercents = emptyMap(),
+            onSave = { ticker, name, notes, categoryId, currentPrice, platformIds, _, fixedPct, sectorIds, regionPercents ->
                 catalogViewModel.addAsset(ticker, name, notes, categoryId, currentPrice, platformIds, fixedPct, sectorIds, regionPercents)
             },
             onDismiss = { catalogViewModel.closeAddSheet() }
@@ -339,103 +314,81 @@ fun PortfolioScreen(
     }
     catalogState.editing?.let { editing ->
         AddEditAssetBottomSheet(
-            asset        = editing,
-            categories   = availableCategories,
-            currencyCode = state.currencyCode,
-            allPlatforms = state.platforms,
-            linkedPlatformIds = catalogState.editingPlatformIds,
-            allSectors   = state.allSectors,
-            linkedSectorIds = catalogState.editingSectorIds,
-            allRegions   = state.allRegions,
-            linkedRegionPercents = catalogState.editingRegionPercents,
+            asset = editing, categories = availableCategories, currencyCode = state.currencyCode,
+            allPlatforms = state.platforms, linkedPlatformIds = catalogState.editingPlatformIds,
+            allSectors = state.allSectors, linkedSectorIds = catalogState.editingSectorIds,
+            allRegions = state.allRegions, linkedRegionPercents = catalogState.editingRegionPercents,
             linkedFixedIncomePercent = catalogState.editingFixedIncomePercent,
-            onSave       = { ticker, name, notes, categoryId, currentPrice, platformIds, _, fixedPct, sectorIds, regionPercents ->
+            onSave = { ticker, name, notes, categoryId, currentPrice, platformIds, _, fixedPct, sectorIds, regionPercents ->
                 catalogViewModel.editAsset(editing, ticker, name, notes, categoryId, currentPrice, platformIds, fixedPct, sectorIds, regionPercents)
             },
-            onDismiss    = { catalogViewModel.closeEditSheet() }
+            onDismiss = { catalogViewModel.closeEditSheet() }
         )
     }
-
-    // Sheet de plataforma (atajo inline cuando se intenta crear movimiento sin tenerlas)
     if (platformState.showAddSheet) {
         AddEditPlatformSheet(
-            initial   = null,
-            onSave    = { name, icon, notes -> platformViewModel.addPlatform(name, icon, notes) },
+            initial = null,
+            onSave  = { name, icon, notes -> platformViewModel.addPlatform(name, icon, notes) },
             onDismiss = { platformViewModel.closeAddSheet() }
         )
     }
-
-    // Errores
-    state.error?.let { msg ->
+    for (msg in listOfNotNull(state.error, catalogState.error, platformState.error)) {
+        val clearFn: () -> Unit = when (msg) {
+            state.error        -> { { viewModel.clearError() } }
+            catalogState.error -> { { catalogViewModel.clearError() } }
+            else               -> { { platformViewModel.clearError() } }
+        }
         AlertDialog(
-            onDismissRequest = { viewModel.clearError() },
+            onDismissRequest = clearFn,
             containerColor   = SurfaceWhite,
-            title = { Text("Error", fontSize = 17.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary) },
-            text  = { Text(msg, fontSize = 14.sp, color = TextSecondary) },
-            confirmButton = {
-                TextButton(onClick = { viewModel.clearError() }) {
-                    Text("Aceptar", color = PrimaryDark, fontWeight = FontWeight.Medium)
-                }
-            },
+            title = { Text("Error", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = TextPrimary) },
+            text  = { Text(msg, fontSize = 13.sp, color = TextSecondary) },
+            confirmButton = { TextButton(onClick = clearFn) { Text("Aceptar", color = PrimaryDark) } },
             shape = RoundedCornerShape(16.dp)
         )
-    }
-    catalogState.error?.let { msg ->
-        AlertDialog(
-            onDismissRequest = { catalogViewModel.clearError() },
-            containerColor   = SurfaceWhite,
-            title = { Text("Error", fontSize = 17.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary) },
-            text  = { Text(msg, fontSize = 14.sp, color = TextSecondary) },
-            confirmButton = {
-                TextButton(onClick = { catalogViewModel.clearError() }) {
-                    Text("Aceptar", color = PrimaryDark, fontWeight = FontWeight.Medium)
-                }
-            },
-            shape = RoundedCornerShape(16.dp)
-        )
-    }
-    platformState.error?.let { msg ->
-        AlertDialog(
-            onDismissRequest = { platformViewModel.clearError() },
-            containerColor   = SurfaceWhite,
-            title = { Text("Error", fontSize = 17.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary) },
-            text  = { Text(msg, fontSize = 14.sp, color = TextSecondary) },
-            confirmButton = {
-                TextButton(onClick = { platformViewModel.clearError() }) {
-                    Text("Aceptar", color = PrimaryDark, fontWeight = FontWeight.Medium)
-                }
-            },
-            shape = RoundedCornerShape(16.dp)
-        )
+        break // show one at a time
     }
 }
 
-// ─── Cabecera ─────────────────────────────────────────────────────────────────
+// ─── Top bar ─────────────────────────────────────────────────────────────────
 @Composable
-private fun PortfolioHeader(onSettingsClick: () -> Unit = {}) {
-    Surface(color = SurfaceWhite, shadowElevation = 1.dp) {
+private fun PortfolioTopBar(onSettingsClick: () -> Unit) {
+    Surface(color = SurfaceWhite, shadowElevation = 0.dp) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .windowInsetsPadding(WindowInsets.statusBars)
-                .padding(horizontal = 20.dp, vertical = 18.dp),
+                .padding(horizontal = 16.dp, vertical = 16.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment     = Alignment.CenterVertically
         ) {
             Text(
-                text       = "Portfolio",
-                fontSize   = 20.sp,
-                fontWeight = FontWeight.SemiBold,
-                color      = TextPrimary
+                "Portfolio",
+                fontSize      = 18.sp,
+                fontWeight    = FontWeight.Bold,
+                color         = TextPrimary,
+                letterSpacing = (-0.3).sp
             )
-            IconButton(onClick = onSettingsClick, modifier = Modifier.size(32.dp)) {
-                Icon(Icons.Outlined.Settings, "Ajustes de portfolio", tint = TextSecondary)
+            IconButton(
+                onClick  = onSettingsClick,
+                modifier = Modifier
+                    .size(34.dp)
+                    .clip(RoundedCornerShape(9.dp))
+                    .background(SurfaceElevated)
+            ) {
+                Icon(
+                    Icons.Outlined.Settings,
+                    contentDescription = "Ajustes de portfolio",
+                    tint     = TextSecondary,
+                    modifier = Modifier.size(17.dp)
+                )
             }
         }
     }
+    HorizontalDivider(color = BorderGray, thickness = 0.5.dp)
 }
 
-// ─── Tarjeta resumen ──────────────────────────────────────────────────────────
+// ─── Summary card ─────────────────────────────────────────────────────────────
 @Composable
 private fun PortfolioSummaryCard(
     totalInvested: Double,
@@ -450,117 +403,89 @@ private fun PortfolioSummaryCard(
     modifier: Modifier = Modifier
 ) {
     val symbol = currencySymbol(currencyCode)
-
     Card(
         modifier  = modifier.fillMaxWidth(),
         shape     = RoundedCornerShape(16.dp),
         colors    = CardDefaults.cardColors(containerColor = PrimaryDark),
-        elevation = CardDefaults.cardElevation(4.dp)
+        elevation = CardDefaults.cardElevation(0.dp)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 20.dp, vertical = 20.dp)
         ) {
-            // ── Valor actual destacado ─────────────────────────────────────
-            Text(
-                text     = "Valor total",
-                fontSize = 13.sp,
-                color    = Color.White.copy(alpha = 0.65f)
-            )
+            Text("Valor total", fontSize = 12.sp, color = Color.White.copy(alpha = 0.55f))
             Spacer(Modifier.height(6.dp))
             Row(verticalAlignment = Alignment.Bottom) {
                 Text(
-                    text          = maskAmount(formatAmount(totalCurrentValue), balancesHidden),
-                    fontSize      = 34.sp,
+                    maskAmount(formatAmount(totalCurrentValue), balancesHidden),
+                    fontSize      = 32.sp,
                     fontWeight    = FontWeight.Bold,
                     color         = Color.White,
-                    letterSpacing = (-0.5).sp
+                    letterSpacing = (-1).sp
                 )
                 Spacer(Modifier.width(6.dp))
                 Text(
-                    text       = symbol,
+                    symbol,
                     fontSize   = 18.sp,
-                    color      = Color.White.copy(alpha = 0.8f),
+                    color      = Color.White.copy(alpha = 0.75f),
                     fontWeight = FontWeight.Medium,
                     modifier   = Modifier.padding(bottom = 4.dp)
                 )
             }
-
             Spacer(Modifier.height(18.dp))
-            HorizontalDivider(color = Color.White.copy(alpha = 0.15f), thickness = 0.5.dp)
-            Spacer(Modifier.height(16.dp))
-
-            // ── Invertido + Beneficio destacados ───────────────────────────
+            HorizontalDivider(color = Color.White.copy(alpha = 0.12f), thickness = 0.5.dp)
+            Spacer(Modifier.height(14.dp))
             Row(
                 modifier              = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment     = Alignment.Top
             ) {
-                MetricColumn(
-                    label    = "Invertido",
-                    primary  = "${maskAmount(formatAmount(totalInvested), balancesHidden)} $symbol",
-                    color    = Color.White,
+                PortfolioMetric(
+                    label   = "Invertido",
+                    primary = "${maskAmount(formatAmount(totalInvested), balancesHidden)} $symbol",
+                    color   = Color.White,
                     modifier = Modifier.weight(1f)
                 )
                 Box(
-                    modifier = Modifier
+                    Modifier
                         .width(0.5.dp)
                         .height(44.dp)
-                        .background(Color.White.copy(alpha = 0.15f))
+                        .background(Color.White.copy(alpha = 0.12f))
                 )
-                MetricColumn(
+                PortfolioMetric(
                     label     = "Beneficio total",
-                    primary   = if (totalPnL == 0.0)
-                                    "—"
+                    primary   = if (totalPnL == 0.0) "—"
                                 else "${if (totalPnL >= 0) "+" else "−"} ${maskAmount(formatAmount(abs(totalPnL)), balancesHidden)} $symbol",
                     secondary = if (totalPnL == 0.0) null
                                 else "${if (totalPnLPercent >= 0) "+" else "−"}${formatPercent1(abs(totalPnLPercent))}%",
                     color     = when {
-                        totalPnL > 0 -> Color(0xFF66BB6A)
-                        totalPnL < 0 -> Color(0xFFEF9A9A)
+                        totalPnL > 0 -> Color(0xFF86EFAC)
+                        totalPnL < 0 -> Color(0xFFFCA5A5)
                         else         -> Color.White
                     },
-                    modifier = Modifier.weight(1f).padding(start = 16.dp)
+                    modifier  = Modifier.weight(1f).padding(start = 16.dp)
                 )
             }
-
-            // ── Desglose realizado / latente (si aplica) ─────────────────
             if (totalRealizedPnL != 0.0 && totalUnrealizedPnL != 0.0) {
                 Spacer(Modifier.height(12.dp))
-                Row(
-                    modifier              = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    PnLBreakdownChip(
-                        label  = "Realizado",
-                        amount = totalRealizedPnL,
-                        symbol = symbol,
-                        masked = balancesHidden
-                    )
-                    PnLBreakdownChip(
-                        label  = "Latente",
-                        amount = totalUnrealizedPnL,
-                        symbol = symbol,
-                        masked = balancesHidden
-                    )
+                Row(Modifier.fillMaxWidth(), Arrangement.SpaceBetween) {
+                    PnLChip("Realizado",   totalRealizedPnL,   symbol, balancesHidden)
+                    PnLChip("Latente",     totalUnrealizedPnL, symbol, balancesHidden)
                 }
             }
-
-            Spacer(Modifier.height(14.dp))
-
-            // ── Pie discreto: nº de posiciones abiertas ───────────────────
+            Spacer(Modifier.height(12.dp))
             Text(
-                text     = "$positionsCount ${if (positionsCount == 1) "posición abierta" else "posiciones abiertas"}",
-                fontSize = 11.sp,
-                color    = Color.White.copy(alpha = 0.55f)
+                "$positionsCount ${if (positionsCount == 1) "posición abierta" else "posiciones abiertas"}",
+                fontSize = 10.sp,
+                color    = Color.White.copy(alpha = 0.45f)
             )
         }
     }
 }
 
 @Composable
-private fun MetricColumn(
+private fun PortfolioMetric(
     label: String,
     primary: String,
     color: Color,
@@ -568,60 +493,44 @@ private fun MetricColumn(
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
-        Text(label, fontSize = 11.sp, color = Color.White.copy(alpha = 0.55f))
+        Text(label, fontSize = 10.sp, color = Color.White.copy(alpha = 0.5f))
         Spacer(Modifier.height(4.dp))
-        Text(
-            text       = primary,
-            fontSize   = 16.sp,
-            color      = color,
-            fontWeight = FontWeight.SemiBold,
-            maxLines   = 1
-        )
+        Text(primary, fontSize = 15.sp, color = color, fontWeight = FontWeight.Bold, maxLines = 1)
         if (secondary != null) {
             Spacer(Modifier.height(2.dp))
-            Text(
-                text       = secondary,
-                fontSize   = 11.sp,
-                color      = color.copy(alpha = 0.85f),
-                fontWeight = FontWeight.Medium
-            )
+            Text(secondary, fontSize = 11.sp, color = color.copy(alpha = 0.8f), fontWeight = FontWeight.Medium)
         }
     }
 }
 
 @Composable
-private fun PnLBreakdownChip(
-    label: String,
-    amount: Double,
-    symbol: String,
-    masked: Boolean
-) {
+private fun PnLChip(label: String, amount: Double, symbol: String, masked: Boolean) {
     val color = when {
-        amount > 0  -> Color(0xFF66BB6A)
-        amount < 0  -> Color(0xFFEF9A9A)
-        else        -> Color.White.copy(alpha = 0.6f)
+        amount > 0 -> Color(0xFF86EFAC)
+        amount < 0 -> Color(0xFFFCA5A5)
+        else       -> Color.White.copy(alpha = 0.5f)
     }
     Column {
-        Text(label, fontSize = 10.sp, color = Color.White.copy(alpha = 0.5f))
+        Text(label, fontSize = 10.sp, color = Color.White.copy(alpha = 0.45f))
         Spacer(Modifier.height(2.dp))
         Text(
-            text     = if (amount == 0.0) "—"
-                       else "${if (amount >= 0) "+" else "−"} ${maskAmount(formatAmount(abs(amount)), masked)} $symbol",
-            fontSize = 12.sp,
-            color    = color,
+            if (amount == 0.0) "—"
+            else "${if (amount >= 0) "+" else "−"} ${maskAmount(formatAmount(abs(amount)), masked)} $symbol",
+            fontSize   = 12.sp,
+            color      = color,
             fontWeight = FontWeight.Medium
         )
     }
 }
 
-// ─── Cabecera de grupo de categoría ──────────────────────────────────────────
+// ─── Category group header ────────────────────────────────────────────────────
 @Composable
 private fun CategoryGroupHeader(
     group: CategoryGroup,
     currencyCode: String,
     balancesHidden: Boolean
 ) {
-    val symbol = currencySymbol(currencyCode)
+    val symbol   = currencySymbol(currencyCode)
     val pnlColor = when {
         group.totalPnL > 0 -> IncomeGreen
         group.totalPnL < 0 -> ExpenseRed
@@ -630,72 +539,47 @@ private fun CategoryGroupHeader(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 20.dp)
-            .padding(top = 14.dp, bottom = 4.dp)
+            .padding(horizontal = 16.dp)
+            .padding(top = 16.dp, bottom = 4.dp)
     ) {
         Row(
-            modifier              = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment     = Alignment.CenterVertically
+            Modifier.fillMaxWidth(),
+            Arrangement.SpaceBetween,
+            Alignment.CenterVertically
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(group.displayIcon, fontSize = 18.sp)
+                Text(group.displayIcon, fontSize = 17.sp)
                 Spacer(Modifier.width(8.dp))
-                Text(
-                    text       = group.displayName,
-                    fontSize   = 14.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    color      = TextPrimary
-                )
-                Spacer(Modifier.width(8.dp))
-                Text(
-                    text     = "(${group.rowCount})",
-                    fontSize = 12.sp,
-                    color    = TextSecondary
-                )
+                Text(group.displayName, fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary)
+                Spacer(Modifier.width(6.dp))
+                Text("(${group.rowCount})", fontSize = 11.sp, color = TextTertiary)
             }
-            // % beneficio del grupo a la derecha
             if (group.totalPnL != 0.0) {
                 Text(
-                    text       = "${if (group.totalPnLPercent >= 0) "+" else "−"}${formatPercent1(abs(group.totalPnLPercent))}%",
-                    fontSize   = 13.sp,
+                    "${if (group.totalPnLPercent >= 0) "+" else "−"}${formatPercent1(abs(group.totalPnLPercent))}%",
+                    fontSize   = 12.sp,
                     color      = pnlColor,
-                    fontWeight = FontWeight.SemiBold
+                    fontWeight = FontWeight.Bold
                 )
             }
         }
-        Spacer(Modifier.height(6.dp))
-        Row(
-            modifier              = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment     = Alignment.CenterVertically
-        ) {
-            ValueChip(
-                label = "Invertido",
-                value = "${maskAmount(formatAmount(group.totalInvested), balancesHidden)} $symbol"
+        Spacer(Modifier.height(5.dp))
+        Row(Modifier.fillMaxWidth(), Arrangement.SpaceBetween) {
+            Text(
+                "Invertido: ${maskAmount(formatAmount(group.totalInvested), balancesHidden)} $symbol",
+                fontSize = 11.sp,
+                color    = TextTertiary
             )
-            ValueChip(
-                label = "Actual",
-                value = "${maskAmount(formatAmount(group.totalCurrentValue), balancesHidden)} $symbol"
+            Text(
+                "Actual: ${maskAmount(formatAmount(group.totalCurrentValue), balancesHidden)} $symbol",
+                fontSize = 11.sp,
+                color    = TextTertiary
             )
         }
     }
 }
 
-@Composable
-private fun ValueChip(label: String, value: String) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        Text("$label: ", fontSize = 12.sp, color = TextSecondary)
-        Text(
-            text       = value,
-            fontSize   = 13.sp,
-            color      = TextPrimary,
-            fontWeight = FontWeight.SemiBold
-        )
-    }
-}
-
-// ─── Tarjeta de activo abierta ───────────────────────────────────────────────
+// ─── Asset card ───────────────────────────────────────────────────────────────
 @Composable
 private fun AssetCard(
     row: AssetRow,
@@ -717,27 +601,25 @@ private fun AssetCard(
     Card(
         onClick   = onClick,
         modifier  = modifier.fillMaxWidth(),
-        shape     = RoundedCornerShape(14.dp),
+        shape     = RoundedCornerShape(13.dp),
         colors    = CardDefaults.cardColors(containerColor = SurfaceWhite),
-        elevation = CardDefaults.cardElevation(0.dp),
-        border    = CardDefaults.outlinedCardBorder()
+        elevation = CardDefaults.cardElevation(0.dp)
     ) {
         Row(
             modifier          = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 14.dp),
+                .padding(horizontal = 14.dp, vertical = 13.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Avatar ticker
             Box(
-                modifier         = Modifier
-                    .size(44.dp)
-                    .clip(RoundedCornerShape(10.dp))
+                modifier = Modifier
+                    .size(42.dp)
+                    .clip(RoundedCornerShape(11.dp))
                     .background(PrimaryDark),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text       = asset.ticker.take(3),
+                    asset.ticker.take(3),
                     fontSize   = if (asset.ticker.length > 3) 9.sp else 11.sp,
                     fontWeight = FontWeight.Bold,
                     color      = Color.White,
@@ -745,75 +627,68 @@ private fun AssetCard(
                 )
             }
             Spacer(Modifier.width(12.dp))
-
-            // Nombre + qty × coste medio + frescura del precio
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text       = asset.name,
-                    fontSize   = 15.sp,
-                    fontWeight = FontWeight.Medium,
+                    asset.name,
+                    fontSize   = 13.sp,
+                    fontWeight = FontWeight.SemiBold,
                     color      = TextPrimary,
                     maxLines   = 1
                 )
                 Spacer(Modifier.height(2.dp))
                 Text(
-                    text     = "${formatQty(pos.netQuantity)} × ${maskAmount(formatAmount(pos.averageCostOfRemaining), balancesHidden)} $symbol",
-                    fontSize = 12.sp,
-                    color    = TextSecondary
+                    "${formatQty(pos.netQuantity)} × ${maskAmount(formatAmount(pos.averageCostOfRemaining), balancesHidden)} $symbol",
+                    fontSize = 11.sp,
+                    color    = TextTertiary
                 )
                 if (pos.hasCurrentPrice && asset.currentPriceUpdatedAt != null) {
-                    Spacer(Modifier.height(2.dp))
                     Text(
-                        text     = "actualizado ${formatRelativeTime(asset.currentPriceUpdatedAt!!)}",
+                        "actualizado ${formatRelativeTime(asset.currentPriceUpdatedAt!!)}",
                         fontSize = 10.sp,
-                        color    = TextSecondary.copy(alpha = 0.75f)
+                        color    = TextTertiary.copy(alpha = 0.7f)
                     )
                 }
             }
-
             Spacer(Modifier.width(8.dp))
-
-            // Valor + P&L
             Column(horizontalAlignment = Alignment.End) {
                 Text(
-                    text       = if (pos.hasCurrentPrice)
+                    if (pos.hasCurrentPrice)
                         "${maskAmount(formatAmount(pos.currentValue), balancesHidden)} $symbol"
                     else "—",
-                    fontSize   = 15.sp,
-                    fontWeight = FontWeight.SemiBold,
+                    fontSize   = 13.sp,
+                    fontWeight = FontWeight.Bold,
                     color      = TextPrimary
                 )
                 if (pos.hasCurrentPrice) {
                     val prefix = if (pos.totalPnL >= 0) "+" else "−"
                     Text(
-                        text     = "$prefix ${maskAmount(formatAmount(abs(pos.totalPnL)), balancesHidden)} $symbol",
-                        fontSize = 12.sp,
+                        "$prefix ${maskAmount(formatAmount(abs(pos.totalPnL)), balancesHidden)} $symbol",
+                        fontSize = 11.sp,
                         color    = pnlColor
                     )
                     Text(
-                        text     = "$prefix${formatPercent1(abs(pos.totalPnLPercent))}%",
-                        fontSize = 11.sp,
-                        color    = pnlColor.copy(alpha = 0.85f)
+                        "$prefix${formatPercent1(abs(pos.totalPnLPercent))}%",
+                        fontSize = 10.sp,
+                        color    = pnlColor.copy(alpha = 0.8f)
                     )
                 } else {
-                    Text(
-                        text     = "Sin precio",
-                        fontSize = 11.sp,
-                        color    = TextSecondary.copy(alpha = 0.6f)
-                    )
+                    Text("Sin precio", fontSize = 10.sp, color = TextTertiary)
                 }
             }
-
-            Spacer(Modifier.width(4.dp))
-
-            // Botón actualizar precio (no disponible para renta fija)
             if (!AssetCategoryType.isFixedIncome(asset.assetCategoryId)) {
-                IconButton(onClick = onUpdatePrice, modifier = Modifier.size(32.dp)) {
+                Spacer(Modifier.width(4.dp))
+                IconButton(
+                    onClick  = onUpdatePrice,
+                    modifier = Modifier
+                        .size(30.dp)
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(SurfaceElevated)
+                ) {
                     Icon(
                         Icons.Outlined.Refresh,
                         contentDescription = "Actualizar precio",
-                        modifier = Modifier.size(16.dp),
-                        tint     = PrimaryDark
+                        modifier = Modifier.size(14.dp),
+                        tint     = TextSecondary
                     )
                 }
             }
@@ -821,43 +696,30 @@ private fun AssetCard(
     }
 }
 
-// ─── Sección de posiciones cerradas ──────────────────────────────────────────
+// ─── Closed positions ─────────────────────────────────────────────────────────
 @Composable
-private fun ClosedPositionsHeader(
-    count: Int,
-    expanded: Boolean,
-    onToggle: () -> Unit
-) {
+private fun ClosedPositionsHeader(count: Int, expanded: Boolean, onToggle: () -> Unit) {
     Row(
-        modifier              = Modifier
+        modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = onToggle)
-            .padding(horizontal = 20.dp)
-            .padding(top = 18.dp, bottom = 8.dp),
+            .padding(horizontal = 16.dp)
+            .padding(top = 16.dp, bottom = 8.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment     = Alignment.CenterVertically
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Text("✓", fontSize = 16.sp, color = TextSecondary)
+            Text("✓", fontSize = 14.sp, color = TextTertiary)
             Spacer(Modifier.width(8.dp))
-            Text(
-                text       = "Posiciones cerradas",
-                fontSize   = 13.sp,
-                fontWeight = FontWeight.SemiBold,
-                color      = TextSecondary
-            )
-            Spacer(Modifier.width(6.dp))
-            Text(
-                text     = "($count)",
-                fontSize = 12.sp,
-                color    = TextSecondary
-            )
+            Text("Posiciones cerradas", fontSize = 12.sp, fontWeight = FontWeight.SemiBold, color = TextTertiary)
+            Spacer(Modifier.width(5.dp))
+            Text("($count)", fontSize = 11.sp, color = TextTertiary)
         }
         Icon(
             if (expanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
             contentDescription = if (expanded) "Colapsar" else "Expandir",
-            tint = TextSecondary,
-            modifier = Modifier.size(20.dp)
+            tint     = TextTertiary,
+            modifier = Modifier.size(18.dp)
         )
     }
 }
@@ -870,65 +732,53 @@ private fun ClosedAssetCard(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val asset = row.asset
-    val pos   = row.position
-    val symbol = currencySymbol(currencyCode)
+    val asset    = row.asset
+    val pos      = row.position
+    val symbol   = currencySymbol(currencyCode)
     val pnlColor = when {
         pos.realizedPnL > 0 -> IncomeGreen
         pos.realizedPnL < 0 -> ExpenseRed
         else                -> TextSecondary
     }
-
     Card(
         onClick   = onClick,
         modifier  = modifier.fillMaxWidth(),
         shape     = RoundedCornerShape(12.dp),
-        colors    = CardDefaults.cardColors(containerColor = SurfaceWhite.copy(alpha = 0.6f)),
-        elevation = CardDefaults.cardElevation(0.dp),
-        border    = CardDefaults.outlinedCardBorder()
+        colors    = CardDefaults.cardColors(containerColor = SurfaceWhite.copy(alpha = 0.5f)),
+        elevation = CardDefaults.cardElevation(0.dp)
     ) {
         Row(
             modifier          = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 12.dp),
+                .padding(horizontal = 14.dp, vertical = 12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Box(
-                modifier         = Modifier
+                modifier = Modifier
                     .size(36.dp)
-                    .clip(RoundedCornerShape(8.dp))
-                    .background(TextSecondary.copy(alpha = 0.18f)),
+                    .clip(RoundedCornerShape(9.dp))
+                    .background(SurfaceElevated),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text       = asset.ticker.take(3),
-                    fontSize   = if (asset.ticker.length > 3) 9.sp else 10.sp,
+                    asset.ticker.take(3),
+                    fontSize   = if (asset.ticker.length > 3) 8.sp else 10.sp,
                     fontWeight = FontWeight.Bold,
-                    color      = TextSecondary
+                    color      = TextTertiary
                 )
             }
             Spacer(Modifier.width(12.dp))
             Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text       = asset.name,
-                    fontSize   = 14.sp,
-                    fontWeight = FontWeight.Medium,
-                    color      = TextPrimary,
-                    maxLines   = 1
-                )
-                Text(
-                    text       = "Cerrada · ${asset.ticker}",
-                    fontSize   = 11.sp,
-                    color      = TextSecondary
-                )
+                Text(asset.name, fontSize = 13.sp, fontWeight = FontWeight.Medium, color = TextSecondary, maxLines = 1)
+                Text("Cerrada · ${asset.ticker}", fontSize = 10.sp, color = TextTertiary)
             }
             Column(horizontalAlignment = Alignment.End) {
-                Text("Realizado", fontSize = 10.sp, color = TextSecondary)
+                Text("Realizado", fontSize = 10.sp, color = TextTertiary)
                 Text(
-                    text       = "${if (pos.realizedPnL >= 0) "+" else "−"} ${maskAmount(formatAmount(abs(pos.realizedPnL)), balancesHidden)} $symbol",
-                    fontSize   = 13.sp,
+                    "${if (pos.realizedPnL >= 0) "+" else "−"} ${maskAmount(formatAmount(abs(pos.realizedPnL)), balancesHidden)} $symbol",
+                    fontSize   = 12.sp,
                     color      = pnlColor,
-                    fontWeight = FontWeight.SemiBold
+                    fontWeight = FontWeight.Bold
                 )
             }
         }
@@ -938,31 +788,22 @@ private fun ClosedAssetCard(
 // ─── Empty state ─────────────────────────────────────────────────────────────
 @Composable
 private fun EmptyPortfolioState() {
-    Box(
-        modifier         = Modifier.fillMaxWidth().padding(40.dp),
-        contentAlignment = Alignment.Center
-    ) {
+    Box(Modifier.fillMaxWidth().padding(40.dp), contentAlignment = Alignment.Center) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text("📈", fontSize = 48.sp)
-            Spacer(Modifier.height(16.dp))
-            Text(
-                "Sin posiciones",
-                fontSize   = 18.sp,
-                fontWeight = FontWeight.Bold,
-                color      = TextPrimary
-            )
+            Text("📈", fontSize = 44.sp)
+            Spacer(Modifier.height(14.dp))
+            Text("Sin posiciones", fontSize = 17.sp, fontWeight = FontWeight.Bold, color = TextPrimary)
             Spacer(Modifier.height(8.dp))
             Text(
                 "Pulsa + para registrar\ntu primera inversión",
-                fontSize  = 14.sp,
-                color     = TextSecondary,
+                fontSize  = 13.sp,
+                color     = TextTertiary,
                 textAlign = TextAlign.Center
             )
         }
     }
 }
 
-// ─── Helpers de formato locales ──────────────────────────────────────────────
 private fun formatPercent1(value: Double): String {
     val rounded = (value * 10).toLong()
     return "${rounded / 10},${rounded % 10}"

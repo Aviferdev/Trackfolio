@@ -13,11 +13,6 @@ fun bottomNavItems() = listOf(
         icon = Icons.Outlined.Home
     ),
     BottomNavItem(
-        screen = Screen.Transactions,
-        label = "Movimientos",
-        icon = Icons.Outlined.DateRange
-    ),
-    BottomNavItem(
         screen = Screen.NetWorth,
         label = "Patrimonio",
         icon = Icons.Outlined.AccountBalance

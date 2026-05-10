@@ -5,7 +5,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -23,12 +22,10 @@ import es.aviferdev.trackfolio.ui.theme.*
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun DebtListScreen(
-    viewModel: DebtViewModel = koinViewModel()
-) {
-    val uiState by viewModel.uiState.collectAsState()
-    val balancesHidden = LocalBalanceHidden.current
-    var showAddDebt by remember { mutableStateOf(false) }
+fun DebtListScreen(viewModel: DebtViewModel = koinViewModel()) {
+    val uiState        by viewModel.uiState.collectAsState()
+    val balancesHidden  = LocalBalanceHidden.current
+    var showAdd        by remember { mutableStateOf(false) }
     var debtToEdit     by remember { mutableStateOf<Debt?>(null) }
     var debtToMarkPaid by remember { mutableStateOf<Debt?>(null) }
     var debtToDelete   by remember { mutableStateOf<Debt?>(null) }
@@ -41,168 +38,132 @@ fun DebtListScreen(
         if (uiState.isLoading) {
             CircularProgressIndicator(
                 modifier = Modifier.align(Alignment.Center),
-                color = PrimaryDark
+                color    = PrimaryDark
             )
         } else {
             LazyColumn(
-                modifier = Modifier.fillMaxSize(),
+                modifier       = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(bottom = 100.dp)
             ) {
-                item {
-                    DebtHeader(
-                        totalTheyOwe   = uiState.totalTheyOwe,
-                        totalIOwe      = uiState.totalIOwe,
-                        balancesHidden = balancesHidden
-                    )
-                }
+                // ── Header ────────────────────────────────────────────────────
+                item { DebtTopBar(uiState.totalTheyOwe, uiState.totalIOwe, balancesHidden) }
 
+                // ── Me deben ──────────────────────────────────────────────────
                 if (uiState.debtsTheyOwe.isNotEmpty()) {
                     item {
-                        DebtSectionTitle(
-                            title          = "Me deben",
-                            total          = uiState.totalTheyOwe,
-                            color          = IncomeGreen,
-                            balancesHidden = balancesHidden
+                        SectionHeader(
+                            title  = "Me deben",
+                            total  = uiState.totalTheyOwe,
+                            color  = IncomeGreen,
+                            hidden = balancesHidden
                         )
                     }
                     items(uiState.debtsTheyOwe, key = { it.id }) { debt ->
-                        SwipeToDeleteDebtContainer(
-                            onDelete = { debtToDelete = debt }
-                        ) {
-                            DebtCard(
-                                debt           = debt,
-                                balancesHidden = balancesHidden,
-                                onMarkPaid     = { debtToMarkPaid = debt },
-                                onEdit         = { debtToEdit = debt }
+                        SwipeDebt(onDelete = { debtToDelete = debt }) {
+                            DebtRow(
+                                debt       = debt,
+                                hidden     = balancesHidden,
+                                onMarkPaid = { debtToMarkPaid = debt },
+                                onEdit     = { debtToEdit = debt }
                             )
                         }
-                        HorizontalDivider(
-                            modifier = Modifier.padding(horizontal = 20.dp),
-                            color = BorderGray,
-                            thickness = 0.5.dp
-                        )
+                        HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), color = BorderGray, thickness = .5.dp)
                     }
                 }
 
+                // ── Debo yo ───────────────────────────────────────────────────
                 if (uiState.debtsIOwe.isNotEmpty()) {
                     item {
-                        DebtSectionTitle(
-                            title          = "Debo yo",
-                            total          = uiState.totalIOwe,
-                            color          = ExpenseRed,
-                            balancesHidden = balancesHidden
+                        SectionHeader(
+                            title  = "Debo yo",
+                            total  = uiState.totalIOwe,
+                            color  = ExpenseRed,
+                            hidden = balancesHidden
                         )
                     }
                     items(uiState.debtsIOwe, key = { it.id }) { debt ->
-                        SwipeToDeleteDebtContainer(
-                            onDelete = { debtToDelete = debt }
-                        ) {
-                            DebtCard(
-                                debt           = debt,
-                                balancesHidden = balancesHidden,
-                                onMarkPaid     = { debtToMarkPaid = debt },
-                                onEdit         = { debtToEdit = debt }
+                        SwipeDebt(onDelete = { debtToDelete = debt }) {
+                            DebtRow(
+                                debt       = debt,
+                                hidden     = balancesHidden,
+                                onMarkPaid = { debtToMarkPaid = debt },
+                                onEdit     = { debtToEdit = debt }
                             )
                         }
-                        HorizontalDivider(
-                            modifier = Modifier.padding(horizontal = 20.dp),
-                            color = BorderGray,
-                            thickness = 0.5.dp
-                        )
+                        HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), color = BorderGray, thickness = .5.dp)
                     }
                 }
 
                 if (uiState.debtsTheyOwe.isEmpty() && uiState.debtsIOwe.isEmpty()) {
-                    item { DebtEmptyState() }
+                    item { EmptyState() }
                 }
             }
         }
 
+        // ── FAB ───────────────────────────────────────────────────────────────
         FloatingActionButton(
-            onClick = { showAddDebt = true },
-            modifier = Modifier
+            onClick        = { showAdd = true },
+            modifier       = Modifier
                 .align(Alignment.BottomEnd)
-                .padding(end = 24.dp, bottom = 32.dp)
-                .size(56.dp),
-            shape = CircleShape,
+                .padding(end = 20.dp, bottom = 28.dp)
+                .size(52.dp),
+            shape          = RoundedCornerShape(16.dp),
             containerColor = PrimaryDark,
-            contentColor = Color.White,
-            elevation = FloatingActionButtonDefaults.elevation(4.dp)
+            contentColor   = Color.White,
+            elevation      = FloatingActionButtonDefaults.elevation(4.dp)
         ) {
-            Text(
-                text = "+",
-                fontSize = 28.sp,
-                fontWeight = FontWeight.Light,
-                color = Color.White
-            )
+            Text("+", fontSize = 26.sp, fontWeight = FontWeight.Light, color = Color.White)
         }
     }
 
-    if (showAddDebt) {
-        AddDebtBottomSheet(
-            onDismiss = { showAddDebt = false },
-            viewModel = viewModel
-        )
+    // ── Sheets ────────────────────────────────────────────────────────────────
+    if (showAdd) {
+        AddDebtBottomSheet(onDismiss = { showAdd = false }, viewModel = viewModel)
     }
-
     debtToEdit?.let { debt ->
-        AddDebtBottomSheet(
-            editingDebt = debt,
-            onDismiss   = { debtToEdit = null },
-            viewModel   = viewModel
-        )
+        AddDebtBottomSheet(editingDebt = debt, onDismiss = { debtToEdit = null }, viewModel = viewModel)
     }
-
     debtToDelete?.let { debt ->
         DeleteDebtDialog(
             personName = debt.personName,
-            onConfirm = {
-                viewModel.deleteDebt(debt.id)
-                debtToDelete = null
-            },
-            onDismiss = { debtToDelete = null }
+            onConfirm  = { viewModel.deleteDebt(debt.id); debtToDelete = null },
+            onDismiss  = { debtToDelete = null }
         )
     }
-
     debtToMarkPaid?.let { debt ->
         MarkPaidDialog(
             personName = debt.personName,
-            amount = debt.amount,
-            onConfirm = {
-                viewModel.markAsPaid(debt.id)
-                debtToMarkPaid = null
-            },
-            onDismiss = { debtToMarkPaid = null }
+            amount     = debt.amount,
+            onConfirm  = { viewModel.markAsPaid(debt.id); debtToMarkPaid = null },
+            onDismiss  = { debtToMarkPaid = null }
         )
     }
 }
 
+// ─── Top bar with summary card ────────────────────────────────────────────────
 @Composable
-private fun DebtHeader(
-    totalTheyOwe: Double,
-    totalIOwe: Double,
-    balancesHidden: Boolean
-) {
-    Surface(color = SurfaceWhite, shadowElevation = 1.dp) {
+private fun DebtTopBar(totalTheyOwe: Double, totalIOwe: Double, hidden: Boolean) {
+    Surface(color = SurfaceWhite, shadowElevation = 0.dp) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .windowInsetsPadding(WindowInsets.statusBars)
-                .padding(horizontal = 20.dp)
-                .padding(top = 16.dp, bottom = 20.dp)
+                .padding(horizontal = 16.dp)
+                .padding(top = 14.dp, bottom = 16.dp)
         ) {
             Text(
-                text = "Deudas",
-                fontSize = 20.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = TextPrimary
+                "Deudas",
+                fontSize      = 18.sp,
+                fontWeight    = FontWeight.Bold,
+                color         = TextPrimary,
+                letterSpacing = (-.3).sp
             )
-            Spacer(Modifier.height(16.dp))
+            Spacer(Modifier.height(14.dp))
 
             Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(14.dp),
-                colors = CardDefaults.cardColors(containerColor = PrimaryDark),
+                modifier  = Modifier.fillMaxWidth(),
+                shape     = RoundedCornerShape(16.dp),
+                colors    = CardDefaults.cardColors(containerColor = PrimaryDark),
                 elevation = CardDefaults.cardElevation(0.dp)
             ) {
                 Row(
@@ -210,289 +171,178 @@ private fun DebtHeader(
                         .fillMaxWidth()
                         .padding(horizontal = 20.dp, vertical = 16.dp)
                 ) {
-                    DebtSummaryItem(
-                        label          = "Me deben",
-                        amount         = totalTheyOwe,
-                        color          = Color(0xFF66BB6A),
-                        balancesHidden = balancesHidden,
-                        modifier       = Modifier.weight(1f),
-                        align          = Alignment.Start
+                    DebtSummaryCell(
+                        label    = "Me deben",
+                        amount   = totalTheyOwe,
+                        color    = Color(0xFF86EFAC),
+                        hidden   = hidden,
+                        modifier = Modifier.weight(1f),
+                        alignEnd = false
                     )
                     Box(
-                        modifier = Modifier
-                            .width(0.5.dp)
-                            .height(48.dp)
-                            .background(Color.White.copy(alpha = 0.15f))
+                        Modifier
+                            .width(.5.dp)
+                            .height(44.dp)
+                            .background(Color.White.copy(.12f))
                             .align(Alignment.CenterVertically)
                     )
-                    DebtSummaryItem(
-                        label          = "Debo yo",
-                        amount         = totalIOwe,
-                        color          = Color(0xFFEF9A9A),
-                        balancesHidden = balancesHidden,
-                        modifier       = Modifier.weight(1f),
-                        align          = Alignment.End
+                    DebtSummaryCell(
+                        label    = "Debo yo",
+                        amount   = totalIOwe,
+                        color    = Color(0xFFFCA5A5),
+                        hidden   = hidden,
+                        modifier = Modifier.weight(1f),
+                        alignEnd = true
                     )
                 }
             }
         }
     }
+    HorizontalDivider(color = BorderGray, thickness = .5.dp)
 }
 
 @Composable
-private fun DebtSummaryItem(
+private fun DebtSummaryCell(
     label: String,
     amount: Double,
     color: Color,
-    balancesHidden: Boolean,
+    hidden: Boolean,
     modifier: Modifier = Modifier,
-    align: Alignment.Horizontal
+    alignEnd: Boolean = false
 ) {
     Column(
-        modifier = modifier.padding(horizontal = 8.dp),
-        horizontalAlignment = align
+        modifier            = modifier.padding(horizontal = 10.dp),
+        horizontalAlignment = if (alignEnd) Alignment.End else Alignment.Start
     ) {
-        Text(text = label, fontSize = 12.sp, color = Color.White.copy(alpha = 0.65f))
+        Text(label, fontSize = 11.sp, color = Color.White.copy(.5f))
         Spacer(Modifier.height(4.dp))
         Text(
-            text = "${maskAmount(formatAmount(amount), balancesHidden)} €",
-            fontSize = 20.sp,
+            "${maskAmount(formatAmount(amount), hidden)} €",
+            fontSize   = 20.sp,
             fontWeight = FontWeight.Bold,
-            color = color
+            color      = color
         )
     }
 }
 
+// ─── Section header ───────────────────────────────────────────────────────────
 @Composable
-private fun DebtSectionTitle(
-    title: String,
-    total: Double,
-    color: Color,
-    balancesHidden: Boolean
-) {
+private fun SectionHeader(title: String, total: Double, color: Color, hidden: Boolean) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 20.dp)
-            .padding(top = 20.dp, bottom = 8.dp),
+            .padding(horizontal = 16.dp)
+            .padding(top = 18.dp, bottom = 8.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment     = Alignment.CenterVertically
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Box(
-                modifier = Modifier
-                    .size(8.dp)
-                    .clip(CircleShape)
-                    .background(color)
-            )
+            Box(Modifier.size(7.dp).clip(RoundedCornerShape(50)).background(color))
             Spacer(Modifier.width(8.dp))
-            Text(
-                text = title,
-                fontSize = 14.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = TextPrimary
-            )
+            Text(title, fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary)
         }
         Text(
-            text = "${maskAmount(formatAmount(total), balancesHidden)} €",
-            fontSize = 13.sp,
-            fontWeight = FontWeight.Medium,
-            color = color
+            "${maskAmount(formatAmount(total), hidden)} €",
+            fontSize   = 12.sp,
+            fontWeight = FontWeight.Bold,
+            color      = color
         )
     }
 }
 
+// ─── Debt row ─────────────────────────────────────────────────────────────────
 @Composable
-private fun DebtCard(
+private fun DebtRow(
     debt: Debt,
-    balancesHidden: Boolean,
+    hidden: Boolean,
     onMarkPaid: () -> Unit,
     onEdit: () -> Unit
 ) {
+    val isTheyOwe   = debt.direction == DebtDirection.THEY_OWE
+    val avatarColor = if (isTheyOwe) IncomeGreen else ExpenseRed
+    val amountColor = if (isTheyOwe) IncomeGreen else ExpenseRed
+    val prefix      = if (isTheyOwe) "+" else "−"
+    val initial     = debt.personName.firstOrNull()?.uppercaseChar()?.toString() ?: "?"
+
     Row(
-        modifier = Modifier
+        modifier          = Modifier
             .fillMaxWidth()
             .background(SurfaceWhite)
-            .padding(horizontal = 20.dp, vertical = 14.dp),
+            .padding(horizontal = 16.dp, vertical = 13.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        val isTheyOwe = debt.direction == DebtDirection.THEY_OWE
-        val avatarColor = if (isTheyOwe) IncomeGreen else ExpenseRed
-        val initial = debt.personName.firstOrNull()?.uppercaseChar()?.toString() ?: "?"
-
+        // Avatar
         Box(
             modifier = Modifier
-                .size(42.dp)
-                .clip(CircleShape)
+                .size(40.dp)
+                .clip(RoundedCornerShape(12.dp))
                 .background(avatarColor),
             contentAlignment = Alignment.Center
         ) {
-            Text(
-                text = initial,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.White
-            )
+            Text(initial, fontSize = 16.sp, fontWeight = FontWeight.Bold, color = Color.White)
         }
 
-        Spacer(Modifier.width(14.dp))
+        Spacer(Modifier.width(12.dp))
 
+        // Name + notes
         Column(modifier = Modifier.weight(1f)) {
-            Text(
-                text = debt.personName,
-                fontSize = 15.sp,
-                fontWeight = FontWeight.Medium,
-                color = TextPrimary
-            )
+            Text(debt.personName, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary)
             if (!debt.notes.isNullOrBlank()) {
                 Spacer(Modifier.height(2.dp))
-                Text(
-                    text = debt.notes,
-                    fontSize = 12.sp,
-                    color = TextSecondary
-                )
+                Text(debt.notes, fontSize = 11.sp, color = TextTertiary)
             }
         }
 
+        // Amount + actions
         Column(horizontalAlignment = Alignment.End) {
-            val amountColor = if (isTheyOwe) IncomeGreen else ExpenseRed
-            val prefix = if (isTheyOwe) "+" else "−"
             Text(
-                text = "$prefix ${maskAmount(formatAmount(debt.amount), balancesHidden)} €",
-                fontSize = 14.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = amountColor
+                "$prefix ${maskAmount(formatAmount(debt.amount), hidden)} €",
+                fontSize   = 13.sp,
+                fontWeight = FontWeight.Bold,
+                color      = amountColor
             )
             Spacer(Modifier.height(4.dp))
-            TextButton(
-                    onClick = onMarkPaid,
-                    contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp),
-                    modifier = Modifier.height(24.dp)
+            Row {
+                TextButton(
+                    onClick        = onMarkPaid,
+                    contentPadding = PaddingValues(horizontal = 6.dp, vertical = 0.dp),
+                    modifier       = Modifier.height(22.dp)
                 ) {
-                    Text(
-                        text = "Marcar pagada",
-                        fontSize = 11.sp,
-                        color = PrimaryDark,
-                        fontWeight = FontWeight.Medium
-                    )
+                    Text("Pagada", fontSize = 10.sp, color = PrimaryDark, fontWeight = FontWeight.SemiBold)
                 }
                 TextButton(
-                    onClick = onEdit,
-                    contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp),
-                    modifier = Modifier.height(24.dp)
+                    onClick        = onEdit,
+                    contentPadding = PaddingValues(horizontal = 6.dp, vertical = 0.dp),
+                    modifier       = Modifier.height(22.dp)
                 ) {
-                    Text(
-                        text = "Editar",
-                        fontSize = 11.sp,
-                        color = TextSecondary
-                    )
+                    Text("Editar", fontSize = 10.sp, color = TextTertiary)
                 }
+            }
         }
     }
 }
 
-@Composable
-private fun DebtEmptyState() {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(32.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(
-                text = "Sin deudas activas",
-                fontSize = 17.sp,
-                fontWeight = FontWeight.Medium,
-                color = TextPrimary,
-                textAlign = TextAlign.Center
-            )
-            Spacer(Modifier.height(8.dp))
-            Text(
-                text = "Pulsa + para registrar una deuda nueva",
-                fontSize = 14.sp,
-                color = TextSecondary,
-                textAlign = TextAlign.Center
-            )
-        }
-    }
-}
-
-@Composable
-private fun MarkPaidDialog(
-    personName: String,
-    amount: Double,
-    onConfirm: () -> Unit,
-    onDismiss: () -> Unit
-) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        containerColor = SurfaceWhite,
-        title = {
-            Text(
-                text = "Marcar como pagada",
-                fontSize = 17.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = TextPrimary
-            )
-        },
-        text = {
-            Text(
-                text = "¿Confirmas que la deuda de ${formatAmount(amount)} € con $personName ha sido saldada?",
-                fontSize = 14.sp,
-                color = TextSecondary
-            )
-        },
-        confirmButton = {
-            TextButton(onClick = onConfirm) {
-                Text(
-                    text = "Confirmar",
-                    color = IncomeGreen,
-                    fontWeight = FontWeight.Medium
-                )
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text(
-                    text = "Cancelar",
-                    color = PrimaryDark,
-                    fontWeight = FontWeight.Medium
-                )
-            }
-        },
-        shape = RoundedCornerShape(16.dp)
-    )
-}
-
+// ─── Swipe to delete ──────────────────────────────────────────────────────────
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun SwipeToDeleteDebtContainer(
-    onDelete: () -> Unit,
-    content: @Composable () -> Unit
-) {
-    val dismissState = rememberSwipeToDismissBoxState(
-        confirmValueChange = { value ->
-            if (value == SwipeToDismissBoxValue.EndToStart) { onDelete(); false } else false
-        }
+private fun SwipeDebt(onDelete: () -> Unit, content: @Composable () -> Unit) {
+    val state = rememberSwipeToDismissBoxState(
+        confirmValueChange = { v -> if (v == SwipeToDismissBoxValue.EndToStart) { onDelete(); false } else false }
     )
     SwipeToDismissBox(
-        state = dismissState,
+        state                       = state,
         enableDismissFromStartToEnd = false,
         enableDismissFromEndToStart = true,
         backgroundContent = {
-            val color by animateColorAsState(
-                targetValue = when (dismissState.dismissDirection) {
-                    SwipeToDismissBoxValue.EndToStart -> ExpenseRed
-                    else -> Color.Transparent
-                },
-                label = "swipe_debt_bg"
+            val bg by animateColorAsState(
+                targetValue = if (state.dismissDirection == SwipeToDismissBoxValue.EndToStart) ExpenseRed else Color.Transparent,
+                label       = "swipe_debt"
             )
             Box(
-                modifier = Modifier.fillMaxSize().background(color).padding(end = 20.dp),
+                modifier         = Modifier.fillMaxSize().background(bg).padding(end = 18.dp),
                 contentAlignment = Alignment.CenterEnd
             ) {
-                Text("Eliminar", color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.Medium)
+                Text("Eliminar", color = Color.White, fontSize = 13.sp, fontWeight = FontWeight.Medium)
             }
         }
     ) {
@@ -500,48 +350,51 @@ private fun SwipeToDeleteDebtContainer(
     }
 }
 
+// ─── Empty state ──────────────────────────────────────────────────────────────
 @Composable
-private fun DeleteDebtDialog(
-    personName: String,
-    onConfirm: () -> Unit,
-    onDismiss: () -> Unit
-) {
+private fun EmptyState() {
+    Box(Modifier.fillMaxWidth().padding(40.dp), contentAlignment = Alignment.Center) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Text("Sin deudas activas", fontSize = 16.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary, textAlign = TextAlign.Center)
+            Spacer(Modifier.height(8.dp))
+            Text("Pulsa + para registrar una deuda nueva", fontSize = 13.sp, color = TextTertiary, textAlign = TextAlign.Center)
+        }
+    }
+}
+
+// ─── Dialogs ─────────────────────────────────────────────────────────────────
+@Composable
+private fun MarkPaidDialog(personName: String, amount: Double, onConfirm: () -> Unit, onDismiss: () -> Unit) {
     AlertDialog(
         onDismissRequest = onDismiss,
-        containerColor = SurfaceWhite,
-        title = {
-            Text("Eliminar deuda", fontSize = 17.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary)
-        },
-        text = {
-            Text(
-                "¿Seguro que quieres eliminar la deuda con $personName? Esta acción no se puede deshacer.",
-                fontSize = 14.sp,
-                color = TextSecondary
-            )
-        },
-        confirmButton = {
-            TextButton(onClick = onConfirm) {
-                Text("Eliminar", color = ExpenseRed, fontWeight = FontWeight.Medium)
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text("Cancelar", color = PrimaryDark, fontWeight = FontWeight.Medium)
-            }
-        },
+        containerColor   = SurfaceWhite,
+        title = { Text("Marcar como pagada", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = TextPrimary) },
+        text  = { Text("¿Confirmas que la deuda de ${formatAmount(amount)} € con $personName ha sido saldada?", fontSize = 13.sp, color = TextSecondary) },
+        confirmButton = { TextButton(onClick = onConfirm) { Text("Confirmar", color = IncomeGreen, fontWeight = FontWeight.SemiBold) } },
+        dismissButton = { TextButton(onClick = onDismiss) { Text("Cancelar", color = PrimaryDark) } },
         shape = RoundedCornerShape(16.dp)
     )
 }
 
+@Composable
+private fun DeleteDebtDialog(personName: String, onConfirm: () -> Unit, onDismiss: () -> Unit) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        containerColor   = SurfaceWhite,
+        title = { Text("Eliminar deuda", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = TextPrimary) },
+        text  = { Text("¿Seguro que quieres eliminar la deuda con $personName? Esta acción no se puede deshacer.", fontSize = 13.sp, color = TextSecondary) },
+        confirmButton = { TextButton(onClick = onConfirm) { Text("Eliminar", color = ExpenseRed, fontWeight = FontWeight.SemiBold) } },
+        dismissButton = { TextButton(onClick = onDismiss) { Text("Cancelar", color = PrimaryDark) } },
+        shape = RoundedCornerShape(16.dp)
+    )
+}
+
+// ─── Local format helper (keeps the file self-contained) ─────────────────────
 private fun formatAmount(amount: Double): String {
-    val rounded = (amount * 100).toLong()
-    val euros = rounded / 100
-    val cents = rounded % 100
-    val eurosStr = buildString {
-        euros.toString().reversed().forEachIndexed { i, c ->
-            if (i > 0 && i % 3 == 0) append('.')
-            append(c)
-        }
-    }.reversed()
-    return "$eurosStr,${cents.toString().padStart(2, '0')}"
+    val rounded  = (amount * 100).toLong()
+    val euros    = rounded / 100
+    val cents    = rounded % 100
+    val eurosStr = euros.toString().reversed()
+        .chunked(3).joinToString(".").reversed()
+    return "$eurosStr,${cents.toString().padStart(2,'0')}"
 }
