@@ -96,6 +96,21 @@ fun PortfolioScreen(
                 )
             }
 
+            // ── Gráfico de evolución del valor del portfolio ─────────────
+            if (valueHistory.isNotEmpty()) {
+                item {
+                    LineChartCard(
+                        title          = "Evolución del valor",
+                        subtitle       = "Valor mensual del portfolio",
+                        points         = valueHistory.map { it.date to it.value },
+                        lineColor      = PrimaryDark,
+                        currencyCode   = state.currencyCode,
+                        balancesHidden = balancesHidden,
+                        modifier       = Modifier.padding(horizontal = 20.dp, vertical = 8.dp)
+                    )
+                }
+            }
+
             // ── Selector de vista de distribución ──────────────────────────
             val currentDistribution = when (state.selectedDistributionView) {
                 DistributionView.CATEGORY    -> state.distribution
@@ -140,21 +155,6 @@ fun PortfolioScreen(
                         currencyCode      = state.currencyCode,
                         balancesHidden    = balancesHidden,
                         modifier          = Modifier.padding(horizontal = 20.dp, vertical = 8.dp)
-                    )
-                }
-            }
-
-            // ── Gráfico de evolución del valor del portfolio ─────────────
-            if (valueHistory.isNotEmpty()) {
-                item {
-                    LineChartCard(
-                        title          = "Evolución del valor",
-                        subtitle       = "Valor mensual del portfolio",
-                        points         = valueHistory.map { it.date to it.value },
-                        lineColor      = PrimaryDark,
-                        currencyCode   = state.currencyCode,
-                        balancesHidden = balancesHidden,
-                        modifier       = Modifier.padding(horizontal = 20.dp, vertical = 8.dp)
                     )
                 }
             }

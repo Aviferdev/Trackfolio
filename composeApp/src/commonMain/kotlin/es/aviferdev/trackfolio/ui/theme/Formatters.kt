@@ -93,3 +93,48 @@ fun formatRelativeTime(epochMillis: Long): String {
         else           -> "hace $years años"
     }
 }
+
+// ─── Formateo para axis de gráficos ──────────────────────────────────────────
+
+/**
+ * Formatea un valor para mostrarlo en el eje Y de un gráfico.
+ * Usa abreviaturas K (miles) y M (millones) cuando corresponde.
+ * Formato español: coma decimal, espacio como separador de miles.
+ *
+ * @param value valor numérico a formatear.
+ * @param currencyCode código de moneda (EUR, USD, etc.).
+ * @return cadena formateada, ej: "1,2K €", "500 €", "2,5M €".
+ */
+fun formatAxisLabel(value: Double, currencyCode: String): String {
+    val symbol = currencySymbol(currencyCode)
+    val absVal = if (value < 0) -value else value
+    val sign = if (value < 0) "-" else ""
+
+    return when {
+        absVal >= 1_000_000 -> {
+            val m = value / 1_000_000
+            "${sign}${formatCompact(m)}M $symbol"
+        }
+        absVal >= 10_000 -> {
+            val k = value / 1_000
+            "${sign}${k.toLong()}K $symbol"
+        }
+        absVal >= 1_000 -> {
+            val k = value / 1_000
+            "${sign}${formatCompact(k)}K $symbol"
+        }
+        else -> {
+            "${sign}${formatAmount(value)} $symbol"
+        }
+    }
+}
+
+/**
+ * Formatea un número con 1 decimal usando coma española.
+ * Ej: 1.2 -> "1,2", 5.0 -> "5", 2.5 -> "2,5"
+ */
+private fun formatCompact(n: Double): String {
+    val integer = n.toLong()
+    val decimal = ((n - integer) * 10).toLong().coerceIn(0, 9)
+    return if (decimal == 0L) "$integer" else "$integer,$decimal"
+}

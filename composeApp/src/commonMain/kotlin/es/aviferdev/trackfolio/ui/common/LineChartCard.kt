@@ -15,7 +15,10 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -23,6 +26,10 @@ import es.aviferdev.trackfolio.ui.theme.*
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import kotlin.math.ceil
+import kotlin.math.floor
+import kotlin.math.log10
+import kotlin.math.pow
 
 private val MONTH_ABBR = listOf(
     "ene", "feb", "mar", "abr", "may", "jun",
@@ -52,6 +59,8 @@ fun LineChartCard(
     balancesHidden: Boolean,
     modifier: Modifier = Modifier
 ) {
+    val textMeasurer = rememberTextMeasurer()
+
     Card(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(14.dp),
@@ -83,6 +92,7 @@ fun LineChartCard(
                     lineColor = lineColor,
                     currencyCode = currencyCode,
                     balancesHidden = balancesHidden,
+                    textMeasurer = textMeasurer,
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(200.dp)
@@ -100,9 +110,9 @@ private fun LineChartCanvas(
     lineColor: Color,
     currencyCode: String,
     balancesHidden: Boolean,
+    textMeasurer: androidx.compose.ui.text.TextMeasurer,
     modifier: Modifier = Modifier
 ) {
-    val symbol = currencySymbol(currencyCode)
     val guideColor = TextSecondary.copy(alpha = 0.15f)
     val axisColor = TextSecondary.copy(alpha = 0.35f)
     val labelColor = TextSecondary
@@ -112,13 +122,17 @@ private fun LineChartCanvas(
     val maxVal = points.maxOf { it.second }
     val range = (maxVal - minVal).coerceAtLeast(1.0)
 
-    val yLabels = listOf(maxVal, (maxVal + minVal) / 2.0, minVal)
+    // Calcular labels del eje Y (valores "bonitos")
+    val ySteps = computeNiceYAxisSteps(minVal, maxVal, targetSteps = 4)
+
+    // Calcular labels del eje X (meses)
+    val xLabels = selectXAxisLabels(points)
 
     Canvas(modifier = modifier) {
         val leftPad = 56.dp.toPx()
         val rightPad = 12.dp.toPx()
         val topPad = 8.dp.toPx()
-        val bottomPad = 24.dp.toPx()
+        val bottomPad = 32.dp.toPx() // Mayor espacio para labels X
         val chartW = size.width - leftPad - rightPad
         val chartH = size.height - topPad - bottomPad
 
@@ -149,6 +163,49 @@ private fun LineChartCanvas(
             end = Offset(size.width - rightPad, topPad + chartH),
             strokeWidth = 1.dp.toPx()
         )
+
+        // ── Labels del eje Y ───────────────────────────────────────────
+        if (!balancesHidden) {
+            val labelStyle = TextStyle(
+                fontSize = 9.sp,
+                color = labelColor
+            )
+            ySteps.forEach { value ->
+                val yRatio = ((value - minVal) / range).toFloat()
+                val y = topPad + chartH * (1f - yRatio)
+                val label = formatAxisLabel(value, currencyCode)
+                val textResult = textMeasurer.measure(label, labelStyle)
+                drawText(
+                    textLayoutResult = textResult,
+                    topLeft = Offset(
+                        leftPad - textResult.size.width - 4.dp.toPx(),
+                        y - textResult.size.height / 2f
+                    )
+                )
+            }
+        }
+
+        // ── Labels del eje X ───────────────────────────────────────────
+        val xLabelStyle = TextStyle(
+            fontSize = 9.sp,
+            color = labelColor
+        )
+        xLabels.forEach { xLabel ->
+            val x = leftPad + chartW * xLabel.index / (points.size - 1).toFloat()
+            val labelText = if (xLabel.yearSuffix != null) {
+                "${xLabel.monthAbbr} '${xLabel.yearSuffix}"
+            } else {
+                xLabel.monthAbbr
+            }
+            val textResult = textMeasurer.measure(labelText, xLabelStyle)
+            drawText(
+                textLayoutResult = textResult,
+                topLeft = Offset(
+                    x - textResult.size.width / 2f,
+                    topPad + chartH + 6.dp.toPx()
+                )
+            )
+        }
 
         // ── Mapear puntos a coordenadas ─────────────────────────────────
         val coords = points.mapIndexed { idx, (_, value) ->
@@ -215,4 +272,154 @@ private fun EmptyLineChartState() {
             )
         }
     }
+}
+
+// ─── Funciones de ayuda para los ejes ────────────────────────────────────────
+
+/**
+ * Calcula valores "bonitos" (redondos) para el eje Y.
+ * Algoritmo: encuentra un step "nice" basado en la magnitud del rango.
+ */
+private fun computeNiceYAxisSteps(minVal: Double, maxVal: Double, targetSteps: Int): List<Double> {
+    val range = maxVal - minVal
+    if (range <= 0) {
+        // Datos planos: crear steps alrededor del valor
+        val center = minVal
+        return listOf(center - 1, center, center + 1)
+    }
+
+    val roughStep = range / targetSteps
+    val magnitude = 10.0.pow(floor(log10(roughStep)).toInt())
+    val residual = roughStep / magnitude
+
+    val niceStep = when {
+        residual <= 1.5 -> 1.0 * magnitude
+        residual <= 3.5 -> 2.0 * magnitude
+        residual <= 7.5 -> 5.0 * magnitude
+        else -> 10.0 * magnitude
+    }
+
+    val niceMin = floor(minVal / niceStep) * niceStep
+    val niceMax = ceil(maxVal / niceStep) * niceStep
+
+    val steps = mutableListOf<Double>()
+    var current = niceMin
+    while (current <= niceMax + niceStep * 0.001) {
+        steps.add(current)
+        current += niceStep
+    }
+
+    // Asegurar que hay al menos 2 steps
+    if (steps.size < 2) {
+        val center = (minVal + maxVal) / 2
+        return listOf(center - niceStep, center, center + niceStep)
+    }
+
+    // Limitar a máximo 6 steps
+    return if (steps.size > 6) {
+        steps.filterIndexed { index, _ -> index % (steps.size / 4) == 0 || index == steps.lastIndex }
+    } else {
+        steps
+    }
+}
+
+/**
+ * Datos para un label del eje X.
+ */
+private data class XAxisLabel(
+    val index: Int,           // Índice del punto en la lista
+    val monthAbbr: String,    // Abreviatura del mes (ene, feb, etc.)
+    val yearSuffix: String?   // Sufijo del año (24, 25...) o null si no mostrar
+)
+
+/**
+ * Selecciona qué labels mostrar en el eje X.
+ * Muestra ~4 meses por año (enero, abril, julio, octubre).
+ * Siempre incluye el primer y último punto.
+ */
+private fun selectXAxisLabels(points: List<Pair<Long, Double>>): List<XAxisLabel> {
+    if (points.isEmpty()) return emptyList()
+
+    // Si hay pocos puntos, mostrar todos
+    if (points.size <= 6) {
+        return points.mapIndexed { idx, (epoch, _) ->
+            val instant = Instant.fromEpochMilliseconds(epoch)
+            val local = instant.toLocalDateTime(TimeZone.currentSystemDefault())
+            XAxisLabel(
+                index = idx,
+                monthAbbr = MONTH_ABBR[local.monthNumber - 1],
+                yearSuffix = local.year.toString().takeLast(2)
+            )
+        }
+    }
+
+    // Determinar años presentes en los datos
+    val years = points.map { Instant.fromEpochMilliseconds(it.first).toLocalDateTime(TimeZone.currentSystemDefault()).year }.toSet()
+    val showYearSuffix = years.size > 1
+
+    val labels = mutableListOf<XAxisLabel>()
+
+    // Siempre incluir primer punto
+    val firstInstant = Instant.fromEpochMilliseconds(points.first().first)
+    val firstLocal = firstInstant.toLocalDateTime(TimeZone.currentSystemDefault())
+    labels.add(
+        XAxisLabel(
+            index = 0,
+            monthAbbr = MONTH_ABBR[firstLocal.monthNumber - 1],
+            yearSuffix = if (showYearSuffix) firstLocal.year.toString().takeLast(2) else null
+        )
+    )
+
+    // Procesar puntos intermedios
+    points.forEachIndexed { idx, (epoch, _) ->
+        if (idx == 0 || idx == points.lastIndex) return@forEachIndexed
+
+        val instant = Instant.fromEpochMilliseconds(epoch)
+        val local = instant.toLocalDateTime(TimeZone.currentSystemDefault())
+        val month = local.monthNumber
+
+        // Mostrar meses: 1 (ene), 4 (abr), 7 (jul), 10 (oct) - aproximadamente 4 por año
+        val shouldShow = month == 1 || month == 4 || month == 7 || month == 10
+
+        if (shouldShow) {
+            // Añadir sufijo de año solo si es enero (cambio de año) o si hay múltiples años
+            val yearSuffix = if (month == 1 && showYearSuffix) {
+                local.year.toString().takeLast(2)
+            } else if (showYearSuffix) {
+                // Para otros meses, solo mostrar año si es el primer label de ese año
+                val prevLabel = labels.lastOrNull()
+                if (prevLabel?.yearSuffix != null) null else local.year.toString().takeLast(2)
+            } else {
+                null
+            }
+
+            // Evitar duplicados muy cercanos
+            val lastLabel = labels.lastOrNull()
+            if (lastLabel == null || (idx - lastLabel.index) >= 2) {
+                labels.add(
+                    XAxisLabel(
+                        index = idx,
+                        monthAbbr = MONTH_ABBR[month - 1],
+                        yearSuffix = yearSuffix
+                    )
+                )
+            }
+        }
+    }
+
+    // Siempre incluir último punto si no está ya
+    val lastIdx = points.lastIndex
+    if (labels.lastOrNull()?.index != lastIdx) {
+        val lastInstant = Instant.fromEpochMilliseconds(points.last().first)
+        val lastLocal = lastInstant.toLocalDateTime(TimeZone.currentSystemDefault())
+        labels.add(
+            XAxisLabel(
+                index = lastIdx,
+                monthAbbr = MONTH_ABBR[lastLocal.monthNumber - 1],
+                yearSuffix = if (showYearSuffix) lastLocal.year.toString().takeLast(2) else null
+            )
+        )
+    }
+
+    return labels
 }

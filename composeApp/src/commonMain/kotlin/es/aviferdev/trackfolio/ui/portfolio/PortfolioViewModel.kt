@@ -479,22 +479,44 @@ class PortfolioViewModel(
         val assetCurrentValues = openRows.associate { it.asset.id to it.position.currentValue }
         val regionById = allRegionsList.associateBy { it.id }
         val regionValues = mutableMapOf<String, Double>()
+        val catalogedAssetIds = mutableSetOf<String>()
+
         for (dist in regionDistributions) {
             val assetValue = assetCurrentValues[dist.assetId] ?: continue
             val weight = dist.percent / 100.0
             regionValues[dist.regionId] = (regionValues[dist.regionId] ?: 0.0) + (assetValue * weight)
+            catalogedAssetIds.add(dist.assetId)
         }
+
+        // Activos sin región → "No catalogados"
+        for ((assetId, value) in assetCurrentValues) {
+            if (assetId !in catalogedAssetIds) {
+                regionValues["__uncatalogued__"] = (regionValues["__uncatalogued__"] ?: 0.0) + value
+            }
+        }
+
         val regionSlices: List<CategorySlice> = if (combinedCurrentValue > 0.0 && regionValues.isNotEmpty()) {
             regionValues.map { (regionId, value) ->
-                val region = regionById[regionId]
-                CategorySlice(
-                    categoryId = regionId,
-                    name = region?.name ?: regionId,
-                    icon = "🌍",
-                    value = value,
-                    percent = (value / combinedCurrentValue) * 100.0,
-                    color = CategoryPalette[regionValues.keys.indexOf(regionId) % CategoryPalette.size]
-                )
+                if (regionId == "__uncatalogued__") {
+                    CategorySlice(
+                        categoryId = null,
+                        name = "No catalogados",
+                        icon = "❔",
+                        value = value,
+                        percent = (value / combinedCurrentValue) * 100.0,
+                        color = UncategorizedColor
+                    )
+                } else {
+                    val region = regionById[regionId]
+                    CategorySlice(
+                        categoryId = regionId,
+                        name = region?.name ?: regionId,
+                        icon = "🌍",
+                        value = value,
+                        percent = (value / combinedCurrentValue) * 100.0,
+                        color = CategoryPalette[regionValues.keys.indexOf(regionId) % CategoryPalette.size]
+                    )
+                }
             }.sortedByDescending { it.percent }
         } else {
             emptyList()
@@ -504,6 +526,8 @@ class PortfolioViewModel(
         val sectorById = allSectorsList.associateBy { it.id }
         val sectorValues = mutableMapOf<String, Double>()
         val sectorsByAsset = sectorRelations.groupBy { it.assetId }
+        val catalogedAssetIdsForSector = mutableSetOf<String>()
+
         for ((assetId, relations) in sectorsByAsset) {
             val assetValue = assetCurrentValues[assetId] ?: continue
             val sectorCount = relations.size
@@ -512,19 +536,39 @@ class PortfolioViewModel(
                 for (rel in relations) {
                     sectorValues[rel.sectorId] = (sectorValues[rel.sectorId] ?: 0.0) + valuePerSector
                 }
+                catalogedAssetIdsForSector.add(assetId)
             }
         }
+
+        // Activos sin sector → "No catalogados"
+        for ((assetId, value) in assetCurrentValues) {
+            if (assetId !in catalogedAssetIdsForSector) {
+                sectorValues["__uncatalogued__"] = (sectorValues["__uncatalogued__"] ?: 0.0) + value
+            }
+        }
+
         val sectorSlices: List<CategorySlice> = if (combinedCurrentValue > 0.0 && sectorValues.isNotEmpty()) {
             sectorValues.map { (sectorId, value) ->
-                val sector = sectorById[sectorId]
-                CategorySlice(
-                    categoryId = sectorId,
-                    name = sector?.name ?: sectorId,
-                    icon = sector?.icon ?: "📊",
-                    value = value,
-                    percent = (value / combinedCurrentValue) * 100.0,
-                    color = CategoryPalette[sectorValues.keys.indexOf(sectorId) % CategoryPalette.size]
-                )
+                if (sectorId == "__uncatalogued__") {
+                    CategorySlice(
+                        categoryId = null,
+                        name = "No catalogados",
+                        icon = "❔",
+                        value = value,
+                        percent = (value / combinedCurrentValue) * 100.0,
+                        color = UncategorizedColor
+                    )
+                } else {
+                    val sector = sectorById[sectorId]
+                    CategorySlice(
+                        categoryId = sectorId,
+                        name = sector?.name ?: sectorId,
+                        icon = sector?.icon ?: "📊",
+                        value = value,
+                        percent = (value / combinedCurrentValue) * 100.0,
+                        color = CategoryPalette[sectorValues.keys.indexOf(sectorId) % CategoryPalette.size]
+                    )
+                }
             }.sortedByDescending { it.percent }
         } else {
             emptyList()
