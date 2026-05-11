@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.trackfolio.domain.model.IncomeType
 import es.aviferdev.trackfolio.ui.theme.*
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 /** Tipos de ingreso visibles en la Home (excluye los gestionados desde Portfolio). */
 private val HOME_INCOME_TYPES = IncomeType.entries.filter {
@@ -116,5 +117,16 @@ private fun SectionHeader(title: String, actionLabel: String? = null, onAction: 
 private fun SettingsGroupCard(content: @Composable ColumnScope.() -> Unit) {
     Card(modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(12.dp), colors = CardDefaults.cardColors(containerColor = SurfaceWhite), elevation = CardDefaults.cardElevation(0.dp)) {
         Column(content = content)
+    }
+}
+
+@Preview
+@Composable
+private fun IncomeSettingsScreenPreview() {
+    TrackfolioTheme {
+        IncomeSettingsScreen(
+            onBack = {},
+            onNavigateToIncomeTypeDetail = {}
+        )
     }
 }

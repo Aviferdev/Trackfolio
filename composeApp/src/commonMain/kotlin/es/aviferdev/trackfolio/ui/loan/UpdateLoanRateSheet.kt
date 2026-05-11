@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.trackfolio.ui.theme.*
 import kotlinx.datetime.Clock
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -103,5 +104,17 @@ fun UpdateLoanRateSheet(
 
             Spacer(Modifier.height(32.dp))
         }
+    }
+}
+
+@Preview
+@Composable
+private fun UpdateLoanRateSheetPreview() {
+    TrackfolioTheme {
+        UpdateLoanRateSheet(
+            currentRate = 3.5,
+            onDismiss = {},
+            onConfirm = { _, _ -> }
+        )
     }
 }

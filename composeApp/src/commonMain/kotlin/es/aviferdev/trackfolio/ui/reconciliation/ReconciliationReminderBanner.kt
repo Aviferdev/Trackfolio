@@ -22,6 +22,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.trackfolio.ui.theme.SecondaryTeal
 import es.aviferdev.trackfolio.ui.theme.TextSecondary
+import es.aviferdev.trackfolio.ui.theme.TrackfolioTheme
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun ReconciliationReminderBanner(
@@ -76,5 +78,29 @@ fun ReconciliationReminderBanner(
                 Text("×", fontSize = 16.sp, color = SecondaryTeal.copy(alpha = 0.6f))
             }
         }
+    }
+}
+
+@Preview
+@Composable
+private fun ReconciliationReminderBannerVisiblePreview() {
+    TrackfolioTheme {
+        ReconciliationReminderBanner(
+            visible = true,
+            onReconcileNow = {},
+            onRemindLater = {}
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun ReconciliationReminderBannerHiddenPreview() {
+    TrackfolioTheme {
+        ReconciliationReminderBanner(
+            visible = false,
+            onReconcileNow = {},
+            onRemindLater = {}
+        )
     }
 }

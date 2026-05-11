@@ -32,12 +32,16 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import es.aviferdev.trackfolio.ui.common.DonutSlice
 import es.aviferdev.trackfolio.ui.theme.BorderGray
+import es.aviferdev.trackfolio.ui.theme.CategoryPalette
 import es.aviferdev.trackfolio.ui.theme.SurfaceWhite
 import es.aviferdev.trackfolio.ui.theme.TextPrimary
 import es.aviferdev.trackfolio.ui.theme.TextSecondary
+import es.aviferdev.trackfolio.ui.theme.TrackfolioTheme
 import es.aviferdev.trackfolio.ui.theme.formatAmountWithCurrency
 import es.aviferdev.trackfolio.ui.theme.maskAmount
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import kotlin.math.abs
 
 /**
@@ -251,4 +255,43 @@ private fun EmptyDonutState(title: String, subtitle: String) {
 private fun formatPercentLegend(value: Double): String {
     val rounded = (value * 10.0).toLong()
     return "${rounded / 10},${rounded % 10}"
+}
+
+private fun createMockDonutSlices(): List<DonutSlice> {
+    return listOf(
+        DonutSlice(name = "Salario", icon = "💼", amount = 36000.0, percent = 60.0, color = CategoryPalette[0]),
+        DonutSlice(name = "Inversiones", icon = "📈", amount = 12000.0, percent = 20.0, color = CategoryPalette[1]),
+        DonutSlice(name = "Freelance", icon = "💻", amount = 8000.0, percent = 13.3, color = CategoryPalette[2]),
+        DonutSlice(name = "Otros", icon = "🎁", amount = 4000.0, percent = 6.7, color = CategoryPalette[3])
+    )
+}
+
+@Preview
+@Composable
+private fun DonutChartCardPreview() {
+    TrackfolioTheme {
+        DonutChartCard(
+            title = "Ingresos por fuente",
+            subtitle = "Año 2024",
+            slices = createMockDonutSlices(),
+            totalAmount = 60000.0,
+            currencyCode = "EUR",
+            balancesHidden = false
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun DonutChartCardEmptyPreview() {
+    TrackfolioTheme {
+        DonutChartCard(
+            title = "Ingresos por fuente",
+            subtitle = "Año 2025",
+            slices = emptyList(),
+            totalAmount = 0.0,
+            currencyCode = "EUR",
+            balancesHidden = false
+        )
+    }
 }

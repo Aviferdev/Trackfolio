@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.sp
 import es.aviferdev.trackfolio.domain.model.*
 import es.aviferdev.trackfolio.ui.theme.*
 import kotlinx.datetime.*
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -535,5 +536,55 @@ fun EditFixedIncomeBottomSheet(
         ) {
             DatePicker(state = datePickerState)
         }
+    }
+}
+
+@Preview
+@Composable
+private fun EditFixedIncomeBottomSheetPreview() {
+    TrackfolioTheme {
+        val now = Clock.System.now().toEpochMilliseconds()
+        val samplePosition = FixedIncomePosition(
+            id = "pos-1",
+            accountId = "acc-1",
+            assetCategoryId = null,
+            name = "Bono Tesoro 2025",
+            ticker = "ES0000000001",
+            type = FixedIncomeType.BOND,
+            notes = null,
+            principal = 10000.0,
+            quantity = 100.0,
+            nominalPerUnit = 100.0,
+            interestRate = 4.5,
+            interestFrequency = InterestFrequency.ANNUAL,
+            startDate = now - 30L * 24 * 60 * 60 * 1000,
+            maturityDate = now + 335L * 24 * 60 * 60 * 1000,
+            platformId = "platform-1",
+            issuerId = "issuer-1",
+            autoRenew = false,
+            archived = false,
+            closedAt = null,
+            closeType = null,
+            feeNote = null,
+            createdAt = now - 30L * 24 * 60 * 60 * 1000
+        )
+        val samplePlatforms = listOf(
+            Platform("platform-1", "Banco Santander", "🏦", 0, false, now),
+            Platform("platform-2", "BBVA", "🏛️", 1, false, now)
+        )
+        val sampleIssuers = listOf(
+            Issuer(id = "issuer-1", accountId = "acc-1", name = "Tesoro Público", type = IssuerType.BOND_ISSUER, icon = "📊", archived = false, createdAt = now),
+            Issuer(id = "issuer-2", accountId = "acc-1", name = "Banco de España", type = IssuerType.BANK, icon = "🏦", archived = false, createdAt = now)
+        )
+
+        EditFixedIncomeBottomSheet(
+            position = samplePosition,
+            platforms = samplePlatforms,
+            bondIssuers = sampleIssuers,
+            bankIssuers = sampleIssuers,
+            onSave = {},
+            onSaveIssuer = { _, _, _ -> },
+            onDismiss = {}
+        )
     }
 }

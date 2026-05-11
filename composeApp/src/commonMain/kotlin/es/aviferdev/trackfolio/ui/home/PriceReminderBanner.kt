@@ -23,7 +23,9 @@ import androidx.compose.ui.unit.sp
 import es.aviferdev.trackfolio.ui.theme.PrimaryDark
 import es.aviferdev.trackfolio.ui.theme.TextDisabled
 import es.aviferdev.trackfolio.ui.theme.TextSecondary
+import es.aviferdev.trackfolio.ui.theme.TrackfolioTheme
 import es.aviferdev.trackfolio.ui.theme.WarnAmber
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun PriceReminderBanner(
@@ -79,5 +81,31 @@ fun PriceReminderBanner(
                 Text("×", fontSize = 16.sp, color = WarnAmber.copy(alpha = 0.6f))
             }
         }
+    }
+}
+
+@Preview
+@Composable
+private fun PriceReminderBannerVisiblePreview() {
+    TrackfolioTheme {
+        PriceReminderBanner(
+            outdatedCount = 3,
+            visible = true,
+            onUpdateNow = {},
+            onRemindLater = {}
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun PriceReminderBannerHiddenPreview() {
+    TrackfolioTheme {
+        PriceReminderBanner(
+            outdatedCount = 0,
+            visible = false,
+            onUpdateNow = {},
+            onRemindLater = {}
+        )
     }
 }

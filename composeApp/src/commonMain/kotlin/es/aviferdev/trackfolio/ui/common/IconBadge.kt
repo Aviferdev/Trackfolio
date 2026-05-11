@@ -1,7 +1,10 @@
 package es.aviferdev.trackfolio.ui.common
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
@@ -14,7 +17,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import es.aviferdev.trackfolio.ui.theme.IncomeGreen
 import es.aviferdev.trackfolio.ui.theme.PrimaryDark
+import es.aviferdev.trackfolio.ui.theme.TrackfolioTheme
+import es.aviferdev.trackfolio.ui.theme.WarnAmber
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 /**
  * Icon inside a colored rounded badge.
@@ -46,5 +53,20 @@ fun IconBadge(
             color      = color,
             fontWeight = FontWeight.Bold
         )
+    }
+}
+
+@Preview
+@Composable
+private fun IconBadgePreview() {
+    TrackfolioTheme {
+        Row(
+            modifier = Modifier.padding(16.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            IconBadge(icon = "📄", color = IncomeGreen)
+            IconBadge(icon = "🏦", color = WarnAmber)
+            IconBadge(icon = "📈", color = PrimaryDark, size = 48.dp)
+        }
     }
 }

@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.sp
 import es.aviferdev.trackfolio.domain.model.Asset
 import es.aviferdev.trackfolio.ui.theme.*
 import kotlinx.datetime.Clock
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 /**
  * Sheet para registrar un dividendo sobre un activo.
@@ -251,6 +252,73 @@ private fun SummaryItem(label: String, value: Double, currency: String, color: C
             fontSize   = 12.sp,
             fontWeight = FontWeight.SemiBold,
             color      = color
+        )
+    }
+}
+
+private fun createMockAssets(): List<Asset> {
+    val now = Clock.System.now().toEpochMilliseconds()
+    return listOf(
+        Asset(
+            id = "1",
+            accountId = "acc1",
+            ticker = "AAPL",
+            name = "Apple Inc.",
+            notes = null,
+            createdAt = now,
+            currentPrice = 178.50,
+            currentPriceUpdatedAt = now,
+            archived = false
+        ),
+        Asset(
+            id = "2",
+            accountId = "acc1",
+            ticker = "MSFT",
+            name = "Microsoft Corporation",
+            notes = null,
+            createdAt = now,
+            currentPrice = 420.00,
+            currentPriceUpdatedAt = now,
+            archived = false
+        ),
+        Asset(
+            id = "3",
+            accountId = "acc1",
+            ticker = "GOOGL",
+            name = "Alphabet Inc.",
+            notes = null,
+            createdAt = now,
+            currentPrice = 175.00,
+            currentPriceUpdatedAt = now,
+            archived = false
+        )
+    )
+}
+
+@Preview
+@Composable
+private fun AddDividendBottomSheetWithAssetSelectorPreview() {
+    TrackfolioTheme {
+        AddDividendBottomSheet(
+            fixedAssetName = null,
+            allAssets = createMockAssets(),
+            currencyCode = "EUR",
+            onSave = { _, _, _, _ -> },
+            onDismiss = {}
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun AddDividendBottomSheetFixedAssetPreview() {
+    TrackfolioTheme {
+        AddDividendBottomSheet(
+            fixedAssetName = "Apple Inc.",
+            allAssets = emptyList(),
+            currencyCode = "EUR",
+            onSave = { _, _, _, _ -> },
+            onDismiss = {}
         )
     }
 }

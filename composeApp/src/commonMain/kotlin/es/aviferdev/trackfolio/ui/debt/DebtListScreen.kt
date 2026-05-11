@@ -19,10 +19,27 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import es.aviferdev.trackfolio.domain.model.Account
 import es.aviferdev.trackfolio.domain.model.Debt
 import es.aviferdev.trackfolio.domain.model.DebtDirection
 import es.aviferdev.trackfolio.ui.common.*
-import es.aviferdev.trackfolio.ui.theme.*
+import es.aviferdev.trackfolio.ui.theme.BackgroundGray
+import es.aviferdev.trackfolio.ui.theme.BorderGray
+import es.aviferdev.trackfolio.ui.theme.ExpenseRed
+import es.aviferdev.trackfolio.ui.theme.IncomeGreen
+import es.aviferdev.trackfolio.ui.theme.LocalBalanceHidden
+import es.aviferdev.trackfolio.ui.theme.PrimaryDark
+import es.aviferdev.trackfolio.ui.theme.SurfaceWhite
+import es.aviferdev.trackfolio.ui.theme.TextPrimary
+import es.aviferdev.trackfolio.ui.theme.TextSecondary
+import es.aviferdev.trackfolio.ui.theme.TextTertiary
+import es.aviferdev.trackfolio.ui.theme.TrackfolioTheme
+import es.aviferdev.trackfolio.ui.theme.formatAmount
+import es.aviferdev.trackfolio.ui.theme.formatDate
+import es.aviferdev.trackfolio.ui.theme.maskAmount
+import kotlinx.datetime.Clock
+import kotlinx.coroutines.flow.MutableStateFlow
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -216,3 +233,17 @@ private fun EmptyState() {
         }
     }
 }
+
+private fun createMockDebts(): Pair<List<Debt>, List<Debt>> {
+    val now = Clock.System.now().toEpochMilliseconds()
+    val dayInMillis = 24 * 60 * 60 * 1000L
+    val theyOwe = listOf(
+        Debt(id = "1", accountId = "acc1", personName = "Juan", amount = 150.0, direction = DebtDirection.THEY_OWE, date = now - (5 * dayInMillis), isPaid = false, notes = null, createdAt = now - (5 * dayInMillis)),
+        Debt(id = "2", accountId = "acc1", personName = "María", amount = 75.50, direction = DebtDirection.THEY_OWE, date = now - (10 * dayInMillis), isPaid = false, notes = "Cena", createdAt = now - (10 * dayInMillis))
+    )
+    val iOwe = listOf(
+        Debt(id = "3", accountId = "acc1", personName = "Carlos", amount = 200.0, direction = DebtDirection.I_OWE, date = now - (3 * dayInMillis), isPaid = false, notes = null, createdAt = now - (3 * dayInMillis))
+    )
+    return theyOwe to iOwe
+}
+

@@ -23,8 +23,19 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.trackfolio.domain.model.Account
+import es.aviferdev.trackfolio.domain.model.AccountType
 import es.aviferdev.trackfolio.ui.home.SetInitialBalanceBottomSheet
-import es.aviferdev.trackfolio.ui.theme.*
+import es.aviferdev.trackfolio.ui.theme.BackgroundGray
+import es.aviferdev.trackfolio.ui.theme.BorderGray
+import es.aviferdev.trackfolio.ui.theme.ExpenseRed
+import es.aviferdev.trackfolio.ui.theme.LocalBalanceHidden
+import es.aviferdev.trackfolio.ui.theme.PrimaryDark
+import es.aviferdev.trackfolio.ui.theme.SurfaceWhite
+import es.aviferdev.trackfolio.ui.theme.TextPrimary
+import es.aviferdev.trackfolio.ui.theme.TextSecondary
+import es.aviferdev.trackfolio.ui.theme.TrackfolioTheme
+import es.aviferdev.trackfolio.ui.theme.maskAmount
+import kotlinx.datetime.Clock
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -290,4 +301,13 @@ private fun formatAmount(amount: Double): String {
         }
     }.reversed()
     return "$eurosStr,${cents.toString().padStart(2, '0')}"
+}
+
+private fun createMockAccounts(): List<Account> {
+    val now = Clock.System.now().toEpochMilliseconds()
+    return listOf(
+        Account(id = "1", name = "Cuenta Principal", currency = "EUR", initialBalance = 5000.0, computedBalance = 5200.0, createdAt = now, accountType = AccountType.GENERAL),
+        Account(id = "2", name = "Efectivo", currency = "EUR", initialBalance = 0.0, computedBalance = 0.0, createdAt = now, accountType = AccountType.CASH),
+        Account(id = "3", name = "USD Savings", currency = "USD", initialBalance = 1000.0, computedBalance = 1050.0, createdAt = now, accountType = AccountType.GENERAL)
+    )
 }

@@ -1,7 +1,9 @@
 package es.aviferdev.trackfolio.ui.common
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
@@ -13,6 +15,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.trackfolio.ui.theme.ExpenseRed
 import es.aviferdev.trackfolio.ui.theme.IncomeGreen
+import es.aviferdev.trackfolio.ui.theme.TrackfolioTheme
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 /**
  * Delta indicator — arrow + formatted value, green for positive, red for negative.
@@ -50,5 +54,19 @@ fun DeltaIndicator(
             fontWeight = FontWeight.Bold,
             color      = color
         )
+    }
+}
+
+@Preview
+@Composable
+private fun DeltaIndicatorPreview() {
+    TrackfolioTheme {
+        Row(
+            modifier = Modifier.padding(16.dp),
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            DeltaIndicator(value = "+10,8%", isPositive = true)
+            DeltaIndicator(value = "-7,1%", isPositive = false)
+        }
     }
 }

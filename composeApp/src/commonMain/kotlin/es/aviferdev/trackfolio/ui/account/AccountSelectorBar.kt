@@ -13,12 +13,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.trackfolio.domain.model.Account
+import es.aviferdev.trackfolio.domain.model.AccountType
 import es.aviferdev.trackfolio.ui.theme.BorderGray
 import es.aviferdev.trackfolio.ui.theme.PrimaryAlpha
 import es.aviferdev.trackfolio.ui.theme.PrimaryDark
 import es.aviferdev.trackfolio.ui.theme.SurfaceElevated
 import es.aviferdev.trackfolio.ui.theme.TextDisabled
 import es.aviferdev.trackfolio.ui.theme.TextSecondary
+import es.aviferdev.trackfolio.ui.theme.TrackfolioTheme
+import kotlinx.datetime.Clock
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun AccountSelectorBar(
@@ -83,5 +87,50 @@ private fun AccountChip(
                 Text("⚠️", fontSize = 11.sp)
             }
         }
+    }
+}
+
+private fun createMockAccounts(): List<Account> {
+    val now = Clock.System.now().toEpochMilliseconds()
+    return listOf(
+        Account(
+            id = "1",
+            name = "Cuenta Principal",
+            currency = "EUR",
+            initialBalance = 5000.0,
+            computedBalance = 5200.0,
+            createdAt = now,
+            accountType = AccountType.GENERAL
+        ),
+        Account(
+            id = "2",
+            name = "Efectivo",
+            currency = "EUR",
+            initialBalance = 0.0,
+            computedBalance = 0.0,
+            createdAt = now,
+            accountType = AccountType.CASH
+        ),
+        Account(
+            id = "3",
+            name = "USD Savings",
+            currency = "USD",
+            initialBalance = 1000.0,
+            computedBalance = 1050.0,
+            createdAt = now,
+            accountType = AccountType.GENERAL
+        )
+    )
+}
+
+@Preview
+@Composable
+private fun AccountSelectorBarPreview() {
+    TrackfolioTheme {
+        AccountSelectorBar(
+            accounts = createMockAccounts(),
+            selectedAccountId = "1",
+            onAccountSelected = {}
+        )
     }
 }

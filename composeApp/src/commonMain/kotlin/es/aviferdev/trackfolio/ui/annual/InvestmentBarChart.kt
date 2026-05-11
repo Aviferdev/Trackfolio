@@ -31,8 +31,10 @@ import es.aviferdev.trackfolio.ui.theme.PrimaryDark
 import es.aviferdev.trackfolio.ui.theme.SurfaceWhite
 import es.aviferdev.trackfolio.ui.theme.TextPrimary
 import es.aviferdev.trackfolio.ui.theme.TextSecondary
+import es.aviferdev.trackfolio.ui.theme.TrackfolioTheme
 import es.aviferdev.trackfolio.ui.theme.formatAmountWithCurrency
 import es.aviferdev.trackfolio.ui.theme.maskAmount
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 private val MONTH_LABELS = listOf("E", "F", "M", "A", "M", "J", "J", "A", "S", "O", "N", "D")
 
@@ -177,5 +179,48 @@ private fun EmptyInvestmentState(year: String) {
                 textAlign = TextAlign.Center
             )
         }
+    }
+}
+
+private fun createMockInvestments(): List<MonthlyInvestment> {
+    return listOf(
+        MonthlyInvestment(year = "2024", month = "01", amount = 1500.0),
+        MonthlyInvestment(year = "2024", month = "02", amount = 2200.0),
+        MonthlyInvestment(year = "2024", month = "03", amount = 800.0),
+        MonthlyInvestment(year = "2024", month = "04", amount = 3000.0),
+        MonthlyInvestment(year = "2024", month = "05", amount = 1200.0),
+        MonthlyInvestment(year = "2024", month = "06", amount = 1800.0),
+        MonthlyInvestment(year = "2024", month = "07", amount = 2500.0),
+        MonthlyInvestment(year = "2024", month = "08", amount = 900.0),
+        MonthlyInvestment(year = "2024", month = "09", amount = 1500.0),
+        MonthlyInvestment(year = "2024", month = "10", amount = 2000.0),
+        MonthlyInvestment(year = "2024", month = "11", amount = 1100.0),
+        MonthlyInvestment(year = "2024", month = "12", amount = 3500.0)
+    )
+}
+
+@Preview
+@Composable
+private fun InvestmentBarChartPreview() {
+    TrackfolioTheme {
+        InvestmentBarChart(
+            investments = createMockInvestments(),
+            year = "2024",
+            currencyCode = "EUR",
+            balancesHidden = false
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun InvestmentBarChartEmptyPreview() {
+    TrackfolioTheme {
+        InvestmentBarChart(
+            investments = emptyList(),
+            year = "2025",
+            currencyCode = "EUR",
+            balancesHidden = false
+        )
     }
 }

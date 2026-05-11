@@ -50,8 +50,11 @@ import es.aviferdev.trackfolio.ui.theme.SurfaceElevated
 import es.aviferdev.trackfolio.ui.theme.SurfaceWhite
 import es.aviferdev.trackfolio.ui.theme.TextPrimary
 import es.aviferdev.trackfolio.ui.theme.TextSecondary
+import es.aviferdev.trackfolio.ui.theme.TrackfolioTheme
 import es.aviferdev.trackfolio.ui.theme.formatAmount
 import es.aviferdev.trackfolio.ui.theme.formatDate
+import kotlinx.datetime.Clock
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -276,5 +279,58 @@ private fun AssetPriceUpdateRow(
                 }
             }
         }
+    }
+}
+
+private fun createMockAssets(): List<Asset> {
+    val now = Clock.System.now().toEpochMilliseconds()
+    val dayInMillis = 24 * 60 * 60 * 1000L
+    return listOf(
+        Asset(
+            id = "1",
+            accountId = "acc1",
+            ticker = "AAPL",
+            name = "Apple Inc.",
+            notes = null,
+            createdAt = now - (365 * dayInMillis),
+            currentPrice = 178.50,
+            currentPriceUpdatedAt = now - (10 * dayInMillis),
+            archived = false
+        ),
+        Asset(
+            id = "2",
+            accountId = "acc1",
+            ticker = "MSFT",
+            name = "Microsoft Corporation",
+            notes = null,
+            createdAt = now - (200 * dayInMillis),
+            currentPrice = 420.00,
+            currentPriceUpdatedAt = now - (15 * dayInMillis),
+            archived = false
+        ),
+        Asset(
+            id = "3",
+            accountId = "acc1",
+            ticker = "GOOGL",
+            name = "Alphabet Inc.",
+            notes = null,
+            createdAt = now - (100 * dayInMillis),
+            currentPrice = null,
+            currentPriceUpdatedAt = null,
+            archived = false
+        )
+    )
+}
+
+@Preview
+@Composable
+private fun PriceUpdateBottomSheetPreview() {
+    TrackfolioTheme {
+        PriceUpdateBottomSheet(
+            outdatedAssets = createMockAssets(),
+            updatedAssetIds = setOf("1"),
+            onUpdatePrice = { _, _ -> },
+            onDismiss = {}
+        )
     }
 }

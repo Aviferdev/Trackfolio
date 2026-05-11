@@ -17,6 +17,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.trackfolio.ui.theme.*
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 /**
  * Sheet obligatorio para configurar el saldo inicial de una cuenta.
@@ -138,5 +139,17 @@ fun SetInitialBalanceBottomSheet(
                 Text("Establecer saldo", fontSize = 16.sp, fontWeight = FontWeight.Medium)
             }
         }
+    }
+}
+
+@Preview
+@Composable
+private fun SetInitialBalanceBottomSheetPreview() {
+    TrackfolioTheme {
+        SetInitialBalanceBottomSheet(
+            accountName = "Cuenta Principal",
+            currency = "€",
+            onConfirm = {}
+        )
     }
 }

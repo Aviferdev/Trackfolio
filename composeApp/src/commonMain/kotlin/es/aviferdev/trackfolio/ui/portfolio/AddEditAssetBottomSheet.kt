@@ -59,7 +59,9 @@ import es.aviferdev.trackfolio.ui.theme.SurfaceWhite
 import es.aviferdev.trackfolio.ui.theme.SurfaceElevated
 import es.aviferdev.trackfolio.ui.theme.TextPrimary
 import es.aviferdev.trackfolio.ui.theme.TextSecondary
+import es.aviferdev.trackfolio.ui.theme.TrackfolioTheme
 import es.aviferdev.trackfolio.ui.theme.currencySymbol
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
@@ -713,5 +715,40 @@ private fun SectorToggleChip(
             Spacer(Modifier.width(4.dp))
             Text("✓", fontSize = 12.sp, color = PrimaryDark, fontWeight = FontWeight.Bold)
         }
+    }
+}
+
+@Preview
+@Composable
+private fun AddEditAssetBottomSheetPreview() {
+    TrackfolioTheme {
+        val now = Clock.System.now().toEpochMilliseconds()
+        val sampleCategories = listOf(
+            AssetCategory("fixed_cat_funds", "Fondos de Inversión", "📊", 0, false, now),
+            AssetCategory("fixed_cat_stocks", "Acciones", "📈", 1, false, now),
+            AssetCategory("fixed_cat_etfs", "ETFs", "📉", 2, false, now),
+            AssetCategory("fixed_cat_pensions", "Planes de Pensiones", "🏦", 3, false, now)
+        )
+        val samplePlatforms = listOf(
+            Platform("platform-1", "Banco Santander", "🏦", 0, false, now),
+            Platform("platform-2", "BBVA", "🏛️", 1, false, now),
+            Platform("platform-3", "ING", "🏠", 2, false, now)
+        )
+
+        AddEditAssetBottomSheet(
+            asset = null,
+            categories = sampleCategories,
+            currencyCode = "EUR",
+            preselectedCategoryId = null,
+            allPlatforms = samplePlatforms,
+            linkedPlatformIds = emptySet(),
+            allSectors = emptyList(),
+            linkedSectorIds = emptySet(),
+            allRegions = emptyList(),
+            linkedRegionPercents = emptyMap(),
+            linkedFixedIncomePercent = 0,
+            onSave = { _, _, _, _, _, _, _, _, _, _ -> },
+            onDismiss = {}
+        )
     }
 }

@@ -13,6 +13,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.trackfolio.ui.theme.PrimaryDark
+import es.aviferdev.trackfolio.ui.theme.TrackfolioTheme
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun SectionHeader(
@@ -38,5 +40,25 @@ fun SectionHeader(
                 modifier = Modifier.clickable { onAction() }
             )
         }
+    }
+}
+
+@Preview
+@Composable
+private fun SectionHeaderPreview() {
+    TrackfolioTheme {
+        SectionHeader(label = "Últimos movimientos")
+    }
+}
+
+@Preview
+@Composable
+private fun SectionHeaderWithActionPreview() {
+    TrackfolioTheme {
+        SectionHeader(
+            label = "Activos",
+            actionLabel = "Ver todos",
+            onAction = {}
+        )
     }
 }

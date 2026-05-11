@@ -17,6 +17,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.trackfolio.domain.model.Asset
 import es.aviferdev.trackfolio.ui.theme.*
+import kotlinx.datetime.Clock
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 /**
  * Sheet ligero para refrescar únicamente el precio actual de un activo
@@ -151,5 +153,51 @@ fun UpdateCurrentPriceSheet(
                 Text("Cancelar", fontSize = 14.sp, color = TextSecondary)
             }
         }
+    }
+}
+
+@Preview
+@Composable
+private fun UpdateCurrentPriceSheetWithPricePreview() {
+    TrackfolioTheme {
+        UpdateCurrentPriceSheet(
+            asset = Asset(
+                id = "1",
+                accountId = "acc1",
+                ticker = "AAPL",
+                name = "Apple Inc.",
+                notes = null,
+                createdAt = Clock.System.now().toEpochMilliseconds(),
+                currentPrice = 178.50,
+                currentPriceUpdatedAt = Clock.System.now().toEpochMilliseconds(),
+                archived = false
+            ),
+            currencyCode = "EUR",
+            onConfirm = {},
+            onDismiss = {}
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun UpdateCurrentPriceSheetWithoutPricePreview() {
+    TrackfolioTheme {
+        UpdateCurrentPriceSheet(
+            asset = Asset(
+                id = "2",
+                accountId = "acc1",
+                ticker = "GOOGL",
+                name = "Alphabet Inc.",
+                notes = null,
+                createdAt = Clock.System.now().toEpochMilliseconds(),
+                currentPrice = null,
+                currentPriceUpdatedAt = null,
+                archived = false
+            ),
+            currencyCode = "EUR",
+            onConfirm = {},
+            onDismiss = {}
+        )
     }
 }

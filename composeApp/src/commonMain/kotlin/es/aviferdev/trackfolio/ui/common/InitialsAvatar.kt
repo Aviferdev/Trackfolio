@@ -1,7 +1,10 @@
 package es.aviferdev.trackfolio.ui.common
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
@@ -15,7 +18,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import es.aviferdev.trackfolio.ui.theme.ExpenseRed
+import es.aviferdev.trackfolio.ui.theme.IncomeGreen
 import es.aviferdev.trackfolio.ui.theme.PrimaryDark
+import es.aviferdev.trackfolio.ui.theme.TrackfolioTheme
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 /**
  * Rounded-square avatar with centered initials/emoji.
@@ -50,5 +57,20 @@ fun InitialsAvatar(
             textAlign = TextAlign.Center,
             maxLines  = 1
         )
+    }
+}
+
+@Preview
+@Composable
+private fun InitialsAvatarPreview() {
+    TrackfolioTheme {
+        Row(
+            modifier = Modifier.padding(16.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            InitialsAvatar("A", bgColor = PrimaryDark)
+            InitialsAvatar("📈", bgColor = IncomeGreen)
+            InitialsAvatar("JD", bgColor = ExpenseRed, size = 48.dp, textSize = 14)
+        }
     }
 }

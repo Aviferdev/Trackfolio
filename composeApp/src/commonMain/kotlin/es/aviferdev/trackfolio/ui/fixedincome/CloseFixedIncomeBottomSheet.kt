@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.sp
 import es.aviferdev.trackfolio.domain.model.*
 import es.aviferdev.trackfolio.ui.theme.*
 import kotlinx.datetime.Clock
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 private fun formatEuro(value: Double): String {
     val intPart = value.toLong()
@@ -230,5 +231,45 @@ fun CloseFixedIncomeBottomSheet(
 
             Spacer(Modifier.height(16.dp))
         }
+    }
+}
+
+private fun createMockPosition(): FixedIncomePosition {
+    val now = Clock.System.now().toEpochMilliseconds()
+    val dayInMillis = 24 * 60 * 60 * 1000L
+    return FixedIncomePosition(
+        id = "1",
+        accountId = "acc1",
+        name = "Bono Tesoro 2025",
+        ticker = "ES0000000001",
+        type = FixedIncomeType.BOND,
+        notes = null,
+        principal = 10000.0,
+        quantity = 10.0,
+        nominalPerUnit = 1000.0,
+        interestRate = 3.5,
+        interestFrequency = InterestFrequency.ANNUAL,
+        startDate = now - (365 * dayInMillis),
+        maturityDate = now + (30 * dayInMillis),
+        platformId = "platform1",
+        issuerId = null,
+        autoRenew = false,
+        archived = false,
+        closedAt = null,
+        closeType = null,
+        feeNote = null,
+        createdAt = now - (365 * dayInMillis)
+    )
+}
+
+@Preview
+@Composable
+private fun CloseFixedIncomeBottomSheetPreview() {
+    TrackfolioTheme {
+        CloseFixedIncomeBottomSheet(
+            position = createMockPosition(),
+            onSave = { _, _, _ -> },
+            onDismiss = {}
+        )
     }
 }

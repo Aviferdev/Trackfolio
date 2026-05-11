@@ -16,6 +16,7 @@ import es.aviferdev.trackfolio.domain.model.FixedIncomeEvent
 import es.aviferdev.trackfolio.domain.model.FixedIncomeEventType
 import es.aviferdev.trackfolio.ui.theme.*
 import kotlinx.datetime.Clock
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 private fun formatEuro(value: Double): String {
     val intPart = value.toLong()
@@ -170,5 +171,17 @@ fun RegisterCouponBottomSheet(
 
             Spacer(Modifier.height(16.dp))
         }
+    }
+}
+
+@Preview
+@Composable
+private fun RegisterCouponBottomSheetPreview() {
+    TrackfolioTheme {
+        RegisterCouponBottomSheet(
+            positionName = "Bono Tesoro 2025",
+            onSave = {},
+            onDismiss = {}
+        )
     }
 }

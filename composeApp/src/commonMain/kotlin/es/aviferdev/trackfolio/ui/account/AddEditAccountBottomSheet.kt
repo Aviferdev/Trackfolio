@@ -9,8 +9,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import es.aviferdev.trackfolio.domain.model.Account
 import es.aviferdev.trackfolio.domain.model.AccountType
 import es.aviferdev.trackfolio.ui.theme.*
+import kotlinx.datetime.Clock
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 /**
  * Bottom sheet para crear o editar una cuenta.
@@ -166,5 +169,37 @@ fun AddEditAccountBottomSheet(
                 )
             }
         }
+    }
+}
+
+@Preview
+@Composable
+private fun AddEditAccountBottomSheetCreatePreview() {
+    TrackfolioTheme {
+        AddEditAccountBottomSheet(
+            account = null,
+            onSave = { _, _, _ -> },
+            onDismiss = {}
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun AddEditAccountBottomSheetEditPreview() {
+    TrackfolioTheme {
+        AddEditAccountBottomSheet(
+            account = Account(
+                id = "1",
+                name = "Cuenta Principal",
+                currency = "EUR",
+                initialBalance = 5000.0,
+                computedBalance = 5200.0,
+                createdAt = Clock.System.now().toEpochMilliseconds(),
+                accountType = AccountType.GENERAL
+            ),
+            onSave = { _, _, _ -> },
+            onDismiss = {}
+        )
     }
 }

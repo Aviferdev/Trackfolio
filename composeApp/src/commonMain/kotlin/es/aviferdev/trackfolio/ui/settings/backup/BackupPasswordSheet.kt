@@ -18,6 +18,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.trackfolio.ui.theme.*
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -297,4 +298,23 @@ fun BackupPasswordSheet(
 
     // El sheet de import ya no se auto-cierra: el usuario debe leer el aviso
     // de que necesita reiniciar la app y darle a "Entendido" explícitamente.
+}
+
+@Preview
+@Composable
+private fun BackupPasswordSheetExportPreview() {
+    TrackfolioTheme {
+        BackupPasswordSheet(
+            state = BackupSheetState(
+                action = BackupAction.EXPORT,
+                password = "",
+                confirmPassword = "",
+                backupState = BackupUiState.Idle
+            ),
+            onPasswordChange = {},
+            onConfirmPasswordChange = {},
+            onConfirm = {},
+            onDismiss = {}
+        )
+    }
 }

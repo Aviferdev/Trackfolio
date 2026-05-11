@@ -23,7 +23,9 @@ import es.aviferdev.trackfolio.domain.model.Asset
 import es.aviferdev.trackfolio.domain.model.AssetTransaction
 import es.aviferdev.trackfolio.domain.model.Platform
 import es.aviferdev.trackfolio.domain.portfolio.PortfolioCalculator
+import es.aviferdev.trackfolio.ui.theme.TrackfolioTheme
 import es.aviferdev.trackfolio.ui.theme.*
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
@@ -470,4 +472,40 @@ private fun formatFullDate(epochMillis: Long): String {
     val instant = Instant.fromEpochMilliseconds(epochMillis)
     val ld: LocalDate = instant.toLocalDateTime(TimeZone.currentSystemDefault()).date
     return "${ld.dayOfMonth} de ${months[ld.monthNumber - 1]} de ${ld.year}"
+}
+
+@Preview
+@Composable
+private fun TransferFundBottomSheetPreview() {
+    TrackfolioTheme {
+        val now = Clock.System.now().toEpochMilliseconds()
+        val sourceAsset = Asset(
+            id = "asset-1",
+            accountId = "acc-1",
+            ticker = "SAN",
+            name = "Fondo Santander España",
+            notes = null,
+            createdAt = now,
+            assetCategoryId = "fixed_cat_funds"
+        )
+        val destinationAssets = listOf(
+            Asset(id = "asset-2", accountId = "acc-1", ticker = "BBVA", name = "Fondo BBVA España", notes = null, createdAt = now, assetCategoryId = "fixed_cat_funds"),
+            Asset(id = "asset-3", accountId = "acc-1", ticker = "ING", name = "Fondo ING España", notes = null, createdAt = now, assetCategoryId = "fixed_cat_funds")
+        )
+        val platforms = listOf(
+            Platform("platform-1", "Banco Santander", "🏦", 0, false, now),
+            Platform("platform-2", "BBVA", "🏛️", 1, false, now)
+        )
+        val transactions = emptyList<AssetTransaction>()
+
+        TransferFundBottomSheet(
+            sourceAsset = sourceAsset,
+            destinations = destinationAssets,
+            platforms = platforms,
+            assetTransactions = transactions,
+            currencyCode = "EUR",
+            onExecuteTransfer = { _, _, _, _, _, _ -> },
+            onDismiss = {}
+        )
+    }
 }

@@ -21,11 +21,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.trackfolio.domain.model.Transaction
+import es.aviferdev.trackfolio.domain.model.TransactionType
 import es.aviferdev.trackfolio.ui.common.*
 import es.aviferdev.trackfolio.ui.home.AddTransactionBottomSheet
 import es.aviferdev.trackfolio.ui.home.AddTransactionViewModel
 import es.aviferdev.trackfolio.ui.theme.*
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
 private val MONTH_NAMES = listOf(

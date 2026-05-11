@@ -20,6 +20,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.trackfolio.domain.model.Platform
 import es.aviferdev.trackfolio.ui.theme.*
+import kotlinx.datetime.Clock
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 /**
  * Sheet para vincular plataformas a una categoría de activos.
@@ -171,4 +173,30 @@ private fun PlatformLinkRow(
         }
     }
     Spacer(Modifier.height(6.dp))
+}
+
+private fun createMockPlatforms(): List<Platform> {
+    val now = Clock.System.now().toEpochMilliseconds()
+    return listOf(
+        Platform(id = "1", name = "Interactive Brokers", icon = "📊", sortOrder = 0, archived = false, createdAt = now),
+        Platform(id = "2", name = "Degiro", icon = "📈", sortOrder = 1, archived = false, createdAt = now),
+        Platform(id = "3", name = "Coinbase", icon = "🪙", sortOrder = 2, archived = false, createdAt = now),
+        Platform(id = "4", name = "Sabadell", icon = "🏦", sortOrder = 3, archived = false, createdAt = now)
+    )
+}
+
+@Preview
+@Composable
+private fun LinkPlatformToCategorySheetPreview() {
+    TrackfolioTheme {
+        LinkPlatformToCategorySheet(
+            categoryName = "Acciones",
+            linkedPlatforms = listOf(createMockPlatforms()[0], createMockPlatforms()[1]),
+            allPlatforms = createMockPlatforms(),
+            onLink = {},
+            onUnlink = {},
+            onCreate = { _, _, _ -> },
+            onDismiss = {}
+        )
+    }
 }

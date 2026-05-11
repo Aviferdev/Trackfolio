@@ -14,7 +14,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import es.aviferdev.trackfolio.ui.theme.ExpenseRed
+import es.aviferdev.trackfolio.ui.theme.TrackfolioTheme
 import es.aviferdev.trackfolio.ui.theme.WarnAmber
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 /**
  * Contextual alert banner with icon, label, optional action button, and dismiss.
@@ -84,6 +87,31 @@ fun AlertBanner(
                 fontSize   = 14.sp,
                 color      = color,
                 modifier   = Modifier.clickable { onDismiss() }
+            )
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun AlertBannerPreview() {
+    TrackfolioTheme {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            AlertBanner(
+                icon = "↻",
+                label = "3 activos sin precio actualizado",
+                actionLabel = "Actualizar",
+                onAction = {},
+                onDismiss = {},
+                color = WarnAmber
+            )
+            AlertBanner(
+                icon = "⚠️",
+                label = "Error de conexión",
+                color = ExpenseRed
             )
         }
     }

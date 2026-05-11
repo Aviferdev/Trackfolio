@@ -19,9 +19,13 @@ import androidx.compose.ui.unit.sp
 import es.aviferdev.trackfolio.domain.model.FixedIncomePosition
 import es.aviferdev.trackfolio.domain.model.FixedIncomeRow
 import es.aviferdev.trackfolio.domain.model.FixedIncomeSummary
+import es.aviferdev.trackfolio.domain.model.FixedIncomeType
+import es.aviferdev.trackfolio.domain.model.InterestFrequency
 import es.aviferdev.trackfolio.ui.common.StatusTag
 import es.aviferdev.trackfolio.ui.theme.*
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import kotlin.math.abs
+import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 
@@ -352,4 +356,65 @@ fun formatDate(timestamp: Long): String {
     val tz = kotlinx.datetime.TimeZone.currentSystemDefault()
     val dateTime = instant.toLocalDateTime(tz)
     return "${dateTime.dayOfMonth}/${dateTime.monthNumber}/${dateTime.year}"
+}
+
+private fun createMockSummary(): FixedIncomeSummary {
+    val now = Clock.System.now().toEpochMilliseconds()
+    val dayInMillis = 24 * 60 * 60 * 1000L
+    val position = FixedIncomePosition(
+        id = "1",
+        accountId = "acc1",
+        name = "Bono Tesoro 2025",
+        ticker = "ES0000000001",
+        type = FixedIncomeType.BOND,
+        notes = null,
+        principal = 10000.0,
+        quantity = 10.0,
+        nominalPerUnit = 1000.0,
+        interestRate = 3.5,
+        interestFrequency = InterestFrequency.ANNUAL,
+        startDate = now - (365 * dayInMillis),
+        maturityDate = now + (180 * dayInMillis),
+        platformId = "platform1",
+        issuerId = null,
+        autoRenew = false,
+        archived = false,
+        closedAt = null,
+        closeType = null,
+        feeNote = null,
+        createdAt = now - (365 * dayInMillis)
+    )
+    val row = FixedIncomeRow(
+        position = position,
+        collectedInterest = 350.0,
+        currentValue = 10350.0,
+        totalProfit = 350.0,
+        totalProfitPercent = 3.5
+    )
+    return FixedIncomeSummary(
+        totalPrincipal = 10000.0,
+        totalCurrentValue = 10350.0,
+        totalAccruedInterest = 350.0,
+        totalCollectedInterest = 350.0,
+        totalNetProfit = 350.0,
+        totalNetProfitPercent = 3.5,
+        openPositionsCount = 1,
+        nearMaturityCount = 0,
+        positions = listOf(row),
+        closedPositions = emptyList()
+    )
+}
+
+@Preview
+@Composable
+private fun FixedIncomeSectionPreview() {
+    TrackfolioTheme {
+        FixedIncomeSection(
+            summary = createMockSummary(),
+            onPositionClick = {},
+            onRegisterCoupon = {},
+            currencyCode = "EUR",
+            balancesHidden = false
+        )
+    }
 }

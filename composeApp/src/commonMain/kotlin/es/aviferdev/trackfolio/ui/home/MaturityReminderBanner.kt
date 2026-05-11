@@ -19,8 +19,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.trackfolio.domain.model.FixedIncomePosition
+import es.aviferdev.trackfolio.domain.model.FixedIncomeType
+import es.aviferdev.trackfolio.domain.model.InterestFrequency
 import es.aviferdev.trackfolio.ui.theme.TextSecondary
+import es.aviferdev.trackfolio.ui.theme.TrackfolioTheme
 import es.aviferdev.trackfolio.ui.theme.WarnAmber
+import kotlinx.datetime.Clock
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun MaturityReminderBanner(
@@ -102,5 +107,107 @@ fun MaturityReminderBanner(
                 )
             }
         }
+    }
+}
+
+private fun createMockPositions(): List<FixedIncomePosition> {
+    val now = Clock.System.now().toEpochMilliseconds()
+    val dayInMillis = 24 * 60 * 60 * 1000L
+    return listOf(
+        FixedIncomePosition(
+            id = "1",
+            accountId = "acc1",
+            name = "Bono Tesoro 2025",
+            ticker = "ES0000000001",
+            type = FixedIncomeType.BOND,
+            notes = null,
+            principal = 10000.0,
+            quantity = 10.0,
+            nominalPerUnit = 1000.0,
+            interestRate = 3.5,
+            interestFrequency = InterestFrequency.ANNUAL,
+            startDate = now - (180 * dayInMillis),
+            maturityDate = now + (15 * dayInMillis),
+            platformId = "platform1",
+            issuerId = null,
+            autoRenew = false,
+            archived = false,
+            closedAt = null,
+            closeType = null,
+            feeNote = null,
+            createdAt = now - (180 * dayInMillis)
+        ),
+        FixedIncomePosition(
+            id = "2",
+            accountId = "acc1",
+            name = "Depósito Bankia",
+            ticker = "DEP001",
+            type = FixedIncomeType.DEPOSIT,
+            notes = null,
+            principal = 5000.0,
+            quantity = 1.0,
+            nominalPerUnit = 5000.0,
+            interestRate = 2.0,
+            interestFrequency = InterestFrequency.AT_MATURITY,
+            startDate = now - (365 * dayInMillis),
+            maturityDate = now + (7 * dayInMillis),
+            platformId = "platform1",
+            issuerId = null,
+            autoRenew = false,
+            archived = false,
+            closedAt = null,
+            closeType = null,
+            feeNote = null,
+            createdAt = now - (365 * dayInMillis)
+        ),
+        FixedIncomePosition(
+            id = "3",
+            accountId = "acc1",
+            name = "Letra Tesoro",
+            ticker = "LT001",
+            type = FixedIncomeType.BILL,
+            notes = null,
+            principal = 3000.0,
+            quantity = 3.0,
+            nominalPerUnit = 1000.0,
+            interestRate = 1.5,
+            interestFrequency = InterestFrequency.AT_MATURITY,
+            startDate = now - (90 * dayInMillis),
+            maturityDate = now + (25 * dayInMillis),
+            platformId = "platform1",
+            issuerId = null,
+            autoRenew = false,
+            archived = false,
+            closedAt = null,
+            closeType = null,
+            feeNote = null,
+            createdAt = now - (90 * dayInMillis)
+        )
+    )
+}
+
+@Preview
+@Composable
+private fun MaturityReminderBannerVisiblePreview() {
+    TrackfolioTheme {
+        MaturityReminderBanner(
+            positions = createMockPositions(),
+            visible = true,
+            onDismiss = {},
+            onViewDetails = {}
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun MaturityReminderBannerHiddenPreview() {
+    TrackfolioTheme {
+        MaturityReminderBanner(
+            positions = emptyList(),
+            visible = false,
+            onDismiss = {},
+            onViewDetails = {}
+        )
     }
 }

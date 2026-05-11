@@ -20,6 +20,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.trackfolio.domain.model.Platform
 import es.aviferdev.trackfolio.ui.theme.*
+import kotlinx.datetime.Clock
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 /**
  * Sheet para crear o editar una plataforma (broker, exchange, banco).
@@ -183,5 +185,37 @@ fun AddEditPlatformSheet(
                 Text("Cancelar", fontSize = 14.sp, color = TextSecondary)
             }
         }
+    }
+}
+
+@Preview
+@Composable
+private fun AddEditPlatformSheetCreatePreview() {
+    TrackfolioTheme {
+        AddEditPlatformSheet(
+            initial = null,
+            onSave = { _, _, _ -> },
+            onDismiss = {}
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun AddEditPlatformSheetEditPreview() {
+    TrackfolioTheme {
+        AddEditPlatformSheet(
+            initial = Platform(
+                id = "1",
+                name = "Interactive Brokers",
+                icon = "📊",
+                sortOrder = 0,
+                archived = false,
+                createdAt = Clock.System.now().toEpochMilliseconds(),
+                notes = "Cuenta principal para acciones USA"
+            ),
+            onSave = { _, _, _ -> },
+            onDismiss = {}
+        )
     }
 }

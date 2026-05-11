@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.sp
 import es.aviferdev.trackfolio.domain.model.*
 import es.aviferdev.trackfolio.ui.theme.*
 import kotlinx.datetime.*
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
@@ -648,5 +649,55 @@ fun CreateFixedIncomeBottomSheet(
         ) {
             DatePicker(state = pickerState)
         }
+    }
+}
+
+private fun createMockPlatforms(): List<Platform> {
+    val now = Clock.System.now().toEpochMilliseconds()
+    return listOf(
+        Platform(id = "1", name = "Banco Sabadell", icon = "🏦", sortOrder = 0, archived = false, createdAt = now),
+        Platform(id = "2", name = "ING", icon = "🏦", sortOrder = 1, archived = false, createdAt = now)
+    )
+}
+
+private fun createMockIssuers(): List<Issuer> {
+    val now = Clock.System.now().toEpochMilliseconds()
+    return listOf(
+        Issuer(id = "1", accountId = "acc1", name = "Banco de España", icon = "🏛️", type = IssuerType.BOND_ISSUER, createdAt = now),
+        Issuer(id = "2", accountId = "acc1", name = "Santander", icon = "🏦", type = IssuerType.BANK, createdAt = now)
+    )
+}
+
+@Preview
+@Composable
+private fun CreateFixedIncomeBottomSheetPreview() {
+    TrackfolioTheme {
+        CreateFixedIncomeBottomSheet(
+            platforms = createMockPlatforms(),
+            categories = emptyList(),
+            bondIssuers = createMockIssuers(),
+            bankIssuers = createMockIssuers(),
+            accountId = "acc1",
+            onSave = { _, _ -> },
+            onSaveIssuer = { _, _, _ -> },
+            onDismiss = {}
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun CreateFixedIncomeBottomSheetWithAccountPreview() {
+    TrackfolioTheme {
+        CreateFixedIncomeBottomSheet(
+            platforms = createMockPlatforms(),
+            categories = emptyList(),
+            bondIssuers = createMockIssuers(),
+            bankIssuers = createMockIssuers(),
+            accountId = "acc1",
+            onSave = { _, _ -> },
+            onSaveIssuer = { _, _, _ -> },
+            onDismiss = {}
+        )
     }
 }

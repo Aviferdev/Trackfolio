@@ -9,11 +9,20 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import es.aviferdev.trackfolio.ui.theme.BorderGray
+import es.aviferdev.trackfolio.ui.theme.ExpenseRed
+import es.aviferdev.trackfolio.ui.theme.IncomeGreen
+import es.aviferdev.trackfolio.ui.theme.TextPrimary
+import es.aviferdev.trackfolio.ui.theme.TextSecondary
+import es.aviferdev.trackfolio.ui.theme.TrackfolioTheme
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 /**
  * Standard row layout inside cards: left slot → fluid mid → right slot.
@@ -59,6 +68,39 @@ fun InfoRow(
                 color     = BorderGray,
                 thickness = 0.5.dp,
                 modifier  = Modifier.padding(start = 16.dp, end = 16.dp)
+            )
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun InfoRowPreview() {
+    TrackfolioTheme {
+        Column {
+            InfoRow(
+                left = { InitialsAvatar("A", bgColor = IncomeGreen) },
+                mid = {
+                    Column {
+                        Text("Apple Inc.", fontSize = 14.sp, fontWeight = FontWeight.Medium, color = TextPrimary)
+                        Text("10 acciones", fontSize = 11.sp, color = TextSecondary)
+                    }
+                },
+                right = { Text("+1.234,56 €", fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = IncomeGreen) },
+                isLast = false,
+                onClick = {}
+            )
+            InfoRow(
+                left = { InitialsAvatar("G", bgColor = ExpenseRed) },
+                mid = {
+                    Column {
+                        Text("Gas Natural", fontSize = 14.sp, fontWeight = FontWeight.Medium, color = TextPrimary)
+                        Text("5 acciones", fontSize = 11.sp, color = TextSecondary)
+                    }
+                },
+                right = { Text("-456,78 €", fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = ExpenseRed) },
+                isLast = true,
+                onClick = {}
             )
         }
     }

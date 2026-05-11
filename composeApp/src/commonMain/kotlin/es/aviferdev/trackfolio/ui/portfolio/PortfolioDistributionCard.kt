@@ -30,14 +30,16 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import es.aviferdev.trackfolio.ui.portfolio.DistributionView
 import es.aviferdev.trackfolio.ui.theme.BorderGray
+import es.aviferdev.trackfolio.ui.theme.CategoryPalette
 import es.aviferdev.trackfolio.ui.theme.SurfaceWhite
 import es.aviferdev.trackfolio.ui.theme.TextPrimary
 import es.aviferdev.trackfolio.ui.theme.TextSecondary
+import es.aviferdev.trackfolio.ui.theme.TrackfolioTheme
 import es.aviferdev.trackfolio.ui.theme.WarnAmber
 import es.aviferdev.trackfolio.ui.theme.formatAmountWithCurrency
 import es.aviferdev.trackfolio.ui.theme.maskAmount
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 /**
  * Donut chart con leyenda. Muestra el reparto del valor actual del portfolio
@@ -220,4 +222,67 @@ private fun LegendRow(slice: CategorySlice) {
 private fun formatPercentLegend(value: Double): String {
     val rounded = (value * 10.0).toLong()
     return "${rounded / 10},${rounded % 10}"
+}
+
+private fun createMockSlices(): List<CategorySlice> {
+    return listOf(
+        CategorySlice(
+            categoryId = "1",
+            name = "Acciones",
+            icon = "📈",
+            value = 45000.0,
+            percent = 45.0,
+            color = CategoryPalette[0]
+        ),
+        CategorySlice(
+            categoryId = "2",
+            name = "Renta Fija",
+            icon = "📋",
+            value = 30000.0,
+            percent = 30.0,
+            color = CategoryPalette[1]
+        ),
+        CategorySlice(
+            categoryId = "3",
+            name = "Cripto",
+            icon = "🪙",
+            value = 15000.0,
+            percent = 15.0,
+            color = CategoryPalette[2]
+        ),
+        CategorySlice(
+            categoryId = "4",
+            name = "ETF",
+            icon = "📊",
+            value = 10000.0,
+            percent = 10.0,
+            color = CategoryPalette[3]
+        )
+    )
+}
+
+@Preview
+@Composable
+private fun PortfolioDistributionCardPreview() {
+    TrackfolioTheme {
+        PortfolioDistributionCard(
+            slices = createMockSlices(),
+            totalCurrentValue = 100000.0,
+            currencyCode = "EUR",
+            balancesHidden = false
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun PortfolioDistributionCardHiddenPreview() {
+    TrackfolioTheme {
+        PortfolioDistributionCard(
+            slices = createMockSlices(),
+            totalCurrentValue = 100000.0,
+            currencyCode = "EUR",
+            balancesHidden = true
+        )
+    }
 }

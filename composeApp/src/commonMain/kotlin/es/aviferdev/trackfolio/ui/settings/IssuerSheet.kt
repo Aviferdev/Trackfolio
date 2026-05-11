@@ -17,6 +17,8 @@ import androidx.compose.ui.unit.sp
 import es.aviferdev.trackfolio.domain.model.Issuer
 import es.aviferdev.trackfolio.domain.model.IssuerType
 import es.aviferdev.trackfolio.ui.theme.*
+import kotlinx.datetime.Clock
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -119,5 +121,38 @@ fun AddEditIssuerSheet(
                 Text("Cancelar", color = TextSecondary, fontSize = 14.sp)
             }
         }
+    }
+}
+
+@Preview
+@Composable
+private fun AddEditIssuerSheetCreatePreview() {
+    TrackfolioTheme {
+        AddEditIssuerSheet(
+            initial = null,
+            type = IssuerType.BANK,
+            onSave = { _, _ -> },
+            onDismiss = {}
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun AddEditIssuerSheetEditPreview() {
+    TrackfolioTheme {
+        AddEditIssuerSheet(
+            initial = Issuer(
+                id = "1",
+                accountId = "acc1",
+                name = "BBVA",
+                icon = "🏦",
+                type = IssuerType.BANK,
+                createdAt = Clock.System.now().toEpochMilliseconds()
+            ),
+            type = IssuerType.BANK,
+            onSave = { _, _ -> },
+            onDismiss = {}
+        )
     }
 }
