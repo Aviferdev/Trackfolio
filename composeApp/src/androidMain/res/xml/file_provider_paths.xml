@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <paths>
-    <!-- Permite compartir ficheros desde cache dir (donde generamos el backup) -->
     <cache-path name="backup" path="." />
 </paths>

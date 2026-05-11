@@ -28,12 +28,12 @@ fun TrackfolioLabel(
     modifier: Modifier = Modifier
 ) {
     Text(
-        text          = text.uppercase(),
-        fontSize      = 10.sp,
-        fontWeight    = FontWeight.SemiBold,
-        color         = color,
+        text = text.uppercase(),
+        fontSize = 10.sp,
+        fontWeight = FontWeight.SemiBold,
+        color = color,
         letterSpacing = 0.7.sp,
-        modifier      = modifier
+        modifier = modifier
     )
 }
 

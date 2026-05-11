@@ -22,10 +22,10 @@ import kotlinx.datetime.Clock
 
 data class DebtUiState(
     val debtsTheyOwe: List<Debt> = emptyList(),
-    val debtsIOwe: List<Debt>    = emptyList(),
-    val totalTheyOwe: Double     = 0.0,
-    val totalIOwe: Double        = 0.0,
-    val isLoading: Boolean       = true
+    val debtsIOwe: List<Debt> = emptyList(),
+    val totalTheyOwe: Double = 0.0,
+    val totalIOwe: Double = 0.0,
+    val isLoading: Boolean = true
 )
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -45,20 +45,20 @@ class DebtViewModel(
             } else {
                 getActiveDebts(accountId).map { debts ->
                     val theyOwe = debts.filter { it.direction == DebtDirection.THEY_OWE }
-                    val iOwe    = debts.filter { it.direction == DebtDirection.I_OWE }
+                    val iOwe = debts.filter { it.direction == DebtDirection.I_OWE }
                     DebtUiState(
                         debtsTheyOwe = theyOwe,
-                        debtsIOwe    = iOwe,
+                        debtsIOwe = iOwe,
                         totalTheyOwe = theyOwe.sumOf { it.amount },
-                        totalIOwe    = iOwe.sumOf { it.amount },
-                        isLoading    = false
+                        totalIOwe = iOwe.sumOf { it.amount },
+                        isLoading = false
                     )
                 }
             }
         }
         .stateIn(
-            scope        = viewModelScope,
-            started      = SharingStarted.WhileSubscribed(5_000),
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
             initialValue = DebtUiState()
         )
 
@@ -70,14 +70,22 @@ class DebtViewModel(
         viewModelScope.launch { deleteDebtUseCase(id) }
     }
 
-    fun editDebt(original: Debt, personName: String, amount: Double, direction: DebtDirection, notes: String?) {
+    fun editDebt(
+        original: Debt,
+        personName: String,
+        amount: Double,
+        direction: DebtDirection,
+        notes: String?
+    ) {
         viewModelScope.launch {
-            updateDebtUseCase(original.copy(
-                personName = personName,
-                amount     = amount,
-                direction  = direction,
-                notes      = notes
-            ))
+            updateDebtUseCase(
+                original.copy(
+                    personName = personName,
+                    amount = amount,
+                    direction = direction,
+                    notes = notes
+                )
+            )
         }
     }
 
@@ -86,15 +94,15 @@ class DebtViewModel(
         viewModelScope.launch {
             val now = Clock.System.now().toEpochMilliseconds()
             val debt = Debt(
-                id         = generateId(),
-                accountId  = accountId,
+                id = generateId(),
+                accountId = accountId,
                 personName = personName,
-                amount     = amount,
-                direction  = direction,
-                date       = now,
-                isPaid     = false,
-                notes      = notes,
-                createdAt  = now
+                amount = amount,
+                direction = direction,
+                date = now,
+                isPaid = false,
+                notes = notes,
+                createdAt = now
             )
             saveDebt(debt)
         }

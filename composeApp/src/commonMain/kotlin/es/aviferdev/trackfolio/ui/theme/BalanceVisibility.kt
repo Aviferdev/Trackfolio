@@ -17,5 +17,8 @@ const val HIDDEN_AMOUNT_MASK: String = "•••••"
  * Devuelve [text] o la máscara según el flag [hidden].
  * Útil cuando ya tienes la cadena ya formateada (con sufijos de moneda, etc.).
  */
-fun maskAmount(text: String, hidden: Boolean): String =
-    if (hidden) HIDDEN_AMOUNT_MASK else text
+fun maskAmount(text: String, hidden: Boolean): String = if (hidden) {
+    HIDDEN_AMOUNT_MASK
+} else {
+    text
+}

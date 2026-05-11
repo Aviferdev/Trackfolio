@@ -39,7 +39,7 @@ fun formatAmount(amount: Double): String {
         }
     }.reversed()
     val formatted = "$eurosStr,${cents.toString().padStart(2, '0')}"
-    return if (negative) "-$formatted" else formatted
+    return if (negative) "-$formatted" else "+$formatted"
 }
 
 // ─── Moneda ──────────────────────────────────────────────────────────────────

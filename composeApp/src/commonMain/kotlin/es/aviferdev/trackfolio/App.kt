@@ -1,6 +1,14 @@
 package es.aviferdev.trackfolio
 
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
@@ -18,8 +26,8 @@ import org.koin.compose.koinInject
 @Composable
 fun App() {
     val databaseInitializer = koinInject<DatabaseInitializer>()
-    val appLockManager      = koinInject<AppLockManager>()
-    val balanceVisibility   = koinInject<BalanceVisibilityManager>()
+    val appLockManager = koinInject<AppLockManager>()
+    val balanceVisibility = koinInject<BalanceVisibilityManager>()
 
     var isLocked by remember {
         appLockManager.onAppStart()
@@ -42,9 +50,11 @@ fun App() {
                     appLockManager.onAppBackground()
                     isLocked = appLockManager.isLocked
                 }
+
                 Lifecycle.Event.ON_START -> {
                     isLocked = appLockManager.isLocked
                 }
+
                 else -> Unit
             }
         }

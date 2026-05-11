@@ -1,0 +1,64 @@
+package es.aviferdev.trackfolio.ui.common.navigation
+
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import es.aviferdev.trackfolio.ui.common.button.IconButtomApp
+import es.aviferdev.trackfolio.ui.common.separator.SpacerHorizontalApp
+import es.aviferdev.trackfolio.ui.theme.BorderGray
+import es.aviferdev.trackfolio.ui.theme.SurfaceWhite
+import es.aviferdev.trackfolio.ui.theme.TextPrimary
+import org.jetbrains.compose.ui.tooling.preview.Preview
+
+
+@Composable
+fun TopBarApp(
+    title: String,
+    navigateBack: (() -> Unit)? = null
+) {
+    Surface(color = SurfaceWhite) {
+        Row(
+            modifier = Modifier.fillMaxWidth()
+                .padding(horizontal = 8.dp)
+                .padding(top = 8.dp, bottom = 8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            navigateBack?.let {
+                IconButtomApp(
+                    clickButton = it,
+                    icon = Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = "Ir atras"
+                )
+                SpacerHorizontalApp(8.dp)
+            }
+            Text(
+                text = title,
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold,
+                color = TextPrimary,
+                letterSpacing = (-0.3).sp
+            )
+        }
+        HorizontalDivider(color = BorderGray, thickness = 0.5.dp)
+    }
+}
+
+@Preview
+@Composable
+private fun TopBarPreview() {
+    TopBarApp(
+        title = "Ir atras",
+        navigateBack = {}
+    )
+}
