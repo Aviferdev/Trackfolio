@@ -251,12 +251,39 @@ fun PortfolioSettingsScreen(
             }
             item {
                 SettingsGroupCard {
-                    Text(
-                        "Clasifica tus activos por sectores (Tecnologia, Salud, Energia...) para analizar tu exposicion por industria.",
-                        fontSize    = 13.sp,
-                        color       = TextSecondary,
-                        modifier    = Modifier.padding(horizontal = 16.dp, vertical = 18.dp)
-                    )
+                    val sectors = assetCatalogState.allSectors
+                    if (sectors.isEmpty()) {
+                        Text(
+                            "Clasifica tus activos por sectores (Tecnologia, Salud, Energia...) para analizar tu exposicion por industria.",
+                            fontSize    = 13.sp,
+                            color       = TextSecondary,
+                            modifier    = Modifier.padding(horizontal = 16.dp, vertical = 18.dp)
+                        )
+                    } else {
+                        sectors.forEachIndexed { index, sector ->
+                            Row(
+                                modifier = Modifier.fillMaxWidth()
+                                    .padding(horizontal = 16.dp, vertical = 14.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(sector.icon, fontSize = 18.sp, modifier = Modifier.size(28.dp))
+                                Spacer(Modifier.width(12.dp))
+                                Text(
+                                    text = sector.name,
+                                    fontSize = 15.sp,
+                                    color = TextPrimary,
+                                    modifier = Modifier.weight(1f)
+                                )
+                            }
+                            if (index < sectors.lastIndex) {
+                                HorizontalDivider(
+                                    color = BorderGray,
+                                    thickness = 0.5.dp,
+                                    modifier = Modifier.padding(start = 52.dp)
+                                )
+                            }
+                        }
+                    }
                 }
             }
 
@@ -271,12 +298,37 @@ fun PortfolioSettingsScreen(
             }
             item {
                 SettingsGroupCard {
-                    Text(
-                        "Define la distribucion geografica de tus activos por region (EE.UU., Europa, Asia...) para analizar tu exposicion internacional.",
-                        fontSize    = 13.sp,
-                        color       = TextSecondary,
-                        modifier    = Modifier.padding(horizontal = 16.dp, vertical = 18.dp)
-                    )
+                    val regions = assetCatalogState.allRegions
+                    if (regions.isEmpty()) {
+                        Text(
+                            "Define la distribucion geografica de tus activos por region (EE.UU., Europa, Asia...) para analizar tu exposicion internacional.",
+                            fontSize    = 13.sp,
+                            color       = TextSecondary,
+                            modifier    = Modifier.padding(horizontal = 16.dp, vertical = 18.dp)
+                        )
+                    } else {
+                        regions.forEachIndexed { index, region ->
+                            Row(
+                                modifier = Modifier.fillMaxWidth()
+                                    .padding(horizontal = 16.dp, vertical = 14.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = region.name,
+                                    fontSize = 15.sp,
+                                    color = TextPrimary,
+                                    modifier = Modifier.weight(1f)
+                                )
+                            }
+                            if (index < regions.lastIndex) {
+                                HorizontalDivider(
+                                    color = BorderGray,
+                                    thickness = 0.5.dp,
+                                    modifier = Modifier.padding(start = 16.dp)
+                                )
+                            }
+                        }
+                    }
                 }
             }
 

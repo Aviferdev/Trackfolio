@@ -30,10 +30,12 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import es.aviferdev.trackfolio.ui.portfolio.DistributionView
 import es.aviferdev.trackfolio.ui.theme.BorderGray
 import es.aviferdev.trackfolio.ui.theme.SurfaceWhite
 import es.aviferdev.trackfolio.ui.theme.TextPrimary
 import es.aviferdev.trackfolio.ui.theme.TextSecondary
+import es.aviferdev.trackfolio.ui.theme.WarnAmber
 import es.aviferdev.trackfolio.ui.theme.formatAmountWithCurrency
 import es.aviferdev.trackfolio.ui.theme.maskAmount
 
@@ -50,9 +52,18 @@ fun PortfolioDistributionCard(
     totalCurrentValue: Double,
     currencyCode: String,
     balancesHidden: Boolean,
+    selectedView: DistributionView = DistributionView.CATEGORY,
+    fixedIncomePercent: Double = 0.0,
     modifier: Modifier = Modifier
 ) {
     if (slices.isEmpty()) return
+
+    val title = when (selectedView) {
+        DistributionView.CATEGORY    -> "Distribución por categoría"
+        DistributionView.COMPOSITION -> "Composición"
+        DistributionView.REGION     -> "Distribución por región"
+        DistributionView.SECTOR      -> "Distribución por sector"
+    }
 
     Card(
         modifier  = modifier.fillMaxWidth(),
@@ -62,12 +73,26 @@ fun PortfolioDistributionCard(
         border    = CardDefaults.outlinedCardBorder()
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text(
-                text       = "Distribución por categoría",
-                fontSize   = 14.sp,
-                fontWeight = FontWeight.SemiBold,
-                color      = TextPrimary
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text       = title,
+                    fontSize   = 14.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color      = TextPrimary
+                )
+                if (fixedIncomePercent > 0) {
+                    Text(
+                        text       = "RF: ${fixedIncomePercent.toInt()}%",
+                        fontSize   = 12.sp,
+                        fontWeight = FontWeight.Bold,
+                        color      = WarnAmber
+                    )
+                }
+            }
             Spacer(Modifier.height(2.dp))
             Text(
                 text     = "Sobre el valor actual",

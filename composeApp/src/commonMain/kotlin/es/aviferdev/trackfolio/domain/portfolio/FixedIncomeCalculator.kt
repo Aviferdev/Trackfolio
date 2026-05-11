@@ -45,18 +45,25 @@ object FixedIncomeCalculator {
             calculatePosition(pos, events, nowMillis)
         }
 
-        val totalPrincipal = positions.sumOf { it.principal }
-        val totalCurrentValue = rows.sumOf { it.currentValue }
-        val totalAccruedInterest = positions.sumOf { it.accruedInterestToDate }
-        val totalCollectedInterest = rows.sumOf { it.collectedInterest }
-        val totalNetProfit = rows.sumOf { it.totalProfit }
+        // Separar posiciones abiertas y cerradas
+        val openPositions = positions.filter { it.isOpen }
+        val closedPositions = positions.filter { !it.isOpen }
+
+        val openRows = rows.filter { it.position.isOpen }
+        val closedRows = rows.filter { !it.position.isOpen }
+
+        val totalPrincipal = openPositions.sumOf { it.principal }
+        val totalCurrentValue = openRows.sumOf { it.currentValue }
+        val totalAccruedInterest = openPositions.sumOf { it.accruedInterestToDate }
+        val totalCollectedInterest = openRows.sumOf { it.collectedInterest }
+        val totalNetProfit = openRows.sumOf { it.totalProfit }
 
         val totalNetProfitPercent = if (totalPrincipal > 0.0) {
             (totalNetProfit / totalPrincipal) * 100.0
         } else 0.0
 
-        val openPositionsCount = positions.count { it.isOpen }
-        val nearMaturityCount = positions.count { it.isOpen && it.isNearMaturity }
+        val openPositionsCount = openPositions.size
+        val nearMaturityCount = openPositions.count { it.isNearMaturity }
 
         return FixedIncomeSummary(
             totalPrincipal = totalPrincipal,
@@ -67,7 +74,8 @@ object FixedIncomeCalculator {
             totalNetProfitPercent = totalNetProfitPercent,
             openPositionsCount = openPositionsCount,
             nearMaturityCount = nearMaturityCount,
-            positions = rows
+            positions = openRows,
+            closedPositions = closedRows
         )
     }
 

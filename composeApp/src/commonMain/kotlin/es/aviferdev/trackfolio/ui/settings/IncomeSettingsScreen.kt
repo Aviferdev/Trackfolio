@@ -90,3 +90,31 @@ fun IncomeSettingsScreen(
         }
     }
 }
+
+// ─── Private components ──────────────────────────────────────────────────────
+@Composable
+private fun SectionHeader(title: String, actionLabel: String? = null, onAction: (() -> Unit)? = null) {
+    Row(
+        modifier = Modifier.fillMaxWidth().padding(top = 14.dp, start = 16.dp, end = 16.dp, bottom = 6.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(title.uppercase(), fontSize = 10.sp, fontWeight = FontWeight.Bold, color = TextTertiary, letterSpacing = 0.7.sp)
+        if (actionLabel != null && onAction != null) {
+            Text(
+                text = actionLabel,
+                fontSize = 11.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = PrimaryDark,
+                modifier = Modifier.clickable { onAction() }
+            )
+        }
+    }
+}
+
+@Composable
+private fun SettingsGroupCard(content: @Composable ColumnScope.() -> Unit) {
+    Card(modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(12.dp), colors = CardDefaults.cardColors(containerColor = SurfaceWhite), elevation = CardDefaults.cardElevation(0.dp)) {
+        Column(content = content)
+    }
+}

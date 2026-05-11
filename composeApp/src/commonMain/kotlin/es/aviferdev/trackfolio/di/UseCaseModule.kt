@@ -335,6 +335,8 @@ val useCaseModule = module {
             getFixedIncomeSummary               = get(),
             getNearMaturityPositions            = get(),
             createFixedIncomePosition           = get(),
+            getBondIssuers                      = get(),
+            saveBondIssuer                      = get(),
             getPortfolioValueHistory            = get()
         )
     }

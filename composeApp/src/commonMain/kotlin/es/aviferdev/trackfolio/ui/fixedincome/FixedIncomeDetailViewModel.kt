@@ -150,5 +150,14 @@ class FixedIncomeDetailViewModel(
         }
     }
 
+    fun updateRegionAndSector(region: String?, sector: String?) {
+        viewModelScope.launch {
+            val position = uiState.value.row?.position ?: return@launch
+            val updatedPosition = position.copy(region = region, sector = sector)
+            updatePosition(updatedPosition)
+                .onFailure { _error.value = it.message }
+        }
+    }
+
     fun clearError() { _error.value = null }
 }

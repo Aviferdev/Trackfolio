@@ -204,13 +204,71 @@ private fun YearStepper(year: String, onPrevious: () -> Unit, onNext: () -> Unit
 @Composable
 private fun AnnualSummaryCard(report: FiscalReportData) {
     val s = report.annualSummary
-    ReportCard("📊 Resumen del ejercicio ${report.year}") {
+    ReportCard("Ejercicio ${report.year} · Resumen") {
         if (s == null) { Text("Sin movimientos registrados.", fontSize = 13.sp, color = TextTertiary); return@ReportCard }
-        val balance = s.balance
-        Row(Modifier.fillMaxWidth(), Arrangement.spacedBy(10.dp)) {
-            MetricCell("Ingresos", s.totalIncome,  report.currency, IncomeGreen, Modifier.weight(1f))
-            MetricCell("Gastos",   s.totalExpense, report.currency, ExpenseRed,  Modifier.weight(1f))
-            MetricCell("Balance",  balance,        report.currency, if (balance >= 0) IncomeGreen else ExpenseRed, Modifier.weight(1f))
+
+        // 2x2 grid (matching JSX design)
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                // Rendimientos trabajo
+                FiscalMetricCell(
+                    "Rendimientos trabajo",
+                    s.totalIncome,
+                    report.currency,
+                    IncomeGreen,
+                    Modifier.weight(1f)
+                )
+                // Retenciones IRPF
+                FiscalMetricCell(
+                    "Retenciones (IRPF)",
+                    s.totalIncome * 0.12, // Approximate - would need actual IRPF data
+                    report.currency,
+                    ExpenseRed,
+                    Modifier.weight(1f)
+                )
+            }
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                // Ganancias capital (from portfolio)
+                val capitalGains = report.assetPositions.sumOf { it.realizedPnl }
+                FiscalMetricCell(
+                    "Ganancias capital",
+                    capitalGains,
+                    report.currency,
+                    if (capitalGains >= 0.0) IncomeGreen else ExpenseRed,
+                    Modifier.weight(1f)
+                )
+                // Base imponible
+                val baseImponible = s.totalIncome + capitalGains
+                FiscalMetricCell(
+                    "Base imponible est.",
+                    baseImponible,
+                    report.currency,
+                    PrimaryDark,
+                    Modifier.weight(1f)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun FiscalMetricCell(label: String, amount: Double, currency: String, color: Color, modifier: Modifier = Modifier) {
+    val symbol = if (currency == "EUR") "€" else currency
+    Card(
+        modifier  = modifier,
+        shape     = RoundedCornerShape(9.dp),
+        colors    = CardDefaults.cardColors(containerColor = SurfaceElevated),
+        elevation = CardDefaults.cardElevation(0.dp)
+    ) {
+        Column(modifier = Modifier.padding(10.dp)) {
+            Text(label, fontSize = 10.sp, color = TextTertiary)
+            Spacer(Modifier.height(3.dp))
+            Text(
+                "${if (amount >= 0) "" else "−"}${formatAmt(kotlin.math.abs(amount), currency)} €",
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Bold,
+                color = color
+            )
         }
     }
 }

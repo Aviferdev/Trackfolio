@@ -639,7 +639,7 @@ private fun TransactionRow(
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-//  QuickAccessSection
+//  QuickAccessSection - JSX: Gráficos + Deudas (solo 2 cards)
 // ─────────────────────────────────────────────────────────────────────────────
 @Composable
 private fun QuickAccessSection(
@@ -665,12 +665,6 @@ private fun QuickAccessSection(
                 emoji    = "🤝",
                 label    = "Deudas",
                 onClick  = onNavigateToDebts,
-                modifier = Modifier.weight(1f)
-            )
-            QuickCard(
-                emoji    = "🧾",
-                label    = "Fiscal",
-                onClick  = onNavigateToFiscalReport,
                 modifier = Modifier.weight(1f)
             )
         }

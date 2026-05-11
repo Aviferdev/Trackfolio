@@ -55,7 +55,7 @@ fun PriceReminderBanner(
             )
             Spacer(Modifier.width(10.dp))
             Text(
-                text     = "$outdatedCount ${if (outdatedCount == 1) "activo sin" else "activos sin"} precio actualizado",
+                text     = "$outdatedCount ${if (outdatedCount == 1) "activo sin" else "activos sin"} precio actualizado (>7 días)",
                 fontSize = 12.sp,
                 color    = WarnAmber,
                 fontWeight = FontWeight.Medium,

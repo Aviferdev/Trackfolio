@@ -1,15 +1,46 @@
 package es.aviferdev.trackfolio.ui.fixedincome
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -17,12 +48,20 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.trackfolio.domain.model.FixedIncomeEvent
-import es.aviferdev.trackfolio.domain.model.FixedIncomeEventType
 import es.aviferdev.trackfolio.domain.portfolio.ScheduledCoupon
-import es.aviferdev.trackfolio.ui.theme.*
+import es.aviferdev.trackfolio.ui.common.StatusTag
+import es.aviferdev.trackfolio.ui.fixedincome.formatPercent1
+import es.aviferdev.trackfolio.ui.theme.ExpenseRed
+import es.aviferdev.trackfolio.ui.theme.NegativeRed
+import es.aviferdev.trackfolio.ui.theme.PositiveGreen
+import es.aviferdev.trackfolio.ui.theme.PrimaryDark
+import es.aviferdev.trackfolio.ui.theme.SurfaceWhite
+import es.aviferdev.trackfolio.ui.theme.TextPrimary
+import es.aviferdev.trackfolio.ui.theme.TextSecondary
+import es.aviferdev.trackfolio.ui.theme.TextTertiary
+import es.aviferdev.trackfolio.ui.theme.WarnAmber
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
-import kotlin.math.abs
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -55,9 +94,9 @@ fun FixedIncomeDetailScreen(
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = PrimaryDark,
-                    titleContentColor = Color.White,
-                    navigationIconContentColor = Color.White
+                    containerColor = WarnAmber,
+                    titleContentColor = Color.Black,
+                    navigationIconContentColor = Color.Black
                 )
             )
         },
@@ -67,8 +106,8 @@ fun FixedIncomeDetailScreen(
                 Box {
                     FloatingActionButton(
                         onClick = { fabMenuOpen = true },
-                        containerColor = PrimaryDark,
-                        contentColor = Color.White
+                        containerColor = WarnAmber,
+                        contentColor = Color.Black
                     ) {
                         Text("⚡", fontSize = 20.sp)
                     }
@@ -166,10 +205,52 @@ fun FixedIncomeDetailScreen(
                         onDeleteEvent = { event -> viewModel.showDeleteEventDialog(event) }
                     )
                 }
+
+                // Sección de distribución (región y sector)
+                item {
+                    Spacer(Modifier.height(16.dp))
+                    DistributionSection(
+                        position = state.row?.position,
+                        onUpdateRegionSector = { region, sector ->
+                            viewModel.updateRegionAndSector(region, sector)
+                        },
+                        modifier = Modifier.padding(horizontal = 16.dp)
+                    )
+                }
+
+                // Botón "Cerrar posición" (como en JSX)
+                if (state.row?.position?.isOpen == true) {
+                    item {
+                        Spacer(Modifier.height(16.dp))
+                        Button(
+                            onClick = { viewModel.showCloseSheet() },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp),
+                            shape = RoundedCornerShape(12.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = ExpenseRed.copy(alpha = 0.15f),
+                                contentColor = ExpenseRed
+                            ),
+                            border = androidx.compose.foundation.BorderStroke(
+                                width = 1.dp,
+                                color = ExpenseRed.copy(alpha = 0.4f)
+                            )
+                        ) {
+                            Text(
+                                text = "Cerrar posición",
+                                fontSize = 13.sp,
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier.padding(vertical = 2.dp)
+                            )
+                        }
+                    }
+                }
             }
         }
     }
 
+    // ── Dialogs ─────────────────────────────────────────────────────────────────
     if (state.showDeleteEventDialog && state.selectedEventForDelete != null) {
         AlertDialog(
             onDismissRequest = { viewModel.hideDeleteEventDialog() },
@@ -211,6 +292,146 @@ fun FixedIncomeDetailScreen(
     }
 }
 
+// ─── Distribution Section (Región y Sector) ───────────────────────────────────
+@Composable
+private fun DistributionSection(
+    position: es.aviferdev.trackfolio.domain.model.FixedIncomePosition?,
+    onUpdateRegionSector: (String?, String?) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    // Valores predefinidos para región y sector
+    val regions = listOf("Europa", "EE.UU.", "España", "Emerging Markets", "Global")
+    val sectors = listOf("Gobierno", "Corporativo", "Banca", " Energía", "Inmobiliario", "Otro")
+
+    var showRegionDialog by remember { mutableStateOf(false) }
+    var showSectorDialog by remember { mutableStateOf(false) }
+
+    Card(
+        modifier = modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = SurfaceWhite)
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(
+                text = "Distribución",
+                fontSize = 16.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = TextPrimary
+            )
+
+            Spacer(Modifier.height(12.dp))
+
+            // Región
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column {
+                    Text("Región", fontSize = 11.sp, color = TextSecondary)
+                    Text(
+                        text = position?.region ?: "No asignada",
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = if (position?.region != null) TextPrimary else TextTertiary
+                    )
+                }
+                TextButton(onClick = { showRegionDialog = true }) {
+                    Text("Cambiar", fontSize = 12.sp, color = PrimaryDark)
+                }
+            }
+
+            HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+
+            // Sector
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column {
+                    Text("Sector", fontSize = 11.sp, color = TextSecondary)
+                    Text(
+                        text = position?.sector ?: "No asignado",
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = if (position?.sector != null) TextPrimary else TextTertiary
+                    )
+                }
+                TextButton(onClick = { showSectorDialog = true }) {
+                    Text("Cambiar", fontSize = 12.sp, color = PrimaryDark)
+                }
+            }
+        }
+    }
+
+    // Diálogo para seleccionar región
+    if (showRegionDialog) {
+        AlertDialog(
+            onDismissRequest = { showRegionDialog = false },
+            containerColor = SurfaceWhite,
+            title = { Text("Seleccionar Región", fontSize = 17.sp, fontWeight = FontWeight.SemiBold) },
+            text = {
+                Column {
+                    regions.forEach { region ->
+                        TextButton(
+                            onClick = {
+                                onUpdateRegionSector(region, position?.sector)
+                                showRegionDialog = false
+                            },
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text(
+                                text = region,
+                                color = if (position?.region == region) PrimaryDark else TextPrimary,
+                                fontWeight = if (position?.region == region) FontWeight.Bold else FontWeight.Normal
+                            )
+                        }
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = { showRegionDialog = false }) {
+                    Text("Cancelar", color = TextSecondary)
+                }
+            }
+        )
+    }
+
+    // Diálogo para seleccionar sector
+    if (showSectorDialog) {
+        AlertDialog(
+            onDismissRequest = { showSectorDialog = false },
+            containerColor = SurfaceWhite,
+            title = { Text("Seleccionar Sector", fontSize = 17.sp, fontWeight = FontWeight.SemiBold) },
+            text = {
+                Column {
+                    sectors.forEach { sector ->
+                        TextButton(
+                            onClick = {
+                                onUpdateRegionSector(position?.region, sector)
+                                showSectorDialog = false
+                            },
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text(
+                                text = sector,
+                                color = if (position?.sector == sector) PrimaryDark else TextPrimary,
+                                fontWeight = if (position?.sector == sector) FontWeight.Bold else FontWeight.Normal
+                            )
+                        }
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = { showSectorDialog = false }) {
+                    Text("Cancelar", color = TextSecondary)
+                }
+            }
+        )
+    }
+}
+
 @Composable
 private fun FixedIncomeDetailHeader(
     position: es.aviferdev.trackfolio.domain.model.FixedIncomePosition,
@@ -218,219 +439,105 @@ private fun FixedIncomeDetailHeader(
     symbol: String,
     balancesHidden: Boolean
 ) {
+    // Hero card with WarnAmber background (matching JSX design)
     Card(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = PrimaryDark)
+        shape = RoundedCornerShape(14.dp),
+        colors = CardDefaults.cardColors(containerColor = WarnAmber.copy(alpha = 0.15f)),
+        border = CardDefaults.outlinedCardBorder().copy(brush = androidx.compose.ui.graphics.SolidColor(WarnAmber.copy(alpha = 0.2f)))
     ) {
-        Column(modifier = Modifier.padding(20.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(position.type.emoji, fontSize = 28.sp)
-                Spacer(Modifier.width(12.dp))
-                Column {
-                    Text(position.type.label, fontSize = 12.sp, color = Color.White.copy(alpha = 0.7f))
-                    if (position.ticker.isNotBlank()) {
-                        Text(position.ticker, fontSize = 13.sp, color = Color.White.copy(alpha = 0.6f))
-                    }
-                }
-            }
-
-            Spacer(Modifier.height(16.dp))
-
-            FixedIncomeProgressBar(
-                progress = position.progressPercent,
-                color = when {
-                    position.remainingDays <= 30 -> Color(0xFFE53935)
-                    position.progressPercent > 0.75f -> Color(0xFFFF9800)
-                    else -> Color(0xFF66BB6A)
-                },
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            Spacer(Modifier.height(6.dp))
-
+        Column(modifier = Modifier.padding(18.dp)) {
+            // Top row: label + amount + tag
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(
-                    text = formatDate(position.startDate),
-                    fontSize = 11.sp,
-                    color = Color.White.copy(alpha = 0.5f)
-                )
-                val remainingDays = if (position.isOpen) position.remainingDays else 0
-                Text(
-                    text = if (position.isOpen) "$remainingDays días restantes" else "Cerrada",
-                    fontSize = 11.sp,
-                    color = Color.White.copy(alpha = 0.7f)
-                )
-                Text(
-                    text = formatDate(position.maturityDate),
-                    fontSize = 11.sp,
-                    color = Color.White.copy(alpha = 0.5f)
-                )
-            }
-
-            Spacer(Modifier.height(20.dp))
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.Top
             ) {
                 Column {
-                    Text("Capital", fontSize = 11.sp, color = Color.White.copy(alpha = 0.6f))
                     Text(
-                        text = "${maskAmount(formatAmount(position.principal), balancesHidden)} $symbol",
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        color = Color.White
-                    )
-                }
-                Column(horizontalAlignment = Alignment.End) {
-                    Text("Valor actual", fontSize = 11.sp, color = Color.White.copy(alpha = 0.6f))
-                    Text(
-                        text = "${maskAmount(formatAmount(row.currentValue), balancesHidden)} $symbol",
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        color = Color.White
-                    )
-                }
-            }
-
-            Spacer(Modifier.height(12.dp))
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Column {
-                    Text("TAE", fontSize = 11.sp, color = Color.White.copy(alpha = 0.6f))
-                    Text(
-                        text = "${formatPercent1(position.interestRate)}%",
-                        fontSize = 14.sp,
+                        "Renta fija · ${if (position.isOpen) "ACTIVO" else "CERRADO"}",
+                        fontSize = 10.sp,
                         fontWeight = FontWeight.Medium,
-                        color = Color.White
+                        color = WarnAmber
                     )
-                }
-                Column(horizontalAlignment = Alignment.End) {
-                    Text("Frecuencia", fontSize = 11.sp, color = Color.White.copy(alpha = 0.6f))
-                    Text(
-                        text = position.interestFrequency.label,
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Medium,
-                        color = Color.White
-                    )
-                }
-            }
-
-            Spacer(Modifier.height(12.dp))
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Column {
-                    Text("Intereses devengados", fontSize = 11.sp, color = Color.White.copy(alpha = 0.6f))
-                    Text(
-                        text = "+${maskAmount(formatAmount(position.accruedInterestToDate), balancesHidden)} $symbol",
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Medium,
-                        color = Color(0xFF66BB6A)
-                    )
-                }
-                Column(horizontalAlignment = Alignment.End) {
-                    Text("Intereses cobrados", fontSize = 11.sp, color = Color.White.copy(alpha = 0.6f))
-                    Text(
-                        text = "${maskAmount(formatAmount(row.collectedInterest), balancesHidden)} $symbol",
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Medium,
-                        color = Color.White
-                    )
-                }
-            }
-
-            Spacer(Modifier.height(12.dp))
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Column {
-                    Text("Rendimiento total", fontSize = 11.sp, color = Color.White.copy(alpha = 0.6f))
-                    val pnlColor = if (row.totalProfit >= 0) Color(0xFF66BB6A) else Color(0xFFEF9A9A)
-                    val sign = if (row.totalProfit >= 0) "+" else ""
-                    Text(
-                        text = "$sign${maskAmount(formatAmount(row.totalProfit), balancesHidden)} $symbol",
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        color = pnlColor
-                    )
-                }
-                Column(horizontalAlignment = Alignment.End) {
-                    Text("% Rentabilidad", fontSize = 11.sp, color = Color.White.copy(alpha = 0.6f))
-                    Text(
-                        text = "${formatPercent1(row.totalProfitPercent)}%",
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Medium,
-                        color = Color.White
-                    )
-                }
-            }
-
-            // TAE efectiva real (solo para posiciones cerradas)
-            if (!position.isOpen && position.closedAt != null) {
-                Spacer(Modifier.height(12.dp))
-                val elapsedDays = position.elapsedDays
-                val effectiveTae = if (elapsedDays > 0) {
-                    (row.totalProfit / position.principal) * (365.0 / elapsedDays) * 100.0
-                } else 0.0
-                
-                HorizontalDivider(color = Color.White.copy(alpha = 0.15f), thickness = 0.5.dp)
-                Spacer(Modifier.height(12.dp))
-                
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Column {
-                        Text("TAE nominal", fontSize = 11.sp, color = Color.White.copy(alpha = 0.6f))
-                        Text(
-                            text = "${formatPercent1(position.interestRate)}%",
-                            fontSize = 13.sp,
-                            color = Color.White.copy(alpha = 0.8f)
-                        )
-                    }
-                    Column(horizontalAlignment = Alignment.End) {
-                        Text("TAE efectiva real", fontSize = 11.sp, color = Color.White.copy(alpha = 0.6f))
-                        val effectiveColor = when {
-                            effectiveTae > position.interestRate -> Color(0xFF66BB6A)
-                            effectiveTae < position.interestRate -> Color(0xFFFF9800)
-                            else -> Color.White
-                        }
-                        Text(
-                            text = "${formatPercent1(effectiveTae)}%",
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            color = effectiveColor
-                        )
-                    }
-                }
-                
-                if (effectiveTae != position.interestRate) {
                     Spacer(Modifier.height(4.dp))
                     Text(
-                        text = if (effectiveTae > position.interestRate) 
-                            "✓ Mejor rendimiento de lo esperado" 
-                        else 
-                            "⚠️ Inferior al TAE nominal por comisiones/impuestos",
-                        fontSize = 10.sp,
-                        color = Color.White.copy(alpha = 0.6f)
+                        "${maskAmount(formatAmount(position.principal), balancesHidden)} €",
+                        fontSize = 22.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = TextPrimary,
+                        letterSpacing = (-0.8).sp
+                    )
+                    Text(
+                        "Nominal",
+                        fontSize = 11.sp,
+                        color = TextTertiary,
+                        modifier = Modifier.padding(top = 3.dp)
                     )
                 }
+                // Tag
+                StatusTag(
+                    label = position.type.label.uppercase(),
+                    color = WarnAmber
+                )
+            }
+
+            Spacer(Modifier.height(14.dp))
+
+            // 2x2 grid with details
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                // Cupón anual
+                DetailCell(
+                    label = "Cupón anual",
+                    value = "${position.interestRate?.let { "${formatPercent1(it)}%" } ?: "—"} · ${maskAmount(formatAmount(position.principal * (position.interestRate ?: 0.0) / 100.0), balancesHidden)} €",
+                    modifier = Modifier.weight(1f)
+                )
+                // Vencimiento
+                DetailCell(
+                    label = "Vencimiento",
+                    value = formatDate(position.maturityDate),
+                    modifier = Modifier.weight(1f)
+                )
+            }
+            Spacer(Modifier.height(8.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                // TIR estimada (placeholder - would need actual calculation)
+                DetailCell(
+                    label = "TIR estimada",
+                    value = position.interestRate?.let { "${formatPercent1(it)}%" } ?: "—",
+                    modifier = Modifier.weight(1f)
+                )
+                // Plataforma (placeholder)
+                DetailCell(
+                    label = "Plataforma",
+                    value = position.platformId.ifEmpty { "—" },
+                    modifier = Modifier.weight(1f)
+                )
             }
         }
     }
+}
+
+@Composable
+private fun DetailCell(label: String, value: String, modifier: Modifier = Modifier) {
+    Card(
+        modifier = modifier,
+        shape = RoundedCornerShape(8.dp),
+        colors = CardDefaults.cardColors(containerColor = WarnAmber.copy(alpha = 0.1f)),
+        elevation = CardDefaults.cardElevation(0.dp)
+    ) {
+        Column(modifier = Modifier.padding(8.dp)) {
+            Text(label, fontSize = 10.sp, color = WarnAmber.copy(alpha = 0.7f))
+            Spacer(Modifier.height(2.dp))
+            Text(value, fontSize = 11.sp, fontWeight = FontWeight.Bold, color = TextPrimary)
+        }
+}
 }
 
 @Composable

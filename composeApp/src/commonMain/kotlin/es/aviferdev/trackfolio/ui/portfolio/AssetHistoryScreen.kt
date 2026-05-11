@@ -65,9 +65,12 @@ fun AssetHistoryScreen(
         Column(modifier = Modifier.fillMaxSize()) {
             // ── Top bar ───────────────────────────────────────────────────────
             AssetTopBar(
-                ticker = state.asset?.ticker,
-                name   = state.asset?.name,
-                onBack = onBack
+                ticker    = state.asset?.ticker,
+                name      = state.asset?.name,
+                onBack    = onBack,
+                onRefresh = if (!AssetCategoryType.isFixedIncome(state.asset?.assetCategoryId ?: "")) {
+                    { viewModel.openUpdatePriceSheet() }
+                } else null
             )
 
             when {
@@ -91,16 +94,14 @@ fun AssetHistoryScreen(
                     modifier       = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(bottom = 100.dp)
                 ) {
-                    // Price card
+                    // Summary card (price + position)
                     item {
-                        AssetPriceCard(
-                            ticker                = state.asset!!.ticker,
-                            currentPrice          = state.asset!!.currentPrice,
-                            currentPriceUpdatedAt = state.asset!!.currentPriceUpdatedAt,
-                            currencyCode          = state.currencyCode,
-                            showUpdatePrice       = !AssetCategoryType.isFixedIncome(state.asset!!.assetCategoryId),
-                            onUpdatePrice         = { viewModel.openUpdatePriceSheet() },
-                            modifier              = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
+                        AssetSummaryCard(
+                            ticker       = state.asset!!.ticker,
+                            currentPrice = state.asset!!.currentPrice,
+                            currencyCode = state.currencyCode,
+                            position     = state.position,
+                            modifier     = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
                         )
                     }
 
@@ -113,18 +114,6 @@ fun AssetHistoryScreen(
                                     modifier     = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
                                 )
                             }
-                        }
-                    }
-
-                    // Position FIFO card
-                    state.position?.let { pos ->
-                        item {
-                            PositionCard(
-                                position       = pos,
-                                currencyCode   = state.currencyCode,
-                                balancesHidden = balancesHidden,
-                                modifier       = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
-                            )
                         }
                     }
 
@@ -324,20 +313,20 @@ fun AssetHistoryScreen(
 
 // ─── Top bar ──────────────────────────────────────────────────────────────────
 @Composable
-private fun AssetTopBar(ticker: String?, name: String?, onBack: () -> Unit) {
+private fun AssetTopBar(ticker: String?, name: String?, onBack: () -> Unit, onRefresh: (() -> Unit)? = null) {
     Surface(color = SurfaceWhite, shadowElevation = 0.dp) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .windowInsetsPadding(WindowInsets.statusBars)
-                .padding(horizontal = 8.dp, vertical = 10.dp),
+                .padding(horizontal = 4.dp, vertical = 10.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             IconButton(onClick = onBack) {
                 Icon(Icons.AutoMirrored.Filled.ArrowBack, "Volver", tint = TextPrimary)
             }
-            Spacer(Modifier.width(4.dp))
-            Column {
+            Spacer(Modifier.width(2.dp))
+            Column(modifier = Modifier.weight(1f)) {
                 Text(
                     ticker ?: "—",
                     fontSize      = 17.sp,
@@ -349,73 +338,126 @@ private fun AssetTopBar(ticker: String?, name: String?, onBack: () -> Unit) {
                     Text(name, fontSize = 12.sp, color = TextTertiary, maxLines = 1)
                 }
             }
+            if (onRefresh != null) {
+                IconButton(onClick = onRefresh, modifier = Modifier.size(40.dp)) {
+                    Icon(Icons.Outlined.Refresh, "Actualizar precio", tint = TextSecondary, modifier = Modifier.size(20.dp))
+                }
+            }
         }
     }
     HorizontalDivider(color = BorderGray, thickness = .5.dp)
 }
 
-// ─── Price card ───────────────────────────────────────────────────────────────
+// ─── Summary card (price + position) ───────────────────────────────────────────
 @Composable
-private fun AssetPriceCard(
+private fun AssetSummaryCard(
     ticker: String,
     currentPrice: Double?,
-    currentPriceUpdatedAt: Long?,
     currencyCode: String,
-    showUpdatePrice: Boolean,
-    onUpdatePrice: () -> Unit,
+    position: AssetPosition?,
     modifier: Modifier = Modifier
 ) {
     val symbol = currencySymbol(currencyCode)
+    val isOpen = position?.netQuantity ?: 0.0 > 0.0
+
     Card(
         modifier  = modifier.fillMaxWidth(),
-        shape     = RoundedCornerShape(13.dp),
+        shape     = RoundedCornerShape(12.dp),
         colors    = CardDefaults.cardColors(containerColor = SurfaceWhite),
         elevation = CardDefaults.cardElevation(0.dp)
     ) {
-        Row(
-            modifier          = Modifier.fillMaxWidth().padding(14.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Box(
-                modifier = Modifier.size(44.dp).clip(RoundedCornerShape(12.dp)).background(PrimaryDark),
-                contentAlignment = Alignment.Center
+        Column(modifier = Modifier.fillMaxWidth()) {
+            // 3-column grid
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-                Text(
-                    ticker.take(3),
-                    fontSize  = if (ticker.length > 3) 9.sp else 11.sp,
-                    fontWeight = FontWeight.Bold,
-                    color     = Color.White,
-                    textAlign = TextAlign.Center
-                )
-            }
-            Spacer(Modifier.width(12.dp))
-            Column(modifier = Modifier.weight(1f)) {
-                Text("Precio actual", fontSize = 10.sp, color = TextTertiary)
-                Spacer(Modifier.height(2.dp))
-                if (currentPrice != null) {
-                    Text(
-                        "${formatAmount(currentPrice)} $symbol",
-                        fontSize   = 17.sp,
-                        fontWeight = FontWeight.Bold,
-                        color      = TextPrimary
-                    )
-                    if (currentPriceUpdatedAt != null) {
-                        Text(
-                            "actualizado ${formatRelativeTime(currentPriceUpdatedAt)}",
-                            fontSize = 10.sp,
-                            color    = TextTertiary
-                        )
+                // P&L FIFO
+                Column(
+                    modifier = Modifier.weight(1f),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text("P&L FIFO", fontSize = 10.sp, color = TextTertiary, fontWeight = FontWeight.Medium)
+                    Spacer(Modifier.height(4.dp))
+                    val pnlColor = when {
+                        (position?.totalPnL ?: 0.0) > 0 -> IncomeGreen
+                        (position?.totalPnL ?: 0.0) < 0 -> ExpenseRed
+                        else -> TextPrimary
                     }
-                } else {
-                    Text("Sin precio registrado", fontSize = 13.sp, color = TextTertiary)
+                    Text(
+                        if ((position?.totalPnL ?: 0.0) == 0.0) "—"
+                        else "${if ((position?.totalPnL ?: 0.0) >= 0) "+" else "−"} ${formatAmount(kotlin.math.abs(position?.totalPnL ?: 0.0))} €",
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = pnlColor
+                    )
+                }
+
+                // Divider
+                Box(modifier = Modifier.width(1.dp).height(40.dp).background(BorderGray))
+
+                // Posición
+                Column(
+                    modifier = Modifier.weight(1f),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text("Posición", fontSize = 10.sp, color = TextTertiary, fontWeight = FontWeight.Medium)
+                    Spacer(Modifier.height(4.dp))
+                    Text(
+                        if (isOpen) "${formatQty(position!!.netQuantity)} uds" else "—",
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = TextPrimary
+                    )
+                }
+
+                // Divider
+                Box(modifier = Modifier.width(1.dp).height(40.dp).background(BorderGray))
+
+                // Coste medio
+                Column(
+                    modifier = Modifier.weight(1f),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text("Coste medio", fontSize = 10.sp, color = TextTertiary, fontWeight = FontWeight.Medium)
+                    Spacer(Modifier.height(4.dp))
+                    Text(
+                        if (isOpen && position!!.averageCostOfRemaining > 0) "${formatAmount(position.averageCostOfRemaining)} €" else "—",
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = TextSecondary
+                    )
                 }
             }
-            if (showUpdatePrice) {
-                IconButton(
-                    onClick  = onUpdatePrice,
-                    modifier = Modifier.size(36.dp).clip(RoundedCornerShape(10.dp)).background(SurfaceElevated)
-                ) {
-                    Icon(Icons.Outlined.Refresh, null, modifier = Modifier.size(16.dp), tint = TextSecondary)
+
+            // Bottom row: Precio actual
+            HorizontalDivider(color = BorderGray, thickness = 0.5.dp)
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 10.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text("Precio actual", fontSize = 11.sp, color = TextTertiary)
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        currentPrice?.let { "${formatAmount(it)} €" } ?: "—",
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = TextPrimary
+                    )
+                    if (currentPrice != null && position?.averageCostOfRemaining != null && position.averageCostOfRemaining > 0) {
+                        val pctChange = ((currentPrice - position.averageCostOfRemaining) / position.averageCostOfRemaining) * 100
+                        Spacer(Modifier.width(8.dp))
+                        val isPositive = pctChange >= 0
+                        Text(
+                            "${if (isPositive) "+" else "−"}${formatPercent1(kotlin.math.abs(pctChange))}%",
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = if (isPositive) IncomeGreen else ExpenseRed
+                        )
+                    }
                 }
             }
         }

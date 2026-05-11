@@ -39,7 +39,7 @@ fun CloseFixedIncomeBottomSheet(
     var notes by remember { mutableStateOf("") }
 
     val availableCloseTypes = when (position.type) {
-        FixedIncomeType.BOND -> listOf(
+        FixedIncomeType.BOND, FixedIncomeType.BILL -> listOf(
             FixedIncomeCloseType.MATURITY,
             FixedIncomeCloseType.SECONDARY_SALE
         )

@@ -23,6 +23,8 @@ data class FixedIncomePosition(
     val maturityDate: Long,
     val platformId: String,
     val issuerId: String?,
+    val region: String? = null,     // Región para distribución (Europa, EE.UU., Emergentes, etc.)
+    val sector: String? = null,      // Sector para distribución (Gobierno, Corporativo, etc.)
     val autoRenew: Boolean,
     val archived: Boolean,
     val closedAt: Long?,
@@ -33,6 +35,7 @@ data class FixedIncomePosition(
     val isOpen: Boolean get() = closedAt == null
 
     val isBond: Boolean get() = type == FixedIncomeType.BOND
+    val isBill: Boolean get() = type == FixedIncomeType.BILL
     val isDeposit: Boolean get() = type == FixedIncomeType.DEPOSIT
 
     val totalTermDays: Int

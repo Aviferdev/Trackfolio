@@ -5,6 +5,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountBalance
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -17,6 +19,7 @@ import androidx.compose.ui.unit.sp
 import es.aviferdev.trackfolio.domain.model.FixedIncomePosition
 import es.aviferdev.trackfolio.domain.model.FixedIncomeRow
 import es.aviferdev.trackfolio.domain.model.FixedIncomeSummary
+import es.aviferdev.trackfolio.ui.common.StatusTag
 import es.aviferdev.trackfolio.ui.theme.*
 import kotlin.math.abs
 import kotlinx.datetime.TimeZone
@@ -150,16 +153,7 @@ fun FixedIncomePositionCard(
     val position = row.position
     val symbol = currencySymbol(currencyCode)
 
-    val progressColor by animateColorAsState(
-        targetValue = when {
-            position.remainingDays <= 30 -> Color(0xFFE53935)
-            position.progressPercent > 0.75f -> Color(0xFFFF9800)
-            position.progressPercent > 0.5f -> Color(0xFFFFC107)
-            else -> PositiveGreen
-        },
-        label = "progressColor"
-    )
-
+    // JSX design: badge icon + name + "Vence date · amount" + "ACTIVO" tag + coupon
     Card(
         modifier = modifier
             .fillMaxWidth()
@@ -168,130 +162,58 @@ fun FixedIncomePositionCard(
         colors = CardDefaults.cardColors(containerColor = SurfaceWhite),
         elevation = CardDefaults.cardElevation(1.dp)
     ) {
-        Column(modifier = Modifier.padding(14.dp)) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 14.dp, vertical = 12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // Badge icon (bond icon in warn color)
+            Box(
+                modifier = Modifier
+                    .size(40.dp)
+                    .background(WarnAmber.copy(alpha = 0.15f), RoundedCornerShape(10.dp)),
+                contentAlignment = Alignment.Center
             ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(position.type.emoji, fontSize = 18.sp)
-                    Spacer(Modifier.width(8.dp))
-                    Column {
-                        Text(
-                            text = position.name,
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.Medium,
-                            color = TextPrimary,
-                            maxLines = 1
-                        )
-                        if (position.ticker.isNotBlank()) {
-                            Text(
-                                text = position.ticker,
-                                fontSize = 11.sp,
-                                color = TextSecondary
-                            )
-                        }
-                    }
-                }
-                Column(horizontalAlignment = Alignment.End) {
-                    Text(
-                        text = maskAmount(formatAmount(row.currentValue), balancesHidden),
-                        fontSize = 15.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        color = TextPrimary
-                    )
-                    Text(
-                        text = "$symbol",
-                        fontSize = 11.sp,
-                        color = TextSecondary
-                    )
-                }
-            }
-
-            Spacer(Modifier.height(10.dp))
-
-            FixedIncomeProgressBar(
-                progress = position.progressPercent,
-                color = progressColor
-            )
-
-            Spacer(Modifier.height(8.dp))
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Column {
-                    Text("Capital", fontSize = 11.sp, color = TextSecondary)
-                    Text(
-                        text = "${maskAmount(formatAmount(position.principal), balancesHidden)} $symbol",
-                        fontSize = 12.sp,
-                        color = TextPrimary
-                    )
-                }
-                Column(horizontalAlignment = Alignment.End) {
-                    Text("TAE", fontSize = 11.sp, color = TextSecondary)
-                    Text(
-                        text = "${formatPercent1(position.interestRate)}%",
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Medium,
-                        color = TextPrimary
-                    )
-                }
-            }
-
-            Spacer(Modifier.height(6.dp))
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Column {
-                    Text("Devengado", fontSize = 11.sp, color = TextSecondary)
-                    val accruedColor = if (position.accruedInterestToDate >= 0) PositiveGreen else NegativeRed
-                    Text(
-                        text = "+${maskAmount(formatAmount(position.accruedInterestToDate), balancesHidden)} $symbol",
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Medium,
-                        color = accruedColor
-                    )
-                }
-
-                if (position.isNearMaturity || position.isMatured) {
-                    NearMaturityBadge(remainingDays = position.remainingDays, isMatured = position.isMatured)
-                } else {
-                    Text(
-                        text = "Vence: ${formatDate(position.maturityDate)}",
-                        fontSize = 11.sp,
-                        color = TextSecondary
-                    )
-                }
-            }
-
-            if (position.remainingDays in 1..30) {
-                Spacer(Modifier.height(6.dp))
-                Text(
-                    text = "Quedan ${position.remainingDays} días",
-                    fontSize = 11.sp,
-                    color = Color(0xFFFF9800),
-                    fontWeight = FontWeight.Medium
+                Icon(
+                    imageVector = Icons.Filled.AccountBalance,
+                    contentDescription = null,
+                    tint = WarnAmber,
+                    modifier = Modifier.size(20.dp)
                 )
             }
 
-            if (position.isMatured && position.isOpen) {
-                Spacer(Modifier.height(6.dp))
-                Surface(
-                    color = Color(0xFFFFEBEE),
-                    shape = RoundedCornerShape(6.dp)
-                ) {
+            Spacer(Modifier.width(12.dp))
+
+            // Name + "Vence date · amount"
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = position.name,
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = TextPrimary,
+                    maxLines = 1
+                )
+                Text(
+                    text = "Vence ${formatDate(position.maturityDate)} · ${maskAmount(formatAmount(position.principal), balancesHidden)} €",
+                    fontSize = 10.sp,
+                    color = TextTertiary
+                )
+            }
+
+            // "ACTIVO" tag + coupon amount
+            Column(horizontalAlignment = Alignment.End) {
+                StatusTag(
+                    label = if (position.isOpen) "ACTIVO" else "CERRADO",
+                    color = if (position.isOpen) PositiveGreen else TextTertiary
+                )
+                if (position.isOpen && position.accruedInterestToDate > 0) {
+                    Spacer(Modifier.height(4.dp))
                     Text(
-                        text = "⚠️ Vencido - Liquidar",
+                        text = "+${maskAmount(formatAmount(position.accruedInterestToDate), balancesHidden)} € cupón",
                         fontSize = 11.sp,
-                        color = Color(0xFFE53935),
-                        fontWeight = FontWeight.Medium,
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                        fontWeight = FontWeight.SemiBold,
+                        color = PositiveGreen
                     )
                 }
             }

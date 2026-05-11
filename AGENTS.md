@@ -75,6 +75,22 @@ es.aviferdev.trackfolio/
 - DI con Koin: módulos separados (PlatformModule, DatabaseModule, RepositoryModule, UseCaseModule)
 - Navigation: Navigation Compose 2.8.0-alpha10
 
+## Workflow de Agentes
+
+Dos roles separados que colaboran en serie:
+
+| Rol | Tareas | Límites |
+|---|---|---|
+| **Analista de Requisitos** | Analizar requisitos, explorar código existente, generar especificación técnica con el formato `## Análisis / Arquitectura propuesta / Especificación técnica / Implementación sugerida`, preguntar ambigüedades. | **Nunca escribe ni modifica código fuente.** Solo produce specs. |
+| **Desarrollador** | Implementar código siguiendo la spec del analista, respetando Clean Architecture, MVVM y las convenciones del proyecto. | **No toma decisiones de diseño ni arquitectura.** Si detecta ambigüedades, las devuelve al analista. |
+
+**Flujo:**
+```
+Usuario pide feature → Analista genera spec → Usuario revisa/aprueba → Desarrollador implementa
+```
+
+**Regla de oro:** Si el analista está en una sesión, debe rechazar peticiones de escribir código y redirigirlas al desarrollador. Si el desarrollador necesita tomar una decisión de diseño, debe consultar al analista.
+
 ## Skill: LYRA (Prompt Engineering)
 
 Para activar esta skill, el usuario debe decir "Actúa como LYRA" o "Modo LYRA".

@@ -13,13 +13,13 @@ fun bottomNavItems() = listOf(
         icon = Icons.Outlined.Home
     ),
     BottomNavItem(
+        screen = Screen.Portfolio,
+        label = "Portfolio",
+        icon = Icons.Outlined.Star
+    ),
+    BottomNavItem(
         screen = Screen.NetWorth,
         label = "Patrimonio",
         icon = Icons.Outlined.AccountBalance
     ),
-    BottomNavItem(
-        screen = Screen.Portfolio,
-        label = "Portfolio",
-        icon = Icons.Outlined.Star
-    )
 )

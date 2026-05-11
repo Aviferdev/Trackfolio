@@ -13,6 +13,8 @@ import es.aviferdev.trackfolio.domain.model.FixedIncomeEvent
 import es.aviferdev.trackfolio.domain.model.FixedIncomePosition
 import es.aviferdev.trackfolio.domain.model.FixedIncomeRow
 import es.aviferdev.trackfolio.domain.model.FixedIncomeSummary
+import es.aviferdev.trackfolio.domain.model.Issuer
+import es.aviferdev.trackfolio.domain.model.IssuerType
 import es.aviferdev.trackfolio.domain.portfolio.FixedIncomeCalculator
 import es.aviferdev.trackfolio.domain.model.Platform
 import es.aviferdev.trackfolio.domain.repository.AssetMetadataRepository
@@ -31,12 +33,15 @@ import es.aviferdev.trackfolio.domain.usecase.assettransaction.SaveAssetTransact
 import es.aviferdev.trackfolio.domain.usecase.assettransaction.SyncAssetTransactionToLedgerUseCase
 import es.aviferdev.trackfolio.domain.usecase.fixedincome.CreateFixedIncomePositionUseCase
 import es.aviferdev.trackfolio.domain.usecase.fixedincome.GetFixedIncomeSummaryUseCase
+import es.aviferdev.trackfolio.domain.usecase.issuer.GetIssuersUseCase
+import es.aviferdev.trackfolio.domain.usecase.issuer.SaveIssuerUseCase
 import es.aviferdev.trackfolio.domain.usecase.platform.GetPlatformsUseCase
 import es.aviferdev.trackfolio.domain.usecase.portfolio.GetPortfolioValueHistoryUseCase
 import es.aviferdev.trackfolio.domain.model.PortfolioValuePoint
 import es.aviferdev.trackfolio.ui.account.AccountSession
 import es.aviferdev.trackfolio.ui.theme.CategoryPalette
 import es.aviferdev.trackfolio.ui.theme.UncategorizedColor
+import es.aviferdev.trackfolio.ui.theme.WarnAmber
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -58,6 +63,7 @@ data class AssetRow(
 /** Grupo de activos abiertos pertenecientes a la misma categoría (o "Sin categoría"). */
 data class CategoryGroup(
     val category: AssetCategory?,
+    val customName: String? = null,  // Para grupos por región/sector
     val rows: List<AssetRow>,
     val fixedIncomeRows: List<FixedIncomeRow> = emptyList(),
     val totalInvested: Double,           // coste de las unidades aún en cartera
@@ -67,7 +73,7 @@ data class CategoryGroup(
     val totalPnL: Double,                // realized + unrealized
     val totalPnLPercent: Double          // sobre el invertido remanente
 ) {
-    val displayName: String   get() = category?.name ?: "Sin categoría"
+    val displayName: String   get() = customName ?: category?.name ?: "Sin categoría"
     val displayIcon: String   get() = category?.icon ?: "❔"
     val sortKey: Int          get() = category?.sortOrder ?: Int.MAX_VALUE
     val rowCount: Int get() = rows.size + fixedIncomeRows.size
@@ -98,8 +104,11 @@ enum class DistributionView {
 }
 
 data class PortfolioUiState(
-    val groups: List<CategoryGroup>     = emptyList(),         // posiciones abiertas
+    val groups: List<CategoryGroup>     = emptyList(),         // posiciones abiertas (agrupadas por categoría)
+    val regionGroups: List<CategoryGroup> = emptyList(),       // posiciones abiertas agrupadas por región
+    val sectorGroups: List<CategoryGroup> = emptyList(),        // posiciones abiertas agrupadas por sector
     val closedPositions: List<AssetRow> = emptyList(),         // qty==0 y al menos una venta registrada
+    val closedFixedIncomePositions: List<FixedIncomeRow> = emptyList(), // posiciones de renta fija cerradas
     val distribution: List<CategorySlice> = emptyList(),
     val compositionDistribution: List<CategorySlice> = emptyList(),
     val regionDistribution: List<CategorySlice> = emptyList(),
@@ -125,6 +134,10 @@ data class PortfolioUiState(
     val allAssets: List<Asset>          = emptyList(),
     val platforms: List<Platform>       = emptyList(),
     val platformsByAsset: Map<String, List<Platform>> = emptyMap(),
+    /** Emisores de renta fija (BOND_ISSUER) para bonos y letras. */
+    val bondIssuers: List<Issuer>       = emptyList(),
+    /** Entidades bancarias (BANK) para depósitos. */
+    val bankIssuers: List<Issuer>       = emptyList(),
     val isLoading: Boolean              = true,
     val error: String?                  = null,
 
@@ -166,6 +179,8 @@ class PortfolioViewModel(
     private val getFixedIncomeSummary: GetFixedIncomeSummaryUseCase,
     private val getNearMaturityPositions: es.aviferdev.trackfolio.domain.usecase.fixedincome.GetNearMaturityPositionsUseCase? = null,
     private val createFixedIncomePosition: CreateFixedIncomePositionUseCase? = null,
+    private val getBondIssuers: GetIssuersUseCase,
+    private val saveBondIssuer: SaveIssuerUseCase,
     private val getPortfolioValueHistory: GetPortfolioValueHistoryUseCase
 ) : ViewModel() {
 
@@ -218,7 +233,9 @@ class PortfolioViewModel(
         val transactions: List<AssetTransaction>,
         val platforms: List<Platform>,
         val fiSummary: FixedIncomeSummary?,
-        val nearMaturityPositions: List<es.aviferdev.trackfolio.domain.model.FixedIncomePosition>
+        val nearMaturityPositions: List<es.aviferdev.trackfolio.domain.model.FixedIncomePosition>,
+        val bondIssuers: List<Issuer> = emptyList(),
+        val bankIssuers: List<Issuer> = emptyList()
     )
 
     val portfolioState: StateFlow<PortfolioUiState> = session.selectedAccountId
@@ -232,6 +249,10 @@ class PortfolioViewModel(
                     getNearMaturityPositions(accountId)
                 } else flowOf(emptyList())
 
+                // Emisores de renta fija para el selector de entidad
+                val bondIssuersFlow = getBondIssuers(accountId, IssuerType.BOND_ISSUER)
+                val bankIssuersFlow  = getBondIssuers(accountId, IssuerType.BANK)
+
                 val baseDataFlow = combine(
                     getAssetsByAccount(accountId),
                     getAssetCategoriesIncludingArchived(),
@@ -242,7 +263,7 @@ class PortfolioViewModel(
                     BasicPortfolioData(assets, categories, account, txs, platforms)
                 }
 
-                combine(baseDataFlow, fiFlow, nearMaturityFlow) { baseData, fiSummary, nearMaturity ->
+                combine(baseDataFlow, fiFlow, nearMaturityFlow, bondIssuersFlow, bankIssuersFlow) { baseData, fiSummary, nearMaturity, bondIssuers, bankIssuers ->
                     BasicPortfolioDataWithFI(
                         assets = baseData.assets,
                         categories = baseData.categories,
@@ -250,7 +271,9 @@ class PortfolioViewModel(
                         transactions = baseData.transactions,
                         platforms = baseData.platforms,
                         fiSummary = fiSummary,
-                        nearMaturityPositions = nearMaturity
+                        nearMaturityPositions = nearMaturity,
+                        bondIssuers = bondIssuers,
+                        bankIssuers = bankIssuers
                     )
                 }.flatMapLatest { basicData ->
                     val assetIds = basicData.assets.map { it.id }
@@ -264,7 +287,9 @@ class PortfolioViewModel(
                             platformsByAsset = emptyMap(),
                             fiSummary = basicData.fiSummary,
                             nearMaturityPositions = basicData.nearMaturityPositions,
-                            accountId = basicData.account?.id
+                            accountId = basicData.account?.id,
+                            bondIssuers = basicData.bondIssuers,
+                            bankIssuers = basicData.bankIssuers
                         ))
                     } else {
                         combine(
@@ -285,7 +310,9 @@ class PortfolioViewModel(
                                 accountId = basicData.account?.id,
                                 compositions = compositions,
                                 sectorRelations = sectorRelations,
-                                regionDistributions = regionDistributions
+                                regionDistributions = regionDistributions,
+                                bondIssuers = basicData.bondIssuers,
+                                bankIssuers = basicData.bankIssuers
                             )
                         }
                     }
@@ -332,7 +359,9 @@ class PortfolioViewModel(
         accountId: String? = null,
         compositions: List<es.aviferdev.trackfolio.domain.model.AssetComposition> = emptyList(),
         sectorRelations: List<es.aviferdev.trackfolio.domain.model.AssetSectorRelation> = emptyList(),
-        regionDistributions: List<es.aviferdev.trackfolio.domain.model.AssetRegionDistribution> = emptyList()
+        regionDistributions: List<es.aviferdev.trackfolio.domain.model.AssetRegionDistribution> = emptyList(),
+        bondIssuers: List<Issuer> = emptyList(),
+        bankIssuers: List<Issuer> = emptyList()
     ): PortfolioUiState {
         val allSectorsList = allSectors.value
         val allRegionsList = allRegions.value
@@ -434,6 +463,12 @@ class PortfolioViewModel(
                 { it.displayName }
             )
         )
+
+        // ── Groups by Region ─────────────────────────────────────────────────────
+        val regionGroups = buildRegionGroups(openRows, fiSummary?.positions.orEmpty())
+
+        // ── Groups by Sector ───────────────────────────────────────────────────────
+        val sectorGroups = buildSectorGroups(openRows, fiSummary?.positions.orEmpty())
 
         val totalInvested      = allGroups.sumOf { it.totalInvested }
         val totalCurrentValue  = allGroups.sumOf { it.totalCurrentValue }
@@ -576,12 +611,15 @@ class PortfolioViewModel(
 
         return PortfolioUiState(
             groups             = allGroups,
+            regionGroups       = regionGroups,
+            sectorGroups       = sectorGroups,
             closedPositions    = closedRows.sortedByDescending { it.position.realizedPnL },
+            closedFixedIncomePositions = fiSummary?.closedPositions ?: emptyList(),
             distribution       = distribution,
             compositionDistribution = compositionSlices,
             regionDistribution       = regionSlices,
             sectorDistribution       = sectorSlices,
-            selectedDistributionView  = DistributionView.CATEGORY,
+            selectedDistributionView  = _selectedDistributionView.value,
             totalInvested      = totalInvested,
             totalCurrentValue  = totalCurrentValue,
             totalRealizedPnL   = totalRealizedPnL,
@@ -593,6 +631,8 @@ class PortfolioViewModel(
             allAssets          = assets,
             platforms          = platforms,
             platformsByAsset  = platformsByAsset,
+            bondIssuers       = bondIssuers,
+            bankIssuers       = bankIssuers,
             isLoading          = false,
             fixedIncomeSummary = fiSummary,
             nearMaturityPositions = nearMaturityPositions,
@@ -619,50 +659,107 @@ class PortfolioViewModel(
         compositionByAsset: Map<String, es.aviferdev.trackfolio.domain.model.AssetComposition>,
         totalValue: Double
     ): List<CategorySlice> {
+        // La composición siempre es 100% renta fija - no se puede seleccionar
         if (totalValue <= 0.0) return emptyList()
 
-        data class CompositionBucket(val label: String, val icon: String, val min: Int, val max: Int)
-
-        val buckets = listOf(
-            CompositionBucket("100% RF", "🔵", 100, 100),
-            CompositionBucket("75% RF / 25% RV", "🟢", 75, 99),
-            CompositionBucket("50% RF / 50% RV", "🟡", 50, 74),
-            CompositionBucket("25% RF / 75% RV", "🟠", 25, 49),
-            CompositionBucket("100% RV", "🔴", 0, 24)
+        return listOf(
+            CategorySlice(
+                categoryId = "rf",
+                name = "Renta fija",
+                icon = "🏦",
+                value = totalValue,
+                percent = 100.0,
+                color = WarnAmber
+            )
         )
+    }
 
-        val bucketValues = mutableMapOf<CompositionBucket, Double>()
-        buckets.forEach { bucketValues[it] = 0.0 }
-
-        for (group in groups) {
-            for (row in group.rows) {
-                val assetId = row.asset.id
-                val comp = compositionByAsset[assetId]
-                val pct = comp?.fixedIncomePercent ?: 0
-                val value = row.position.currentValue
-                val bucket = buckets.first { pct in it.min..it.max }
-                bucketValues[bucket] = (bucketValues[bucket] ?: 0.0) + value
-            }
-            for (fiRow in group.fixedIncomeRows) {
-                val value = fiRow.currentValue
-                val bucket = buckets.first { 100 in it.min..it.max }
-                bucketValues[bucket] = (bucketValues[bucket] ?: 0.0) + value
-            }
+    private fun buildRegionGroups(
+        openRows: List<AssetRow>,
+        fiPositions: List<FixedIncomeRow>
+    ): List<CategoryGroup> {
+        // Por ahora solo agrupamos por región usando renta fija
+        // Los activos de bolsa no tienen metadata de región en este modelo
+        val fiByRegion = fiPositions.groupBy { row ->
+            row.position.region ?: "Sin región"
         }
 
-        return buckets
-            .filter { (bucketValues[it] ?: 0.0) > 0 }
-            .mapIndexed { idx, bucket ->
-                val value = bucketValues[bucket] ?: 0.0
-                CategorySlice(
-                    categoryId = null,
-                    name = bucket.label,
-                    icon = bucket.icon,
-                    value = value,
-                    percent = (value / totalValue) * 100.0,
-                    color = CategoryPalette[idx % CategoryPalette.size]
-                )
-            }
+        // Incluir todos los activos en "Sin región" (ya que no tienen metadata de región)
+        val allAssets = openRows
+        val allRegions = fiByRegion.keys.ifEmpty { setOf("Sin región") }
+
+        return allRegions.map { region ->
+            val assetRows = if (region == "Sin región") allAssets else emptyList()
+            val fiRows = fiByRegion[region].orEmpty()
+
+            val invested = assetRows.sumOf { it.position.totalInvestedRemaining }
+            val current = assetRows.sumOf { it.position.currentValue }
+            val realized = assetRows.sumOf { it.position.realizedPnL }
+            val unrealized = assetRows.sumOf { it.position.unrealizedPnL }
+
+            val fiInvested = fiRows.sumOf { it.position.principal }
+            val fiCurrent = fiRows.sumOf { it.currentValue }
+            val fiProfit = fiRows.sumOf { it.totalProfit }
+
+            CategoryGroup(
+                category = null,
+                customName = region,
+                rows = assetRows.sortedByDescending { it.position.currentValue },
+                fixedIncomeRows = fiRows,
+                totalInvested = invested + fiInvested,
+                totalCurrentValue = current + fiCurrent,
+                totalUnrealizedPnL = unrealized,
+                totalRealizedPnL = realized,
+                totalPnL = (realized + unrealized) + fiProfit,
+                totalPnLPercent = if (invested + fiInvested > 0.0) {
+                    ((realized + unrealized + fiProfit) / (invested + fiInvested)) * 100.0
+                } else 0.0
+            )
+        }.sortedByDescending { it.totalCurrentValue }
+    }
+
+    private fun buildSectorGroups(
+        openRows: List<AssetRow>,
+        fiPositions: List<FixedIncomeRow>
+    ): List<CategoryGroup> {
+        // Por ahora solo agrupamos por sector usando renta fija
+        // Los activos de bolsa no tienen metadata de sector en este modelo
+        val fiBySector = fiPositions.groupBy { row ->
+            row.position.sector ?: "Sin sector"
+        }
+
+        // Incluir todos los activos en "Sin sector" (ya que no tienen metadata de sector)
+        val allAssets = openRows
+        val allSectors = fiBySector.keys.ifEmpty { setOf("Sin sector") }
+
+        return allSectors.map { sector ->
+            val assetRows = if (sector == "Sin sector") allAssets else emptyList()
+            val fiRows = fiBySector[sector].orEmpty()
+
+            val invested = assetRows.sumOf { it.position.totalInvestedRemaining }
+            val current = assetRows.sumOf { it.position.currentValue }
+            val realized = assetRows.sumOf { it.position.realizedPnL }
+            val unrealized = assetRows.sumOf { it.position.unrealizedPnL }
+
+            val fiInvested = fiRows.sumOf { it.position.principal }
+            val fiCurrent = fiRows.sumOf { it.currentValue }
+            val fiProfit = fiRows.sumOf { it.totalProfit }
+
+            CategoryGroup(
+                category = null,
+                customName = sector,
+                rows = assetRows.sortedByDescending { it.position.currentValue },
+                fixedIncomeRows = fiRows,
+                totalInvested = invested + fiInvested,
+                totalCurrentValue = current + fiCurrent,
+                totalUnrealizedPnL = unrealized,
+                totalRealizedPnL = realized,
+                totalPnL = (realized + unrealized) + fiProfit,
+                totalPnLPercent = if (invested + fiInvested > 0.0) {
+                    ((realized + unrealized + fiProfit) / (invested + fiInvested)) * 100.0
+                } else 0.0
+            )
+        }.sortedByDescending { it.totalCurrentValue }
     }
 
     // ── Sheet rápido de actualización de precio ──────────────────────────────
@@ -801,6 +898,32 @@ class PortfolioViewModel(
                 ?.onSuccess { closeCreateFixedIncomeSheet() }
                 ?.onFailure { _sheetState.value = _sheetState.value.copy(error = it.message) }
                 ?: run { _sheetState.value = _sheetState.value.copy(error = "Error al crear posición de renta fija") }
+        }
+    }
+
+    fun saveBondIssuer(name: String, icon: String, type: IssuerType) {
+        viewModelScope.launch {
+            val accountId = session.selectedAccountId.value
+            if (accountId == null) {
+                _sheetState.value = _sheetState.value.copy(error = "No hay cuenta seleccionada")
+                return@launch
+            }
+            val now = Clock.System.now().toEpochMilliseconds()
+            val prefix = when (type) {
+                IssuerType.BANK -> "bk"
+                else -> "bi"
+            }
+            val issuer = Issuer(
+                id = "${prefix}_$now",
+                accountId = accountId,
+                name = name,
+                type = type,
+                icon = icon,
+                archived = false,
+                createdAt = now
+            )
+            saveBondIssuer.invoke(issuer)
+                .onFailure { _sheetState.value = _sheetState.value.copy(error = it.message) }
         }
     }
 

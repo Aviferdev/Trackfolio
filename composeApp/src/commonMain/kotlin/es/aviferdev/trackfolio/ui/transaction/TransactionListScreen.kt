@@ -1,6 +1,9 @@
 package es.aviferdev.trackfolio.ui.transaction
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -18,12 +21,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.trackfolio.domain.model.Transaction
-import es.aviferdev.trackfolio.ui.theme.*
+import es.aviferdev.trackfolio.ui.common.*
 import es.aviferdev.trackfolio.ui.home.AddTransactionBottomSheet
 import es.aviferdev.trackfolio.ui.home.AddTransactionViewModel
-import kotlinx.datetime.Clock
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
+import es.aviferdev.trackfolio.ui.theme.*
+import kotlinx.coroutines.delay
 import org.koin.compose.viewmodel.koinViewModel
 
 private val MONTH_NAMES = listOf(
@@ -40,6 +42,10 @@ fun TransactionListScreen(viewModel: TransactionViewModel = koinViewModel()) {
     var txToEdit       by remember { mutableStateOf<Transaction?>(null) }
     val addViewModel: AddTransactionViewModel = koinViewModel()
 
+    // ── Staggered entrance animation ──────────────────────────────────────────
+    var contentVisible by remember { mutableStateOf(false) }
+    LaunchedEffect(Unit) { delay(60); contentVisible = true }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -53,14 +59,21 @@ fun TransactionListScreen(viewModel: TransactionViewModel = koinViewModel()) {
             onNext     = { viewModel.nextMonth() }
         )
 
-        SearchBar(query = searchQuery, onChange = { viewModel.onSearchQueryChange(it) })
+        AnimatedVisibility(
+            visible = contentVisible,
+            enter = fadeIn() + slideInVertically(initialOffsetY = { it / 10 })
+        ) {
+            Column {
+                SearchBar(query = searchQuery, onChange = { viewModel.onSearchQueryChange(it) })
 
-        uiState.totals?.let { totals ->
-            TotalsRow(
-                totalIncome   = totals.totalIncome,
-                totalExpense  = totals.totalExpense,
-                balancesHidden = balancesHidden
-            )
+                uiState.totals?.let { totals ->
+                    TotalsRow(
+                        totalIncome    = totals.totalIncome,
+                        totalExpense   = totals.totalExpense,
+                        balancesHidden = balancesHidden
+                    )
+                }
+            }
         }
 
         when {
@@ -139,10 +152,7 @@ private fun MonthHeader(
     onPrevious: () -> Unit,
     onNext: () -> Unit
 ) {
-    val now            = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
-    val isCurrentMonth = year == now.year.toString() &&
-            month == now.monthNumber.toString().padStart(2, '0')
-    val monthName      = MONTH_NAMES.getOrElse(month.toIntOrNull()?.minus(1) ?: 0) { month }
+    val monthName = MONTH_NAMES.getOrElse(month.toIntOrNull()?.minus(1) ?: 0) { month }
 
     Surface(color = SurfaceWhite, shadowElevation = 0.dp) {
         Column(
@@ -165,27 +175,12 @@ private fun MonthHeader(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment     = Alignment.CenterVertically
             ) {
-                // Prev
-                MonthNavButton(
-                    label   = "‹",
-                    enabled = canGoBack,
-                    onClick = onPrevious
-                )
+                MonthNavButton(label = "‹", enabled = canGoBack, onClick = onPrevious)
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(
-                        monthName,
-                        fontSize   = 15.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        color      = TextPrimary
-                    )
+                    Text(monthName, fontSize = 15.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary)
                     Text(year, fontSize = 11.sp, color = TextTertiary)
                 }
-                // Next
-                MonthNavButton(
-                    label   = "›",
-                    enabled = !isCurrentMonth,
-                    onClick = onNext
-                )
+                MonthNavButton(label = "›", enabled = month.toIntOrNull() ?: 12 < 12, onClick = onNext)
             }
         }
     }
@@ -202,12 +197,7 @@ private fun MonthNavButton(label: String, enabled: Boolean, onClick: () -> Unit)
             .clip(RoundedCornerShape(9.dp))
             .background(if (enabled) SurfaceElevated else Color.Transparent)
     ) {
-        Text(
-            text       = label,
-            fontSize   = 22.sp,
-            color      = if (enabled) TextPrimary else TextTertiary,
-            fontWeight = FontWeight.Light
-        )
+        Text(label, fontSize = 22.sp, color = if (enabled) TextPrimary else TextTertiary, fontWeight = FontWeight.Light)
     }
 }
 
@@ -217,46 +207,36 @@ private fun SearchBar(query: String, onChange: (String) -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp)
-            .clip(RoundedCornerShape(10.dp))
+            .padding(horizontal = 16.dp, vertical = 10.dp)
+            .clip(RoundedCornerShape(9.dp))
             .background(SurfaceWhite)
-            .padding(horizontal = 12.dp, vertical = 9.dp),
+            .padding(horizontal = 10.dp, vertical = 7.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text("🔍", fontSize = 14.sp)
+        Text("🔍", fontSize = 15.sp)
         Spacer(Modifier.width(8.dp))
         BasicTextField(
             value           = query,
             onValueChange   = onChange,
             singleLine      = true,
             modifier        = Modifier.weight(1f),
-            textStyle       = LocalTextStyle.current.copy(
-                color    = TextPrimary,
-                fontSize = 13.sp
-            ),
+            textStyle       = LocalTextStyle.current.copy(color = TextPrimary, fontSize = 12.sp),
             decorationBox = { inner ->
                 if (query.isEmpty()) {
-                    Text(
-                        "Buscar por nota, categoría o emisor…",
-                        fontSize = 13.sp,
-                        color    = TextTertiary
-                    )
+                    Text("Buscar por nota, categoría o emisor…", fontSize = 12.sp, color = TextTertiary)
                 }
                 inner()
             }
         )
         if (query.isNotBlank()) {
-            TextButton(
-                onClick        = { onChange("") },
-                contentPadding = PaddingValues(horizontal = 4.dp)
-            ) {
-                Text("×", fontSize = 18.sp, color = TextTertiary)
+            TextButton(onClick = { onChange("") }, contentPadding = PaddingValues(horizontal = 4.dp)) {
+                Text("×", fontSize = 16.sp, color = TextTertiary)
             }
         }
     }
 }
 
-// ─── Totals row ──────────────────────────────────────────────────────────────
+// ─── Totals row (3 columnas estilo JSX) ───────────────────────────────────────
 @Composable
 private fun TotalsRow(
     totalIncome: Double,
@@ -268,7 +248,7 @@ private fun TotalsRow(
     Card(
         modifier  = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 6.dp),
+            .padding(horizontal = 16.dp, vertical = 12.dp),
         shape     = RoundedCornerShape(12.dp),
         colors    = CardDefaults.cardColors(containerColor = SurfaceWhite),
         elevation = CardDefaults.cardElevation(0.dp)
@@ -276,7 +256,8 @@ private fun TotalsRow(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 12.dp, vertical = 12.dp)
+                .padding(horizontal = 8.dp, vertical = 10.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
             TotalCell(
                 label          = "Ingresos",
@@ -286,13 +267,7 @@ private fun TotalsRow(
                 balancesHidden = balancesHidden,
                 modifier       = Modifier.weight(1f)
             )
-            Box(
-                Modifier
-                    .width(0.5.dp)
-                    .height(40.dp)
-                    .background(BorderGray)
-                    .align(Alignment.CenterVertically)
-            )
+            Box(Modifier.width(1.dp).height(40.dp).background(BorderGray))
             TotalCell(
                 label          = "Gastos",
                 amount         = totalExpense,
@@ -301,17 +276,11 @@ private fun TotalsRow(
                 balancesHidden = balancesHidden,
                 modifier       = Modifier.weight(1f)
             )
-            Box(
-                Modifier
-                    .width(0.5.dp)
-                    .height(40.dp)
-                    .background(BorderGray)
-                    .align(Alignment.CenterVertically)
-            )
+            Box(Modifier.width(1.dp).height(40.dp).background(BorderGray))
             TotalCell(
                 label          = "Balance",
                 amount         = kotlin.math.abs(balance),
-                color          = if (balance >= 0) IncomeGreen else ExpenseRed,
+                color          = if (balance >= 0) PrimaryDark else ExpenseRed,
                 prefix         = if (balance >= 0) "+" else "−",
                 balancesHidden = balancesHidden,
                 modifier       = Modifier.weight(1f)
@@ -329,15 +298,8 @@ private fun TotalCell(
     balancesHidden: Boolean,
     modifier: Modifier = Modifier
 ) {
-    Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(
-            text          = label.uppercase(),
-            fontSize      = 9.sp,
-            fontWeight    = FontWeight.Bold,
-            color         = TextTertiary,
-            letterSpacing = 0.6.sp
-        )
-        Spacer(Modifier.height(4.dp))
+    Column(modifier = modifier.padding(horizontal = 8.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+        TrackfolioLabel(text = label, modifier = Modifier.padding(bottom = 4.dp))
         Text(
             "$prefix ${maskAmount(formatAmount(amount), balancesHidden)} €",
             fontSize   = 12.sp,
@@ -369,9 +331,8 @@ private fun TransactionCard(
     val initial = when {
         isAdjustment -> "⚖"
         isLinked     -> "📈"
-        isIncome     -> transaction.incomeType?.emoji
-            ?: label.firstOrNull()?.uppercaseChar()?.toString() ?: "?"
-        else         -> label.firstOrNull()?.uppercaseChar()?.toString() ?: "?"
+        isIncome     -> transaction.incomeType?.emoji ?: label.firstOrNull()?.uppercase() ?: "?"
+        else         -> label.firstOrNull()?.uppercase() ?: "?"
     }
 
     val prefix = when {
@@ -386,6 +347,7 @@ private fun TransactionCard(
         else         -> ExpenseRed
     }
     val displayAmount = if (isAdjustment) kotlin.math.abs(transaction.amount) else transaction.amount
+
     val subtitle = when {
         isIncome && transaction.issuerName != null -> transaction.issuerName!!
         !transaction.notes.isNullOrBlank()         -> transaction.notes!!
@@ -399,36 +361,28 @@ private fun TransactionCard(
             .padding(horizontal = 14.dp, vertical = 11.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // Avatar
-        Box(
-            modifier         = Modifier
-                .size(40.dp)
-                .clip(RoundedCornerShape(11.dp))
-                .background(avatarBg),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(initial, fontSize = 15.sp, fontWeight = FontWeight.Bold, color = Color.White)
-        }
+        // Avatar usando componente común
+        InitialsAvatar(
+            text     = initial,
+            bgColor  = avatarBg,
+            size     = 40.dp,
+            textSize = 15
+        )
 
         Spacer(Modifier.width(12.dp))
 
         // Label + subtitle + badge fiscal
         Column(modifier = Modifier.weight(1f)) {
-            Text(
-                label,
-                fontSize   = 13.sp,
-                fontWeight = FontWeight.SemiBold,
-                color      = TextPrimary
-            )
+            Text(label, fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary)
             Spacer(Modifier.height(2.dp))
             Text(subtitle, fontSize = 11.sp, color = TextTertiary)
             if (isIncome && transaction.incomeType != null && transaction.grossAmount != null) {
-                Spacer(Modifier.height(3.dp))
+                Spacer(Modifier.height(4.dp))
                 IncomeBadge(transaction)
             }
         }
 
-        // Importe + gross + fecha + acción
+        // Importe + acciones
         Column(horizontalAlignment = Alignment.End) {
             Text(
                 "$prefix ${maskAmount(formatAmount(displayAmount), balancesHidden)} €",
@@ -437,11 +391,7 @@ private fun TransactionCard(
                 color      = amountColor
             )
             if (isIncome && transaction.grossAmount != null && !balancesHidden) {
-                Text(
-                    "Bruto: ${formatAmount(transaction.grossAmount)} €",
-                    fontSize = 9.sp,
-                    color    = TextTertiary
-                )
+                Text("Bruto: ${formatAmount(transaction.grossAmount)} €", fontSize = 9.sp, color = TextTertiary)
             }
             Text(formatDate(transaction.date), fontSize = 10.sp, color = TextTertiary)
             when {
@@ -452,7 +402,7 @@ private fun TransactionCard(
                 ) {
                     Text("Editar", fontSize = 9.sp, color = PrimaryDark)
                 }
-                isLinked -> Text("Portfolio", fontSize = 9.sp, color = TextTertiary)
+                isLinked -> Text("Portfolio", fontSize = 9.sp, color = PrimaryDark.copy(alpha = 0.6f))
             }
         }
     }
@@ -462,12 +412,13 @@ private fun TransactionCard(
 private fun IncomeBadge(transaction: Transaction) {
     val incType = transaction.incomeType ?: return
     val pct     = transaction.irpfPercent
+
     Row(
         modifier = Modifier
             .background(PrimaryAlpha, RoundedCornerShape(5.dp))
-            .padding(horizontal = 6.dp, vertical = 2.dp),
+            .padding(horizontal = 7.dp, vertical = 2.dp),
         verticalAlignment     = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(3.dp)
+        horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         Text(incType.emoji, fontSize = 9.sp)
         val text = buildString {
@@ -478,7 +429,7 @@ private fun IncomeBadge(transaction: Transaction) {
     }
 }
 
-// ─── Swipe to delete ─────────────────────────────────────────────────────────
+// ─── Swipe to delete (PRESERVAR - funcionalidad existente) ──────────────────
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SwipeToDeleteContainer(onDelete: () -> Unit, content: @Composable () -> Unit) {
@@ -504,12 +455,7 @@ private fun SwipeToDeleteContainer(onDelete: () -> Unit, content: @Composable ()
                     .padding(end = 18.dp),
                 contentAlignment = Alignment.CenterEnd
             ) {
-                Text(
-                    "Eliminar",
-                    color      = Color.White,
-                    fontSize   = 13.sp,
-                    fontWeight = FontWeight.Medium
-                )
+                Text("Eliminar", color = Color.White, fontSize = 13.sp, fontWeight = FontWeight.Medium)
             }
         }
     ) {
@@ -554,19 +500,10 @@ private fun DeleteConfirmDialog(onConfirm: () -> Unit, onDismiss: () -> Unit) {
         onDismissRequest = onDismiss,
         containerColor   = SurfaceWhite,
         title = {
-            Text(
-                "Eliminar movimiento",
-                fontSize   = 16.sp,
-                fontWeight = FontWeight.Bold,
-                color      = TextPrimary
-            )
+            Text("Eliminar movimiento", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = TextPrimary)
         },
         text = {
-            Text(
-                "¿Seguro que quieres eliminar este movimiento? Esta acción no se puede deshacer.",
-                fontSize = 13.sp,
-                color    = TextSecondary
-            )
+            Text("¿Seguro que quieres eliminar este movimiento? Esta acción no se puede deshacer.", fontSize = 13.sp, color = TextSecondary)
         },
         confirmButton = {
             TextButton(onClick = onConfirm) {

@@ -6,12 +6,16 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountBalance
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.outlined.Refresh
@@ -27,8 +31,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.trackfolio.domain.model.AssetCategoryType
+import es.aviferdev.trackfolio.domain.model.Issuer
+import es.aviferdev.trackfolio.domain.model.IssuerType
 import es.aviferdev.trackfolio.ui.account.AccountViewModel
+import es.aviferdev.trackfolio.ui.common.DeltaIndicator
 import es.aviferdev.trackfolio.ui.common.LineChartCard
+import es.aviferdev.trackfolio.ui.common.ProgressBar
 import es.aviferdev.trackfolio.ui.fixedincome.CreateFixedIncomeBottomSheet
 import es.aviferdev.trackfolio.ui.fixedincome.FixedIncomePositionCard
 import es.aviferdev.trackfolio.ui.theme.*
@@ -109,41 +117,34 @@ fun PortfolioScreen(
 
             if (hasDistribution) {
                 item {
-                    // Tabs
+                    // Pill tabs (matching JSX design)
                     Row(
                         modifier              = Modifier
                             .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState())
                             .padding(horizontal = 16.dp),
                         horizontalArrangement = Arrangement.spacedBy(6.dp)
                     ) {
                         DistributionView.entries.forEach { view ->
                             val selected = state.selectedDistributionView == view
-                            FilterChip(
-                                selected = selected,
-                                onClick  = { viewModel.selectDistributionView(view) },
-                                label    = {
-                                    Text(
-                                        view.displayName,
-                                        fontSize = 11.sp,
-                                        fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal
-                                    )
-                                },
-                                colors = FilterChipDefaults.filterChipColors(
-                                    selectedContainerColor = PrimaryDark,
-                                    selectedLabelColor     = Color.White,
-                                    containerColor         = SurfaceWhite,
-                                    labelColor             = TextSecondary
-                                ),
-                                border = FilterChipDefaults.filterChipBorder(
-                                    borderColor         = BorderGray,
-                                    selectedBorderColor = PrimaryDark,
-                                    enabled             = true,
-                                    selected            = selected
+                            Box(
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(18.dp))
+                                    .background(if (selected) PrimaryAlpha else Color.Transparent)
+                                    .border(1.dp, if (selected) PrimaryDark else BorderGray2, RoundedCornerShape(18.dp))
+                                    .clickable { viewModel.selectDistributionView(view) }
+                                    .padding(horizontal = 11.dp, vertical = 5.dp)
+                            ) {
+                                Text(
+                                    view.displayName,
+                                    fontSize = 11.sp,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = if (selected) PrimaryDark else TextTertiary
                                 )
-                            )
+                            }
                         }
                     }
-                    Spacer(Modifier.height(8.dp))
+                    Spacer(Modifier.height(10.dp))
 
                     val currentDist = when (state.selectedDistributionView) {
                         DistributionView.CATEGORY    -> state.distribution
@@ -156,6 +157,10 @@ fun PortfolioScreen(
                         totalCurrentValue = state.combinedCurrentValue,
                         currencyCode      = state.currencyCode,
                         balancesHidden    = balancesHidden,
+                        selectedView      = state.selectedDistributionView,
+                        fixedIncomePercent = state.fixedIncomeSummary?.let { fi ->
+                            if (state.combinedCurrentValue > 0) (fi.totalCurrentValue / state.combinedCurrentValue) * 100 else 0.0
+                        } ?: 0.0,
                         modifier          = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
                     )
                 }
@@ -175,6 +180,8 @@ fun PortfolioScreen(
                 }
 
                 else -> {
+                    // El listado siempre muestra los grupos por categoría
+                    // (solo el gráfico de distribución cambia según la vista seleccionada)
                     state.groups.forEach { group ->
                         item(key = "hdr_${group.category?.id ?: "none"}") {
                             CategoryGroupHeader(
@@ -194,6 +201,13 @@ fun PortfolioScreen(
                             )
                         }
                         if (group.fixedIncomeRows.isNotEmpty()) {
+                            // Header de sección: "🏦 Renta fija" (como en JSX)
+                            item(key = "fi_hdr_${group.category?.id ?: "none"}") {
+                                FixedIncomeSectionHeader(
+                                    count = group.fixedIncomeRows.size,
+                                    modifier = Modifier.padding(start = 16.dp, top = 8.dp, bottom = 4.dp)
+                                )
+                            }
                             items(group.fixedIncomeRows, key = { "fi_${it.position.id}" }) { fiRow ->
                                 FixedIncomePositionCard(
                                     row            = fiRow,
@@ -206,10 +220,11 @@ fun PortfolioScreen(
                         }
                     }
 
-                    if (state.closedPositions.isNotEmpty()) {
+                    val totalClosedCount = state.closedPositions.size + state.closedFixedIncomePositions.size
+                    if (totalClosedCount > 0) {
                         item(key = "closed_hdr") {
                             ClosedPositionsHeader(
-                                count    = state.closedPositions.size,
+                                count    = totalClosedCount,
                                 expanded = closedExpanded,
                                 onToggle = { closedExpanded = !closedExpanded }
                             )
@@ -221,12 +236,23 @@ fun PortfolioScreen(
                                 exit    = shrinkVertically() + fadeOut()
                             ) {
                                 Column {
+                                    // Activos cerrados
                                     state.closedPositions.forEach { row ->
                                         ClosedAssetCard(
                                             row            = row,
                                             currencyCode   = state.currencyCode,
                                             balancesHidden = balancesHidden,
                                             onClick        = { onAssetClick(row.asset.id) },
+                                            modifier       = Modifier.padding(horizontal = 16.dp, vertical = 5.dp)
+                                        )
+                                    }
+                                    // Posiciones de renta fija cerradas
+                                    state.closedFixedIncomePositions.forEach { fiRow ->
+                                        ClosedFixedIncomeCard(
+                                            row            = fiRow,
+                                            currencyCode   = state.currencyCode,
+                                            balancesHidden = balancesHidden,
+                                            onClick        = { onFixedIncomeClick(fiRow.position.id) },
                                             modifier       = Modifier.padding(horizontal = 16.dp, vertical = 5.dp)
                                         )
                                     }
@@ -288,9 +314,13 @@ fun PortfolioScreen(
     }
     if (state.showCreateFixedIncomeSheet && state.currentAccountId != null) {
         CreateFixedIncomeBottomSheet(
-            platforms = state.platforms, categories = availableCategories,
+            platforms = state.platforms,
+            categories = availableCategories,
+            bondIssuers = state.bondIssuers,
+            bankIssuers = state.bankIssuers,
             accountId = state.currentAccountId!!,
             onSave    = { position, event -> viewModel.saveFixedIncomePosition(position, event) },
+            onSaveIssuer = { name, icon, type -> viewModel.saveBondIssuer(name, icon, type) },
             onDismiss = { viewModel.closeCreateFixedIncomeSheet() }
         )
     }
@@ -555,14 +585,12 @@ private fun CategoryGroupHeader(
                 Text("(${group.rowCount})", fontSize = 11.sp, color = TextTertiary)
             }
             if (group.totalPnL != 0.0) {
-                Text(
-                    "${if (group.totalPnLPercent >= 0) "+" else "−"}${formatPercent1(abs(group.totalPnLPercent))}%",
-                    fontSize   = 12.sp,
-                    color      = pnlColor,
-                    fontWeight = FontWeight.Bold
+    DeltaIndicator(
+                    value     = "${if (group.totalPnLPercent >= 0) "+" else "−"}${formatPercent1(abs(group.totalPnLPercent))}%",
+                    isPositive  = group.totalPnLPercent >= 0
                 )
+                }
             }
-        }
         Spacer(Modifier.height(5.dp))
         Row(Modifier.fillMaxWidth(), Arrangement.SpaceBetween) {
             Text(
@@ -611,19 +639,22 @@ private fun AssetCard(
                 .padding(horizontal = 14.dp, vertical = 13.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
+            // Ticker badge with colored border (matching JSX)
             Box(
                 modifier = Modifier
                     .size(42.dp)
                     .clip(RoundedCornerShape(11.dp))
-                    .background(PrimaryDark),
+                    .background(PrimaryAlpha)
+                    .border(1.dp, PrimaryDark.copy(alpha = 0.25f), RoundedCornerShape(11.dp)),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    asset.ticker.take(3),
-                    fontSize   = if (asset.ticker.length > 3) 9.sp else 11.sp,
+                    asset.ticker.take(4),
+                    fontSize   = if (asset.ticker.length > 4) 8.sp else 10.sp,
                     fontWeight = FontWeight.Bold,
-                    color      = Color.White,
-                    textAlign  = TextAlign.Center
+                    color      = PrimaryDark,
+                    textAlign  = TextAlign.Center,
+                    letterSpacing = (-0.3).sp
                 )
             }
             Spacer(Modifier.width(12.dp))
@@ -641,13 +672,6 @@ private fun AssetCard(
                     fontSize = 11.sp,
                     color    = TextTertiary
                 )
-                if (pos.hasCurrentPrice && asset.currentPriceUpdatedAt != null) {
-                    Text(
-                        "actualizado ${formatRelativeTime(asset.currentPriceUpdatedAt!!)}",
-                        fontSize = 10.sp,
-                        color    = TextTertiary.copy(alpha = 0.7f)
-                    )
-                }
             }
             Spacer(Modifier.width(8.dp))
             Column(horizontalAlignment = Alignment.End) {
@@ -660,37 +684,32 @@ private fun AssetCard(
                     color      = TextPrimary
                 )
                 if (pos.hasCurrentPrice) {
-                    val prefix = if (pos.totalPnL >= 0) "+" else "−"
                     Text(
-                        "$prefix ${maskAmount(formatAmount(abs(pos.totalPnL)), balancesHidden)} $symbol",
+                        "${if (pos.totalPnL >= 0) "+" else "−"} ${maskAmount(formatAmount(abs(pos.totalPnL)), balancesHidden)} $symbol",
                         fontSize = 11.sp,
-                        color    = pnlColor
+                        color    = pnlColor,
+                        fontWeight = FontWeight.SemiBold
                     )
-                    Text(
-                        "$prefix${formatPercent1(abs(pos.totalPnLPercent))}%",
-                        fontSize = 10.sp,
-                        color    = pnlColor.copy(alpha = 0.8f)
-                    )
-                } else {
-                    Text("Sin precio", fontSize = 10.sp, color = TextTertiary)
                 }
             }
-            if (!AssetCategoryType.isFixedIncome(asset.assetCategoryId)) {
-                Spacer(Modifier.width(4.dp))
-                IconButton(
-                    onClick  = onUpdatePrice,
-                    modifier = Modifier
-                        .size(30.dp)
-                        .clip(RoundedCornerShape(8.dp))
-                        .background(SurfaceElevated)
-                ) {
-                    Icon(
-                        Icons.Outlined.Refresh,
-                        contentDescription = "Actualizar precio",
-                        modifier = Modifier.size(14.dp),
-                        tint     = TextSecondary
-                    )
-                }
+            Spacer(
+                modifier = Modifier.width(4.dp)
+            )
+            // Refresh price button (matching JSX)
+            IconButton(
+                onClick  = onUpdatePrice,
+                modifier = Modifier
+                    .wrapContentSize()
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(SurfaceElevated)
+            ) {
+                Icon(
+                    Icons.Outlined.Refresh,
+                    contentDescription = "Actualizar precio",
+                    tint     = TextTertiary,
+                    modifier = Modifier.size(16.dp)
+                        .padding(4.dp)
+                )
             }
         }
     }
@@ -744,41 +763,163 @@ private fun ClosedAssetCard(
         onClick   = onClick,
         modifier  = modifier.fillMaxWidth(),
         shape     = RoundedCornerShape(12.dp),
-        colors    = CardDefaults.cardColors(containerColor = SurfaceWhite.copy(alpha = 0.5f)),
+        colors    = CardDefaults.cardColors(containerColor = SurfaceWhite.copy(alpha = 0.8f)),
         elevation = CardDefaults.cardElevation(0.dp)
     ) {
         Row(
             modifier          = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 14.dp, vertical = 12.dp),
+                .padding(horizontal = 14.dp, vertical = 10.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
+            // Ticker badge for closed position
             Box(
                 modifier = Modifier
-                    .size(36.dp)
+                    .size(34.dp)
                     .clip(RoundedCornerShape(9.dp))
                     .background(SurfaceElevated),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
                     asset.ticker.take(3),
-                    fontSize   = if (asset.ticker.length > 3) 8.sp else 10.sp,
+                    fontSize   = 10.sp,
                     fontWeight = FontWeight.Bold,
-                    color      = TextTertiary
+                    color      = TextTertiary,
+                    textAlign  = TextAlign.Center
                 )
             }
-            Spacer(Modifier.width(12.dp))
+            Spacer(Modifier.width(10.dp))
             Column(modifier = Modifier.weight(1f)) {
-                Text(asset.name, fontSize = 13.sp, fontWeight = FontWeight.Medium, color = TextSecondary, maxLines = 1)
-                Text("Cerrada · ${asset.ticker}", fontSize = 10.sp, color = TextTertiary)
+                Text(
+                    asset.name,
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = TextSecondary,
+                    maxLines = 1
+                )
+                Text(
+                    "Cerrada",
+                    fontSize = 10.sp,
+                    color = TextTertiary
+                )
             }
             Column(horizontalAlignment = Alignment.End) {
-                Text("Realizado", fontSize = 10.sp, color = TextTertiary)
                 Text(
-                    "${if (pos.realizedPnL >= 0) "+" else "−"} ${maskAmount(formatAmount(abs(pos.realizedPnL)), balancesHidden)} $symbol",
-                    fontSize   = 12.sp,
-                    color      = pnlColor,
-                    fontWeight = FontWeight.Bold
+                    "Realizado",
+                    fontSize = 10.sp,
+                    color = TextTertiary
+                )
+                Text(
+                    if (pos.realizedPnL == 0.0) "—"
+                    else "${if (pos.realizedPnL >= 0) "+" else "−"} ${maskAmount(formatAmount(abs(pos.realizedPnL)), balancesHidden)} $symbol",
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = pnlColor
+                )
+            }
+        }
+    }
+}
+
+// ─── Fixed Income Section Header (JSX: 🏦 Renta fija) ──────────────────────
+@Composable
+private fun FixedIncomeSectionHeader(
+    count: Int,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text("🏦", fontSize = 15.sp)
+        Spacer(Modifier.width(6.dp))
+        Text(
+            text = "Renta fija",
+            fontSize = 12.sp,
+            fontWeight = FontWeight.Bold,
+            color = TextPrimary
+        )
+        Spacer(Modifier.width(5.dp))
+        Text(
+            text = "($count)",
+            fontSize = 11.sp,
+            color = TextTertiary
+        )
+    }
+}
+
+// ─── Closed Fixed Income Card (JSX: posiciones cerradas de renta fija) ───────
+@Composable
+private fun ClosedFixedIncomeCard(
+    row: es.aviferdev.trackfolio.domain.model.FixedIncomeRow,
+    currencyCode: String,
+    balancesHidden: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val position = row.position
+    val symbol = currencySymbol(currencyCode)
+    val pnlColor = when {
+        row.totalProfit > 0 -> IncomeGreen
+        row.totalProfit < 0 -> ExpenseRed
+        else                -> TextSecondary
+    }
+
+    Card(
+        onClick   = onClick,
+        modifier  = modifier.fillMaxWidth(),
+        shape     = RoundedCornerShape(12.dp),
+        colors    = CardDefaults.cardColors(containerColor = SurfaceWhite.copy(alpha = 0.8f)),
+        elevation = CardDefaults.cardElevation(0.dp)
+    ) {
+        Row(
+            modifier          = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 14.dp, vertical = 10.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // Badge icon
+            Box(
+                modifier = Modifier
+                    .size(34.dp)
+                    .clip(RoundedCornerShape(9.dp))
+                    .background(WarnAmber.copy(alpha = 0.15f)),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.AccountBalance,
+                    contentDescription = null,
+                    tint = WarnAmber,
+                    modifier = Modifier.size(18.dp)
+                )
+            }
+            Spacer(Modifier.width(10.dp))
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    position.name,
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = TextSecondary,
+                    maxLines = 1
+                )
+                Text(
+                    "Cerrada",
+                    fontSize = 10.sp,
+                    color = TextTertiary
+                )
+            }
+            Column(horizontalAlignment = Alignment.End) {
+                Text(
+                    "Realizado",
+                    fontSize = 10.sp,
+                    color = TextTertiary
+                )
+                Text(
+                    if (row.totalProfit == 0.0) "—"
+                    else "${if (row.totalProfit >= 0) "+" else "−"} ${maskAmount(formatAmount(kotlin.math.abs(row.totalProfit)), balancesHidden)} $symbol",
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = pnlColor
                 )
             }
         }

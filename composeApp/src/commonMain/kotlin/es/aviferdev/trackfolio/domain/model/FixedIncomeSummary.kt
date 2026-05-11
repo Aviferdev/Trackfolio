@@ -17,5 +17,6 @@ data class FixedIncomeSummary(
     val totalNetProfitPercent: Double,
     val openPositionsCount: Int,
     val nearMaturityCount: Int,
-    val positions: List<FixedIncomeRow>
+    val positions: List<FixedIncomeRow>,           // posiciones abiertas
+    val closedPositions: List<FixedIncomeRow> = emptyList()  // posiciones cerradas
 )
