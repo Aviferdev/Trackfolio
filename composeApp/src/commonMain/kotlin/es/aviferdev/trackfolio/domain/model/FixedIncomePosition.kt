@@ -35,8 +35,19 @@ data class FixedIncomePosition(
     val isOpen: Boolean get() = closedAt == null
 
     val isBond: Boolean get() = type == FixedIncomeType.BOND
+            || type == FixedIncomeType.CORPORATE_BOND
+            || type == FixedIncomeType.GOVERNMENT_OBLIGATION
     val isBill: Boolean get() = type == FixedIncomeType.BILL
     val isDeposit: Boolean get() = type == FixedIncomeType.DEPOSIT
+
+    // Indica si la posición tiene cupones periódicos (no AT_MATURITY)
+    val hasPeriodicCoupons: Boolean get() = interestFrequency != InterestFrequency.AT_MATURITY
+
+    // Indica si permite venta en mercado secundario
+    val allowsSecondarySale: Boolean get() = type.allowsSecondarySale
+
+    // Indica si permite cancelación anticipada
+    val allowsEarlyCancellation: Boolean get() = type.allowsEarlyCancellation
 
     val totalTermDays: Int
         get() {

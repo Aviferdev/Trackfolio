@@ -28,25 +28,35 @@ private fun formatEuro(value: Double): String {
 @Composable
 fun CloseFixedIncomeBottomSheet(
     position: FixedIncomePosition,
+    preselectedCloseType: FixedIncomeCloseType? = null,
     onSave: (FixedIncomeCloseType, Long, FixedIncomeEvent) -> Unit,
     onDismiss: () -> Unit
 ) {
-    var selectedCloseType by remember { mutableStateOf(FixedIncomeCloseType.MATURITY) }
+    var selectedCloseType by remember { mutableStateOf(preselectedCloseType ?: FixedIncomeCloseType.MATURITY) }
     var closeDateMillis by remember { mutableStateOf(Clock.System.now().toEpochMilliseconds()) }
     var grossAmountStr by remember { mutableStateOf(position.principal.toString()) }
     var irpfPercentStr by remember { mutableStateOf("19") }
     var commissionStr by remember { mutableStateOf("") }
     var notes by remember { mutableStateOf("") }
 
+    // Los tipos de cierre disponibles dependen del tipo de instrumento
     val availableCloseTypes = when (position.type) {
-        FixedIncomeType.BOND, FixedIncomeType.BILL -> listOf(
-            FixedIncomeCloseType.MATURITY,
-            FixedIncomeCloseType.SECONDARY_SALE
-        )
         FixedIncomeType.DEPOSIT -> listOf(
             FixedIncomeCloseType.MATURITY,
             FixedIncomeCloseType.EARLY_CANCELLATION
         )
+        // BILL, BOND, GOVERNMENT_OBLIGATION, CORPORATE_BOND -> venta en secundario
+        else -> listOf(
+            FixedIncomeCloseType.MATURITY,
+            FixedIncomeCloseType.SECONDARY_SALE
+        )
+    }
+
+    // Si el tipo preseleccionado no está disponible, usar el primero disponible
+    LaunchedEffect(preselectedCloseType, availableCloseTypes) {
+        if (preselectedCloseType != null && preselectedCloseType !in availableCloseTypes) {
+            selectedCloseType = availableCloseTypes.first()
+        }
     }
 
     val isValid = grossAmountStr.toDoubleOrNull() != null

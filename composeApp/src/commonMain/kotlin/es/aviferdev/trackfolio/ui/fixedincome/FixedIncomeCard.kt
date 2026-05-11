@@ -29,6 +29,7 @@ import kotlinx.datetime.toLocalDateTime
 fun FixedIncomeSection(
     summary: FixedIncomeSummary,
     onPositionClick: (String) -> Unit,
+    onRegisterCoupon: ((String) -> Unit)? = null,
     currencyCode: String,
     balancesHidden: Boolean,
     modifier: Modifier = Modifier
@@ -100,13 +101,13 @@ fun FixedIncomeSection(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Column {
-                        Text("Devengado", fontSize = 11.sp, color = TextSecondary)
-                        val accruedColor = if (summary.totalAccruedInterest >= 0) PositiveGreen else TextSecondary
+                        Text("Cobrado", fontSize = 11.sp, color = TextSecondary)
+                        val collectedColor = if (summary.totalCollectedInterest >= 0) PositiveGreen else TextSecondary
                         Text(
-                            text = "+${maskAmount(formatAmount(summary.totalAccruedInterest), balancesHidden)} $symbol",
+                            text = "+${maskAmount(formatAmount(summary.totalCollectedInterest), balancesHidden)} $symbol",
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Medium,
-                            color = accruedColor
+                            color = collectedColor
                         )
                     }
                     Column(horizontalAlignment = Alignment.End) {
@@ -136,6 +137,9 @@ fun FixedIncomeSection(
                 currencyCode = currencyCode,
                 balancesHidden = balancesHidden,
                 onClick = { onPositionClick(row.position.id) },
+                onRegisterCoupon = if (onRegisterCoupon != null && row.position.hasPeriodicCoupons) {
+                    { onRegisterCoupon(row.position.id) }
+                } else null,
                 modifier = Modifier.padding(vertical = 4.dp)
             )
         }
@@ -148,12 +152,13 @@ fun FixedIncomePositionCard(
     currencyCode: String,
     balancesHidden: Boolean,
     onClick: () -> Unit,
+    onRegisterCoupon: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     val position = row.position
     val symbol = currencySymbol(currencyCode)
 
-    // JSX design: badge icon + name + "Vence date · amount" + "ACTIVO" tag + coupon
+    // JSX design: badge icon + name + "Vence date · frequency · amount" + "ACTIVO" tag + collected interest + register button
     Card(
         modifier = modifier
             .fillMaxWidth()
@@ -185,7 +190,7 @@ fun FixedIncomePositionCard(
 
             Spacer(Modifier.width(12.dp))
 
-            // Name + "Vence date · amount"
+            // Name + "Vence date · frequency · amount"
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = position.name,
@@ -194,27 +199,51 @@ fun FixedIncomePositionCard(
                     color = TextPrimary,
                     maxLines = 1
                 )
+                val frequencyLabel = if (position.hasPeriodicCoupons) {
+                    position.interestFrequency.label
+                } else {
+                    "Al vencimiento"
+                }
                 Text(
-                    text = "Vence ${formatDate(position.maturityDate)} · ${maskAmount(formatAmount(position.principal), balancesHidden)} €",
+                    text = "Vence ${formatDate(position.maturityDate)} · $frequencyLabel · ${maskAmount(formatAmount(position.principal), balancesHidden)} €",
                     fontSize = 10.sp,
                     color = TextTertiary
                 )
             }
 
-            // "ACTIVO" tag + coupon amount
+            // "ACTIVO" tag + collected interest + register button
             Column(horizontalAlignment = Alignment.End) {
                 StatusTag(
                     label = if (position.isOpen) "ACTIVO" else "CERRADO",
                     color = if (position.isOpen) PositiveGreen else TextTertiary
                 )
-                if (position.isOpen && position.accruedInterestToDate > 0) {
-                    Spacer(Modifier.height(4.dp))
-                    Text(
-                        text = "+${maskAmount(formatAmount(position.accruedInterestToDate), balancesHidden)} € cupón",
-                        fontSize = 11.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        color = PositiveGreen
-                    )
+                if (position.isOpen) {
+                    // Mostrar intereses cobrados si hay, o devengados si no hay cobrados aún
+                    val interestToShow = if (row.collectedInterest > 0) row.collectedInterest else position.accruedInterestToDate
+                    val interestLabel = if (row.collectedInterest > 0) "Cobrado" else "Devengado"
+                    if (interestToShow > 0) {
+                        Spacer(Modifier.height(4.dp))
+                        Text(
+                            text = "$interestLabel: +${maskAmount(formatAmount(interestToShow), balancesHidden)} €",
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = PositiveGreen
+                        )
+                    }
+                    // Botón rápido para registrar cupón (solo si tiene cupones periódicos)
+                    if (position.hasPeriodicCoupons && onRegisterCoupon != null) {
+                        Spacer(Modifier.height(4.dp))
+                        TextButton(
+                            onClick = onRegisterCoupon,
+                            contentPadding = PaddingValues(0.dp)
+                        ) {
+                            Text(
+                                text = "💰 Registrar",
+                                fontSize = 10.sp,
+                                color = PrimaryDark
+                            )
+                        }
+                    }
                 }
             }
         }

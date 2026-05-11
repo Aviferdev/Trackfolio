@@ -40,6 +40,7 @@ import es.aviferdev.trackfolio.domain.usecase.portfolio.GetPortfolioValueHistory
 import es.aviferdev.trackfolio.domain.model.PortfolioValuePoint
 import es.aviferdev.trackfolio.ui.account.AccountSession
 import es.aviferdev.trackfolio.ui.theme.CategoryPalette
+import es.aviferdev.trackfolio.ui.theme.PositiveGreen
 import es.aviferdev.trackfolio.ui.theme.UncategorizedColor
 import es.aviferdev.trackfolio.ui.theme.WarnAmber
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -155,6 +156,10 @@ data class PortfolioUiState(
     val showCreateFixedIncomeSheet: Boolean = false,
     val currentAccountId: String?           = null,
 
+    // Sheet de registrar cupón de renta fija
+    val showRegisterCouponSheet: Boolean = false,
+    val selectedPositionForCoupon: FixedIncomePosition? = null,
+
     // Sectores y regiones para sheets de activos
     val allSectors: List<es.aviferdev.trackfolio.domain.model.AssetSector> = emptyList(),
     val allRegions: List<es.aviferdev.trackfolio.domain.model.AssetRegion> = emptyList()
@@ -181,7 +186,8 @@ class PortfolioViewModel(
     private val createFixedIncomePosition: CreateFixedIncomePositionUseCase? = null,
     private val getBondIssuers: GetIssuersUseCase,
     private val saveBondIssuer: SaveIssuerUseCase,
-    private val getPortfolioValueHistory: GetPortfolioValueHistoryUseCase
+    private val getPortfolioValueHistory: GetPortfolioValueHistoryUseCase,
+    private val registerCoupon: es.aviferdev.trackfolio.domain.usecase.fixedincome.RegisterCouponUseCase? = null
 ) : ViewModel() {
 
     private val _sheetState = MutableStateFlow(SheetState())
@@ -215,6 +221,9 @@ class PortfolioViewModel(
         val showDividendSheet: Boolean = false,
         val dividendAssetId: String? = null,
         val showCreateFixedIncomeSheet: Boolean = false,
+        val showRegisterCouponSheet: Boolean = false,
+        val selectedPositionForCoupon: FixedIncomePosition? = null,
+        val fixedIncomeSummary: FixedIncomeSummary? = null,
         val error: String? = null
     )
 
@@ -659,38 +668,85 @@ class PortfolioViewModel(
         compositionByAsset: Map<String, es.aviferdev.trackfolio.domain.model.AssetComposition>,
         totalValue: Double
     ): List<CategorySlice> {
-        // La composición siempre es 100% renta fija - no se puede seleccionar
         if (totalValue <= 0.0) return emptyList()
 
-        return listOf(
-            CategorySlice(
+        // Calcular valor de renta fija y renta variable basado en AssetComposition
+        var rfValue = 0.0
+        var rvValue = 0.0
+
+        // Incluir renta fija de FixedIncomeSummary
+        val fiSummary = _sheetState.value.fixedIncomeSummary
+        rfValue += fiSummary?.totalCurrentValue ?: 0.0
+
+        // Calcular RV y RF restante de los grupos de activos
+        groups.forEach { group ->
+            group.rows.forEach { assetRow ->
+                val composition = compositionByAsset[assetRow.asset.id]
+                val assetValue = assetRow.position.currentValue
+                if (composition != null && composition.fixedIncomePercent > 0) {
+                    // Este activo tiene composición mixta
+                    val rfPart = assetValue * (composition.fixedIncomePercent / 100.0)
+                    val rvPart = assetValue - rfPart
+                    rfValue += rfPart
+                    rvValue += rvPart
+                } else {
+                    // Por defecto es renta variable (bolsa)
+                    rvValue += assetValue
+                }
+            }
+        }
+
+        val slices = mutableListOf<CategorySlice>()
+        if (rfValue > 0) {
+            slices.add(CategorySlice(
                 categoryId = "rf",
                 name = "Renta fija",
                 icon = "🏦",
-                value = totalValue,
-                percent = 100.0,
+                value = rfValue,
+                percent = (rfValue / totalValue) * 100.0,
                 color = WarnAmber
-            )
-        )
+            ))
+        }
+        if (rvValue > 0) {
+            slices.add(CategorySlice(
+                categoryId = "rv",
+                name = "Renta variable",
+                icon = "📈",
+                value = rvValue,
+                percent = (rvValue / totalValue) * 100.0,
+                color = PositiveGreen
+            ))
+        }
+
+        return slices.sortedByDescending { it.percent }
     }
 
     private fun buildRegionGroups(
         openRows: List<AssetRow>,
         fiPositions: List<FixedIncomeRow>
     ): List<CategoryGroup> {
-        // Por ahora solo agrupamos por región usando renta fija
-        // Los activos de bolsa no tienen metadata de región en este modelo
+        // Agrupar renta fija por región
         val fiByRegion = fiPositions.groupBy { row ->
-            row.position.region ?: "Sin región"
+            row.position.region
         }
 
-        // Incluir todos los activos en "Sin región" (ya que no tienen metadata de región)
-        val allAssets = openRows
-        val allRegions = fiByRegion.keys.ifEmpty { setOf("Sin región") }
+        // Los activos de bolsa sin región van a "No catalogados"
+        val assetsWithoutRegion = openRows.filter { row ->
+            // Verificar si tiene metadata de región
+            val hasRegionMetadata = false // Por ahora los activos no tienen región asignada
+            !hasRegionMetadata
+        }
+
+        // Obtener todas las regiones de FI + "No catalogados" para activos
+        val allRegions = mutableSetOf<String?>()
+        allRegions.addAll(fiByRegion.keys)
+        if (assetsWithoutRegion.isNotEmpty()) {
+            allRegions.add("No catalogados")
+        }
 
         return allRegions.map { region ->
-            val assetRows = if (region == "Sin región") allAssets else emptyList()
             val fiRows = fiByRegion[region].orEmpty()
+            val assetRows = if (region == null) assetsWithoutRegion else emptyList()
 
             val invested = assetRows.sumOf { it.position.totalInvestedRemaining }
             val current = assetRows.sumOf { it.position.currentValue }
@@ -701,9 +757,11 @@ class PortfolioViewModel(
             val fiCurrent = fiRows.sumOf { it.currentValue }
             val fiProfit = fiRows.sumOf { it.totalProfit }
 
+            val displayName = region ?: "No catalogados"
+
             CategoryGroup(
                 category = null,
-                customName = region,
+                customName = displayName,
                 rows = assetRows.sortedByDescending { it.position.currentValue },
                 fixedIncomeRows = fiRows,
                 totalInvested = invested + fiInvested,
@@ -722,19 +780,28 @@ class PortfolioViewModel(
         openRows: List<AssetRow>,
         fiPositions: List<FixedIncomeRow>
     ): List<CategoryGroup> {
-        // Por ahora solo agrupamos por sector usando renta fija
-        // Los activos de bolsa no tienen metadata de sector en este modelo
+        // Agrupar renta fija por sector
         val fiBySector = fiPositions.groupBy { row ->
-            row.position.sector ?: "Sin sector"
+            row.position.sector
         }
 
-        // Incluir todos los activos en "Sin sector" (ya que no tienen metadata de sector)
-        val allAssets = openRows
-        val allSectors = fiBySector.keys.ifEmpty { setOf("Sin sector") }
+        // Los activos de bolsa sin sector van a "No catalogados"
+        val assetsWithoutSector = openRows.filter { row ->
+            // Verificar si tiene metadata de sector
+            val hasSectorMetadata = false // Por ahora los activos no tienen sector asignado
+            !hasSectorMetadata
+        }
+
+        // Obtener todos los sectores de FI + "No catalogados" para activos
+        val allSectors = mutableSetOf<String?>()
+        allSectors.addAll(fiBySector.keys)
+        if (assetsWithoutSector.isNotEmpty()) {
+            allSectors.add("No catalogados")
+        }
 
         return allSectors.map { sector ->
-            val assetRows = if (sector == "Sin sector") allAssets else emptyList()
             val fiRows = fiBySector[sector].orEmpty()
+            val assetRows = if (sector == null) assetsWithoutSector else emptyList()
 
             val invested = assetRows.sumOf { it.position.totalInvestedRemaining }
             val current = assetRows.sumOf { it.position.currentValue }
@@ -745,9 +812,11 @@ class PortfolioViewModel(
             val fiCurrent = fiRows.sumOf { it.currentValue }
             val fiProfit = fiRows.sumOf { it.totalProfit }
 
+            val displayName = sector ?: "No catalogados"
+
             CategoryGroup(
                 category = null,
-                customName = sector,
+                customName = displayName,
                 rows = assetRows.sortedByDescending { it.position.currentValue },
                 fixedIncomeRows = fiRows,
                 totalInvested = invested + fiInvested,
@@ -898,6 +967,32 @@ class PortfolioViewModel(
                 ?.onSuccess { closeCreateFixedIncomeSheet() }
                 ?.onFailure { _sheetState.value = _sheetState.value.copy(error = it.message) }
                 ?: run { _sheetState.value = _sheetState.value.copy(error = "Error al crear posición de renta fija") }
+        }
+    }
+
+    // ── Renta fija: registrar cupón ──────────────────────────────────────
+    fun showRegisterCouponSheet(position: FixedIncomePosition) {
+        _sheetState.value = _sheetState.value.copy(
+            showRegisterCouponSheet = true,
+            selectedPositionForCoupon = position
+        )
+    }
+
+    fun hideRegisterCouponSheet() {
+        _sheetState.value = _sheetState.value.copy(
+            showRegisterCouponSheet = false,
+            selectedPositionForCoupon = null
+        )
+    }
+
+    fun registerCoupon(event: FixedIncomeEvent) {
+        val position = _sheetState.value.selectedPositionForCoupon ?: return
+        val accountId = session.selectedAccountId.value ?: return
+        viewModelScope.launch {
+            registerCoupon?.invoke(event, accountId)
+                ?.onSuccess { hideRegisterCouponSheet() }
+                ?.onFailure { _sheetState.value = _sheetState.value.copy(error = it.message) }
+                ?: run { _sheetState.value = _sheetState.value.copy(error = "Error al registrar cupón") }
         }
     }
 

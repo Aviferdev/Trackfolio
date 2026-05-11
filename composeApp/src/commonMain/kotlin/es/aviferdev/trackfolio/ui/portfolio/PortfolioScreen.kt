@@ -39,6 +39,7 @@ import es.aviferdev.trackfolio.ui.common.LineChartCard
 import es.aviferdev.trackfolio.ui.common.ProgressBar
 import es.aviferdev.trackfolio.ui.fixedincome.CreateFixedIncomeBottomSheet
 import es.aviferdev.trackfolio.ui.fixedincome.FixedIncomePositionCard
+import es.aviferdev.trackfolio.ui.fixedincome.RegisterCouponBottomSheet
 import es.aviferdev.trackfolio.ui.theme.*
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.math.abs
@@ -214,6 +215,9 @@ fun PortfolioScreen(
                                     currencyCode   = state.currencyCode,
                                     balancesHidden = balancesHidden,
                                     onClick        = { onFixedIncomeClick(fiRow.position.id) },
+                                    onRegisterCoupon = if (fiRow.position.hasPeriodicCoupons) {
+                                        { viewModel.showRegisterCouponSheet(fiRow.position) }
+                                    } else null,
                                     modifier       = Modifier.padding(horizontal = 16.dp, vertical = 5.dp)
                                 )
                             }
@@ -322,6 +326,13 @@ fun PortfolioScreen(
             onSave    = { position, event -> viewModel.saveFixedIncomePosition(position, event) },
             onSaveIssuer = { name, icon, type -> viewModel.saveBondIssuer(name, icon, type) },
             onDismiss = { viewModel.closeCreateFixedIncomeSheet() }
+        )
+    }
+    if (state.showRegisterCouponSheet && state.selectedPositionForCoupon != null) {
+        RegisterCouponBottomSheet(
+            positionName = state.selectedPositionForCoupon!!.name,
+            onSave = { event -> viewModel.registerCoupon(event) },
+            onDismiss = { viewModel.hideRegisterCouponSheet() }
         )
     }
     if (state.showUpdatePriceSheet && state.pricingAsset != null) {

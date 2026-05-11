@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import es.aviferdev.trackfolio.domain.model.FixedIncomeEvent
 import es.aviferdev.trackfolio.domain.model.FixedIncomeEventType
+import es.aviferdev.trackfolio.domain.model.FixedIncomePosition
 import es.aviferdev.trackfolio.domain.model.FixedIncomeRow
 import es.aviferdev.trackfolio.domain.portfolio.FixedIncomeCalculator
 import es.aviferdev.trackfolio.domain.portfolio.MaturitySimulation
@@ -21,6 +22,8 @@ data class FixedIncomeDetailUiState(
     val maturitySimulation: MaturitySimulation? = null,
     val showRegisterCouponSheet: Boolean = false,
     val showCloseSheet: Boolean = false,
+    val preselectedCloseType: es.aviferdev.trackfolio.domain.model.FixedIncomeCloseType? = null,
+    val showEditSheet: Boolean = false,
     val showDeleteEventDialog: Boolean = false,
     val selectedEventForDelete: FixedIncomeEvent? = null,
     val isLoading: Boolean = false,
@@ -42,6 +45,8 @@ class FixedIncomeDetailViewModel(
 
     private val _showRegisterCouponSheet = MutableStateFlow(false)
     private val _showCloseSheet = MutableStateFlow(false)
+    private val _preselectedCloseType = MutableStateFlow<es.aviferdev.trackfolio.domain.model.FixedIncomeCloseType?>(null)
+    private val _showEditSheet = MutableStateFlow(false)
     private val _showDeleteEventDialog = MutableStateFlow(false)
     private val _selectedEventForDelete = MutableStateFlow<FixedIncomeEvent?>(null)
     private val _error = MutableStateFlow<String?>(null)
@@ -51,6 +56,8 @@ class FixedIncomeDetailViewModel(
         getPositionDetail.getEvents(positionId),
         _showRegisterCouponSheet,
         _showCloseSheet,
+        _preselectedCloseType,
+        _showEditSheet,
         _showDeleteEventDialog,
         _selectedEventForDelete,
         _error
@@ -60,9 +67,11 @@ class FixedIncomeDetailViewModel(
         val events = values[1] as List<FixedIncomeEvent>
         val showCoupon = values[2] as Boolean
         val showClose = values[3] as Boolean
-        val showDelete = values[4] as Boolean
-        val eventForDelete = values[5] as FixedIncomeEvent?
-        val error = values[6] as String?
+        val preselectedClose = values[4] as es.aviferdev.trackfolio.domain.model.FixedIncomeCloseType?
+        val showEdit = values[5] as Boolean
+        val showDelete = values[6] as Boolean
+        val eventForDelete = values[7] as FixedIncomeEvent?
+        val error = values[8] as String?
 
         val schedule = row?.let {
             getCouponSchedule(it.position)
@@ -79,6 +88,8 @@ class FixedIncomeDetailViewModel(
             maturitySimulation = simulation,
             showRegisterCouponSheet = showCoupon,
             showCloseSheet = showClose,
+            preselectedCloseType = preselectedClose,
+            showEditSheet = showEdit,
             showDeleteEventDialog = showDelete,
             selectedEventForDelete = eventForDelete,
             error = error
@@ -93,7 +104,15 @@ class FixedIncomeDetailViewModel(
     fun hideRegisterCouponSheet() { _showRegisterCouponSheet.value = false }
 
     fun showCloseSheet() { _showCloseSheet.value = true }
-    fun hideCloseSheet() { _showCloseSheet.value = false }
+    fun hideCloseSheet() {
+        _showCloseSheet.value = false
+        _preselectedCloseType.value = null
+    }
+
+    fun showCloseSheetWithType(closeType: es.aviferdev.trackfolio.domain.model.FixedIncomeCloseType) {
+        _preselectedCloseType.value = closeType
+        _showCloseSheet.value = true
+    }
 
     fun showDeleteEventDialog(event: FixedIncomeEvent) {
         _selectedEventForDelete.value = event
@@ -146,6 +165,17 @@ class FixedIncomeDetailViewModel(
     fun archivePosition() {
         viewModelScope.launch {
             archivePosition(positionId)
+                .onFailure { _error.value = it.message }
+        }
+    }
+
+    fun showEditSheet() { _showEditSheet.value = true }
+    fun hideEditSheet() { _showEditSheet.value = false }
+
+    fun savePosition(updatedPosition: FixedIncomePosition) {
+        viewModelScope.launch {
+            updatePosition(updatedPosition)
+                .onSuccess { hideEditSheet() }
                 .onFailure { _error.value = it.message }
         }
     }

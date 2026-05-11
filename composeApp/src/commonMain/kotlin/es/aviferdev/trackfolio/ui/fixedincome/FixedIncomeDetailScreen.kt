@@ -21,6 +21,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
@@ -52,6 +53,7 @@ import es.aviferdev.trackfolio.domain.portfolio.ScheduledCoupon
 import es.aviferdev.trackfolio.ui.common.StatusTag
 import es.aviferdev.trackfolio.ui.fixedincome.formatPercent1
 import es.aviferdev.trackfolio.ui.theme.ExpenseRed
+import es.aviferdev.trackfolio.domain.model.Platform
 import es.aviferdev.trackfolio.ui.theme.NegativeRed
 import es.aviferdev.trackfolio.ui.theme.PositiveGreen
 import es.aviferdev.trackfolio.ui.theme.PrimaryDark
@@ -218,31 +220,112 @@ fun FixedIncomeDetailScreen(
                     )
                 }
 
-                // Botón "Cerrar posición" (como en JSX)
-                if (state.row?.position?.isOpen == true) {
+                // Botones de cierre contextual según el tipo de instrumento
+                val position = state.row?.position
+                if (position?.isOpen == true) {
                     item {
                         Spacer(Modifier.height(16.dp))
-                        Button(
-                            onClick = { viewModel.showCloseSheet() },
+                        Column(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(horizontal = 16.dp),
-                            shape = RoundedCornerShape(12.dp),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = ExpenseRed.copy(alpha = 0.15f),
-                                contentColor = ExpenseRed
-                            ),
-                            border = androidx.compose.foundation.BorderStroke(
-                                width = 1.dp,
-                                color = ExpenseRed.copy(alpha = 0.4f)
-                            )
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
-                            Text(
-                                text = "Cerrar posición",
-                                fontSize = 13.sp,
-                                fontWeight = FontWeight.Bold,
-                                modifier = Modifier.padding(vertical = 2.dp)
-                            )
+                            // Si la posición ya está vencida, mostrar solo botón de liquidación
+                            if (position.isMatured) {
+                                Button(
+                                    onClick = { viewModel.showCloseSheetWithType(es.aviferdev.trackfolio.domain.model.FixedIncomeCloseType.MATURITY) },
+                                    modifier = Modifier.fillMaxWidth(),
+                                    shape = RoundedCornerShape(12.dp),
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = ExpenseRed.copy(alpha = 0.15f),
+                                        contentColor = ExpenseRed
+                                    ),
+                                    border = androidx.compose.foundation.BorderStroke(
+                                        width = 1.dp,
+                                        color = ExpenseRed.copy(alpha = 0.4f)
+                                    )
+                                ) {
+                                    Text(
+                                        text = "Registrar liquidación",
+                                        fontSize = 13.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        modifier = Modifier.padding(vertical = 2.dp)
+                                    )
+                                }
+                            } else {
+                                // Botones según el tipo de instrumento
+                                when {
+                                    // Depósitos: cancelación anticipada
+                                    position.type.allowsEarlyCancellation -> {
+                                        Button(
+                                            onClick = { viewModel.showCloseSheetWithType(es.aviferdev.trackfolio.domain.model.FixedIncomeCloseType.EARLY_CANCELLATION) },
+                                            modifier = Modifier.fillMaxWidth(),
+                                            shape = RoundedCornerShape(12.dp),
+                                            colors = ButtonDefaults.buttonColors(
+                                                containerColor = ExpenseRed.copy(alpha = 0.15f),
+                                                contentColor = ExpenseRed
+                                            ),
+                                            border = androidx.compose.foundation.BorderStroke(
+                                                width = 1.dp,
+                                                color = ExpenseRed.copy(alpha = 0.4f)
+                                            )
+                                        ) {
+                                            Text(
+                                                text = "Cancelar anticipadamente",
+                                                fontSize = 13.sp,
+                                                fontWeight = FontWeight.Bold,
+                                                modifier = Modifier.padding(vertical = 2.dp)
+                                            )
+                                        }
+                                        OutlinedButton(
+                                            onClick = { viewModel.showCloseSheetWithType(es.aviferdev.trackfolio.domain.model.FixedIncomeCloseType.MATURITY) },
+                                            modifier = Modifier.fillMaxWidth(),
+                                            shape = RoundedCornerShape(12.dp)
+                                        ) {
+                                            Text(
+                                                text = "Liquidar al vencimiento",
+                                                fontSize = 13.sp,
+                                                modifier = Modifier.padding(vertical = 2.dp)
+                                            )
+                                        }
+                                    }
+                                    // Bonos/Letras/Obligaciones: venta en secundario
+                                    position.type.allowsSecondarySale -> {
+                                        Button(
+                                            onClick = { viewModel.showCloseSheetWithType(es.aviferdev.trackfolio.domain.model.FixedIncomeCloseType.SECONDARY_SALE) },
+                                            modifier = Modifier.fillMaxWidth(),
+                                            shape = RoundedCornerShape(12.dp),
+                                            colors = ButtonDefaults.buttonColors(
+                                                containerColor = ExpenseRed.copy(alpha = 0.15f),
+                                                contentColor = ExpenseRed
+                                            ),
+                                            border = androidx.compose.foundation.BorderStroke(
+                                                width = 1.dp,
+                                                color = ExpenseRed.copy(alpha = 0.4f)
+                                            )
+                                        ) {
+                                            Text(
+                                                text = "Vender en mercado secundario",
+                                                fontSize = 13.sp,
+                                                fontWeight = FontWeight.Bold,
+                                                modifier = Modifier.padding(vertical = 2.dp)
+                                            )
+                                        }
+                                        OutlinedButton(
+                                            onClick = { viewModel.showCloseSheetWithType(es.aviferdev.trackfolio.domain.model.FixedIncomeCloseType.MATURITY) },
+                                            modifier = Modifier.fillMaxWidth(),
+                                            shape = RoundedCornerShape(12.dp)
+                                        ) {
+                                            Text(
+                                                text = "Liquidar al vencimiento",
+                                                fontSize = 13.sp,
+                                                modifier = Modifier.padding(vertical = 2.dp)
+                                            )
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -284,6 +367,7 @@ fun FixedIncomeDetailScreen(
     if (state.showCloseSheet && state.row != null) {
         CloseFixedIncomeBottomSheet(
             position = state.row!!.position,
+            preselectedCloseType = state.preselectedCloseType,
             onSave = { closeType, closeDate, event ->
                 viewModel.closePosition(closeType, closeDate, event)
             },
