@@ -17,6 +17,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import es.aviferdev.trackfolio.domain.model.IncomeType
+import es.aviferdev.trackfolio.domain.model.TransactionType
 import es.aviferdev.trackfolio.ui.annual.AnnualSummaryScreen
 import es.aviferdev.trackfolio.ui.common.loading.GlobalLoadingManager
 import es.aviferdev.trackfolio.ui.common.loading.GlobalLoadingOverlay
@@ -24,6 +25,7 @@ import es.aviferdev.trackfolio.ui.common.navigation.FloatingBottomNavBar
 import es.aviferdev.trackfolio.ui.debt.DebtListScreen
 import es.aviferdev.trackfolio.ui.fiscal.FiscalReportScreen
 import es.aviferdev.trackfolio.ui.fixedincome.FixedIncomeDetailScreen
+import es.aviferdev.trackfolio.ui.home.CategoryPickerScreen
 import es.aviferdev.trackfolio.ui.home.HomeScreen
 import es.aviferdev.trackfolio.ui.loan.LoanDetailScreen
 import es.aviferdev.trackfolio.ui.networth.NetWorthScreen
@@ -39,6 +41,7 @@ import es.aviferdev.trackfolio.ui.settings.SettingsScreen
 import es.aviferdev.trackfolio.ui.transaction.TransactionDetailScreen
 import es.aviferdev.trackfolio.ui.transaction.TransactionListScreen
 import org.koin.compose.koinInject
+import org.koin.compose.viewmodel.koinViewModel
 
 data class BottomNavItem(
     val screen: Screen,
@@ -116,12 +119,114 @@ fun TrackfolioNavHost() {
                         },
                         onNavigateToSettings = {
                             navController.navigate(Screen.Settings.route) { launchSingleTop = true }
+                        },
+                        onNavigateToCategoryPicker = { type ->
+                            navController.navigate(Screen.CategoryPicker.buildRoute(type.name)) {
+                                launchSingleTop = true
+                            }
+                        }
+                    )
+                    // Reabrir sheet al volver del CategoryPicker
+                    val catPickerCatId = navController.currentBackStackEntry
+                        ?.savedStateHandle?.get<String>("selected_category_id")
+                    val catPickerIncType = navController.currentBackStackEntry
+                        ?.savedStateHandle?.get<String>("selected_income_type")
+
+                    if (catPickerCatId != null || catPickerIncType != null) {
+                        val homeVM: es.aviferdev.trackfolio.ui.home.AddTransactionViewModel = koinViewModel()
+                        if (catPickerCatId != null) {
+                            homeVM.onCategoryChange(catPickerCatId)
+                            navController.currentBackStackEntry
+                                ?.savedStateHandle?.remove<String>("selected_category_id")
+                        }
+                        if (catPickerIncType != null) {
+                            IncomeType.fromName(catPickerIncType)?.let { homeVM.onIncomeTypeChange(it) }
+                            navController.currentBackStackEntry
+                                ?.savedStateHandle?.remove<String>("selected_income_type")
+                        }
+                    }
+                    HomeScreen(
+                        reopenFromPicker = catPickerCatId != null || catPickerIncType != null,
+                        onConsumeReopen = {
+                            navController.currentBackStackEntry
+                                ?.savedStateHandle?.remove<String>("selected_category_id")
+                            navController.currentBackStackEntry
+                                ?.savedStateHandle?.remove<String>("selected_income_type")
+                        },
+                        onNavigateToTransactions = {
+                            navController.navigate(Screen.Transactions.route) {
+                                launchSingleTop = true
+                            }
+                        },
+                        onNavigateToCharts = {
+                            navController.navigate(Screen.Charts.route) { launchSingleTop = true }
+                        },
+                        onNavigateToDebts = {
+                            navController.navigate(Screen.Debts.route) { launchSingleTop = true }
+                        },
+                        onNavigateToFiscalReport = {
+                            navController.navigate(Screen.FiscalReport.route) {
+                                launchSingleTop = true
+                            }
+                        },
+                        onNavigateToSettings = {
+                            navController.navigate(Screen.Settings.route) { launchSingleTop = true }
+                        },
+                        onNavigateToCategoryPicker = { type ->
+                            navController.navigate(Screen.CategoryPicker.buildRoute(type.name)) {
+                                launchSingleTop = true
+                            }
+                        }
+                    )
+                }
+                composable(
+                    route = Screen.CategoryPicker.route,
+                    arguments = listOf(
+                        navArgument(Screen.CategoryPicker.ARG_INITIAL_TYPE) {
+                            type = NavType.StringType
+                        }
+                    )
+                ) { backStackEntry ->
+                    val typeName = backStackEntry.arguments
+                        ?.getString(Screen.CategoryPicker.ARG_INITIAL_TYPE).orEmpty()
+                    val initialType = try {
+                        TransactionType.valueOf(typeName)
+                    } catch (_: Exception) {
+                        TransactionType.EXPENSE
+                    }
+                    CategoryPickerScreen(
+                        initialType = initialType,
+                        onBack = { navController.popBackStack() },
+                        onCreateCategory = {
+                            navController.navigate(Screen.ExpenseSettings.route) {
+                                launchSingleTop = true
+                            }
+                        },
+                        onCategorySelected = { categoryId ->
+                            navController.previousBackStackEntry
+                                ?.savedStateHandle
+                                ?.set("selected_category_id", categoryId)
+                            navController.popBackStack()
+                        },
+                        onIncomeTypeSelected = { incomeType ->
+                            navController.previousBackStackEntry
+                                ?.savedStateHandle
+                                ?.set("selected_income_type", incomeType.name)
+                            navController.popBackStack()
                         }
                     )
                 }
                 composable(Screen.Transactions.route) {
+                    val savedStateHandle = navController.currentBackStackEntry?.savedStateHandle
+                    val editTxId = savedStateHandle?.get<String>("edit_transaction_id")
+                    if (editTxId != null) {
+                        savedStateHandle?.remove<String>("edit_transaction_id")
+                    }
+
                     TransactionListScreen(
                         onBack = { navController.popBackStack() },
+                        editTransactionId = editTxId,
+                        onConsumeEdit = { },
                         onTransactionClick = { transaction ->
                             navController.navigate(
                                 Screen.TransactionDetail.buildRoute(transaction.id)
@@ -146,7 +251,9 @@ fun TrackfolioNavHost() {
                         transactionId = transactionId,
                         onBack = { navController.popBackStack() },
                         onEditTransaction = { tx ->
-                            // Volver al listado (edición se manejará en Fase 4)
+                            navController.previousBackStackEntry
+                                ?.savedStateHandle
+                                ?.set("edit_transaction_id", tx.id)
                             navController.popBackStack()
                         }
                     )

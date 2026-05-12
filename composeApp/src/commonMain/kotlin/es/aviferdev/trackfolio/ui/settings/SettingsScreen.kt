@@ -139,10 +139,6 @@ fun SettingsContent(
         AnimatedVisibility(visible = contentVisible, enter = fadeIn() + slideInVertically(initialOffsetY = { it / 10 })) {
             LazyColumn(contentPadding = PaddingValues(horizontal = 16.dp, vertical = 14.dp), verticalArrangement = Arrangement.spacedBy(18.dp)) {
                 item {
-                    ProfileCard(name = "Alejandro V.", accountCount = accounts.size, onEdit = { })
-                }
-
-                item {
                     SettingsSectionHeader(label = "Cuentas", actionLabel = "Añadir", onAction = onAddAccount)
                 }
 
@@ -218,25 +214,7 @@ fun SettingsContentPreview() {
     }
 }
 
-// ─── Profile Card ─────────────────────────────────────────────────────────────
-@Composable
-private fun ProfileCard(name: String, accountCount: Int, onEdit: () -> Unit) {
-    Card(modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(14.dp), colors = CardDefaults.cardColors(containerColor = SurfaceWhite), elevation = CardDefaults.cardElevation(0.dp)) {
-        Row(modifier = Modifier.fillMaxWidth().padding(14.dp), verticalAlignment = Alignment.CenterVertically) {
-            InitialsAvatar(text = name.firstOrNull()?.uppercase() ?: "A", bgColor = PrimaryDark, size = 44.dp, textSize = 18)
-            Spacer(Modifier.width(14.dp))
-            Column(modifier = Modifier.weight(1f)) {
-                Text(name, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary)
-                Text("$accountCount ${if (accountCount == 1) "cuenta activa" else "cuentas activas"}", fontSize = 11.sp, color = TextTertiary)
-            }
-            TextButton(onClick = onEdit, colors = ButtonDefaults.textButtonColors(contentColor = TextSecondary)) {
-                Text("Editar", fontSize = 11.sp, fontWeight = FontWeight.Medium)
-            }
-        }
-    }
-}
-
-// ─── Section header ─────────────────────────────────────────────────────────
+// ─── Settings section header ──────────────────────────────────────────────────
 @Composable
 private fun SettingsSectionHeader(label: String, actionLabel: String? = null, onAction: (() -> Unit)? = null) {
     Row(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {

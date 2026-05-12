@@ -93,6 +93,9 @@ fun HomeScreen(
     onNavigateToDebts: () -> Unit = {},
     onNavigateToFiscalReport: () -> Unit = {},
     onNavigateToSettings: () -> Unit = {},
+    onNavigateToCategoryPicker: ((TransactionType) -> Unit)? = null,
+    reopenFromPicker: Boolean = false,
+    onConsumeReopen: () -> Unit = {},
     viewModel: HomeViewModel = koinViewModel(),
     accountViewModel: AccountViewModel = koinViewModel(),
     reconciliationViewModel: ReconciliationViewModel = koinViewModel()
@@ -109,8 +112,15 @@ fun HomeScreen(
 
     var showAddTransaction by remember { mutableStateOf(false) }
     var showInitialBalance by remember { mutableStateOf(false) }
-    var showCategoryPicker by remember { mutableStateOf<TransactionType?>(null) }
     val addTransactionViewModel: AddTransactionViewModel = koinViewModel()
+
+    // Reabrir sheet al volver del CategoryPicker
+    LaunchedEffect(reopenFromPicker) {
+        if (reopenFromPicker) {
+            showAddTransaction = true
+            onConsumeReopen()
+        }
+    }
 
     Box(
         modifier = Modifier
@@ -209,36 +219,10 @@ fun HomeScreen(
             onDismiss = { showAddTransaction = false },
             onRequestCategoryPicker = { type ->
                 showAddTransaction = false
-                showCategoryPicker = type
+                onNavigateToCategoryPicker?.invoke(type)
             },
             viewModel = addTransactionViewModel
         )
-    }
-
-    // ── Category Picker overlay (cubre toda la pantalla incluída bottom nav) ──
-    showCategoryPicker?.let { type ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(BackgroundGray)
-                .padding(bottom = 64.dp) // espacio para la bottom nav
-        ) {
-            CategoryPickerScreen(
-                initialType = type,
-                onBack = { showCategoryPicker = null },
-                onCategorySelected = { categoryId ->
-                    addTransactionViewModel.onCategoryChange(categoryId)
-                    showCategoryPicker = null
-                    showAddTransaction = true
-                },
-                onIncomeTypeSelected = { incomeType ->
-                    addTransactionViewModel.onIncomeTypeChange(incomeType)
-                    showCategoryPicker = null
-                    showAddTransaction = true
-                },
-                onCreateCategory = { showCategoryPicker = null }
-            )
-        }
     }
 
     if (showInitialBalance) {

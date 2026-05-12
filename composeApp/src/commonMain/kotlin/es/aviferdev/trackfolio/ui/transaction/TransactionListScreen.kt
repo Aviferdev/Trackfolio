@@ -102,6 +102,8 @@ private val MONTH_NAMES = listOf(
 @Composable
 fun TransactionListScreen(
     onBack: (() -> Unit)? = null,
+    editTransactionId: String? = null,
+    onConsumeEdit: () -> Unit = {},
     onTransactionClick: ((Transaction) -> Unit)? = null,
     viewModel: TransactionViewModel = koinViewModel()
 ) {
@@ -134,6 +136,17 @@ fun TransactionListScreen(
             onConfirm = { viewModel.deleteTransaction(tx.id); txToDelete = null },
             onDismiss = { txToDelete = null }
         )
+    }
+
+    // Recibir edición desde TransactionDetailScreen
+    LaunchedEffect(editTransactionId) {
+        if (editTransactionId != null) {
+            val tx = uiState.transactions.find { it.id == editTransactionId }
+            if (tx != null) {
+                txToEdit = tx
+            }
+            onConsumeEdit()
+        }
     }
 
     txToEdit?.let { tx ->

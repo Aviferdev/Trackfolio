@@ -166,6 +166,7 @@ class AddTransactionViewModel(
             // Modo solo neto
             if (incomeInputMode == IncomeInputMode.NET_ONLY) {
                 return netAmount.replace(',', '.').toDoubleOrNull()?.let { it > 0 } == true
+                        && selectedIssuerId != null
             }
 
             // Modo fiscal
@@ -251,13 +252,11 @@ class AddTransactionViewModel(
     fun onIncomeModeChange(mode: IncomeInputMode) {
         incomeInputMode = mode
         if (mode == IncomeInputMode.NET_ONLY) {
-            // Limpiar campos fiscales
             grossAmount = ""
             irpfPercent = ""
             irpfFixedAmount = ""
             socialSecurityAmount = ""
             commissionAmount = ""
-            selectedIssuerId = null
         } else {
             netAmount = ""
         }
@@ -287,6 +286,8 @@ class AddTransactionViewModel(
 
         if (transaction.isIncome) {
             selectedIncomeType       = transaction.incomeType
+            incomeInputMode          = if (transaction.isNetOnlyIncome) IncomeInputMode.NET_ONLY else IncomeInputMode.FISCAL
+            netAmount                = if (transaction.isNetOnlyIncome) transaction.amount.toString().replace('.', ',') else ""
             grossAmount              = transaction.grossAmount?.toString()?.replace('.', ',') ?: ""
             irpfPercent              = transaction.irpfPercent?.toString()?.replace('.', ',') ?: ""
             socialSecurityAmount     = transaction.socialSecurityAmount?.toString()?.replace('.', ',') ?: ""
@@ -351,11 +352,14 @@ class AddTransactionViewModel(
                 _uiState.value = AddTransactionUiState.Error("Importe neto inválido")
                 return
             }
+            val finalIssuerName = issuers.find { it.id == selectedIssuerId }?.name
             val transaction = buildTransaction(
                 accountId       = accountId,
                 netAmount       = net,
                 now             = now,
                 incomeType      = incType,
+                issuerId        = selectedIssuerId,
+                issuerName      = finalIssuerName,
                 isNetOnlyIncome = true
             )
             persistTransaction(transaction)

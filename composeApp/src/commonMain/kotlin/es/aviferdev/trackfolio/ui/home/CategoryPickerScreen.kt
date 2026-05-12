@@ -8,6 +8,14 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountBalance
+import androidx.compose.material.icons.filled.Build
+import androidx.compose.material.icons.filled.CardGiftcard
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Flight
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.LocalGroceryStore
+import androidx.compose.material.icons.filled.Pets
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.*
@@ -16,6 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -28,44 +37,41 @@ import es.aviferdev.trackfolio.ui.theme.*
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
-// ─── Emoji mapping para categorías (dado que Category model no tiene emoji) ────
+// ─── Icon mapping para categorías (Material icons) ───────────────────────────
 
-private val CATEGORY_EMOJI_MAP = mapOf(
-    "Hogar" to "🏠",
-    "Alquiler" to "🏠",
-    "Alimentación" to "🍔",
-    "Comida" to "🍔",
-    "Supermercado" to "🛒",
-    "Restaurante" to "🍽",
-    "Transporte" to "🚗",
-    "Gasolina" to "⛽",
-    "Salud" to "💊",
-    "Farmacia" to "💊",
-    "Médico" to "🩺",
-    "Formación" to "📚",
-    "Cursos" to "📖",
-    "Libros" to "📖",
-    "Ocio" to "🎬",
-    "Cine" to "🎬",
-    "Viajes" to "✈️",
-    "Suscripciones" to "📺",
-    "Compras" to "🛍️",
-    "Ropa" to "👕",
-    "Electrónica" to "💻",
-    "Regalos" to "🎁",
-    "Mascotas" to "🐾",
-    "Comisiones" to "🏛",
-    "Bancarias" to "🏦",
-    "Seguros" to "🛡",
-    "Impuestos" to "📋",
-    "Otros" to "📦",
-    "Varios" to "📦",
+private val CATEGORY_ICON_MAP: Map<String, ImageVector> = mapOf(
+    "Hogar" to Icons.Filled.Home, "Alquiler" to Icons.Filled.Home,
+    "Alimentación" to Icons.Filled.LocalGroceryStore, "Comida" to Icons.Filled.LocalGroceryStore,
+    "Supermercado" to Icons.Filled.LocalGroceryStore, "Restaurante" to Icons.Filled.Favorite,
+    "Transporte" to Icons.Filled.Flight, "Gasolina" to Icons.Filled.Flight,
+    "Salud" to Icons.Filled.Favorite, "Farmacia" to Icons.Filled.Favorite, "Médico" to Icons.Filled.Favorite,
+    "Formación" to Icons.Filled.Build, "Cursos" to Icons.Filled.Build, "Libros" to Icons.Filled.Build,
+    "Ocio" to Icons.Filled.Favorite, "Cine" to Icons.Filled.Favorite, "Viajes" to Icons.Filled.Flight,
+    "Suscripciones" to Icons.Filled.Build,
+    "Compras" to Icons.Filled.AccountBalance, "Ropa" to Icons.Filled.AccountBalance,
+    "Electrónica" to Icons.Filled.AccountBalance, "Regalos" to Icons.Filled.CardGiftcard,
+    "Mascotas" to Icons.Filled.Pets,
+    "Comisiones" to Icons.Filled.AccountBalance, "Bancarias" to Icons.Filled.AccountBalance,
+    "Seguros" to Icons.Filled.Build, "Impuestos" to Icons.Filled.AccountBalance,
+    "Otros" to Icons.Filled.Home, "Varios" to Icons.Filled.Home,
 )
 
-private fun emojiForCategory(name: String): String =
-    CATEGORY_EMOJI_MAP.entries.firstOrNull { (key, _) ->
+private val DEFAULT_CATEGORY_ICON: ImageVector get() = Icons.Filled.Home
+
+private fun iconForCategory(name: String): ImageVector =
+    CATEGORY_ICON_MAP.entries.firstOrNull { (key, _) ->
         name.contains(key, ignoreCase = true)
-    }?.value ?: "📌"
+    }?.value ?: DEFAULT_CATEGORY_ICON
+
+@Composable
+private fun incomeTypeIcon(incomeType: IncomeType): ImageVector = when (incomeType) {
+    IncomeType.SALARY        -> Icons.Filled.AccountBalance
+    IncomeType.BANK_INTEREST -> Icons.Filled.AccountBalance
+    IncomeType.BOND_DEPOSIT  -> Icons.Filled.AccountBalance
+    IncomeType.DIVIDEND      -> Icons.Filled.AccountBalance
+    IncomeType.BONUS_PRIZE   -> Icons.Filled.CardGiftcard
+    IncomeType.EXEMPT_INCOME -> Icons.Filled.Home
+}
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // Screen
@@ -140,7 +146,7 @@ private fun CategoryPickerContent(
                     uiState.frequentCategories.forEach { category ->
                         FrequentChip(
                             label   = category.name,
-                            emoji   = emojiForCategory(category.name),
+                            icon    = iconForCategory(category.name),
                             onClick = { onCategoryClick(category.id) },
                             modifier = Modifier.weight(1f)
                         )
@@ -186,8 +192,9 @@ private fun CategoryPickerContent(
 
                     itemsIndexed(filtered) { index, category ->
                     CategoryRow(
-                        emoji  = emojiForCategory(category.name),
+                        icon    = iconForCategory(category.name),
                         name   = category.name,
+                        colorIndex = index,
                         onClick = { onCategoryClick(category.id) }
                     )
                     if (index < filtered.lastIndex) {
@@ -235,6 +242,7 @@ private fun CategoryPickerContent(
                 itemsIndexed(uiState.incomeTypes) { index, incomeType ->
                     IncomeTypeRow(
                         incomeType = incomeType,
+                        colorIndex = index,
                         onClick    = { onIncomeTypeClick(incomeType) }
                     )
                     if (index < uiState.incomeTypes.lastIndex) {
@@ -257,7 +265,7 @@ private fun CategoryPickerContent(
 @Composable
 private fun FrequentChip(
     label: String,
-    emoji: String,
+    icon: ImageVector,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -275,7 +283,12 @@ private fun FrequentChip(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            Text(emoji, fontSize = 16.sp)
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint    = PrimaryDark,
+                modifier = Modifier.size(22.dp)
+            )
             Spacer(Modifier.height(2.dp))
             Text(
                 label,
@@ -333,10 +346,13 @@ private fun SearchField(
 
 @Composable
 private fun CategoryRow(
-    emoji: String,
+    icon: ImageVector,
     name: String,
+    colorIndex: Int,
     onClick: () -> Unit,
 ) {
+    val bgColor = CategoryPalette[colorIndex % CategoryPalette.size].copy(alpha = 0.15f)
+    val tintColor = CategoryPalette[colorIndex % CategoryPalette.size]
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -344,15 +360,20 @@ private fun CategoryRow(
             .padding(vertical = 12.dp, horizontal = 4.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // Emoji circle
+        // Icon circle with colored background
         Box(
             modifier = Modifier
                 .size(36.dp)
                 .clip(RoundedCornerShape(10.dp))
-                .background(PrimaryAlpha),
+                .background(bgColor),
             contentAlignment = Alignment.Center
         ) {
-            Text(emoji, fontSize = 16.sp)
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint    = tintColor,
+                modifier = Modifier.size(18.dp)
+            )
         }
 
         Spacer(Modifier.width(12.dp))
@@ -369,8 +390,11 @@ private fun CategoryRow(
 @Composable
 private fun IncomeTypeRow(
     incomeType: IncomeType,
+    colorIndex: Int,
     onClick: () -> Unit,
 ) {
+    val bgColor = CategoryPalette[colorIndex % CategoryPalette.size].copy(alpha = 0.15f)
+    val tintColor = CategoryPalette[colorIndex % CategoryPalette.size]
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -378,15 +402,20 @@ private fun IncomeTypeRow(
             .padding(vertical = 12.dp, horizontal = 4.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // Emoji circle
+        // Icon circle with colored background
         Box(
             modifier = Modifier
                 .size(36.dp)
                 .clip(RoundedCornerShape(10.dp))
-                .background(PrimaryAlpha),
+                .background(bgColor),
             contentAlignment = Alignment.Center
         ) {
-            Text(incomeType.emoji, fontSize = 16.sp)
+            Icon(
+                imageVector = incomeTypeIcon(incomeType),
+                contentDescription = null,
+                tint    = tintColor,
+                modifier = Modifier.size(18.dp)
+            )
         }
 
         Spacer(Modifier.width(12.dp))
