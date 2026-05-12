@@ -67,6 +67,8 @@ fun TrackfolioNavHost() {
                     Screen.TransactionDetail.route,
                     Screen.Transactions.route,
                     Screen.CategoryPicker.route,
+                    Screen.FiscalReport.route,
+                    Screen.Debts.route,
                 )
                 val showBottomBar = currentDestination?.route?.let { route ->
                     hideRoutes.none { route.startsWith(it.substringBefore("{")) }

@@ -79,10 +79,10 @@ es.aviferdev.trackfolio/
 
 Dos roles separados que colaboran en serie:
 
-| Rol | Tareas | Límites |
-|---|---|---|
-| **Analista de Requisitos** | Analizar requisitos, explorar código existente, generar especificación técnica con el formato `## Análisis / Arquitectura propuesta / Especificación técnica / Implementación sugerida`, preguntar ambigüedades. | **Nunca escribe ni modifica código fuente.** Solo produce specs. |
-| **Desarrollador** | Implementar código siguiendo la spec del analista, respetando Clean Architecture, MVVM y las convenciones del proyecto. | **No toma decisiones de diseño ni arquitectura.** Si detecta ambigüedades, las devuelve al analista. |
+| Rol | Modelo | Tareas | Límites |
+|---|---|---|---|
+| **Analista de Requisitos** | deepseek-v4 | Analizar requisitos, explorar código existente, generar especificación técnica con el formato `## Análisis / Arquitectura propuesta / Especificación técnica / Implementación sugerida`, preguntar ambigüedades. | **Nunca escribe ni modifica código fuente.** Solo produce specs. |
+| **Desarrollador** | deepseek-v4-flash | Implementar código siguiendo la spec del analista, respetando Clean Architecture, MVVM y las convenciones del proyecto. | **No toma decisiones de diseño ni arquitectura.** Si detecta ambigüedades, las devuelve al analista. |
 
 **Flujo:**
 ```
