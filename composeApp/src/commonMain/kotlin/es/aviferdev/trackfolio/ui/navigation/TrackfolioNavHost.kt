@@ -4,19 +4,18 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
@@ -58,6 +57,7 @@ import es.aviferdev.trackfolio.ui.settings.ExpenseSettingsScreen
 import es.aviferdev.trackfolio.ui.settings.IncomeSettingsScreen
 import es.aviferdev.trackfolio.ui.settings.IncomeTypeDetailScreen
 import es.aviferdev.trackfolio.ui.settings.SettingsScreen
+import es.aviferdev.trackfolio.ui.theme.BorderGray2
 import es.aviferdev.trackfolio.ui.theme.PrimaryDark
 import es.aviferdev.trackfolio.ui.theme.SurfaceElevated
 import es.aviferdev.trackfolio.ui.theme.SurfaceWhite
@@ -81,19 +81,24 @@ fun TrackfolioNavHost() {
 
     Scaffold(
         bottomBar = {
-            FloatingBottomNavBar(
-                items = bottomNavItems(),
-                currentDestination = currentDestination,
-                onItemClick = { item ->
-                    if (currentDestination?.route == item.screen.route) return@FloatingBottomNavBar
-                    navController.popBackStack(Screen.Home.route, inclusive = false)
-                    if (item.screen.route != Screen.Home.route) {
-                        navController.navigate(item.screen.route) {
-                            launchSingleTop = true
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.BottomCenter
+            ) {
+                FloatingBottomNavBar(
+                    items = bottomNavItems(),
+                    currentDestination = currentDestination,
+                    onItemClick = { item ->
+                        if (currentDestination?.route == item.screen.route) return@FloatingBottomNavBar
+                        navController.popBackStack(Screen.Home.route, inclusive = false)
+                        if (item.screen.route != Screen.Home.route) {
+                            navController.navigate(item.screen.route) {
+                                launchSingleTop = true
+                            }
                         }
                     }
-                }
-            )
+                )
+            }
         }
     ) { innerPadding ->
         NavHost(
@@ -307,16 +312,6 @@ fun TrackfolioNavHost() {
     }
 }
 
-@Preview
-@Composable
-fun aaaa(){
-    FloatingBottomNavBar(
-        listOf(),
-        null,
-        {}
-    )
-}
-
 @Composable
 private fun FloatingBottomNavBar(
     items: List<BottomNavItem>,
@@ -324,7 +319,6 @@ private fun FloatingBottomNavBar(
     onItemClick: (BottomNavItem) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    // Encontrar el índice del item seleccionado
     val selectedIndex = remember(items, currentDestination) {
         items.indexOfFirst { item ->
             currentDestination?.hierarchy?.any { it.route == item.screen.route } == true
@@ -333,18 +327,19 @@ private fun FloatingBottomNavBar(
 
     Surface(
         modifier = modifier
-            .fillMaxWidth()
+            .wrapContentWidth()
             .padding(horizontal = 16.dp)
             .padding(top = 8.dp)
             .padding(bottom = 12.dp)
-            .navigationBarsPadding(),
+            .navigationBarsPadding()
+            .border(1.dp, BorderGray2, RoundedCornerShape(28.dp)),
         shape = RoundedCornerShape(28.dp),
         shadowElevation = 8.dp,
         color = SurfaceWhite
     ) {
         Row(
             modifier = Modifier
-                .fillMaxWidth()
+                .wrapContentWidth()
                 .height(56.dp)
                 .padding(horizontal = 16.dp),
             horizontalArrangement = Arrangement.SpaceEvenly,
