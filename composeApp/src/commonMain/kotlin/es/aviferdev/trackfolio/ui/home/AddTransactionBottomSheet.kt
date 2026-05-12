@@ -998,30 +998,31 @@ private fun IrpfCompactField(
                         color = Color.Transparent
                     ),
                     decorationBox = { inner ->
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            val currentValue =
-                                if (irpfInputMode == IrpfInputMode.PERCENT) irpfPercent else irpfFixedAmount
-                            if (currentValue.isEmpty()) {
+                        Box(modifier = Modifier.fillMaxWidth()) {
+                            inner()
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                val currentValue = if (irpfInputMode == IrpfInputMode.PERCENT) irpfPercent else irpfFixedAmount
+                                if (currentValue.isEmpty()) {
+                                    Text(
+                                        if (irpfInputMode == IrpfInputMode.PERCENT) "0 %" else "0,00 €",
+                                        fontSize = 14.sp,
+                                        color    = TextTertiary
+                                    )
+                                } else {
+                                    Text(
+                                        currentValue,
+                                        fontSize   = 14.sp,
+                                        fontWeight = FontWeight.Medium,
+                                        color      = TextPrimary
+                                    )
+                                }
                                 Text(
-                                    if (irpfInputMode == IrpfInputMode.PERCENT) "0 %" else "0,00 €",
-                                    fontSize = 14.sp,
-                                    color = TextTertiary
-                                )
-                            } else {
-                                Text(
-                                    currentValue,
-                                    fontSize = 14.sp,
-                                    fontWeight = FontWeight.Medium,
-                                    color = TextPrimary
+                                    if (irpfInputMode == IrpfInputMode.PERCENT) "%" else "€",
+                                    fontSize   = 14.sp,
+                                    color      = TextSecondary,
+                                    fontWeight = FontWeight.Medium
                                 )
                             }
-                            inner()
-                            Text(
-                                if (irpfInputMode == IrpfInputMode.PERCENT) "%" else "€",
-                                fontSize = 14.sp,
-                                color = TextSecondary,
-                                fontWeight = FontWeight.Medium
-                            )
                         }
                     },
                     modifier = Modifier.fillMaxWidth()
