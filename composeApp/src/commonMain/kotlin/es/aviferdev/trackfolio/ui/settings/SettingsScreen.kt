@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.trackfolio.domain.model.Account
 import es.aviferdev.trackfolio.domain.model.AccountType
+import es.aviferdev.trackfolio.domain.usecase.reconciliation.GetReconciliationReminderIntervalUseCase
 import es.aviferdev.trackfolio.security.AppLockManager
 import es.aviferdev.trackfolio.security.BiometricAuthenticator
 import es.aviferdev.trackfolio.security.BiometricResult
@@ -58,7 +59,15 @@ fun SettingsScreen(
     var biometricEnabled by remember { mutableStateOf(lockManager.biometricEnabled) }
     var biometricError   by remember { mutableStateOf<String?>(null) }
 
+    val reconciliationIntervalUseCase = koinInject<GetReconciliationReminderIntervalUseCase>()
+    var reconciliationInterval by remember { mutableStateOf(reconciliationIntervalUseCase.get()) }
+
     SettingsContent(
+        reconciliationInterval = reconciliationInterval,
+        onReconciliationIntervalChange = { days ->
+            reconciliationInterval = days
+            reconciliationIntervalUseCase.set(days)
+        },
         accounts = accountState.accounts,
         selectedId = selectedId,
         biometricEnabled = biometricEnabled,
@@ -117,6 +126,8 @@ fun SettingsContent(
     onNavigateToExpenseSettings: () -> Unit,
     onNavigateToIncomeSettings: () -> Unit,
     onNavigateToFiscalReport: () -> Unit,
+    reconciliationInterval: Int = 30,
+    onReconciliationIntervalChange: (Int) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     var contentVisible by remember { mutableStateOf(false) }
@@ -155,6 +166,16 @@ fun SettingsContent(
                     SettingsSectionHeader(label = "Seguridad")
                     SettingsGroupCard {
                         SettingsBiometricRow(enabled = biometricEnabled, onToggle = onToggleBiometric)
+                    }
+                }
+
+                item {
+                    SettingsSectionHeader(label = "Recordatorios")
+                    SettingsGroupCard {
+                        SettingsReconciliationIntervalRow(
+                            interval    = reconciliationInterval,
+                            onIntervalChange = onReconciliationIntervalChange
+                        )
                     }
                 }
 
@@ -262,6 +283,62 @@ private fun SettingsBiometricRow(enabled: Boolean, onToggle: (Boolean) -> Unit) 
             Text(if (enabled) "Activado" else "Desactivado", fontSize = 11.sp, color = TextTertiary)
         }
         Switch(checked = enabled, onCheckedChange = onToggle, colors = SwitchDefaults.colors(checkedThumbColor = Color.White, checkedTrackColor = PrimaryDark, uncheckedThumbColor = Color.White, uncheckedTrackColor = SurfaceElevated))
+    }
+}
+
+// ─── Reconciliation interval row ──────────────────────────────────────────────
+@Composable
+private fun SettingsReconciliationIntervalRow(
+    interval: Int,
+    onIntervalChange: (Int) -> Unit,
+) {
+    val options = listOf(
+        0  to "Desactivado",
+        7  to "7 días",
+        15 to "15 días",
+        30 to "30 días"
+    )
+    val label = options.find { it.first == interval }?.second ?: "30 días"
+
+    Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp)) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text("🔄", fontSize = 18.sp)
+            Spacer(Modifier.width(14.dp))
+            Column(modifier = Modifier.weight(1f)) {
+                Text("Recordatorio de reconciliación", fontSize = 13.sp, fontWeight = FontWeight.Medium, color = TextPrimary)
+                Text(label, fontSize = 11.sp, color = TextTertiary)
+            }
+        }
+        Spacer(Modifier.height(10.dp))
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            options.forEach { (days, text) ->
+                val selected = interval == days
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(if (selected) PrimaryDark.copy(alpha = 0.15f) else Color.Transparent)
+                        .border(
+                            if (selected) 1.5.dp else 0.5.dp,
+                            if (selected) PrimaryDark else BorderGray,
+                            RoundedCornerShape(8.dp)
+                        )
+                        .clickable { onIntervalChange(days) }
+                        .padding(vertical = 6.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text,
+                        fontSize   = 10.sp,
+                        fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal,
+                        color      = if (selected) PrimaryDark else TextSecondary
+                    )
+                }
+            }
+        }
     }
 }
 

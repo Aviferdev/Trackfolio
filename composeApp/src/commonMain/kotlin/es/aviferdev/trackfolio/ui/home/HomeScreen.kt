@@ -45,6 +45,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.trackfolio.domain.model.Account
@@ -76,6 +77,8 @@ import es.aviferdev.trackfolio.ui.theme.TrackfolioTheme
 import es.aviferdev.trackfolio.ui.theme.formatAmount
 import es.aviferdev.trackfolio.ui.theme.formatDate
 import es.aviferdev.trackfolio.ui.theme.maskAmount
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
@@ -311,8 +314,9 @@ fun HomeContent(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column {
+                val greeting = getGreeting()
                 Text(
-                    text = "Buenos días",
+                    text = greeting,
                     fontSize = 12.sp,
                     color = TextTertiary,
                     fontWeight = FontWeight.Normal
@@ -489,28 +493,20 @@ private fun HeroCard(
 
             Spacer(Modifier.height(12.dp))
 
-            // Me deben / Debo yo
-            Row(modifier = Modifier.fillMaxWidth()) {
-                DebtIndicator(
-                    label = "Me deben",
-                    amount = balance.totalOwed,
-                    isPositive = true,
-                    hidden = balancesHidden,
-                    modifier = Modifier.weight(1f)
+            // Me deben / Debo yo — diseño intuitivo
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                DebtChip(
+                    label  = "Me deben",
+                    amount = "${maskAmount(formatAmount(balance.totalOwed), balancesHidden)} €",
+                    color  = IncomeGreen
                 )
-                Box(
-                    modifier = Modifier
-                        .width(0.5.dp)
-                        .height(36.dp)
-                        .background(Color.White.copy(alpha = 0.12f))
-                        .align(Alignment.CenterVertically)
-                )
-                DebtIndicator(
-                    label = "Debo yo",
-                    amount = balance.totalOwing,
-                    isPositive = false,
-                    hidden = balancesHidden,
-                    modifier = Modifier.weight(1f),
+                DebtChip(
+                    label  = "Debo yo",
+                    amount = "${maskAmount(formatAmount(balance.totalOwing), balancesHidden)} €",
+                    color  = ExpenseRed,
                     alignEnd = true
                 )
             }
@@ -519,42 +515,26 @@ private fun HeroCard(
 }
 
 @Composable
-private fun DebtIndicator(
+private fun DebtChip(
     label: String,
-    amount: Double,
-    isPositive: Boolean,
-    hidden: Boolean,
-    modifier: Modifier = Modifier,
+    amount: String,
+    color: Color,
     alignEnd: Boolean = false
 ) {
-    val color = if (isPositive) Color(0xFF86EFAC) else Color(0xFFFCA5A5)
-    val arrow = if (isPositive) "↑" else "↓"
-
     Column(
-        modifier = modifier.padding(horizontal = 10.dp),
         horizontalAlignment = if (alignEnd) Alignment.End else Alignment.Start
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            if (!alignEnd) {
-                Text(arrow, fontSize = 12.sp, color = color, fontWeight = FontWeight.Bold)
-                Spacer(Modifier.width(4.dp))
-            }
-            Text(
-                text = "${maskAmount(formatAmount(amount), hidden)} €",
-                fontSize = 13.sp,
-                color = color,
-                fontWeight = FontWeight.Bold
-            )
-            if (alignEnd) {
-                Spacer(Modifier.width(4.dp))
-                Text(arrow, fontSize = 12.sp, color = color, fontWeight = FontWeight.Bold)
-            }
-        }
+        Text(
+            text     = amount,
+            fontSize = 17.sp,
+            fontWeight = FontWeight.Bold,
+            color    = color
+        )
         Spacer(Modifier.height(2.dp))
         Text(
-            text = label,
-            fontSize = 11.sp,
-            color = Color.White.copy(alpha = 0.50f),
+            text      = label,
+            fontSize  = 11.sp,
+            color     = Color.White.copy(alpha = 0.50f),
             textAlign = if (alignEnd) TextAlign.End else TextAlign.Start
         )
     }
@@ -714,13 +694,21 @@ private fun TransactionRow(
         // Label + subtitle
         Column(modifier = Modifier.weight(1f)) {
             Text(
-                text = categoryName,
+                text     = categoryName,
                 fontSize = 13.sp,
                 fontWeight = FontWeight.SemiBold,
-                color = TextPrimary
+                color    = TextPrimary,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
             Spacer(Modifier.height(2.dp))
-            Text(subtitle, fontSize = 11.sp, color = TextTertiary)
+            Text(
+                subtitle,
+                fontSize = 11.sp,
+                color    = TextTertiary,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
         }
 
         // Importe
@@ -744,8 +732,6 @@ private fun QuickAccessSection(
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
-        SectionLabel("Acceso rápido")
-        Spacer(Modifier.height(10.dp))
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(10.dp)
@@ -917,6 +903,18 @@ private fun HomeContentPreview() {
             onNavigateToFiscalReport = {},
             onNavigateToSettings = {}
         )
+    }
+}
+
+/** Saludo según la hora del día. */
+private fun getGreeting(): String {
+    val now = kotlinx.datetime.Clock.System.now()
+    val local = now.toLocalDateTime(TimeZone.currentSystemDefault())
+    val hour = local.hour
+    return when {
+        hour in 6..11  -> "Buenos días"
+        hour in 12..19 -> "Buenas tardes"
+        else           -> "Buenas noches"
     }
 }
 

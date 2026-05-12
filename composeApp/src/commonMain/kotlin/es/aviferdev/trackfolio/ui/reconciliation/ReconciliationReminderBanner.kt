@@ -6,13 +6,14 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Balance
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -21,7 +22,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.trackfolio.ui.theme.SecondaryTeal
-import es.aviferdev.trackfolio.ui.theme.TextSecondary
 import es.aviferdev.trackfolio.ui.theme.TrackfolioTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -60,9 +60,12 @@ fun ReconciliationReminderBanner(
                 fontWeight = FontWeight.Medium,
                 modifier   = Modifier.weight(1f)
             )
-            TextButton(
-                onClick        = onReconcileNow,
-                contentPadding = PaddingValues(horizontal = 8.dp, vertical = 0.dp)
+            Box(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(SecondaryTeal.copy(alpha = 0.15f))
+                    .clickable { onReconcileNow() }
+                    .padding(horizontal = 12.dp, vertical = 4.dp)
             ) {
                 Text(
                     text       = "Ajustar",
@@ -71,9 +74,13 @@ fun ReconciliationReminderBanner(
                     fontWeight = FontWeight.Bold
                 )
             }
-            TextButton(
-                onClick        = onRemindLater,
-                contentPadding = PaddingValues(horizontal = 4.dp, vertical = 0.dp)
+            Spacer(Modifier.width(6.dp))
+            Box(
+                modifier = Modifier
+                    .clip(CircleShape)
+                    .clickable { onRemindLater() }
+                    .size(24.dp),
+                contentAlignment = Alignment.Center
             ) {
                 Text("×", fontSize = 16.sp, color = SecondaryTeal.copy(alpha = 0.6f))
             }
