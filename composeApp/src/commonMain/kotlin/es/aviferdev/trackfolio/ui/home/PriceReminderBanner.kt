@@ -6,13 +6,14 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.TrendingUp
+import androidx.compose.material.icons.automirrored.outlined.ShowChart
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -50,7 +51,7 @@ fun PriceReminderBanner(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
-                imageVector        = Icons.Outlined.TrendingUp,
+                imageVector        = Icons.AutoMirrored.Outlined.ShowChart,
                 contentDescription = null,
                 tint               = WarnAmber,
                 modifier           = Modifier.size(18.dp)
@@ -63,9 +64,12 @@ fun PriceReminderBanner(
                 fontWeight = FontWeight.Medium,
                 modifier = Modifier.weight(1f)
             )
-            TextButton(
-                onClick          = onUpdateNow,
-                contentPadding   = PaddingValues(horizontal = 8.dp, vertical = 0.dp)
+            Box(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(WarnAmber.copy(alpha = 0.15f))
+                    .clickable { onUpdateNow() }
+                    .padding(horizontal = 12.dp, vertical = 4.dp)
             ) {
                 Text(
                     text       = "Actualizar",
@@ -74,9 +78,13 @@ fun PriceReminderBanner(
                     fontWeight = FontWeight.Bold
                 )
             }
-            TextButton(
-                onClick        = onRemindLater,
-                contentPadding = PaddingValues(horizontal = 4.dp, vertical = 0.dp)
+            Spacer(Modifier.width(6.dp))
+            Box(
+                modifier = Modifier
+                    .clip(CircleShape)
+                    .clickable { onRemindLater() }
+                    .size(24.dp),
+                contentAlignment = Alignment.Center
             ) {
                 Text("×", fontSize = 16.sp, color = WarnAmber.copy(alpha = 0.6f))
             }

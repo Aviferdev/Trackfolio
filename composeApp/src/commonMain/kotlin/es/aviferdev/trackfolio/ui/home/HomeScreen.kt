@@ -212,23 +212,30 @@ fun HomeScreen(
         )
     }
 
-    // ── Category Picker overlay ─────────────────────────────────────────────────
+    // ── Category Picker overlay (cubre toda la pantalla incluída bottom nav) ──
     showCategoryPicker?.let { type ->
-        CategoryPickerScreen(
-            initialType = type,
-            onBack = { showCategoryPicker = null },
-            onCategorySelected = { categoryId ->
-                addTransactionViewModel.onCategoryChange(categoryId)
-                showCategoryPicker = null
-                showAddTransaction = true
-            },
-            onIncomeTypeSelected = { incomeType ->
-                addTransactionViewModel.onIncomeTypeChange(incomeType)
-                showCategoryPicker = null
-                showAddTransaction = true
-            },
-            onCreateCategory = { showCategoryPicker = null }
-        )
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(BackgroundGray)
+                .padding(bottom = 64.dp) // espacio para la bottom nav
+        ) {
+            CategoryPickerScreen(
+                initialType = type,
+                onBack = { showCategoryPicker = null },
+                onCategorySelected = { categoryId ->
+                    addTransactionViewModel.onCategoryChange(categoryId)
+                    showCategoryPicker = null
+                    showAddTransaction = true
+                },
+                onIncomeTypeSelected = { incomeType ->
+                    addTransactionViewModel.onIncomeTypeChange(incomeType)
+                    showCategoryPicker = null
+                    showAddTransaction = true
+                },
+                onCreateCategory = { showCategoryPicker = null }
+            )
+        }
     }
 
     if (showInitialBalance) {

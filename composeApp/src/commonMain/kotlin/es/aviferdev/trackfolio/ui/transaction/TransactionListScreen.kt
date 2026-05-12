@@ -7,6 +7,12 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.ArrowDownward
+import androidx.compose.material.icons.outlined.ArrowUpward
+import androidx.compose.material.icons.outlined.Search
+import androidx.compose.material.icons.outlined.ShowChart
+import androidx.compose.material.icons.outlined.SwapHoriz
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -262,7 +268,12 @@ private fun SearchBar(query: String, onChange: (String) -> Unit) {
             .padding(horizontal = 10.dp, vertical = 7.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text("🔍", fontSize = 15.sp)
+        Icon(
+            imageVector        = Icons.Outlined.Search,
+            contentDescription = "Buscar",
+            tint               = TextTertiary,
+            modifier           = Modifier.size(16.dp)
+        )
         Spacer(Modifier.width(8.dp))
         BasicTextField(
             value           = query,
@@ -351,10 +362,17 @@ private fun TransactionCard(
         isAdjustment -> PrimaryDark; isLinked -> PrimaryDark
         isIncome     -> IncomeGreen; else -> ExpenseRed
     }
-    val initial = when {
-        isAdjustment -> "⚖"; isLinked -> "📈"
-        isIncome     -> transaction.incomeType?.emoji ?: label.firstOrNull()?.uppercase() ?: "?"
-        else         -> label.firstOrNull()?.uppercase() ?: "?"
+    val avatarIcon = when {
+        isAdjustment -> Icons.Outlined.SwapHoriz
+        isLinked     -> Icons.Outlined.ShowChart
+        isIncome     -> Icons.Outlined.ArrowDownward
+        else         -> Icons.Outlined.ArrowUpward
+    }
+    val avatarContentDesc = when {
+        isAdjustment -> "Ajuste"
+        isLinked     -> "Inversión"
+        isIncome     -> "Ingreso"
+        else         -> "Gasto"
     }
     val prefix = when {
         isAdjustment && transaction.amount >= 0 -> "+"
@@ -367,8 +385,9 @@ private fun TransactionCard(
     val subtitle = when {
         isIncome && transaction.issuerName != null -> transaction.issuerName!!
         !transaction.notes.isNullOrBlank()         -> transaction.notes!!
-        else                                       -> formatDate(transaction.date)
+        else                                       -> null
     }
+    val dateFormatted = formatDate(transaction.date)
 
     Row(
         modifier = Modifier.fillMaxWidth().background(SurfaceWhite)
@@ -379,18 +398,43 @@ private fun TransactionCard(
             .padding(horizontal = 14.dp, vertical = 11.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        InitialsAvatar(text = initial, bgColor = avatarBg, size = 40.dp, textSize = 15)
+        // Avatar con icono Material
+        Box(
+            modifier = Modifier
+                .size(40.dp)
+                .clip(RoundedCornerShape(10.dp))
+                .background(avatarBg),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector        = avatarIcon,
+                contentDescription = avatarContentDesc,
+                tint               = Color.White,
+                modifier           = Modifier.size(20.dp)
+            )
+        }
         Spacer(Modifier.width(12.dp))
         Column(modifier = Modifier.weight(1f)) {
-            Text(label, fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary)
-            Spacer(Modifier.height(2.dp))
-            Text(subtitle, fontSize = 11.sp, color = TextTertiary)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(label, fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary)
+                if (dateFormatted.isNotEmpty()) {
+                    Spacer(Modifier.width(4.dp))
+                    Text("· $dateFormatted", fontSize = 11.sp, color = TextTertiary)
+                }
+            }
+            if (subtitle != null) {
+                Spacer(Modifier.height(2.dp))
+                Text(subtitle, fontSize = 11.sp, color = TextTertiary)
+            }
             if (isIncome && transaction.incomeType != null && transaction.grossAmount != null) {
                 Spacer(Modifier.height(4.dp))
                 IncomeBadge(transaction)
             }
         }
-        Column(horizontalAlignment = Alignment.End) {
+        Column(
+            horizontalAlignment = Alignment.End,
+            verticalArrangement = Arrangement.Center
+        ) {
             Text(
                 "$prefix ${maskAmount(formatAmount(displayAmount), balancesHidden)} €",
                 fontSize = 13.sp, fontWeight = FontWeight.Bold, color = amountColor
@@ -398,15 +442,18 @@ private fun TransactionCard(
             if (isIncome && transaction.grossAmount != null && !balancesHidden) {
                 Text("Bruto: ${formatAmount(transaction.grossAmount)} €", fontSize = 9.sp, color = TextTertiary)
             }
-            Text(formatDate(transaction.date), fontSize = 10.sp, color = TextTertiary)
-            when {
-                onEdit != null -> TextButton(
-                    onClick = onEdit, contentPadding = PaddingValues(horizontal = 4.dp, vertical = 0.dp),
-                    modifier = Modifier.height(18.dp)
-                ) { Text("Editar", fontSize = 9.sp, color = PrimaryDark) }
-                isLinked -> Text("Portfolio", fontSize = 9.sp, color = PrimaryDark.copy(alpha = 0.6f))
+            if (isLinked) {
+                Text("Portfolio", fontSize = 9.sp, color = PrimaryDark.copy(alpha = 0.6f))
             }
         }
+        Spacer(Modifier.width(12.dp))
+        Text(
+            "›",
+            fontSize = 20.sp,
+            color    = TextTertiary,
+            fontWeight = FontWeight.Light,
+            modifier = Modifier.align(Alignment.CenterVertically)
+        )
     }
 }
 

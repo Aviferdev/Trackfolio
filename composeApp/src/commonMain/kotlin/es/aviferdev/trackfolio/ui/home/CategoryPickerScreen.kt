@@ -83,8 +83,10 @@ fun CategoryPickerScreen(
     val uiState by viewModel.uiState.collectAsState()
 
     Column(modifier = Modifier.fillMaxSize().background(BackgroundGray)) {
+        val title = if (uiState.type == TransactionType.EXPENSE) "Selecciona categoría"
+                    else "Selecciona tipo de ingreso"
         TopBarApp(
-            title = "Selecciona categoría",
+            title = title,
             navigateBack = onBack
         )
 
@@ -98,7 +100,6 @@ fun CategoryPickerScreen(
         } else {
             CategoryPickerContent(
                 uiState               = uiState,
-                onTypeChange          = { viewModel.onTypeChange(it) },
                 onSearchQueryChange   = { viewModel.onSearchQueryChange(it) },
                 onCategoryClick       = onCategorySelected,
                 onIncomeTypeClick     = onIncomeTypeSelected,
@@ -110,13 +111,12 @@ fun CategoryPickerScreen(
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// Content
+// Content — sin toggle, contenido según initialType
 // ═══════════════════════════════════════════════════════════════════════════════
 
 @Composable
 private fun CategoryPickerContent(
     uiState: CategoryPickerUiState,
-    onTypeChange: (TransactionType) -> Unit,
     onSearchQueryChange: (String) -> Unit,
     onCategoryClick: (String) -> Unit,
     onIncomeTypeClick: (IncomeType) -> Unit,
@@ -126,26 +126,9 @@ private fun CategoryPickerContent(
     Column(modifier = modifier.padding(horizontal = 16.dp)) {
         Spacer(Modifier.height(12.dp))
 
-        // ── Toggle Gasto / Ingreso ──────────────────────────────────────────
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            TypeToggleChip(
-                label    = "Gasto",
-                selected = uiState.type == TransactionType.EXPENSE,
-                selectedColor = ExpenseRed,
-                onClick  = { onTypeChange(TransactionType.EXPENSE) }
-            )
-            TypeToggleChip(
-                label    = "Ingreso",
-                selected = uiState.type == TransactionType.INCOME,
-                selectedColor = IncomeGreen,
-                onClick  = { onTypeChange(TransactionType.INCOME) }
-            )
-        }
-
-        Spacer(Modifier.height(16.dp))
-
         if (uiState.type == TransactionType.EXPENSE) {
-            // ── Frecuentes (solo para gastos) ─────────────────────────────
+            // ── GASTOS ─────────────────────────────────────────────────────
+            // Frecuentes
             if (uiState.frequentCategories.isNotEmpty()) {
                 SectionLabelC("Frecuentes")
                 Spacer(Modifier.height(8.dp))
@@ -167,24 +150,41 @@ private fun CategoryPickerContent(
                 Spacer(Modifier.height(20.dp))
             }
 
-            // ── Search ────────────────────────────────────────────────────
+            // Search
             SearchField(
                 query   = uiState.searchQuery,
                 onChange = onSearchQueryChange,
-                visible = uiState.allCategories.size > 8
+                visible = uiState.allCategories.size > 6
             )
 
-            // ── Todas las categorías ──────────────────────────────────────
+            // Todas las categorías
             SectionLabelC("Todas las categorías")
             Spacer(Modifier.height(8.dp))
 
-            LazyColumn(
-                modifier = Modifier.weight(1f),
-                contentPadding = PaddingValues(bottom = 80.dp)
-            ) {
-                val filtered = uiState.filteredCategoryIndices.map { uiState.allCategories[it] }
+            if (uiState.allCategories.isEmpty() && !uiState.isLoading) {
+                // Sin categorías de gasto — mostrar mensaje
+                Box(
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 32.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        "No hay categorías de gasto",
+                        fontSize = 13.sp,
+                        color = TextSecondary,
+                        textAlign = TextAlign.Center
+                    )
+                }
+                Spacer(Modifier.weight(1f))
+                CreateCategoryButton(onClick = onCreateCategory)
+                Spacer(Modifier.height(16.dp))
+            } else {
+                LazyColumn(
+                    modifier = Modifier.weight(1f),
+                    contentPadding = PaddingValues(bottom = 80.dp)
+                ) {
+                    val filtered = uiState.filteredCategoryIndices.map { uiState.allCategories[it] }
 
-                itemsIndexed(filtered) { index, category ->
+                    itemsIndexed(filtered) { index, category ->
                     CategoryRow(
                         emoji  = emojiForCategory(category.name),
                         name   = category.name,
@@ -215,15 +215,16 @@ private fun CategoryPickerContent(
                     }
                 }
 
-                // ── Crear nueva categoría ─────────────────────────────────
+                // Crear nueva categoría
                 item {
                     Spacer(Modifier.height(8.dp))
                     CreateCategoryButton(onClick = onCreateCategory)
                     Spacer(Modifier.height(16.dp))
                 }
             }
+            } // cierra else del if (allCategories.isEmpty)
         } else {
-            // ── INGRESO — mostrar IncomeTypes ──────────────────────────────
+            // ── INGRESOS — mostrar IncomeTypes ────────────────────────────
             SectionLabelC("Todos los tipos")
             Spacer(Modifier.height(8.dp))
 
@@ -254,35 +255,6 @@ private fun CategoryPickerContent(
 // ═══════════════════════════════════════════════════════════════════════════════
 
 @Composable
-private fun TypeToggleChip(
-    label: String,
-    selected: Boolean,
-    selectedColor: Color,
-    onClick: () -> Unit,
-) {
-    Box(
-        modifier = Modifier
-            .clip(RoundedCornerShape(50.dp))
-            .background(if (selected) selectedColor else Color.Transparent)
-            .border(
-                1.dp,
-                if (selected) selectedColor else BorderGray,
-                RoundedCornerShape(50.dp)
-            )
-            .clickable { onClick() }
-            .padding(horizontal = 20.dp, vertical = 8.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            label,
-            fontSize   = 14.sp,
-            fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal,
-            color      = if (selected) Color.White else TextSecondary
-        )
-    }
-}
-
-@Composable
 private fun FrequentChip(
     label: String,
     emoji: String,
@@ -295,10 +267,14 @@ private fun FrequentChip(
             .background(SurfaceElevated)
             .border(0.5.dp, BorderGray, RoundedCornerShape(10.dp))
             .clickable { onClick() }
-            .padding(horizontal = 8.dp, vertical = 8.dp),
+            .height(60.dp)
+            .padding(horizontal = 4.dp, vertical = 8.dp),
         contentAlignment = Alignment.Center
     ) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
             Text(emoji, fontSize = 16.sp)
             Spacer(Modifier.height(2.dp))
             Text(
@@ -307,7 +283,7 @@ private fun FrequentChip(
                 fontWeight = FontWeight.Medium,
                 color      = TextPrimary,
                 textAlign  = TextAlign.Center,
-                maxLines   = 2,
+                maxLines   = 1,
                 lineHeight = 12.sp
             )
         }

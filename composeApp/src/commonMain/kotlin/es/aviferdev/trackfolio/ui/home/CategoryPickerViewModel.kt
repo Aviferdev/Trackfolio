@@ -36,6 +36,8 @@ class CategoryPickerViewModel(
     val uiState: StateFlow<CategoryPickerUiState> = _uiState.asStateFlow()
 
     init {
+        // Reiniciar estado por si el ViewModel se reutiliza
+        _uiState.value = CategoryPickerUiState(type = initialType)
         loadCategories(initialType)
     }
 
@@ -51,7 +53,7 @@ class CategoryPickerViewModel(
         } else {
             // Para gastos, cargamos categorías de BD
             viewModelScope.launch {
-                getCategoriesByType(TransactionType.EXPENSE)
+                getCategoriesByType(type)
                     .onStart { _uiState.value = _uiState.value.copy(isLoading = true) }
                     .collect { categories ->
                         val freq = categories.take(4)
@@ -66,10 +68,6 @@ class CategoryPickerViewModel(
                     }
             }
         }
-    }
-
-    fun onTypeChange(type: TransactionType) {
-        loadCategories(type)
     }
 
     fun onSearchQueryChange(query: String) {

@@ -18,12 +18,17 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.AccountBalance
 import androidx.compose.material.icons.outlined.CalendarMonth
+import androidx.compose.material.icons.outlined.Close
+import androidx.compose.material.icons.outlined.Description
+import androidx.compose.material.icons.outlined.Folder
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -78,6 +83,7 @@ fun AddTransactionBottomSheet(
         }
     ) {
         AddTransactionSheetContent(
+            onDismiss                = onDismiss,
             uiState                  = uiState,
             isEditing                = viewModel.isEditing,
             type                     = viewModel.type,
@@ -123,6 +129,7 @@ fun AddTransactionBottomSheet(
 
 @Composable
 private fun AddTransactionSheetContent(
+    onDismiss: () -> Unit,
     uiState: AddTransactionUiState,
     isEditing: Boolean,
     type: TransactionType,
@@ -170,29 +177,51 @@ private fun AddTransactionSheetContent(
     ) {
         Spacer(Modifier.height(8.dp))
 
-        // ── Title ─────────────────────────────────────────────────────────
-        Text(
-            text       = if (isEditing) "Editar transacción" else "Nueva transacción",
-            fontSize   = 16.sp,
-            fontWeight = FontWeight.Medium,
-            color      = TextPrimary
-        )
+        // ── Title + close button ──────────────────────────────────────────
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text       = if (isEditing) "Editar transacción" else "Nueva transacción",
+                fontSize   = 16.sp,
+                fontWeight = FontWeight.Medium,
+                color      = TextPrimary,
+                modifier   = Modifier.weight(1f)
+            )
+            IconButton(
+                onClick  = onDismiss,
+                modifier = Modifier.size(32.dp)
+            ) {
+                Icon(
+                    imageVector        = Icons.Outlined.Close,
+                    contentDescription = "Cerrar",
+                    tint               = TextSecondary,
+                    modifier           = Modifier.size(20.dp)
+                )
+            }
+        }
 
         Spacer(Modifier.height(16.dp))
 
-        // ── Type toggle ──────────────────────────────────────────────────
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        // ── Type toggle — full width, less rounded ───────────────────────
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
             TypePill(
                 label         = "Ingreso",
                 selected      = type == TransactionType.INCOME,
                 selectedColor = IncomeGreen,
-                onClick       = { onTypeChange(TransactionType.INCOME) }
+                onClick       = { onTypeChange(TransactionType.INCOME) },
+                modifier      = Modifier.weight(1f)
             )
             TypePill(
                 label         = "Gasto",
                 selected      = type == TransactionType.EXPENSE,
                 selectedColor = ExpenseRed,
-                onClick       = { onTypeChange(TransactionType.EXPENSE) }
+                onClick       = { onTypeChange(TransactionType.EXPENSE) },
+                modifier      = Modifier.weight(1f)
             )
         }
 
@@ -212,14 +241,14 @@ private fun AddTransactionSheetContent(
         if (type == TransactionType.EXPENSE) {
             val categoryName = categories.find { it.id == selectedCategoryId }?.name ?: ""
             DarkTappableRow(
-                emoji = "📁",
+                icon = Icons.Outlined.Folder,
                 label = "Categoría",
                 value = if (categoryName.isNotEmpty()) categoryName else "Seleccionar categoría…",
                 onClick = { onRequestCategoryPicker?.invoke(TransactionType.EXPENSE) }
             )
         } else {
             DarkTappableRow(
-                emoji = selectedIncomeType?.emoji ?: "💼",
+                icon = Icons.Outlined.AccountBalance,
                 label = "Tipo de ingreso",
                 value = selectedIncomeType?.label ?: "Seleccionar tipo…",
                 onClick = onIncomeTypeTap
@@ -232,7 +261,7 @@ private fun AddTransactionSheetContent(
         var showNotes by remember { mutableStateOf(notes.isNotEmpty()) }
         Column {
             DarkTappableRow(
-                emoji = "📝",
+                icon = Icons.Outlined.Description,
                 label = "Descripción",
                 value = if (notes.isNotEmpty()) notes else "Añadir nota…",
                 onClick = { showNotes = !showNotes }
@@ -390,14 +419,15 @@ private fun TypePill(
     selected: Boolean,
     selectedColor: Color,
     onClick: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     Box(
-        modifier = Modifier
-            .clip(RoundedCornerShape(50.dp))
+        modifier = modifier
+            .clip(RoundedCornerShape(12.dp))
             .background(if (selected) selectedColor else Color.Transparent)
-            .border(1.dp, if (selected) selectedColor else BorderGray, RoundedCornerShape(50.dp))
+            .border(1.dp, if (selected) selectedColor else BorderGray, RoundedCornerShape(12.dp))
             .clickable { onClick() }
-            .padding(horizontal = 20.dp, vertical = 8.dp),
+            .padding(vertical = 10.dp),
         contentAlignment = Alignment.Center
     ) {
         Text(
@@ -411,7 +441,7 @@ private fun TypePill(
 
 @Composable
 private fun DarkTappableRow(
-    emoji: String,
+    icon: ImageVector,
     label: String,
     value: String,
     onClick: () -> Unit,
@@ -433,7 +463,12 @@ private fun DarkTappableRow(
                 .background(PrimaryAlpha),
             contentAlignment = Alignment.Center
         ) {
-            Text(emoji, fontSize = 16.sp)
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint    = PrimaryDark,
+                modifier = Modifier.size(18.dp)
+            )
         }
 
         Spacer(Modifier.width(12.dp))
@@ -561,9 +596,9 @@ private fun DateRow(
     val dateText = "${ld.dayOfMonth} de ${months[ld.monthNumber - 1]} de ${ld.year}"
 
     DarkTappableRow(
-        emoji  = "📅",
-        label  = "Fecha",
-        value  = dateText,
+        icon    = Icons.Outlined.CalendarMonth,
+        label   = "Fecha",
+        value   = dateText,
         onClick = { showPicker = true }
     )
 

@@ -165,36 +165,12 @@ private fun TransactionDetailContent(
             .padding(horizontal = 16.dp)
             .padding(top = 8.dp, bottom = 24.dp)
     ) {
-        // ── Type badge ─────────────────────────────────────────────────────
+        // ── Card superior con tipo, importe y categoría ────────────────────
         val (typeLabel, typeColor) = when {
             transaction.isAdjustment -> "AJUSTE" to PrimaryDark
             transaction.isLinkedToAsset -> "INVERSIÓN" to PrimaryDark
             transaction.isIncome  -> "INGRESO" to IncomeGreen
             else                  -> "GASTO" to ExpenseRed
-        }
-
-        Box(
-            modifier = Modifier
-                .clip(RoundedCornerShape(8.dp))
-                .background(typeColor.copy(alpha = 0.15f))
-                .padding(horizontal = 14.dp, vertical = 6.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = typeLabel,
-                fontSize = 12.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = typeColor
-            )
-        }
-
-        Spacer(Modifier.height(16.dp))
-
-        // ── Amount ─────────────────────────────────────────────────────────
-        val amountColor = when {
-            transaction.isAdjustment -> PrimaryDark
-            transaction.isIncome    -> IncomeGreen
-            else                    -> ExpenseRed
         }
         val isNegativeAmount = when {
             transaction.isAdjustment -> transaction.amount < 0
@@ -204,17 +180,6 @@ private fun TransactionDetailContent(
         val absAmount = kotlin.math.abs(transaction.amount)
         val amountPrefix = if (isNegativeAmount) "−" else "+"
 
-        Text(
-            text = "$amountPrefix${formatAmountAbs(absAmount)} €",
-            fontSize = 34.sp,
-            fontWeight = FontWeight.Bold,
-            color = amountColor,
-            letterSpacing = (-1).sp
-        )
-
-        Spacer(Modifier.height(8.dp))
-
-        // ── Category line ──────────────────────────────────────────────────
         val emoji = when {
             transaction.isAdjustment   -> "⚖"
             transaction.isLinkedToAsset -> "📈"
@@ -222,15 +187,62 @@ private fun TransactionDetailContent(
             else                       -> "🏷"
         }
 
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(emoji, fontSize = 18.sp)
-            Spacer(Modifier.width(8.dp))
-            Text(
-                text = categoryName,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Medium,
-                color = TextPrimary
-            )
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(18.dp),
+            colors = CardDefaults.cardColors(containerColor = typeColor.copy(alpha = 0.10f)),
+            elevation = CardDefaults.cardElevation(0.dp)
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 22.dp, vertical = 22.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                // Type badge
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(typeColor.copy(alpha = 0.20f))
+                        .padding(horizontal = 14.dp, vertical = 6.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = typeLabel,
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = typeColor
+                    )
+                }
+
+                Spacer(Modifier.height(16.dp))
+
+                // Amount
+                Text(
+                    text = "$amountPrefix${formatAmountAbs(absAmount)} €",
+                    fontSize = 34.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = typeColor,
+                    letterSpacing = (-1).sp
+                )
+
+                Spacer(Modifier.height(10.dp))
+
+                // Category line
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Text(emoji, fontSize = 18.sp)
+                    Spacer(Modifier.width(8.dp))
+                    Text(
+                        text = categoryName,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = TextPrimary
+                    )
+                }
+            }
         }
 
         Spacer(Modifier.height(24.dp))
