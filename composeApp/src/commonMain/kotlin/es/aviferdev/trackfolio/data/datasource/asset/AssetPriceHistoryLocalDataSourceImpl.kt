@@ -33,6 +33,12 @@ class AssetPriceHistoryLocalDataSourceImpl(
             .mapToList(Dispatchers.IO)
             .map { list -> list.map { it.toDomain() } }
 
+    override fun getByAccount(accountId: String): Flow<List<AssetPriceHistory>> =
+        queries.selectByAccount(accountId)
+            .asFlow()
+            .mapToList(Dispatchers.IO)
+            .map { list -> list.map { it.toDomain() } }
+
     override suspend fun insert(record: AssetPriceHistory): Result<Unit> =
         runCatching {
             withContext(Dispatchers.IO) {

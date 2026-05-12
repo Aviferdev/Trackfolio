@@ -15,6 +15,9 @@ class AssetPriceHistoryRepositoryImpl(
     override fun getByAssetInRange(assetId: String, fromDate: Long, toDate: Long): Flow<List<AssetPriceHistory>> =
         dataSource.getByAssetInRange(assetId, fromDate, toDate)
 
+    override fun getByAccount(accountId: String): Flow<List<AssetPriceHistory>> =
+        dataSource.getByAccount(accountId)
+
     override suspend fun insert(record: AssetPriceHistory): Result<Unit> =
         dataSource.insert(record)
 

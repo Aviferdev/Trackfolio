@@ -13,7 +13,6 @@ import es.aviferdev.trackfolio.domain.repository.AssetTransactionRepository
 import es.aviferdev.trackfolio.domain.repository.FixedIncomeRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
@@ -40,31 +39,22 @@ class GetPortfolioValueHistoryUseCase(
         val assetsFlow = assetRepository.getAssetsByAccount(accountId)
         val txsFlow = assetTransactionRepository.getByAccount(accountId)
         val fiFlow = fixedIncomeRepository.getByAccount(accountId)
+        val priceFlow = priceHistoryRepository.getByAccount(accountId)
 
-        // Combinar primeros 3 flujos
-        val part1 = combine(assetsFlow, txsFlow) { assets, txs ->
-            Pair(assets, txs)
-        }
-
-        return combine(part1, fiFlow) { (assets, txs), fiPositions ->
-            buildPortfolioValueHistory(assets, txs, fiPositions)
+        return combine(assetsFlow, txsFlow, fiFlow, priceFlow) { assets, txs, fiPositions, prices ->
+            val priceHistories = prices.groupBy { it.assetId }
+            buildPortfolioValueHistory(assets, txs, fiPositions, priceHistories)
         }
     }
 
-    private suspend fun buildPortfolioValueHistory(
+    private fun buildPortfolioValueHistory(
         assets: List<Asset>,
         txs: List<AssetTransaction>,
-        fiPositions: List<FixedIncomePosition>
+        fiPositions: List<FixedIncomePosition>,
+        priceHistories: Map<String, List<AssetPriceHistory>>
     ): List<PortfolioValuePoint> {
         val nonArchived = assets.filter { !it.archived }
         if (nonArchived.isEmpty() && fiPositions.isEmpty()) return emptyList()
-
-        // Obtener históricos de precio para cada activo
-        val priceHistories = mutableMapOf<String, List<AssetPriceHistory>>()
-        for (asset in nonArchived) {
-            val history = priceHistoryRepository.getByAsset(asset.id).first()
-            priceHistories[asset.id] = history
-        }
 
         // Determinar rango de meses: desde la primera tx hasta hoy
         val allDates = txs.map { it.date } + fiPositions.map { it.startDate }

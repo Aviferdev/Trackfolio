@@ -14,6 +14,12 @@ SELECT * FROM AssetPriceHistoryEntity
 WHERE assetId = :assetId
 ORDER BY recordedAt DESC;
 
+selectByAccount:
+SELECT aph.* FROM AssetPriceHistoryEntity aph
+INNER JOIN AssetEntity a ON a.id = aph.assetId
+WHERE a.accountId = :accountId
+ORDER BY aph.recordedAt ASC;
+
 selectByAssetInRange:
 SELECT * FROM AssetPriceHistoryEntity
 WHERE assetId = :assetId AND recordedAt >= :fromDate AND recordedAt <= :toDate
