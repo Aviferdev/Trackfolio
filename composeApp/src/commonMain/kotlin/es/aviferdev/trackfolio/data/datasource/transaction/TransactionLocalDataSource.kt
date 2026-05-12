@@ -20,6 +20,8 @@ interface TransactionLocalDataSource {
     fun getExpensesByCategoryPerYear(accountId: String, year: String): Flow<List<CategoryBreakdown>>
     /** Desglose de ingresos por tipo para un año. */
     fun getIncomeByTypePerYear(accountId: String, year: String): Flow<List<IncomeTypeBreakdown>>
+    /** Obtiene una transacción por su ID. */
+    fun getById(id: String): Flow<Transaction?>
     // CRUD
     suspend fun insert(entity: TransactionEntity): Result<Unit>
     suspend fun update(entity: TransactionEntity): Result<Unit>

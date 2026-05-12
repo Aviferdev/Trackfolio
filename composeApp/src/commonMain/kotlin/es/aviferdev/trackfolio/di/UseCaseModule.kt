@@ -96,6 +96,7 @@ import es.aviferdev.trackfolio.domain.usecase.transaction.GetIncomeByTypeUseCase
 import es.aviferdev.trackfolio.domain.usecase.transaction.GetMonthlyBreakdownUseCase
 import es.aviferdev.trackfolio.domain.usecase.transaction.GetMonthlyTotalsUseCase
 import es.aviferdev.trackfolio.domain.usecase.transaction.GetOldestTransactionDateUseCase
+import es.aviferdev.trackfolio.domain.usecase.transaction.GetTransactionByIdUseCase
 import es.aviferdev.trackfolio.domain.usecase.transaction.GetTransactionsByMonthUseCase
 import es.aviferdev.trackfolio.domain.usecase.transaction.SaveTransactionUseCase
 import es.aviferdev.trackfolio.domain.usecase.transaction.UpdateTransactionUseCase
@@ -121,6 +122,7 @@ import es.aviferdev.trackfolio.ui.reconciliation.ReconciliationViewModel
 import es.aviferdev.trackfolio.ui.settings.backup.BackupViewModel
 import es.aviferdev.trackfolio.ui.settings.CategoryViewModel
 import es.aviferdev.trackfolio.ui.settings.IssuerViewModel
+import es.aviferdev.trackfolio.ui.transaction.TransactionDetailViewModel
 import es.aviferdev.trackfolio.ui.transaction.TransactionViewModel
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
@@ -140,6 +142,7 @@ val useCaseModule = module {
     // ── Transaction ───────────────────────────────────────────────────────────
     factory { GetTransactionsByMonthUseCase(get()) }
     factory { GetMonthlyTotalsUseCase(get()) }
+    factory { GetTransactionByIdUseCase(get()) }
     factory { SaveTransactionUseCase(get()) }
     factory { UpdateTransactionUseCase(get()) }
     factory { DeleteTransactionUseCase(get()) }
@@ -302,6 +305,15 @@ val useCaseModule = module {
             getAllCategoriesIncludingArchived  = get(),
             getOldestDate                     = get(),
             session                           = get()
+        )
+    }
+    viewModel { (transactionId: String) ->
+        TransactionDetailViewModel(
+            transactionId                    = transactionId,
+            getTransactionById               = get(),
+            getAccountById                   = get(),
+            getAllCategoriesIncludingArchived = get(),
+            deleteTransactionUseCase         = get()
         )
     }
     viewModel { DebtViewModel(get(), get(), get(), get(), get(), get()) }

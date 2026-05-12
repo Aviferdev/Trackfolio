@@ -46,6 +46,9 @@ class TransactionRepositoryImpl(
     override fun getIncomeByTypePerYear(accountId: String, year: String): Flow<List<IncomeTypeBreakdown>> =
         dataSource.getIncomeByTypePerYear(accountId, year)
 
+    override fun getTransactionById(id: String): Flow<Transaction?> =
+        dataSource.getById(id)
+
     override suspend fun saveTransaction(transaction: Transaction): Result<Unit> =
         dataSource.insert(transaction.toEntity())
 

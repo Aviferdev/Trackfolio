@@ -5,6 +5,7 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -41,7 +42,10 @@ private val MONTH_NAMES = listOf(
 // ═══════════════════════════════════════════════════════════════════════════════
 
 @Composable
-fun TransactionListScreen(viewModel: TransactionViewModel = koinViewModel()) {
+fun TransactionListScreen(
+    onTransactionClick: ((Transaction) -> Unit)? = null,
+    viewModel: TransactionViewModel = koinViewModel()
+) {
     val uiState        by viewModel.uiState.collectAsState()
     val searchQuery    by viewModel.searchQuery.collectAsState()
     val balancesHidden = LocalBalanceHidden.current
@@ -60,7 +64,8 @@ fun TransactionListScreen(viewModel: TransactionViewModel = koinViewModel()) {
         onNextMonth          = { viewModel.nextMonth() },
         onSearchQueryChange  = { viewModel.onSearchQueryChange(it) },
         onDeleteTransaction  = { txToDelete = it },
-        onEditTransaction    = { txToEdit = it }
+        onEditTransaction    = { txToEdit = it },
+        onTransactionClick   = onTransactionClick
     )
 
     // ── Dialogs / Sheets ──────────────────────────────────────────────────────
@@ -95,6 +100,7 @@ fun TransactionListContent(
     onSearchQueryChange: (String) -> Unit,
     onDeleteTransaction: (Transaction) -> Unit,
     onEditTransaction: (Transaction) -> Unit,
+    onTransactionClick: ((Transaction) -> Unit)? = null,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -155,7 +161,8 @@ fun TransactionListContent(
                             transaction    = transaction,
                             label          = TransactionViewModel.resolveLabel(transaction, uiState.categoryNames),
                             balancesHidden = balancesHidden,
-                            onEdit         = null
+                            onEdit         = null,
+                            onClick        = { onTransactionClick?.invoke(transaction) }
                         )
                     } else {
                         SwipeToDeleteContainer(onDelete = { onDeleteTransaction(transaction) }) {
@@ -163,7 +170,8 @@ fun TransactionListContent(
                                 transaction    = transaction,
                                 label          = TransactionViewModel.resolveLabel(transaction, uiState.categoryNames),
                                 balancesHidden = balancesHidden,
-                                onEdit         = { onEditTransaction(transaction) }
+                                onEdit         = { onEditTransaction(transaction) },
+                                onClick        = { onTransactionClick?.invoke(transaction) }
                             )
                         }
                     }
@@ -233,7 +241,8 @@ fun TransactionListContentPreview() {
             onNextMonth         = {},
             onSearchQueryChange = {},
             onDeleteTransaction = {},
-            onEditTransaction   = {}
+            onEditTransaction   = {},
+            onTransactionClick  = {}
         )
     }
 }
@@ -329,7 +338,11 @@ private fun TotalCell(
 
 @Composable
 private fun TransactionCard(
-    transaction: Transaction, label: String, balancesHidden: Boolean, onEdit: (() -> Unit)?
+    transaction: Transaction,
+    label: String,
+    balancesHidden: Boolean,
+    onEdit: (() -> Unit)?,
+    onClick: (() -> Unit)? = null,
 ) {
     val isIncome     = transaction.isIncome
     val isAdjustment = transaction.isAdjustment
@@ -359,6 +372,10 @@ private fun TransactionCard(
 
     Row(
         modifier = Modifier.fillMaxWidth().background(SurfaceWhite)
+            .then(
+                if (onClick != null) Modifier.clickable { onClick() }
+                else Modifier
+            )
             .padding(horizontal = 14.dp, vertical = 11.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {

@@ -36,6 +36,7 @@ import es.aviferdev.trackfolio.ui.settings.ExpenseSettingsScreen
 import es.aviferdev.trackfolio.ui.settings.IncomeSettingsScreen
 import es.aviferdev.trackfolio.ui.settings.IncomeTypeDetailScreen
 import es.aviferdev.trackfolio.ui.settings.SettingsScreen
+import es.aviferdev.trackfolio.ui.transaction.TransactionDetailScreen
 import es.aviferdev.trackfolio.ui.transaction.TransactionListScreen
 import org.koin.compose.koinInject
 
@@ -108,7 +109,35 @@ fun TrackfolioNavHost() {
                     )
                 }
                 composable(Screen.Transactions.route) {
-                    TransactionListScreen()
+                    TransactionListScreen(
+                        onTransactionClick = { transaction ->
+                            navController.navigate(
+                                Screen.TransactionDetail.buildRoute(transaction.id)
+                            ) {
+                                launchSingleTop = true
+                            }
+                        }
+                    )
+                }
+                composable(
+                    route = Screen.TransactionDetail.route,
+                    arguments = listOf(
+                        navArgument(Screen.TransactionDetail.ARG_TRANSACTION_ID) {
+                            type = NavType.StringType
+                        }
+                    )
+                ) { backStackEntry ->
+                    val transactionId =
+                        backStackEntry.arguments?.getString(Screen.TransactionDetail.ARG_TRANSACTION_ID)
+                            .orEmpty()
+                    TransactionDetailScreen(
+                        transactionId = transactionId,
+                        onBack = { navController.popBackStack() },
+                        onEditTransaction = { tx ->
+                            // Volver al listado (edición se manejará en Fase 4)
+                            navController.popBackStack()
+                        }
+                    )
                 }
                 composable(Screen.Portfolio.route) {
                     PortfolioScreen(

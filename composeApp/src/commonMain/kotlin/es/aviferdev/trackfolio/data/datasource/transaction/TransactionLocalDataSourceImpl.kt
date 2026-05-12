@@ -24,6 +24,12 @@ class TransactionLocalDataSourceImpl(
 
     private val queries = database.transactionQueries
 
+    override fun getById(id: String): Flow<Transaction?> =
+        queries.selectById(id)
+            .asFlow()
+            .mapToOneOrNull(Dispatchers.IO)
+            .map { it?.toDomain() }
+
     override fun getByMonthAndAccount(
         accountId: String, year: String, month: String
     ): Flow<List<Transaction>> =

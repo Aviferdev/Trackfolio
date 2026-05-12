@@ -19,6 +19,8 @@ interface TransactionRepository {
     fun getExpensesByCategoryPerYear(accountId: String, year: String): Flow<List<CategoryBreakdown>>
     /** Desglose de ingresos por tipo para un año. */
     fun getIncomeByTypePerYear(accountId: String, year: String): Flow<List<IncomeTypeBreakdown>>
+    /** Obtiene una transacción por su ID. */
+    fun getTransactionById(id: String): Flow<Transaction?>
     suspend fun saveTransaction(transaction: Transaction): Result<Unit>
     suspend fun updateTransaction(transaction: Transaction): Result<Unit>
     suspend fun deleteTransaction(id: String): Result<Unit>
