@@ -38,7 +38,7 @@ class GetFiscalReportDataUseCase(
         ) { account, annual, monthly, debts, incomes ->
             Base(
                 accountName      = account?.name ?: "Cuenta",
-                currency         = account?.currency ?: "EUR",
+                currency         = account?.currency ?: "€",
                 annualSummary    = annual,
                 monthlyBreakdown = monthly,
                 debts            = debts,

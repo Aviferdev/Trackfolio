@@ -397,7 +397,7 @@ private fun AssetCategoryDetailContentPreview() {
                 allCategories = listOf(
                     AssetCategory(id = "cat1", name = "Acciones", icon = "📈", sortOrder = 0, createdAt = 0L)
                 ),
-                currencyCode = "EUR"
+                currencyCode = "€"
             ),
             categoryId = "cat1",
             onBack = {},

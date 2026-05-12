@@ -172,7 +172,7 @@ private fun UpdateCurrentPriceSheetWithPricePreview() {
                 currentPriceUpdatedAt = Clock.System.now().toEpochMilliseconds(),
                 archived = false
             ),
-            currencyCode = "EUR",
+            currencyCode = "€",
             onConfirm = {},
             onDismiss = {}
         )
@@ -195,7 +195,7 @@ private fun UpdateCurrentPriceSheetWithoutPricePreview() {
                 currentPriceUpdatedAt = null,
                 archived = false
             ),
-            currencyCode = "EUR",
+            currencyCode = "€",
             onConfirm = {},
             onDismiss = {}
         )

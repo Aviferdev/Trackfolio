@@ -291,7 +291,7 @@ class DatabaseInitializer(
             Account(
                 id = "acc_main",
                 name = "Cuenta Principal",
-                currency = "EUR",
+                currency = "€",
                 initialBalance = 50000.0,
                 computedBalance = 50000.0,
                 createdAt = startTime,

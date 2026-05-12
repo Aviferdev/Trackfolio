@@ -158,9 +158,9 @@ fun AccountListContent(
 fun AccountListContentPreview() {
     val now = Clock.System.now().toEpochMilliseconds()
     val fakeAccounts = listOf(
-        Account(id = "1", name = "Cuenta Principal", currency = "EUR",
+        Account(id = "1", name = "Cuenta Principal", currency = "€",
             initialBalance = 5000.0, computedBalance = 5200.0, createdAt = now, accountType = AccountType.GENERAL),
-        Account(id = "2", name = "Efectivo", currency = "EUR",
+        Account(id = "2", name = "Efectivo", currency = "€",
             initialBalance = 0.0, computedBalance = 0.0, createdAt = now, accountType = AccountType.CASH),
         Account(id = "3", name = "USD Savings", currency = "USD",
             initialBalance = 1000.0, computedBalance = 1050.0, createdAt = now, accountType = AccountType.GENERAL)

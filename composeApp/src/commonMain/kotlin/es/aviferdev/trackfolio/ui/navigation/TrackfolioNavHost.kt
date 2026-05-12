@@ -17,6 +17,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import es.aviferdev.trackfolio.domain.model.IncomeType
+import es.aviferdev.trackfolio.domain.model.TransactionType
 import es.aviferdev.trackfolio.ui.annual.AnnualSummaryScreen
 import es.aviferdev.trackfolio.ui.common.loading.GlobalLoadingManager
 import es.aviferdev.trackfolio.ui.common.loading.GlobalLoadingOverlay
@@ -24,6 +25,7 @@ import es.aviferdev.trackfolio.ui.common.navigation.FloatingBottomNavBar
 import es.aviferdev.trackfolio.ui.debt.DebtListScreen
 import es.aviferdev.trackfolio.ui.fiscal.FiscalReportScreen
 import es.aviferdev.trackfolio.ui.fixedincome.FixedIncomeDetailScreen
+import es.aviferdev.trackfolio.ui.home.CategoryPickerScreen
 import es.aviferdev.trackfolio.ui.home.HomeScreen
 import es.aviferdev.trackfolio.ui.loan.LoanDetailScreen
 import es.aviferdev.trackfolio.ui.networth.NetWorthScreen
@@ -105,6 +107,38 @@ fun TrackfolioNavHost() {
                         },
                         onNavigateToSettings = {
                             navController.navigate(Screen.Settings.route) { launchSingleTop = true }
+                        }
+                    )
+                }
+                composable(
+                    route = Screen.CategoryPicker.route,
+                    arguments = listOf(
+                        navArgument(Screen.CategoryPicker.ARG_INITIAL_TYPE) {
+                            type = NavType.StringType
+                        }
+                    )
+                ) { backStackEntry ->
+                    val typeName = backStackEntry.arguments
+                        ?.getString(Screen.CategoryPicker.ARG_INITIAL_TYPE).orEmpty()
+                    val initialType = try { TransactionType.valueOf(typeName) } catch (_: Exception) { TransactionType.EXPENSE }
+                    CategoryPickerScreen(
+                        initialType = initialType,
+                        onBack = { navController.popBackStack() },
+                        onCreateCategory = {
+                            // TODO: Navegar a creación de categoría
+                            navController.popBackStack()
+                        },
+                        onCategorySelected = { categoryId ->
+                            navController.previousBackStackEntry
+                                ?.savedStateHandle
+                                ?.set("selected_category_id", categoryId)
+                            navController.popBackStack()
+                        },
+                        onIncomeTypeSelected = { incomeType ->
+                            navController.previousBackStackEntry
+                                ?.savedStateHandle
+                                ?.set("selected_income_type", incomeType.name)
+                            navController.popBackStack()
                         }
                     )
                 }

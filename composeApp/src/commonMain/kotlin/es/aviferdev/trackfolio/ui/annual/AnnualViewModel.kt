@@ -40,7 +40,7 @@ data class AnnualUiState(
     val expensesByCategory: List<DonutSlice> = emptyList(),
     val incomeByType: List<DonutSlice>       = emptyList(),
     val monthlyInvestments: List<MonthlyInvestment> = emptyList(),
-    val currencyCode: String              = "EUR"
+    val currencyCode: String              = "€"
 )
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -124,7 +124,7 @@ class AnnualViewModel(
                         expensesByCategory = expenseSlices,
                         incomeByType       = incomeSlices,
                         monthlyInvestments = investments,
-                        currencyCode       = "EUR"
+                        currencyCode       = "€"
                     )
                 }
             }

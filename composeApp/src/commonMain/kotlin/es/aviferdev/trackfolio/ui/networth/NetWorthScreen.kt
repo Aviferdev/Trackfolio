@@ -145,7 +145,7 @@ fun NetWorthContent(
                                 .toEpochMilliseconds() to point.netWorth
                         },
                         lineColor      = PrimaryDark,
-                        currencyCode   = "EUR",
+                        currencyCode   = "€",
                         balancesHidden = balancesHidden
                     )
                 }
@@ -167,7 +167,7 @@ fun NetWorthContent(
                             subtitle       = "",
                             slices         = assetDistribution,
                             totalAmount    = data.totalAssets,
-                            currencyCode   = "EUR",
+                            currencyCode   = "€",
                             balancesHidden = balancesHidden
                         )
                         Spacer(Modifier.height(12.dp))

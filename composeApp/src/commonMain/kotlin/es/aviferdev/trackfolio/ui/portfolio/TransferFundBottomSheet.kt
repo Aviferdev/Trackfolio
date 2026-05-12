@@ -493,7 +493,7 @@ private fun TransferFundBottomSheetPreview() {
             destinations = destinationAssets,
             platforms = platforms,
             assetTransactions = transactions,
-            currencyCode = "EUR",
+            currencyCode = "€",
             onExecuteTransfer = { _, _, _, _, _, _ -> },
             onDismiss = {}
         )

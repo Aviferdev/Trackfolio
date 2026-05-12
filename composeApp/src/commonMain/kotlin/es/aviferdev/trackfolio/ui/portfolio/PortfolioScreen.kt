@@ -495,7 +495,7 @@ private fun PortfolioContentPreview() {
                 totalRealizedPnL = 500.0,
                 totalUnrealizedPnL = 2000.0,
                 openPositionsCount = 5,
-                currencyCode = "EUR",
+                currencyCode = "€",
                 groups = listOf(
                     CategoryGroup(
                         category = AssetCategory(id = "cat1", name = "Acciones", icon = "📈", sortOrder = 0, createdAt = 0L),

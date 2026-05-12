@@ -46,7 +46,7 @@ data class AssetHistoryUiState(
     val allPlatforms: List<Platform>        = emptyList(),
     val platformsByAsset: Map<String, List<Platform>> = emptyMap(),
     val categories: List<AssetCategory>    = emptyList(),
-    val currencyCode: String                = "EUR",
+    val currencyCode: String                = "€",
     val isLoading: Boolean                  = true,
     val error: String?                      = null,
     // Sheet de añadir/editar movimiento
@@ -214,7 +214,7 @@ class AssetHistoryViewModel(
                 allPlatforms         = core.globalPlatforms,
                 platformsByAsset     = core.platformsByAsset,
                 categories           = core.categories,
-                currencyCode         = "EUR",
+                currencyCode         = "€",
                 isLoading            = false,
                 showAddSheet         = sheets.showAdd,
                 editing              = sheets.editing,
@@ -238,12 +238,12 @@ class AssetHistoryViewModel(
                         a.id != assetId && TransferableCategories.isTransferable(a.assetCategoryId)
                     }
                     flowOf(state.copy(
-                        currencyCode = acc?.currency ?: "EUR",
+                        currencyCode = acc?.currency ?: "€",
                         transferableDestinations = destinations
                     ))
                 }
             } else {
-                flowOf(state.copy(currencyCode = acc?.currency ?: "EUR"))
+                flowOf(state.copy(currencyCode = acc?.currency ?: "€"))
             }
         }
     }

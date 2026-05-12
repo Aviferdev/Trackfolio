@@ -73,7 +73,7 @@ fun FixedIncomeDetailScreen(
     )
 ) {
     val state by viewModel.uiState.collectAsState()
-    val symbol = currencySymbol("EUR")
+    val symbol = currencySymbol("€")
 
     var fabMenuOpen by remember { mutableStateOf(false) }
 

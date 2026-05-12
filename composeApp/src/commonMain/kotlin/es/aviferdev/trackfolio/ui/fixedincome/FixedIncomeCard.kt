@@ -318,7 +318,7 @@ fun Badge(count: Int, color: Color) {
 }
 
 fun currencySymbol(code: String): String = when (code.uppercase()) {
-    "EUR" -> "€"
+    "€" -> "€"
     "USD" -> "$"
     "GBP" -> "£"
     else -> code
@@ -413,7 +413,7 @@ private fun FixedIncomeSectionPreview() {
             summary = createMockSummary(),
             onPositionClick = {},
             onRegisterCoupon = {},
-            currencyCode = "EUR",
+            currencyCode = "€",
             balancesHidden = false
         )
     }

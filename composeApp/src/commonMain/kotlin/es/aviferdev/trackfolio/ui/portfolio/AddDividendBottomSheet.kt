@@ -302,7 +302,7 @@ private fun AddDividendBottomSheetWithAssetSelectorPreview() {
         AddDividendBottomSheet(
             fixedAssetName = null,
             allAssets = createMockAssets(),
-            currencyCode = "EUR",
+            currencyCode = "€",
             onSave = { _, _, _, _ -> },
             onDismiss = {}
         )
@@ -316,7 +316,7 @@ private fun AddDividendBottomSheetFixedAssetPreview() {
         AddDividendBottomSheet(
             fixedAssetName = "Apple Inc.",
             allAssets = emptyList(),
-            currencyCode = "EUR",
+            currencyCode = "€",
             onSave = { _, _, _, _ -> },
             onDismiss = {}
         )

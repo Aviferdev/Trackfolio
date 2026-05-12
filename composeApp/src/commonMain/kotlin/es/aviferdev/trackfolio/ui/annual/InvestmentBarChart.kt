@@ -206,7 +206,7 @@ private fun InvestmentBarChartPreview() {
         InvestmentBarChart(
             investments = createMockInvestments(),
             year = "2024",
-            currencyCode = "EUR",
+            currencyCode = "€",
             balancesHidden = false
         )
     }
@@ -219,7 +219,7 @@ private fun InvestmentBarChartEmptyPreview() {
         InvestmentBarChart(
             investments = emptyList(),
             year = "2025",
-            currencyCode = "EUR",
+            currencyCode = "€",
             balancesHidden = false
         )
     }

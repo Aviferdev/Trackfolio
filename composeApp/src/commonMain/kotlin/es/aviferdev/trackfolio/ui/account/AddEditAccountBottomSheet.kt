@@ -30,12 +30,12 @@ fun AddEditAccountBottomSheet(
     val isEditing = account != null
 
     var name             by remember { mutableStateOf(account?.name ?: "") }
-    var currency         by remember { mutableStateOf(account?.currency ?: "EUR") }
+    var currency         by remember { mutableStateOf(account?.currency ?: "€") }
     var isCash           by remember { mutableStateOf(account?.accountType == AccountType.CASH) }
     var nameError        by remember { mutableStateOf(false) }
     var expandedCurrency by remember { mutableStateOf(false) }
 
-    val currencies = listOf("EUR", "USD", "GBP", "CHF", "JPY", "MXN", "ARS", "CLP")
+    val currencies = listOf("€", "USD", "GBP", "CHF", "JPY", "MXN", "ARS", "CLP")
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
@@ -192,7 +192,7 @@ private fun AddEditAccountBottomSheetEditPreview() {
             account = Account(
                 id = "1",
                 name = "Cuenta Principal",
-                currency = "EUR",
+                currency = "€",
                 initialBalance = 5000.0,
                 computedBalance = 5200.0,
                 createdAt = Clock.System.now().toEpochMilliseconds(),

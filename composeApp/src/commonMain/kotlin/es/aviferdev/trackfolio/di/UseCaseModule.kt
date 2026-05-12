@@ -122,6 +122,7 @@ import es.aviferdev.trackfolio.ui.reconciliation.ReconciliationViewModel
 import es.aviferdev.trackfolio.ui.settings.backup.BackupViewModel
 import es.aviferdev.trackfolio.ui.settings.CategoryViewModel
 import es.aviferdev.trackfolio.ui.settings.IssuerViewModel
+import es.aviferdev.trackfolio.ui.home.CategoryPickerViewModel
 import es.aviferdev.trackfolio.ui.transaction.TransactionDetailViewModel
 import es.aviferdev.trackfolio.ui.transaction.TransactionViewModel
 import org.koin.core.module.dsl.viewModel
@@ -497,6 +498,12 @@ val useCaseModule = module {
             updateLoan                = get(),
             archiveLoan               = get(),
             rateChangeRepository      = get()
+        )
+    }
+    viewModel { (initialTypeName: String) ->
+        CategoryPickerViewModel(
+            initialTypeName    = initialTypeName,
+            getCategoriesByType = get()
         )
     }
 }

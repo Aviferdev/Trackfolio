@@ -197,7 +197,7 @@ fun FiscalReportContentPreview() {
                 selectedYear = "2026",
                 reportData = FiscalReportData(
                     accountName = "Cuenta Principal",
-                    currency = "EUR",
+                    currency = "€",
                     year = "2026",
                     generatedAt = 1700000000000,
                     annualSummary = es.aviferdev.trackfolio.domain.model.AnnualSummary(
@@ -303,7 +303,7 @@ private fun AnnualSummaryCard(report: FiscalReportData) {
 
 @Composable
 private fun FiscalMetricCell(label: String, amount: Double, currency: String, color: Color, modifier: Modifier = Modifier) {
-    val symbol = if (currency == "EUR") "€" else currency
+    val symbol = if (currency == "€") "€" else currency
     Card(
         modifier  = modifier,
         shape     = RoundedCornerShape(9.dp),

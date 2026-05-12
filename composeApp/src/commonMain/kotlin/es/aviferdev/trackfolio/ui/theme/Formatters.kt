@@ -26,7 +26,7 @@ fun formatDate(epochMillis: Long): String {
     }
 }
 
-fun formatAmount(amount: Double): String {
+fun formatAmount(amount: Double, addPositive: Boolean = false): String {
     val negative = amount < 0
     val abs = if (negative) -amount else amount
     val rounded = (abs * 100).toLong()
@@ -39,7 +39,11 @@ fun formatAmount(amount: Double): String {
         }
     }.reversed()
     val formatted = "$eurosStr,${cents.toString().padStart(2, '0')}"
-    return if (negative) "-$formatted" else "+$formatted"
+    return if (negative) "-$formatted" else if (addPositive){
+        "+$formatted"
+    } else {
+        formatted
+    }
 }
 
 // ─── Moneda ──────────────────────────────────────────────────────────────────
@@ -50,7 +54,7 @@ fun formatAmount(amount: Double): String {
  * confiando en que la cuenta ya identifica de cuál se trata.
  */
 fun currencySymbol(code: String): String = when (code.uppercase()) {
-    "EUR" -> "€"
+    "€" -> "€"
     "USD", "MXN", "ARS", "CLP" -> "$"
     "GBP" -> "£"
     "JPY" -> "¥"

@@ -268,7 +268,7 @@ private fun PortfolioDistributionCardPreview() {
         PortfolioDistributionCard(
             slices = createMockSlices(),
             totalCurrentValue = 100000.0,
-            currencyCode = "EUR",
+            currencyCode = "€",
             balancesHidden = false
         )
     }
@@ -281,7 +281,7 @@ private fun PortfolioDistributionCardHiddenPreview() {
         PortfolioDistributionCard(
             slices = createMockSlices(),
             totalCurrentValue = 100000.0,
-            currencyCode = "EUR",
+            currencyCode = "€",
             balancesHidden = true
         )
     }

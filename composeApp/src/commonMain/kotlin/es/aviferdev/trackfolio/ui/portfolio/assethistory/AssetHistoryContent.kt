@@ -398,7 +398,7 @@ fun AssetHistoryContentPreview() {
                 createdAt = 1704067200000
             )
         ),
-        currencyCode = "EUR",
+        currencyCode = "€",
         isLoading = false,
         isTransferable = false
     )

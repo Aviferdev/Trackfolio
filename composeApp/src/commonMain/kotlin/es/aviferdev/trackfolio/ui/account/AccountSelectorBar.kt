@@ -96,7 +96,7 @@ private fun createMockAccounts(): List<Account> {
         Account(
             id = "1",
             name = "Cuenta Principal",
-            currency = "EUR",
+            currency = "€",
             initialBalance = 5000.0,
             computedBalance = 5200.0,
             createdAt = now,
@@ -105,7 +105,7 @@ private fun createMockAccounts(): List<Account> {
         Account(
             id = "2",
             name = "Efectivo",
-            currency = "EUR",
+            currency = "€",
             initialBalance = 0.0,
             computedBalance = 0.0,
             createdAt = now,

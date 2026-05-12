@@ -275,7 +275,7 @@ private fun DonutChartCardPreview() {
             subtitle = "Año 2024",
             slices = createMockDonutSlices(),
             totalAmount = 60000.0,
-            currencyCode = "EUR",
+            currencyCode = "€",
             balancesHidden = false
         )
     }
@@ -290,7 +290,7 @@ private fun DonutChartCardEmptyPreview() {
             subtitle = "Año 2025",
             slices = emptyList(),
             totalAmount = 0.0,
-            currencyCode = "EUR",
+            currencyCode = "€",
             balancesHidden = false
         )
     }

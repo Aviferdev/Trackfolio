@@ -180,8 +180,8 @@ fun SettingsContentPreview() {
     TrackfolioTheme {
         SettingsContent(
             accounts = listOf(
-                Account(id = "1", name = "Cuenta principal", currency = "EUR", initialBalance = 1000.0, computedBalance = 1500.0, createdAt = 0L, accountType = AccountType.GENERAL),
-                Account(id = "2", name = "Efectivo", currency = "EUR", initialBalance = 0.0, computedBalance = 500.0, createdAt = 0L, accountType = AccountType.CASH)
+                Account(id = "1", name = "Cuenta principal", currency = "€", initialBalance = 1000.0, computedBalance = 1500.0, createdAt = 0L, accountType = AccountType.GENERAL),
+                Account(id = "2", name = "Efectivo", currency = "€", initialBalance = 0.0, computedBalance = 500.0, createdAt = 0L, accountType = AccountType.CASH)
             ),
             selectedId = "1",
             biometricEnabled = false,

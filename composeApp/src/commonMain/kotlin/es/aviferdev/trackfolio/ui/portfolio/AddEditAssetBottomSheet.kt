@@ -73,7 +73,7 @@ import kotlinx.datetime.toLocalDateTime
 fun AddEditAssetBottomSheet(
     asset: Asset?,
     categories: List<AssetCategory>,
-    currencyCode: String = "EUR",
+    currencyCode: String = "€",
     preselectedCategoryId: String? = null,
     allPlatforms: List<Platform> = emptyList(),
     linkedPlatformIds: Set<String> = emptySet(),
@@ -738,7 +738,7 @@ private fun AddEditAssetBottomSheetPreview() {
         AddEditAssetBottomSheet(
             asset = null,
             categories = sampleCategories,
-            currencyCode = "EUR",
+            currencyCode = "€",
             preselectedCategoryId = null,
             allPlatforms = samplePlatforms,
             linkedPlatformIds = emptySet(),
