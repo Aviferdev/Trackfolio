@@ -4,6 +4,7 @@ import es.aviferdev.trackfolio.domain.model.Account
 import es.aviferdev.trackfolio.domain.model.AccountType
 import es.aviferdev.trackfolio.domain.model.IncomeType
 import es.aviferdev.trackfolio.domain.model.TransactionType
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -356,21 +357,21 @@ private fun HeroCard(
 
     Card(
         modifier  = modifier.fillMaxWidth(),
-        shape     = RoundedCornerShape(16.dp),
+        shape     = RoundedCornerShape(18.dp),
         colors    = CardDefaults.cardColors(containerColor = PrimaryDark),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 20.dp, vertical = 20.dp)
+                .padding(horizontal = 22.dp, vertical = 22.dp)
         ) {
             // Nombre de cuenta
             Text(
                 text     = accountLabel,
-                fontSize = 12.sp,
-                color    = Color.White.copy(alpha = 0.55f),
-                fontWeight = FontWeight.Normal
+                fontSize = 10.sp,
+                color    = Color.White.copy(alpha = 0.60f),
+                fontWeight = FontWeight.SemiBold
             )
 
             Spacer(Modifier.height(6.dp))
@@ -378,10 +379,11 @@ private fun HeroCard(
             // Saldo principal
             Text(
                 text          = "${maskAmount(formatAmount(balance.selectedAccountBalance), balancesHidden)} $currency",
-                fontSize      = 34.sp,
-                fontWeight    = FontWeight.Bold,
+                fontSize      = 46.sp,
+                fontWeight    = FontWeight.ExtraBold,
                 color         = Color.White,
-                letterSpacing = (-1).sp
+                letterSpacing = (-2).sp,
+                lineHeight    = 46.sp
             )
 
             Spacer(Modifier.height(18.dp))
@@ -644,7 +646,7 @@ private fun TransactionRow(
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-//  QuickAccessSection - JSX: Gráficos + Deudas (solo 2 cards)
+//  QuickAccessSection - 3 cards: Resumen, Deudas, Fiscal
 // ─────────────────────────────────────────────────────────────────────────────
 @Composable
 private fun QuickAccessSection(
@@ -662,7 +664,7 @@ private fun QuickAccessSection(
         ) {
             QuickCard(
                 emoji    = "📊",
-                label    = "Gráficos",
+                label    = "Resumen",
                 onClick  = onNavigateToCharts,
                 modifier = Modifier.weight(1f)
             )
@@ -670,6 +672,12 @@ private fun QuickAccessSection(
                 emoji    = "🤝",
                 label    = "Deudas",
                 onClick  = onNavigateToDebts,
+                modifier = Modifier.weight(1f)
+            )
+            QuickCard(
+                emoji    = "📋",
+                label    = "Fiscal",
+                onClick  = onNavigateToFiscalReport,
                 modifier = Modifier.weight(1f)
             )
         }
@@ -686,25 +694,25 @@ private fun QuickCard(
     Card(
         onClick   = onClick,
         modifier  = modifier,
-        shape     = RoundedCornerShape(14.dp),
+        shape     = RoundedCornerShape(11.dp),
         colors    = CardDefaults.cardColors(containerColor = SurfaceWhite),
-        elevation = CardDefaults.cardElevation(0.dp)
+        elevation = CardDefaults.cardElevation(0.dp),
+        border    = BorderStroke(1.dp, BorderGray)
     ) {
         Column(
             modifier            = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 20.dp),
+                .padding(horizontal = 4.dp, vertical = 10.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+            verticalArrangement = Arrangement.spacedBy(5.dp)
         ) {
-            Text(emoji, fontSize = 24.sp)
-            Spacer(Modifier.height(8.dp))
+            Text(emoji, fontSize = 18.sp)
             Text(
                 text      = label,
-                fontSize  = 12.sp,
-                color     = TextSecondary,
+                fontSize  = 10.sp,
+                color     = TextPrimary,
                 textAlign = TextAlign.Center,
-                fontWeight = FontWeight.Medium
+                fontWeight = FontWeight.SemiBold
             )
         }
     }
