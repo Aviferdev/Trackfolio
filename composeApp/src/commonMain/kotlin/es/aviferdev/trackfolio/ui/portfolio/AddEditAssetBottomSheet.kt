@@ -609,7 +609,7 @@ Spacer(Modifier.height(12.dp))
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
-private fun formatFullDate(epochMillis: Long): String {
+fun formatFullDate(epochMillis: Long): String {
     val months = listOf("enero","febrero","marzo","abril","mayo","junio",
         "julio","agosto","septiembre","octubre","noviembre","diciembre")
     val instant = Instant.fromEpochMilliseconds(epochMillis)

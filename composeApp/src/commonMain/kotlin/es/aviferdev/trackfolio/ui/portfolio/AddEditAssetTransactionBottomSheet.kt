@@ -820,16 +820,6 @@ private fun EmptyPlatformsInlineHint() {
     }
 }
 
-// ─── Helpers de formato locales ───────────────────────────────────────────────
-
-private fun formatFullDate(epochMillis: Long): String {
-    val months = listOf("enero","febrero","marzo","abril","mayo","junio",
-        "julio","agosto","septiembre","octubre","noviembre","diciembre")
-    val instant = Instant.fromEpochMilliseconds(epochMillis)
-    val ld: LocalDate = instant.toLocalDateTime(TimeZone.currentSystemDefault()).date
-    return "${ld.dayOfMonth} de ${months[ld.monthNumber - 1]} de ${ld.year}"
-}
-
 internal fun formatQty(value: Double): String {
     if (value == value.toLong().toDouble()) return value.toLong().toString()
     val rounded = (value * 10000).toLong()
