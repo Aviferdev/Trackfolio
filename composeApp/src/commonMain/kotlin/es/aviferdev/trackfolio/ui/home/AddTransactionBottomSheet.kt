@@ -822,44 +822,46 @@ private fun DarkInlineField(
             verticalAlignment = Alignment.CenterVertically
         ) {
             BasicTextField(
-                value = value,
+                value         = value,
                 onValueChange = onValueChange,
-                singleLine = true,
+                singleLine    = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                textStyle = TextStyle(
-                    fontSize = 14.sp,
+                textStyle     = TextStyle(
+                    fontSize   = 14.sp,
                     fontWeight = FontWeight.Medium,
-                    color = Color.Transparent
+                    color      = Color.Transparent
                 ),
                 decorationBox = { inner ->
-                    Row(verticalAlignment = Alignment.CenterVertically) {
+                    Box(modifier = Modifier.fillMaxWidth()) {
                         inner()
-                        if (value.isEmpty()) {
-                            Text(
-                                placeholder,
-                                fontSize = 14.sp,
-                                color = TextTertiary
-                            )
-                        } else {
-                            Text(
-                                value,
-                                fontSize = 14.sp,
-                                fontWeight = FontWeight.Medium,
-                                color = TextPrimary
-                            )
-                        }
-                        if (suffix.isNotEmpty()) {
-                            Spacer(Modifier.width(4.dp))
-                            Text(
-                                suffix,
-                                fontSize = 14.sp,
-                                color = TextSecondary,
-                                fontWeight = FontWeight.Medium
-                            )
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            if (value.isEmpty()) {
+                                Text(
+                                    placeholder,
+                                    fontSize = 14.sp,
+                                    color    = TextTertiary
+                                )
+                            } else {
+                                Text(
+                                    value,
+                                    fontSize   = 14.sp,
+                                    fontWeight = FontWeight.Medium,
+                                    color      = TextPrimary
+                                )
+                            }
+                            if (suffix.isNotEmpty()) {
+                                Spacer(Modifier.width(4.dp))
+                                Text(
+                                    suffix,
+                                    fontSize   = 14.sp,
+                                    color      = TextSecondary,
+                                    fontWeight = FontWeight.Medium
+                                )
+                            }
                         }
                     }
                 },
-                modifier = Modifier.width(100.dp)
+                modifier = Modifier.fillMaxWidth()
             )
         }
     }
