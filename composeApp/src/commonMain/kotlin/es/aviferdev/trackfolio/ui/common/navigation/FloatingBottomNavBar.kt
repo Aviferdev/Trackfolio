@@ -77,7 +77,7 @@ fun FloatingBottomNavBar(
     val selectedIndex = remember(items, currentDestination) {
         items.indexOfFirst { item ->
             currentDestination?.hierarchy?.any { it.route == item.screen.route } == true
-        }.coerceAtLeast(0)
+        }
     }
 
     Surface(

@@ -44,3 +44,10 @@ sealed class Screen(val route: String) {
         fun buildRoute(loanId: String): String = "loan_detail/$loanId"
     }
 }
+
+/**
+ * Helper para determinar si una Screen corresponde a una pestaña principal de la bottom bar.
+ * Útil para lógica de navegación condicional (ej: deseleccionar bottom bar en pantallas secundarias).
+ */
+fun Screen.isMainTab(): Boolean =
+    this == Screen.Home || this == Screen.Portfolio || this == Screen.NetWorth
