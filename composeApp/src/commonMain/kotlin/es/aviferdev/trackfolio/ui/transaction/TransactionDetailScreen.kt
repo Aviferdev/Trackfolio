@@ -5,6 +5,13 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.ArrowDownward
+import androidx.compose.material.icons.outlined.ArrowUpward
+import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.material.icons.outlined.ShowChart
+import androidx.compose.material.icons.outlined.SwapHoriz
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -186,6 +193,12 @@ private fun TransactionDetailContent(
             incomeTypeEmoji != null    -> incomeTypeEmoji
             else                       -> "🏷"
         }
+        val categoryIcon = when {
+            transaction.isAdjustment   -> Icons.Outlined.SwapHoriz
+            transaction.isLinkedToAsset -> Icons.Outlined.ShowChart
+            transaction.isIncome       -> Icons.Outlined.ArrowDownward
+            else                       -> Icons.Outlined.ArrowUpward
+        }
 
         Card(
             modifier = Modifier.fillMaxWidth(),
@@ -197,7 +210,7 @@ private fun TransactionDetailContent(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 22.dp, vertical = 22.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
+                horizontalAlignment = Alignment.Start
             ) {
                 // Type badge
                 Box(
@@ -223,7 +236,8 @@ private fun TransactionDetailContent(
                     fontSize = 34.sp,
                     fontWeight = FontWeight.Bold,
                     color = typeColor,
-                    letterSpacing = (-1).sp
+                    letterSpacing = (-1).sp,
+                    modifier = Modifier.fillMaxWidth()
                 )
 
                 Spacer(Modifier.height(10.dp))
@@ -231,9 +245,14 @@ private fun TransactionDetailContent(
                 // Category line
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
+                    horizontalArrangement = Arrangement.Start
                 ) {
-                    Text(emoji, fontSize = 18.sp)
+                    Icon(
+                        imageVector = categoryIcon,
+                        contentDescription = null,
+                        tint = TextPrimary,
+                        modifier = Modifier.size(20.dp)
+                    )
                     Spacer(Modifier.width(8.dp))
                     Text(
                         text = categoryName,
@@ -262,7 +281,7 @@ private fun TransactionDetailContent(
                 // Categoría
                 DetailRow(
                     label = "Categoría",
-                    value = "$emoji $categoryName",
+                    value = categoryName,
                     isLast = false
                 )
 
@@ -364,6 +383,12 @@ private fun TransactionDetailContent(
                         brush = androidx.compose.ui.graphics.SolidColor(PrimaryDark)
                     )
                 ) {
+                    Icon(
+                        imageVector = Icons.Outlined.Edit,
+                        contentDescription = "Editar",
+                        modifier = Modifier.size(18.dp)
+                    )
+                    Spacer(Modifier.width(6.dp))
                     Text(
                         "Editar",
                         fontSize = 15.sp,
@@ -383,6 +408,12 @@ private fun TransactionDetailContent(
                         contentColor = Color.White
                     )
                 ) {
+                    Icon(
+                        imageVector = Icons.Outlined.Delete,
+                        contentDescription = "Eliminar",
+                        modifier = Modifier.size(18.dp)
+                    )
+                    Spacer(Modifier.width(6.dp))
                     Text(
                         "Eliminar",
                         fontSize = 15.sp,
@@ -445,13 +476,14 @@ private fun DetailRow(
                 color = TextSecondary,
                 modifier = Modifier.width(100.dp)
             )
-            // Value
+            // Value — alineado a la izquierda
             Text(
                 text = value,
                 fontSize = 13.sp,
                 fontWeight = FontWeight.Medium,
                 color = TextPrimary,
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f),
+                textAlign = TextAlign.Start
             )
         }
         if (!isLast) {

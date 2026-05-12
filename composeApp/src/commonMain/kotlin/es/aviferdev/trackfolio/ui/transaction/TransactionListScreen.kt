@@ -101,6 +101,7 @@ private val MONTH_NAMES = listOf(
 
 @Composable
 fun TransactionListScreen(
+    onBack: (() -> Unit)? = null,
     onTransactionClick: ((Transaction) -> Unit)? = null,
     viewModel: TransactionViewModel = koinViewModel()
 ) {
@@ -118,6 +119,7 @@ fun TransactionListScreen(
         searchQuery = searchQuery,
         balancesHidden = balancesHidden,
         contentVisible = contentVisible,
+        onBack = onBack,
         onPreviousMonth = { viewModel.previousMonth() },
         onNextMonth = { viewModel.nextMonth() },
         onSearchQueryChange = { viewModel.onSearchQueryChange(it) },
@@ -153,6 +155,7 @@ fun TransactionListContent(
     searchQuery: String,
     balancesHidden: Boolean,
     contentVisible: Boolean,
+    onBack: (() -> Unit)? = null,
     onPreviousMonth: () -> Unit,
     onNextMonth: () -> Unit,
     onSearchQueryChange: (String) -> Unit,
@@ -174,7 +177,8 @@ fun TransactionListContent(
             currentValueSecondary = uiState.year,
             canGoBack = uiState.canGoBack,
             onPrevious = onPreviousMonth,
-            onNext = onNextMonth
+            onNext = onNextMonth,
+            navigateBack = onBack
         )
 
         AnimatedVisibility(

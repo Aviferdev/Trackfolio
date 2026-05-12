@@ -66,6 +66,12 @@ class AddTransactionViewModel(
     var selectedIncomeType by mutableStateOf<IncomeType?>(null)
         private set
 
+    // ── Modo de entrada de ingresos ──────────────────────────────────────────
+    var incomeInputMode by mutableStateOf(IncomeInputMode.FISCAL)
+        private set
+    var netAmount by mutableStateOf("")
+        private set
+
     // ── Campos fiscales de ingreso ────────────────────────────────────────────
     var grossAmount by mutableStateOf("")
         private set
@@ -156,6 +162,13 @@ class AddTransactionViewModel(
             }
             // INCOME
             val incType = selectedIncomeType ?: return false
+
+            // Modo solo neto
+            if (incomeInputMode == IncomeInputMode.NET_ONLY) {
+                return netAmount.replace(',', '.').toDoubleOrNull()?.let { it > 0 } == true
+            }
+
+            // Modo fiscal
             val gross = grossAmount.replace(',', '.').toDoubleOrNull()
             if (incType == IncomeType.EXEMPT_INCOME) {
                 // Solo necesita importe
@@ -195,6 +208,9 @@ class AddTransactionViewModel(
 
     fun onIncomeTypeChange(incomeType: IncomeType) {
         selectedIncomeType = incomeType
+        // Resetear modo de entrada
+        incomeInputMode = IncomeInputMode.FISCAL
+        netAmount = ""
         // Limpiar campos que no aplican
         if (!incomeType.hasSocialSecurity) socialSecurityAmount = ""
         if (!incomeType.hasCommission) commissionAmount = ""
@@ -231,6 +247,22 @@ class AddTransactionViewModel(
     fun onCategoryChange(categoryId: String) { selectedCategoryId = categoryId }
     fun onNotesChange(value: String) { notes = value }
     fun onDateChange(millis: Long) { dateMillis = millis }
+
+    fun onIncomeModeChange(mode: IncomeInputMode) {
+        incomeInputMode = mode
+        if (mode == IncomeInputMode.NET_ONLY) {
+            // Limpiar campos fiscales
+            grossAmount = ""
+            irpfPercent = ""
+            irpfFixedAmount = ""
+            socialSecurityAmount = ""
+            commissionAmount = ""
+            selectedIssuerId = null
+        } else {
+            netAmount = ""
+        }
+    }
+    fun onNetAmountChange(value: String) { netAmount = filterDecimal(value) }
 
     fun onIssuerSelected(issuerId: String) {
         selectedIssuerId = issuerId
@@ -313,6 +345,23 @@ class AddTransactionViewModel(
     private suspend fun saveIncome(accountId: String, now: Long) {
         val incType = selectedIncomeType!!
 
+        // Modo solo neto
+        if (incomeInputMode == IncomeInputMode.NET_ONLY) {
+            val net = netAmount.replace(',', '.').toDoubleOrNull() ?: run {
+                _uiState.value = AddTransactionUiState.Error("Importe neto inválido")
+                return
+            }
+            val transaction = buildTransaction(
+                accountId       = accountId,
+                netAmount       = net,
+                now             = now,
+                incomeType      = incType,
+                isNetOnlyIncome = true
+            )
+            persistTransaction(transaction)
+            return
+        }
+
         val finalIssuerId: String? = selectedIssuerId
         var finalIssuerName: String? = null
 
@@ -354,7 +403,8 @@ class AddTransactionViewModel(
         socialSecurityAmount: Double? = null,
         commissionAmount: Double? = null,
         issuerId: String? = null,
-        issuerName: String? = null
+        issuerName: String? = null,
+        isNetOnlyIncome: Boolean = false
     ): Transaction {
         val existing = editingTransaction
         return Transaction(
@@ -366,6 +416,7 @@ class AddTransactionViewModel(
             date                 = dateMillis,
             notes                = notes.ifBlank { null },
             createdAt            = existing?.createdAt ?: now,
+            isNetOnlyIncome      = isNetOnlyIncome,
             incomeType           = incomeType,
             grossAmount          = grossAmount,
             irpfPercent          = irpfPercent,
@@ -393,6 +444,8 @@ class AddTransactionViewModel(
 
     private fun clearIncomeFields() {
         selectedIncomeType   = null
+        incomeInputMode      = IncomeInputMode.FISCAL
+        netAmount            = ""
         grossAmount          = ""
         irpfPercent          = ""
         irpfFixedAmount      = ""
@@ -440,3 +493,6 @@ class AddTransactionViewModel(
 
 /** Modo de entrada del IRPF: porcentual o importe fijo. */
 enum class IrpfInputMode { PERCENT, AMOUNT }
+
+/** Modo de entrada de ingresos: con desglose fiscal o solo neto. */
+enum class IncomeInputMode { FISCAL, NET_ONLY }

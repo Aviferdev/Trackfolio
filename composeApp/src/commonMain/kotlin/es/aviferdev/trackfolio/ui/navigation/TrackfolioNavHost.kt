@@ -60,23 +60,34 @@ fun TrackfolioNavHost() {
     Box(Modifier.fillMaxSize()) {
         Scaffold(
             bottomBar = {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.BottomCenter
-                ) {
-                    FloatingBottomNavBar(
-                        items = bottomNavItems(),
-                        currentDestination = currentDestination,
-                        onItemClick = { item ->
-                            if (currentDestination?.route == item.screen.route) return@FloatingBottomNavBar
-                            navController.popBackStack(Screen.Home.route, inclusive = false)
-                            if (item.screen.route != Screen.Home.route) {
-                                navController.navigate(item.screen.route) {
-                                    launchSingleTop = true
+                val hideRoutes = listOf(
+                    Screen.TransactionDetail.route,
+                    Screen.Transactions.route,
+                    Screen.CategoryPicker.route,
+                )
+                val showBottomBar = currentDestination?.route?.let { route ->
+                    hideRoutes.none { route.startsWith(it.substringBefore("{")) }
+                } ?: true
+
+                if (showBottomBar) {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.BottomCenter
+                    ) {
+                        FloatingBottomNavBar(
+                            items = bottomNavItems(),
+                            currentDestination = currentDestination,
+                            onItemClick = { item ->
+                                if (currentDestination?.route == item.screen.route) return@FloatingBottomNavBar
+                                navController.popBackStack(Screen.Home.route, inclusive = false)
+                                if (item.screen.route != Screen.Home.route) {
+                                    navController.navigate(item.screen.route) {
+                                        launchSingleTop = true
+                                    }
                                 }
                             }
-                        }
-                    )
+                        )
+                    }
                 }
             }
         ) { innerPadding ->
@@ -110,6 +121,7 @@ fun TrackfolioNavHost() {
                 }
                 composable(Screen.Transactions.route) {
                     TransactionListScreen(
+                        onBack = { navController.popBackStack() },
                         onTransactionClick = { transaction ->
                             navController.navigate(
                                 Screen.TransactionDetail.buildRoute(transaction.id)

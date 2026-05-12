@@ -8,6 +8,7 @@ CREATE TABLE TransactionEntity (
     notes                      TEXT,
     createdAt                  INTEGER NOT NULL,
     excludeFromFiscal          INTEGER NOT NULL DEFAULT 0,
+    isNetOnlyIncome            INTEGER NOT NULL DEFAULT 0,
     -- ── Campos de ingreso ─────────────────────────────────────────────────────
     incomeType                 TEXT,
     grossAmount                REAL,
@@ -139,11 +140,11 @@ WHERE linkedAssetTransactionId IS NULL
 insert:
 INSERT INTO TransactionEntity(
     id, accountId, amount, type, categoryId, date, notes, createdAt,
-    excludeFromFiscal,
+    excludeFromFiscal, isNetOnlyIncome,
     incomeType, grossAmount, irpfPercent, socialSecurityAmount,
     commissionAmount, issuerId, issuerName, linkedAssetTransactionId,
     linkedLoanId
-) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 
 update:
 UPDATE TransactionEntity
@@ -154,6 +155,7 @@ SET accountId                = :accountId,
     date                     = :date,
     notes                    = :notes,
     excludeFromFiscal        = :excludeFromFiscal,
+    isNetOnlyIncome          = :isNetOnlyIncome,
     incomeType               = :incomeType,
     grossAmount              = :grossAmount,
     irpfPercent              = :irpfPercent,

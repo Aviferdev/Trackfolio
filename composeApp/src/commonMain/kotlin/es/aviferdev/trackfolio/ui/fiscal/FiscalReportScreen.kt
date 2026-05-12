@@ -102,6 +102,31 @@ fun FiscalReportContent(
             }
         )
 
+        if (state.hasNetOnlyIncomes && !state.isLoading) {
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                shape = RoundedCornerShape(10.dp),
+                color = WarnAmber.copy(alpha = 0.12f)
+            ) {
+                Row(
+                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text("⚠️", fontSize = 14.sp)
+                    Spacer(Modifier.width(8.dp))
+                    Text(
+                        "Hay ingresos registrados solo con el importe neto. " +
+                                "El desglose fiscal puede estar incompleto.",
+                        fontSize = 11.sp,
+                        color = WarnAmber,
+                        lineHeight = 14.sp
+                    )
+                }
+            }
+        }
+
         if (state.isLoading) {
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 CircularProgressIndicator(color = PrimaryDark)

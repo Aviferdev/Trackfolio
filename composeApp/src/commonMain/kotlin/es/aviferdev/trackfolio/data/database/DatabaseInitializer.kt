@@ -935,6 +935,7 @@ class DatabaseInitializer(
         notes = notes,
         createdAt = createdAt,
         excludeFromFiscal = if (excludeFromFiscal) 1L else 0L,
+        isNetOnlyIncome   = if (isNetOnlyIncome) 1L else 0L,
         incomeType = incomeType?.name,
         grossAmount = grossAmount,
         irpfPercent = irpfPercent,

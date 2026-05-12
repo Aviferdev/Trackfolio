@@ -23,7 +23,8 @@ data class FiscalReportUiState(
     val isGenerating: Boolean       = false,
     val showPasswordSheet: Boolean  = false,
     val successMessage: String?     = null,
-    val errorMessage: String?       = null
+    val errorMessage: String?       = null,
+    val hasNetOnlyIncomes: Boolean  = false
 )
 
 private fun currentYear(): String =
@@ -56,7 +57,11 @@ class FiscalReportViewModel(
                     )
                 }
                 .collectLatest { data ->
-                    _uiState.value = _uiState.value.copy(isLoading = false, reportData = data)
+                    _uiState.value = _uiState.value.copy(
+                        isLoading = false,
+                        reportData = data,
+                        hasNetOnlyIncomes = data.hasNetOnlyIncomes
+                    )
                 }
         }
     }

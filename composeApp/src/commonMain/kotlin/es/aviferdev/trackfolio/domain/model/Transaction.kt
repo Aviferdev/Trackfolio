@@ -40,7 +40,9 @@ data class Transaction(
 
     // ── Reconciliación ────────────────────────────────────────────────────────
     /** Si true, esta transacción se excluye del informe fiscal (IRPF). */
-    val excludeFromFiscal: Boolean = false
+    val excludeFromFiscal: Boolean = false,
+    /** Si true, solo se registró el neto (sin desglose fiscal). */
+    val isNetOnlyIncome: Boolean = false
 ) {
     /** Importe retenido por IRPF = bruto − cotizaciones − comisiones − neto. */
     val irpfAmount: Double?

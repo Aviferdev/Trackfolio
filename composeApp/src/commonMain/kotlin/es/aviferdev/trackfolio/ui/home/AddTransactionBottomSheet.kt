@@ -96,6 +96,10 @@ fun AddTransactionBottomSheet(
             selectedIncomeType       = viewModel.selectedIncomeType,
             onIncomeTypeChange       = { viewModel.onIncomeTypeChange(it) },
             calculatedNet            = viewModel.calculatedNet,
+            incomeInputMode          = viewModel.incomeInputMode,
+            onIncomeModeChange       = { viewModel.onIncomeModeChange(it) },
+            netAmount                = viewModel.netAmount,
+            onNetAmountChange        = { viewModel.onNetAmountChange(it) },
             grossAmount              = viewModel.grossAmount,
             onGrossAmountChange      = { viewModel.onGrossAmountChange(it) },
             socialSecurityAmount     = viewModel.socialSecurityAmount,
@@ -142,6 +146,10 @@ private fun AddTransactionSheetContent(
     selectedIncomeType: IncomeType?,
     onIncomeTypeChange: (IncomeType) -> Unit,
     calculatedNet: Double?,
+    incomeInputMode: IncomeInputMode,
+    onIncomeModeChange: (IncomeInputMode) -> Unit,
+    netAmount: String,
+    onNetAmountChange: (String) -> Unit,
     grossAmount: String,
     onGrossAmountChange: (String) -> Unit,
     socialSecurityAmount: String,
@@ -227,15 +235,17 @@ private fun AddTransactionSheetContent(
 
         Spacer(Modifier.height(20.dp))
 
-        // ── Amount ───────────────────────────────────────────────────────
-        DarkAmountInput(
-            value         = amount,
-            onValueChange = onAmountChange,
-            label         = "Importe",
-            color         = if (type == TransactionType.INCOME) IncomeGreen else ExpenseRed
-        )
+        // ── Amount (solo para gastos; ingresos usan sus propios campos) ────
+        if (type == TransactionType.EXPENSE) {
+            DarkAmountInput(
+                value         = amount,
+                onValueChange = onAmountChange,
+                label         = "Importe",
+                color         = ExpenseRed
+            )
 
-        Spacer(Modifier.height(16.dp))
+            Spacer(Modifier.height(16.dp))
+        }
 
         // ── Category / Income Type row ───────────────────────────────────
         if (type == TransactionType.EXPENSE) {
@@ -298,8 +308,61 @@ private fun AddTransactionSheetContent(
 
             val incType = selectedIncomeType
 
-            when (incType) {
-                IncomeType.EXEMPT_INCOME -> {
+            // ── Toggle de modo: Fiscal / Solo neto ────────────────────────
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                ModeChip(
+                    label    = "📋 Fiscal",
+                    selected = incomeInputMode == IncomeInputMode.FISCAL,
+                    onClick  = { onIncomeModeChange(IncomeInputMode.FISCAL) },
+                    modifier = Modifier.weight(1f)
+                )
+                ModeChip(
+                    label    = "📝 Solo neto",
+                    selected = incomeInputMode == IncomeInputMode.NET_ONLY,
+                    onClick  = { onIncomeModeChange(IncomeInputMode.NET_ONLY) },
+                    modifier = Modifier.weight(1f)
+                )
+            }
+
+            Spacer(Modifier.height(14.dp))
+
+            if (incomeInputMode == IncomeInputMode.NET_ONLY) {
+                // ── MODO SOLO NETO ─────────────────────────────────────────
+                Surface(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape    = RoundedCornerShape(10.dp),
+                    color    = WarnAmber.copy(alpha = 0.12f)
+                ) {
+                    Row(
+                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text("⚠️", fontSize = 14.sp)
+                        Spacer(Modifier.width(8.dp))
+                        Text(
+                            "Este ingreso no se reflejará correctamente en el informe fiscal IRPF",
+                            fontSize = 11.sp,
+                            color    = WarnAmber,
+                            lineHeight = 14.sp
+                        )
+                    }
+                }
+
+                Spacer(Modifier.height(14.dp))
+
+                DarkAmountInput(
+                    value         = netAmount,
+                    onValueChange = onNetAmountChange,
+                    label         = "Importe neto",
+                    color         = IncomeGreen
+                )
+            } else {
+                // ── MODO FISCAL ────────────────────────────────────────────
+                when (incType) {
+                    IncomeType.EXEMPT_INCOME -> {
                     DarkInlineField(
                         label       = "Importe",
                         value       = grossAmount,
@@ -366,6 +429,7 @@ private fun AddTransactionSheetContent(
                         issuerTypeLabel = incType.issuerType.label
                     )
                 }
+            }
             }
         }
 
@@ -435,6 +499,35 @@ private fun TypePill(
             fontSize   = 14.sp,
             fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal,
             color      = if (selected) Color.White else TextSecondary
+        )
+    }
+}
+
+@Composable
+private fun ModeChip(
+    label: String,
+    selected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Box(
+        modifier = modifier
+            .clip(RoundedCornerShape(10.dp))
+            .background(if (selected) PrimaryDark.copy(alpha = 0.15f) else Color.Transparent)
+            .border(
+                width = if (selected) 1.5.dp else 0.5.dp,
+                color = if (selected) PrimaryDark else BorderGray,
+                shape = RoundedCornerShape(10.dp)
+            )
+            .clickable { onClick() }
+            .padding(vertical = 8.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            label,
+            fontSize   = 12.sp,
+            fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal,
+            color      = if (selected) PrimaryDark else TextSecondary
         )
     }
 }
