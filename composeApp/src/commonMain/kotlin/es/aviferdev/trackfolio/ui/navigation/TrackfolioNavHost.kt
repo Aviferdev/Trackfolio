@@ -1,16 +1,39 @@
 package es.aviferdev.trackfolio.ui.navigation
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -38,8 +61,10 @@ import es.aviferdev.trackfolio.ui.settings.SettingsScreen
 import es.aviferdev.trackfolio.ui.theme.PrimaryDark
 import es.aviferdev.trackfolio.ui.theme.SurfaceElevated
 import es.aviferdev.trackfolio.ui.theme.SurfaceWhite
+import es.aviferdev.trackfolio.ui.theme.TextPrimary
 import es.aviferdev.trackfolio.ui.theme.TextSecondary
 import es.aviferdev.trackfolio.ui.transaction.TransactionListScreen
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 data class BottomNavItem(
     val screen: Screen,
@@ -50,47 +75,31 @@ data class BottomNavItem(
 
 @Composable
 fun TrackfolioNavHost() {
-    val navController      = rememberNavController()
-    val navBackStackEntry  by navController.currentBackStackEntryAsState()
+    val navController = rememberNavController()
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
-    val items              = bottomNavItems()
 
     Scaffold(
         bottomBar = {
-            NavigationBar(containerColor = SurfaceWhite) {
-                items.forEach { item ->
-                    val selected = currentDestination?.hierarchy
-                        ?.any { it.route == item.screen.route } == true
-
-                    NavigationBarItem(
-                        selected = selected,
-                        onClick = {
-                            if (currentDestination?.route == item.screen.route) return@NavigationBarItem
-                            navController.popBackStack(Screen.Home.route, inclusive = false)
-                            if (item.screen.route != Screen.Home.route) {
-                                navController.navigate(item.screen.route) {
-                                    launchSingleTop = true
-                                }
-                            }
-                        },
-                        icon  = { Icon(if (selected) item.selectedIcon else item.icon, item.label) },
-                        label = { Text(item.label) },
-                        colors = NavigationBarItemDefaults.colors(
-                            selectedIconColor   = PrimaryDark,
-                            selectedTextColor   = PrimaryDark,
-                            unselectedIconColor = TextSecondary,
-                            unselectedTextColor = TextSecondary,
-                            indicatorColor      = SurfaceElevated
-                        )
-                    )
+            FloatingBottomNavBar(
+                items = bottomNavItems(),
+                currentDestination = currentDestination,
+                onItemClick = { item ->
+                    if (currentDestination?.route == item.screen.route) return@FloatingBottomNavBar
+                    navController.popBackStack(Screen.Home.route, inclusive = false)
+                    if (item.screen.route != Screen.Home.route) {
+                        navController.navigate(item.screen.route) {
+                            launchSingleTop = true
+                        }
+                    }
                 }
-            }
+            )
         }
     ) { innerPadding ->
         NavHost(
-            navController    = navController,
+            navController = navController,
             startDestination = Screen.Home.route,
-            modifier         = Modifier.padding(innerPadding)
+            modifier = Modifier.padding(top = innerPadding.calculateTopPadding())
         ) {
             composable(Screen.Home.route) {
                 HomeScreen(
@@ -175,9 +184,11 @@ fun TrackfolioNavHost() {
                 )
             }
             composable(
-                route     = Screen.IncomeTypeDetail.route,
+                route = Screen.IncomeTypeDetail.route,
                 arguments = listOf(
-                    navArgument(Screen.IncomeTypeDetail.ARG_INCOME_TYPE) { type = NavType.StringType }
+                    navArgument(Screen.IncomeTypeDetail.ARG_INCOME_TYPE) {
+                        type = NavType.StringType
+                    }
                 )
             ) { backStackEntry ->
                 val incomeTypeName = backStackEntry.arguments
@@ -186,7 +197,7 @@ fun TrackfolioNavHost() {
                 if (incomeType != null) {
                     IncomeTypeDetailScreen(
                         incomeType = incomeType,
-                        onBack     = { navController.popBackStack() }
+                        onBack = { navController.popBackStack() }
                     )
                 }
             }
@@ -212,27 +223,32 @@ fun TrackfolioNavHost() {
                 )
             }
             composable(
-                route     = Screen.AssetHistory.route,
+                route = Screen.AssetHistory.route,
                 arguments = listOf(
                     navArgument(Screen.AssetHistory.ARG_ASSET_ID) { type = NavType.StringType }
                 )
             ) { backStackEntry ->
-                val assetId = backStackEntry.arguments?.getString(Screen.AssetHistory.ARG_ASSET_ID).orEmpty()
+                val assetId =
+                    backStackEntry.arguments?.getString(Screen.AssetHistory.ARG_ASSET_ID).orEmpty()
                 AssetHistoryScreen(
                     assetId = assetId,
-                    onBack  = { navController.popBackStack() }
+                    onBack = { navController.popBackStack() }
                 )
             }
             composable(
-                route     = Screen.AssetCategoryDetail.route,
+                route = Screen.AssetCategoryDetail.route,
                 arguments = listOf(
-                    navArgument(Screen.AssetCategoryDetail.ARG_CATEGORY_ID) { type = NavType.StringType }
+                    navArgument(Screen.AssetCategoryDetail.ARG_CATEGORY_ID) {
+                        type = NavType.StringType
+                    }
                 )
             ) { backStackEntry ->
-                val categoryId = backStackEntry.arguments?.getString(Screen.AssetCategoryDetail.ARG_CATEGORY_ID).orEmpty()
+                val categoryId =
+                    backStackEntry.arguments?.getString(Screen.AssetCategoryDetail.ARG_CATEGORY_ID)
+                        .orEmpty()
                 AssetCategoryDetailScreen(
-                    categoryId   = categoryId,
-                    onBack       = { navController.popBackStack() },
+                    categoryId = categoryId,
+                    onBack = { navController.popBackStack() },
                     onAssetClick = { assetId ->
                         navController.navigate(Screen.AssetDetail.buildRoute(assetId)) {
                             launchSingleTop = true
@@ -246,40 +262,146 @@ fun TrackfolioNavHost() {
                 )
             }
             composable(
-                route     = Screen.AssetDetail.route,
+                route = Screen.AssetDetail.route,
                 arguments = listOf(
                     navArgument(Screen.AssetDetail.ARG_ASSET_ID) { type = NavType.StringType }
                 )
             ) { backStackEntry ->
-                val assetId = backStackEntry.arguments?.getString(Screen.AssetDetail.ARG_ASSET_ID).orEmpty()
+                val assetId =
+                    backStackEntry.arguments?.getString(Screen.AssetDetail.ARG_ASSET_ID).orEmpty()
                 AssetDetailScreen(
                     assetId = assetId,
-                    onBack  = { navController.popBackStack() }
+                    onBack = { navController.popBackStack() }
                 )
             }
             composable(
-                route     = Screen.FixedIncomeDetail.route,
+                route = Screen.FixedIncomeDetail.route,
                 arguments = listOf(
-                    navArgument(Screen.FixedIncomeDetail.ARG_POSITION_ID) { type = NavType.StringType }
+                    navArgument(Screen.FixedIncomeDetail.ARG_POSITION_ID) {
+                        type = NavType.StringType
+                    }
                 )
             ) { backStackEntry ->
-                val positionId = backStackEntry.arguments?.getString(Screen.FixedIncomeDetail.ARG_POSITION_ID).orEmpty()
+                val positionId =
+                    backStackEntry.arguments?.getString(Screen.FixedIncomeDetail.ARG_POSITION_ID)
+                        .orEmpty()
                 FixedIncomeDetailScreen(
                     positionId = positionId,
-                    onBack     = { navController.popBackStack() }
+                    onBack = { navController.popBackStack() }
                 )
             }
             composable(
-                route     = Screen.LoanDetail.route,
+                route = Screen.LoanDetail.route,
                 arguments = listOf(
                     navArgument(Screen.LoanDetail.ARG_LOAN_ID) { type = NavType.StringType }
                 )
             ) { backStackEntry ->
-                val loanId = backStackEntry.arguments?.getString(Screen.LoanDetail.ARG_LOAN_ID).orEmpty()
+                val loanId = backStackEntry.arguments
+                    ?.getString(Screen.LoanDetail.ARG_LOAN_ID).orEmpty()
                 LoanDetailScreen(
                     loanId = loanId,
                     onBack = { navController.popBackStack() }
                 )
+            }
+        }
+    }
+}
+
+@Preview
+@Composable
+fun aaaa(){
+    FloatingBottomNavBar(
+        listOf(),
+        null,
+        {}
+    )
+}
+
+@Composable
+private fun FloatingBottomNavBar(
+    items: List<BottomNavItem>,
+    currentDestination: androidx.navigation.NavDestination?,
+    onItemClick: (BottomNavItem) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    // Encontrar el índice del item seleccionado
+    val selectedIndex = remember(items, currentDestination) {
+        items.indexOfFirst { item ->
+            currentDestination?.hierarchy?.any { it.route == item.screen.route } == true
+        }.coerceAtLeast(0)
+    }
+
+    Surface(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp)
+            .padding(top = 8.dp)
+            .padding(bottom = 12.dp)
+            .navigationBarsPadding(),
+        shape = RoundedCornerShape(28.dp),
+        shadowElevation = 8.dp,
+        color = SurfaceWhite
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(56.dp)
+                .padding(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            items.forEachIndexed { index, item ->
+                val selected = index == selectedIndex
+
+                val scale by animateFloatAsState(
+                    targetValue = if (selected) 1.1f else 1f,
+                    animationSpec = tween(durationMillis = 200),
+                    label = "scale"
+                )
+
+                val iconColor by animateColorAsState(
+                    targetValue = if (selected) TextPrimary else TextSecondary,
+                    animationSpec = tween(durationMillis = 200),
+                    label = "iconColor"
+                )
+
+                val textColor by animateColorAsState(
+                    targetValue = if (selected) TextPrimary else TextSecondary,
+                    animationSpec = tween(durationMillis = 200),
+                    label = "textColor"
+                )
+
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(28.dp))
+                        .background(if (selected) PrimaryDark else androidx.compose.ui.graphics.Color.Transparent)
+                        .clickable { onItemClick(item) }
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Icon(
+                            imageVector = if (selected) item.selectedIcon else item.icon,
+                            contentDescription = item.label,
+                            modifier = Modifier
+                                .size(24.dp)
+                                .scale(scale),
+                            tint = iconColor
+                        )
+
+                        if (selected) {
+                            Text(
+                                text = item.label,
+                                color = textColor,
+                                fontSize = 14.sp,
+                                modifier = Modifier.scale(scale)
+                            )
+                        }
+                    }
+                }
             }
         }
     }
