@@ -45,6 +45,7 @@ import es.aviferdev.trackfolio.domain.model.Platform
 import es.aviferdev.trackfolio.domain.model.Transaction
 import es.aviferdev.trackfolio.domain.model.TransactionType
 import es.aviferdev.trackfolio.domain.portfolio.AssetPosition
+import es.aviferdev.trackfolio.ui.common.navigation.TopBarApp
 import es.aviferdev.trackfolio.ui.portfolio.AssetHistoryUiState
 import es.aviferdev.trackfolio.ui.theme.BackgroundGray
 import es.aviferdev.trackfolio.ui.theme.BorderGray
@@ -79,16 +80,24 @@ fun AssetHistoryContent(
             .background(BackgroundGray)
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
-            AssetTopBar(
-                ticker = state.asset?.ticker,
-                name = state.asset?.name,
-                onBack = onBack,
-                onRefresh = if (!AssetCategoryType.isFixedIncome(
+            TopBarApp(
+                title = state.asset?.ticker ?: "Activo",
+                subtitle = state.asset?.name,
+                navigateBack = onBack,
+                actions = {
+                    val canRefresh = !AssetCategoryType.isFixedIncome(
                         state.asset?.assetCategoryId ?: ""
                     )
-                ) {
-                    onRefreshClick
-                } else null
+                    if (canRefresh) {
+                        IconButton(onClick = onRefreshClick) {
+                            Icon(
+                                Icons.Outlined.Refresh,
+                                contentDescription = "Actualizar precio",
+                                tint = TextSecondary
+                            )
+                        }
+                    }
+                }
             )
 
             when {

@@ -29,6 +29,7 @@ import es.aviferdev.trackfolio.domain.model.DebtDirection
 import es.aviferdev.trackfolio.domain.model.FiscalIncomeTaxBreakdown
 import es.aviferdev.trackfolio.domain.model.FiscalReportData
 import es.aviferdev.trackfolio.domain.model.MonthlyTotals
+import es.aviferdev.trackfolio.ui.common.navigation.TopBarApp
 import es.aviferdev.trackfolio.ui.theme.*
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
@@ -54,37 +55,18 @@ fun FiscalReportScreen(
             .fillMaxSize()
             .background(BackgroundGray)
     ) {
-        // ── Top bar ───────────────────────────────────────────────────────────
-        Surface(color = SurfaceWhite, shadowElevation = 0.dp) {
-            Row(
-                modifier          = Modifier
-                    .fillMaxWidth()
-                    .windowInsetsPadding(WindowInsets.statusBars)
-                    .padding(horizontal = 8.dp, vertical = 12.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                IconButton(onClick = onBack) {
-                    Icon(Icons.AutoMirrored.Filled.ArrowBack, "Volver", tint = TextPrimary)
-                }
-                Spacer(Modifier.width(4.dp))
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        "Informe Fiscal",
-                        fontSize      = 17.sp,
-                        fontWeight    = FontWeight.Bold,
-                        color         = TextPrimary,
-                        letterSpacing = (-.3).sp
-                    )
-                    Text(state.selectedYear, fontSize = 11.sp, color = TextTertiary)
-                }
+        TopBarApp(
+            title = "Informe Fiscal",
+            subtitle = state.selectedYear,
+            navigateBack = onBack,
+            actions = {
                 YearStepper(
-                    year       = state.selectedYear,
+                    year = state.selectedYear,
                     onPrevious = { viewModel.previousYear() },
-                    onNext     = { viewModel.nextYear() }
+                    onNext = { viewModel.nextYear() }
                 )
             }
-        }
-        HorizontalDivider(color = BorderGray, thickness = .5.dp)
+        )
 
         if (state.isLoading) {
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {

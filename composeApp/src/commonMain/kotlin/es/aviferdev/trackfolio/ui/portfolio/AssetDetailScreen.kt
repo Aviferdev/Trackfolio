@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.trackfolio.domain.model.Asset
 import es.aviferdev.trackfolio.domain.model.Platform
+import es.aviferdev.trackfolio.ui.common.navigation.TopBarApp
 import es.aviferdev.trackfolio.ui.theme.*
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -45,51 +46,11 @@ fun AssetDetailScreen(
     Column(
         modifier = Modifier.fillMaxSize().background(BackgroundGray)
     ) {
-        // ── Top bar ──────────────────────────────────────────────────────────
-        Surface(color = SurfaceWhite, shadowElevation = 1.dp) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .windowInsetsPadding(WindowInsets.statusBars)
-                    .padding(horizontal = 8.dp, vertical = 10.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                IconButton(onClick = onBack) {
-                    Icon(Icons.AutoMirrored.Filled.ArrowBack, "Volver", tint = TextPrimary)
-                }
-                state.asset?.let { asset ->
-                    Box(
-                        modifier = Modifier
-                            .size(36.dp)
-                            .clip(RoundedCornerShape(8.dp))
-                            .background(PrimaryDark),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = asset.ticker.take(3),
-                            fontSize = if (asset.ticker.length > 3) 9.sp else 11.sp,
-                            color = Color.White,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-                    Spacer(Modifier.width(10.dp))
-                    Column {
-                        Text(
-                            asset.name,
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            color = TextPrimary
-                        )
-                        Text(asset.ticker, fontSize = 12.sp, color = TextSecondary)
-                    }
-                } ?: Text(
-                    "Activo",
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    color = TextPrimary
-                )
-            }
-        }
+        TopBarApp(
+            title = state.asset?.name ?: "Activo",
+            subtitle = state.asset?.ticker,
+            navigateBack = onBack
+        )
 
         LazyColumn(
             contentPadding = PaddingValues(horizontal = 20.dp, vertical = 20.dp),

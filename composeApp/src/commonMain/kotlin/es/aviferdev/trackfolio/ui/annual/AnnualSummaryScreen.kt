@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.sp
 import es.aviferdev.trackfolio.domain.model.AnnualSummary
 import es.aviferdev.trackfolio.domain.model.MonthlyTotals
 import es.aviferdev.trackfolio.ui.common.ProgressBar
+import es.aviferdev.trackfolio.ui.common.navigation.TimeStepperHeader
 import es.aviferdev.trackfolio.ui.theme.*
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
@@ -49,11 +50,12 @@ fun AnnualSummaryScreen(
             .fillMaxSize()
             .background(BackgroundGray)
     ) {
-        AnnualHeader(
-            year       = uiState.year,
-            canGoBack  = uiState.canGoBack,
+        TimeStepperHeader(
+            title = "Resumen anual",
+            currentValue = uiState.year,
+            canGoBack = uiState.canGoBack,
             onPrevious = { viewModel.previousYear() },
-            onNext     = { viewModel.nextYear() }
+            onNext = { viewModel.nextYear() }
         )
 
         // Tabs

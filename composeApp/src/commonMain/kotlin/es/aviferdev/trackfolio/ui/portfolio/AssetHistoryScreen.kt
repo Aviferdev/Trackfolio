@@ -70,6 +70,7 @@ import es.aviferdev.trackfolio.domain.portfolio.AssetPosition
 import es.aviferdev.trackfolio.domain.portfolio.FifoBreakdown
 import es.aviferdev.trackfolio.domain.portfolio.FifoOpenLot
 import es.aviferdev.trackfolio.domain.portfolio.FifoSaleMatch
+import es.aviferdev.trackfolio.ui.common.navigation.TopBarApp
 import es.aviferdev.trackfolio.ui.portfolio.assethistory.AssetHistoryContent
 import es.aviferdev.trackfolio.ui.theme.BackgroundGray
 import es.aviferdev.trackfolio.ui.theme.BorderGray

@@ -32,6 +32,7 @@ import es.aviferdev.trackfolio.security.BiometricResult
 import es.aviferdev.trackfolio.ui.account.AccountViewModel
 import es.aviferdev.trackfolio.ui.account.AddEditAccountBottomSheet
 import es.aviferdev.trackfolio.ui.common.*
+import es.aviferdev.trackfolio.ui.common.navigation.TopBarApp
 import es.aviferdev.trackfolio.ui.settings.backup.BackupViewModel
 import es.aviferdev.trackfolio.ui.theme.*
 import org.koin.compose.koinInject
@@ -60,13 +61,7 @@ fun SettingsScreen(
     LaunchedEffect(Unit) { delay(60); contentVisible = true }
 
     Column(modifier = Modifier.fillMaxSize().background(BackgroundGray)) {
-        // ── Top bar ───────────────────────────────────────────────────────────
-        Surface(color = SurfaceWhite, shadowElevation = 0.dp) {
-            Box(modifier = Modifier.fillMaxWidth().windowInsetsPadding(WindowInsets.statusBars).padding(horizontal = 16.dp, vertical = 16.dp)) {
-                Text("Ajustes", fontSize = 18.sp, fontWeight = FontWeight.Bold, color = TextPrimary, letterSpacing = (-0.3).sp)
-            }
-        }
-        HorizontalDivider(color = BorderGray, thickness = 0.5.dp)
+        TopBarApp(title = "Ajustes")
 
         AnimatedVisibility(visible = contentVisible, enter = fadeIn() + slideInVertically(initialOffsetY = { it / 10 })) {
             LazyColumn(contentPadding = PaddingValues(horizontal = 16.dp, vertical = 14.dp), verticalArrangement = Arrangement.spacedBy(18.dp)) {

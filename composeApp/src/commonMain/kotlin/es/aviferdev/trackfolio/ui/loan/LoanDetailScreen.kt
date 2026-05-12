@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.sp
 import es.aviferdev.trackfolio.domain.model.AmortizationEntry
 import es.aviferdev.trackfolio.domain.model.Loan
 import es.aviferdev.trackfolio.domain.model.LoanRateChange
+import es.aviferdev.trackfolio.ui.common.navigation.TopBarApp
 import es.aviferdev.trackfolio.ui.theme.*
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
@@ -40,62 +41,41 @@ fun LoanDetailScreen(
     val uiState by viewModel.uiState.collectAsState()
     var showArchiveConfirm by remember { mutableStateOf(false) }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        uiState.loan?.name ?: "Detalle préstamo",
-                        maxLines      = 1,
-                        fontWeight    = FontWeight.Bold,
-                        fontSize      = 17.sp,
-                        letterSpacing = (-0.3).sp
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Outlined.ArrowBack, "Volver", tint = TextPrimary)
-                    }
-                },
-                actions = {
-                    IconButton(onClick = { viewModel.openEditSheet() }) {
-                        Icon(Icons.Outlined.Edit, "Editar", tint = TextSecondary)
-                    }
-                    IconButton(onClick = { viewModel.openRateSheet() }) {
-                        Icon(Icons.Outlined.Edit, "Cambiar tipo", tint = TextSecondary)
-                    }
-                    IconButton(onClick = { showArchiveConfirm = true }) {
-                        Icon(Icons.Outlined.Delete, "Archivar", tint = ExpenseRed)
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = SurfaceWhite,
-                    titleContentColor = TextPrimary
-                )
-            )
-        },
-        containerColor = BackgroundGray
-    ) { padding ->
+    Column(
+        modifier = Modifier.fillMaxSize().background(BackgroundGray)
+    ) {
+        TopBarApp(
+            title = uiState.loan?.name ?: "Detalle préstamo",
+            navigateBack = onBack,
+            actions = {
+                IconButton(onClick = { viewModel.openEditSheet() }) {
+                    Icon(Icons.Outlined.Edit, "Editar", tint = TextSecondary)
+                }
+                IconButton(onClick = { viewModel.openRateSheet() }) {
+                    Icon(Icons.Outlined.Edit, "Cambiar tipo", tint = TextSecondary)
+                }
+                IconButton(onClick = { showArchiveConfirm = true }) {
+                    Icon(Icons.Outlined.Delete, "Archivar", tint = ExpenseRed)
+                }
+            }
+        )
+
         if (uiState.isLoading) {
-            Box(Modifier.fillMaxSize().padding(padding), contentAlignment = Alignment.Center) {
+            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 CircularProgressIndicator(color = PrimaryDark)
             }
-            return@Scaffold
-        }
-
-        val loan = uiState.loan
-        if (loan == null) {
-            Box(Modifier.fillMaxSize().padding(padding), contentAlignment = Alignment.Center) {
+        } else if (uiState.loan == null) {
+            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Text("Préstamo no encontrado", color = TextTertiary, fontSize = 13.sp)
             }
-            return@Scaffold
-        }
+        } else {
+            val loan = uiState.loan!!
 
-        LazyColumn(
-            modifier        = Modifier.fillMaxSize().padding(padding),
-            contentPadding  = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
             // ── Hero card ─────────────────────────────────────────────────────
             item { LoanHeroCard(loan = loan) }
 
@@ -118,6 +98,7 @@ fun LoanDetailScreen(
             }
 
             item { Spacer(Modifier.height(24.dp)) }
+        }
         }
     }
 

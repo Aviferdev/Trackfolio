@@ -12,6 +12,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import es.aviferdev.trackfolio.domain.model.Platform
 import es.aviferdev.trackfolio.domain.usecase.asset.GetPriceReminderIntervalUseCase
+import es.aviferdev.trackfolio.ui.common.navigation.TopBarApp
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -47,26 +48,7 @@ fun PortfolioSettingsScreen(
     Column(
         modifier = Modifier.fillMaxSize().background(BackgroundGray)
     ) {
-        // ── Header ────────────────────────────────────────────────────────
-        Surface(color = SurfaceWhite, shadowElevation = 1.dp) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .windowInsetsPadding(WindowInsets.statusBars)
-                    .padding(horizontal = 8.dp, vertical = 10.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                IconButton(onClick = onBack) {
-                    Icon(Icons.Default.ArrowBack, "Volver", tint = TextPrimary)
-                }
-                Text(
-                    "Ajustes de Portfolio",
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    color = TextPrimary
-                )
-            }
-        }
+        TopBarApp(title = "Ajustes de Portfolio", navigateBack = onBack)
 
         LazyColumn(
             contentPadding = PaddingValues(horizontal = 20.dp, vertical = 20.dp),

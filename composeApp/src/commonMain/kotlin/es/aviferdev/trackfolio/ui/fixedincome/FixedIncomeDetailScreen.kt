@@ -51,7 +51,9 @@ import androidx.compose.ui.unit.sp
 import es.aviferdev.trackfolio.domain.model.FixedIncomeEvent
 import es.aviferdev.trackfolio.domain.portfolio.ScheduledCoupon
 import es.aviferdev.trackfolio.ui.common.StatusTag
+import es.aviferdev.trackfolio.ui.common.navigation.TopBarApp
 import es.aviferdev.trackfolio.ui.fixedincome.formatPercent1
+import es.aviferdev.trackfolio.ui.theme.BackgroundGray
 import es.aviferdev.trackfolio.ui.theme.ExpenseRed
 import es.aviferdev.trackfolio.domain.model.Platform
 import es.aviferdev.trackfolio.ui.theme.NegativeRed
@@ -80,93 +82,37 @@ fun FixedIncomeDetailScreen(
     val balancesHidden = false
     val symbol = currencySymbol(currencyCode)
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = state.row?.position?.name ?: "Posición de renta fija",
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Default.ArrowBack, contentDescription = "Volver")
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = WarnAmber,
-                    titleContentColor = Color.Black,
-                    navigationIconContentColor = Color.Black
-                )
-            )
-        },
-        floatingActionButton = {
-            if (state.row?.position?.isOpen == true) {
-                var fabMenuOpen by remember { mutableStateOf(false) }
-                Box {
-                    FloatingActionButton(
-                        onClick = { fabMenuOpen = true },
-                        containerColor = WarnAmber,
-                        contentColor = Color.Black
-                    ) {
-                        Text("⚡", fontSize = 20.sp)
-                    }
-                    DropdownMenu(
-                        expanded = fabMenuOpen,
-                        onDismissRequest = { fabMenuOpen = false },
-                        containerColor = SurfaceWhite
-                    ) {
-                        DropdownMenuItem(
-                            text = { Text("Registrar cupón", color = TextPrimary) },
-                            leadingIcon = { Text("💰", fontSize = 16.sp) },
-                            onClick = {
-                                fabMenuOpen = false
-                                viewModel.showRegisterCouponSheet()
-                            }
-                        )
-                        DropdownMenuItem(
-                            text = { Text("Liquidar posición", color = TextPrimary) },
-                            leadingIcon = { Text("🔒", fontSize = 16.sp) },
-                            onClick = {
-                                fabMenuOpen = false
-                                viewModel.showCloseSheet()
-                            }
-                        )
-                    }
-                }
-            }
-        }
-    ) { padding ->
-        if (state.isLoading) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(padding),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator(color = PrimaryDark)
-            }
-        } else if (state.row == null) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(padding),
-                contentAlignment = Alignment.Center
-            ) {
-                Text("Posición no encontrada", color = TextSecondary)
-            }
-        } else {
-            val row = state.row!!
-            val position = row.position
+    var fabMenuOpen by remember { mutableStateOf(false) }
 
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(padding),
-                contentPadding = PaddingValues(16.dp)
-            ) {
+    Box(Modifier.fillMaxSize().background(BackgroundGray)) {
+        Column(Modifier.fillMaxSize()) {
+            TopBarApp(
+                title = state.row?.position?.name ?: "Posición de renta fija",
+                navigateBack = onBack
+            )
+
+            if (state.isLoading) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(color = PrimaryDark)
+                }
+            } else if (state.row == null) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text("Posición no encontrada", color = TextSecondary)
+                }
+            } else {
+                val row = state.row!!
+                val position = row.position
+
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(16.dp)
+                ) {
                 item {
                     FixedIncomeDetailHeader(
                         position = position,
@@ -323,8 +269,9 @@ fun FixedIncomeDetailScreen(
                                                 modifier = Modifier.padding(vertical = 2.dp)
                                             )
                                         }
-                                    }
-                                }
+    }
+}
+}
                             }
                         }
                     }

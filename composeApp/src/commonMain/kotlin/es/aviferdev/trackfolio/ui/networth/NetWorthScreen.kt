@@ -26,6 +26,7 @@ import es.aviferdev.trackfolio.domain.model.NetWorthData
 import es.aviferdev.trackfolio.domain.model.NetWorthHistoryPoint
 import es.aviferdev.trackfolio.ui.annual.DonutChartCard
 import es.aviferdev.trackfolio.ui.common.*
+import es.aviferdev.trackfolio.ui.common.navigation.TopBarApp
 import es.aviferdev.trackfolio.ui.loan.AddEditLoanBottomSheet
 import es.aviferdev.trackfolio.ui.theme.*
 import kotlinx.coroutines.delay
@@ -98,24 +99,14 @@ private fun NetWorthContent(
 ) {
     val balancesHidden = LocalBalanceHidden.current
 
-    LazyColumn(
-        modifier        = Modifier
-            .fillMaxSize()
-            .background(BackgroundGray),
-        contentPadding  = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        // ── Título ────────────────────────────────────────────────────────────
-        item {
-            Spacer(Modifier.height(4.dp))
-            Text(
-                "Patrimonio",
-                fontSize      = 22.sp,
-                fontWeight    = FontWeight.ExtraBold,
-                color         = PrimaryDark,
-                letterSpacing = (-0.5).sp
-            )
-        }
+    Column(Modifier.fillMaxSize().background(BackgroundGray)) {
+        TopBarApp(title = "Patrimonio")
+
+        LazyColumn(
+            modifier        = Modifier.fillMaxSize(),
+            contentPadding  = PaddingValues(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
 
         // ── Hero patrimonio neto (animated) ────────────────────────────────────
         item {
@@ -255,6 +246,7 @@ private fun NetWorthContent(
         }
 
         item { Spacer(Modifier.height(80.dp)) }
+        }
     }
 }
 

@@ -67,6 +67,7 @@ import es.aviferdev.trackfolio.ui.account.AccountViewModel
 import es.aviferdev.trackfolio.ui.common.DeltaIndicator
 import es.aviferdev.trackfolio.ui.common.LineChartCard
 import es.aviferdev.trackfolio.ui.common.button.IconButtomApp
+import es.aviferdev.trackfolio.ui.common.navigation.TopBarApp
 import es.aviferdev.trackfolio.ui.fixedincome.CreateFixedIncomeBottomSheet
 import es.aviferdev.trackfolio.ui.fixedincome.FixedIncomePositionCard
 import es.aviferdev.trackfolio.ui.fixedincome.RegisterCouponBottomSheet
@@ -118,14 +119,25 @@ fun PortfolioScreen(
             .fillMaxSize()
             .background(BackgroundGray)
     ) {
-        LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(bottom = 100.dp)
-        ) {
-            // ── Header ────────────────────────────────────────────────────────
-            item { PortfolioTopBar(onSettingsClick = onNavigateToSettings) }
+        Column(Modifier.fillMaxSize()) {
+            TopBarApp(
+                title = "Portfolio",
+                actions = {
+                    IconButton(onClick = onNavigateToSettings) {
+                        Icon(
+                            Icons.Outlined.Settings,
+                            contentDescription = "Ajustes de portfolio",
+                            tint = TextSecondary
+                        )
+                    }
+                }
+            )
 
-            // ── Summary card ──────────────────────────────────────────────────
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(bottom = 100.dp)
+            ) {
+                // ── Summary card ──────────────────────────────────────────────────
             item {
                 PortfolioSummaryCard(
                     totalInvested = state.totalInvested,
@@ -329,6 +341,8 @@ fun PortfolioScreen(
                     }
                 }
             }
+        }
+
         }
 
         // ── FAB ───────────────────────────────────────────────────────────────

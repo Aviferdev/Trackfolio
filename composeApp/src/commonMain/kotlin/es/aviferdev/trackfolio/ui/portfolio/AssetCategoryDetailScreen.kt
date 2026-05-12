@@ -20,6 +20,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.trackfolio.domain.model.Asset
+import es.aviferdev.trackfolio.ui.common.navigation.TopBarApp
 import es.aviferdev.trackfolio.ui.fixedincome.FixedIncomePositionCard
 import es.aviferdev.trackfolio.ui.theme.*
 import org.koin.compose.viewmodel.koinViewModel
@@ -38,28 +39,10 @@ fun AssetCategoryDetailScreen(
     Column(
         modifier = Modifier.fillMaxSize().background(BackgroundGray)
     ) {
-        // ── Top bar ──────────────────────────────────────────────────────────
-        Surface(color = SurfaceWhite, shadowElevation = 1.dp) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .windowInsetsPadding(WindowInsets.statusBars)
-                    .padding(horizontal = 8.dp, vertical = 10.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                IconButton(onClick = onBack) {
-                    Icon(Icons.AutoMirrored.Filled.ArrowBack, "Volver", tint = TextPrimary)
-                }
-                Text(state.category?.icon ?: "", fontSize = 20.sp)
-                Spacer(Modifier.width(8.dp))
-                Text(
-                    state.category?.name ?: "Categoría",
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    color = TextPrimary
-                )
-            }
-        }
+        TopBarApp(
+            title = state.category?.name ?: "Categoría",
+            navigateBack = onBack
+        )
 
         LazyColumn(
             contentPadding = PaddingValues(horizontal = 20.dp, vertical = 20.dp),

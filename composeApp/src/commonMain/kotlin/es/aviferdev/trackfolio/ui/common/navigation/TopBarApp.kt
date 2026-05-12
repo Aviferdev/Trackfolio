@@ -1,6 +1,8 @@
 package es.aviferdev.trackfolio.ui.common.navigation
 
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -19,13 +21,16 @@ import es.aviferdev.trackfolio.ui.common.separator.SpacerHorizontalApp
 import es.aviferdev.trackfolio.ui.theme.BorderGray
 import es.aviferdev.trackfolio.ui.theme.SurfaceWhite
 import es.aviferdev.trackfolio.ui.theme.TextPrimary
+import es.aviferdev.trackfolio.ui.theme.TextTertiary
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 
 @Composable
 fun TopBarApp(
     title: String,
-    navigateBack: (() -> Unit)? = null
+    navigateBack: (() -> Unit)? = null,
+    subtitle: String? = null,
+    actions: @Composable RowScope.() -> Unit = {}
 ) {
     Surface(color = SurfaceWhite) {
         Row(
@@ -42,13 +47,24 @@ fun TopBarApp(
                 )
                 SpacerHorizontalApp(8.dp)
             }
-            Text(
-                text = title,
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold,
-                color = TextPrimary,
-                letterSpacing = (-0.3).sp
-            )
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = title,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = TextPrimary,
+                    letterSpacing = (-0.3).sp
+                )
+                if (subtitle != null) {
+                    Text(
+                        text = subtitle,
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Normal,
+                        color = TextTertiary
+                    )
+                }
+            }
+            actions()
         }
         HorizontalDivider(color = BorderGray, thickness = 0.5.dp)
     }

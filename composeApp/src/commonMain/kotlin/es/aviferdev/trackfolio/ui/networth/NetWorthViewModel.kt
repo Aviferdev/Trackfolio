@@ -11,6 +11,7 @@ import es.aviferdev.trackfolio.domain.usecase.networth.GetNetWorthDataUseCase
 import es.aviferdev.trackfolio.domain.usecase.networth.GetNetWorthHistoryUseCase
 import es.aviferdev.trackfolio.ui.account.AccountSession
 import es.aviferdev.trackfolio.ui.common.DonutSlice
+import es.aviferdev.trackfolio.ui.common.loading.GlobalLoadingManager
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -18,6 +19,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 
 sealed class NetWorthUiState {
     data object Loading : NetWorthUiState()
@@ -34,7 +36,8 @@ class NetWorthViewModel(
     private val getNetWorthData: GetNetWorthDataUseCase,
     private val getLoansByAccount: GetLoansByAccountUseCase,
     private val getNetWorthHistory: GetNetWorthHistoryUseCase,
-    private val session: AccountSession
+    private val session: AccountSession,
+    private val loadingManager: GlobalLoadingManager
 ) : ViewModel() {
 
     val uiState: StateFlow<NetWorthUiState> = session.selectedAccountId
@@ -63,6 +66,17 @@ class NetWorthViewModel(
     // ── Estado para el bottom sheet de crear préstamo ─────────────────────────
     private val _showAddLoanSheet = MutableStateFlow(false)
     val showAddLoanSheet: StateFlow<Boolean> = _showAddLoanSheet
+
+    init {
+        viewModelScope.launch {
+            uiState.collect { state ->
+                when (state) {
+                    is NetWorthUiState.Loading -> loadingManager.show("Cargando patrimonio...")
+                    else -> loadingManager.hide()
+                }
+            }
+        }
+    }
 
     fun openAddLoanSheet() { _showAddLoanSheet.value = true }
     fun closeAddLoanSheet() { _showAddLoanSheet.value = false }

@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.trackfolio.domain.model.Account
 import es.aviferdev.trackfolio.domain.model.AccountType
+import es.aviferdev.trackfolio.ui.common.navigation.TopBarApp
 import es.aviferdev.trackfolio.ui.home.SetInitialBalanceBottomSheet
 import es.aviferdev.trackfolio.ui.theme.BackgroundGray
 import es.aviferdev.trackfolio.ui.theme.BorderGray
@@ -36,55 +37,32 @@ import es.aviferdev.trackfolio.ui.theme.TextSecondary
 import es.aviferdev.trackfolio.ui.theme.TrackfolioTheme
 import es.aviferdev.trackfolio.ui.theme.maskAmount
 import kotlinx.datetime.Clock
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
+// ═══════════════════════════════════════════════════════════════════════════════
+// WRAPPER
+// ═══════════════════════════════════════════════════════════════════════════════
+
 @Composable
 fun AccountListScreen(
     viewModel: AccountViewModel = koinViewModel()
 ) {
     val uiState    by viewModel.uiState.collectAsState()
     val selectedId by viewModel.selectedAccountId.collectAsState()
+    val balancesHidden = LocalBalanceHidden.current
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title        = { Text("Mis cuentas", fontWeight = FontWeight.Bold) },
-                windowInsets = WindowInsets.statusBars,
-                actions = {
-                    IconButton(onClick = { viewModel.openAddSheet() }) {
-                        Icon(Icons.Default.Add, contentDescription = "Añadir cuenta")
-                    }
-                }
-            )
-        }
-    ) { padding ->
-        if (uiState.accounts.isEmpty()) {
-            EmptyAccountsState(
-                modifier = Modifier.padding(padding),
-                onAdd    = { viewModel.openAddSheet() }
-            )
-        } else {
-            LazyColumn(
-                modifier            = Modifier.padding(padding).fillMaxSize(),
-                contentPadding      = PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                items(uiState.accounts, key = { it.id }) { account ->
-                    AccountCard(
-                        account        = account,
-                        isSelected     = account.id == selectedId,
-                        balancesHidden = LocalBalanceHidden.current,
-                        onSelect       = { viewModel.selectAccount(account.id) },
-                        onEdit         = { viewModel.openEditSheet(account) },
-                        onDelete       = { viewModel.requestDelete(account) }
-                    )
-                }
-            }
-        }
-    }
+    AccountListContent(
+        uiState         = uiState,
+        selectedId      = selectedId,
+        balancesHidden  = balancesHidden,
+        onAddClick      = { viewModel.openAddSheet() },
+        onSelectAccount = { viewModel.selectAccount(it) },
+        onEditAccount   = { viewModel.openEditSheet(it) },
+        onDeleteAccount = { viewModel.requestDelete(it) }
+    )
 
-    // Crear cuenta
+    // ── Diálogos / Sheets (usan viewModel) ─────────────────────────────────────
     if (uiState.showAddSheet) {
         AddEditAccountBottomSheet(
             account   = null,
@@ -92,8 +70,6 @@ fun AccountListScreen(
             onDismiss = { viewModel.closeAddSheet() }
         )
     }
-
-    // Saldo inicial obligatorio tras crear
     uiState.pendingInitialBalanceAccount?.let { pending ->
         SetInitialBalanceBottomSheet(
             accountName = pending.name,
@@ -101,8 +77,6 @@ fun AccountListScreen(
             onConfirm   = { amount -> viewModel.confirmInitialBalance(amount) },
         )
     }
-
-    // Editar cuenta
     if (uiState.showEditSheet && uiState.editingAccount != null) {
         AddEditAccountBottomSheet(
             account   = uiState.editingAccount,
@@ -112,8 +86,6 @@ fun AccountListScreen(
             onDismiss = { viewModel.closeEditSheet() }
         )
     }
-
-    // Confirmar borrado
     if (uiState.showDeleteConfirm && uiState.accountToDelete != null) {
         DeleteAccountDialog(
             account   = uiState.accountToDelete!!,
@@ -121,13 +93,99 @@ fun AccountListScreen(
             onDismiss = { viewModel.cancelDelete() }
         )
     }
-
     uiState.error?.let {
         LaunchedEffect(it) { viewModel.clearError() }
     }
 }
 
-// ─── AccountCard ─────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════════════
+// CONTENT
+// ═══════════════════════════════════════════════════════════════════════════════
+
+@Composable
+fun AccountListContent(
+    uiState: AccountUiState,
+    selectedId: String?,
+    balancesHidden: Boolean,
+    onAddClick: () -> Unit,
+    onSelectAccount: (String) -> Unit,
+    onEditAccount: (Account) -> Unit,
+    onDeleteAccount: (Account) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(modifier = modifier.fillMaxSize().background(BackgroundGray)) {
+        TopBarApp(
+            title = "Mis cuentas",
+            actions = {
+                IconButton(onClick = onAddClick) {
+                    Icon(Icons.Default.Add, contentDescription = "Añadir cuenta", tint = TextPrimary)
+                }
+            }
+        )
+
+        if (uiState.accounts.isEmpty()) {
+            EmptyAccountsState(
+                modifier = Modifier.fillMaxSize(),
+                onAdd    = onAddClick
+            )
+        } else {
+            LazyColumn(
+                modifier            = Modifier.fillMaxSize(),
+                contentPadding      = PaddingValues(16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                items(uiState.accounts, key = { it.id }) { account ->
+                    AccountCard(
+                        account        = account,
+                        isSelected     = account.id == selectedId,
+                        balancesHidden = balancesHidden,
+                        onSelect       = { onSelectAccount(account.id) },
+                        onEdit         = { onEditAccount(account) },
+                        onDelete       = { onDeleteAccount(account) }
+                    )
+                }
+            }
+        }
+    }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// PREVIEW
+// ═══════════════════════════════════════════════════════════════════════════════
+
+@Preview
+@Composable
+fun AccountListContentPreview() {
+    val now = Clock.System.now().toEpochMilliseconds()
+    val fakeAccounts = listOf(
+        Account(id = "1", name = "Cuenta Principal", currency = "EUR",
+            initialBalance = 5000.0, computedBalance = 5200.0, createdAt = now, accountType = AccountType.GENERAL),
+        Account(id = "2", name = "Efectivo", currency = "EUR",
+            initialBalance = 0.0, computedBalance = 0.0, createdAt = now, accountType = AccountType.CASH),
+        Account(id = "3", name = "USD Savings", currency = "USD",
+            initialBalance = 1000.0, computedBalance = 1050.0, createdAt = now, accountType = AccountType.GENERAL)
+    )
+
+    TrackfolioTheme {
+        AccountListContent(
+            uiState = AccountUiState(
+                accounts = fakeAccounts,
+                isLoading = false
+            ),
+            selectedId = "1",
+            balancesHidden = false,
+            onAddClick = {},
+            onSelectAccount = {},
+            onEditAccount = {},
+            onDeleteAccount = {}
+        )
+    }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// Subcomponentes (sin cambios)
+// ═══════════════════════════════════════════════════════════════════════════════
+
 @Composable
 private fun AccountCard(
     account: Account,
@@ -161,7 +219,6 @@ private fun AccountCard(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    // Avatar con inicial
                     Box(
                         modifier        = Modifier
                             .size(44.dp)
@@ -241,7 +298,6 @@ private fun AccountCard(
     }
 }
 
-// ─── Empty state ─────────────────────────────────────────────────────────────
 @Composable
 private fun EmptyAccountsState(modifier: Modifier, onAdd: () -> Unit) {
     Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -265,7 +321,6 @@ private fun EmptyAccountsState(modifier: Modifier, onAdd: () -> Unit) {
     }
 }
 
-// ─── Diálogo borrado ─────────────────────────────────────────────────────────
 @Composable
 private fun DeleteAccountDialog(account: Account, onConfirm: () -> Unit, onDismiss: () -> Unit) {
     AlertDialog(
@@ -301,13 +356,4 @@ private fun formatAmount(amount: Double): String {
         }
     }.reversed()
     return "$eurosStr,${cents.toString().padStart(2, '0')}"
-}
-
-private fun createMockAccounts(): List<Account> {
-    val now = Clock.System.now().toEpochMilliseconds()
-    return listOf(
-        Account(id = "1", name = "Cuenta Principal", currency = "EUR", initialBalance = 5000.0, computedBalance = 5200.0, createdAt = now, accountType = AccountType.GENERAL),
-        Account(id = "2", name = "Efectivo", currency = "EUR", initialBalance = 0.0, computedBalance = 0.0, createdAt = now, accountType = AccountType.CASH),
-        Account(id = "3", name = "USD Savings", currency = "USD", initialBalance = 1000.0, computedBalance = 1050.0, createdAt = now, accountType = AccountType.GENERAL)
-    )
 }

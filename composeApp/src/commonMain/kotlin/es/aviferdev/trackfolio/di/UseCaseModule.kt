@@ -281,7 +281,8 @@ val useCaseModule = module {
             getOutdatedAssets         = get(),
             updateAssetCurrentPrice   = get(),
             savePriceReminderShown    = get(),
-            getNearMaturityPositions  = get()
+            getNearMaturityPositions  = get(),
+            loadingManager            = get()
         )
     }
     viewModel {
@@ -471,7 +472,8 @@ val useCaseModule = module {
             getNetWorthData      = get(),
             getLoansByAccount    = get(),
             getNetWorthHistory   = get(),
-            session              = get()
+            session              = get(),
+            loadingManager       = get()
         )
     }
     viewModel { (loanId: String) ->

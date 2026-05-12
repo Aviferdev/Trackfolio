@@ -15,6 +15,7 @@ import es.aviferdev.trackfolio.domain.usecase.asset.UpdateAssetCurrentPriceUseCa
 import es.aviferdev.trackfolio.domain.usecase.category.GetCategoriesByTypeUseCase
 import es.aviferdev.trackfolio.domain.usecase.home.GetHomeBalanceUseCase
 import es.aviferdev.trackfolio.ui.account.AccountSession
+import es.aviferdev.trackfolio.ui.common.loading.GlobalLoadingManager
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -60,7 +61,8 @@ class HomeViewModel(
     private val getOutdatedAssets: GetOutdatedAssetsUseCase,
     private val updateAssetCurrentPrice: UpdateAssetCurrentPriceUseCase,
     private val savePriceReminderShown: SavePriceReminderShownUseCase,
-    private val getNearMaturityPositions: GetNearMaturityPositionsUseCase? = null
+    private val getNearMaturityPositions: GetNearMaturityPositionsUseCase? = null,
+    private val loadingManager: GlobalLoadingManager
 ) : ViewModel() {
 
     val uiState: StateFlow<HomeUiState> = session.selectedAccountId
@@ -92,6 +94,15 @@ class HomeViewModel(
     val nearMaturityState: StateFlow<NearMaturityState> = _nearMaturityState.asStateFlow()
 
     init {
+        // Observar cambios de estado para mostrar/ocultar loading global
+        viewModelScope.launch {
+            uiState.collect { state ->
+                when (state) {
+                    is HomeUiState.Loading -> loadingManager.show("Cargando inicio...")
+                    else -> loadingManager.hide()
+                }
+            }
+        }
         checkPriceReminder()
         loadNearMaturityPositions()
     }
