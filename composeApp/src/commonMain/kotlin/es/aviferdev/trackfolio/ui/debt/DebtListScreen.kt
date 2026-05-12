@@ -57,10 +57,16 @@ import es.aviferdev.trackfolio.ui.theme.SurfaceWhite
 import es.aviferdev.trackfolio.ui.theme.TextPrimary
 import es.aviferdev.trackfolio.ui.theme.TextSecondary
 import es.aviferdev.trackfolio.ui.theme.TextTertiary
+import es.aviferdev.trackfolio.ui.theme.TrackfolioTheme
 import es.aviferdev.trackfolio.ui.theme.formatAmount
 import es.aviferdev.trackfolio.ui.theme.formatDate
 import es.aviferdev.trackfolio.ui.theme.maskAmount
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// WRAPPER: Conoce al ViewModel y Koin. Orquesta estado y delega al Content.
+// ═══════════════════════════════════════════════════════════════════════════════
 
 @Composable
 fun DebtListScreen(viewModel: DebtViewModel = koinViewModel()) {
@@ -71,107 +77,16 @@ fun DebtListScreen(viewModel: DebtViewModel = koinViewModel()) {
     var debtToMarkPaid by remember { mutableStateOf<Debt?>(null) }
     var debtToDelete by remember { mutableStateOf<Debt?>(null) }
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(BackgroundGray)
-    ) {
-        if (uiState.isLoading) {
-            CircularProgressIndicator(
-                modifier = Modifier.align(Alignment.Center),
-                color = PrimaryDark
-            )
-        } else {
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(bottom = 100.dp)
-            ) {
-                item {
-                    TopBarApp(
-                        title = "Deudas",
-                        navigateBack = {
-                            // TODO
-                        }
-                    )
-                    SpacerVerticalApp(8.dp)
-                }
+    DebtListContent(
+        uiState = uiState,
+        balancesHidden = balancesHidden,
+        onAddClick = { showAdd = true },
+        onEditDebt = { debtToEdit = it },
+        onMarkPaid = { debtToMarkPaid = it },
+        onDeleteDebt = { debtToDelete = it },
+    )
 
-                item {
-                    HeaderDebtListScreen(
-                        totalTheyOwe = uiState.totalTheyOwe,
-                        totalIOwe = uiState.totalIOwe,
-                        hidden = balancesHidden
-                    )
-                }
-
-                if (uiState.debtsTheyOwe.isNotEmpty()) {
-                    item {
-                        DebtSectionHeader(
-                            title = "Me deben ↑",
-                            total = uiState.totalTheyOwe,
-                            color = IncomeGreen,
-                            hidden = balancesHidden
-                        )
-                    }
-                    items(uiState.debtsTheyOwe, key = { it.id }) { debt ->
-                        SwipeRowApp(
-                            titleSwipe = "Eliminar",
-                            colorSwipe = ExpenseRed,
-                            onDelete = { debtToDelete = debt },
-                            content = {
-                                DebtCard(
-                                    debt = debt,
-                                    hidden = balancesHidden,
-                                    onMarkPaid = { debtToMarkPaid = debt },
-                                    onEdit = { debtToEdit = debt }
-                                )
-                            }
-                        )
-                    }
-                }
-
-                if (uiState.debtsIOwe.isNotEmpty()) {
-                    item {
-                        DebtSectionHeader(
-                            title = "Debo yo ↓",
-                            total = uiState.totalIOwe,
-                            color = ExpenseRed,
-                            hidden = balancesHidden
-                        )
-                    }
-                    items(uiState.debtsIOwe, key = { it.id }) { debt ->
-                        SwipeRowApp(
-                            titleSwipe = "Eliminar",
-                            colorSwipe = ExpenseRed,
-                            onDelete = { debtToDelete = debt },
-                            content = {
-                                DebtCard(
-                                    debt = debt,
-                                    hidden = balancesHidden,
-                                    onMarkPaid = { debtToMarkPaid = debt },
-                                    onEdit = { debtToEdit = debt })
-                            }
-                        )
-                    }
-                }
-
-                if (uiState.debtsTheyOwe.isEmpty() && uiState.debtsIOwe.isEmpty()) {
-                    item { EmptyState() }
-                }
-
-                item {
-                    SpacerVerticalApp(8.dp)
-                    LargeButtonApp(
-                        icon = Icons.Default.Add,
-                        contentDescription = "Añadir",
-                        title = "Nueva deuda",
-                        onClick = { showAdd = true }
-                    )
-                }
-            }
-        }
-    }
-
+    // ── Diálogos y BottomSheets (usan viewModel directamente) ─────────────────
     if (showAdd) {
         AddDebtBottomSheet(onDismiss = { showAdd = false }, viewModel = viewModel)
     }
@@ -251,6 +166,176 @@ fun DebtListScreen(viewModel: DebtViewModel = koinViewModel()) {
         )
     }
 }
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// CONTENT: Stateless. Solo recibe datos planos y callbacks. Puede tener @Preview.
+// ═══════════════════════════════════════════════════════════════════════════════
+
+@Composable
+fun DebtListContent(
+    uiState: DebtUiState,
+    balancesHidden: Boolean,
+    onAddClick: () -> Unit,
+    onEditDebt: (Debt) -> Unit,
+    onMarkPaid: (Debt) -> Unit,
+    onDeleteDebt: (Debt) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .background(BackgroundGray)
+    ) {
+        if (uiState.isLoading) {
+            CircularProgressIndicator(
+                modifier = Modifier.align(Alignment.Center),
+                color = PrimaryDark
+            )
+        } else {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(bottom = 100.dp)
+            ) {
+                item {
+                    TopBarApp(
+                        title = "Deudas",
+                        navigateBack = {
+                            // TODO: manejar navegación desde el wrapper
+                        }
+                    )
+                    SpacerVerticalApp(8.dp)
+                }
+
+                item {
+                    HeaderDebtListScreen(
+                        totalTheyOwe = uiState.totalTheyOwe,
+                        totalIOwe = uiState.totalIOwe,
+                        hidden = balancesHidden
+                    )
+                }
+
+                if (uiState.debtsTheyOwe.isNotEmpty()) {
+                    item {
+                        DebtSectionHeader(
+                            title = "Me deben ↑",
+                            total = uiState.totalTheyOwe,
+                            color = IncomeGreen,
+                            hidden = balancesHidden
+                        )
+                    }
+                    items(uiState.debtsTheyOwe, key = { it.id }) { debt ->
+                        SwipeRowApp(
+                            titleSwipe = "Eliminar",
+                            colorSwipe = ExpenseRed,
+                            onDelete = { onDeleteDebt(debt) },
+                            content = {
+                                DebtCard(
+                                    debt = debt,
+                                    hidden = balancesHidden,
+                                    onMarkPaid = { onMarkPaid(debt) },
+                                    onEdit = { onEditDebt(debt) }
+                                )
+                            }
+                        )
+                    }
+                }
+
+                if (uiState.debtsIOwe.isNotEmpty()) {
+                    item {
+                        DebtSectionHeader(
+                            title = "Debo yo ↓",
+                            total = uiState.totalIOwe,
+                            color = ExpenseRed,
+                            hidden = balancesHidden
+                        )
+                    }
+                    items(uiState.debtsIOwe, key = { it.id }) { debt ->
+                        SwipeRowApp(
+                            titleSwipe = "Eliminar",
+                            colorSwipe = ExpenseRed,
+                            onDelete = { onDeleteDebt(debt) },
+                            content = {
+                                DebtCard(
+                                    debt = debt,
+                                    hidden = balancesHidden,
+                                    onMarkPaid = { onMarkPaid(debt) },
+                                    onEdit = { onEditDebt(debt) })
+                            }
+                        )
+                    }
+                }
+
+                if (uiState.debtsTheyOwe.isEmpty() && uiState.debtsIOwe.isEmpty()) {
+                    item { EmptyState() }
+                }
+
+                item {
+                    SpacerVerticalApp(8.dp)
+                    LargeButtonApp(
+                        icon = Icons.Default.Add,
+                        contentDescription = "Añadir",
+                        title = "Nueva deuda",
+                        onClick = onAddClick
+                    )
+                }
+            }
+        }
+    }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// PREVIEW
+// ═══════════════════════════════════════════════════════════════════════════════
+
+@Preview
+@Composable
+fun DebtListContentPreview() {
+    val fakeDebts = listOf(
+        Debt(
+            id = "debt_1",
+            accountId = "acc_1",
+            personName = "Juan Pérez",
+            amount = 150.0,
+            direction = DebtDirection.THEY_OWE,
+            date = 1704067200000,
+            isPaid = false,
+            notes = "Préstamo personal",
+            createdAt = 1704067200000
+        ),
+        Debt(
+            id = "debt_2",
+            accountId = "acc_1",
+            personName = "María García",
+            amount = 75.0,
+            direction = DebtDirection.I_OWE,
+            date = 1706745600000,
+            isPaid = false,
+            notes = null,
+            createdAt = 1706745600000
+        )
+    )
+
+    TrackfolioTheme {
+        DebtListContent(
+            uiState = DebtUiState(
+                debtsTheyOwe = listOf(fakeDebts[0]),
+                debtsIOwe = listOf(fakeDebts[1]),
+                totalTheyOwe = 150.0,
+                totalIOwe = 75.0,
+                isLoading = false
+            ),
+            balancesHidden = false,
+            onAddClick = {},
+            onEditDebt = {},
+            onMarkPaid = {},
+            onDeleteDebt = {}
+        )
+    }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// Subcomponentes (sin cambios, solo se movieron de private a internal)
+// ═══════════════════════════════════════════════════════════════════════════════
 
 @Composable
 private fun HeaderDebtListScreen(totalTheyOwe: Double, totalIOwe: Double, hidden: Boolean) {

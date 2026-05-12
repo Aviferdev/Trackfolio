@@ -29,12 +29,8 @@ import es.aviferdev.trackfolio.ui.common.navigation.TopBarApp
 import es.aviferdev.trackfolio.ui.theme.*
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
-/**
- * Pantalla de configuración de un activo individual.
- * Permite gestionar las plataformas donde se encuentra el activo
- * (vincular/desvincular) y crear nuevas plataformas.
- */
 @Composable
 fun AssetDetailScreen(
     assetId: String,
@@ -43,8 +39,47 @@ fun AssetDetailScreen(
 ) {
     val state by viewModel.uiState.collectAsState()
 
+    AssetDetailContent(
+        state = state,
+        onBack = onBack,
+        onLinkPlatform = { platformId -> viewModel.linkPlatform(platformId) },
+        onUnlinkPlatform = { platformId -> viewModel.unlinkPlatform(platformId) }
+    )
+
+    if (state.showAddPlatformSheet) {
+        AddEditPlatformSheet(
+            initial = null,
+            onSave = { name, icon, notes -> viewModel.createAndLinkPlatform(name, icon, notes) },
+            onDismiss = { viewModel.closeAddPlatformSheet() }
+        )
+    }
+
+    state.error?.let { msg ->
+        AlertDialog(
+            onDismissRequest = { viewModel.clearError() },
+            containerColor = SurfaceWhite,
+            title = { Text("Error", fontSize = 17.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary) },
+            text = { Text(msg, fontSize = 14.sp, color = TextSecondary) },
+            confirmButton = {
+                TextButton(onClick = { viewModel.clearError() }) {
+                    Text("Aceptar", color = PrimaryDark, fontWeight = FontWeight.Medium)
+                }
+            },
+            shape = RoundedCornerShape(16.dp)
+        )
+    }
+}
+
+@Composable
+fun AssetDetailContent(
+    state: AssetDetailUiState,
+    onBack: () -> Unit,
+    onLinkPlatform: (String) -> Unit,
+    onUnlinkPlatform: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
     Column(
-        modifier = Modifier.fillMaxSize().background(BackgroundGray)
+        modifier = modifier.fillMaxSize().background(BackgroundGray)
     ) {
         TopBarApp(
             title = state.asset?.name ?: "Activo",
@@ -56,7 +91,6 @@ fun AssetDetailScreen(
             contentPadding = PaddingValues(horizontal = 20.dp, vertical = 20.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            // ── Plataformas vinculadas ────────────────────────────────────
             item {
                 Text(
                     "PLATAFORMAS",
@@ -89,7 +123,6 @@ fun AssetDetailScreen(
                                 modifier = Modifier.fillMaxWidth()
                             )
                         } else {
-                            // Chips de plataformas — las vinculadas aparecen seleccionadas
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -103,8 +136,8 @@ fun AssetDetailScreen(
                                         label = platform.name,
                                         isSelected = isLinked,
                                         onClick = {
-                                            if (isLinked) viewModel.unlinkPlatform(platform.id)
-                                            else viewModel.linkPlatform(platform.id)
+                                            if (isLinked) onUnlinkPlatform(platform.id)
+                                            else onLinkPlatform(platform.id)
                                         }
                                     )
                                 }
@@ -123,7 +156,6 @@ fun AssetDetailScreen(
                 }
             }
 
-            // ── Resumen de plataformas vinculadas ─────────────────────────
             if (state.linkedPlatforms.isNotEmpty()) {
                 item { Spacer(Modifier.height(4.dp)) }
                 item {
@@ -159,7 +191,7 @@ fun AssetDetailScreen(
                                         modifier = Modifier.weight(1f)
                                     )
                                     IconButton(
-                                        onClick = { viewModel.unlinkPlatform(platform.id) },
+                                        onClick = { onUnlinkPlatform(platform.id) },
                                         modifier = Modifier.size(28.dp)
                                     ) {
                                         Icon(Icons.Default.Delete, "Desvincular", modifier = Modifier.size(14.dp), tint = ExpenseRed)
@@ -181,28 +213,36 @@ fun AssetDetailScreen(
             item { Spacer(Modifier.height(20.dp)) }
         }
     }
+}
 
-    // ── Sheet crear plataforma ───────────────────────────────────────────────
-    if (state.showAddPlatformSheet) {
-        AddEditPlatformSheet(
-            initial = null,
-            onSave = { name, icon, notes -> viewModel.createAndLinkPlatform(name, icon, notes) },
-            onDismiss = { viewModel.closeAddPlatformSheet() }
-        )
-    }
-
-    state.error?.let { msg ->
-        AlertDialog(
-            onDismissRequest = { viewModel.clearError() },
-            containerColor = SurfaceWhite,
-            title = { Text("Error", fontSize = 17.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary) },
-            text = { Text(msg, fontSize = 14.sp, color = TextSecondary) },
-            confirmButton = {
-                TextButton(onClick = { viewModel.clearError() }) {
-                    Text("Aceptar", color = PrimaryDark, fontWeight = FontWeight.Medium)
-                }
-            },
-            shape = RoundedCornerShape(16.dp)
+@Preview
+@Composable
+private fun AssetDetailContentPreview() {
+    TrackfolioTheme {
+        AssetDetailContent(
+            state = AssetDetailUiState(
+                asset = Asset(
+                    id = "1",
+                    accountId = "acc1",
+                    ticker = "AAPL",
+                    name = "Apple Inc.",
+                    notes = null,
+                    createdAt = 0L,
+                    assetCategoryId = "cat1",
+                    currentPrice = 150.0
+                ),
+                allPlatforms = listOf(
+                    Platform(id = "p1", name = "Interactive Brokers", icon = "🏦", sortOrder = 0, createdAt = 0L),
+                    Platform(id = "p2", name = "DeGiro", icon = "🏛️", sortOrder = 1, createdAt = 0L)
+                ),
+                linkedPlatformIds = setOf("p1"),
+                linkedPlatforms = listOf(
+                    Platform(id = "p1", name = "Interactive Brokers", icon = "🏦", sortOrder = 0, createdAt = 0L)
+                )
+            ),
+            onBack = {},
+            onLinkPlatform = {},
+            onUnlinkPlatform = {}
         )
     }
 }

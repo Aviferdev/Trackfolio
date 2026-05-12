@@ -34,15 +34,19 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import es.aviferdev.trackfolio.domain.model.Category
 import es.aviferdev.trackfolio.domain.model.IncomeType
 import es.aviferdev.trackfolio.domain.model.Issuer
+
 import es.aviferdev.trackfolio.domain.model.TransactionType
 import es.aviferdev.trackfolio.ui.theme.*
+import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
 import kotlinx.datetime.toLocalDateTime
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -74,108 +78,206 @@ fun AddTransactionBottomSheet(
             )
         }
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .verticalScroll(rememberScrollState())
-                .imePadding()
-                .padding(horizontal = 20.dp)
-                .padding(bottom = 32.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
+        AddTransactionBottomSheetContent(
+            uiState               = uiState,
+            isEditing             = viewModel.isEditing,
+            type                  = viewModel.type,
+            onTypeChange          = { viewModel.onTypeChange(it) },
+            amount                = viewModel.amount,
+            onAmountChange        = { viewModel.onAmountChange(it) },
+            categories            = viewModel.categories,
+            selectedCategoryId    = viewModel.selectedCategoryId,
+            onCategoryChange      = { viewModel.onCategoryChange(it) },
+            calculatedNet         = viewModel.calculatedNet,
+            selectedIncomeType    = viewModel.selectedIncomeType,
+            onIncomeTypeChange    = { viewModel.onIncomeTypeChange(it) },
+            grossAmount           = viewModel.grossAmount,
+            onGrossAmountChange   = { viewModel.onGrossAmountChange(it) },
+            socialSecurityAmount  = viewModel.socialSecurityAmount,
+            onSocialSecurityChange = { viewModel.onSocialSecurityChange(it) },
+            irpfInputMode         = viewModel.irpfInputMode,
+            onIrpfInputModeChange = { viewModel.onIrpfInputModeChange(it) },
+            irpfPercent           = viewModel.irpfPercent,
+            onIrpfPercentChange   = { viewModel.onIrpfPercentChange(it) },
+            irpfFixedAmount       = viewModel.irpfFixedAmount,
+            onIrpfFixedAmountChange = { viewModel.onIrpfFixedAmountChange(it) },
+            commissionAmount      = viewModel.commissionAmount,
+            onCommissionChange    = { viewModel.onCommissionChange(it) },
+            issuers               = viewModel.issuers,
+            selectedIssuerId      = viewModel.selectedIssuerId,
+            onIssuerSelected      = { viewModel.onIssuerSelected(it) },
+            notes                 = viewModel.notes,
+            onNotesChange         = { viewModel.onNotesChange(it) },
+            dateMillis            = viewModel.dateMillis,
+            onDateChange          = { viewModel.onDateChange(it) },
+            isValid               = viewModel.isValid,
+            onSave                = { viewModel.save() }
+        )
+    }
+}
+
+@Composable
+fun AddTransactionBottomSheetContent(
+    uiState: AddTransactionUiState,
+    isEditing: Boolean,
+    type: TransactionType,
+    onTypeChange: (TransactionType) -> Unit,
+    amount: String,
+    onAmountChange: (String) -> Unit,
+    categories: List<Category>,
+    selectedCategoryId: String,
+    onCategoryChange: (String) -> Unit,
+    calculatedNet: Double?,
+    selectedIncomeType: IncomeType?,
+    onIncomeTypeChange: (IncomeType) -> Unit,
+    grossAmount: String,
+    onGrossAmountChange: (String) -> Unit,
+    socialSecurityAmount: String,
+    onSocialSecurityChange: (String) -> Unit,
+    irpfInputMode: IrpfInputMode,
+    onIrpfInputModeChange: (IrpfInputMode) -> Unit,
+    irpfPercent: String,
+    onIrpfPercentChange: (String) -> Unit,
+    irpfFixedAmount: String,
+    onIrpfFixedAmountChange: (String) -> Unit,
+    commissionAmount: String,
+    onCommissionChange: (String) -> Unit,
+    issuers: List<Issuer>,
+    selectedIssuerId: String?,
+    onIssuerSelected: (String) -> Unit,
+    notes: String,
+    onNotesChange: (String) -> Unit,
+    dateMillis: Long,
+    onDateChange: (Long) -> Unit,
+    isValid: Boolean,
+    onSave: () -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .verticalScroll(rememberScrollState())
+            .imePadding()
+            .padding(horizontal = 20.dp)
+            .padding(bottom = 32.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Spacer(Modifier.height(8.dp))
+
+        Text(
+            text       = if (isEditing) "Editar movimiento" else "Nuevo movimiento",
+            fontSize   = 16.sp,
+            fontWeight = FontWeight.Medium,
+            color      = TextPrimary
+        )
+
+        Spacer(Modifier.height(16.dp))
+
+        // ── Selector de tipo (Ingreso / Gasto) ───────────────────────────
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            TypeChip(
+                label         = "Ingreso",
+                selected      = type == TransactionType.INCOME,
+                selectedColor = IncomeGreen,
+                onClick       = { onTypeChange(TransactionType.INCOME) }
+            )
+            TypeChip(
+                label         = "Gasto",
+                selected      = type == TransactionType.EXPENSE,
+                selectedColor = ExpenseRed,
+                onClick       = { onTypeChange(TransactionType.EXPENSE) }
+            )
+        }
+
+        Spacer(Modifier.height(16.dp))
+
+        if (type == TransactionType.EXPENSE) {
+            ExpenseForm(
+                amount             = amount,
+                onAmountChange     = onAmountChange,
+                categories         = categories,
+                selectedCategoryId = selectedCategoryId,
+                onCategoryChange   = onCategoryChange
+            )
+        } else {
+            IncomeForm(
+                calculatedNet         = calculatedNet,
+                selectedIncomeType    = selectedIncomeType,
+                onIncomeTypeChange    = onIncomeTypeChange,
+                grossAmount           = grossAmount,
+                onGrossAmountChange   = onGrossAmountChange,
+                socialSecurityAmount  = socialSecurityAmount,
+                onSocialSecurityChange = onSocialSecurityChange,
+                irpfInputMode         = irpfInputMode,
+                onIrpfInputModeChange = onIrpfInputModeChange,
+                irpfPercent           = irpfPercent,
+                onIrpfPercentChange   = onIrpfPercentChange,
+                irpfFixedAmount       = irpfFixedAmount,
+                onIrpfFixedAmountChange = onIrpfFixedAmountChange,
+                commissionAmount      = commissionAmount,
+                onCommissionChange    = onCommissionChange,
+                issuers               = issuers,
+                selectedIssuerId      = selectedIssuerId,
+                onIssuerSelected      = onIssuerSelected
+            )
+        }
+
+        // ── Fecha ─────────────────────────────────────────────────────────
+        Spacer(Modifier.height(16.dp))
+        HorizontalDivider(color = BorderGray, thickness = 0.5.dp)
+        Spacer(Modifier.height(16.dp))
+
+        DateSelector(
+            dateMillis     = dateMillis,
+            onDateSelected = onDateChange
+        )
+
+        // ── Nota ──────────────────────────────────────────────────────────
+        Spacer(Modifier.height(16.dp))
+        HorizontalDivider(color = BorderGray, thickness = 0.5.dp)
+        Spacer(Modifier.height(16.dp))
+
+        Column(modifier = Modifier.fillMaxWidth()) {
+            Text("Nota (opcional)", fontSize = 13.sp, color = TextSecondary)
             Spacer(Modifier.height(8.dp))
+            OutlinedTextField(
+                value         = notes,
+                onValueChange = onNotesChange,
+                placeholder   = { Text("Ej. Nómina enero", color = TextSecondary.copy(alpha = 0.6f), fontSize = 14.sp) },
+                modifier      = Modifier.fillMaxWidth(),
+                shape         = RoundedCornerShape(8.dp),
+                colors        = OutlinedTextFieldDefaults.colors(focusedBorderColor = PrimaryDark, unfocusedBorderColor = BorderGray),
+                singleLine    = true
+            )
+        }
 
+        Spacer(Modifier.height(24.dp))
+
+        if (uiState is AddTransactionUiState.Error) {
             Text(
-                text       = if (viewModel.isEditing) "Editar movimiento" else "Nuevo movimiento",
-                fontSize   = 16.sp,
-                fontWeight = FontWeight.Medium,
-                color      = TextPrimary
+                text     = (uiState as AddTransactionUiState.Error).message,
+                color    = ExpenseRed,
+                fontSize = 13.sp,
+                modifier = Modifier.padding(bottom = 8.dp)
             )
+        }
 
-            Spacer(Modifier.height(16.dp))
-
-            // ── Selector de tipo (Ingreso / Gasto) ───────────────────────────
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                TypeChip(
-                    label         = "Ingreso",
-                    selected      = viewModel.type == TransactionType.INCOME,
-                    selectedColor = IncomeGreen,
-                    onClick       = { viewModel.onTypeChange(TransactionType.INCOME) }
-                )
-                TypeChip(
-                    label         = "Gasto",
-                    selected      = viewModel.type == TransactionType.EXPENSE,
-                    selectedColor = ExpenseRed,
-                    onClick       = { viewModel.onTypeChange(TransactionType.EXPENSE) }
-                )
-            }
-
-            Spacer(Modifier.height(16.dp))
-
-            if (viewModel.type == TransactionType.EXPENSE) {
-                ExpenseForm(viewModel)
+        Button(
+            onClick  = onSave,
+            enabled  = isValid && uiState !is AddTransactionUiState.Loading,
+            modifier = Modifier.fillMaxWidth().height(52.dp),
+            shape    = RoundedCornerShape(10.dp),
+            colors   = ButtonDefaults.buttonColors(
+                containerColor         = PrimaryDark,
+                disabledContainerColor = PrimaryDark.copy(alpha = 0.38f)
+            )
+        ) {
+            if (uiState is AddTransactionUiState.Loading) {
+                CircularProgressIndicator(modifier = Modifier.size(20.dp), color = Color.White, strokeWidth = 2.dp)
             } else {
-                IncomeForm(viewModel)
-            }
-
-            // ── Fecha ─────────────────────────────────────────────────────────
-            Spacer(Modifier.height(16.dp))
-            HorizontalDivider(color = BorderGray, thickness = 0.5.dp)
-            Spacer(Modifier.height(16.dp))
-
-            DateSelector(
-                dateMillis     = viewModel.dateMillis,
-                onDateSelected = { viewModel.onDateChange(it) }
-            )
-
-            // ── Nota ──────────────────────────────────────────────────────────
-            Spacer(Modifier.height(16.dp))
-            HorizontalDivider(color = BorderGray, thickness = 0.5.dp)
-            Spacer(Modifier.height(16.dp))
-
-            Column(modifier = Modifier.fillMaxWidth()) {
-                Text("Nota (opcional)", fontSize = 13.sp, color = TextSecondary)
-                Spacer(Modifier.height(8.dp))
-                OutlinedTextField(
-                    value         = viewModel.notes,
-                    onValueChange = { viewModel.onNotesChange(it) },
-                    placeholder   = { Text("Ej. Nómina enero", color = TextSecondary.copy(alpha = 0.6f), fontSize = 14.sp) },
-                    modifier      = Modifier.fillMaxWidth(),
-                    shape         = RoundedCornerShape(8.dp),
-                    colors        = OutlinedTextFieldDefaults.colors(focusedBorderColor = PrimaryDark, unfocusedBorderColor = BorderGray),
-                    singleLine    = true
-                )
-            }
-
-            Spacer(Modifier.height(24.dp))
-
-            if (uiState is AddTransactionUiState.Error) {
                 Text(
-                    text     = (uiState as AddTransactionUiState.Error).message,
-                    color    = ExpenseRed,
-                    fontSize = 13.sp,
-                    modifier = Modifier.padding(bottom = 8.dp)
+                    if (isEditing) "Guardar cambios" else "Guardar",
+                    fontSize = 16.sp, fontWeight = FontWeight.Medium
                 )
-            }
-
-            Button(
-                onClick  = { viewModel.save() },
-                enabled  = viewModel.isValid && uiState !is AddTransactionUiState.Loading,
-                modifier = Modifier.fillMaxWidth().height(52.dp),
-                shape    = RoundedCornerShape(10.dp),
-                colors   = ButtonDefaults.buttonColors(
-                    containerColor         = PrimaryDark,
-                    disabledContainerColor = PrimaryDark.copy(alpha = 0.38f)
-                )
-            ) {
-                if (uiState is AddTransactionUiState.Loading) {
-                    CircularProgressIndicator(modifier = Modifier.size(20.dp), color = Color.White, strokeWidth = 2.dp)
-                } else {
-                    Text(
-                        if (viewModel.isEditing) "Guardar cambios" else "Guardar",
-                        fontSize = 16.sp, fontWeight = FontWeight.Medium
-                    )
-                }
             }
         }
     }
@@ -185,10 +287,16 @@ fun AddTransactionBottomSheet(
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun ExpenseForm(viewModel: AddTransactionViewModel) {
+private fun ExpenseForm(
+    amount: String,
+    onAmountChange: (String) -> Unit,
+    categories: List<Category>,
+    selectedCategoryId: String,
+    onCategoryChange: (String) -> Unit
+) {
     AmountInput(
-        value         = viewModel.amount,
-        onValueChange = { viewModel.onAmountChange(it) },
+        value         = amount,
+        onValueChange = onAmountChange,
         prefix        = "− ",
         color         = ExpenseRed
     )
@@ -202,11 +310,10 @@ private fun ExpenseForm(viewModel: AddTransactionViewModel) {
         Text("Categoría", fontSize = 13.sp, color = TextSecondary)
         Spacer(Modifier.height(10.dp))
 
-        val allCategories = viewModel.categories
+        val allCategories = categories
         var searchQuery by remember { mutableStateOf("") }
         val showSearch = allCategories.size > 8
 
-        // ── Buscador (solo si hay más de 8 categorías) ────────────────
         AnimatedVisibility(
             visible = showSearch,
             enter   = expandVertically() + fadeIn(),
@@ -244,7 +351,6 @@ private fun ExpenseForm(viewModel: AddTransactionViewModel) {
             )
         }
 
-        // ── Grid de categorías ────────────────────────────────────────
         val filtered = if (searchQuery.isBlank()) {
             allCategories
         } else {
@@ -261,20 +367,18 @@ private fun ExpenseForm(viewModel: AddTransactionViewModel) {
             verticalArrangement   = Arrangement.spacedBy(8.dp)
         ) {
             filtered.forEachIndexed { index, category ->
-                // Buscar índice original para asignar color consistente
                 val originalIndex = allCategories.indexOf(category)
                 val accentColor   = CategoryPalette[originalIndex % CategoryPalette.size]
 
                 CategoryChip(
                     label       = category.name,
-                    selected    = category.id == viewModel.selectedCategoryId,
+                    selected    = category.id == selectedCategoryId,
                     accentColor = accentColor,
-                    onClick     = { viewModel.onCategoryChange(category.id) }
+                    onClick     = { onCategoryChange(category.id) }
                 )
             }
         }
 
-        // ── Mensaje si no hay resultados ───────────────────────────────
         if (filtered.isEmpty() && searchQuery.isNotBlank()) {
             Spacer(Modifier.height(8.dp))
             Text(
@@ -291,9 +395,27 @@ private fun ExpenseForm(viewModel: AddTransactionViewModel) {
 // ─── Formulario de INGRESO ───────────────────────────────────────────────────
 
 @Composable
-private fun IncomeForm(viewModel: AddTransactionViewModel) {
-    // Neto calculado o placeholder
-    val net = viewModel.calculatedNet
+private fun IncomeForm(
+    calculatedNet: Double?,
+    selectedIncomeType: IncomeType?,
+    onIncomeTypeChange: (IncomeType) -> Unit,
+    grossAmount: String,
+    onGrossAmountChange: (String) -> Unit,
+    socialSecurityAmount: String,
+    onSocialSecurityChange: (String) -> Unit,
+    irpfInputMode: IrpfInputMode,
+    onIrpfInputModeChange: (IrpfInputMode) -> Unit,
+    irpfPercent: String,
+    onIrpfPercentChange: (String) -> Unit,
+    irpfFixedAmount: String,
+    onIrpfFixedAmountChange: (String) -> Unit,
+    commissionAmount: String,
+    onCommissionChange: (String) -> Unit,
+    issuers: List<Issuer>,
+    selectedIssuerId: String?,
+    onIssuerSelected: (String) -> Unit
+) {
+    val net = calculatedNet
     if (net != null) {
         Text(
             text       = "Neto: ${fmtAmt(net)} €",
@@ -323,8 +445,8 @@ private fun IncomeForm(viewModel: AddTransactionViewModel) {
                 row.forEach { incomeType ->
                     IncomeTypeChip(
                         incomeType = incomeType,
-                        selected   = viewModel.selectedIncomeType == incomeType,
-                        onClick    = { viewModel.onIncomeTypeChange(incomeType) },
+                        selected   = selectedIncomeType == incomeType,
+                        onClick    = { onIncomeTypeChange(incomeType) },
                         modifier   = Modifier.weight(1f)
                     )
                 }
@@ -334,7 +456,7 @@ private fun IncomeForm(viewModel: AddTransactionViewModel) {
     }
 
     // ── Campos fiscales dinámicos ─────────────────────────────────────────
-    val selectedType = viewModel.selectedIncomeType
+    val selectedType = selectedIncomeType
     AnimatedVisibility(
         visible = selectedType != null,
         enter   = expandVertically(),
@@ -353,8 +475,8 @@ private fun IncomeForm(viewModel: AddTransactionViewModel) {
                         Text("Importe", fontSize = 12.sp, color = TextSecondary)
                         Spacer(Modifier.height(4.dp))
                         FiscalTextField(
-                            value         = viewModel.grossAmount,
-                            onValueChange = { viewModel.onGrossAmountChange(it) },
+                            value         = grossAmount,
+                            onValueChange = onGrossAmountChange,
                             placeholder   = "0,00",
                             suffix        = "€"
                         )
@@ -383,8 +505,8 @@ private fun IncomeForm(viewModel: AddTransactionViewModel) {
                         Text("Importe bruto", fontSize = 12.sp, color = TextSecondary)
                         Spacer(Modifier.height(4.dp))
                         FiscalTextField(
-                            value         = viewModel.grossAmount,
-                            onValueChange = { viewModel.onGrossAmountChange(it) },
+                            value         = grossAmount,
+                            onValueChange = onGrossAmountChange,
                             placeholder   = "0,00",
                             suffix        = "€"
                         )
@@ -396,8 +518,8 @@ private fun IncomeForm(viewModel: AddTransactionViewModel) {
                             Text("Cotizaciones Seg. Social", fontSize = 12.sp, color = TextSecondary)
                             Spacer(Modifier.height(4.dp))
                             FiscalTextField(
-                                value         = viewModel.socialSecurityAmount,
-                                onValueChange = { viewModel.onSocialSecurityChange(it) },
+                                value         = socialSecurityAmount,
+                                onValueChange = onSocialSecurityChange,
                                 placeholder   = "0,00",
                                 suffix        = "€"
                             )
@@ -414,30 +536,29 @@ private fun IncomeForm(viewModel: AddTransactionViewModel) {
                             Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                                 IrpfModeChip(
                                     label    = "%",
-                                    selected = viewModel.irpfInputMode == IrpfInputMode.PERCENT,
-                                    onClick  = { viewModel.onIrpfInputModeChange(IrpfInputMode.PERCENT) }
+                                    selected = irpfInputMode == IrpfInputMode.PERCENT,
+                                    onClick  = { onIrpfInputModeChange(IrpfInputMode.PERCENT) }
                                 )
                                 IrpfModeChip(
                                     label    = "€",
-                                    selected = viewModel.irpfInputMode == IrpfInputMode.AMOUNT,
-                                    onClick  = { viewModel.onIrpfInputModeChange(IrpfInputMode.AMOUNT) }
+                                    selected = irpfInputMode == IrpfInputMode.AMOUNT,
+                                    onClick  = { onIrpfInputModeChange(IrpfInputMode.AMOUNT) }
                                 )
                             }
 
                             Spacer(Modifier.height(6.dp))
 
-                            // ── Campo según modo ─────────────────────────────────
-                            if (viewModel.irpfInputMode == IrpfInputMode.PERCENT) {
+                            if (irpfInputMode == IrpfInputMode.PERCENT) {
                                 FiscalTextField(
-                                    value         = viewModel.irpfPercent,
-                                    onValueChange = { viewModel.onIrpfPercentChange(it) },
+                                    value         = irpfPercent,
+                                    onValueChange = onIrpfPercentChange,
                                     placeholder   = "0",
                                     suffix        = "%"
                                 )
                             } else {
                                 FiscalTextField(
-                                    value         = viewModel.irpfFixedAmount,
-                                    onValueChange = { viewModel.onIrpfFixedAmountChange(it) },
+                                    value         = irpfFixedAmount,
+                                    onValueChange = onIrpfFixedAmountChange,
                                     placeholder   = "0,00",
                                     suffix        = "€"
                                 )
@@ -451,8 +572,8 @@ private fun IncomeForm(viewModel: AddTransactionViewModel) {
                             Text("Comisiones", fontSize = 12.sp, color = TextSecondary)
                             Spacer(Modifier.height(4.dp))
                             FiscalTextField(
-                                value         = viewModel.commissionAmount,
-                                onValueChange = { viewModel.onCommissionChange(it) },
+                                value         = commissionAmount,
+                                onValueChange = onCommissionChange,
                                 placeholder   = "0,00",
                                 suffix        = "€"
                             )
@@ -460,11 +581,11 @@ private fun IncomeForm(viewModel: AddTransactionViewModel) {
                     }
 
                     // Resumen calculado
-                    viewModel.calculatedNet?.let { netValue ->
-                        val gross = viewModel.grossAmount.replace(',', '.').toDoubleOrNull() ?: 0.0
-                        val ss   = if (selectedType.hasSocialSecurity) viewModel.socialSecurityAmount.replace(',', '.').toDoubleOrNull() ?: 0.0 else 0.0
-                        val comm = if (selectedType.hasCommission) viewModel.commissionAmount.replace(',', '.').toDoubleOrNull() ?: 0.0 else 0.0
-                        val irpf = viewModel.resolveIrpf(gross, ssDeduction = if (selectedType == IncomeType.SALARY) ss else 0.0)
+                    calculatedNet?.let { netValue ->
+                        val gross = grossAmount.replace(',', '.').toDoubleOrNull() ?: 0.0
+                        val ss   = if (selectedType.hasSocialSecurity) socialSecurityAmount.replace(',', '.').toDoubleOrNull() ?: 0.0 else 0.0
+                        val comm = if (selectedType.hasCommission) commissionAmount.replace(',', '.').toDoubleOrNull() ?: 0.0 else 0.0
+                        val irpf = resolveIrpf(irpfInputMode, irpfPercent, irpfFixedAmount, gross, ssDeduction = if (selectedType == IncomeType.SALARY) ss else 0.0)
 
                         Surface(
                             shape  = RoundedCornerShape(10.dp),
@@ -491,9 +612,9 @@ private fun IncomeForm(viewModel: AddTransactionViewModel) {
                 HorizontalDivider(color = BorderGray, thickness = 0.5.dp)
                 IssuerSection(
                     issuerTypeLabel = selectedType.issuerType.label,
-                    issuers         = viewModel.issuers,
-                    selectedId      = viewModel.selectedIssuerId,
-                    onSelect        = { viewModel.onIssuerSelected(it) }
+                    issuers         = issuers,
+                    selectedId      = selectedIssuerId,
+                    onSelect        = onIssuerSelected
                 )
             }
         }
@@ -684,7 +805,6 @@ private fun CategoryChip(
         contentAlignment = Alignment.Center
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            // ── Círculo con inicial ───────────────────────────────────
             Box(
                 modifier = Modifier
                     .size(24.dp)
@@ -740,6 +860,25 @@ private fun IrpfModeChip(label: String, selected: Boolean, onClick: () -> Unit) 
             fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal,
             color      = if (selected) PrimaryDark else TextSecondary
         )
+    }
+}
+
+private fun resolveIrpf(
+    irpfInputMode: IrpfInputMode,
+    irpfPercent: String,
+    irpfFixedAmount: String,
+    gross: Double,
+    ssDeduction: Double = 0.0
+): Double {
+    return when (irpfInputMode) {
+        IrpfInputMode.PERCENT -> {
+            val pct = irpfPercent.replace(',', '.').toDoubleOrNull() ?: 0.0
+            val base = gross - ssDeduction
+            base * pct / 100.0
+        }
+        IrpfInputMode.AMOUNT -> {
+            irpfFixedAmount.replace(',', '.').toDoubleOrNull() ?: 0.0
+        }
     }
 }
 
@@ -803,8 +942,6 @@ private fun DateSelector(
             confirmButton    = {
                 TextButton(onClick = {
                     pickerState.selectedDateMillis?.let { selectedUtc ->
-                        // DatePicker devuelve millis a medianoche UTC.
-                        // Ajustamos para que represente medianoche en la zona local.
                         val selectedLocal = Instant.fromEpochMilliseconds(selectedUtc)
                             .toLocalDateTime(TimeZone.UTC).date
                         val localInstant = selectedLocal.atStartOfDayIn(TimeZone.currentSystemDefault())
@@ -832,5 +969,54 @@ private fun DateSelector(
                 )
             )
         }
+    }
+}
+
+// ─── Preview ─────────────────────────────────────────────────────────────────
+
+@Preview
+@Composable
+private fun AddTransactionBottomSheetContentPreview() {
+    TrackfolioTheme {
+        AddTransactionBottomSheetContent(
+            uiState               = AddTransactionUiState.Idle,
+            isEditing             = false,
+            type                  = TransactionType.EXPENSE,
+            onTypeChange          = {},
+            amount                = "45,50",
+            onAmountChange        = {},
+            categories            = listOf(
+                Category("1", "Supermercado", TransactionType.EXPENSE, false),
+                Category("2", "Restaurante", TransactionType.EXPENSE, false),
+                Category("3", "Transporte", TransactionType.EXPENSE, false),
+                Category("4", "Ocio", TransactionType.EXPENSE, false)
+            ),
+            selectedCategoryId    = "1",
+            onCategoryChange      = {},
+            calculatedNet         = null,
+            selectedIncomeType    = null,
+            onIncomeTypeChange    = {},
+            grossAmount           = "",
+            onGrossAmountChange   = {},
+            socialSecurityAmount  = "",
+            onSocialSecurityChange = {},
+            irpfInputMode         = IrpfInputMode.PERCENT,
+            onIrpfInputModeChange = {},
+            irpfPercent           = "",
+            onIrpfPercentChange   = {},
+            irpfFixedAmount       = "",
+            onIrpfFixedAmountChange = {},
+            commissionAmount      = "",
+            onCommissionChange    = {},
+            issuers               = emptyList(),
+            selectedIssuerId      = null,
+            onIssuerSelected      = {},
+            notes                 = "",
+            onNotesChange         = {},
+            dateMillis            = Clock.System.now().toEpochMilliseconds(),
+            onDateChange          = {},
+            isValid               = false,
+            onSave                = {}
+        )
     }
 }

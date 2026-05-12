@@ -34,6 +34,7 @@ import es.aviferdev.trackfolio.ui.theme.*
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.math.abs
 
@@ -41,6 +42,10 @@ private val MONTH_NAMES = listOf(
     "Enero","Febrero","Marzo","Abril","Mayo","Junio",
     "Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"
 )
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// WRAPPER
+// ═══════════════════════════════════════════════════════════════════════════════
 
 @Composable
 fun FiscalReportScreen(
@@ -50,8 +55,37 @@ fun FiscalReportScreen(
     val state by viewModel.uiState.collectAsState()
     state.successMessage?.let { LaunchedEffect(it) { viewModel.clearMessages() } }
 
+    FiscalReportContent(
+        state = state,
+        onBack = onBack,
+        onPreviousYear = { viewModel.previousYear() },
+        onNextYear = { viewModel.nextYear() },
+        onGeneratePdf = { viewModel.generatePdf() }
+    )
+
+    if (state.showPasswordSheet) {
+        PdfPasswordSheet(
+            onConfirm = { viewModel.confirmGeneratePdf(it) },
+            onDismiss = { viewModel.cancelPasswordSheet() }
+        )
+    }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// CONTENT
+// ═══════════════════════════════════════════════════════════════════════════════
+
+@Composable
+fun FiscalReportContent(
+    state: FiscalReportUiState,
+    onBack: () -> Unit,
+    onPreviousYear: () -> Unit,
+    onNextYear: () -> Unit,
+    onGeneratePdf: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .background(BackgroundGray)
     ) {
@@ -62,8 +96,8 @@ fun FiscalReportScreen(
             actions = {
                 YearStepper(
                     year = state.selectedYear,
-                    onPrevious = { viewModel.previousYear() },
-                    onNext = { viewModel.nextYear() }
+                    onPrevious = onPreviousYear,
+                    onNext = onNextYear
                 )
             }
         )
@@ -74,7 +108,6 @@ fun FiscalReportScreen(
             }
         } else {
             Column(modifier = Modifier.weight(1f)) {
-                // ── Scrollable content ────────────────────────────────────────
                 Column(
                     modifier = Modifier
                         .weight(1f)
@@ -111,7 +144,6 @@ fun FiscalReportScreen(
                     Spacer(Modifier.height(8.dp))
                 }
 
-                // ── Bottom action bar ─────────────────────────────────────────
                 Surface(color = SurfaceWhite, shadowElevation = 0.dp) {
                     Column(
                         modifier = Modifier
@@ -125,7 +157,7 @@ fun FiscalReportScreen(
                             Text(err, fontSize = 11.sp, color = ExpenseRed, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
                         }
                         Button(
-                            onClick  = { viewModel.generatePdf() },
+                            onClick  = onGeneratePdf,
                             enabled  = state.reportData != null && !state.isGenerating,
                             modifier = Modifier.fillMaxWidth().height(50.dp),
                             shape    = RoundedCornerShape(12.dp),
@@ -149,12 +181,48 @@ fun FiscalReportScreen(
             }
         }
     }
+}
 
-    // ── Password sheet ────────────────────────────────────────────────────────
-    if (state.showPasswordSheet) {
-        PdfPasswordSheet(
-            onConfirm = { viewModel.confirmGeneratePdf(it) },
-            onDismiss = { viewModel.cancelPasswordSheet() }
+// ═══════════════════════════════════════════════════════════════════════════════
+// PREVIEW
+// ═══════════════════════════════════════════════════════════════════════════════
+
+@Preview
+@Composable
+fun FiscalReportContentPreview() {
+    TrackfolioTheme {
+        FiscalReportContent(
+            state = FiscalReportUiState(
+                isLoading = false,
+                selectedYear = "2026",
+                reportData = FiscalReportData(
+                    accountName = "Cuenta Principal",
+                    currency = "EUR",
+                    year = "2026",
+                    generatedAt = 1700000000000,
+                    annualSummary = es.aviferdev.trackfolio.domain.model.AnnualSummary(
+                        year = "2026",
+                        totalIncome = 45000.0,
+                        totalExpense = 32000.0,
+                        previousYearIncome = 42000.0,
+                        previousYearExpense = 30000.0
+                    ),
+                    monthlyBreakdown = listOf(
+                        es.aviferdev.trackfolio.domain.model.MonthlyTotals("2026", "01", 3800.0, 2500.0),
+                        es.aviferdev.trackfolio.domain.model.MonthlyTotals("2026", "02", 3750.0, 2700.0),
+                        es.aviferdev.trackfolio.domain.model.MonthlyTotals("2026", "03", 4000.0, 2600.0)
+                    ),
+                    activeDebts = emptyList(),
+                    assetPositions = emptyList(),
+                    incomeTaxBreakdown = emptyList()
+                ),
+                isGenerating = false,
+                showPasswordSheet = false
+            ),
+            onBack = {},
+            onPreviousYear = {},
+            onNextYear = {},
+            onGeneratePdf = {}
         )
     }
 }

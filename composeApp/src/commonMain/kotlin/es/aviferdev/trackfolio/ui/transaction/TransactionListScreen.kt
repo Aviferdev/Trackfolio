@@ -214,7 +214,7 @@ fun TransactionListContentPreview() {
         transactions = fakeTransactions,
         filteredTransactions = fakeTransactions,
         totals = es.aviferdev.trackfolio.domain.model.MonthlyTotals(
-            totalIncome = 1500.0, totalExpense = 45.50
+            "2024", "03", 1500.0, 45.50
         ),
         categoryNames = mapOf("cat_food" to "Alimentación"),
         year = "2024",

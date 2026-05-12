@@ -10,6 +10,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import es.aviferdev.trackfolio.domain.model.Asset
 import es.aviferdev.trackfolio.domain.model.Platform
 import es.aviferdev.trackfolio.domain.usecase.asset.GetPriceReminderIntervalUseCase
 import es.aviferdev.trackfolio.ui.common.navigation.TopBarApp
@@ -22,6 +23,11 @@ import androidx.compose.ui.unit.sp
 import es.aviferdev.trackfolio.ui.theme.*
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.compose.koinInject
+import es.aviferdev.trackfolio.domain.model.AssetCategory
+import es.aviferdev.trackfolio.domain.model.AssetSector
+import es.aviferdev.trackfolio.domain.model.AssetRegion
+import es.aviferdev.trackfolio.ui.theme.TrackfolioTheme
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun PortfolioSettingsScreen(
@@ -40,13 +46,86 @@ fun PortfolioSettingsScreen(
     val reminderIntervalUseCase = koinInject<GetPriceReminderIntervalUseCase>()
     var selectedInterval by remember { mutableIntStateOf(reminderIntervalUseCase.get()) }
 
+    PortfolioSettingsContent(
+        assetCatalogState = assetCatalogState,
+        platformState = platformState,
+        onBack = onBack,
+        onNavigateToCategoryDetail = onNavigateToCategoryDetail,
+        onNavigateToPlatformDetail = onNavigateToPlatformDetail,
+        selectedInterval = selectedInterval,
+        onIntervalChange = { days ->
+            selectedInterval = days
+            reminderIntervalUseCase.set(days)
+        },
+        onOpenPlatformAdd = { platformViewModel.openAddSheet() },
+        onOpenPlatformEdit = { platform -> platformViewModel.openEditSheet(platform) },
+        onOpenSectorSheet = { showSectorSheet = true },
+        onOpenRegionSheet = { showRegionSheet = true }
+    )
+
+    if (platformState.showAddSheet) {
+        AddEditPlatformSheet(
+            initial   = null,
+            onSave    = { name, icon, notes -> platformViewModel.addPlatform(name, icon, notes) },
+            onDismiss = { platformViewModel.closeAddSheet() }
+        )
+    }
+    platformState.editing?.let { platform ->
+        AddEditPlatformSheet(
+            initial   = platform,
+            onSave    = { name, icon, notes -> platformViewModel.renamePlatform(platform.id, name, icon, notes) },
+            onDismiss = { platformViewModel.closeEditSheet() }
+        )
+    }
+    platformState.error?.let { msg ->
+        AlertDialog(
+            onDismissRequest = { platformViewModel.clearError() },
+            containerColor   = SurfaceWhite,
+            title = { Text("Error", fontSize = 17.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary) },
+            text  = { Text(msg, fontSize = 14.sp, color = TextSecondary) },
+            confirmButton = {
+                TextButton(onClick = { platformViewModel.clearError() }) {
+                    Text("Aceptar", color = PrimaryDark, fontWeight = FontWeight.Medium)
+                }
+            },
+            shape = RoundedCornerShape(16.dp)
+        )
+    }
+
+    if (showSectorSheet) {
+        SectorManagementSheet(
+            onDismiss = { showSectorSheet = false }
+        )
+    }
+    if (showRegionSheet) {
+        RegionManagementSheet(
+            onDismiss = { showRegionSheet = false }
+        )
+    }
+}
+
+@Composable
+fun PortfolioSettingsContent(
+    assetCatalogState: AssetCatalogUiState,
+    platformState: PlatformListUiState,
+    onBack: () -> Unit,
+    onNavigateToCategoryDetail: (String) -> Unit,
+    onNavigateToPlatformDetail: (Platform) -> Unit,
+    selectedInterval: Int,
+    onIntervalChange: (Int) -> Unit,
+    onOpenPlatformAdd: () -> Unit,
+    onOpenPlatformEdit: (Platform) -> Unit,
+    onOpenSectorSheet: () -> Unit,
+    onOpenRegionSheet: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     val categories = assetCatalogState.categories
     val assetsByCategory = remember(assetCatalogState.assets) {
         assetCatalogState.assets.groupBy { it.assetCategoryId }
     }
 
     Column(
-        modifier = Modifier.fillMaxSize().background(BackgroundGray)
+        modifier = modifier.fillMaxSize().background(BackgroundGray)
     ) {
         TopBarApp(title = "Ajustes de Portfolio", navigateBack = onBack)
 
@@ -54,7 +133,6 @@ fun PortfolioSettingsScreen(
             contentPadding = PaddingValues(horizontal = 20.dp, vertical = 20.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            // ── Sección: Categorías de activo ─────────────────────────────
             item {
                 Text(
                     "CATEGORÍAS DE ACTIVO",
@@ -100,7 +178,6 @@ fun PortfolioSettingsScreen(
                 }
             }
 
-            // ── Sección: Recordatorio de precios ──────────────────────────
             item { Spacer(Modifier.height(8.dp)) }
             item {
                 Text(
@@ -137,10 +214,7 @@ fun PortfolioSettingsScreen(
                             listOf(7, 14, 30).forEach { days ->
                                 val isSelected = selectedInterval == days
                                 OutlinedButton(
-                                    onClick = {
-                                        selectedInterval = days
-                                        reminderIntervalUseCase.set(days)
-                                    },
+                                    onClick = { onIntervalChange(days) },
                                     shape   = RoundedCornerShape(8.dp),
                                     colors  = ButtonDefaults.outlinedButtonColors(
                                         containerColor = if (isSelected) PrimaryDark else Color.Transparent,
@@ -164,13 +238,12 @@ fun PortfolioSettingsScreen(
                 }
             }
 
-            // ── Sección: Plataformas ───────────────────────────────────────
             item { Spacer(Modifier.height(8.dp)) }
             item {
                 SectionHeader(
                     title       = "PLATAFORMAS",
                     actionLabel = "Añadir",
-                    onAction    = { platformViewModel.openAddSheet() }
+                    onAction    = onOpenPlatformAdd
                 )
             }
             item {
@@ -187,7 +260,7 @@ fun PortfolioSettingsScreen(
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .clickable { platformViewModel.openEditSheet(platform) }
+                                    .clickable { onOpenPlatformEdit(platform) }
                                     .padding(horizontal = 16.dp, vertical = 14.dp),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
@@ -222,13 +295,12 @@ fun PortfolioSettingsScreen(
                 }
             }
 
-            // ── Sección: Sectores ────────────────────────────────────────────
             item { Spacer(Modifier.height(8.dp)) }
             item {
                 SectionHeader(
                     title       = "SECTORES",
                     actionLabel = "Gestionar",
-                    onAction    = { showSectorSheet = true }
+                    onAction    = onOpenSectorSheet
                 )
             }
             item {
@@ -269,13 +341,12 @@ fun PortfolioSettingsScreen(
                 }
             }
 
-            // ── Sección: Regiones ────────────────────────────────────────────
             item { Spacer(Modifier.height(8.dp)) }
             item {
                 SectionHeader(
                     title       = "REGIONES",
                     actionLabel = "Gestionar",
-                    onAction    = { showRegionSheet = true }
+                    onAction    = onOpenRegionSheet
                 )
             }
             item {
@@ -317,46 +388,42 @@ fun PortfolioSettingsScreen(
             item { Spacer(Modifier.height(20.dp)) }
         }
     }
+}
 
-    // ── Sheets de plataforma ────────────────────────────────────────────────
-    if (platformState.showAddSheet) {
-        AddEditPlatformSheet(
-            initial   = null,
-            onSave    = { name, icon, notes -> platformViewModel.addPlatform(name, icon, notes) },
-            onDismiss = { platformViewModel.closeAddSheet() }
-        )
-    }
-    platformState.editing?.let { platform ->
-        AddEditPlatformSheet(
-            initial   = platform,
-            onSave    = { name, icon, notes -> platformViewModel.renamePlatform(platform.id, name, icon, notes) },
-            onDismiss = { platformViewModel.closeEditSheet() }
-        )
-    }
-    platformState.error?.let { msg ->
-        AlertDialog(
-            onDismissRequest = { platformViewModel.clearError() },
-            containerColor   = SurfaceWhite,
-            title = { Text("Error", fontSize = 17.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary) },
-            text  = { Text(msg, fontSize = 14.sp, color = TextSecondary) },
-            confirmButton = {
-                TextButton(onClick = { platformViewModel.clearError() }) {
-                    Text("Aceptar", color = PrimaryDark, fontWeight = FontWeight.Medium)
-                }
-            },
-            shape = RoundedCornerShape(16.dp)
-        )
-    }
-
-    // ── Sheets de sectores y regiones ─────────────────────────────────────────
-    if (showSectorSheet) {
-        SectorManagementSheet(
-            onDismiss = { showSectorSheet = false }
-        )
-    }
-    if (showRegionSheet) {
-        RegionManagementSheet(
-            onDismiss = { showRegionSheet = false }
+@Preview
+@Composable
+private fun PortfolioSettingsContentPreview() {
+    TrackfolioTheme {
+        PortfolioSettingsContent(
+            assetCatalogState = AssetCatalogUiState(
+                categories = listOf(
+                    AssetCategory(id = "cat1", name = "Acciones", icon = "📈", sortOrder = 0, createdAt = 0L),
+                    AssetCategory(id = "cat2", name = "ETFs", icon = "📊", sortOrder = 1, createdAt = 0L)
+                ),
+                assets = listOf(
+                    Asset(id = "a1", accountId = "acc1", ticker = "AAPL", name = "Apple Inc.", notes = null, createdAt = 0L, assetCategoryId = "cat1", currentPrice = 150.0)
+                ),
+                allSectors = listOf(
+                    AssetSector(id = "s1", name = "Tecnología", icon = "💻", createdAt = 0L)
+                ),
+                allRegions = listOf(
+                    AssetRegion(id = "r1", name = "EE.UU.", createdAt = 0L)
+                )
+            ),
+            platformState = PlatformListUiState(
+                platforms = listOf(
+                    Platform(id = "p1", name = "Interactive Brokers", icon = "🏦", sortOrder = 0, createdAt = 0L)
+                )
+            ),
+            onBack = {},
+            onNavigateToCategoryDetail = {},
+            onNavigateToPlatformDetail = {},
+            selectedInterval = 7,
+            onIntervalChange = {},
+            onOpenPlatformAdd = {},
+            onOpenPlatformEdit = {},
+            onOpenSectorSheet = {},
+            onOpenRegionSheet = {}
         )
     }
 }

@@ -20,11 +20,12 @@ import androidx.compose.ui.unit.sp
 import es.aviferdev.trackfolio.domain.model.Debt
 import es.aviferdev.trackfolio.domain.model.DebtDirection
 import es.aviferdev.trackfolio.ui.theme.*
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddDebtBottomSheet(
-    editingDebt: Debt? = null,   // null = crear, non-null = editar
+    editingDebt: Debt? = null,
     onDismiss: () -> Unit,
     viewModel: DebtViewModel
 ) {
@@ -59,104 +60,22 @@ fun AddDebtBottomSheet(
             )
         }
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .imePadding()
-                .padding(horizontal = 20.dp)
-                .padding(bottom = 32.dp)
-        ) {
-            Spacer(Modifier.height(8.dp))
-
-            Text(
-                text       = if (isEditing) "Editar deuda" else "Nueva deuda",
-                fontSize   = 18.sp,
-                fontWeight = FontWeight.SemiBold,
-                color      = TextPrimary
-            )
-
-            Spacer(Modifier.height(20.dp))
-
-            Text(text = "Tipo de deuda", fontSize = 13.sp, color = TextSecondary)
-            Spacer(Modifier.height(8.dp))
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                DirectionChip(
-                    label         = "Me deben",
-                    selected      = direction == DebtDirection.THEY_OWE,
-                    selectedColor = IncomeGreen,
-                    onClick       = { direction = DebtDirection.THEY_OWE }
-                )
-                DirectionChip(
-                    label         = "Debo yo",
-                    selected      = direction == DebtDirection.I_OWE,
-                    selectedColor = ExpenseRed,
-                    onClick       = { direction = DebtDirection.I_OWE }
-                )
-            }
-
-            Spacer(Modifier.height(20.dp))
-
-            Text(text = "Persona", fontSize = 13.sp, color = TextSecondary)
-            Spacer(Modifier.height(8.dp))
-            OutlinedTextField(
-                value         = personName,
-                onValueChange = { personName = it },
-                placeholder   = { Text("Nombre o apodo", color = TextSecondary.copy(alpha = 0.6f), fontSize = 14.sp) },
-                modifier      = Modifier.fillMaxWidth(),
-                shape         = RoundedCornerShape(8.dp),
-                keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words),
-                colors        = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor   = PrimaryDark,
-                    unfocusedBorderColor = BorderGray
-                ),
-                singleLine = true
-            )
-
-            Spacer(Modifier.height(16.dp))
-
-            Text(text = "Importe", fontSize = 13.sp, color = TextSecondary)
-            Spacer(Modifier.height(8.dp))
-            OutlinedTextField(
-                value         = amount,
-                onValueChange = { amount = it.filter { c -> c.isDigit() || c == ',' || c == '.' } },
-                placeholder   = { Text("0,00", color = TextSecondary.copy(alpha = 0.6f), fontSize = 14.sp) },
-                modifier      = Modifier.fillMaxWidth(),
-                shape         = RoundedCornerShape(8.dp),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                trailingIcon  = {
-                    Text("€", fontSize = 16.sp, color = TextSecondary, modifier = Modifier.padding(end = 12.dp))
-                },
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor   = PrimaryDark,
-                    unfocusedBorderColor = BorderGray
-                ),
-                singleLine = true
-            )
-
-            Spacer(Modifier.height(16.dp))
-
-            Text(text = "Nota (opcional)", fontSize = 13.sp, color = TextSecondary)
-            Spacer(Modifier.height(8.dp))
-            OutlinedTextField(
-                value         = notes,
-                onValueChange = { notes = it },
-                placeholder   = { Text("Ej. Cena del viernes", color = TextSecondary.copy(alpha = 0.6f), fontSize = 14.sp) },
-                modifier      = Modifier.fillMaxWidth(),
-                shape         = RoundedCornerShape(8.dp),
-                colors        = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor   = PrimaryDark,
-                    unfocusedBorderColor = BorderGray
-                ),
-                singleLine = true
-            )
-
-            Spacer(Modifier.height(28.dp))
-
-            Button(
-                onClick = {
-                    if (!isValid) return@Button
+        AddDebtBottomSheetContent(
+            isEditing         = isEditing,
+            personName        = personName,
+            onPersonNameChange = { personName = it },
+            amount            = amount,
+            onAmountChange    = { amount = it.filter { c -> c.isDigit() || c == ',' || c == '.' } },
+            direction         = direction,
+            onDirectionChange = { direction = it },
+            notes             = notes,
+            onNotesChange     = { notes = it },
+            isValid           = isValid,
+            isLoading         = isLoading,
+            onSave            = {
+                val amountValue = amount.replace(',', '.').toDoubleOrNull()
+                if (amountValue != null) {
                     isLoading = true
-                    val amountValue = amount.replace(',', '.').toDoubleOrNull() ?: return@Button
                     if (isEditing && editingDebt != null) {
                         viewModel.editDebt(
                             original   = editingDebt,
@@ -174,21 +93,135 @@ fun AddDebtBottomSheet(
                         )
                     }
                     onDismiss()
-                },
-                enabled  = isValid && !isLoading,
-                modifier = Modifier.fillMaxWidth().height(52.dp),
-                shape    = RoundedCornerShape(10.dp),
-                colors   = ButtonDefaults.buttonColors(
-                    containerColor         = PrimaryDark,
-                    disabledContainerColor = PrimaryDark.copy(alpha = 0.38f)
-                )
-            ) {
-                Text(
-                    if (isEditing) "Guardar cambios" else "Guardar deuda",
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Medium
-                )
+                }
             }
+        )
+    }
+}
+
+@Composable
+fun AddDebtBottomSheetContent(
+    isEditing: Boolean,
+    personName: String,
+    onPersonNameChange: (String) -> Unit,
+    amount: String,
+    onAmountChange: (String) -> Unit,
+    direction: DebtDirection,
+    onDirectionChange: (DebtDirection) -> Unit,
+    notes: String,
+    onNotesChange: (String) -> Unit,
+    isValid: Boolean,
+    isLoading: Boolean,
+    onSave: () -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .imePadding()
+            .padding(horizontal = 20.dp)
+            .padding(bottom = 32.dp)
+    ) {
+        Spacer(Modifier.height(8.dp))
+
+        Text(
+            text       = if (isEditing) "Editar deuda" else "Nueva deuda",
+            fontSize   = 18.sp,
+            fontWeight = FontWeight.SemiBold,
+            color      = TextPrimary
+        )
+
+        Spacer(Modifier.height(20.dp))
+
+        Text(text = "Tipo de deuda", fontSize = 13.sp, color = TextSecondary)
+        Spacer(Modifier.height(8.dp))
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            DirectionChip(
+                label         = "Me deben",
+                selected      = direction == DebtDirection.THEY_OWE,
+                selectedColor = IncomeGreen,
+                onClick       = { onDirectionChange(DebtDirection.THEY_OWE) }
+            )
+            DirectionChip(
+                label         = "Debo yo",
+                selected      = direction == DebtDirection.I_OWE,
+                selectedColor = ExpenseRed,
+                onClick       = { onDirectionChange(DebtDirection.I_OWE) }
+            )
+        }
+
+        Spacer(Modifier.height(20.dp))
+
+        Text(text = "Persona", fontSize = 13.sp, color = TextSecondary)
+        Spacer(Modifier.height(8.dp))
+        OutlinedTextField(
+            value         = personName,
+            onValueChange = onPersonNameChange,
+            placeholder   = { Text("Nombre o apodo", color = TextSecondary.copy(alpha = 0.6f), fontSize = 14.sp) },
+            modifier      = Modifier.fillMaxWidth(),
+            shape         = RoundedCornerShape(8.dp),
+            keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words),
+            colors        = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor   = PrimaryDark,
+                unfocusedBorderColor = BorderGray
+            ),
+            singleLine = true
+        )
+
+        Spacer(Modifier.height(16.dp))
+
+        Text(text = "Importe", fontSize = 13.sp, color = TextSecondary)
+        Spacer(Modifier.height(8.dp))
+        OutlinedTextField(
+            value         = amount,
+            onValueChange = onAmountChange,
+            placeholder   = { Text("0,00", color = TextSecondary.copy(alpha = 0.6f), fontSize = 14.sp) },
+            modifier      = Modifier.fillMaxWidth(),
+            shape         = RoundedCornerShape(8.dp),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+            trailingIcon  = {
+                Text("€", fontSize = 16.sp, color = TextSecondary, modifier = Modifier.padding(end = 12.dp))
+            },
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor   = PrimaryDark,
+                unfocusedBorderColor = BorderGray
+            ),
+            singleLine = true
+        )
+
+        Spacer(Modifier.height(16.dp))
+
+        Text(text = "Nota (opcional)", fontSize = 13.sp, color = TextSecondary)
+        Spacer(Modifier.height(8.dp))
+        OutlinedTextField(
+            value         = notes,
+            onValueChange = onNotesChange,
+            placeholder   = { Text("Ej. Cena del viernes", color = TextSecondary.copy(alpha = 0.6f), fontSize = 14.sp) },
+            modifier      = Modifier.fillMaxWidth(),
+            shape         = RoundedCornerShape(8.dp),
+            colors        = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor   = PrimaryDark,
+                unfocusedBorderColor = BorderGray
+            ),
+            singleLine = true
+        )
+
+        Spacer(Modifier.height(28.dp))
+
+        Button(
+            onClick  = onSave,
+            enabled  = isValid && !isLoading,
+            modifier = Modifier.fillMaxWidth().height(52.dp),
+            shape    = RoundedCornerShape(10.dp),
+            colors   = ButtonDefaults.buttonColors(
+                containerColor         = PrimaryDark,
+                disabledContainerColor = PrimaryDark.copy(alpha = 0.38f)
+            )
+        ) {
+            Text(
+                if (isEditing) "Guardar cambios" else "Guardar deuda",
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Medium
+            )
         }
     }
 }
@@ -214,6 +247,27 @@ private fun DirectionChip(
             fontSize   = 14.sp,
             fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal,
             color      = if (selected) Color.White else TextSecondary
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun AddDebtBottomSheetContentPreview() {
+    TrackfolioTheme {
+        AddDebtBottomSheetContent(
+            isEditing         = false,
+            personName        = "Juan Pérez",
+            onPersonNameChange = {},
+            amount            = "50,00",
+            onAmountChange    = {},
+            direction         = DebtDirection.THEY_OWE,
+            onDirectionChange = {},
+            notes             = "Cena del viernes",
+            onNotesChange     = {},
+            isValid           = true,
+            isLoading         = false,
+            onSave            = {}
         )
     }
 }

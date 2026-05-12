@@ -53,19 +53,14 @@ import es.aviferdev.trackfolio.domain.portfolio.ScheduledCoupon
 import es.aviferdev.trackfolio.ui.common.StatusTag
 import es.aviferdev.trackfolio.ui.common.navigation.TopBarApp
 import es.aviferdev.trackfolio.ui.fixedincome.formatPercent1
-import es.aviferdev.trackfolio.ui.theme.BackgroundGray
-import es.aviferdev.trackfolio.ui.theme.ExpenseRed
-import es.aviferdev.trackfolio.domain.model.Platform
-import es.aviferdev.trackfolio.ui.theme.NegativeRed
-import es.aviferdev.trackfolio.ui.theme.PositiveGreen
-import es.aviferdev.trackfolio.ui.theme.PrimaryDark
-import es.aviferdev.trackfolio.ui.theme.SurfaceWhite
-import es.aviferdev.trackfolio.ui.theme.TextPrimary
-import es.aviferdev.trackfolio.ui.theme.TextSecondary
-import es.aviferdev.trackfolio.ui.theme.TextTertiary
-import es.aviferdev.trackfolio.ui.theme.WarnAmber
+import es.aviferdev.trackfolio.ui.theme.*
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// WRAPPER
+// ═══════════════════════════════════════════════════════════════════════════════
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -78,209 +73,21 @@ fun FixedIncomeDetailScreen(
     )
 ) {
     val state by viewModel.uiState.collectAsState()
-    val currencyCode = "EUR"
-    val balancesHidden = false
-    val symbol = currencySymbol(currencyCode)
+    val symbol = currencySymbol("EUR")
 
     var fabMenuOpen by remember { mutableStateOf(false) }
 
-    Box(Modifier.fillMaxSize().background(BackgroundGray)) {
-        Column(Modifier.fillMaxSize()) {
-            TopBarApp(
-                title = state.row?.position?.name ?: "Posición de renta fija",
-                navigateBack = onBack
-            )
+    FixedIncomeDetailContent(
+        state = state,
+        symbol = symbol,
+        onBack = onBack,
+        onDeleteEvent = { event -> viewModel.showDeleteEventDialog(event) },
+        onUpdateRegionSector = { region, sector ->
+            viewModel.updateRegionAndSector(region, sector)
+        },
+        onShowCloseSheet = { viewModel.showCloseSheetWithType(it) }
+    )
 
-            if (state.isLoading) {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator(color = PrimaryDark)
-                }
-            } else if (state.row == null) {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text("Posición no encontrada", color = TextSecondary)
-                }
-            } else {
-                val row = state.row!!
-                val position = row.position
-
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(16.dp)
-                ) {
-                item {
-                    FixedIncomeDetailHeader(
-                        position = position,
-                        row = row,
-                        symbol = symbol,
-                        balancesHidden = balancesHidden
-                    )
-                }
-
-                if (position.interestFrequency != es.aviferdev.trackfolio.domain.model.InterestFrequency.AT_MATURITY && state.couponSchedule.isNotEmpty()) {
-                    item {
-                        Spacer(Modifier.height(16.dp))
-                        CouponTimelineSection(
-                            schedule = state.couponSchedule,
-                            symbol = symbol,
-                            balancesHidden = balancesHidden
-                        )
-                    }
-                }
-
-                if (state.maturitySimulation != null) {
-                    item {
-                        Spacer(Modifier.height(16.dp))
-                        MaturitySimulatorCard(
-                            simulation = state.maturitySimulation!!,
-                            symbol = symbol,
-                            balancesHidden = balancesHidden
-                        )
-                    }
-                }
-
-                item {
-                    Spacer(Modifier.height(16.dp))
-                    EventsHistorySection(
-                        events = state.events,
-                        symbol = symbol,
-                        balancesHidden = balancesHidden,
-                        onDeleteEvent = { event -> viewModel.showDeleteEventDialog(event) }
-                    )
-                }
-
-                // Sección de distribución (región y sector)
-                item {
-                    Spacer(Modifier.height(16.dp))
-                    DistributionSection(
-                        position = state.row?.position,
-                        onUpdateRegionSector = { region, sector ->
-                            viewModel.updateRegionAndSector(region, sector)
-                        },
-                        modifier = Modifier.padding(horizontal = 16.dp)
-                    )
-                }
-
-                // Botones de cierre contextual según el tipo de instrumento
-                val position = state.row?.position
-                if (position?.isOpen == true) {
-                    item {
-                        Spacer(Modifier.height(16.dp))
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 16.dp),
-                            verticalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            // Si la posición ya está vencida, mostrar solo botón de liquidación
-                            if (position.isMatured) {
-                                Button(
-                                    onClick = { viewModel.showCloseSheetWithType(es.aviferdev.trackfolio.domain.model.FixedIncomeCloseType.MATURITY) },
-                                    modifier = Modifier.fillMaxWidth(),
-                                    shape = RoundedCornerShape(12.dp),
-                                    colors = ButtonDefaults.buttonColors(
-                                        containerColor = ExpenseRed.copy(alpha = 0.15f),
-                                        contentColor = ExpenseRed
-                                    ),
-                                    border = androidx.compose.foundation.BorderStroke(
-                                        width = 1.dp,
-                                        color = ExpenseRed.copy(alpha = 0.4f)
-                                    )
-                                ) {
-                                    Text(
-                                        text = "Registrar liquidación",
-                                        fontSize = 13.sp,
-                                        fontWeight = FontWeight.Bold,
-                                        modifier = Modifier.padding(vertical = 2.dp)
-                                    )
-                                }
-                            } else {
-                                // Botones según el tipo de instrumento
-                                when {
-                                    // Depósitos: cancelación anticipada
-                                    position.type.allowsEarlyCancellation -> {
-                                        Button(
-                                            onClick = { viewModel.showCloseSheetWithType(es.aviferdev.trackfolio.domain.model.FixedIncomeCloseType.EARLY_CANCELLATION) },
-                                            modifier = Modifier.fillMaxWidth(),
-                                            shape = RoundedCornerShape(12.dp),
-                                            colors = ButtonDefaults.buttonColors(
-                                                containerColor = ExpenseRed.copy(alpha = 0.15f),
-                                                contentColor = ExpenseRed
-                                            ),
-                                            border = androidx.compose.foundation.BorderStroke(
-                                                width = 1.dp,
-                                                color = ExpenseRed.copy(alpha = 0.4f)
-                                            )
-                                        ) {
-                                            Text(
-                                                text = "Cancelar anticipadamente",
-                                                fontSize = 13.sp,
-                                                fontWeight = FontWeight.Bold,
-                                                modifier = Modifier.padding(vertical = 2.dp)
-                                            )
-                                        }
-                                        OutlinedButton(
-                                            onClick = { viewModel.showCloseSheetWithType(es.aviferdev.trackfolio.domain.model.FixedIncomeCloseType.MATURITY) },
-                                            modifier = Modifier.fillMaxWidth(),
-                                            shape = RoundedCornerShape(12.dp)
-                                        ) {
-                                            Text(
-                                                text = "Liquidar al vencimiento",
-                                                fontSize = 13.sp,
-                                                modifier = Modifier.padding(vertical = 2.dp)
-                                            )
-                                        }
-                                    }
-                                    // Bonos/Letras/Obligaciones: venta en secundario
-                                    position.type.allowsSecondarySale -> {
-                                        Button(
-                                            onClick = { viewModel.showCloseSheetWithType(es.aviferdev.trackfolio.domain.model.FixedIncomeCloseType.SECONDARY_SALE) },
-                                            modifier = Modifier.fillMaxWidth(),
-                                            shape = RoundedCornerShape(12.dp),
-                                            colors = ButtonDefaults.buttonColors(
-                                                containerColor = ExpenseRed.copy(alpha = 0.15f),
-                                                contentColor = ExpenseRed
-                                            ),
-                                            border = androidx.compose.foundation.BorderStroke(
-                                                width = 1.dp,
-                                                color = ExpenseRed.copy(alpha = 0.4f)
-                                            )
-                                        ) {
-                                            Text(
-                                                text = "Vender en mercado secundario",
-                                                fontSize = 13.sp,
-                                                fontWeight = FontWeight.Bold,
-                                                modifier = Modifier.padding(vertical = 2.dp)
-                                            )
-                                        }
-                                        OutlinedButton(
-                                            onClick = { viewModel.showCloseSheetWithType(es.aviferdev.trackfolio.domain.model.FixedIncomeCloseType.MATURITY) },
-                                            modifier = Modifier.fillMaxWidth(),
-                                            shape = RoundedCornerShape(12.dp)
-                                        ) {
-                                            Text(
-                                                text = "Liquidar al vencimiento",
-                                                fontSize = 13.sp,
-                                                modifier = Modifier.padding(vertical = 2.dp)
-                                            )
-                                        }
-    }
-}
-}
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    // ── Dialogs ─────────────────────────────────────────────────────────────────
     if (state.showDeleteEventDialog && state.selectedEventForDelete != null) {
         AlertDialog(
             onDismissRequest = { viewModel.hideDeleteEventDialog() },
@@ -323,6 +130,273 @@ fun FixedIncomeDetailScreen(
     }
 }
 
+// ═══════════════════════════════════════════════════════════════════════════════
+// CONTENT
+// ═══════════════════════════════════════════════════════════════════════════════
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun FixedIncomeDetailContent(
+    state: FixedIncomeDetailUiState,
+    symbol: String,
+    onBack: () -> Unit,
+    onDeleteEvent: (FixedIncomeEvent) -> Unit,
+    onUpdateRegionSector: (String?, String?) -> Unit,
+    onShowCloseSheet: (es.aviferdev.trackfolio.domain.model.FixedIncomeCloseType) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Box(modifier.fillMaxSize().background(BackgroundGray)) {
+        Column(Modifier.fillMaxSize()) {
+            TopBarApp(
+                title = state.row?.position?.name ?: "Posición de renta fija",
+                navigateBack = onBack
+            )
+
+            if (state.isLoading) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(color = PrimaryDark)
+                }
+            } else if (state.row == null) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text("Posición no encontrada", color = TextSecondary)
+                }
+            } else {
+                val row = state.row!!
+                val position = row.position
+
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(16.dp)
+                ) {
+                item {
+                    FixedIncomeDetailHeader(
+                        position = position,
+                        row = row,
+                        symbol = symbol,
+                        balancesHidden = false
+                    )
+                }
+
+                if (position.interestFrequency != es.aviferdev.trackfolio.domain.model.InterestFrequency.AT_MATURITY && state.couponSchedule.isNotEmpty()) {
+                    item {
+                        Spacer(Modifier.height(16.dp))
+                        CouponTimelineSection(
+                            schedule = state.couponSchedule,
+                            symbol = symbol,
+                            balancesHidden = false
+                        )
+                    }
+                }
+
+                if (state.maturitySimulation != null) {
+                    item {
+                        Spacer(Modifier.height(16.dp))
+                        MaturitySimulatorCard(
+                            simulation = state.maturitySimulation!!,
+                            symbol = symbol,
+                            balancesHidden = false
+                        )
+                    }
+                }
+
+                item {
+                    Spacer(Modifier.height(16.dp))
+                    EventsHistorySection(
+                        events = state.events,
+                        symbol = symbol,
+                        balancesHidden = false,
+                        onDeleteEvent = onDeleteEvent
+                    )
+                }
+
+                item {
+                    Spacer(Modifier.height(16.dp))
+                    DistributionSection(
+                        position = state.row?.position,
+                        onUpdateRegionSector = onUpdateRegionSector,
+                        modifier = Modifier.padding(horizontal = 16.dp)
+                    )
+                }
+
+                val position = state.row?.position
+                if (position?.isOpen == true) {
+                    item {
+                        Spacer(Modifier.height(16.dp))
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            if (position.isMatured) {
+                                Button(
+                                    onClick = { onShowCloseSheet(es.aviferdev.trackfolio.domain.model.FixedIncomeCloseType.MATURITY) },
+                                    modifier = Modifier.fillMaxWidth(),
+                                    shape = RoundedCornerShape(12.dp),
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = ExpenseRed.copy(alpha = 0.15f),
+                                        contentColor = ExpenseRed
+                                    ),
+                                    border = androidx.compose.foundation.BorderStroke(
+                                        width = 1.dp,
+                                        color = ExpenseRed.copy(alpha = 0.4f)
+                                    )
+                                ) {
+                                    Text(
+                                        text = "Registrar liquidación",
+                                        fontSize = 13.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        modifier = Modifier.padding(vertical = 2.dp)
+                                    )
+                                }
+                            } else {
+                                when {
+                                    position.type.allowsEarlyCancellation -> {
+                                        Button(
+                                            onClick = { onShowCloseSheet(es.aviferdev.trackfolio.domain.model.FixedIncomeCloseType.EARLY_CANCELLATION) },
+                                            modifier = Modifier.fillMaxWidth(),
+                                            shape = RoundedCornerShape(12.dp),
+                                            colors = ButtonDefaults.buttonColors(
+                                                containerColor = ExpenseRed.copy(alpha = 0.15f),
+                                                contentColor = ExpenseRed
+                                            ),
+                                            border = androidx.compose.foundation.BorderStroke(
+                                                width = 1.dp,
+                                                color = ExpenseRed.copy(alpha = 0.4f)
+                                            )
+                                        ) {
+                                            Text(
+                                                text = "Cancelar anticipadamente",
+                                                fontSize = 13.sp,
+                                                fontWeight = FontWeight.Bold,
+                                                modifier = Modifier.padding(vertical = 2.dp)
+                                            )
+                                        }
+                                        OutlinedButton(
+                                            onClick = { onShowCloseSheet(es.aviferdev.trackfolio.domain.model.FixedIncomeCloseType.MATURITY) },
+                                            modifier = Modifier.fillMaxWidth(),
+                                            shape = RoundedCornerShape(12.dp)
+                                        ) {
+                                            Text(
+                                                text = "Liquidar al vencimiento",
+                                                fontSize = 13.sp,
+                                                modifier = Modifier.padding(vertical = 2.dp)
+                                            )
+                                        }
+                                    }
+                                    position.type.allowsSecondarySale -> {
+                                        Button(
+                                            onClick = { onShowCloseSheet(es.aviferdev.trackfolio.domain.model.FixedIncomeCloseType.SECONDARY_SALE) },
+                                            modifier = Modifier.fillMaxWidth(),
+                                            shape = RoundedCornerShape(12.dp),
+                                            colors = ButtonDefaults.buttonColors(
+                                                containerColor = ExpenseRed.copy(alpha = 0.15f),
+                                                contentColor = ExpenseRed
+                                            ),
+                                            border = androidx.compose.foundation.BorderStroke(
+                                                width = 1.dp,
+                                                color = ExpenseRed.copy(alpha = 0.4f)
+                                            )
+                                        ) {
+                                            Text(
+                                                text = "Vender en mercado secundario",
+                                                fontSize = 13.sp,
+                                                fontWeight = FontWeight.Bold,
+                                                modifier = Modifier.padding(vertical = 2.dp)
+                                            )
+                                        }
+                                        OutlinedButton(
+                                            onClick = { onShowCloseSheet(es.aviferdev.trackfolio.domain.model.FixedIncomeCloseType.MATURITY) },
+                                            modifier = Modifier.fillMaxWidth(),
+                                            shape = RoundedCornerShape(12.dp)
+                                        ) {
+                                            Text(
+                                                text = "Liquidar al vencimiento",
+                                                fontSize = 13.sp,
+                                                modifier = Modifier.padding(vertical = 2.dp)
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// PREVIEW
+// ═══════════════════════════════════════════════════════════════════════════════
+
+@Preview
+@Composable
+fun FixedIncomeDetailContentPreview() {
+    TrackfolioTheme {
+        FixedIncomeDetailContent(
+            state = FixedIncomeDetailUiState(
+                isLoading = false,
+                row = es.aviferdev.trackfolio.domain.model.FixedIncomeRow(
+                    position = es.aviferdev.trackfolio.domain.model.FixedIncomePosition(
+                        id = "fi-preview",
+                        accountId = "acct-1",
+                        name = "Depósito Ejemplo 3M",
+                        ticker = "DEP-EJ3M",
+                        type = es.aviferdev.trackfolio.domain.model.FixedIncomeType.DEPOSIT,
+                        notes = null,
+                        principal = 10000.0,
+                        quantity = 1.0,
+                        nominalPerUnit = 10000.0,
+                        interestRate = 3.5,
+                        interestFrequency = es.aviferdev.trackfolio.domain.model.InterestFrequency.AT_MATURITY,
+                        startDate = 1700000000000,
+                        maturityDate = 1700000000000 + 90L * 24L * 3600L * 1000L,
+                        platformId = "",
+                        issuerId = null,
+                        region = "Europa",
+                        sector = "Banca",
+                        autoRenew = false,
+                        archived = false,
+                        closedAt = null,
+                        closeType = null,
+                        feeNote = null,
+                        createdAt = 1700000000000
+                    ),
+                    collectedInterest = 0.0,
+                    currentValue = 10000.0,
+                    totalProfit = 0.0,
+                    totalProfitPercent = 0.0
+                ),
+                events = emptyList(),
+                couponSchedule = emptyList(),
+                maturitySimulation = es.aviferdev.trackfolio.domain.portfolio.MaturitySimulation(
+                    capitalInvested = 10000.0,
+                    grossInterest = 87.5,
+                    collectedCoupons = 0.0,
+                    remainingInterest = 87.5,
+                    estimatedIrpf = 16.62,
+                    estimatedCommission = 0.0,
+                    netAtMaturity = 10070.88,
+                    netProfit = 70.88
+                )
+            ),
+            symbol = "€",
+            onBack = {},
+            onDeleteEvent = {},
+            onUpdateRegionSector = { _, _ -> },
+            onShowCloseSheet = {}
+        )
+    }
+}
 // ─── Distribution Section (Región y Sector) ───────────────────────────────────
 @Composable
 private fun DistributionSection(

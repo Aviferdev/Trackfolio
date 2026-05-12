@@ -20,11 +20,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.trackfolio.domain.model.Asset
+import es.aviferdev.trackfolio.domain.model.AssetCategory
+import es.aviferdev.trackfolio.domain.model.Platform
 import es.aviferdev.trackfolio.ui.common.navigation.TopBarApp
 import es.aviferdev.trackfolio.ui.fixedincome.FixedIncomePositionCard
 import es.aviferdev.trackfolio.ui.theme.*
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
+import es.aviferdev.trackfolio.ui.theme.TrackfolioTheme
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun AssetCategoryDetailScreen(
@@ -36,222 +40,19 @@ fun AssetCategoryDetailScreen(
 ) {
     val state by viewModel.uiState.collectAsState()
 
-    Column(
-        modifier = Modifier.fillMaxSize().background(BackgroundGray)
-    ) {
-        TopBarApp(
-            title = state.category?.name ?: "Categoría",
-            navigateBack = onBack
-        )
+    AssetCategoryDetailContent(
+        state = state,
+        categoryId = categoryId,
+        onBack = onBack,
+        onAssetClick = onAssetClick,
+        onFixedIncomeClick = onFixedIncomeClick,
+        onOpenAddSheet = { viewModel.openAddSheet() },
+        onOpenEditSheet = { asset -> viewModel.openEditSheet(asset) },
+        onRequestArchive = { asset -> viewModel.requestArchive(asset) },
+        onRestoreAsset = { assetId -> viewModel.restoreAsset(assetId) },
+        onOpenLinkPlatformSheet = { viewModel.openLinkPlatformSheet() }
+    )
 
-        LazyColumn(
-            contentPadding = PaddingValues(horizontal = 20.dp, vertical = 20.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            // ── Activos activos ─────────────────────────────────
-            item {
-                SectionHeaderWithAction(
-                    title = "ACTIVOS",
-                    actionLabel = "+ Nuevo",
-                    onAction = { viewModel.openAddSheet() }
-                )
-            }
-            item {
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(14.dp),
-                    colors = CardDefaults.cardColors(containerColor = SurfaceWhite),
-                    border = CardDefaults.outlinedCardBorder(),
-                    elevation = CardDefaults.cardElevation(0.dp)
-                ) {
-                    if (state.activeAssets.isEmpty()) {
-                        Box(
-                            modifier = Modifier.fillMaxWidth().padding(16.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                "Sin activos en esta categoría",
-                                fontSize = 13.sp,
-                                color = TextSecondary
-                            )
-                        }
-                    } else {
-                        Column {
-                            state.activeAssets.forEachIndexed { index, asset ->
-                                AssetRow(
-                                    asset = asset,
-                                    onClick = { onAssetClick(asset.id) },
-                                    onEdit = { viewModel.openEditSheet(asset) },
-                                    onArchive = { viewModel.requestArchive(asset) }
-                                )
-                                if (index < state.activeAssets.lastIndex) {
-                                    HorizontalDivider(
-                                        color = BorderGray,
-                                        thickness = 0.5.dp,
-                                        modifier = Modifier.padding(start = 56.dp)
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            // ── Sección: Renta Fija ───────────────────────────────
-            if (state.activeFixedIncome.isNotEmpty()) {
-                item { Spacer(Modifier.height(8.dp)) }
-                item {
-                    SectionHeaderWithAction(
-                        title = "RENTA FIJA",
-                        actionLabel = "(${state.activeFixedIncome.size})",
-                        onAction = { }
-                    )
-                }
-                item {
-                    Card(
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(14.dp),
-                        colors = CardDefaults.cardColors(containerColor = SurfaceWhite),
-                        border = CardDefaults.outlinedCardBorder(),
-                        elevation = CardDefaults.cardElevation(0.dp)
-                    ) {
-                        Column {
-                            state.activeFixedIncome.forEachIndexed { index, fiRow ->
-                                FixedIncomePositionCard(
-                                    row = fiRow,
-                                    currencyCode = state.currencyCode,
-                                    balancesHidden = false,
-                                    onClick = { onFixedIncomeClick(fiRow.position.id) }
-                                )
-                                if (index < state.activeFixedIncome.lastIndex) {
-                                    HorizontalDivider(
-                                        color = BorderGray,
-                                        thickness = 0.5.dp,
-                                        modifier = Modifier.padding(start = 20.dp)
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            // ── Sección: Plataformas de esta categoría ───────────
-            if (state.category != null) {
-                item { Spacer(Modifier.height(8.dp)) }
-                item {
-                    SectionHeaderWithAction(
-                        title = "PLATAFORMAS",
-                        actionLabel = "Gestionar",
-                        onAction = { viewModel.openLinkPlatformSheet() }
-                    )
-                }
-                item {
-                    Card(
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(14.dp),
-                        colors = CardDefaults.cardColors(containerColor = SurfaceWhite),
-                        border = CardDefaults.outlinedCardBorder(),
-                        elevation = CardDefaults.cardElevation(0.dp)
-                    ) {
-                        if (state.categoryPlatforms.isEmpty()) {
-                            Box(
-                                modifier = Modifier.fillMaxWidth().padding(16.dp),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                    Text(
-                                        "Sin plataformas vinculadas",
-                                        fontSize = 13.sp,
-                                        color = TextSecondary
-                                    )
-                                    Spacer(Modifier.height(4.dp))
-                                    TextButton(onClick = { viewModel.openLinkPlatformSheet() }) {
-                                        Text(
-                                            "+ Añadir plataforma",
-                                            fontSize = 13.sp,
-                                            color = PrimaryDark,
-                                            fontWeight = FontWeight.Medium
-                                        )
-                                    }
-                                }
-                            }
-                        } else {
-                            Column {
-                                state.categoryPlatforms.forEachIndexed { index, platform ->
-                                    Row(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(horizontal = 16.dp, vertical = 12.dp),
-                                        verticalAlignment = Alignment.CenterVertically
-                                    ) {
-                                        Text(platform.icon, fontSize = 18.sp, modifier = Modifier.size(28.dp))
-                                        Spacer(Modifier.width(12.dp))
-                                        Text(
-                                            platform.name,
-                                            fontSize = 15.sp,
-                                            color = TextPrimary,
-                                            modifier = Modifier.weight(1f)
-                                        )
-                                    }
-                                    if (index < state.categoryPlatforms.lastIndex) {
-                                        HorizontalDivider(
-                                            color = BorderGray,
-                                            thickness = 0.5.dp,
-                                            modifier = Modifier.padding(start = 52.dp)
-                                        )
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            // ── Activos archivados ──────────────────────────────
-            if (state.archivedAssets.isNotEmpty()) {
-                item { Spacer(Modifier.height(8.dp)) }
-                item {
-                    Text(
-                        "ARCHIVADOS",
-                        fontSize = 11.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        color = TextSecondary
-                    )
-                }
-                item {
-                    Card(
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(14.dp),
-                        colors = CardDefaults.cardColors(containerColor = SurfaceWhite),
-                        border = CardDefaults.outlinedCardBorder(),
-                        elevation = CardDefaults.cardElevation(0.dp)
-                    ) {
-                        Column {
-                            state.archivedAssets.forEachIndexed { index, asset ->
-                                ArchivedAssetRow(
-                                    asset = asset,
-                                    onRestore = { viewModel.restoreAsset(asset.id) }
-                                )
-                                if (index < state.archivedAssets.lastIndex) {
-                                    HorizontalDivider(
-                                        color = BorderGray,
-                                        thickness = 0.5.dp,
-                                        modifier = Modifier.padding(start = 56.dp)
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            item { Spacer(Modifier.height(20.dp)) }
-        }
-    }
-
-    // ── Sheets y diálogos ────────────────────────────────────────────────────
-    // Sheet de vincular plataformas a la categoría
     if (state.showLinkPlatformSheet && state.category != null) {
         LinkPlatformToCategorySheet(
             categoryName    = state.category!!.name,
@@ -347,6 +148,266 @@ fun AssetCategoryDetailScreen(
                 }
             },
             shape = RoundedCornerShape(16.dp)
+        )
+    }
+}
+
+@Composable
+fun AssetCategoryDetailContent(
+    state: AssetCategoryDetailUiState,
+    categoryId: String,
+    onBack: () -> Unit,
+    onAssetClick: (String) -> Unit,
+    onFixedIncomeClick: (String) -> Unit,
+    onOpenAddSheet: () -> Unit,
+    onOpenEditSheet: (Asset) -> Unit,
+    onRequestArchive: (Asset) -> Unit,
+    onRestoreAsset: (String) -> Unit,
+    onOpenLinkPlatformSheet: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier.fillMaxSize().background(BackgroundGray)
+    ) {
+        TopBarApp(
+            title = state.category?.name ?: "Categoría",
+            navigateBack = onBack
+        )
+
+        LazyColumn(
+            contentPadding = PaddingValues(horizontal = 20.dp, vertical = 20.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            item {
+                SectionHeaderWithAction(
+                    title = "ACTIVOS",
+                    actionLabel = "+ Nuevo",
+                    onAction = onOpenAddSheet
+                )
+            }
+            item {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(14.dp),
+                    colors = CardDefaults.cardColors(containerColor = SurfaceWhite),
+                    border = CardDefaults.outlinedCardBorder(),
+                    elevation = CardDefaults.cardElevation(0.dp)
+                ) {
+                    if (state.activeAssets.isEmpty()) {
+                        Box(
+                            modifier = Modifier.fillMaxWidth().padding(16.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                "Sin activos en esta categoría",
+                                fontSize = 13.sp,
+                                color = TextSecondary
+                            )
+                        }
+                    } else {
+                        Column {
+                            state.activeAssets.forEachIndexed { index, asset ->
+                                AssetRow(
+                                    asset = asset,
+                                    onClick = { onAssetClick(asset.id) },
+                                    onEdit = { onOpenEditSheet(asset) },
+                                    onArchive = { onRequestArchive(asset) }
+                                )
+                                if (index < state.activeAssets.lastIndex) {
+                                    HorizontalDivider(
+                                        color = BorderGray,
+                                        thickness = 0.5.dp,
+                                        modifier = Modifier.padding(start = 56.dp)
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (state.activeFixedIncome.isNotEmpty()) {
+                item { Spacer(Modifier.height(8.dp)) }
+                item {
+                    SectionHeaderWithAction(
+                        title = "RENTA FIJA",
+                        actionLabel = "(${state.activeFixedIncome.size})",
+                        onAction = { }
+                    )
+                }
+                item {
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(14.dp),
+                        colors = CardDefaults.cardColors(containerColor = SurfaceWhite),
+                        border = CardDefaults.outlinedCardBorder(),
+                        elevation = CardDefaults.cardElevation(0.dp)
+                    ) {
+                        Column {
+                            state.activeFixedIncome.forEachIndexed { index, fiRow ->
+                                FixedIncomePositionCard(
+                                    row = fiRow,
+                                    currencyCode = state.currencyCode,
+                                    balancesHidden = false,
+                                    onClick = { onFixedIncomeClick(fiRow.position.id) }
+                                )
+                                if (index < state.activeFixedIncome.lastIndex) {
+                                    HorizontalDivider(
+                                        color = BorderGray,
+                                        thickness = 0.5.dp,
+                                        modifier = Modifier.padding(start = 20.dp)
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (state.category != null) {
+                item { Spacer(Modifier.height(8.dp)) }
+                item {
+                    SectionHeaderWithAction(
+                        title = "PLATAFORMAS",
+                        actionLabel = "Gestionar",
+                        onAction = onOpenLinkPlatformSheet
+                    )
+                }
+                item {
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(14.dp),
+                        colors = CardDefaults.cardColors(containerColor = SurfaceWhite),
+                        border = CardDefaults.outlinedCardBorder(),
+                        elevation = CardDefaults.cardElevation(0.dp)
+                    ) {
+                        if (state.categoryPlatforms.isEmpty()) {
+                            Box(
+                                modifier = Modifier.fillMaxWidth().padding(16.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                    Text(
+                                        "Sin plataformas vinculadas",
+                                        fontSize = 13.sp,
+                                        color = TextSecondary
+                                    )
+                                    Spacer(Modifier.height(4.dp))
+                                    TextButton(onClick = onOpenLinkPlatformSheet) {
+                                        Text(
+                                            "+ Añadir plataforma",
+                                            fontSize = 13.sp,
+                                            color = PrimaryDark,
+                                            fontWeight = FontWeight.Medium
+                                        )
+                                    }
+                                }
+                            }
+                        } else {
+                            Column {
+                                state.categoryPlatforms.forEachIndexed { index, platform ->
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(horizontal = 16.dp, vertical = 12.dp),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Text(platform.icon, fontSize = 18.sp, modifier = Modifier.size(28.dp))
+                                        Spacer(Modifier.width(12.dp))
+                                        Text(
+                                            platform.name,
+                                            fontSize = 15.sp,
+                                            color = TextPrimary,
+                                            modifier = Modifier.weight(1f)
+                                        )
+                                    }
+                                    if (index < state.categoryPlatforms.lastIndex) {
+                                        HorizontalDivider(
+                                            color = BorderGray,
+                                            thickness = 0.5.dp,
+                                            modifier = Modifier.padding(start = 52.dp)
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (state.archivedAssets.isNotEmpty()) {
+                item { Spacer(Modifier.height(8.dp)) }
+                item {
+                    Text(
+                        "ARCHIVADOS",
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = TextSecondary
+                    )
+                }
+                item {
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(14.dp),
+                        colors = CardDefaults.cardColors(containerColor = SurfaceWhite),
+                        border = CardDefaults.outlinedCardBorder(),
+                        elevation = CardDefaults.cardElevation(0.dp)
+                    ) {
+                        Column {
+                            state.archivedAssets.forEachIndexed { index, asset ->
+                                ArchivedAssetRow(
+                                    asset = asset,
+                                    onRestore = { onRestoreAsset(asset.id) }
+                                )
+                                if (index < state.archivedAssets.lastIndex) {
+                                    HorizontalDivider(
+                                        color = BorderGray,
+                                        thickness = 0.5.dp,
+                                        modifier = Modifier.padding(start = 56.dp)
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            item { Spacer(Modifier.height(20.dp)) }
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun AssetCategoryDetailContentPreview() {
+    TrackfolioTheme {
+        AssetCategoryDetailContent(
+            state = AssetCategoryDetailUiState(
+                category = AssetCategory(id = "cat1", name = "Acciones", icon = "📈", sortOrder = 0, createdAt = 0L),
+                activeAssets = listOf(
+                    Asset(id = "a1", accountId = "acc1", ticker = "AAPL", name = "Apple Inc.", notes = null, createdAt = 0L, assetCategoryId = "cat1", currentPrice = 150.0),
+                    Asset(id = "a2", accountId = "acc1", ticker = "MSFT", name = "Microsoft Corp.", notes = null, createdAt = 0L, assetCategoryId = "cat1", currentPrice = 250.0)
+                ),
+                categoryPlatforms = listOf(
+                    Platform(id = "p1", name = "Interactive Brokers", icon = "🏦", sortOrder = 0, createdAt = 0L)
+                ),
+                allPlatforms = listOf(
+                    Platform(id = "p1", name = "Interactive Brokers", icon = "🏦", sortOrder = 0, createdAt = 0L)
+                ),
+                allCategories = listOf(
+                    AssetCategory(id = "cat1", name = "Acciones", icon = "📈", sortOrder = 0, createdAt = 0L)
+                ),
+                currencyCode = "EUR"
+            ),
+            categoryId = "cat1",
+            onBack = {},
+            onAssetClick = {},
+            onFixedIncomeClick = {},
+            onOpenAddSheet = {},
+            onOpenEditSheet = {},
+            onRequestArchive = {},
+            onRestoreAsset = {},
+            onOpenLinkPlatformSheet = {}
         )
     }
 }

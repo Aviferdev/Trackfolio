@@ -90,6 +90,13 @@ import es.aviferdev.trackfolio.ui.theme.formatAmount
 import es.aviferdev.trackfolio.ui.theme.maskAmount
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.math.abs
+import es.aviferdev.trackfolio.domain.model.Asset
+import es.aviferdev.trackfolio.domain.model.AssetCategory
+import es.aviferdev.trackfolio.domain.model.FixedIncomePosition
+import es.aviferdev.trackfolio.domain.model.PortfolioValuePoint
+import es.aviferdev.trackfolio.domain.portfolio.AssetPosition
+import es.aviferdev.trackfolio.ui.theme.TrackfolioTheme
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -111,11 +118,138 @@ fun PortfolioScreen(
 
     accountViewModel.selectAccount()
 
+    PortfolioContent(
+        state = state,
+        valueHistory = valueHistory,
+        balancesHidden = balancesHidden,
+        onAssetClick = onAssetClick,
+        onNavigateToSettings = onNavigateToSettings,
+        onFixedIncomeClick = onFixedIncomeClick,
+        onSelectDistributionView = { viewModel.selectDistributionView(it) },
+        onOpenAddTransactionSheet = { viewModel.openAddTransactionSheet() },
+        onOpenCreateFixedIncomeSheet = { viewModel.openCreateFixedIncomeSheet() },
+        onOpenUpdatePriceSheet = { asset -> viewModel.openUpdatePriceSheet(asset) },
+        onShowRegisterCouponSheet = { position -> viewModel.showRegisterCouponSheet(position) }
+    )
+
+    if (state.showAddTxSheet) {
+        AddEditAssetTransactionBottomSheet(
+            transaction = null, fixedAsset = null,
+            allAssets = state.allAssets, platforms = state.platforms,
+            platformsByAsset = state.platformsByAsset, categories = availableCategories,
+            assetTransactions = emptyList(), currencyCode = state.currencyCode, buyOnly = true,
+            onSave = { assetId, type, qty, price, date, platformId, feeNote, notes ->
+                viewModel.addTransaction(assetId, type, qty, price, date, platformId, feeNote, notes)
+            },
+            onDismiss = { viewModel.closeAddTransactionSheet() }
+        )
+    }
+    if (state.showCreateFixedIncomeSheet && state.currentAccountId != null) {
+        CreateFixedIncomeBottomSheet(
+            platforms = state.platforms,
+            categories = availableCategories,
+            bondIssuers = state.bondIssuers,
+            bankIssuers = state.bankIssuers,
+            accountId = state.currentAccountId!!,
+            onSave = { position, event -> viewModel.saveFixedIncomePosition(position, event) },
+            onSaveIssuer = { name, icon, type -> viewModel.saveBondIssuer(name, icon, type) },
+            onDismiss = { viewModel.closeCreateFixedIncomeSheet() }
+        )
+    }
+    if (state.showRegisterCouponSheet && state.selectedPositionForCoupon != null) {
+        RegisterCouponBottomSheet(
+            positionName = state.selectedPositionForCoupon!!.name,
+            onSave = { event -> viewModel.registerCoupon(event) },
+            onDismiss = { viewModel.hideRegisterCouponSheet() }
+        )
+    }
+    if (state.showUpdatePriceSheet && state.pricingAsset != null) {
+        UpdateCurrentPriceSheet(
+            asset = state.pricingAsset!!, currencyCode = state.currencyCode,
+            onConfirm = { newPrice -> viewModel.refreshCurrentPrice(state.pricingAsset!!, newPrice) },
+            onDismiss = { viewModel.closeUpdatePriceSheet() }
+        )
+    }
+    if (catalogState.showAddSheet) {
+        AddEditAssetBottomSheet(
+            asset = null,
+            categories = availableCategories,
+            currencyCode = state.currencyCode,
+            allPlatforms = state.platforms,
+            allSectors = state.allSectors,
+            linkedSectorIds = emptySet(),
+            allRegions = state.allRegions,
+            linkedRegionPercents = emptyMap(),
+            onSave = { ticker, name, notes, categoryId, currentPrice, platformIds, _, fixedPct, sectorIds, regionPercents ->
+                catalogViewModel.addAsset(ticker, name, notes, categoryId, currentPrice, platformIds, fixedPct, sectorIds, regionPercents)
+            },
+            onDismiss = { catalogViewModel.closeAddSheet() }
+        )
+    }
+    catalogState.editing?.let { editing ->
+        AddEditAssetBottomSheet(
+            asset = editing,
+            categories = availableCategories,
+            currencyCode = state.currencyCode,
+            allPlatforms = state.platforms,
+            linkedPlatformIds = catalogState.editingPlatformIds,
+            allSectors = state.allSectors,
+            linkedSectorIds = catalogState.editingSectorIds,
+            allRegions = state.allRegions,
+            linkedRegionPercents = catalogState.editingRegionPercents,
+            linkedFixedIncomePercent = catalogState.editingFixedIncomePercent,
+            onSave = { ticker, name, notes, categoryId, currentPrice, platformIds, _, fixedPct, sectorIds, regionPercents ->
+                catalogViewModel.editAsset(editing, ticker, name, notes, categoryId, currentPrice, platformIds, fixedPct, sectorIds, regionPercents)
+            },
+            onDismiss = { catalogViewModel.closeEditSheet() }
+        )
+    }
+    if (platformState.showAddSheet) {
+        AddEditPlatformSheet(
+            initial = null,
+            onSave = { name, icon, notes -> platformViewModel.addPlatform(name, icon, notes) },
+            onDismiss = { platformViewModel.closeAddSheet() }
+        )
+    }
+    for (msg in listOfNotNull(state.error, catalogState.error, platformState.error)) {
+        val clearFn: () -> Unit = when (msg) {
+            state.error -> { { viewModel.clearError() } }
+            catalogState.error -> { { catalogViewModel.clearError() } }
+            else -> { { platformViewModel.clearError() } }
+        }
+        AlertDialog(
+            onDismissRequest = clearFn,
+            containerColor = SurfaceWhite,
+            title = { Text("Error", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = TextPrimary) },
+            text = { Text(msg, fontSize = 13.sp, color = TextSecondary) },
+            confirmButton = { TextButton(onClick = clearFn) { Text("Aceptar", color = PrimaryDark) } },
+            shape = RoundedCornerShape(16.dp)
+        )
+        break
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun PortfolioContent(
+    state: PortfolioUiState,
+    valueHistory: List<PortfolioValuePoint>,
+    balancesHidden: Boolean,
+    onAssetClick: (String) -> Unit,
+    onNavigateToSettings: () -> Unit,
+    onFixedIncomeClick: (String) -> Unit,
+    onSelectDistributionView: (DistributionView) -> Unit,
+    onOpenAddTransactionSheet: () -> Unit,
+    onOpenCreateFixedIncomeSheet: () -> Unit,
+    onOpenUpdatePriceSheet: (Asset) -> Unit,
+    onShowRegisterCouponSheet: (FixedIncomePosition) -> Unit,
+    modifier: Modifier = Modifier
+) {
     var closedExpanded by remember { mutableStateOf(false) }
     var fabMenuOpen by remember { mutableStateOf(false) }
 
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .background(BackgroundGray)
     ) {
@@ -124,11 +258,7 @@ fun PortfolioScreen(
                 title = "Portfolio",
                 actions = {
                     IconButton(onClick = onNavigateToSettings) {
-                        Icon(
-                            Icons.Outlined.Settings,
-                            contentDescription = "Ajustes de portfolio",
-                            tint = TextSecondary
-                        )
+                        Icon(Icons.Outlined.Settings, contentDescription = "Ajustes de portfolio", tint = TextSecondary)
                     }
                 }
             )
@@ -137,7 +267,6 @@ fun PortfolioScreen(
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(bottom = 100.dp)
             ) {
-                // ── Summary card ──────────────────────────────────────────────────
             item {
                 PortfolioSummaryCard(
                     totalInvested = state.totalInvested,
@@ -153,7 +282,6 @@ fun PortfolioScreen(
                 )
             }
 
-            // ── Line chart ────────────────────────────────────────────────────
             if (valueHistory.isNotEmpty()) {
                 item {
                     LineChartCard(
@@ -168,7 +296,6 @@ fun PortfolioScreen(
                 }
             }
 
-            // ── Distribution tabs + donut ─────────────────────────────────────
             val hasDistribution = state.distribution.isNotEmpty()
                     || state.compositionDistribution.isNotEmpty()
                     || state.regionDistribution.isNotEmpty()
@@ -176,7 +303,6 @@ fun PortfolioScreen(
 
             if (hasDistribution) {
                 item {
-                    // Pill tabs (matching JSX design)
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -190,12 +316,8 @@ fun PortfolioScreen(
                                 modifier = Modifier
                                     .clip(RoundedCornerShape(18.dp))
                                     .background(if (selected) PrimaryAlpha else Color.Transparent)
-                                    .border(
-                                        1.dp,
-                                        if (selected) PrimaryDark else BorderGray2,
-                                        RoundedCornerShape(18.dp)
-                                    )
-                                    .clickable { viewModel.selectDistributionView(view) }
+                                    .border(1.dp, if (selected) PrimaryDark else BorderGray2, RoundedCornerShape(18.dp))
+                                    .clickable { onSelectDistributionView(view) }
                                     .padding(horizontal = 11.dp, vertical = 5.dp)
                             ) {
                                 Text(
@@ -229,13 +351,11 @@ fun PortfolioScreen(
                 }
             }
 
-            // ── Asset groups ──────────────────────────────────────────────────
             when {
                 state.isLoading -> item {
-                    Box(
-                        Modifier.fillMaxWidth().height(200.dp),
-                        contentAlignment = Alignment.Center
-                    ) { CircularProgressIndicator(color = PrimaryDark) }
+                    Box(Modifier.fillMaxWidth().height(200.dp), contentAlignment = Alignment.Center) {
+                        CircularProgressIndicator(color = PrimaryDark)
+                    }
                 }
 
                 state.groups.isEmpty() && state.closedPositions.isEmpty() -> item {
@@ -243,8 +363,6 @@ fun PortfolioScreen(
                 }
 
                 else -> {
-                    // El listado siempre muestra los grupos por categoría
-                    // (solo el gráfico de distribución cambia según la vista seleccionada)
                     state.groups.forEach { group ->
                         item(key = "hdr_${group.category?.id ?: "none"}") {
                             CategoryGroupHeader(
@@ -259,32 +377,25 @@ fun PortfolioScreen(
                                 currencyCode = state.currencyCode,
                                 balancesHidden = balancesHidden,
                                 onClick = { onAssetClick(row.asset.id) },
-                                onUpdatePrice = { viewModel.openUpdatePriceSheet(row.asset) },
+                                onUpdatePrice = { onOpenUpdatePriceSheet(row.asset) },
                                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 5.dp)
                             )
                         }
                         if (group.fixedIncomeRows.isNotEmpty()) {
-                            // Header de sección: "🏦 Renta fija" (como en JSX)
                             item(key = "fi_hdr_${group.category?.id ?: "none"}") {
                                 FixedIncomeSectionHeader(
                                     count = group.fixedIncomeRows.size,
-                                    modifier = Modifier.padding(
-                                        start = 16.dp,
-                                        top = 8.dp,
-                                        bottom = 4.dp
-                                    )
+                                    modifier = Modifier.padding(start = 16.dp, top = 8.dp, bottom = 4.dp)
                                 )
                             }
-                            items(
-                                group.fixedIncomeRows,
-                                key = { "fi_${it.position.id}" }) { fiRow ->
+                            items(group.fixedIncomeRows, key = { "fi_${it.position.id}" }) { fiRow ->
                                 FixedIncomePositionCard(
                                     row = fiRow,
                                     currencyCode = state.currencyCode,
                                     balancesHidden = balancesHidden,
                                     onClick = { onFixedIncomeClick(fiRow.position.id) },
                                     onRegisterCoupon = if (fiRow.position.hasPeriodicCoupons) {
-                                        { viewModel.showRegisterCouponSheet(fiRow.position) }
+                                        { onShowRegisterCouponSheet(fiRow.position) }
                                     } else null,
                                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 5.dp)
                                 )
@@ -292,8 +403,7 @@ fun PortfolioScreen(
                         }
                     }
 
-                    val totalClosedCount =
-                        state.closedPositions.size + state.closedFixedIncomePositions.size
+                    val totalClosedCount = state.closedPositions.size + state.closedFixedIncomePositions.size
                     if (totalClosedCount > 0) {
                         item(key = "closed_hdr") {
                             ClosedPositionsHeader(
@@ -309,30 +419,22 @@ fun PortfolioScreen(
                                 exit = shrinkVertically() + fadeOut()
                             ) {
                                 Column {
-                                    // Activos cerrados
                                     state.closedPositions.forEach { row ->
                                         ClosedAssetCard(
                                             row = row,
                                             currencyCode = state.currencyCode,
                                             balancesHidden = balancesHidden,
                                             onClick = { onAssetClick(row.asset.id) },
-                                            modifier = Modifier.padding(
-                                                horizontal = 16.dp,
-                                                vertical = 5.dp
-                                            )
+                                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 5.dp)
                                         )
                                     }
-                                    // Posiciones de renta fija cerradas
                                     state.closedFixedIncomePositions.forEach { fiRow ->
                                         ClosedFixedIncomeCard(
                                             row = fiRow,
                                             currencyCode = state.currencyCode,
                                             balancesHidden = balancesHidden,
                                             onClick = { onFixedIncomeClick(fiRow.position.id) },
-                                            modifier = Modifier.padding(
-                                                horizontal = 16.dp,
-                                                vertical = 5.dp
-                                            )
+                                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 5.dp)
                                         )
                                     }
                                 }
@@ -345,7 +447,6 @@ fun PortfolioScreen(
 
         }
 
-        // ── FAB ───────────────────────────────────────────────────────────────
         Box(
             modifier = Modifier
                 .align(Alignment.BottomEnd)
@@ -369,169 +470,73 @@ fun PortfolioScreen(
                 DropdownMenuItem(
                     text = { Text("Nueva compra", color = TextPrimary, fontSize = 14.sp) },
                     leadingIcon = { Text("↗", fontSize = 15.sp) },
-                    onClick = { fabMenuOpen = false; viewModel.openAddTransactionSheet() }
+                    onClick = { fabMenuOpen = false; onOpenAddTransactionSheet() }
                 )
                 DropdownMenuItem(
                     text = { Text("Nuevo bono/depósito", color = TextPrimary, fontSize = 14.sp) },
                     leadingIcon = { Text("🏦", fontSize = 14.sp) },
-                    onClick = { fabMenuOpen = false; viewModel.openCreateFixedIncomeSheet() }
+                    onClick = { fabMenuOpen = false; onOpenCreateFixedIncomeSheet() }
                 )
             }
         }
     }
+}
 
-    // ── Sheets & dialogs (lógica intacta) ─────────────────────────────────────
-    if (state.showAddTxSheet) {
-        AddEditAssetTransactionBottomSheet(
-            transaction = null, fixedAsset = null,
-            allAssets = state.allAssets, platforms = state.platforms,
-            platformsByAsset = state.platformsByAsset, categories = availableCategories,
-            assetTransactions = emptyList(), currencyCode = state.currencyCode, buyOnly = true,
-            onSave = { assetId, type, qty, price, date, platformId, feeNote, notes ->
-                viewModel.addTransaction(
-                    assetId,
-                    type,
-                    qty,
-                    price,
-                    date,
-                    platformId,
-                    feeNote,
-                    notes
-                )
-            },
-            onDismiss = { viewModel.closeAddTransactionSheet() }
-        )
-    }
-    if (state.showCreateFixedIncomeSheet && state.currentAccountId != null) {
-        CreateFixedIncomeBottomSheet(
-            platforms = state.platforms,
-            categories = availableCategories,
-            bondIssuers = state.bondIssuers,
-            bankIssuers = state.bankIssuers,
-            accountId = state.currentAccountId!!,
-            onSave = { position, event -> viewModel.saveFixedIncomePosition(position, event) },
-            onSaveIssuer = { name, icon, type -> viewModel.saveBondIssuer(name, icon, type) },
-            onDismiss = { viewModel.closeCreateFixedIncomeSheet() }
-        )
-    }
-    if (state.showRegisterCouponSheet && state.selectedPositionForCoupon != null) {
-        RegisterCouponBottomSheet(
-            positionName = state.selectedPositionForCoupon!!.name,
-            onSave = { event -> viewModel.registerCoupon(event) },
-            onDismiss = { viewModel.hideRegisterCouponSheet() }
-        )
-    }
-    if (state.showUpdatePriceSheet && state.pricingAsset != null) {
-        UpdateCurrentPriceSheet(
-            asset = state.pricingAsset!!, currencyCode = state.currencyCode,
-            onConfirm = { newPrice ->
-                viewModel.refreshCurrentPrice(
-                    state.pricingAsset!!,
-                    newPrice
-                )
-            },
-            onDismiss = { viewModel.closeUpdatePriceSheet() }
-        )
-    }
-    if (catalogState.showAddSheet) {
-        AddEditAssetBottomSheet(
-            asset = null,
-            categories = availableCategories,
-            currencyCode = state.currencyCode,
-            allPlatforms = state.platforms,
-            allSectors = state.allSectors,
-            linkedSectorIds = emptySet(),
-            allRegions = state.allRegions,
-            linkedRegionPercents = emptyMap(),
-            onSave = { ticker, name, notes, categoryId, currentPrice, platformIds, _, fixedPct, sectorIds, regionPercents ->
-                catalogViewModel.addAsset(
-                    ticker,
-                    name,
-                    notes,
-                    categoryId,
-                    currentPrice,
-                    platformIds,
-                    fixedPct,
-                    sectorIds,
-                    regionPercents
-                )
-            },
-            onDismiss = { catalogViewModel.closeAddSheet() }
-        )
-    }
-    catalogState.editing?.let { editing ->
-        AddEditAssetBottomSheet(
-            asset = editing,
-            categories = availableCategories,
-            currencyCode = state.currencyCode,
-            allPlatforms = state.platforms,
-            linkedPlatformIds = catalogState.editingPlatformIds,
-            allSectors = state.allSectors,
-            linkedSectorIds = catalogState.editingSectorIds,
-            allRegions = state.allRegions,
-            linkedRegionPercents = catalogState.editingRegionPercents,
-            linkedFixedIncomePercent = catalogState.editingFixedIncomePercent,
-            onSave = { ticker, name, notes, categoryId, currentPrice, platformIds, _, fixedPct, sectorIds, regionPercents ->
-                catalogViewModel.editAsset(
-                    editing,
-                    ticker,
-                    name,
-                    notes,
-                    categoryId,
-                    currentPrice,
-                    platformIds,
-                    fixedPct,
-                    sectorIds,
-                    regionPercents
-                )
-            },
-            onDismiss = { catalogViewModel.closeEditSheet() }
-        )
-    }
-    if (platformState.showAddSheet) {
-        AddEditPlatformSheet(
-            initial = null,
-            onSave = { name, icon, notes -> platformViewModel.addPlatform(name, icon, notes) },
-            onDismiss = { platformViewModel.closeAddSheet() }
-        )
-    }
-    for (msg in listOfNotNull(state.error, catalogState.error, platformState.error)) {
-        val clearFn: () -> Unit = when (msg) {
-            state.error -> {
-                { viewModel.clearError() }
-            }
-
-            catalogState.error -> {
-                { catalogViewModel.clearError() }
-            }
-
-            else -> {
-                { platformViewModel.clearError() }
-            }
-        }
-        AlertDialog(
-            onDismissRequest = clearFn,
-            containerColor = SurfaceWhite,
-            title = {
-                Text(
-                    "Error",
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = TextPrimary
-                )
-            },
-            text = { Text(msg, fontSize = 13.sp, color = TextSecondary) },
-            confirmButton = {
-                TextButton(onClick = clearFn) {
-                    Text(
-                        "Aceptar",
-                        color = PrimaryDark
+@Preview
+@Composable
+private fun PortfolioContentPreview() {
+    TrackfolioTheme {
+        PortfolioContent(
+            state = PortfolioUiState(
+                totalInvested = 10000.0,
+                totalCurrentValue = 12500.0,
+                totalPnL = 2500.0,
+                totalPnLPercent = 25.0,
+                totalRealizedPnL = 500.0,
+                totalUnrealizedPnL = 2000.0,
+                openPositionsCount = 5,
+                currencyCode = "EUR",
+                groups = listOf(
+                    CategoryGroup(
+                        category = AssetCategory(id = "cat1", name = "Acciones", icon = "📈", sortOrder = 0, createdAt = 0L),
+                        rows = listOf(
+                            AssetRow(
+                                asset = Asset(id = "a1", accountId = "acc1", ticker = "AAPL", name = "Apple Inc.", notes = null, createdAt = 0L, assetCategoryId = "cat1", currentPrice = 150.0),
+                                position = AssetPosition(netQuantity = 10.0, averageCostOfRemaining = 100.0, totalInvestedRemaining = 1000.0, realizedPnL = 0.0, currentValue = 1500.0, unrealizedPnL = 500.0, unrealizedPnLPercent = 50.0, totalPnL = 500.0, totalPnLPercent = 50.0, hasCurrentPrice = true)
+                            ),
+                            AssetRow(
+                                asset = Asset(id = "a2", accountId = "acc1", ticker = "MSFT", name = "Microsoft Corp.", notes = null, createdAt = 0L, assetCategoryId = "cat1", currentPrice = 250.0),
+                                position = AssetPosition(netQuantity = 5.0, averageCostOfRemaining = 150.0, totalInvestedRemaining = 750.0, realizedPnL = 0.0, currentValue = 1250.0, unrealizedPnL = 500.0, unrealizedPnLPercent = 66.67, totalPnL = 500.0, totalPnLPercent = 66.67, hasCurrentPrice = true)
+                            )
+                        ),
+                        totalInvested = 1750.0,
+                        totalCurrentValue = 2750.0,
+                        totalUnrealizedPnL = 1000.0,
+                        totalRealizedPnL = 0.0,
+                        totalPnL = 1000.0,
+                        totalPnLPercent = 57.14
                     )
-                }
-            },
-            shape = RoundedCornerShape(16.dp)
+                ),
+                distribution = listOf(
+                    CategorySlice(categoryId = "cat1", name = "Acciones", icon = "📈", value = 12500.0, percent = 100.0, color = PrimaryDark)
+                ),
+                isLoading = false
+            ),
+            valueHistory = listOf(
+                PortfolioValuePoint(date = 1704067200000L, value = 10000.0),
+                PortfolioValuePoint(date = 1706745600000L, value = 11000.0),
+                PortfolioValuePoint(date = 1709251200000L, value = 12500.0)
+            ),
+            balancesHidden = false,
+            onAssetClick = {},
+            onNavigateToSettings = {},
+            onFixedIncomeClick = {},
+            onSelectDistributionView = {},
+            onOpenAddTransactionSheet = {},
+            onOpenCreateFixedIncomeSheet = {},
+            onOpenUpdatePriceSheet = {},
+            onShowRegisterCouponSheet = {}
         )
-        break // show one at a time
     }
 }
 

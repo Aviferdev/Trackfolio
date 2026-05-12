@@ -27,9 +27,14 @@ import es.aviferdev.trackfolio.ui.theme.*
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 import kotlin.math.abs
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// WRAPPER
+// ═══════════════════════════════════════════════════════════════════════════════
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -41,68 +46,14 @@ fun LoanDetailScreen(
     val uiState by viewModel.uiState.collectAsState()
     var showArchiveConfirm by remember { mutableStateOf(false) }
 
-    Column(
-        modifier = Modifier.fillMaxSize().background(BackgroundGray)
-    ) {
-        TopBarApp(
-            title = uiState.loan?.name ?: "Detalle préstamo",
-            navigateBack = onBack,
-            actions = {
-                IconButton(onClick = { viewModel.openEditSheet() }) {
-                    Icon(Icons.Outlined.Edit, "Editar", tint = TextSecondary)
-                }
-                IconButton(onClick = { viewModel.openRateSheet() }) {
-                    Icon(Icons.Outlined.Edit, "Cambiar tipo", tint = TextSecondary)
-                }
-                IconButton(onClick = { showArchiveConfirm = true }) {
-                    Icon(Icons.Outlined.Delete, "Archivar", tint = ExpenseRed)
-                }
-            }
-        )
+    LoanDetailContent(
+        uiState = uiState,
+        onBack = onBack,
+        onEditClick = { viewModel.openEditSheet() },
+        onRateChangeClick = { viewModel.openRateSheet() },
+        onArchiveClick = { showArchiveConfirm = true }
+    )
 
-        if (uiState.isLoading) {
-            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator(color = PrimaryDark)
-            }
-        } else if (uiState.loan == null) {
-            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text("Préstamo no encontrado", color = TextTertiary, fontSize = 13.sp)
-            }
-        } else {
-            val loan = uiState.loan!!
-
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-            // ── Hero card ─────────────────────────────────────────────────────
-            item { LoanHeroCard(loan = loan) }
-
-            // ── Details grid ──────────────────────────────────────────────────
-            item { LoanDetailsGrid(loan = loan) }
-
-            // ── Rate history ──────────────────────────────────────────────────
-            if (uiState.rateChanges.isNotEmpty()) {
-                item { SectionLabel("Historial de tipo de interés") }
-                items(uiState.rateChanges, key = { it.id }) { change ->
-                    RateChangeRow(change)
-                }
-            }
-
-            // ── Amortization table ────────────────────────────────────────────
-            item { SectionLabel("Cuadro de amortización") }
-            item { AmortizationHeader() }
-            items(uiState.schedule, key = { it.installmentNumber }) { entry ->
-                AmortizationRow(entry = entry, paidInstallments = loan.paidInstallments)
-            }
-
-            item { Spacer(Modifier.height(24.dp)) }
-        }
-        }
-    }
-
-    // ── Archive dialog ────────────────────────────────────────────────────────
     if (showArchiveConfirm && uiState.loan != null) {
         AlertDialog(
             onDismissRequest = { showArchiveConfirm = false },
@@ -134,9 +85,119 @@ fun LoanDetailScreen(
         )
     }
 
-    // ── Edit sheet ────────────────────────────────────────────────────────────
     if (uiState.showEditSheet && uiState.loan != null) {
         AddEditLoanBottomSheet(loan = uiState.loan, onDismiss = { viewModel.closeEditSheet() })
+    }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// CONTENT
+// ═══════════════════════════════════════════════════════════════════════════════
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun LoanDetailContent(
+    uiState: LoanDetailUiState,
+    onBack: () -> Unit,
+    onEditClick: () -> Unit,
+    onRateChangeClick: () -> Unit,
+    onArchiveClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier.fillMaxSize().background(BackgroundGray)
+    ) {
+        TopBarApp(
+            title = uiState.loan?.name ?: "Detalle préstamo",
+            navigateBack = onBack,
+            actions = {
+                IconButton(onClick = onEditClick) {
+                    Icon(Icons.Outlined.Edit, "Editar", tint = TextSecondary)
+                }
+                IconButton(onClick = onRateChangeClick) {
+                    Icon(Icons.Outlined.Edit, "Cambiar tipo", tint = TextSecondary)
+                }
+                IconButton(onClick = onArchiveClick) {
+                    Icon(Icons.Outlined.Delete, "Archivar", tint = ExpenseRed)
+                }
+            }
+        )
+
+        if (uiState.isLoading) {
+            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator(color = PrimaryDark)
+            }
+        } else if (uiState.loan == null) {
+            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Text("Préstamo no encontrado", color = TextTertiary, fontSize = 13.sp)
+            }
+        } else {
+            val loan = uiState.loan!!
+
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+            item { LoanHeroCard(loan = loan) }
+            item { LoanDetailsGrid(loan = loan) }
+
+            if (uiState.rateChanges.isNotEmpty()) {
+                item { SectionLabel("Historial de tipo de interés") }
+                items(uiState.rateChanges, key = { it.id }) { change ->
+                    RateChangeRow(change)
+                }
+            }
+
+            item { SectionLabel("Cuadro de amortización") }
+            item { AmortizationHeader() }
+            items(uiState.schedule, key = { it.installmentNumber }) { entry ->
+                AmortizationRow(entry = entry, paidInstallments = loan.paidInstallments)
+            }
+
+            item { Spacer(Modifier.height(24.dp)) }
+            }
+        }
+    }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// PREVIEW
+// ═══════════════════════════════════════════════════════════════════════════════
+
+@Preview
+@Composable
+fun LoanDetailContentPreview() {
+    TrackfolioTheme {
+        LoanDetailContent(
+            uiState = LoanDetailUiState(
+                isLoading = false,
+                loan = Loan(
+                    id = "preview-1",
+                    accountId = "acct-1",
+                    name = "Préstamo Hipoteca",
+                    type = es.aviferdev.trackfolio.domain.model.LoanType.MORTGAGE,
+                    totalAmount = 120000.0,
+                    outstandingPrincipal = 98000.0,
+                    monthlyPayment = 850.0,
+                    currentInterestRate = 2.75,
+                    totalInstallments = 240,
+                    paidInstallments = 36,
+                    startDate = 1700000000000,
+                    endDate = 1700000000000 + 240L * 30L * 24L * 3600L * 1000L,
+                    lenderName = "Banco Ejemplo",
+                    notes = null,
+                    archived = false,
+                    createdAt = 1700000000000
+                ),
+                rateChanges = emptyList(),
+                schedule = emptyList()
+            ),
+            onBack = {},
+            onEditClick = {},
+            onRateChangeClick = {},
+            onArchiveClick = {}
+        )
     }
 }
 

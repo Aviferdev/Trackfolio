@@ -1,5 +1,9 @@
 package es.aviferdev.trackfolio.ui.home
 
+import es.aviferdev.trackfolio.domain.model.Account
+import es.aviferdev.trackfolio.domain.model.AccountType
+import es.aviferdev.trackfolio.domain.model.IncomeType
+import es.aviferdev.trackfolio.domain.model.TransactionType
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -35,6 +39,7 @@ import es.aviferdev.trackfolio.ui.theme.*
 import es.aviferdev.trackfolio.ui.theme.formatAmount
 import es.aviferdev.trackfolio.ui.theme.formatDate
 import es.aviferdev.trackfolio.ui.theme.maskAmount
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -189,7 +194,7 @@ fun HomeScreen(
 //  HomeContent — scroll principal
 // ─────────────────────────────────────────────────────────────────────────────
 @Composable
-private fun HomeContent(
+fun HomeContent(
     balance: HomeBalance,
     categoryNames: Map<String, String>,
     accounts: List<es.aviferdev.trackfolio.domain.model.Account>,
@@ -737,6 +742,85 @@ private fun IconActionButton(
         contentAlignment = Alignment.Center
     ) {
         content()
+    }
+}
+
+@Preview
+@Composable
+private fun HomeContentPreview() {
+    val fakeAccount = Account(
+        id = "1",
+        name = "Cuenta Corriente",
+        currency = "EUR",
+        initialBalance = 1000.0,
+        computedBalance = 3500.0,
+        createdAt = 0L,
+        accountType = AccountType.GENERAL
+    )
+    val fakeTransactions = listOf(
+        Transaction(
+            id = "1",
+            accountId = "1",
+            amount = 2500.0,
+            type = TransactionType.INCOME,
+            categoryId = null,
+            date = 1715500800000L,
+            notes = null,
+            createdAt = 1715500800000L,
+            incomeType = IncomeType.SALARY,
+            grossAmount = 3000.0,
+            irpfPercent = 19.0,
+            socialSecurityAmount = 250.0,
+            issuerName = "Empresa S.L."
+        ),
+        Transaction(
+            id = "2",
+            accountId = "1",
+            amount = 85.50,
+            type = TransactionType.EXPENSE,
+            categoryId = "food",
+            date = 1715414400000L,
+            notes = null,
+            createdAt = 1715414400000L
+        ),
+        Transaction(
+            id = "3",
+            accountId = "1",
+            amount = 150.0,
+            type = TransactionType.EXPENSE,
+            categoryId = "transport",
+            date = 1715328000000L,
+            notes = null,
+            createdAt = 1715328000000L
+        )
+    )
+    val fakeBalance = HomeBalance(
+        selectedAccount = fakeAccount,
+        selectedAccountBalance = 3500.0,
+        totalOwed = 500.0,
+        totalOwing = 200.0,
+        recentTransactions = fakeTransactions
+    )
+    val fakeCategoryNames = mapOf(
+        "food" to "Alimentación",
+        "transport" to "Transporte"
+    )
+
+    TrackfolioTheme {
+        HomeContent(
+            balance = fakeBalance,
+            categoryNames = fakeCategoryNames,
+            accounts = listOf(fakeAccount),
+            selectedAccountId = "1",
+            balancesHidden = false,
+            onToggleBalances = {},
+            onAccountSelected = {},
+            onNavigateToTransactions = {},
+            onNavigateToCharts = {},
+            onNavigateToDebts = {},
+            onNavigateToFiscalReport = {},
+            onNavigateToSettings = {}
+        )
     }
 }
 

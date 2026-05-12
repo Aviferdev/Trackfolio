@@ -33,6 +33,7 @@ import kotlinx.coroutines.delay
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.math.abs
 
@@ -43,8 +44,8 @@ fun NetWorthScreen(
 ) {
     val uiState          by viewModel.uiState.collectAsState()
     val showAddLoanSheet by viewModel.showAddLoanSheet.collectAsState()
+    val balancesHidden = LocalBalanceHidden.current
 
-    // ── Staggered entrance animation ──────────────────────────────────────────
     var heroVisible by remember { mutableStateOf(false) }
     var chartVisible by remember { mutableStateOf(false) }
     var assetsVisible by remember { mutableStateOf(false) }
@@ -75,6 +76,7 @@ fun NetWorthScreen(
             data              = state.data,
             netWorthHistory   = state.netWorthHistory,
             assetDistribution = state.assetDistribution,
+            balancesHidden    = balancesHidden,
             onLoanClick       = onLoanClick,
             onAddLoan         = { viewModel.openAddLoanSheet() },
             heroVisible       = heroVisible,
@@ -86,20 +88,21 @@ fun NetWorthScreen(
 }
 
 @Composable
-private fun NetWorthContent(
+fun NetWorthContent(
     data: NetWorthData,
     netWorthHistory: List<NetWorthHistoryPoint>,
     assetDistribution: List<DonutSlice>,
+    balancesHidden: Boolean,
     onLoanClick: (String) -> Unit,
     onAddLoan: () -> Unit,
     heroVisible: Boolean = true,
     chartVisible: Boolean = true,
     assetsVisible: Boolean = true,
-    liabilitiesVisible: Boolean = true
+    liabilitiesVisible: Boolean = true,
+    modifier: Modifier = Modifier
 ) {
-    val balancesHidden = LocalBalanceHidden.current
 
-    Column(Modifier.fillMaxSize().background(BackgroundGray)) {
+    Column(modifier.fillMaxSize().background(BackgroundGray)) {
         TopBarApp(title = "Patrimonio")
 
         LazyColumn(
@@ -447,6 +450,37 @@ private fun LoanCard(loan: Loan, onClick: () -> Unit) {
                 Text("${loan.currentInterestRate}%", fontSize = 10.sp, color = TextTertiary)
             }
         }
+    }
+}
+
+// ─── Preview ──────────────────────────────────────────────────────────────────
+@Preview
+@Composable
+fun NetWorthContentPreview() {
+    TrackfolioTheme {
+        NetWorthContent(
+            data = NetWorthData(
+                totalAccountBalance = 25000.0,
+                totalPortfolioValue = 75000.0,
+                totalFixedIncomeValue = 15000.0,
+                totalLoansOutstanding = 30000.0,
+                totalDebtsOwing = 2000.0,
+                loans = emptyList()
+            ),
+            netWorthHistory = listOf(
+                NetWorthHistoryPoint("2026-01", 75000.0, 110000.0, 35000.0),
+                NetWorthHistoryPoint("2026-02", 80000.0, 115000.0, 35000.0),
+                NetWorthHistoryPoint("2026-03", 83000.0, 118000.0, 35000.0)
+            ),
+            assetDistribution = listOf(
+                DonutSlice("Cuentas", "🏦", 25000.0, 21.74, Color(0xFF4CAF50)),
+                DonutSlice("Inversiones", "📈", 75000.0, 65.22, Color(0xFF2196F3)),
+                DonutSlice("Renta fija", "🏛️", 15000.0, 13.04, Color(0xFFFF9800))
+            ),
+            balancesHidden = false,
+            onLoanClick = {},
+            onAddLoan = {}
+        )
     }
 }
 

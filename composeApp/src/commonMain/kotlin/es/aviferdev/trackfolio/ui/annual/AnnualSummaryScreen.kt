@@ -228,7 +228,7 @@ private fun AnnualHeader(year: String, canGoBack: Boolean, onPrevious: () -> Uni
 }
 
 @Composable
-private fun AnnualContent(summary: AnnualSummary, breakdown: List<MonthlyTotals>, balancesHidden: Boolean) {
+fun AnnualContent(summary: AnnualSummary, breakdown: List<MonthlyTotals>, balancesHidden: Boolean) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -661,5 +661,30 @@ private fun formatPercent(value: Double): String {
     else {
         val rounded = (abs * 10).toLong()
         "${rounded / 10},${rounded % 10}"
+    }
+}
+
+@Preview
+@Composable
+private fun AnnualContentPreview() {
+    val fakeSummary = AnnualSummary(
+        year = "2025",
+        totalIncome = 45000.0,
+        totalExpense = 32000.0,
+        previousYearIncome = 42000.0,
+        previousYearExpense = 30000.0
+    )
+    val fakeBreakdown = listOf(
+        MonthlyTotals(year = "2025", month = "1", totalIncome = 3750.0, totalExpense = 2800.0),
+        MonthlyTotals(year = "2025", month = "2", totalIncome = 3750.0, totalExpense = 2600.0),
+        MonthlyTotals(year = "2025", month = "3", totalIncome = 3800.0, totalExpense = 2700.0)
+    )
+
+    TrackfolioTheme {
+        AnnualContent(
+            summary = fakeSummary,
+            breakdown = fakeBreakdown,
+            balancesHidden = false
+        )
     }
 }

@@ -35,10 +35,12 @@ import es.aviferdev.trackfolio.ui.common.*
 import es.aviferdev.trackfolio.ui.common.navigation.TopBarApp
 import es.aviferdev.trackfolio.ui.settings.backup.BackupViewModel
 import es.aviferdev.trackfolio.ui.theme.*
+import kotlinx.coroutines.delay
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
-import kotlinx.coroutines.delay
 
+// ─── WRAPPER ────────────────────────────────────────────────────────────────────
 @Composable
 fun SettingsScreen(
     onNavigateToExpenseSettings: () -> Unit = {},
@@ -56,77 +58,32 @@ fun SettingsScreen(
     var biometricEnabled by remember { mutableStateOf(lockManager.biometricEnabled) }
     var biometricError   by remember { mutableStateOf<String?>(null) }
 
-    // ── Staggered entrance animation ──────────────────────────────────────────
-    var contentVisible by remember { mutableStateOf(false) }
-    LaunchedEffect(Unit) { delay(60); contentVisible = true }
-
-    Column(modifier = Modifier.fillMaxSize().background(BackgroundGray)) {
-        TopBarApp(title = "Ajustes")
-
-        AnimatedVisibility(visible = contentVisible, enter = fadeIn() + slideInVertically(initialOffsetY = { it / 10 })) {
-            LazyColumn(contentPadding = PaddingValues(horizontal = 16.dp, vertical = 14.dp), verticalArrangement = Arrangement.spacedBy(18.dp)) {
-                // ── Profile Card (nuevo en JSX) ─────────────────────────────────
-                item {
-                    ProfileCard(name = "Alejandro V.", accountCount = accountState.accounts.size, onEdit = { })
-                }
-
-                // ── CUENTAS ───────────────────────────────────────────────────
-                item {
-                    SettingsSectionHeader(label = "Cuentas", actionLabel = "Añadir", onAction = { accountViewModel.openAddSheet() })
-                }
-
-                if (accountState.accounts.isEmpty()) {
-                    item { EmptyAccountsCard(onAdd = { accountViewModel.openAddSheet() }) }
-                } else {
-                    items(accountState.accounts, key = { it.id }) { account ->
-                        SettingsAccountCard(account = account, isSelected = account.id == selectedId, onSelect = { accountViewModel.selectAccount(account.id) }, onEdit = { accountViewModel.openEditSheet(account) }, onDelete = { accountViewModel.requestDelete(account) })
+    SettingsContent(
+        accounts = accountState.accounts,
+        selectedId = selectedId,
+        biometricEnabled = biometricEnabled,
+        onAddAccount = { accountViewModel.openAddSheet() },
+        onSelectAccount = { id -> accountViewModel.selectAccount(id) },
+        onEditAccount = { account -> accountViewModel.openEditSheet(account) },
+        onDeleteAccount = { account -> accountViewModel.requestDelete(account) },
+        onToggleBiometric = { enabled ->
+            if (enabled) {
+                authenticator.authenticate("Activar biometría", "Confirma tu identidad") { result ->
+                    when (result) {
+                        is BiometricResult.Success -> { lockManager.enableBiometric(); biometricEnabled = true }
+                        is BiometricResult.Error -> biometricError = result.message
+                        else -> {}
                     }
                 }
-
-                // ── CATEGORÍAS ─────────────────────────────────────────────────
-                item {
-                    SettingsGroupCard {
-                        SettingsNavigableRow(icon = "📉", label = "Categorías de gastos", onClick = onNavigateToExpenseSettings)
-                        SettingsRowDivider()
-                        SettingsNavigableRow(icon = "📈", label = "Tipos de ingresos",   onClick = onNavigateToIncomeSettings)
-                    }
-                }
-
-                // ── SEGURIDAD ─────────────────────────────────────────────────
-                item {
-                    SettingsSectionHeader(label = "Seguridad")
-                    SettingsGroupCard {
-                        SettingsBiometricRow(enabled = biometricEnabled, onToggle = { enabled ->
-                            if (enabled) {
-                                authenticator.authenticate("Activar biometría", "Confirma tu identidad") { result ->
-                                    when (result) {
-                                        is BiometricResult.Success -> { lockManager.enableBiometric(); biometricEnabled = true }
-                                        is BiometricResult.Error -> biometricError = result.message
-                                        else -> {}
-                                    }
-                                }
-                            } else {
-                                lockManager.disableBiometric()
-                                biometricEnabled = false
-                            }
-                        })
-                    }
-                }
-
-                // ── DATOS ─────────────────────────────────────────────────────
-                item {
-                    SettingsSectionHeader(label = "Datos")
-                    SettingsGroupCard {
-                        SettingsNavigableRow(icon = "🧾", label = "Informe fiscal IRPF", onClick = onNavigateToFiscalReport)
-                        SettingsRowDivider()
-                        SettingsNavigableRow(icon = "💾", label = "Copia de seguridad",   onClick = { })
-                    }
-                }
-
-                item { Spacer(Modifier.height(60.dp)) }
+            } else {
+                lockManager.disableBiometric()
+                biometricEnabled = false
             }
-        }
-    }
+        },
+        onNavigateToExpenseSettings = onNavigateToExpenseSettings,
+        onNavigateToIncomeSettings = onNavigateToIncomeSettings,
+        onNavigateToFiscalReport = onNavigateToFiscalReport
+    )
 
     // ── Sheets ───────────────────────────────────────────────────────────────
     if (accountState.showAddSheet) {
@@ -142,6 +99,100 @@ fun SettingsScreen(
             confirmButton = { TextButton(onClick = { accountViewModel.confirmDelete() }) { Text("Eliminar", color = ExpenseRed, fontWeight = FontWeight.SemiBold) } },
             dismissButton = { TextButton(onClick = { accountViewModel.cancelDelete() }) { Text("Cancelar", color = PrimaryDark) } },
             shape = RoundedCornerShape(16.dp)
+        )
+    }
+}
+
+// ─── CONTENT ────────────────────────────────────────────────────────────────────
+@Composable
+fun SettingsContent(
+    accounts: List<Account>,
+    selectedId: String?,
+    biometricEnabled: Boolean,
+    onAddAccount: () -> Unit,
+    onSelectAccount: (String) -> Unit,
+    onEditAccount: (Account) -> Unit,
+    onDeleteAccount: (Account) -> Unit,
+    onToggleBiometric: (Boolean) -> Unit,
+    onNavigateToExpenseSettings: () -> Unit,
+    onNavigateToIncomeSettings: () -> Unit,
+    onNavigateToFiscalReport: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    var contentVisible by remember { mutableStateOf(false) }
+    LaunchedEffect(Unit) { delay(60); contentVisible = true }
+
+    Column(modifier = modifier.fillMaxSize().background(BackgroundGray)) {
+        TopBarApp(title = "Ajustes")
+
+        AnimatedVisibility(visible = contentVisible, enter = fadeIn() + slideInVertically(initialOffsetY = { it / 10 })) {
+            LazyColumn(contentPadding = PaddingValues(horizontal = 16.dp, vertical = 14.dp), verticalArrangement = Arrangement.spacedBy(18.dp)) {
+                item {
+                    ProfileCard(name = "Alejandro V.", accountCount = accounts.size, onEdit = { })
+                }
+
+                item {
+                    SettingsSectionHeader(label = "Cuentas", actionLabel = "Añadir", onAction = onAddAccount)
+                }
+
+                if (accounts.isEmpty()) {
+                    item { EmptyAccountsCard(onAdd = onAddAccount) }
+                } else {
+                    items(accounts, key = { it.id }) { account ->
+                        SettingsAccountCard(account = account, isSelected = account.id == selectedId, onSelect = { onSelectAccount(account.id) }, onEdit = { onEditAccount(account) }, onDelete = { onDeleteAccount(account) })
+                    }
+                }
+
+                item {
+                    SettingsGroupCard {
+                        SettingsNavigableRow(icon = "📉", label = "Categorías de gastos", onClick = onNavigateToExpenseSettings)
+                        SettingsRowDivider()
+                        SettingsNavigableRow(icon = "📈", label = "Tipos de ingresos",   onClick = onNavigateToIncomeSettings)
+                    }
+                }
+
+                item {
+                    SettingsSectionHeader(label = "Seguridad")
+                    SettingsGroupCard {
+                        SettingsBiometricRow(enabled = biometricEnabled, onToggle = onToggleBiometric)
+                    }
+                }
+
+                item {
+                    SettingsSectionHeader(label = "Datos")
+                    SettingsGroupCard {
+                        SettingsNavigableRow(icon = "🧾", label = "Informe fiscal IRPF", onClick = onNavigateToFiscalReport)
+                        SettingsRowDivider()
+                        SettingsNavigableRow(icon = "💾", label = "Copia de seguridad",   onClick = { })
+                    }
+                }
+
+                item { Spacer(Modifier.height(60.dp)) }
+            }
+        }
+    }
+}
+
+// ─── PREVIEW ────────────────────────────────────────────────────────────────────
+@Preview
+@Composable
+fun SettingsContentPreview() {
+    TrackfolioTheme {
+        SettingsContent(
+            accounts = listOf(
+                Account(id = "1", name = "Cuenta principal", currency = "EUR", initialBalance = 1000.0, computedBalance = 1500.0, createdAt = 0L, accountType = AccountType.GENERAL),
+                Account(id = "2", name = "Efectivo", currency = "EUR", initialBalance = 0.0, computedBalance = 500.0, createdAt = 0L, accountType = AccountType.CASH)
+            ),
+            selectedId = "1",
+            biometricEnabled = false,
+            onAddAccount = {},
+            onSelectAccount = {},
+            onEditAccount = {},
+            onDeleteAccount = {},
+            onToggleBiometric = {},
+            onNavigateToExpenseSettings = {},
+            onNavigateToIncomeSettings = {},
+            onNavigateToFiscalReport = {}
         )
     }
 }
