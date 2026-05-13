@@ -68,6 +68,7 @@ fun TrackfolioNavHost() {
                     Screen.Transactions.route,
                     Screen.CategoryPicker.route,
                     Screen.FiscalReport.route,
+                    Screen.Settings.route,
                     Screen.Debts.route,
                 )
                 val showBottomBar = currentDestination?.route?.let { route ->
@@ -293,6 +294,7 @@ fun TrackfolioNavHost() {
                 }
                 composable(Screen.Settings.route) {
                     SettingsScreen(
+                        navigateBack = { navController.popBackStack() },
                         onNavigateToExpenseSettings = {
                             navController.navigate(Screen.ExpenseSettings.route) {
                                 launchSingleTop = true

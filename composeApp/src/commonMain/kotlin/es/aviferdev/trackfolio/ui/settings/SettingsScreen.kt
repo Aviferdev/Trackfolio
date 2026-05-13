@@ -45,6 +45,7 @@ import org.koin.core.qualifier.named
 // ─── WRAPPER ────────────────────────────────────────────────────────────────────
 @Composable
 fun SettingsScreen(
+    navigateBack: () -> Unit = {},
     onNavigateToExpenseSettings: () -> Unit = {},
     onNavigateToIncomeSettings: () -> Unit = {},
     accountViewModel: AccountViewModel = koinViewModel(),
@@ -64,6 +65,7 @@ fun SettingsScreen(
     val appVersion: String = koinInject(named("appVersion"))
 
     SettingsContent(
+        navigateBack = navigateBack,
         reconciliationInterval = reconciliationInterval,
         onReconciliationIntervalChange = { days ->
             reconciliationInterval = days
@@ -143,6 +145,7 @@ fun SettingsContent(
     onNavigateToExpenseSettings: () -> Unit,
     onNavigateToIncomeSettings: () -> Unit,
     appVersion: String,
+    navigateBack: () -> Unit = {},
     reconciliationInterval: Int = 30,
     onReconciliationIntervalChange: (Int) -> Unit = {},
     modifier: Modifier = Modifier
@@ -151,7 +154,7 @@ fun SettingsContent(
     LaunchedEffect(Unit) { delay(60); contentVisible = true }
 
     Column(modifier = modifier.fillMaxSize().background(BackgroundGray)) {
-        TopBarApp(title = "Ajustes")
+        TopBarApp(title = "Ajustes", navigateBack = navigateBack)
 
         AnimatedVisibility(visible = contentVisible, enter = fadeIn() + slideInVertically(initialOffsetY = { it / 10 })) {
             LazyColumn(contentPadding = PaddingValues(horizontal = 16.dp, vertical = 14.dp), verticalArrangement = Arrangement.spacedBy(18.dp)) {

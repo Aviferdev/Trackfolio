@@ -1,8 +1,10 @@
 package es.aviferdev.trackfolio.security
 
 import android.content.Context
+import android.os.Build
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_STRONG
+import androidx.biometric.BiometricManager.Authenticators.DEVICE_CREDENTIAL
 import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
@@ -25,7 +27,12 @@ actual class BiometricAuthenticator(private val context: Context) {
     private fun currentActivity(): FragmentActivity? = activityRef?.get()
 
     actual fun isAvailable(): Boolean {
-        val result = BiometricManager.from(context).canAuthenticate(BIOMETRIC_STRONG)
+        val authenticators = if (Build.VERSION.SDK_INT >= 30) {
+            BIOMETRIC_STRONG or DEVICE_CREDENTIAL
+        } else {
+            BIOMETRIC_STRONG
+        }
+        val result = BiometricManager.from(context).canAuthenticate(authenticators)
         return result == BiometricManager.BIOMETRIC_SUCCESS
     }
 
@@ -44,6 +51,20 @@ actual class BiometricAuthenticator(private val context: Context) {
             return
         }
         try {
+            val promptInfo = if (Build.VERSION.SDK_INT >= 30) {
+                BiometricPrompt.PromptInfo.Builder()
+                    .setTitle(title)
+                    .setSubtitle(subtitle)
+                    .setAllowedAuthenticators(BIOMETRIC_STRONG or DEVICE_CREDENTIAL)
+                    .build()
+            } else {
+                BiometricPrompt.PromptInfo.Builder()
+                    .setTitle(title)
+                    .setSubtitle(subtitle)
+                    .setNegativeButtonText("Cancelar")
+                    .setAllowedAuthenticators(BIOMETRIC_STRONG)
+                    .build()
+            }
             BiometricPrompt(
                 activity,
                 ContextCompat.getMainExecutor(context),
@@ -67,14 +88,7 @@ actual class BiometricAuthenticator(private val context: Context) {
                         // No emitimos resultado aquí — el sistema muestra el error automáticamente
                     }
                 }
-            ).authenticate(
-                BiometricPrompt.PromptInfo.Builder()
-                    .setTitle(title)
-                    .setSubtitle(subtitle)
-                    .setNegativeButtonText("Cancelar")
-                    .setAllowedAuthenticators(BIOMETRIC_STRONG)
-                    .build()
-            )
+            ).authenticate(promptInfo)
         } catch (e: Exception) {
             onResult(BiometricResult.Error("Error al iniciar autenticación: ${e.localizedMessage ?: e.message}"))
         }

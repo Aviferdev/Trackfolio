@@ -3,8 +3,10 @@ package es.aviferdev.trackfolio.ui.common.navigation
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.HorizontalDivider
@@ -39,13 +41,15 @@ fun TopBarApp(
                 .padding(top = 8.dp, bottom = 8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            navigateBack?.let {
+            if (navigateBack != null) {
                 IconButtomApp(
-                    clickButton = it,
+                    clickButton = navigateBack,
                     icon = Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = "Ir atras"
                 )
                 SpacerHorizontalApp(8.dp)
+            } else {
+                Spacer(Modifier.width(56.dp))
             }
             Column(modifier = Modifier.weight(1f)) {
                 Text(
