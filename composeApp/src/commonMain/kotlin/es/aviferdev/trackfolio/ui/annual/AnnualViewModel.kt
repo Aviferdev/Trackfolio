@@ -39,7 +39,22 @@ data class AnnualUiState(
     // Nuevos datos para gráficos
     val expensesByCategory: List<DonutSlice> = emptyList(),
     val incomeByType: List<DonutSlice>       = emptyList(),
-    val monthlyInvestments: List<MonthlyInvestment> = emptyList()
+    val monthlyInvestments: List<MonthlyInvestment> = emptyList(),
+    // Comparativas interanuales
+    val categoryComparisons: List<CategoryExpenseComparison> = emptyList(),
+    val incomeComparisons: List<CategoryExpenseComparison> = emptyList()
+)
+
+/**
+ * Contenedor intermedio para los 5 flows principales del combine.
+ * Necesario porque combine() solo soporta hasta 5 parámetros.
+ */
+private data class MainData(
+    val summary: AnnualSummary?,
+    val breakdown: List<MonthlyTotals>,
+    val expenses: List<CategoryBreakdown>,
+    val incomes: List<IncomeTypeBreakdown>,
+    val investments: List<MonthlyInvestment>
 )
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -84,17 +99,33 @@ class AnnualViewModel(
             if (accountId == null) {
                 flowOf(AnnualUiState(year = year, isLoading = false, canGoBack = canGoBack))
             } else {
-                combine(
+                val prevYear = (year.toInt() - 1).toString()
+                val prevExpensesFlow = if (canGoBack) getExpensesByCategory(accountId, prevYear)
+                                       else flowOf(emptyList())
+                val prevIncomeFlow = if (canGoBack) getIncomeByType(accountId, prevYear)
+                                     else flowOf(emptyList())
+
+                // Combinamos los 5 flows principales en uno intermedio,
+                // porque combine() solo soporta hasta 5 flows.
+                val mainFlow = combine(
                     getAnnualSummary(accountId, year),
                     getMonthlyBreakdown(accountId, year),
                     getExpensesByCategory(accountId, year),
                     getIncomeByType(accountId, year),
                     getMonthlyInvestments(accountId, year)
                 ) { summary, breakdown, expenses, income, investments ->
-                    val totalExpense = summary?.totalExpense ?: 0.0
-                    val totalIncome = summary?.totalIncome ?: 0.0
+                    MainData(summary, breakdown, expenses, income, investments)
+                }
 
-                    val expenseSlices = expenses.mapIndexed { idx, item ->
+                combine(
+                    mainFlow,
+                    prevExpensesFlow,
+                    prevIncomeFlow
+                ) { main, prevExpenses, prevIncomes ->
+                    val totalExpense = main.summary?.totalExpense ?: 0.0
+                    val totalIncome = main.summary?.totalIncome ?: 0.0
+
+                    val expenseSlices = main.expenses.mapIndexed { idx, item ->
                         DonutSlice(
                             name   = item.categoryName,
                             icon   = "💰",
@@ -104,7 +135,7 @@ class AnnualViewModel(
                         )
                     }
 
-                    val incomeSlices = income.mapIndexed { idx, item ->
+                    val incomeSlices = main.incomes.mapIndexed { idx, item ->
                         DonutSlice(
                             name   = item.label,
                             icon   = item.emoji,
@@ -114,15 +145,49 @@ class AnnualViewModel(
                         )
                     }
 
+                    // Construir comparativas de gastos (año actual vs anterior)
+                    val prevExpenseMap = prevExpenses.associateBy { it.categoryName }
+                    val categoryComparisons = main.expenses.mapIndexed { idx, curr ->
+                        val prev = prevExpenseMap[curr.categoryName]
+                        CategoryExpenseComparison(
+                            name           = curr.categoryName,
+                            icon           = "💰",
+                            currentAmount  = curr.amount,
+                            currentPercent = if (totalExpense > 0) (curr.amount / totalExpense) * 100 else 0.0,
+                            previousAmount = prev?.amount,
+                            changePercent  = if (prev != null && prev.amount > 0)
+                                ((curr.amount - prev.amount) / prev.amount) * 100 else null,
+                            color          = CategoryPalette[idx % CategoryPalette.size]
+                        )
+                    }.sortedByDescending { it.currentAmount }
+
+                    // Construir comparativas de ingresos (año actual vs anterior)
+                    val prevIncomeMap = prevIncomes.associateBy { it.incomeType }
+                    val incomeComparisons = main.incomes.mapIndexed { idx, curr ->
+                        val prev = prevIncomeMap[curr.incomeType]
+                        CategoryExpenseComparison(
+                            name           = curr.label,
+                            icon           = curr.emoji,
+                            currentAmount  = curr.amount,
+                            currentPercent = if (totalIncome > 0) (curr.amount / totalIncome) * 100 else 0.0,
+                            previousAmount = prev?.amount,
+                            changePercent  = if (prev != null && prev.amount > 0)
+                                ((curr.amount - prev.amount) / prev.amount) * 100 else null,
+                            color          = CategoryPalette[idx % CategoryPalette.size]
+                        )
+                    }.sortedByDescending { it.currentAmount }
+
                     AnnualUiState(
-                        summary            = summary,
-                        monthlyBreakdown   = breakdown,
+                        summary            = main.summary,
+                        monthlyBreakdown   = main.breakdown,
                         year               = year,
                         isLoading          = false,
                         canGoBack          = canGoBack,
                         expensesByCategory = expenseSlices,
                         incomeByType       = incomeSlices,
-                        monthlyInvestments = investments
+                        monthlyInvestments = main.investments,
+                        categoryComparisons = categoryComparisons,
+                        incomeComparisons   = incomeComparisons
                     )
                 }
             }

@@ -70,6 +70,7 @@ fun TrackfolioNavHost() {
                     Screen.FiscalReport.route,
                     Screen.Settings.route,
                     Screen.Debts.route,
+                    Screen.Charts.route,
                 )
                 val showBottomBar = currentDestination?.route?.let { route ->
                     hideRoutes.none { route.startsWith(it.substringBefore("{")) }
@@ -341,7 +342,9 @@ fun TrackfolioNavHost() {
                     }
                 }
                 composable(Screen.Charts.route) {
-                    AnnualSummaryScreen()
+                    AnnualSummaryScreen(
+                        navigateBack = { navController.popBackStack() }
+                    )
                 }
                 composable(Screen.PortfolioSettings.route) {
                     PortfolioSettingsScreen(

@@ -22,9 +22,6 @@ import es.aviferdev.trackfolio.domain.model.MonthlyTotals
 import es.aviferdev.trackfolio.ui.common.ProgressBar
 import es.aviferdev.trackfolio.ui.common.navigation.TimeStepperHeader
 import es.aviferdev.trackfolio.ui.theme.*
-import kotlinx.datetime.Clock
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.math.abs
@@ -39,6 +36,7 @@ enum class AnnualTab {
 
 @Composable
 fun AnnualSummaryScreen(
+    navigateBack: () -> Unit = {},
     viewModel: AnnualViewModel = koinViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -55,7 +53,8 @@ fun AnnualSummaryScreen(
             currentValue = uiState.year,
             canGoBack = uiState.canGoBack,
             onPrevious = { viewModel.previousYear() },
-            onNext = { viewModel.nextYear() }
+            onNext = { viewModel.nextYear() },
+            navigateBack = navigateBack
         )
 
         // Tabs
@@ -71,32 +70,30 @@ fun AnnualSummaryScreen(
         } else {
             when (selectedTab) {
                 AnnualTab.RESUMEN -> {
-                    uiState.summary?.let { summary ->
-                        AnnualContent(
-                            summary        = summary,
+                    if (uiState.summary != null) {
+                        ResumenTab(
+                            summary        = uiState.summary!!,
                             breakdown      = uiState.monthlyBreakdown,
                             balancesHidden = balancesHidden
                         )
-                    } ?: EmptyYearState()
+                    } else {
+                        EmptyYearState()
+                    }
                 }
                 AnnualTab.GASTOS -> {
-                    DonutChartCard(
-                        title          = "Gastos por categoría",
-                        subtitle       = "Año ${uiState.year}",
-                        slices         = uiState.expensesByCategory,
-                        totalAmount    = uiState.summary?.totalExpense ?: 0.0,
-                                                balancesHidden = balancesHidden,
-                        modifier       = Modifier.padding(horizontal = 20.dp, vertical = 16.dp)
+                    GastosTab(
+                        breakdown      = uiState.monthlyBreakdown,
+                        comparisons    = uiState.categoryComparisons,
+                        year           = uiState.year,
+                        balancesHidden = balancesHidden
                     )
                 }
                 AnnualTab.INGRESOS -> {
-                    DonutChartCard(
-                        title          = "Ingresos por tipo",
-                        subtitle       = "Año ${uiState.year}",
-                        slices         = uiState.incomeByType,
-                        totalAmount    = uiState.summary?.totalIncome ?: 0.0,
-                                                balancesHidden = balancesHidden,
-                        modifier       = Modifier.padding(horizontal = 20.dp, vertical = 16.dp)
+                    IngresosTab(
+                        breakdown      = uiState.monthlyBreakdown,
+                        comparisons    = uiState.incomeComparisons,
+                        year           = uiState.year,
+                        balancesHidden = balancesHidden
                     )
                 }
                 AnnualTab.INVERSIONES -> {
@@ -111,7 +108,7 @@ fun AnnualSummaryScreen(
                         InvestmentBarChart(
                             investments    = uiState.monthlyInvestments,
                             year           = uiState.year,
-                                                        balancesHidden = balancesHidden
+                            balancesHidden = balancesHidden
                         )
                     }
                 }
@@ -120,6 +117,94 @@ fun AnnualSummaryScreen(
     }
 }
 
+// ─── Pestaña RESUMEN ────────────────────────────────────────────────────────────
+@Composable
+private fun ResumenTab(
+    summary: AnnualSummary,
+    breakdown: List<MonthlyTotals>,
+    balancesHidden: Boolean
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .padding(horizontal = 16.dp)
+            .padding(top = 16.dp, bottom = 40.dp),
+        verticalArrangement = Arrangement.spacedBy(14.dp)
+    ) {
+        YearTotalsCard(summary = summary, balancesHidden = balancesHidden)
+        MonthlyBarChart(
+            breakdown    = breakdown,
+            year         = summary.year,
+            showIncome   = true,
+            showExpense  = true
+        )
+    }
+}
+
+// ─── Pestaña GASTOS ─────────────────────────────────────────────────────────────
+@Composable
+private fun GastosTab(
+    breakdown: List<MonthlyTotals>,
+    comparisons: List<CategoryExpenseComparison>,
+    year: String,
+    balancesHidden: Boolean
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .padding(horizontal = 16.dp)
+            .padding(top = 16.dp, bottom = 40.dp),
+        verticalArrangement = Arrangement.spacedBy(14.dp)
+    ) {
+        MonthlyBarChart(
+            breakdown    = breakdown,
+            year         = year,
+            showIncome   = false,
+            showExpense  = true
+        )
+        CategoryExpenseList(
+            title          = "Categorías de gasto",
+            comparisons    = comparisons,
+            isExpense      = true,
+            balancesHidden = balancesHidden
+        )
+    }
+}
+
+// ─── Pestaña INGRESOS ───────────────────────────────────────────────────────────
+@Composable
+private fun IngresosTab(
+    breakdown: List<MonthlyTotals>,
+    comparisons: List<CategoryExpenseComparison>,
+    year: String,
+    balancesHidden: Boolean
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .padding(horizontal = 16.dp)
+            .padding(top = 16.dp, bottom = 40.dp),
+        verticalArrangement = Arrangement.spacedBy(14.dp)
+    ) {
+        MonthlyBarChart(
+            breakdown    = breakdown,
+            year         = year,
+            showIncome   = true,
+            showExpense  = false
+        )
+        CategoryExpenseList(
+            title          = "Tipos de ingreso",
+            comparisons    = comparisons,
+            isExpense      = false,
+            balancesHidden = balancesHidden
+        )
+    }
+}
+
+// ─── Tabs ───────────────────────────────────────────────────────────────────────
 @Composable
 private fun AnnualTabs(
     selectedTab: AnnualTab,
@@ -168,89 +253,7 @@ private fun AnnualTab.displayName(): String = when (this) {
     AnnualTab.INVERSIONES -> "Inversiones"
 }
 
-@Composable
-private fun AnnualHeader(year: String, canGoBack: Boolean, onPrevious: () -> Unit, onNext: () -> Unit) {
-    val nowYear       = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).year
-    val isCurrentYear = year.toIntOrNull() == nowYear
-
-    Surface(color = SurfaceWhite, shadowElevation = 1.dp) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .windowInsetsPadding(WindowInsets.statusBars)
-                .padding(horizontal = 20.dp)
-                .padding(top = 16.dp, bottom = 16.dp)
-        ) {
-            Text("Resumen anual", fontSize = 20.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary)
-            Spacer(Modifier.height(16.dp))
-            Row(
-                modifier              = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment     = Alignment.CenterVertically
-            ) {
-                IconButton(
-                    onClick  = onPrevious,
-                    enabled  = canGoBack,
-                    modifier = Modifier
-                        .size(36.dp)
-                        .clip(CircleShape)
-                        .background(if (canGoBack) BackgroundGray else Color.Transparent)
-                ) {
-                    Text(
-                        "‹",
-                        fontSize   = 22.sp,
-                        color      = if (canGoBack) TextPrimary else TextSecondary.copy(alpha = 0.3f),
-                        fontWeight = FontWeight.Light
-                    )
-                }
-                Text(year, fontSize = 20.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary)
-                IconButton(
-                    onClick  = onNext,
-                    enabled  = !isCurrentYear,
-                    modifier = Modifier
-                        .size(36.dp)
-                        .clip(CircleShape)
-                        .background(if (!isCurrentYear) BackgroundGray else Color.Transparent)
-                ) {
-                    Text(
-                        "›",
-                        fontSize   = 22.sp,
-                        color      = if (!isCurrentYear) TextPrimary else TextSecondary.copy(alpha = 0.3f),
-                        fontWeight = FontWeight.Light
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun AnnualContent(summary: AnnualSummary, breakdown: List<MonthlyTotals>, balancesHidden: Boolean) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(horizontal = 16.dp)
-            .padding(top = 16.dp, bottom = 40.dp),
-        verticalArrangement = Arrangement.spacedBy(14.dp)
-    ) {
-        // Year totals - 3-column grid (matching JSX design)
-        YearTotalsCard(summary = summary, balancesHidden = balancesHidden)
-
-        // ── Gráfico de barras mensual ──────────────────────────────────────
-        MonthlyBarChart(breakdown = breakdown, year = summary.year)
-
-        // ── Top categorías de gastos ───────────────────────────────────────
-        TopCategoriesCard(breakdown = breakdown, balancesHidden = balancesHidden)
-
-        // ── Comparativa año anterior ───────────────────────────────────────
-        if (summary.previousYearIncome > 0 || summary.previousYearExpense > 0) {
-            PreviousYearCard(summary = summary, balancesHidden = balancesHidden)
-        }
-    }
-}
-
-// ─── Year totals card (3-column grid) ─────────────────────────────────────────
+// ─── Year totals card (3-column grid) ───────────────────────────────────────────
 @Composable
 private fun YearTotalsCard(summary: AnnualSummary, balancesHidden: Boolean) {
     val savings = summary.totalIncome - summary.totalExpense
@@ -325,53 +328,92 @@ private fun YearTotalsCard(summary: AnnualSummary, balancesHidden: Boolean) {
     }
 }
 
-// ─── Top categories card ───────────────────────────────────────────────────────
+// ─── Lista de categorías con comparativa interanual ─────────────────────────────
 @Composable
-private fun TopCategoriesCard(breakdown: List<MonthlyTotals>, balancesHidden: Boolean) {
-    // Simplified: show placeholder data since expensesByCategory may not exist
-    val sampleCategories = listOf(
-        "Hogar" to 2550.0,
-        "Alimentación" to 1348.0,
-        "Transporte" to 850.0,
-        "Ocio" to 540.0,
-        "Otros" to 405.0
-    )
-    val totalExpense = sampleCategories.sumOf { it.second }
+private fun CategoryExpenseList(
+    title: String,
+    comparisons: List<CategoryExpenseComparison>,
+    isExpense: Boolean,
+    balancesHidden: Boolean
+) {
+    if (comparisons.isEmpty()) {
+        Card(
+            modifier  = Modifier.fillMaxWidth(),
+            shape     = RoundedCornerShape(14.dp),
+            colors    = CardDefaults.cardColors(containerColor = SurfaceWhite),
+            elevation = CardDefaults.cardElevation(0.dp),
+            border    = CardDefaults.outlinedCardBorder()
+        ) {
+            Column(
+                modifier = Modifier.fillMaxWidth().padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text("📊", fontSize = 32.sp)
+                Spacer(Modifier.height(8.dp))
+                Text(
+                    "Sin datos",
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = TextPrimary
+                )
+                Spacer(Modifier.height(4.dp))
+                Text(
+                    "No hay movimientos registrados",
+                    fontSize = 12.sp,
+                    color = TextSecondary
+                )
+            }
+        }
+        return
+    }
 
     Card(
         modifier  = Modifier.fillMaxWidth(),
-        shape     = RoundedCornerShape(12.dp),
+        shape     = RoundedCornerShape(14.dp),
         colors    = CardDefaults.cardColors(containerColor = SurfaceWhite),
-        elevation = CardDefaults.cardElevation(0.dp)
+        elevation = CardDefaults.cardElevation(0.dp),
+        border    = CardDefaults.outlinedCardBorder()
     ) {
         Column(modifier = Modifier.padding(14.dp)) {
             Text(
-                "Top categorías de gastos",
-                fontSize = 12.sp,
+                title,
+                fontSize = 14.sp,
                 fontWeight = FontWeight.SemiBold,
                 color = TextPrimary
             )
             Spacer(Modifier.height(14.dp))
 
-            val colors = listOf(WarnAmber, PrimaryDark, SecondaryTeal, ExpenseRed, BorderGray)
-            sampleCategories.forEachIndexed { index, (category, amount) ->
-                val pct = if (totalExpense > 0) (amount / totalExpense) * 100 else 0.0
+            comparisons.forEach { comp ->
                 Column(modifier = Modifier.padding(bottom = 10.dp)) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text(category, fontSize = 12.sp, color = TextSecondary)
+                        // Nombre
                         Text(
-                            "${maskAmount(formatAmount(amount), balancesHidden)} €",
+                            comp.name,
+                            fontSize = 12.sp,
+                            color = TextSecondary,
+                            modifier = Modifier.weight(1f)
+                        )
+                        // Importe
+                        Text(
+                            "${maskAmount(formatAmount(comp.currentAmount), balancesHidden)} €",
                             fontSize = 11.sp,
-                            color = TextTertiary
+                            color = TextTertiary,
+                            modifier = Modifier.padding(end = 6.dp)
+                        )
+                        // Badge de variación
+                        VariationBadge(
+                            changePercent = comp.changePercent,
+                            previousAmount = comp.previousAmount,
+                            isExpense = isExpense
                         )
                     }
                     Spacer(Modifier.height(5.dp))
                     ProgressBar(
-                        progress = (pct / 100.0).toFloat(),
-                        color = colors.getOrElse(index) { BorderGray }
+                        progress = (comp.currentPercent / 100.0).toFloat(),
+                        color = comp.color
                     )
                 }
             }
@@ -379,14 +421,58 @@ private fun TopCategoriesCard(breakdown: List<MonthlyTotals>, balancesHidden: Bo
     }
 }
 
-// ─── Gráfico de barras por mes ────────────────────────────────────────────────
 @Composable
-private fun MonthlyBarChart(breakdown: List<MonthlyTotals>, year: String) {
+private fun VariationBadge(
+    changePercent: Double?,
+    previousAmount: Double?,
+    isExpense: Boolean
+) {
+    if (changePercent != null) {
+        val isPositive = changePercent >= 0
+        // Para gastos: ▲ aumento es malo (rojo), ▼ disminución es bueno (verde)
+        // Para ingresos: ▲ aumento es bueno (verde), ▼ disminución es malo (rojo)
+        val isGood = if (isExpense) !isPositive else isPositive
+        val varColor = if (isGood) IncomeGreen else ExpenseRed
+        val arrow = if (isPositive) "▲" else "▼"
+        val sign = if (isPositive && changePercent > 0) "+" else ""
+
+        Text(
+            "$arrow $sign${formatPercent(changePercent)}%",
+            fontSize = 11.sp,
+            fontWeight = FontWeight.Medium,
+            color = varColor
+        )
+    } else if (previousAmount == null) {
+        // Categoría nueva (no existía el año anterior)
+        Surface(
+            shape = RoundedCornerShape(4.dp),
+            color = BackgroundGray
+        ) {
+            Text(
+                " Nuevo ",
+                fontSize = 9.sp,
+                fontWeight = FontWeight.Medium,
+                color = TextTertiary
+            )
+        }
+    }
+}
+
+// ─── Gráfico de barras por mes ─────────────────────────────────────────────────
+@Composable
+private fun MonthlyBarChart(
+    breakdown: List<MonthlyTotals>,
+    year: String,
+    showIncome: Boolean = true,
+    showExpense: Boolean = true
+) {
     // Construimos un mapa completo para los 12 meses (rellena con 0 los que no tienen datos)
     val dataMap = breakdown.associateBy { it.month.trimStart('0').ifEmpty { "0" }.toInt() }
     val maxValue = (1..12).maxOf { m ->
         val row = dataMap[m]
-        maxOf(row?.totalIncome ?: 0.0, row?.totalExpense ?: 0.0)
+        val incomeVal = if (showIncome) row?.totalIncome ?: 0.0 else 0.0
+        val expenseVal = if (showExpense) row?.totalExpense ?: 0.0 else 0.0
+        maxOf(incomeVal, expenseVal)
     }.coerceAtLeast(1.0)
 
     Card(
@@ -407,8 +493,12 @@ private fun MonthlyBarChart(breakdown: List<MonthlyTotals>, year: String) {
 
             // Leyenda
             Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                LegendItem(color = IncomeGreen, label = "Ingresos")
-                LegendItem(color = ExpenseRed,  label = "Gastos")
+                if (showIncome) {
+                    LegendItem(color = IncomeGreen, label = "Ingresos")
+                }
+                if (showExpense) {
+                    LegendItem(color = ExpenseRed, label = "Gastos")
+                }
             }
 
             Spacer(Modifier.height(16.dp))
@@ -424,11 +514,13 @@ private fun MonthlyBarChart(breakdown: List<MonthlyTotals>, year: String) {
                     val income  = row?.totalIncome  ?: 0.0
                     val expense = row?.totalExpense ?: 0.0
                     MonthBarGroup(
-                        monthLabel  = MONTH_LABELS[monthNum - 1],
-                        income      = income,
-                        expense     = expense,
-                        maxValue    = maxValue,
-                        modifier    = Modifier.weight(1f)
+                        monthLabel   = MONTH_LABELS[monthNum - 1],
+                        income       = income,
+                        expense      = expense,
+                        maxValue     = maxValue,
+                        showIncome   = showIncome,
+                        showExpense  = showExpense,
+                        modifier     = Modifier.weight(1f)
                     )
                 }
             }
@@ -442,10 +534,12 @@ private fun MonthBarGroup(
     income: Double,
     expense: Double,
     maxValue: Double,
+    showIncome: Boolean = true,
+    showExpense: Boolean = true,
     modifier: Modifier = Modifier
 ) {
-    val incomeRatio  = (income  / maxValue).toFloat().coerceIn(0f, 1f)
-    val expenseRatio = (expense / maxValue).toFloat().coerceIn(0f, 1f)
+    val incomeRatio  = if (showIncome) (income / maxValue).toFloat().coerceIn(0f, 1f) else 0f
+    val expenseRatio = if (showExpense) (expense / maxValue).toFloat().coerceIn(0f, 1f) else 0f
     val maxBarHeight = 130.dp
 
     Column(
@@ -460,21 +554,25 @@ private fun MonthBarGroup(
             horizontalArrangement = Arrangement.spacedBy(1.dp)
         ) {
             // Barra ingreso
-            Box(
-                modifier = Modifier
-                    .width(4.dp)
-                    .fillMaxHeight(incomeRatio)
-                    .clip(RoundedCornerShape(topStart = 2.dp, topEnd = 2.dp))
-                    .background(IncomeGreen)
-            )
+            if (showIncome) {
+                Box(
+                    modifier = Modifier
+                        .width(4.dp)
+                        .fillMaxHeight(incomeRatio)
+                        .clip(RoundedCornerShape(topStart = 2.dp, topEnd = 2.dp))
+                        .background(IncomeGreen)
+                )
+            }
             // Barra gasto
-            Box(
-                modifier = Modifier
-                    .width(4.dp)
-                    .fillMaxHeight(expenseRatio)
-                    .clip(RoundedCornerShape(topStart = 2.dp, topEnd = 2.dp))
-                    .background(ExpenseRed)
-            )
+            if (showExpense) {
+                Box(
+                    modifier = Modifier
+                        .width(4.dp)
+                        .fillMaxHeight(expenseRatio)
+                        .clip(RoundedCornerShape(topStart = 2.dp, topEnd = 2.dp))
+                        .background(ExpenseRed)
+                )
+            }
         }
         Spacer(Modifier.height(4.dp))
         Text(
@@ -500,131 +598,7 @@ private fun LegendItem(color: Color, label: String) {
     }
 }
 
-// ─── Tarjetas existentes ──────────────────────────────────────────────────────
-@Composable
-private fun BalanceHeroCard(summary: AnnualSummary, balancesHidden: Boolean) {
-    val balance    = summary.balance
-    val isPositive = balance >= 0
-
-    Card(
-        modifier  = Modifier.fillMaxWidth(),
-        shape     = RoundedCornerShape(16.dp),
-        colors    = CardDefaults.cardColors(containerColor = PrimaryDark),
-        elevation = CardDefaults.cardElevation(4.dp)
-    ) {
-        Column(
-            modifier            = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 20.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text("Balance ${summary.year}", fontSize = 13.sp, color = Color.White.copy(alpha = 0.65f))
-            Spacer(Modifier.height(8.dp))
-            Text(
-                text          = "${if (isPositive) "+" else "−"} ${maskAmount(formatAmount(abs(balance)), balancesHidden)} €",
-                fontSize      = 36.sp,
-                fontWeight    = FontWeight.Bold,
-                color         = if (isPositive) Color(0xFF66BB6A) else Color(0xFFEF9A9A),
-                letterSpacing = (-0.5).sp
-            )
-            Spacer(Modifier.height(4.dp))
-            Text(
-                if (isPositive) "Año positivo" else "Año en negativo",
-                fontSize = 13.sp,
-                color    = Color.White.copy(alpha = 0.65f)
-            )
-        }
-    }
-}
-
-@Composable
-private fun AnnualMetricCard(
-    label: String,
-    amount: Double,
-    color: Color,
-    variationPercent: Double,
-    balancesHidden: Boolean,
-    modifier: Modifier = Modifier
-) {
-    val hasPrevious        = variationPercent != 0.0
-    val isPositiveVariation = variationPercent >= 0
-
-    Card(
-        modifier  = modifier,
-        shape     = RoundedCornerShape(14.dp),
-        colors    = CardDefaults.cardColors(containerColor = SurfaceWhite),
-        elevation = CardDefaults.cardElevation(0.dp),
-        border    = CardDefaults.outlinedCardBorder()
-    ) {
-        Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
-            Text(label, fontSize = 12.sp, color = TextSecondary)
-            Spacer(Modifier.height(8.dp))
-            Text("${maskAmount(formatAmount(amount), balancesHidden)} €", fontSize = 18.sp, fontWeight = FontWeight.SemiBold, color = color)
-            if (hasPrevious) {
-                Spacer(Modifier.height(6.dp))
-                val sign     = if (isPositiveVariation) "+" else ""
-                val varColor = if (isPositiveVariation) IncomeGreen else ExpenseRed
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(if (isPositiveVariation) "▲" else "▼", fontSize = 10.sp, color = varColor)
-                    Spacer(Modifier.width(3.dp))
-                    Text(
-                        "$sign${formatPercent(variationPercent)}% vs año anterior",
-                        fontSize = 11.sp,
-                        color    = varColor
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun PreviousYearCard(summary: AnnualSummary, balancesHidden: Boolean) {
-    Card(
-        modifier  = Modifier.fillMaxWidth(),
-        shape     = RoundedCornerShape(14.dp),
-        colors    = CardDefaults.cardColors(containerColor = SurfaceWhite),
-        elevation = CardDefaults.cardElevation(0.dp),
-        border    = CardDefaults.outlinedCardBorder()
-    ) {
-        Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
-            Text(
-                "Comparativa con ${summary.year.toInt() - 1}",
-                fontSize   = 14.sp,
-                fontWeight = FontWeight.SemiBold,
-                color      = TextPrimary
-            )
-            Spacer(Modifier.height(14.dp))
-            ComparisonRow("Ingresos", summary.totalIncome,  summary.previousYearIncome,  IncomeGreen, balancesHidden)
-            Spacer(Modifier.height(10.dp))
-            HorizontalDivider(color = BorderGray, thickness = 0.5.dp)
-            Spacer(Modifier.height(10.dp))
-            ComparisonRow("Gastos",   summary.totalExpense, summary.previousYearExpense, ExpenseRed, balancesHidden)
-            Spacer(Modifier.height(10.dp))
-            HorizontalDivider(color = BorderGray, thickness = 0.5.dp)
-            Spacer(Modifier.height(10.dp))
-            ComparisonRow(
-                label    = "Balance",
-                current  = summary.balance,
-                previous = summary.previousYearIncome - summary.previousYearExpense,
-                color    = if (summary.balance >= 0) IncomeGreen else ExpenseRed,
-                balancesHidden = balancesHidden
-            )
-        }
-    }
-}
-
-@Composable
-private fun ComparisonRow(label: String, current: Double, previous: Double, color: Color, balancesHidden: Boolean) {
-    Row(
-        modifier              = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment     = Alignment.CenterVertically
-    ) {
-        Text(label,                  fontSize = 13.sp, color = TextSecondary, modifier = Modifier.weight(1f))
-        Text("${maskAmount(formatAmount(previous), balancesHidden)} €", fontSize = 13.sp, color = TextSecondary, textAlign = TextAlign.End, modifier = Modifier.weight(1f))
-        Text("${maskAmount(formatAmount(current), balancesHidden)} €",  fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = color, textAlign = TextAlign.End, modifier = Modifier.weight(1f))
-    }
-}
-
+// ─── Empty state ────────────────────────────────────────────────────────────────
 @Composable
 private fun EmptyYearState() {
     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -638,6 +612,7 @@ private fun EmptyYearState() {
     }
 }
 
+// ─── Formateo de utilidad ───────────────────────────────────────────────────────
 private fun formatAmount(amount: Double): String {
     val abs     = abs(amount)
     val rounded = (abs * 100).toLong()
@@ -658,30 +633,5 @@ private fun formatPercent(value: Double): String {
     else {
         val rounded = (abs * 10).toLong()
         "${rounded / 10},${rounded % 10}"
-    }
-}
-
-@Preview
-@Composable
-private fun AnnualContentPreview() {
-    val fakeSummary = AnnualSummary(
-        year = "2025",
-        totalIncome = 45000.0,
-        totalExpense = 32000.0,
-        previousYearIncome = 42000.0,
-        previousYearExpense = 30000.0
-    )
-    val fakeBreakdown = listOf(
-        MonthlyTotals(year = "2025", month = "1", totalIncome = 3750.0, totalExpense = 2800.0),
-        MonthlyTotals(year = "2025", month = "2", totalIncome = 3750.0, totalExpense = 2600.0),
-        MonthlyTotals(year = "2025", month = "3", totalIncome = 3800.0, totalExpense = 2700.0)
-    )
-
-    TrackfolioTheme {
-        AnnualContent(
-            summary = fakeSummary,
-            breakdown = fakeBreakdown,
-            balancesHidden = false
-        )
     }
 }
