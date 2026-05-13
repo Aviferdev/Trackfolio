@@ -194,12 +194,11 @@ fun HomeScreen(
             }
         }
 
-        // FAB — estilo Revolut: cuadrado redondeado, índigo
         FloatingActionButton(
             onClick = { showAddTransaction = true },
             modifier = Modifier
                 .align(Alignment.BottomEnd)
-                .padding(end = 20.dp, bottom = 112.dp)
+                .padding(end = 20.dp, bottom = 136.dp)
                 .size(52.dp),
             shape = RoundedCornerShape(16.dp),
             containerColor = PrimaryDark,

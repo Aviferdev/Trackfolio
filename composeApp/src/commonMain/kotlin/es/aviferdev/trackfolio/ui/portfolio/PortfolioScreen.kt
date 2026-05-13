@@ -450,7 +450,7 @@ fun PortfolioContent(
         Box(
             modifier = Modifier
                 .align(Alignment.BottomEnd)
-                .padding(end = 20.dp, bottom = 28.dp)
+                .padding(end = 20.dp, bottom = 136.dp)
         ) {
             FloatingActionButton(
                 onClick = { fabMenuOpen = true },
