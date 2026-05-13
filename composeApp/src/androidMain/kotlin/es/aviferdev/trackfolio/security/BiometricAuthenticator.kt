@@ -34,9 +34,18 @@ actual class BiometricAuthenticator(private val context: Context) {
         subtitle: String,
         onResult: (BiometricResult) -> Unit
     ) {
-        currentActivity()?.let {
+        val activity = currentActivity()
+        if (activity == null) {
+            onResult(BiometricResult.Error("La aplicación no está en primer plano"))
+            return
+        }
+        if (activity.isFinishing || activity.isDestroyed) {
+            onResult(BiometricResult.Error("La actividad no está disponible"))
+            return
+        }
+        try {
             BiometricPrompt(
-                it,
+                activity,
                 ContextCompat.getMainExecutor(context),
                 object : BiometricPrompt.AuthenticationCallback() {
                     override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
@@ -65,8 +74,8 @@ actual class BiometricAuthenticator(private val context: Context) {
                     .setAllowedAuthenticators(BIOMETRIC_STRONG or DEVICE_CREDENTIAL)
                     .build()
             )
-        } ?: run{
-            onResult(BiometricResult.Error("La aplicación no está en primer plano"))
+        } catch (e: Exception) {
+            onResult(BiometricResult.Error("Error al iniciar autenticación: ${e.localizedMessage ?: e.message}"))
         }
     }
 }

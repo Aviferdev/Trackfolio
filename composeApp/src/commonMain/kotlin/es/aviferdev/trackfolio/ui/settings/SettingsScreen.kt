@@ -77,11 +77,15 @@ fun SettingsScreen(
         onDeleteAccount = { account -> accountViewModel.requestDelete(account) },
         onToggleBiometric = { enabled ->
             if (enabled) {
-                authenticator.authenticate("Activar biometría", "Confirma tu identidad") { result ->
-                    when (result) {
-                        is BiometricResult.Success -> { lockManager.enableBiometric(); biometricEnabled = true }
-                        is BiometricResult.Error -> biometricError = result.message
-                        else -> {}
+                if (!authenticator.isAvailable()) {
+                    biometricError = "No hay biometría disponible. Configura una huella o PIN en ajustes del dispositivo."
+                } else {
+                    authenticator.authenticate("Activar biometría", "Confirma tu identidad") { result ->
+                        when (result) {
+                            is BiometricResult.Success -> { lockManager.enableBiometric(); biometricEnabled = true }
+                            is BiometricResult.Error -> biometricError = result.message
+                            else -> {}
+                        }
                     }
                 }
             } else {
@@ -108,6 +112,18 @@ fun SettingsScreen(
             confirmButton = { TextButton(onClick = { accountViewModel.confirmDelete() }) { Text("Eliminar", color = ExpenseRed, fontWeight = FontWeight.SemiBold) } },
             dismissButton = { TextButton(onClick = { accountViewModel.cancelDelete() }) { Text("Cancelar", color = PrimaryDark) } },
             shape = RoundedCornerShape(16.dp)
+        )
+    }
+
+    // Mostrar error de biometría si existe
+    biometricError?.let { msg ->
+        AlertDialog(
+            onDismissRequest = { biometricError = null },
+            containerColor   = SurfaceWhite,
+            title            = { Text("Biometría", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = TextPrimary) },
+            text             = { Text(msg, fontSize = 13.sp, color = TextSecondary) },
+            confirmButton    = { TextButton(onClick = { biometricError = null }) { Text("Aceptar", color = PrimaryDark, fontWeight = FontWeight.SemiBold) } },
+            shape            = RoundedCornerShape(16.dp)
         )
     }
 }
