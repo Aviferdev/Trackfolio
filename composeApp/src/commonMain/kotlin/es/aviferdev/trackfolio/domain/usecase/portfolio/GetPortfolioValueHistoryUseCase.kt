@@ -12,6 +12,7 @@ import es.aviferdev.trackfolio.domain.repository.AssetRepository
 import es.aviferdev.trackfolio.domain.repository.AssetTransactionRepository
 import es.aviferdev.trackfolio.domain.repository.FixedIncomeRepository
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
@@ -35,13 +36,25 @@ class GetPortfolioValueHistoryUseCase(
     private val priceHistoryRepository: AssetPriceHistoryRepository,
     private val fixedIncomeRepository: FixedIncomeRepository
 ) {
+    /**
+     * Trigger de actualización manual.
+     * Incrementar este contador fuerza al [combine] a re-emitir,
+     * recalculando el histórico con los datos más recientes de la BD.
+     * Útil cuando se actualizan precios desde fuera del PortfolioScreen.
+     */
+    private val refreshTrigger = MutableStateFlow(0)
+
+    fun triggerRefresh() {
+        refreshTrigger.value++
+    }
+
     operator fun invoke(accountId: String): Flow<List<PortfolioValuePoint>> {
         val assetsFlow = assetRepository.getAssetsByAccount(accountId)
         val txsFlow = assetTransactionRepository.getByAccount(accountId)
         val fiFlow = fixedIncomeRepository.getByAccount(accountId)
         val priceFlow = priceHistoryRepository.getByAccount(accountId)
 
-        return combine(assetsFlow, txsFlow, fiFlow, priceFlow) { assets, txs, fiPositions, prices ->
+        return combine(assetsFlow, txsFlow, fiFlow, priceFlow, refreshTrigger) { assets, txs, fiPositions, prices, _ ->
             val priceHistories = prices.groupBy { it.assetId }
             buildPortfolioValueHistory(assets, txs, fiPositions, priceHistories)
         }

@@ -3,6 +3,7 @@ package es.aviferdev.trackfolio.data.database
 import es.aviferdev.trackfolio.data.datasource.account.AccountLocalDataSource
 import es.aviferdev.trackfolio.data.datasource.asset.AssetCategoryLocalDataSource
 import es.aviferdev.trackfolio.data.datasource.asset.AssetLocalDataSource
+import es.aviferdev.trackfolio.data.datasource.asset.AssetPriceHistoryLocalDataSource
 import es.aviferdev.trackfolio.data.datasource.asset.AssetTransactionLocalDataSource
 import es.aviferdev.trackfolio.data.datasource.assetmetadata.AssetMetadataLocalDataSource
 import es.aviferdev.trackfolio.data.datasource.debt.DebtLocalDataSource
@@ -12,6 +13,7 @@ import es.aviferdev.trackfolio.data.datasource.transaction.TransactionLocalDataS
 import es.aviferdev.trackfolio.domain.model.Account
 import es.aviferdev.trackfolio.domain.model.AccountType
 import es.aviferdev.trackfolio.domain.model.Asset
+import es.aviferdev.trackfolio.domain.model.AssetPriceHistory
 import es.aviferdev.trackfolio.domain.model.AssetCategory
 import es.aviferdev.trackfolio.domain.model.AssetRegion
 import es.aviferdev.trackfolio.domain.model.AssetSector
@@ -34,7 +36,8 @@ class DatabaseInitializer(
     private val assetDataSource: AssetLocalDataSource? = null,
     private val assetTransactionDataSource: AssetTransactionLocalDataSource? = null,
     private val platformDataSource: PlatformLocalDataSource? = null,
-    private val debtDataSource: DebtLocalDataSource? = null
+    private val debtDataSource: DebtLocalDataSource? = null,
+    private val priceHistoryDataSource: AssetPriceHistoryLocalDataSource? = null
 ) {
     companion object {
 
@@ -388,7 +391,19 @@ class DatabaseInitializer(
                 currentPrice = 125.40,
                 currentPriceUpdatedAt = endTime
             )
-        ).forEach { assetDataSource?.insert(it) }
+        ).forEach { asset ->
+            assetDataSource?.insert(asset)
+            if (asset.currentPrice != null && asset.currentPriceUpdatedAt != null) {
+                priceHistoryDataSource?.insert(
+                    AssetPriceHistory(
+                        id = "price_${asset.id}_init",
+                        assetId = asset.id,
+                        price = asset.currentPrice,
+                        recordedAt = asset.currentPriceUpdatedAt
+                    )
+                )
+            }
+        }
 
         val assetTransactions = mutableListOf<AssetTransaction>()
         var atCounter = 1
@@ -591,7 +606,20 @@ class DatabaseInitializer(
             )
         )
 
-        assetTransactions.forEach { assetTransactionDataSource?.insert(it) }
+        assetTransactions.forEach { tx ->
+            assetTransactionDataSource?.insert(tx)
+            // Registrar el precio de cada compra como histórico en la fecha de la transacción
+            if (tx.type == AssetTransactionType.BUY) {
+                priceHistoryDataSource?.insert(
+                    AssetPriceHistory(
+                        id         = "price_${tx.id}",
+                        assetId    = tx.assetId,
+                        price      = tx.pricePerUnit,
+                        recordedAt = tx.date
+                    )
+                )
+            }
+        }
 
         var txCounter = 1
 
@@ -922,7 +950,19 @@ class DatabaseInitializer(
                 currentPriceUpdatedAt = endTime,
                 maturityDate = startTime + 1460 * oneDay
             )
-        ).forEach { assetDataSource?.insert(it) }
+        ).forEach { asset ->
+            assetDataSource?.insert(asset)
+            if (asset.currentPrice != null && asset.currentPriceUpdatedAt != null) {
+                priceHistoryDataSource?.insert(
+                    AssetPriceHistory(
+                        id = "price_${asset.id}_init",
+                        assetId = asset.id,
+                        price = asset.currentPrice,
+                        recordedAt = asset.currentPriceUpdatedAt
+                    )
+                )
+            }
+        }
     }
 
     private fun Transaction.toEntity(): TransactionEntity = TransactionEntity(

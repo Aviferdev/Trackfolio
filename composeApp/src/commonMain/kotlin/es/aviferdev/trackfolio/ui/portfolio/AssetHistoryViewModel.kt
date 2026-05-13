@@ -5,6 +5,8 @@ import androidx.lifecycle.viewModelScope
 import es.aviferdev.trackfolio.domain.model.Account
 import es.aviferdev.trackfolio.domain.model.Asset
 import es.aviferdev.trackfolio.domain.model.AssetCategory
+import com.benasher44.uuid.uuid4
+import es.aviferdev.trackfolio.domain.model.AssetPriceHistory
 import es.aviferdev.trackfolio.domain.model.AssetTransaction
 import es.aviferdev.trackfolio.domain.model.AssetTransactionType
 import es.aviferdev.trackfolio.domain.model.Platform
@@ -22,6 +24,7 @@ import es.aviferdev.trackfolio.domain.usecase.assettransaction.SaveAssetTransact
 import es.aviferdev.trackfolio.domain.usecase.assettransaction.SyncAssetTransactionToLedgerUseCase
 import es.aviferdev.trackfolio.domain.usecase.assettransaction.UpdateAssetTransactionUseCase
 import es.aviferdev.trackfolio.domain.usecase.platform.GetPlatformsUseCase
+import es.aviferdev.trackfolio.domain.repository.AssetPriceHistoryRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -81,6 +84,7 @@ class AssetHistoryViewModel(
     private val updateAssetTransaction: UpdateAssetTransactionUseCase,
     private val deleteAssetTransaction: DeleteAssetTransactionUseCase,
     private val updateAssetCurrentPrice: UpdateAssetCurrentPriceUseCase,
+    private val assetPriceHistoryRepository: AssetPriceHistoryRepository,
     private val syncToLedger: SyncAssetTransactionToLedgerUseCase,
     private val transactionRepository: es.aviferdev.trackfolio.domain.repository.TransactionRepository,
     private val executeFundTransfer: ExecuteFundTransferUseCase,
@@ -290,8 +294,17 @@ class AssetHistoryViewModel(
                             accountId = uiState.value.asset!!.accountId,
                             assetName = uiState.value.asset!!.name
                         )
-                        if (type == AssetTransactionType.BUY && isSameDay(date, now)) {
-                            updateAssetCurrentPrice(assetId, pricePerUnit, now, uiState.value.asset!!.assetCategoryId)
+                        if (type == AssetTransactionType.BUY) {
+                            assetPriceHistoryRepository.insert(
+                                AssetPriceHistory(
+                                    id         = uuid4().toString(),
+                                    assetId    = assetId,
+                                    price      = pricePerUnit,
+                                    recordedAt = date
+                                )
+                            ).onFailure { err ->
+                                _error.value = "Error al registrar precio histórico: ${err.message}"
+                            }
                         }
                     }
                 }

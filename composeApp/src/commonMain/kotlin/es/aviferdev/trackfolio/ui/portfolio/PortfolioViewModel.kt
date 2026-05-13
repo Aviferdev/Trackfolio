@@ -3,9 +3,11 @@ package es.aviferdev.trackfolio.ui.portfolio
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.benasher44.uuid.uuid4
 import es.aviferdev.trackfolio.domain.model.Account
 import es.aviferdev.trackfolio.domain.model.Asset
 import es.aviferdev.trackfolio.domain.model.AssetCategory
+import es.aviferdev.trackfolio.domain.model.AssetPriceHistory
 import es.aviferdev.trackfolio.domain.model.AssetCategoryType
 import es.aviferdev.trackfolio.domain.model.AssetTransaction
 import es.aviferdev.trackfolio.domain.model.AssetTransactionType
@@ -19,6 +21,7 @@ import es.aviferdev.trackfolio.domain.portfolio.FixedIncomeCalculator
 import es.aviferdev.trackfolio.domain.model.Platform
 import es.aviferdev.trackfolio.domain.repository.AssetMetadataRepository
 import es.aviferdev.trackfolio.domain.repository.AssetPlatformRepository
+import es.aviferdev.trackfolio.domain.repository.AssetPriceHistoryRepository
 import es.aviferdev.trackfolio.domain.portfolio.AssetPosition
 import es.aviferdev.trackfolio.domain.portfolio.PortfolioCalculator
 import es.aviferdev.trackfolio.domain.usecase.account.GetAccountByIdUseCase
@@ -180,6 +183,7 @@ class PortfolioViewModel(
     private val syncToLedger: SyncAssetTransactionToLedgerUseCase,
     private val assetPlatformRepository: AssetPlatformRepository,
     private val assetMetadataRepository: AssetMetadataRepository,
+    private val assetPriceHistoryRepository: AssetPriceHistoryRepository,
     private val session: AccountSession,
     private val getFixedIncomeSummary: GetFixedIncomeSummaryUseCase,
     private val getNearMaturityPositions: es.aviferdev.trackfolio.domain.usecase.fixedincome.GetNearMaturityPositionsUseCase? = null,
@@ -848,7 +852,10 @@ class PortfolioViewModel(
         viewModelScope.launch {
             val now = Clock.System.now().toEpochMilliseconds()
             updateAssetCurrentPrice(asset.id, newPrice, now, asset.assetCategoryId)
-                .onSuccess { closeUpdatePriceSheet() }
+                .onSuccess {
+                    getPortfolioValueHistory.triggerRefresh()
+                    closeUpdatePriceSheet()
+                }
                 .onFailure { _sheetState.value = _sheetState.value.copy(error = it.message) }
         }
     }
@@ -902,8 +909,17 @@ class PortfolioViewModel(
                             accountId = asset.accountId,
                             assetName = asset.name
                         )
-                        if (type == AssetTransactionType.BUY && isSameDay(date, now)) {
-                            updateAssetCurrentPrice(assetId, pricePerUnit, now, asset.assetCategoryId)
+                        if (type == AssetTransactionType.BUY) {
+                            assetPriceHistoryRepository.insert(
+                                AssetPriceHistory(
+                                    id         = uuid4().toString(),
+                                    assetId    = assetId,
+                                    price      = pricePerUnit,
+                                    recordedAt = date
+                                )
+                            ).onFailure { err ->
+                                _sheetState.value = _sheetState.value.copy(error = "Error al registrar precio histórico: ${err.message}")
+                            }
                         }
                     }
                     closeAddTransactionSheet()

@@ -13,6 +13,7 @@ import es.aviferdev.trackfolio.domain.usecase.asset.SavePriceReminderShownUseCas
 import es.aviferdev.trackfolio.domain.usecase.asset.ShouldShowPriceReminderUseCase
 import es.aviferdev.trackfolio.domain.usecase.asset.UpdateAssetCurrentPriceUseCase
 import es.aviferdev.trackfolio.domain.usecase.category.GetCategoriesByTypeUseCase
+import es.aviferdev.trackfolio.domain.usecase.portfolio.GetPortfolioValueHistoryUseCase
 import es.aviferdev.trackfolio.domain.usecase.home.GetHomeBalanceUseCase
 import es.aviferdev.trackfolio.ui.account.AccountSession
 import es.aviferdev.trackfolio.ui.common.loading.GlobalLoadingManager
@@ -62,7 +63,8 @@ class HomeViewModel(
     private val updateAssetCurrentPrice: UpdateAssetCurrentPriceUseCase,
     private val savePriceReminderShown: SavePriceReminderShownUseCase,
     private val getNearMaturityPositions: GetNearMaturityPositionsUseCase? = null,
-    private val loadingManager: GlobalLoadingManager
+    private val loadingManager: GlobalLoadingManager,
+    private val getPortfolioValueHistory: GetPortfolioValueHistoryUseCase
 ) : ViewModel() {
 
     val uiState: StateFlow<HomeUiState> = session.selectedAccountId
@@ -175,6 +177,9 @@ class HomeViewModel(
             val asset = _priceReminderState.value.outdatedAssets.find { it.id == assetId }
             val result = updateAssetCurrentPrice(assetId, newPrice, now, asset?.assetCategoryId)
             if (result.isSuccess) {
+                // Forzar refresco del histórico de la gráfica de portfolio
+                getPortfolioValueHistory.triggerRefresh()
+
                 val current = _priceReminderState.value
                 val newUpdatedIds = current.updatedAssetIds + assetId
                 _priceReminderState.value = current.copy(

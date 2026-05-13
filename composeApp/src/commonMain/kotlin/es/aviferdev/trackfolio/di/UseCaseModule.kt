@@ -168,7 +168,7 @@ val useCaseModule = module {
 
     // ── Asset (catálogo) ──────────────────────────────────────────────────────
     factory { GetAssetsByAccountUseCase(get()) }
-    factory { SaveAssetUseCase(get()) }
+    factory { SaveAssetUseCase(get(), get()) }
     factory { UpdateAssetUseCase(get()) }
     factory { UpdateAssetCurrentPriceUseCase(get(), get()) }
     factory { ArchiveAssetUseCase(get()) }
@@ -286,7 +286,8 @@ val useCaseModule = module {
             updateAssetCurrentPrice   = get(),
             savePriceReminderShown    = get(),
             getNearMaturityPositions  = get(),
-            loadingManager            = get()
+            loadingManager            = get(),
+            getPortfolioValueHistory  = get()
         )
     }
     viewModel {
@@ -345,6 +346,7 @@ val useCaseModule = module {
             syncToLedger                        = get(),
             assetPlatformRepository             = get(),
             assetMetadataRepository            = get(),
+            assetPriceHistoryRepository         = get(),
             session                             = get(),
             getFixedIncomeSummary               = get(),
             getNearMaturityPositions            = get(),
@@ -398,6 +400,7 @@ val useCaseModule = module {
             updateAssetTransaction   = get(),
             deleteAssetTransaction   = get(),
             updateAssetCurrentPrice  = get(),
+            assetPriceHistoryRepository = get(),
             syncToLedger             = get(),
             transactionRepository    = get(),
             executeFundTransfer      = get(),
@@ -476,7 +479,7 @@ val useCaseModule = module {
 
     // ── Net Worth ────────────────────────────────────────────────────────────────
     factory { GetNetWorthDataUseCase(get(), get(), get(), get(), get(), get()) }
-    factory { GetPortfolioValueHistoryUseCase(get(), get(), get(), get()) }
+    single { GetPortfolioValueHistoryUseCase(get(), get(), get(), get()) }
     factory { GetNetWorthHistoryUseCase(get(), get(), get(), get(), get()) }
 
     // ── ViewModels (Loan / NetWorth) ─────────────────────────────────────────────
