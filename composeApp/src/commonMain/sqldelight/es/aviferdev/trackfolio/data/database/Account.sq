@@ -1,7 +1,6 @@
 CREATE TABLE AccountEntity (
     id          TEXT    NOT NULL PRIMARY KEY,
     name        TEXT    NOT NULL,
-    currency    TEXT    NOT NULL DEFAULT 'EUR',
     balance     REAL    NOT NULL DEFAULT 0.0,
     createdAt   INTEGER NOT NULL,
     accountType TEXT    NOT NULL DEFAULT 'GENERAL'
@@ -16,12 +15,12 @@ selectById:
 SELECT * FROM AccountEntity WHERE id = :id;
 
 insert:
-INSERT OR REPLACE INTO AccountEntity(id, name, currency, balance, createdAt, accountType)
-VALUES (?, ?, ?, ?, ?, ?);
+INSERT OR REPLACE INTO AccountEntity(id, name, balance, createdAt, accountType)
+VALUES (?, ?, ?, ?, ?);
 
 update:
 UPDATE AccountEntity
-SET name = :name, currency = :currency, accountType = :accountType
+SET name = :name, accountType = :accountType
 WHERE id = :id;
 
 updateInitialBalance:
@@ -39,7 +38,6 @@ getComputedBalance:
 SELECT
     a.id,
     a.name,
-    a.currency,
     a.balance AS initialBalance,
     a.createdAt,
     a.accountType,
@@ -57,7 +55,6 @@ getAllComputedBalances:
 SELECT
     a.id,
     a.name,
-    a.currency,
     a.balance AS initialBalance,
     a.createdAt,
     a.accountType,

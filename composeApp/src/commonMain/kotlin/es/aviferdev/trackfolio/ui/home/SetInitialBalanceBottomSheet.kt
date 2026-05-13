@@ -27,7 +27,6 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Composable
 fun SetInitialBalanceBottomSheet(
     accountName: String = "",
-    currency: String = "€",
     onConfirm: (Double) -> Unit
 ) {
     var amount by remember { mutableStateOf("") }
@@ -98,7 +97,7 @@ fun SetInitialBalanceBottomSheet(
                 ),
                 trailingIcon = {
                     Text(
-                        currency,
+                        "€",
                         fontSize = 20.sp,
                         color    = TextSecondary,
                         modifier = Modifier.padding(end = 16.dp)
@@ -148,7 +147,6 @@ private fun SetInitialBalanceBottomSheetPreview() {
     TrackfolioTheme {
         SetInitialBalanceBottomSheet(
             accountName = "Cuenta Principal",
-            currency = "€",
             onConfirm = {}
         )
     }

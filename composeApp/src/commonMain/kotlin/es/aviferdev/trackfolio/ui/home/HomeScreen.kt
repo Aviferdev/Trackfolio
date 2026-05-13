@@ -227,7 +227,6 @@ fun HomeScreen(
     if (showInitialBalance) {
         SetInitialBalanceBottomSheet(
             accountName = (uiState as? HomeUiState.Success)?.balance?.selectedAccount?.name ?: "",
-            currency = (uiState as? HomeUiState.Success)?.balance?.selectedAccount?.currency ?: "€",
             onConfirm = { amount ->
                 viewModel.setInitialBalance(amount); showInitialBalance = false
             }
@@ -244,11 +243,8 @@ fun HomeScreen(
     }
 
     if (reconciliationState.showBottomSheet) {
-        val currency =
-            (uiState as? HomeUiState.Success)?.balance?.selectedAccount?.currency ?: "€"
         ReconcileBalanceBottomSheet(
             viewModel = reconciliationViewModel,
-            currency = currency,
             onDismiss = { reconciliationViewModel.closeBottomSheet() }
         )
     }
@@ -416,7 +412,6 @@ private fun HeroCard(
     modifier: Modifier = Modifier
 ) {
     val accountLabel = balance.selectedAccount?.name ?: "Sin cuenta"
-    val currency = balance.selectedAccount?.currency ?: "€"
     val netWithDebts = balance.selectedAccountBalance + balance.totalOwed - balance.totalOwing
 
     Card(
@@ -447,7 +442,7 @@ private fun HeroCard(
                         formatAmount(balance.selectedAccountBalance),
                         balancesHidden
                     )
-                } $currency",
+                } €",
                 fontSize = 46.sp,
                 fontWeight = FontWeight.ExtraBold,
                 color = Color.White,
@@ -469,7 +464,7 @@ private fun HeroCard(
                         formatAmount(netWithDebts),
                         balancesHidden
                     )
-                } $currency",
+                } €",
                 fontSize = 11.sp,
                 color = Color.White.copy(alpha = 0.45f)
             )
@@ -816,7 +811,6 @@ private fun HomeContentPreview() {
     val fakeAccount = Account(
         id = "1",
         name = "Cuenta Corriente",
-        currency = "€",
         initialBalance = 1000.0,
         computedBalance = 3500.0,
         createdAt = 0L,

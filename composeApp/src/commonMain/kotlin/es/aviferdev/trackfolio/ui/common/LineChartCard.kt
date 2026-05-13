@@ -46,7 +46,6 @@ private val MONTH_ABBR = listOf(
  * @param subtitle subtítulo descriptivo.
  * @param points lista de pares (epochMillis, valor). Debe estar ordenada cronológicamente.
  * @param lineColor color de la línea y el área sombreada.
- * @param currencyCode código ISO-4217 para el símbolo de moneda.
  * @param balancesHidden si true, oculta los valores del eje Y.
  */
 @Composable
@@ -55,7 +54,6 @@ fun LineChartCard(
     subtitle: String,
     points: List<Pair<Long, Double>>,
     lineColor: Color,
-    currencyCode: String,
     balancesHidden: Boolean,
     modifier: Modifier = Modifier
 ) {
@@ -90,7 +88,6 @@ fun LineChartCard(
                 LineChartCanvas(
                     points = points,
                     lineColor = lineColor,
-                    currencyCode = currencyCode,
                     balancesHidden = balancesHidden,
                     textMeasurer = textMeasurer,
                     modifier = Modifier
@@ -108,7 +105,6 @@ fun LineChartCard(
 private fun LineChartCanvas(
     points: List<Pair<Long, Double>>,
     lineColor: Color,
-    currencyCode: String,
     balancesHidden: Boolean,
     textMeasurer: androidx.compose.ui.text.TextMeasurer,
     modifier: Modifier = Modifier
@@ -173,7 +169,7 @@ private fun LineChartCanvas(
             ySteps.forEach { value ->
                 val yRatio = ((value - minVal) / range).toFloat()
                 val y = topPad + chartH * (1f - yRatio)
-                val label = formatAxisLabel(value, currencyCode)
+                val label = formatAxisLabel(value)
                 val textResult = textMeasurer.measure(label, labelStyle)
                 drawText(
                     textLayoutResult = textResult,

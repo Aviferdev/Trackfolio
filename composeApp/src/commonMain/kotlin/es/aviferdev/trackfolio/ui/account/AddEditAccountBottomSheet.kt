@@ -17,25 +17,22 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 
 /**
  * Bottom sheet para crear o editar una cuenta.
- * En creación solo pide nombre, moneda y tipo — el saldo inicial se configura
+ * En creación solo pide nombre y tipo — el saldo inicial se configura
  * en un paso posterior obligatorio (SetInitialBalanceBottomSheet).
+ * Todas las cuentas usan euros (€).
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddEditAccountBottomSheet(
     account: es.aviferdev.trackfolio.domain.model.Account?,  // null = crear
-    onSave: (name: String, currency: String, accountType: AccountType) -> Unit,
+    onSave: (name: String, accountType: AccountType) -> Unit,
     onDismiss: () -> Unit
 ) {
     val isEditing = account != null
 
-    var name             by remember { mutableStateOf(account?.name ?: "") }
-    var currency         by remember { mutableStateOf(account?.currency ?: "€") }
-    var isCash           by remember { mutableStateOf(account?.accountType == AccountType.CASH) }
-    var nameError        by remember { mutableStateOf(false) }
-    var expandedCurrency by remember { mutableStateOf(false) }
-
-    val currencies = listOf("€", "USD", "GBP", "CHF", "JPY", "MXN", "ARS", "CLP")
+    var name      by remember { mutableStateOf(account?.name ?: "") }
+    var isCash    by remember { mutableStateOf(account?.accountType == AccountType.CASH) }
+    var nameError by remember { mutableStateOf(false) }
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
@@ -73,41 +70,6 @@ fun AddEditAccountBottomSheet(
                     unfocusedBorderColor = BorderGray
                 )
             )
-
-            Spacer(Modifier.height(16.dp))
-
-            // Moneda
-            ExposedDropdownMenuBox(
-                expanded         = expandedCurrency,
-                onExpandedChange = { expandedCurrency = !expandedCurrency }
-            ) {
-                OutlinedTextField(
-                    value         = currency,
-                    onValueChange = {},
-                    readOnly      = true,
-                    label         = { Text("Moneda") },
-                    trailingIcon  = { ExposedDropdownMenuDefaults.TrailingIcon(expandedCurrency) },
-                    modifier      = Modifier
-                        .menuAnchor(MenuAnchorType.PrimaryNotEditable)
-                        .fillMaxWidth(),
-                    shape  = RoundedCornerShape(10.dp),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor   = PrimaryDark,
-                        unfocusedBorderColor = BorderGray
-                    )
-                )
-                ExposedDropdownMenu(
-                    expanded         = expandedCurrency,
-                    onDismissRequest = { expandedCurrency = false }
-                ) {
-                    currencies.forEach { c ->
-                        DropdownMenuItem(
-                            text    = { Text(c) },
-                            onClick = { currency = c; expandedCurrency = false }
-                        )
-                    }
-                }
-            }
 
             Spacer(Modifier.height(16.dp))
 
@@ -156,7 +118,7 @@ fun AddEditAccountBottomSheet(
                 onClick = {
                     if (name.isBlank()) { nameError = true; return@Button }
                     val type = if (isCash) AccountType.CASH else AccountType.GENERAL
-                    onSave(name.trim(), currency, type)
+                    onSave(name.trim(), type)
                 },
                 modifier = Modifier.fillMaxWidth().height(52.dp),
                 shape    = RoundedCornerShape(10.dp),
@@ -178,7 +140,7 @@ private fun AddEditAccountBottomSheetCreatePreview() {
     TrackfolioTheme {
         AddEditAccountBottomSheet(
             account = null,
-            onSave = { _, _, _ -> },
+            onSave = { _, _ -> },
             onDismiss = {}
         )
     }
@@ -192,13 +154,12 @@ private fun AddEditAccountBottomSheetEditPreview() {
             account = Account(
                 id = "1",
                 name = "Cuenta Principal",
-                currency = "€",
                 initialBalance = 5000.0,
                 computedBalance = 5200.0,
                 createdAt = Clock.System.now().toEpochMilliseconds(),
                 accountType = AccountType.GENERAL
             ),
-            onSave = { _, _, _ -> },
+            onSave = { _, _ -> },
             onDismiss = {}
         )
     }

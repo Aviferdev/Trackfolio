@@ -37,7 +37,7 @@ import es.aviferdev.trackfolio.ui.theme.TextPrimary
 import es.aviferdev.trackfolio.ui.theme.TextSecondary
 import es.aviferdev.trackfolio.ui.theme.TrackfolioTheme
 import es.aviferdev.trackfolio.ui.theme.WarnAmber
-import es.aviferdev.trackfolio.ui.theme.formatAmountWithCurrency
+import es.aviferdev.trackfolio.ui.theme.formatAmountEuro
 import es.aviferdev.trackfolio.ui.theme.maskAmount
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -52,7 +52,6 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 fun PortfolioDistributionCard(
     slices: List<CategorySlice>,
     totalCurrentValue: Double,
-    currencyCode: String,
     balancesHidden: Boolean,
     selectedView: DistributionView = DistributionView.CATEGORY,
     fixedIncomePercent: Double = 0.0,
@@ -125,7 +124,7 @@ fun PortfolioDistributionCard(
                         )
                         Text(
                             text       = maskAmount(
-                                formatAmountWithCurrency(totalCurrentValue, currencyCode),
+                                formatAmountEuro(totalCurrentValue),
                                 balancesHidden
                             ),
                             fontSize   = 13.sp,
@@ -268,7 +267,6 @@ private fun PortfolioDistributionCardPreview() {
         PortfolioDistributionCard(
             slices = createMockSlices(),
             totalCurrentValue = 100000.0,
-            currencyCode = "€",
             balancesHidden = false
         )
     }
@@ -281,7 +279,6 @@ private fun PortfolioDistributionCardHiddenPreview() {
         PortfolioDistributionCard(
             slices = createMockSlices(),
             totalCurrentValue = 100000.0,
-            currencyCode = "€",
             balancesHidden = true
         )
     }

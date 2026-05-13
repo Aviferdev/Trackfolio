@@ -32,7 +32,7 @@ import es.aviferdev.trackfolio.ui.theme.maskAmount
 import kotlin.math.abs
 
 @Composable
-fun FifoSaleMatchBlock(sale: FifoSaleMatch, symbol: String, masked: Boolean) {
+fun FifoSaleMatchBlock(sale: FifoSaleMatch, masked: Boolean) {
     val pnlColor = when {
         sale.realizedPnL > 0 -> IncomeGreen
         sale.realizedPnL < 0 -> ExpenseRed
@@ -63,7 +63,7 @@ fun FifoSaleMatchBlock(sale: FifoSaleMatch, symbol: String, masked: Boolean) {
                             formatAmount(sale.salePrice),
                             masked
                         )
-                    } $symbol/u.", fontSize = 10.sp, color = TextTertiary
+                    } €/u.", fontSize = 10.sp, color = TextTertiary
                 )
             }
             Column(horizontalAlignment = Alignment.End) {
@@ -74,7 +74,7 @@ fun FifoSaleMatchBlock(sale: FifoSaleMatch, symbol: String, masked: Boolean) {
                             formatAmount(abs(sale.realizedPnL)),
                             masked
                         )
-                    } $symbol",
+                    } €",
                     fontSize = 12.sp, color = pnlColor, fontWeight = FontWeight.Bold
                 )
             }
@@ -102,7 +102,7 @@ fun FifoSaleMatchBlock(sale: FifoSaleMatch, symbol: String, masked: Boolean) {
                                     formatAmount(c.purchasePrice),
                                     masked
                                 )
-                            } $symbol/u.", fontSize = 9.sp, color = TextTertiary
+                            } €/u.", fontSize = 9.sp, color = TextTertiary
                         )
                     }
                     Text(
@@ -111,7 +111,7 @@ fun FifoSaleMatchBlock(sale: FifoSaleMatch, symbol: String, masked: Boolean) {
                                 formatAmount(abs(c.pnl)),
                                 masked
                             )
-                        } $symbol",
+                        } €",
                         fontSize = 10.sp, color = cColor, fontWeight = FontWeight.Medium
                     )
                 }

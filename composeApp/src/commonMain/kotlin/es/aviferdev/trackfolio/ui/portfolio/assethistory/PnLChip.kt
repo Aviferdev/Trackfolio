@@ -18,7 +18,6 @@ import kotlin.math.abs
 fun PnLChip(
     label: String,
     amount: Double,
-    symbol: String,
     masked: Boolean,
     unavailable: Boolean = false
 ) {
@@ -30,7 +29,7 @@ fun PnLChip(
                 formatAmount(abs(amount)),
                 masked
             )
-        } $symbol"
+        } €"
     }
     val color = when {
         unavailable -> Color.White.copy(.45f)

@@ -126,8 +126,7 @@ fun AssetHistoryContent(
                         AssetSummaryCard(
                             ticker = state.asset!!.ticker,
                             currentPrice = state.asset!!.currentPrice,
-                            currencyCode = state.currencyCode,
-                            position = state.position,
+                                                        position = state.position,
                             modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
                         )
                     }
@@ -149,8 +148,7 @@ fun AssetHistoryContent(
                         item {
                             FifoBreakdownSection(
                                 breakdown = bd,
-                                currencyCode = state.currencyCode,
-                                balancesHidden = balancesHidden,
+                                                                balancesHidden = balancesHidden,
                                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
                             )
                         }
@@ -171,8 +169,7 @@ fun AssetHistoryContent(
                             TxRow(
                                 tx = tx,
                                 platform = state.platforms.firstOrNull { it.id == tx.platformId },
-                                currencyCode = state.currencyCode,
-                                balancesHidden = balancesHidden,
+                                                                balancesHidden = balancesHidden,
                                 onEdit = { onEditTransaction(tx) },
                                 onDelete = { onDeleteTransaction(tx) },
                                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
@@ -195,8 +192,7 @@ fun AssetHistoryContent(
                         items(state.dividends, key = { it.id }) { dividend ->
                             DividendRow(
                                 dividend = dividend,
-                                currencyCode = state.currencyCode,
-                                balancesHidden = balancesHidden,
+                                                                balancesHidden = balancesHidden,
                                 onDelete = {
                                     onDeleteDividend(
                                         dividend.linkedAssetTransactionId ?: dividend.id
@@ -398,7 +394,6 @@ fun AssetHistoryContentPreview() {
                 createdAt = 1704067200000
             )
         ),
-        currencyCode = "€",
         isLoading = false,
         isTransferable = false
     )

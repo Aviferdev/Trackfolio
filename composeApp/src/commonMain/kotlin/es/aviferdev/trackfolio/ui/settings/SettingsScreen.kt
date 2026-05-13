@@ -103,10 +103,10 @@ fun SettingsScreen(
 
     // ── Sheets ───────────────────────────────────────────────────────────────
     if (accountState.showAddSheet) {
-        AddEditAccountBottomSheet(account = null, onSave = { name, currency, type -> accountViewModel.addAccount(name, currency, type) }, onDismiss = { accountViewModel.closeAddSheet() })
+        AddEditAccountBottomSheet(account = null, onSave = { name, type -> accountViewModel.addAccount(name, type) }, onDismiss = { accountViewModel.closeAddSheet() })
     }
     if (accountState.showEditSheet && accountState.editingAccount != null) {
-        AddEditAccountBottomSheet(account = accountState.editingAccount, onSave = { name, currency, type -> accountViewModel.editAccount(accountState.editingAccount!!, name, currency, type) }, onDismiss = { accountViewModel.closeEditSheet() })
+        AddEditAccountBottomSheet(account = accountState.editingAccount, onSave = { name, type -> accountViewModel.editAccount(accountState.editingAccount!!, name, type) }, onDismiss = { accountViewModel.closeEditSheet() })
     }
     if (accountState.showDeleteConfirm && accountState.accountToDelete != null) {
         AlertDialog(onDismissRequest = { accountViewModel.cancelDelete() }, containerColor = SurfaceWhite,
@@ -221,8 +221,8 @@ fun SettingsContentPreview() {
     TrackfolioTheme {
         SettingsContent(
             accounts = listOf(
-                Account(id = "1", name = "Cuenta principal", currency = "€", initialBalance = 1000.0, computedBalance = 1500.0, createdAt = 0L, accountType = AccountType.GENERAL),
-                Account(id = "2", name = "Efectivo", currency = "€", initialBalance = 0.0, computedBalance = 500.0, createdAt = 0L, accountType = AccountType.CASH)
+                Account(id = "1", name = "Cuenta principal", initialBalance = 1000.0, computedBalance = 1500.0, createdAt = 0L, accountType = AccountType.GENERAL),
+                Account(id = "2", name = "Efectivo", initialBalance = 0.0, computedBalance = 500.0, createdAt = 0L, accountType = AccountType.CASH)
             ),
             selectedId = "1",
             biometricEnabled = false,
@@ -373,7 +373,7 @@ private fun SettingsAccountCard(account: Account, isSelected: Boolean, onSelect:
         Row(modifier = Modifier.fillMaxWidth().clickable(onClick = onSelect).padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(account.name, fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary)
-                Text("${account.currency} · ${formatAmount(account.computedBalance)} €", fontSize = 11.sp, color = TextTertiary)
+                Text("€ · ${formatAmount(account.computedBalance)}", fontSize = 11.sp, color = TextTertiary)
             }
             IconButton(onClick = onEdit, modifier = Modifier.size(32.dp)) { Icon(Icons.Default.Edit, contentDescription = "Editar", tint = TextSecondary, modifier = Modifier.size(16.dp)) }
             IconButton(onClick = onDelete, modifier = Modifier.size(32.dp)) { Icon(Icons.Default.Delete, contentDescription = "Eliminar", tint = ExpenseRed, modifier = Modifier.size(16.dp)) }

@@ -228,7 +228,6 @@ fun FiscalReportContentPreview() {
                 selectedYear = "2026",
                 reportData = FiscalReportData(
                     accountName = "Cuenta Principal",
-                    currency = "€",
                     year = "2026",
                     generatedAt = 1700000000000,
                     annualSummary = es.aviferdev.trackfolio.domain.model.AnnualSummary(
@@ -295,7 +294,6 @@ private fun AnnualSummaryCard(report: FiscalReportData) {
                 FiscalMetricCell(
                     "Rendimientos trabajo",
                     s.totalIncome,
-                    report.currency,
                     IncomeGreen,
                     Modifier.weight(1f)
                 )
@@ -303,7 +301,6 @@ private fun AnnualSummaryCard(report: FiscalReportData) {
                 FiscalMetricCell(
                     "Retenciones (IRPF)",
                     s.totalIncome * 0.12, // Approximate - would need actual IRPF data
-                    report.currency,
                     ExpenseRed,
                     Modifier.weight(1f)
                 )
@@ -314,7 +311,6 @@ private fun AnnualSummaryCard(report: FiscalReportData) {
                 FiscalMetricCell(
                     "Ganancias capital",
                     capitalGains,
-                    report.currency,
                     if (capitalGains >= 0.0) IncomeGreen else ExpenseRed,
                     Modifier.weight(1f)
                 )
@@ -323,7 +319,6 @@ private fun AnnualSummaryCard(report: FiscalReportData) {
                 FiscalMetricCell(
                     "Base imponible est.",
                     baseImponible,
-                    report.currency,
                     PrimaryDark,
                     Modifier.weight(1f)
                 )
@@ -333,8 +328,7 @@ private fun AnnualSummaryCard(report: FiscalReportData) {
 }
 
 @Composable
-private fun FiscalMetricCell(label: String, amount: Double, currency: String, color: Color, modifier: Modifier = Modifier) {
-    val symbol = if (currency == "€") "€" else currency
+private fun FiscalMetricCell(label: String, amount: Double, color: Color, modifier: Modifier = Modifier) {
     Card(
         modifier  = modifier,
         shape     = RoundedCornerShape(9.dp),
@@ -345,7 +339,7 @@ private fun FiscalMetricCell(label: String, amount: Double, currency: String, co
             Text(label, fontSize = 10.sp, color = TextTertiary)
             Spacer(Modifier.height(3.dp))
             Text(
-                "${if (amount >= 0) "" else "−"}${formatAmt(kotlin.math.abs(amount), currency)} €",
+                "${if (amount >= 0) "" else "−"}${formatAmt(kotlin.math.abs(amount))} €",
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Bold,
                 color = color
@@ -365,15 +359,15 @@ private fun IncomeTaxBreakdownCard(report: FiscalReportData) {
 
     ReportCard("🏛️ Desglose IRPF ${report.year}") {
         Row(Modifier.fillMaxWidth(), Arrangement.spacedBy(8.dp)) {
-            MetricCell("Bruto total",   totalGross, report.currency, TextPrimary, Modifier.weight(1f))
-            MetricCell("IRPF retenido", totalIrpf,  report.currency, ExpenseRed,  Modifier.weight(1f))
-            MetricCell("Neto total",    totalNet,   report.currency, IncomeGreen, Modifier.weight(1f))
+            MetricCell("Bruto total",   totalGross, TextPrimary, Modifier.weight(1f))
+            MetricCell("IRPF retenido", totalIrpf,  ExpenseRed,  Modifier.weight(1f))
+            MetricCell("Neto total",    totalNet,   IncomeGreen, Modifier.weight(1f))
         }
         if (totalSS > 0 || totalComm > 0) {
             Spacer(Modifier.height(8.dp))
             Row(Modifier.fillMaxWidth(), Arrangement.spacedBy(8.dp)) {
-                if (totalSS   > 0) MetricCell("Seg. Social", totalSS,   report.currency, WarnAmber, Modifier.weight(1f))
-                if (totalComm > 0) MetricCell("Comisiones",  totalComm, report.currency, WarnAmber, Modifier.weight(1f))
+                if (totalSS   > 0) MetricCell("Seg. Social", totalSS,   WarnAmber, Modifier.weight(1f))
+                if (totalComm > 0) MetricCell("Comisiones",  totalComm, WarnAmber, Modifier.weight(1f))
                 if (totalSS > 0 && totalComm == 0.0) Spacer(Modifier.weight(1f))
                 if (totalSS == 0.0 && totalComm > 0) Spacer(Modifier.weight(1f))
             }
@@ -391,7 +385,7 @@ private fun IncomeTaxBreakdownCard(report: FiscalReportData) {
         Spacer(Modifier.height(5.dp))
         bk.forEachIndexed { i, item ->
             if (i > 0) HorizontalDivider(color = BorderGray, thickness = .3.dp)
-            TaxBreakdownRow(item, report.currency)
+            TaxBreakdownRow(item)
         }
         Spacer(Modifier.height(8.dp))
         Text("Solo incluye ingresos con información fiscal introducida.", fontSize = 10.sp, color = TextTertiary)
@@ -399,7 +393,7 @@ private fun IncomeTaxBreakdownCard(report: FiscalReportData) {
 }
 
 @Composable
-private fun TaxBreakdownRow(item: FiscalIncomeTaxBreakdown, currency: String) {
+private fun TaxBreakdownRow(item: FiscalIncomeTaxBreakdown) {
     Row(Modifier.fillMaxWidth().padding(vertical = 6.dp), verticalAlignment = Alignment.CenterVertically) {
         Row(Modifier.weight(3f), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
             Text(item.incomeType.emoji, fontSize = 13.sp)
@@ -408,9 +402,9 @@ private fun TaxBreakdownRow(item: FiscalIncomeTaxBreakdown, currency: String) {
                 Text("${item.count} ingreso${if (item.count != 1) "s" else ""}", fontSize = 9.sp, color = TextTertiary)
             }
         }
-        Text(formatAmt(item.grossTotal, currency), fontSize = 11.sp, color = TextPrimary,  modifier = Modifier.weight(2f), textAlign = TextAlign.End)
-        Text(formatAmt(item.irpfTotal,  currency), fontSize = 11.sp, color = ExpenseRed,   fontWeight = FontWeight.Medium, modifier = Modifier.weight(2f), textAlign = TextAlign.End)
-        Text(formatAmt(item.netTotal,   currency), fontSize = 11.sp, color = IncomeGreen,  fontWeight = FontWeight.Medium, modifier = Modifier.weight(2f), textAlign = TextAlign.End)
+        Text(formatAmt(item.grossTotal), fontSize = 11.sp, color = TextPrimary,  modifier = Modifier.weight(2f), textAlign = TextAlign.End)
+        Text(formatAmt(item.irpfTotal),  fontSize = 11.sp, color = ExpenseRed,   fontWeight = FontWeight.Medium, modifier = Modifier.weight(2f), textAlign = TextAlign.End)
+        Text(formatAmt(item.netTotal),   fontSize = 11.sp, color = IncomeGreen,  fontWeight = FontWeight.Medium, modifier = Modifier.weight(2f), textAlign = TextAlign.End)
         Text(formatPct(item.avgIrpfPercent),       fontSize = 11.sp, color = TextSecondary,modifier = Modifier.weight(1f), textAlign = TextAlign.End)
     }
 }
@@ -432,20 +426,20 @@ private fun MonthlyBreakdownCard(report: FiscalReportData) {
         for (m in 1..12) {
             val row = byMonth[m] ?: continue
             HorizontalDivider(color = BorderGray, thickness = .3.dp)
-            MonthlyRow(m, row, report.currency)
+            MonthlyRow(m, row)
         }
     }
 }
 
 @Composable
-private fun MonthlyRow(month: Int, data: MonthlyTotals, currency: String) {
+private fun MonthlyRow(month: Int, data: MonthlyTotals) {
     val balance = data.balance
     Row(Modifier.fillMaxWidth().padding(vertical = 6.dp), verticalAlignment = Alignment.CenterVertically) {
         Text(MONTH_NAMES.getOrElse(month - 1) { month.toString() }, fontSize = 12.sp, color = TextPrimary, modifier = Modifier.weight(2f))
-        Text(formatAmt(data.totalIncome,  currency), fontSize = 11.sp, color = IncomeGreen, modifier = Modifier.weight(2f), textAlign = TextAlign.End)
-        Text(formatAmt(data.totalExpense, currency), fontSize = 11.sp, color = ExpenseRed,  modifier = Modifier.weight(2f), textAlign = TextAlign.End)
+        Text(formatAmt(data.totalIncome),  fontSize = 11.sp, color = IncomeGreen, modifier = Modifier.weight(2f), textAlign = TextAlign.End)
+        Text(formatAmt(data.totalExpense), fontSize = 11.sp, color = ExpenseRed,  modifier = Modifier.weight(2f), textAlign = TextAlign.End)
         Text(
-            "${if (balance >= 0) "+" else ""}${formatAmt(balance, currency)}",
+            "${if (balance >= 0) "+" else ""}${formatAmt(balance)}",
             fontSize   = 11.sp,
             color      = if (balance >= 0) IncomeGreen else ExpenseRed,
             fontWeight = FontWeight.SemiBold,
@@ -468,7 +462,7 @@ private fun DebtsCard(report: FiscalReportData) {
                     Text(if (isIOwe) "Les debo" else "Me deben", fontSize = 11.sp, color = color)
                     debt.notes?.let { Text(it, fontSize = 10.sp, color = TextTertiary) }
                 }
-                Text(formatAmt(debt.amount, report.currency), fontSize = 13.sp, color = color, fontWeight = FontWeight.Bold)
+                Text(formatAmt(debt.amount), fontSize = 13.sp, color = color, fontWeight = FontWeight.Bold)
             }
         }
     }
@@ -483,9 +477,9 @@ private fun PortfolioCard(report: FiscalReportData) {
 
     ReportCard("📈 Cartera de inversión") {
         Row(Modifier.fillMaxWidth().padding(bottom = 10.dp), Arrangement.spacedBy(8.dp)) {
-            MetricCell("Invertido",    totalInvested, report.currency, TextPrimary,  Modifier.weight(1f))
-            MetricCell("Valor actual", totalValue,    report.currency, if (totalValue >= totalInvested) IncomeGreen else ExpenseRed, Modifier.weight(1f))
-            MetricCell("P&L Real.",    totalRealized, report.currency, if (totalRealized >= 0) IncomeGreen else ExpenseRed, Modifier.weight(1f))
+            MetricCell("Invertido",    totalInvested, TextPrimary,  Modifier.weight(1f))
+            MetricCell("Valor actual", totalValue,    if (totalValue >= totalInvested) IncomeGreen else ExpenseRed, Modifier.weight(1f))
+            MetricCell("P&L Real.",    totalRealized, if (totalRealized >= 0) IncomeGreen else ExpenseRed, Modifier.weight(1f))
         }
         HorizontalDivider(color = BorderGray, thickness = .5.dp)
         Spacer(Modifier.height(8.dp))
@@ -505,8 +499,8 @@ private fun PortfolioCard(report: FiscalReportData) {
                     Text(pos.categoryName ?: "Sin categoría", fontSize = 9.sp, color = TextTertiary)
                 }
                 Text(formatQty(pos.netQuantity),          fontSize = 11.sp, color = TextPrimary, modifier = Modifier.weight(1.5f), textAlign = TextAlign.End)
-                Text(formatAmt(pos.avgCostBasis, report.currency), fontSize = 11.sp, color = TextSecondary, modifier = Modifier.weight(1.5f), textAlign = TextAlign.End)
-                Text(formatAmt(totalPnl, report.currency), fontSize = 11.sp, color = if (totalPnl >= 0) IncomeGreen else ExpenseRed, fontWeight = FontWeight.SemiBold, modifier = Modifier.weight(1.5f), textAlign = TextAlign.End)
+                Text(formatAmt(pos.avgCostBasis), fontSize = 11.sp, color = TextSecondary, modifier = Modifier.weight(1.5f), textAlign = TextAlign.End)
+                Text(formatAmt(totalPnl), fontSize = 11.sp, color = if (totalPnl >= 0) IncomeGreen else ExpenseRed, fontWeight = FontWeight.SemiBold, modifier = Modifier.weight(1.5f), textAlign = TextAlign.End)
             }
         }
 
@@ -527,9 +521,9 @@ private fun PortfolioCard(report: FiscalReportData) {
                 if (i > 0) HorizontalDivider(color = BorderGray, thickness = .3.dp)
                 Row(Modifier.fillMaxWidth().padding(vertical = 5.dp), verticalAlignment = Alignment.CenterVertically) {
                     Text(pos.ticker, fontSize = 12.sp, color = TextPrimary, fontWeight = FontWeight.SemiBold, modifier = Modifier.weight(2f))
-                    Text(formatAmt(pos.totalBought, report.currency), fontSize = 11.sp, color = IncomeGreen, modifier = Modifier.weight(1.5f), textAlign = TextAlign.End)
-                    Text(formatAmt(pos.totalSold,   report.currency), fontSize = 11.sp, color = ExpenseRed,  modifier = Modifier.weight(1.5f), textAlign = TextAlign.End)
-                    Text(formatAmt(pos.realizedPnl, report.currency), fontSize = 11.sp, color = if (pos.realizedPnl >= 0) IncomeGreen else ExpenseRed, fontWeight = FontWeight.SemiBold, modifier = Modifier.weight(1.5f), textAlign = TextAlign.End)
+                    Text(formatAmt(pos.totalBought), fontSize = 11.sp, color = IncomeGreen, modifier = Modifier.weight(1.5f), textAlign = TextAlign.End)
+                    Text(formatAmt(pos.totalSold),   fontSize = 11.sp, color = ExpenseRed,  modifier = Modifier.weight(1.5f), textAlign = TextAlign.End)
+                    Text(formatAmt(pos.realizedPnl), fontSize = 11.sp, color = if (pos.realizedPnl >= 0) IncomeGreen else ExpenseRed, fontWeight = FontWeight.SemiBold, modifier = Modifier.weight(1.5f), textAlign = TextAlign.End)
                 }
             }
         }
@@ -554,11 +548,11 @@ private fun ReportCard(title: String, content: @Composable ColumnScope.() -> Uni
 }
 
 @Composable
-private fun MetricCell(label: String, value: Double, currency: String, color: Color, modifier: Modifier = Modifier) {
+private fun MetricCell(label: String, value: Double, color: Color, modifier: Modifier = Modifier) {
     Column(modifier = modifier) {
         Text(label.uppercase(), fontSize = 9.sp, color = TextTertiary, fontWeight = FontWeight.Bold, letterSpacing = .4.sp)
         Spacer(Modifier.height(3.dp))
-        Text(formatAmt(value, currency), fontSize = 12.sp, fontWeight = FontWeight.Bold, color = color, maxLines = 1)
+        Text(formatAmt(value), fontSize = 12.sp, fontWeight = FontWeight.Bold, color = color, maxLines = 1)
     }
 }
 
@@ -644,14 +638,14 @@ private fun PdfPasswordSheet(onConfirm: (String) -> Unit, onDismiss: () -> Unit)
 }
 
 // ─── Format helpers ───────────────────────────────────────────────────────────
-private fun formatAmt(value: Double, currency: String): String {
+private fun formatAmt(value: Double): String {
     val sign   = if (value < 0) "-" else ""
     val absVal = abs(value)
     val euros  = absVal.toLong()
     val cents  = ((absVal - euros) * 100 + .5).toLong().coerceIn(0, 99)
     val eurosStr = euros.toString().reversed()
         .chunked(3).joinToString(".").reversed()
-    return "$sign$eurosStr,${cents.toString().padStart(2,'0')} $currency"
+    return "$sign$eurosStr,${cents.toString().padStart(2,'0')} €"
 }
 
 private fun formatPct(value: Double): String {

@@ -30,7 +30,6 @@ import es.aviferdev.trackfolio.ui.theme.ExpenseRed
 import es.aviferdev.trackfolio.ui.theme.IncomeGreen
 import es.aviferdev.trackfolio.ui.theme.SurfaceWhite
 import es.aviferdev.trackfolio.ui.theme.TextTertiary
-import es.aviferdev.trackfolio.ui.theme.currencySymbol
 import es.aviferdev.trackfolio.ui.theme.formatAmount
 import es.aviferdev.trackfolio.ui.theme.maskAmount
 
@@ -38,12 +37,10 @@ import es.aviferdev.trackfolio.ui.theme.maskAmount
 @Composable
 fun DividendRow(
     dividend: Transaction,
-    currencyCode: String,
     balancesHidden: Boolean,
     onDelete: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val symbol = currencySymbol(currencyCode)
     val gross = dividend.grossAmount ?: dividend.amount
     val irpf = if (dividend.grossAmount != null && dividend.irpfPercent != null)
         dividend.grossAmount * dividend.irpfPercent / 100.0 else 0.0
@@ -79,19 +76,19 @@ fun DividendRow(
                                 formatAmount(gross),
                                 balancesHidden
                             )
-                        } $symbol  ·  IRPF: ${
+                        } €  ·  IRPF: ${
                             maskAmount(
                                 formatAmount(irpf),
                                 balancesHidden
                             )
-                        } $symbol",
+                        } €",
                         fontSize = 9.sp, color = TextTertiary
                     )
                 }
             }
             Column(horizontalAlignment = Alignment.End) {
                 Text(
-                    "+ ${maskAmount(formatAmount(dividend.amount), balancesHidden)} $symbol",
+                    "+ ${maskAmount(formatAmount(dividend.amount), balancesHidden)} €",
                     fontSize = 12.sp, color = IncomeGreen, fontWeight = FontWeight.Bold
                 )
                 IconButton(onClick = onDelete, modifier = Modifier.size(26.dp)) {

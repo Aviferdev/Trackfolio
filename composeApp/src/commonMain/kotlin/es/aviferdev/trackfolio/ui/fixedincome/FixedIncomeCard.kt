@@ -34,11 +34,9 @@ fun FixedIncomeSection(
     summary: FixedIncomeSummary,
     onPositionClick: (String) -> Unit,
     onRegisterCoupon: ((String) -> Unit)? = null,
-    currencyCode: String,
     balancesHidden: Boolean,
     modifier: Modifier = Modifier
 ) {
-    val symbol = currencySymbol(currencyCode)
 
     Column(modifier = modifier.padding(horizontal = 20.dp, vertical = 8.dp)) {
         Card(
@@ -80,7 +78,7 @@ fun FixedIncomeSection(
                     Column {
                         Text("Capital", fontSize = 11.sp, color = TextSecondary)
                         Text(
-                            text = "${maskAmount(formatAmount(summary.totalPrincipal), balancesHidden)} $symbol",
+                            text = "${maskAmount(formatAmount(summary.totalPrincipal), balancesHidden)} €",
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Medium,
                             color = TextPrimary
@@ -89,7 +87,7 @@ fun FixedIncomeSection(
                     Column(horizontalAlignment = Alignment.End) {
                         Text("Valor actual", fontSize = 11.sp, color = TextSecondary)
                         Text(
-                            text = "${maskAmount(formatAmount(summary.totalCurrentValue), balancesHidden)} $symbol",
+                            text = "${maskAmount(formatAmount(summary.totalCurrentValue), balancesHidden)} €",
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Medium,
                             color = TextPrimary
@@ -108,7 +106,7 @@ fun FixedIncomeSection(
                         Text("Cobrado", fontSize = 11.sp, color = TextSecondary)
                         val collectedColor = if (summary.totalCollectedInterest >= 0) PositiveGreen else TextSecondary
                         Text(
-                            text = "+${maskAmount(formatAmount(summary.totalCollectedInterest), balancesHidden)} $symbol",
+                            text = "+${maskAmount(formatAmount(summary.totalCollectedInterest), balancesHidden)} €",
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Medium,
                             color = collectedColor
@@ -123,7 +121,7 @@ fun FixedIncomeSection(
                         }
                         val sign = if (summary.totalNetProfit >= 0) "+" else ""
                         Text(
-                            text = "$sign${maskAmount(formatAmount(summary.totalNetProfit), balancesHidden)} $symbol (${formatPercent1(summary.totalNetProfitPercent)})",
+                            text = "$sign${maskAmount(formatAmount(summary.totalNetProfit), balancesHidden)} € (${formatPercent1(summary.totalNetProfitPercent)})",
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Medium,
                             color = pnlColor
@@ -138,7 +136,6 @@ fun FixedIncomeSection(
         summary.positions.forEach { row ->
             FixedIncomePositionCard(
                 row = row,
-                currencyCode = currencyCode,
                 balancesHidden = balancesHidden,
                 onClick = { onPositionClick(row.position.id) },
                 onRegisterCoupon = if (onRegisterCoupon != null && row.position.hasPeriodicCoupons) {
@@ -153,14 +150,12 @@ fun FixedIncomeSection(
 @Composable
 fun FixedIncomePositionCard(
     row: FixedIncomeRow,
-    currencyCode: String,
     balancesHidden: Boolean,
     onClick: () -> Unit,
     onRegisterCoupon: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     val position = row.position
-    val symbol = currencySymbol(currencyCode)
 
     // JSX design: badge icon + name + "Vence date · frequency · amount" + "ACTIVO" tag + collected interest + register button
     Card(
@@ -317,13 +312,6 @@ fun Badge(count: Int, color: Color) {
     }
 }
 
-fun currencySymbol(code: String): String = when (code.uppercase()) {
-    "€" -> "€"
-    "USD" -> "$"
-    "GBP" -> "£"
-    else -> code
-}
-
 fun formatAmount(amount: Double): String {
     val negative = amount < 0
     val abs = if (negative) -amount else amount
@@ -413,7 +401,6 @@ private fun FixedIncomeSectionPreview() {
             summary = createMockSummary(),
             onPositionClick = {},
             onRegisterCoupon = {},
-            currencyCode = "€",
             balancesHidden = false
         )
     }

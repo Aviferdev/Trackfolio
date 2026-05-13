@@ -30,7 +30,6 @@ import es.aviferdev.trackfolio.ui.theme.SurfaceWhite
 import es.aviferdev.trackfolio.ui.theme.TextPrimary
 import es.aviferdev.trackfolio.ui.theme.TextSecondary
 import es.aviferdev.trackfolio.ui.theme.TextTertiary
-import es.aviferdev.trackfolio.ui.theme.currencySymbol
 import es.aviferdev.trackfolio.ui.theme.formatAmount
 import kotlin.math.abs
 
@@ -40,11 +39,9 @@ import kotlin.math.abs
 fun AssetSummaryCard(
     ticker: String,
     currentPrice: Double?,
-    currencyCode: String,
     position: AssetPosition?,
     modifier: Modifier = Modifier
 ) {
-    val symbol = currencySymbol(currencyCode)
     val isOpen = position?.netQuantity ?: 0.0 > 0.0
 
     Card(

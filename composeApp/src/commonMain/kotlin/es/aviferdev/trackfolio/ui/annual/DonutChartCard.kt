@@ -39,7 +39,7 @@ import es.aviferdev.trackfolio.ui.theme.SurfaceWhite
 import es.aviferdev.trackfolio.ui.theme.TextPrimary
 import es.aviferdev.trackfolio.ui.theme.TextSecondary
 import es.aviferdev.trackfolio.ui.theme.TrackfolioTheme
-import es.aviferdev.trackfolio.ui.theme.formatAmountWithCurrency
+import es.aviferdev.trackfolio.ui.theme.formatAmountEuro
 import es.aviferdev.trackfolio.ui.theme.maskAmount
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import kotlin.math.abs
@@ -54,7 +54,6 @@ fun DonutChartCard(
     subtitle: String,
     slices: List<DonutSlice>,
     totalAmount: Double,
-    currencyCode: String,
     balancesHidden: Boolean,
     modifier: Modifier = Modifier
 ) {
@@ -107,7 +106,7 @@ fun DonutChartCard(
                         )
                         Text(
                             text       = maskAmount(
-                                formatAmountWithCurrency(totalAmount, currencyCode),
+                                formatAmountEuro(totalAmount),
                                 balancesHidden
                             ),
                             fontSize   = 12.sp,
@@ -125,7 +124,7 @@ fun DonutChartCard(
                     verticalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
                     slices.forEach { slice ->
-                        DonutLegendRow(slice = slice, currencyCode = currencyCode, balancesHidden = balancesHidden)
+                        DonutLegendRow(slice = slice, balancesHidden = balancesHidden)
                     }
                 }
             }
@@ -166,7 +165,7 @@ private fun DonutCanvas(
 }
 
 @Composable
-private fun DonutLegendRow(slice: DonutSlice, currencyCode: String, balancesHidden: Boolean) {
+private fun DonutLegendRow(slice: DonutSlice, balancesHidden: Boolean) {
     Row(
         modifier          = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
@@ -192,7 +191,7 @@ private fun DonutLegendRow(slice: DonutSlice, currencyCode: String, balancesHidd
             overflow = TextOverflow.Ellipsis
         )
 Text(
-                            text       = maskAmount(formatAmountWithCurrency(slice.amount, currencyCode), balancesHidden),
+                            text       = maskAmount(formatAmountEuro(slice.amount), balancesHidden),
                             fontSize   = 11.sp,
                             color      = TextSecondary,
                             fontWeight = FontWeight.Normal,
@@ -275,7 +274,6 @@ private fun DonutChartCardPreview() {
             subtitle = "Año 2024",
             slices = createMockDonutSlices(),
             totalAmount = 60000.0,
-            currencyCode = "€",
             balancesHidden = false
         )
     }
@@ -290,7 +288,6 @@ private fun DonutChartCardEmptyPreview() {
             subtitle = "Año 2025",
             slices = emptyList(),
             totalAmount = 0.0,
-            currencyCode = "€",
             balancesHidden = false
         )
     }

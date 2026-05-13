@@ -6,7 +6,6 @@ package es.aviferdev.trackfolio.domain.model
  */
 data class FiscalReportData(
     val accountName: String,
-    val currency: String,
     val year: String,
     val generatedAt: Long,
     val annualSummary: AnnualSummary?,

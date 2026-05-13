@@ -32,7 +32,7 @@ import es.aviferdev.trackfolio.ui.theme.SurfaceWhite
 import es.aviferdev.trackfolio.ui.theme.TextPrimary
 import es.aviferdev.trackfolio.ui.theme.TextSecondary
 import es.aviferdev.trackfolio.ui.theme.TrackfolioTheme
-import es.aviferdev.trackfolio.ui.theme.formatAmountWithCurrency
+import es.aviferdev.trackfolio.ui.theme.formatAmountEuro
 import es.aviferdev.trackfolio.ui.theme.maskAmount
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -45,7 +45,6 @@ private val MONTH_LABELS = listOf("E", "F", "M", "A", "M", "J", "J", "A", "S", "
 fun InvestmentBarChart(
     investments: List<MonthlyInvestment>,
     year: String,
-    currencyCode: String,
     balancesHidden: Boolean,
     modifier: Modifier = Modifier
 ) {
@@ -77,7 +76,7 @@ fun InvestmentBarChart(
 
             // Total invertido
             Text(
-                text     = "Total invertido: ${maskAmount(formatAmountWithCurrency(totalInvested, currencyCode), balancesHidden)} €",
+                text     = "Total invertido: ${maskAmount(formatAmountEuro(totalInvested), balancesHidden)}",
                 fontSize = 12.sp,
                 color    = PrimaryDark,
                 fontWeight = FontWeight.Medium
@@ -206,7 +205,6 @@ private fun InvestmentBarChartPreview() {
         InvestmentBarChart(
             investments = createMockInvestments(),
             year = "2024",
-            currencyCode = "€",
             balancesHidden = false
         )
     }
@@ -219,7 +217,6 @@ private fun InvestmentBarChartEmptyPreview() {
         InvestmentBarChart(
             investments = emptyList(),
             year = "2025",
-            currencyCode = "€",
             balancesHidden = false
         )
     }

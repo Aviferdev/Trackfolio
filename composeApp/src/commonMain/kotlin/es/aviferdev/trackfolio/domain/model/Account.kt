@@ -3,7 +3,6 @@ package es.aviferdev.trackfolio.domain.model
 data class Account(
     val id: String,
     val name: String,
-    val currency: String,
     val initialBalance: Double,   // saldo inicial — obligatorio antes de operar
     val computedBalance: Double,  // initialBalance + SUM(INCOME) - SUM(EXPENSE) + SUM(ADJUSTMENT), calculado en BD
     val createdAt: Long,

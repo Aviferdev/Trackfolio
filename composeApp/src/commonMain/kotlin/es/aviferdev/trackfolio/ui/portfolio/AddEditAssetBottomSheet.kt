@@ -60,7 +60,6 @@ import es.aviferdev.trackfolio.ui.theme.SurfaceElevated
 import es.aviferdev.trackfolio.ui.theme.TextPrimary
 import es.aviferdev.trackfolio.ui.theme.TextSecondary
 import es.aviferdev.trackfolio.ui.theme.TrackfolioTheme
-import es.aviferdev.trackfolio.ui.theme.currencySymbol
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
@@ -73,7 +72,6 @@ import kotlinx.datetime.toLocalDateTime
 fun AddEditAssetBottomSheet(
     asset: Asset?,
     categories: List<AssetCategory>,
-    currencyCode: String = "€",
     preselectedCategoryId: String? = null,
     allPlatforms: List<Platform> = emptyList(),
     linkedPlatformIds: Set<String> = emptySet(),
@@ -97,7 +95,6 @@ fun AddEditAssetBottomSheet(
     onDismiss: () -> Unit
 ) {
     val isEditing = asset != null
-    val symbol    = currencySymbol(currencyCode)
 
     var ticker        by remember { mutableStateOf(asset?.ticker ?: "") }
     var name          by remember { mutableStateOf(asset?.name ?: "") }
@@ -325,7 +322,7 @@ Spacer(Modifier.height(12.dp))
                     onValueChange = { currentPrice = it.filter { c -> c.isDigit() || c == ',' || c == '.' } },
                     label         = { Text("Precio actual (opcional)") },
                     placeholder   = { Text("0,00") },
-                    trailingIcon  = { Text(symbol, color = TextSecondary, modifier = Modifier.padding(end = 12.dp)) },
+                    trailingIcon  = { Text("€", color = TextSecondary, modifier = Modifier.padding(end = 12.dp)) },
                     supportingText = {
                         Text(
                             text     = "Sirve para calcular el valor actual y la revalorización.",
@@ -738,7 +735,6 @@ private fun AddEditAssetBottomSheetPreview() {
         AddEditAssetBottomSheet(
             asset = null,
             categories = sampleCategories,
-            currencyCode = "€",
             preselectedCategoryId = null,
             allPlatforms = samplePlatforms,
             linkedPlatformIds = emptySet(),

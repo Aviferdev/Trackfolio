@@ -85,7 +85,6 @@ import es.aviferdev.trackfolio.ui.theme.TextPrimary
 import es.aviferdev.trackfolio.ui.theme.TextSecondary
 import es.aviferdev.trackfolio.ui.theme.TextTertiary
 import es.aviferdev.trackfolio.ui.theme.WarnAmber
-import es.aviferdev.trackfolio.ui.theme.currencySymbol
 import es.aviferdev.trackfolio.ui.theme.formatAmount
 import es.aviferdev.trackfolio.ui.theme.maskAmount
 import org.koin.compose.viewmodel.koinViewModel
@@ -137,7 +136,7 @@ fun PortfolioScreen(
             transaction = null, fixedAsset = null,
             allAssets = state.allAssets, platforms = state.platforms,
             platformsByAsset = state.platformsByAsset, categories = availableCategories,
-            assetTransactions = emptyList(), currencyCode = state.currencyCode, buyOnly = true,
+            assetTransactions = emptyList(),  buyOnly = true,
             onSave = { assetId, type, qty, price, date, platformId, feeNote, notes ->
                 viewModel.addTransaction(assetId, type, qty, price, date, platformId, feeNote, notes)
             },
@@ -165,7 +164,7 @@ fun PortfolioScreen(
     }
     if (state.showUpdatePriceSheet && state.pricingAsset != null) {
         UpdateCurrentPriceSheet(
-            asset = state.pricingAsset!!, currencyCode = state.currencyCode,
+            asset = state.pricingAsset!!, 
             onConfirm = { newPrice -> viewModel.refreshCurrentPrice(state.pricingAsset!!, newPrice) },
             onDismiss = { viewModel.closeUpdatePriceSheet() }
         )
@@ -174,7 +173,7 @@ fun PortfolioScreen(
         AddEditAssetBottomSheet(
             asset = null,
             categories = availableCategories,
-            currencyCode = state.currencyCode,
+            
             allPlatforms = state.platforms,
             allSectors = state.allSectors,
             linkedSectorIds = emptySet(),
@@ -190,7 +189,7 @@ fun PortfolioScreen(
         AddEditAssetBottomSheet(
             asset = editing,
             categories = availableCategories,
-            currencyCode = state.currencyCode,
+            
             allPlatforms = state.platforms,
             linkedPlatformIds = catalogState.editingPlatformIds,
             allSectors = state.allSectors,
@@ -276,7 +275,7 @@ fun PortfolioContent(
                     totalRealizedPnL = state.totalRealizedPnL,
                     totalUnrealizedPnL = state.totalUnrealizedPnL,
                     positionsCount = state.openPositionsCount,
-                    currencyCode = state.currencyCode,
+                    
                     balancesHidden = balancesHidden,
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                 )
@@ -289,7 +288,7 @@ fun PortfolioContent(
                         subtitle = "Valor mensual del portfolio",
                         points = valueHistory.map { it.date to it.value },
                         lineColor = PrimaryDark,
-                        currencyCode = state.currencyCode,
+                        
                         balancesHidden = balancesHidden,
                         modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
                     )
@@ -340,7 +339,7 @@ fun PortfolioContent(
                     PortfolioDistributionCard(
                         slices = currentDist,
                         totalCurrentValue = state.combinedCurrentValue,
-                        currencyCode = state.currencyCode,
+                        
                         balancesHidden = balancesHidden,
                         selectedView = state.selectedDistributionView,
                         fixedIncomePercent = state.fixedIncomeSummary?.let { fi ->
@@ -367,14 +366,14 @@ fun PortfolioContent(
                         item(key = "hdr_${group.category?.id ?: "none"}") {
                             CategoryGroupHeader(
                                 group = group,
-                                currencyCode = state.currencyCode,
+                                
                                 balancesHidden = balancesHidden
                             )
                         }
                         items(group.rows, key = { "open_${it.asset.id}" }) { row ->
                             AssetCard(
                                 row = row,
-                                currencyCode = state.currencyCode,
+                                
                                 balancesHidden = balancesHidden,
                                 onClick = { onAssetClick(row.asset.id) },
                                 onUpdatePrice = { onOpenUpdatePriceSheet(row.asset) },
@@ -391,7 +390,7 @@ fun PortfolioContent(
                             items(group.fixedIncomeRows, key = { "fi_${it.position.id}" }) { fiRow ->
                                 FixedIncomePositionCard(
                                     row = fiRow,
-                                    currencyCode = state.currencyCode,
+                                    
                                     balancesHidden = balancesHidden,
                                     onClick = { onFixedIncomeClick(fiRow.position.id) },
                                     onRegisterCoupon = if (fiRow.position.hasPeriodicCoupons) {
@@ -422,7 +421,7 @@ fun PortfolioContent(
                                     state.closedPositions.forEach { row ->
                                         ClosedAssetCard(
                                             row = row,
-                                            currencyCode = state.currencyCode,
+                                            
                                             balancesHidden = balancesHidden,
                                             onClick = { onAssetClick(row.asset.id) },
                                             modifier = Modifier.padding(horizontal = 16.dp, vertical = 5.dp)
@@ -431,7 +430,7 @@ fun PortfolioContent(
                                     state.closedFixedIncomePositions.forEach { fiRow ->
                                         ClosedFixedIncomeCard(
                                             row = fiRow,
-                                            currencyCode = state.currencyCode,
+                                            
                                             balancesHidden = balancesHidden,
                                             onClick = { onFixedIncomeClick(fiRow.position.id) },
                                             modifier = Modifier.padding(horizontal = 16.dp, vertical = 5.dp)
@@ -495,7 +494,6 @@ private fun PortfolioContentPreview() {
                 totalRealizedPnL = 500.0,
                 totalUnrealizedPnL = 2000.0,
                 openPositionsCount = 5,
-                currencyCode = "€",
                 groups = listOf(
                     CategoryGroup(
                         category = AssetCategory(id = "cat1", name = "Acciones", icon = "📈", sortOrder = 0, createdAt = 0L),
@@ -588,11 +586,9 @@ private fun PortfolioSummaryCard(
     totalRealizedPnL: Double,
     totalUnrealizedPnL: Double,
     positionsCount: Int,
-    currencyCode: String,
     balancesHidden: Boolean,
     modifier: Modifier = Modifier
 ) {
-    val symbol = currencySymbol(currencyCode)
     Card(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
@@ -616,7 +612,7 @@ private fun PortfolioSummaryCard(
                 )
                 Spacer(Modifier.width(6.dp))
                 Text(
-                    symbol,
+                    "€",
                     fontSize = 18.sp,
                     color = Color.White.copy(alpha = 0.75f),
                     fontWeight = FontWeight.Medium,
@@ -633,7 +629,7 @@ private fun PortfolioSummaryCard(
             ) {
                 PortfolioMetric(
                     label = "Invertido",
-                    primary = "${maskAmount(formatAmount(totalInvested), balancesHidden)} $symbol",
+                    primary = "${maskAmount(formatAmount(totalInvested), balancesHidden)} €",
                     color = Color.White,
                     modifier = Modifier.weight(1f)
                 )
@@ -651,7 +647,7 @@ private fun PortfolioSummaryCard(
                             formatAmount(abs(totalPnL)),
                             balancesHidden
                         )
-                    } $symbol",
+                    } €",
                     secondary = if (totalPnL == 0.0) null
                     else "${if (totalPnLPercent >= 0) "+" else "−"}${
                         formatPercent1(
@@ -671,8 +667,8 @@ private fun PortfolioSummaryCard(
             if (totalRealizedPnL != 0.0 && totalUnrealizedPnL != 0.0) {
                 Spacer(Modifier.height(12.dp))
                 Row(Modifier.fillMaxWidth(), Arrangement.SpaceBetween) {
-                    PnLChip("Realizado", totalRealizedPnL, symbol, balancesHidden)
-                    PnLChip("Latente", totalUnrealizedPnL, symbol, balancesHidden)
+                    PnLChip("Realizado", totalRealizedPnL, balancesHidden)
+                    PnLChip("Latente", totalUnrealizedPnL, balancesHidden)
                 }
             }
             Spacer(Modifier.height(12.dp))
@@ -710,7 +706,7 @@ private fun PortfolioMetric(
 }
 
 @Composable
-private fun PnLChip(label: String, amount: Double, symbol: String, masked: Boolean) {
+private fun PnLChip(label: String, amount: Double, masked: Boolean) {
     val color = when {
         amount > 0 -> Color(0xFF86EFAC)
         amount < 0 -> Color(0xFFFCA5A5)
@@ -726,7 +722,7 @@ private fun PnLChip(label: String, amount: Double, symbol: String, masked: Boole
                     formatAmount(abs(amount)),
                     masked
                 )
-            } $symbol",
+            } €",
             fontSize = 12.sp,
             color = color,
             fontWeight = FontWeight.Medium
@@ -738,10 +734,8 @@ private fun PnLChip(label: String, amount: Double, symbol: String, masked: Boole
 @Composable
 private fun CategoryGroupHeader(
     group: CategoryGroup,
-    currencyCode: String,
     balancesHidden: Boolean
 ) {
-    val symbol = currencySymbol(currencyCode)
     val pnlColor = when {
         group.totalPnL > 0 -> IncomeGreen
         group.totalPnL < 0 -> ExpenseRed
@@ -791,7 +785,7 @@ private fun CategoryGroupHeader(
                         formatAmount(group.totalInvested),
                         balancesHidden
                     )
-                } $symbol",
+                } €",
                 fontSize = 11.sp,
                 color = TextTertiary
             )
@@ -801,7 +795,7 @@ private fun CategoryGroupHeader(
                         formatAmount(group.totalCurrentValue),
                         balancesHidden
                     )
-                } $symbol",
+                } €",
                 fontSize = 11.sp,
                 color = TextTertiary
             )
@@ -813,7 +807,6 @@ private fun CategoryGroupHeader(
 @Composable
 private fun AssetCard(
     row: AssetRow,
-    currencyCode: String,
     balancesHidden: Boolean,
     onClick: () -> Unit,
     onUpdatePrice: () -> Unit,
@@ -821,7 +814,6 @@ private fun AssetCard(
 ) {
     val asset = row.asset
     val pos = row.position
-    val symbol = currencySymbol(currencyCode)
     val pnlColor = when {
         pos.totalPnL > 0 -> IncomeGreen
         pos.totalPnL < 0 -> ExpenseRed
@@ -875,7 +867,7 @@ private fun AssetCard(
                             formatAmount(pos.averageCostOfRemaining),
                             balancesHidden
                         )
-                    } $symbol",
+                    } €",
                     fontSize = 11.sp,
                     color = TextTertiary
                 )
@@ -884,7 +876,7 @@ private fun AssetCard(
             Column(horizontalAlignment = Alignment.End) {
                 Text(
                     if (pos.hasCurrentPrice)
-                        "${maskAmount(formatAmount(pos.currentValue), balancesHidden)} $symbol"
+                        "${maskAmount(formatAmount(pos.currentValue), balancesHidden)} €"
                     else "—",
                     fontSize = 13.sp,
                     fontWeight = FontWeight.Bold,
@@ -897,7 +889,7 @@ private fun AssetCard(
                                 formatAmount(abs(pos.totalPnL)),
                                 balancesHidden
                             )
-                        } $symbol",
+                        } €",
                         fontSize = 11.sp,
                         color = pnlColor,
                         fontWeight = FontWeight.SemiBold
@@ -952,14 +944,12 @@ private fun ClosedPositionsHeader(count: Int, expanded: Boolean, onToggle: () ->
 @Composable
 private fun ClosedAssetCard(
     row: AssetRow,
-    currencyCode: String,
     balancesHidden: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val asset = row.asset
     val pos = row.position
-    val symbol = currencySymbol(currencyCode)
     val pnlColor = when {
         pos.realizedPnL > 0 -> IncomeGreen
         pos.realizedPnL < 0 -> ExpenseRed
@@ -1025,7 +1015,7 @@ private fun ClosedAssetCard(
                                 )
                             ), balancesHidden
                         )
-                    } $symbol",
+                    } €",
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Bold,
                     color = pnlColor
@@ -1066,13 +1056,11 @@ private fun FixedIncomeSectionHeader(
 @Composable
 private fun ClosedFixedIncomeCard(
     row: es.aviferdev.trackfolio.domain.model.FixedIncomeRow,
-    currencyCode: String,
     balancesHidden: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val position = row.position
-    val symbol = currencySymbol(currencyCode)
     val pnlColor = when {
         row.totalProfit > 0 -> IncomeGreen
         row.totalProfit < 0 -> ExpenseRed
@@ -1138,7 +1126,7 @@ private fun ClosedFixedIncomeCard(
                                 )
                             ), balancesHidden
                         )
-                    } $symbol",
+                    } €",
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Bold,
                     color = pnlColor

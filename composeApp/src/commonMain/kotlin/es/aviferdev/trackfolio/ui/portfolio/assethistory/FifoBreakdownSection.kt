@@ -38,18 +38,14 @@ import es.aviferdev.trackfolio.ui.theme.BorderGray
 import es.aviferdev.trackfolio.ui.theme.SurfaceWhite
 import es.aviferdev.trackfolio.ui.theme.TextPrimary
 import es.aviferdev.trackfolio.ui.theme.TextTertiary
-import es.aviferdev.trackfolio.ui.theme.currencySymbol
-
 // ─── FIFO breakdown ───────────────────────────────────────────────────────────
 @Composable
 fun FifoBreakdownSection(
     breakdown: FifoBreakdown,
-    currencyCode: String,
     balancesHidden: Boolean,
     modifier: Modifier = Modifier
 ) {
     var expanded by remember { mutableStateOf(true) }
-    val symbol = currencySymbol(currencyCode)
 
     Card(
         modifier = modifier.fillMaxWidth(),
@@ -105,7 +101,6 @@ fun FifoBreakdownSection(
                             FifoOpenLotRow(
                                 i + 1,
                                 lot,
-                                symbol,
                                 balancesHidden
                             )
                         }
@@ -122,7 +117,6 @@ fun FifoBreakdownSection(
                         breakdown.saleMatches.forEach {
                             FifoSaleMatchBlock(
                                 it,
-                                symbol,
                                 balancesHidden
                             )
                         }

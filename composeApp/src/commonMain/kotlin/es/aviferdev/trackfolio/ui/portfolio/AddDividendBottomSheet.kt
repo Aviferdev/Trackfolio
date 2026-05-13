@@ -37,11 +37,9 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 fun AddDividendBottomSheet(
     fixedAssetName: String? = null,
     allAssets: List<Asset> = emptyList(),
-    currencyCode: String,
     onSave: (assetId: String?, grossAmount: Double, irpfPercent: Double, date: Long) -> Unit,
     onDismiss: () -> Unit
 ) {
-    val symbol = currencySymbol(currencyCode)
     val showAssetSelector = fixedAssetName == null && allAssets.isNotEmpty()
 
     var selectedAssetId by remember { mutableStateOf(allAssets.firstOrNull()?.id) }
@@ -131,7 +129,7 @@ fun AddDividendBottomSheet(
             // \u2500\u2500 Neto calculado \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
             if (netAmount != null) {
                 Text(
-                    text       = "+ ${formatAmount(netAmount)} $symbol",
+                    text       = "+ ${formatAmount(netAmount)} €",
                     fontSize   = 28.sp,
                     color      = IncomeGreen,
                     fontWeight = FontWeight.Bold
@@ -156,7 +154,7 @@ fun AddDividendBottomSheet(
                     value           = grossAmountText,
                     onValueChange   = { grossAmountText = it.filter { c -> c.isDigit() || c == ',' || c == '.' }; error = null },
                     placeholder     = { Text("0,00", color = TextSecondary.copy(alpha = 0.5f), fontSize = 14.sp) },
-                    suffix          = { Text(symbol, color = TextSecondary, fontSize = 14.sp) },
+                    suffix          = { Text("€", color = TextSecondary, fontSize = 14.sp) },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                     singleLine      = true,
                     modifier        = Modifier.fillMaxWidth(),
@@ -199,9 +197,9 @@ fun AddDividendBottomSheet(
                         modifier              = Modifier.fillMaxWidth().padding(12.dp),
                         horizontalArrangement = Arrangement.SpaceEvenly
                     ) {
-                        SummaryItem("Bruto", grossAmount, symbol, TextPrimary)
-                        if (irpfAmount > 0) SummaryItem("IRPF", irpfAmount, symbol, ExpenseRed)
-                        SummaryItem("Neto", netAmount ?: 0.0, symbol, IncomeGreen)
+                        SummaryItem("Bruto", grossAmount, TextPrimary)
+                        if (irpfAmount > 0) SummaryItem("IRPF", irpfAmount, ExpenseRed)
+                        SummaryItem("Neto", netAmount ?: 0.0, IncomeGreen)
                     }
                 }
             }
@@ -244,11 +242,11 @@ fun AddDividendBottomSheet(
 }
 
 @Composable
-private fun SummaryItem(label: String, value: Double, currency: String, color: Color) {
+private fun SummaryItem(label: String, value: Double, color: Color) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Text(label, fontSize = 10.sp, color = TextSecondary)
         Text(
-            text       = "${formatAmount(value)} $currency",
+            text       = "${formatAmount(value)} €",
             fontSize   = 12.sp,
             fontWeight = FontWeight.SemiBold,
             color      = color
@@ -302,7 +300,6 @@ private fun AddDividendBottomSheetWithAssetSelectorPreview() {
         AddDividendBottomSheet(
             fixedAssetName = null,
             allAssets = createMockAssets(),
-            currencyCode = "€",
             onSave = { _, _, _, _ -> },
             onDismiss = {}
         )
@@ -316,7 +313,6 @@ private fun AddDividendBottomSheetFixedAssetPreview() {
         AddDividendBottomSheet(
             fixedAssetName = "Apple Inc.",
             allAssets = emptyList(),
-            currencyCode = "€",
             onSave = { _, _, _, _ -> },
             onDismiss = {}
         )

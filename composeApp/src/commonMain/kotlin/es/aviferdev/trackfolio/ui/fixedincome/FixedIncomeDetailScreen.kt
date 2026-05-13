@@ -73,13 +73,11 @@ fun FixedIncomeDetailScreen(
     )
 ) {
     val state by viewModel.uiState.collectAsState()
-    val symbol = currencySymbol("€")
 
     var fabMenuOpen by remember { mutableStateOf(false) }
 
     FixedIncomeDetailContent(
         state = state,
-        symbol = symbol,
         onBack = onBack,
         onDeleteEvent = { event -> viewModel.showDeleteEventDialog(event) },
         onUpdateRegionSector = { region, sector ->
@@ -138,7 +136,6 @@ fun FixedIncomeDetailScreen(
 @Composable
 fun FixedIncomeDetailContent(
     state: FixedIncomeDetailUiState,
-    symbol: String,
     onBack: () -> Unit,
     onDeleteEvent: (FixedIncomeEvent) -> Unit,
     onUpdateRegionSector: (String?, String?) -> Unit,
@@ -178,7 +175,6 @@ fun FixedIncomeDetailContent(
                     FixedIncomeDetailHeader(
                         position = position,
                         row = row,
-                        symbol = symbol,
                         balancesHidden = false
                     )
                 }
@@ -188,8 +184,7 @@ fun FixedIncomeDetailContent(
                         Spacer(Modifier.height(16.dp))
                         CouponTimelineSection(
                             schedule = state.couponSchedule,
-                            symbol = symbol,
-                            balancesHidden = false
+                                balancesHidden = false
                         )
                     }
                 }
@@ -199,8 +194,7 @@ fun FixedIncomeDetailContent(
                         Spacer(Modifier.height(16.dp))
                         MaturitySimulatorCard(
                             simulation = state.maturitySimulation!!,
-                            symbol = symbol,
-                            balancesHidden = false
+                                balancesHidden = false
                         )
                     }
                 }
@@ -209,7 +203,6 @@ fun FixedIncomeDetailContent(
                     Spacer(Modifier.height(16.dp))
                     EventsHistorySection(
                         events = state.events,
-                        symbol = symbol,
                         balancesHidden = false,
                         onDeleteEvent = onDeleteEvent
                     )
@@ -389,7 +382,6 @@ fun FixedIncomeDetailContentPreview() {
                     netProfit = 70.88
                 )
             ),
-            symbol = "€",
             onBack = {},
             onDeleteEvent = {},
             onUpdateRegionSector = { _, _ -> },
@@ -541,7 +533,7 @@ private fun DistributionSection(
 private fun FixedIncomeDetailHeader(
     position: es.aviferdev.trackfolio.domain.model.FixedIncomePosition,
     row: es.aviferdev.trackfolio.domain.model.FixedIncomeRow,
-    symbol: String,
+
     balancesHidden: Boolean
 ) {
     // Hero card with WarnAmber background (matching JSX design)
@@ -648,7 +640,7 @@ private fun DetailCell(label: String, value: String, modifier: Modifier = Modifi
 @Composable
 private fun CouponTimelineSection(
     schedule: List<ScheduledCoupon>,
-    symbol: String,
+
     balancesHidden: Boolean
 ) {
     Card(
@@ -698,7 +690,7 @@ private fun CouponTimelineSection(
                         }
                     }
                     Text(
-                        text = "${maskAmount(formatAmount(coupon.grossAmount), balancesHidden)} $symbol",
+                        text = "${maskAmount(formatAmount(coupon.grossAmount), balancesHidden)} €",
                         fontSize = 13.sp,
                         fontWeight = FontWeight.Medium,
                         color = TextPrimary
@@ -719,7 +711,7 @@ private fun CouponTimelineSection(
 @Composable
 private fun MaturitySimulatorCard(
     simulation: es.aviferdev.trackfolio.domain.portfolio.MaturitySimulation,
-    symbol: String,
+
     balancesHidden: Boolean
 ) {
     Card(
@@ -740,32 +732,27 @@ private fun MaturitySimulatorCard(
             SimulatorRow(
                 label = "Capital invertido",
                 value = maskAmount(formatAmount(simulation.capitalInvested), balancesHidden),
-                symbol = symbol
             )
             SimulatorRow(
                 label = "Intereses brutos",
                 value = "+ ${maskAmount(formatAmount(simulation.grossInterest), balancesHidden)}",
-                symbol = symbol,
                 valueColor = PositiveGreen
             )
             SimulatorRow(
                 label = "Cupones ya cobrados",
                 value = "- ${maskAmount(formatAmount(simulation.collectedCoupons), balancesHidden)}",
-                symbol = symbol,
                 valueColor = TextSecondary
             )
             SimulatorRow(
                 label = "IRPF estimado (19%)",
                 value = "- ${maskAmount(formatAmount(simulation.estimatedIrpf), balancesHidden)}",
-                symbol = symbol,
                 valueColor = NegativeRed
             )
             if (simulation.estimatedCommission > 0) {
                 SimulatorRow(
                     label = "Comisiones estimadas",
                     value = "- ${maskAmount(formatAmount(simulation.estimatedCommission), balancesHidden)}",
-                    symbol = symbol,
-                    valueColor = NegativeRed
+                        valueColor = NegativeRed
                 )
             }
 
@@ -782,7 +769,7 @@ private fun MaturitySimulatorCard(
                     color = TextPrimary
                 )
                 Text(
-                    text = "${maskAmount(formatAmount(simulation.netAtMaturity), balancesHidden)} $symbol",
+                    text = "${maskAmount(formatAmount(simulation.netAtMaturity), balancesHidden)} €",
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold,
                     color = PrimaryDark
@@ -793,7 +780,7 @@ private fun MaturitySimulatorCard(
 
             val sign = if (simulation.netProfit >= 0) "+" else ""
             Text(
-                text = "Beneficio neto total: $sign${maskAmount(formatAmount(simulation.netProfit), balancesHidden)} $symbol",
+                text = "Beneficio neto total: $sign${maskAmount(formatAmount(simulation.netProfit), balancesHidden)} €",
                 fontSize = 13.sp,
                 fontWeight = FontWeight.Medium,
                 color = if (simulation.netProfit >= 0) PositiveGreen else NegativeRed
@@ -806,7 +793,7 @@ private fun MaturitySimulatorCard(
 private fun SimulatorRow(
     label: String,
     value: String,
-    symbol: String,
+
     valueColor: Color = TextPrimary
 ) {
     Row(
@@ -817,7 +804,7 @@ private fun SimulatorRow(
     ) {
         Text(text = label, fontSize = 13.sp, color = TextSecondary)
         Text(
-            text = "$value $symbol",
+            text = "$value €",
             fontSize = 13.sp,
             fontWeight = FontWeight.Medium,
             color = valueColor
@@ -828,7 +815,7 @@ private fun SimulatorRow(
 @Composable
 private fun EventsHistorySection(
     events: List<FixedIncomeEvent>,
-    symbol: String,
+
     balancesHidden: Boolean,
     onDeleteEvent: (FixedIncomeEvent) -> Unit
 ) {
@@ -857,7 +844,6 @@ private fun EventsHistorySection(
                 events.forEach { event ->
                     EventItem(
                         event = event,
-                        symbol = symbol,
                         balancesHidden = balancesHidden,
                         onDelete = { onDeleteEvent(event) }
                     )
@@ -876,7 +862,7 @@ private fun EventsHistorySection(
 @Composable
 private fun EventItem(
     event: FixedIncomeEvent,
-    symbol: String,
+
     balancesHidden: Boolean,
     onDelete: () -> Unit
 ) {
@@ -901,7 +887,7 @@ private fun EventItem(
             }
             Column(horizontalAlignment = Alignment.End) {
                 Text(
-                    text = "${maskAmount(formatAmount(event.netAmount), balancesHidden)} $symbol",
+                    text = "${maskAmount(formatAmount(event.netAmount), balancesHidden)} €",
                     fontSize = 14.sp,
                     fontWeight = FontWeight.SemiBold,
                     color = if (event.netAmount >= 0) PositiveGreen else NegativeRed

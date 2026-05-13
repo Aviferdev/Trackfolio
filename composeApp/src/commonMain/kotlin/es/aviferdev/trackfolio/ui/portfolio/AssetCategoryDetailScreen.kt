@@ -69,8 +69,7 @@ fun AssetCategoryDetailScreen(
         AddEditAssetBottomSheet(
             asset = null,
             categories = state.allCategories,
-            currencyCode = state.currencyCode,
-            preselectedCategoryId = categoryId,
+                        preselectedCategoryId = categoryId,
             allPlatforms = state.categoryPlatforms,
             allSectors = state.allSectors,
             linkedSectorIds = emptySet(),
@@ -87,8 +86,7 @@ fun AssetCategoryDetailScreen(
         AddEditAssetBottomSheet(
             asset = editing,
             categories = state.allCategories,
-            currencyCode = state.currencyCode,
-            allPlatforms = state.categoryPlatforms,
+                        allPlatforms = state.categoryPlatforms,
             linkedPlatformIds = state.editingPlatformIds,
             allSectors = state.allSectors,
             linkedSectorIds = state.editingSectorIds,
@@ -247,8 +245,7 @@ fun AssetCategoryDetailContent(
                             state.activeFixedIncome.forEachIndexed { index, fiRow ->
                                 FixedIncomePositionCard(
                                     row = fiRow,
-                                    currencyCode = state.currencyCode,
-                                    balancesHidden = false,
+                                                                        balancesHidden = false,
                                     onClick = { onFixedIncomeClick(fiRow.position.id) }
                                 )
                                 if (index < state.activeFixedIncome.lastIndex) {
@@ -397,7 +394,6 @@ private fun AssetCategoryDetailContentPreview() {
                 allCategories = listOf(
                     AssetCategory(id = "cat1", name = "Acciones", icon = "📈", sortOrder = 0, createdAt = 0L)
                 ),
-                currencyCode = "€"
             ),
             categoryId = "cat1",
             onBack = {},

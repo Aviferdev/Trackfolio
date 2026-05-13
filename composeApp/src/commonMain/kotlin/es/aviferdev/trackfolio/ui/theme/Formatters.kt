@@ -48,23 +48,9 @@ fun formatAmount(amount: Double, addPositive: Boolean = false): String {
 
 // ─── Moneda ──────────────────────────────────────────────────────────────────
 
-/**
- * Convierte un código ISO-4217 (EUR, USD, GBP…) a su símbolo más reconocible.
- * Para monedas que comparten el `$` (USD, MXN, ARS, CLP) se usa solo `$`,
- * confiando en que la cuenta ya identifica de cuál se trata.
- */
-fun currencySymbol(code: String): String = when (code.uppercase()) {
-    "€" -> "€"
-    "USD", "MXN", "ARS", "CLP" -> "$"
-    "GBP" -> "£"
-    "JPY" -> "¥"
-    "CHF" -> "Fr"
-    else  -> code
-}
-
-/** Importe formateado seguido de su símbolo de moneda — "1.234,56 €". */
-fun formatAmountWithCurrency(amount: Double, currencyCode: String): String =
-    "${formatAmount(amount)} ${currencySymbol(currencyCode)}"
+/** Importe formateado en euros — "1.234,56 €". */
+fun formatAmountEuro(amount: Double): String =
+    "${formatAmount(amount)} €"
 
 // ─── Tiempo relativo ─────────────────────────────────────────────────────────
 
@@ -106,29 +92,27 @@ fun formatRelativeTime(epochMillis: Long): String {
  * Formato español: coma decimal, espacio como separador de miles.
  *
  * @param value valor numérico a formatear.
- * @param currencyCode código de moneda (EUR, USD, etc.).
  * @return cadena formateada, ej: "1,2K €", "500 €", "2,5M €".
  */
-fun formatAxisLabel(value: Double, currencyCode: String): String {
-    val symbol = currencySymbol(currencyCode)
+fun formatAxisLabel(value: Double): String {
     val absVal = if (value < 0) -value else value
     val sign = if (value < 0) "-" else ""
 
     return when {
         absVal >= 1_000_000 -> {
             val m = value / 1_000_000
-            "${sign}${formatCompact(m)}M $symbol"
+            "${sign}${formatCompact(m)}M €"
         }
         absVal >= 10_000 -> {
             val k = value / 1_000
-            "${sign}${k.toLong()}K $symbol"
+            "${sign}${k.toLong()}K €"
         }
         absVal >= 1_000 -> {
             val k = value / 1_000
-            "${sign}${formatCompact(k)}K $symbol"
+            "${sign}${formatCompact(k)}K €"
         }
         else -> {
-            "${sign}${formatAmount(value)} $symbol"
+            "${sign}${formatAmount(value)} €"
         }
     }
 }

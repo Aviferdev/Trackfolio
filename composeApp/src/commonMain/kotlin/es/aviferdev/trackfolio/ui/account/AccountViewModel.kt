@@ -106,13 +106,12 @@ class AccountViewModel(
         _uiState.value = _uiState.value.copy(showDeleteConfirm = false, accountToDelete = null)
     }
 
-    fun addAccount(name: String, currency: String, accountType: AccountType = AccountType.GENERAL) {
+    fun addAccount(name: String, accountType: AccountType = AccountType.GENERAL) {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true)
             val newAccount = Account(
                 id              = generateId(),
                 name            = name,
-                currency        = currency,
                 initialBalance  = 0.0,
                 computedBalance = 0.0,
                 createdAt       = Clock.System.now().toEpochMilliseconds(),
@@ -141,12 +140,11 @@ class AccountViewModel(
         }
     }
 
-    fun editAccount(account: Account, newName: String, newCurrency: String, accountType: AccountType? = null) {
+    fun editAccount(account: Account, newName: String, accountType: AccountType? = null) {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true)
             val updated = account.copy(
                 name        = newName,
-                currency    = newCurrency,
                 accountType = accountType ?: account.accountType
             )
             updateAccount(updated)

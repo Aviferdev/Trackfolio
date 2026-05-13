@@ -50,8 +50,8 @@ actual class PdfReportGenerator(private val context: Context) {
     private val fmt = NumberFormat.getNumberInstance(Locale("es", "ES")).apply {
         minimumFractionDigits = 2; maximumFractionDigits = 2
     }
-    private fun fmtAmt(v: Double, currency: String = "") =
-        "${fmt.format(v)}${if (currency.isNotEmpty()) " $currency" else ""}"
+    private fun fmtAmt(v: Double) =
+        "${fmt.format(v)} €"
     private fun fmtPct(v: Double) = "${"%.1f".format(v)}%"
     private fun fmtQty(v: Double) = NumberFormat.getNumberInstance(Locale("es", "ES"))
         .apply { minimumFractionDigits = 0; maximumFractionDigits = 6 }.format(v)
@@ -163,7 +163,7 @@ actual class PdfReportGenerator(private val context: Context) {
             pRect.color = C_BG_HEADER
             canvas.drawRect(0f, 0f, PAGE_W.toFloat(), 70f, pRect)
             canvas.drawText("INFORME FISCAL ${data.year}", MARGIN, 28f, pTitle)
-            canvas.drawText("Cuenta: ${data.accountName}  ·  Moneda: ${data.currency}", MARGIN, 44f, pSub)
+            canvas.drawText("Cuenta: ${data.accountName}  ·  Moneda: €", MARGIN, 44f, pSub)
             canvas.drawText("Generado: ${formatDate(data.generatedAt)}", MARGIN, 58f, pSub)
             y = 86f
         }
@@ -188,7 +188,7 @@ actual class PdfReportGenerator(private val context: Context) {
                 val x = MARGIN + i * colW
                 canvas.drawText(lbl, x, y, pLabel)
                 val p12 = Paint(paints[i]).apply { textSize = 12f }
-                canvas.drawText(fmtAmt(values[i], data.currency), x, y + 16f, p12)
+                canvas.drawText(fmtAmt(values[i]), x, y + 16f, p12)
             }
             y += 32f
         }
@@ -208,7 +208,7 @@ actual class PdfReportGenerator(private val context: Context) {
                 val x = MARGIN + i * colW
                 canvas.drawText(lbl, x, y, pLabel)
                 val p12 = Paint(totPaints[i]).apply { textSize = 11f; isFakeBoldText = true }
-                canvas.drawText(fmtAmt(totValues[i], data.currency), x, y + 14f, p12)
+                canvas.drawText(fmtAmt(totValues[i]), x, y + 14f, p12)
             }
             y += 28f
 
@@ -220,9 +220,9 @@ actual class PdfReportGenerator(private val context: Context) {
                 checkBreak(14f)
                 val cells = listOf(
                     "${item.incomeType.emoji} ${item.incomeType.label}",
-                    fmtAmt(item.grossTotal, data.currency),
-                    fmtAmt(item.irpfTotal,  data.currency),
-                    fmtAmt(item.netTotal,   data.currency),
+                    fmtAmt(item.grossTotal),
+                    fmtAmt(item.irpfTotal),
+                    fmtAmt(item.netTotal),
                     fmtPct(item.avgIrpfPercent)
                 )
                 val paints = listOf(pBold, pNormal, pRed, pGreen, pLabel)
@@ -247,7 +247,7 @@ actual class PdfReportGenerator(private val context: Context) {
                 if (income == 0.0 && expense == 0.0) continue
                 checkBreak(14f)
                 drawTableRow(
-                    listOf(monthNames.getOrElse(m - 1) { m.toString() }, fmtAmt(income, data.currency), fmtAmt(expense, data.currency), fmtAmt(balance, data.currency)),
+                    listOf(monthNames.getOrElse(m - 1) { m.toString() }, fmtAmt(income), fmtAmt(expense), fmtAmt(balance)),
                     widths, listOf(pNormal, pGreen, pRed, if (balance >= 0) pGreen else pRed)
                 )
             }
@@ -262,7 +262,7 @@ actual class PdfReportGenerator(private val context: Context) {
                 checkBreak(14f)
                 val dir = if (debt.direction == DebtDirection.I_OWE) "Te debo" else "Me debe"
                 val amtPaint = if (debt.direction == DebtDirection.I_OWE) pRed else pGreen
-                drawTableRow(listOf(debt.personName, dir, fmtAmt(debt.amount, data.currency), formatDate(debt.date)), widths, listOf(pNormal, pNormal, amtPaint, pNormal))
+                drawTableRow(listOf(debt.personName, dir, fmtAmt(debt.amount), formatDate(debt.date)), widths, listOf(pNormal, pNormal, amtPaint, pNormal))
             }
             y += 4f
         }
@@ -274,10 +274,10 @@ actual class PdfReportGenerator(private val context: Context) {
             for (pos in data.assetPositions) {
                 if (pos.netQuantity == 0.0 && pos.totalBought == 0.0 && pos.totalSold == 0.0) continue
                 checkBreak(14f)
-                val unrealStr   = pos.unrealizedPnl?.let { fmtAmt(it, data.currency) } ?: "Sin precio"
+                val unrealStr   = pos.unrealizedPnl?.let { fmtAmt(it) } ?: "Sin precio"
                 val unrealPaint = when { pos.unrealizedPnl == null -> pNormal; pos.unrealizedPnl >= 0.0 -> pGreen; else -> pRed }
                 val realPaint   = if (pos.realizedPnl >= 0) pGreen else pRed
-                drawTableRow(listOf(pos.ticker, pos.name.take(16), pos.categoryName ?: "-", fmtQty(pos.netQuantity), fmtAmt(pos.avgCostBasis, data.currency), fmtAmt(pos.totalCost, data.currency), unrealStr, fmtAmt(pos.realizedPnl, data.currency)), widths1, listOf(pBold, pNormal, pNormal, pNormal, pNormal, pNormal, unrealPaint, realPaint))
+                drawTableRow(listOf(pos.ticker, pos.name.take(16), pos.categoryName ?: "-", fmtQty(pos.netQuantity), fmtAmt(pos.avgCostBasis), fmtAmt(pos.totalCost), unrealStr, fmtAmt(pos.realizedPnl)), widths1, listOf(pBold, pNormal, pNormal, pNormal, pNormal, pNormal, unrealPaint, realPaint))
             }
             y += 10f; checkBreak(20f)
             val labelPaint = Paint(pHead).apply { textSize = 10f; color = C_PRIMARY }
@@ -289,7 +289,7 @@ actual class PdfReportGenerator(private val context: Context) {
                 if (pos.totalBought == 0.0 && pos.totalSold == 0.0) continue
                 checkBreak(14f)
                 val pnlPaint = if (pos.realizedPnl >= 0) pGreen else pRed
-                drawTableRow(listOf(pos.ticker, pos.name.take(20), fmtAmt(pos.totalBought, data.currency), fmtAmt(pos.totalSold, data.currency), fmtAmt(pos.realizedPnl, data.currency)), widths2, listOf(pBold, pNormal, pGreen, pRed, pnlPaint))
+                drawTableRow(listOf(pos.ticker, pos.name.take(20), fmtAmt(pos.totalBought), fmtAmt(pos.totalSold), fmtAmt(pos.realizedPnl)), widths2, listOf(pBold, pNormal, pGreen, pRed, pnlPaint))
             }
             y += 4f
         }

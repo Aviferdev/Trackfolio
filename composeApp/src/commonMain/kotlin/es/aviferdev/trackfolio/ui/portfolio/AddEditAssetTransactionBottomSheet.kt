@@ -60,7 +60,6 @@ fun AddEditAssetTransactionBottomSheet(
     platformsByAsset: Map<String, List<Platform>>, // plataformas vinculadas por activo
     categories: List<AssetCategory>,             // categorías para filtrar
     assetTransactions: List<AssetTransaction>,   // movimientos del activo seleccionado actual
-    currencyCode: String,
     buyOnly: Boolean = false,                    // si true, no se muestra el toggle y siempre es BUY
     onSave: (
         assetId: String,
@@ -75,7 +74,6 @@ fun AddEditAssetTransactionBottomSheet(
     onDismiss: () -> Unit
 ) {
     val isEditing = transaction != null
-    val symbol = currencySymbol(currencyCode)
 
     // ── Estado del formulario ────────────────────────────────────────────────
     var selectedAssetId by remember(transaction, fixedAsset) {
@@ -455,7 +453,7 @@ fun AddEditAssetTransactionBottomSheet(
                     onValueChange = { pricePerUnit = it.filter { c -> c.isDigit() || c == ',' || c == '.' } },
                     label         = { Text("Precio unidad") },
                     placeholder   = { Text("0,00") },
-                    trailingIcon  = { Text(symbol, color = TextSecondary, modifier = Modifier.padding(end = 12.dp)) },
+                    trailingIcon  = { Text("€", color = TextSecondary, modifier = Modifier.padding(end = 12.dp)) },
                     modifier      = Modifier.weight(1f),
                     singleLine    = true,
                     shape         = RoundedCornerShape(10.dp),

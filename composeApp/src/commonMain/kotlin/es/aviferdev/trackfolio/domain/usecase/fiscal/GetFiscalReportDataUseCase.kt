@@ -38,7 +38,6 @@ class GetFiscalReportDataUseCase(
         ) { account, annual, monthly, debts, incomes ->
             Base(
                 accountName      = account?.name ?: "Cuenta",
-                currency         = account?.currency ?: "€",
                 annualSummary    = annual,
                 monthlyBreakdown = monthly,
                 debts            = debts,
@@ -81,7 +80,6 @@ class GetFiscalReportDataUseCase(
 
                 FiscalReportData(
                     accountName        = base.accountName,
-                    currency           = base.currency,
                     year               = year,
                     generatedAt        = Clock.System.now().toEpochMilliseconds(),
                     annualSummary      = adjustedSummary,
@@ -246,7 +244,6 @@ class GetFiscalReportDataUseCase(
 
     private data class Base(
         val accountName:      String,
-        val currency:         String,
         val annualSummary:    es.aviferdev.trackfolio.domain.model.AnnualSummary?,
         val monthlyBreakdown: List<es.aviferdev.trackfolio.domain.model.MonthlyTotals>,
         val debts:            List<es.aviferdev.trackfolio.domain.model.Debt>,

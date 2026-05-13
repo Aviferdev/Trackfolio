@@ -23,7 +23,6 @@ import androidx.compose.ui.unit.sp
 import es.aviferdev.trackfolio.domain.portfolio.AssetPosition
 import es.aviferdev.trackfolio.ui.portfolio.formatQty
 import es.aviferdev.trackfolio.ui.theme.PrimaryDark
-import es.aviferdev.trackfolio.ui.theme.currencySymbol
 import es.aviferdev.trackfolio.ui.theme.formatAmount
 import es.aviferdev.trackfolio.ui.theme.maskAmount
 import kotlin.math.abs
@@ -33,11 +32,9 @@ import kotlin.math.abs
 @Composable
 fun PositionCard(
     position: AssetPosition,
-    currencyCode: String,
     balancesHidden: Boolean,
     modifier: Modifier = Modifier
 ) {
-    val symbol = currencySymbol(currencyCode)
     val isOpen = position.netQuantity > 0.0
     val pnlColor = when {
         position.totalPnL > 0 -> Color(0xFF86EFAC)
@@ -65,7 +62,7 @@ fun PositionCard(
                             formatAmount(position.averageCostOfRemaining),
                             balancesHidden
                         )
-                    } $symbol" else "—",
+                    } €" else "—",
                     Color.White,
                     alignEnd = true
                 )
@@ -81,7 +78,7 @@ fun PositionCard(
                             formatAmount(position.totalInvestedRemaining),
                             balancesHidden
                         )
-                    } $symbol" else "—",
+                    } €" else "—",
                     Color.White.copy(.8f)
                 )
                 PositionMetric(
@@ -93,7 +90,7 @@ fun PositionCard(
                                 formatAmount(position.currentValue),
                                 balancesHidden
                             )
-                        } $symbol"
+                        } €"
 
                         else -> "Sin precio"
                     },
@@ -118,7 +115,7 @@ fun PositionCard(
                                 )
                             ), balancesHidden
                         )
-                    } $symbol",
+                    } €",
                     fontSize = 22.sp,
                     fontWeight = FontWeight.Bold,
                     color = pnlColor
@@ -144,17 +141,15 @@ fun PositionCard(
             if (position.realizedPnL != 0.0 || position.unrealizedPnL != 0.0 || position.dividendIncome != 0.0) {
                 Spacer(Modifier.height(10.dp))
                 Row(Modifier.fillMaxWidth(), Arrangement.SpaceBetween) {
-                    PnLChip("Realizado", position.realizedPnL, symbol, balancesHidden)
+                    PnLChip("Realizado", position.realizedPnL, balancesHidden)
                     if (position.dividendIncome != 0.0) PnLChip(
                         "Dividendos",
                         position.dividendIncome,
-                        symbol,
                         balancesHidden
                     )
                     PnLChip(
                         "Latente",
                         position.unrealizedPnL,
-                        symbol,
                         balancesHidden,
                         unavailable = !position.hasCurrentPrice && isOpen
                     )

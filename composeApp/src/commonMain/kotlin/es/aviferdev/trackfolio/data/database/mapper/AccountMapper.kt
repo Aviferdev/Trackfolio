@@ -8,7 +8,6 @@ import es.aviferdev.trackfolio.domain.model.AccountType
 fun GetComputedBalance.toDomain(): Account = Account(
     id              = id,
     name            = name,
-    currency        = currency,
     initialBalance  = initialBalance,
     computedBalance = computedBalance,
     createdAt       = createdAt,
@@ -18,7 +17,6 @@ fun GetComputedBalance.toDomain(): Account = Account(
 fun GetAllComputedBalances.toDomain(): Account = Account(
     id              = id,
     name            = name,
-    currency        = currency,
     initialBalance  = initialBalance,
     computedBalance = computedBalance,
     createdAt       = createdAt,

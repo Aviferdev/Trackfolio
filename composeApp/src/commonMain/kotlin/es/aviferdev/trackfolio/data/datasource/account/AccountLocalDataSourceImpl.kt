@@ -47,7 +47,6 @@ class AccountLocalDataSourceImpl(
             queries.insert(
                 id          = account.id,
                 name        = account.name,
-                currency    = account.currency,
                 balance     = account.initialBalance,
                 createdAt   = account.createdAt,
                 accountType = account.accountType.name
@@ -59,9 +58,8 @@ class AccountLocalDataSourceImpl(
         withContext(Dispatchers.IO) {
             queries.update(
                 name        = account.name,
-                currency   = account.currency,
                 accountType = account.accountType.name,
-                id         = account.id
+                id          = account.id
             )
         }
     }

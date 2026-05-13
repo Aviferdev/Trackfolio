@@ -66,22 +66,21 @@ fun AccountListScreen(
     if (uiState.showAddSheet) {
         AddEditAccountBottomSheet(
             account   = null,
-            onSave    = { name, currency, type -> viewModel.addAccount(name, currency, type) },
+            onSave    = { name, type -> viewModel.addAccount(name, type) },
             onDismiss = { viewModel.closeAddSheet() }
         )
     }
     uiState.pendingInitialBalanceAccount?.let { pending ->
         SetInitialBalanceBottomSheet(
             accountName = pending.name,
-            currency    = pending.currency,
             onConfirm   = { amount -> viewModel.confirmInitialBalance(amount) },
         )
     }
     if (uiState.showEditSheet && uiState.editingAccount != null) {
         AddEditAccountBottomSheet(
             account   = uiState.editingAccount,
-            onSave    = { name, currency, type ->
-                viewModel.editAccount(uiState.editingAccount!!, name, currency, type)
+            onSave    = { name, type ->
+                viewModel.editAccount(uiState.editingAccount!!, name, type)
             },
             onDismiss = { viewModel.closeEditSheet() }
         )
@@ -158,11 +157,11 @@ fun AccountListContent(
 fun AccountListContentPreview() {
     val now = Clock.System.now().toEpochMilliseconds()
     val fakeAccounts = listOf(
-        Account(id = "1", name = "Cuenta Principal", currency = "€",
+        Account(id = "1", name = "Cuenta Principal",
             initialBalance = 5000.0, computedBalance = 5200.0, createdAt = now, accountType = AccountType.GENERAL),
-        Account(id = "2", name = "Efectivo", currency = "€",
+        Account(id = "2", name = "Efectivo",
             initialBalance = 0.0, computedBalance = 0.0, createdAt = now, accountType = AccountType.CASH),
-        Account(id = "3", name = "USD Savings", currency = "USD",
+        Account(id = "3", name = "USD Savings",
             initialBalance = 1000.0, computedBalance = 1050.0, createdAt = now, accountType = AccountType.GENERAL)
     )
 
@@ -248,7 +247,7 @@ private fun AccountCard(
                             }
                         }
                         Text(
-                            text  = if (account.needsInitialBalance) "Saldo inicial pendiente" else account.currency,
+                            text  = if (account.needsInitialBalance) "Saldo inicial pendiente" else "€",
                             fontSize = 12.sp,
                             color = if (account.needsInitialBalance) ExpenseRed else TextSecondary
                         )
@@ -276,7 +275,7 @@ private fun AccountCard(
                     Column {
                         Text("Saldo actual", fontSize = 11.sp, color = TextSecondary)
                         Text(
-                            text       = "${maskAmount(formatAmount(account.computedBalance), balancesHidden)} ${account.currency}",
+                            text       = "${maskAmount(formatAmount(account.computedBalance), balancesHidden)} €",
                             fontSize   = 20.sp,
                             fontWeight = FontWeight.Bold,
                             color      = if (account.computedBalance >= 0) PrimaryDark else ExpenseRed

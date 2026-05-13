@@ -36,7 +36,6 @@ import es.aviferdev.trackfolio.ui.theme.SurfaceWhite
 import es.aviferdev.trackfolio.ui.theme.TextPrimary
 import es.aviferdev.trackfolio.ui.theme.TextSecondary
 import es.aviferdev.trackfolio.ui.theme.TextTertiary
-import es.aviferdev.trackfolio.ui.theme.currencySymbol
 import es.aviferdev.trackfolio.ui.theme.formatAmount
 import es.aviferdev.trackfolio.ui.theme.maskAmount
 
@@ -44,13 +43,11 @@ import es.aviferdev.trackfolio.ui.theme.maskAmount
 fun TxRow(
     tx: AssetTransaction,
     platform: Platform?,
-    currencyCode: String,
     balancesHidden: Boolean,
     onEdit: () -> Unit,
     onDelete: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val symbol = currencySymbol(currencyCode)
     val isBuy = tx.type == AssetTransactionType.BUY || tx.type == AssetTransactionType.TRANSFER_IN
     val sideColor = if (isBuy) IncomeGreen else ExpenseRed
     val sideLabel = when (tx.type) {
@@ -99,7 +96,7 @@ fun TxRow(
                                 formatAmount(tx.pricePerUnit),
                                 balancesHidden
                             )
-                        } $symbol", fontSize = 11.sp, color = TextPrimary
+                        } €", fontSize = 11.sp, color = TextPrimary
                     )
                 }
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -131,7 +128,7 @@ fun TxRow(
                             formatAmount(tx.grossAmount),
                             balancesHidden
                         )
-                    } $symbol",
+                    } €",
                     fontSize = 12.sp, color = sideColor, fontWeight = FontWeight.Bold
                 )
                 Row {

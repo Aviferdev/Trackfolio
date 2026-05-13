@@ -196,7 +196,7 @@ actual class PdfReportGenerator {
         fun drawPageHeader() {
             fillRect(0.0, 0.0, PAGE_W, 70.0, colorPrimary)
             drawText("INFORME FISCAL ${data.year}",                               MARGIN, 14.0, fontTitle, UIColor.whiteColor)
-            drawText("Cuenta: ${data.accountName}  ·  Moneda: ${data.currency}",  MARGIN, 38.0, fontSub,   UIColor.whiteColor)
+            drawText("Cuenta: ${data.accountName}  ·  Moneda: ${"€"}",  MARGIN, 38.0, fontSub,   UIColor.whiteColor)
             drawText("Generado: ${formatDate(data.generatedAt)}",                 MARGIN, 52.0, fontSub,   UIColor.whiteColor)
             y = 86.0
         }
@@ -219,7 +219,7 @@ actual class PdfReportGenerator {
                     val x = MARGIN + i * colW
                     drawText(lbl, x, y, fontLabel, colorGray)
                     val col = when (i) { 0 -> colorGreen; 1 -> colorRed; else -> if (v >= 0) colorGreen else colorRed }
-                    drawText(fmtAmt(v, data.currency), x, y + 16.0, fontMedium, col)
+                    drawText(fmtAmt(v), x, y + 16.0, fontMedium, col)
                 }
             y += 32.0
         }
@@ -238,7 +238,7 @@ actual class PdfReportGenerator {
                     val x = MARGIN + i * colW
                     drawText(lbl, x, y, fontLabel, colorGray)
                     val col = when (i) { 1 -> colorRed; 2 -> colorGreen; else -> UIColor.blackColor }
-                    drawText(fmtAmt(v, data.currency), x, y + 14.0, fontMedium, col)
+                    drawText(fmtAmt(v), x, y + 14.0, fontMedium, col)
                 }
             y += 28.0
 
@@ -250,9 +250,9 @@ actual class PdfReportGenerator {
                 checkBreak(14.0)
                 val cells  = listOf(
                     "${item.incomeType.emoji} ${item.incomeType.label}",
-                    fmtAmt(item.grossTotal, data.currency),
-                    fmtAmt(item.irpfTotal,  data.currency),
-                    fmtAmt(item.netTotal,   data.currency),
+                    fmtAmt(item.grossTotal),
+                    fmtAmt(item.irpfTotal),
+                    fmtAmt(item.netTotal),
                     fmtPct(item.avgIrpfPercent)
                 )
                 val colors = listOf(UIColor.blackColor, UIColor.blackColor, colorRed, colorGreen, colorGray)
@@ -275,7 +275,7 @@ actual class PdfReportGenerator {
                 if (income == 0.0 && expense == 0.0) continue
                 checkBreak(14.0)
                 drawTableRow(
-                    listOf(monthNames.getOrElse(m - 1) { m.toString() }, fmtAmt(income, data.currency), fmtAmt(expense, data.currency), fmtAmt(balance, data.currency)),
+                    listOf(monthNames.getOrElse(m - 1) { m.toString() }, fmtAmt(income), fmtAmt(expense), fmtAmt(balance)),
                     widths,
                     listOf(UIColor.blackColor, colorGreen, colorRed, if (balance >= 0) colorGreen else colorRed)
                 )
@@ -292,7 +292,7 @@ actual class PdfReportGenerator {
                 checkBreak(14.0)
                 val dir      = if (debt.direction == DebtDirection.I_OWE) "Te debo" else "Me debe"
                 val amtColor = if (debt.direction == DebtDirection.I_OWE) colorRed else colorGreen
-                drawTableRow(listOf(debt.personName, dir, fmtAmt(debt.amount, data.currency), formatDate(debt.date)), widths, listOf(UIColor.blackColor, UIColor.blackColor, amtColor, UIColor.blackColor))
+                drawTableRow(listOf(debt.personName, dir, fmtAmt(debt.amount), formatDate(debt.date)), widths, listOf(UIColor.blackColor, UIColor.blackColor, amtColor, UIColor.blackColor))
             }
             y += 4.0
         }
@@ -305,10 +305,10 @@ actual class PdfReportGenerator {
             for (pos in data.assetPositions) {
                 if (pos.netQuantity == 0.0 && pos.totalBought == 0.0 && pos.totalSold == 0.0) continue
                 checkBreak(14.0)
-                val unrealStr   = pos.unrealizedPnl?.let { fmtAmt(it, data.currency) } ?: "Sin precio"
+                val unrealStr   = pos.unrealizedPnl?.let { fmtAmt(it) } ?: "Sin precio"
                 val unrealColor = when { pos.unrealizedPnl == null -> UIColor.blackColor; pos.unrealizedPnl >= 0.0 -> colorGreen; else -> colorRed }
                 drawTableRow(
-                    listOf(pos.ticker, pos.name.take(16), pos.categoryName ?: "-", fmtQty(pos.netQuantity), fmtAmt(pos.avgCostBasis, data.currency), fmtAmt(pos.totalCost, data.currency), unrealStr, fmtAmt(pos.realizedPnl, data.currency)),
+                    listOf(pos.ticker, pos.name.take(16), pos.categoryName ?: "-", fmtQty(pos.netQuantity), fmtAmt(pos.avgCostBasis), fmtAmt(pos.totalCost), unrealStr, fmtAmt(pos.realizedPnl)),
                     widths1,
                     listOf(UIColor.blackColor, UIColor.blackColor, UIColor.blackColor, UIColor.blackColor, UIColor.blackColor, UIColor.blackColor, unrealColor, if (pos.realizedPnl >= 0) colorGreen else colorRed)
                 )
@@ -322,7 +322,7 @@ actual class PdfReportGenerator {
                 if (pos.totalBought == 0.0 && pos.totalSold == 0.0) continue
                 checkBreak(14.0)
                 val pnlColor = if (pos.realizedPnl >= 0) colorGreen else colorRed
-                drawTableRow(listOf(pos.ticker, pos.name.take(20), fmtAmt(pos.totalBought, data.currency), fmtAmt(pos.totalSold, data.currency), fmtAmt(pos.realizedPnl, data.currency)), widths2, listOf(UIColor.blackColor, UIColor.blackColor, colorGreen, colorRed, pnlColor))
+                drawTableRow(listOf(pos.ticker, pos.name.take(20), fmtAmt(pos.totalBought), fmtAmt(pos.totalSold), fmtAmt(pos.realizedPnl)), widths2, listOf(UIColor.blackColor, UIColor.blackColor, colorGreen, colorRed, pnlColor))
             }
             y += 4.0
         }
@@ -356,14 +356,14 @@ actual class PdfReportGenerator {
 
         // ── Formato — puro Kotlin, sin String.format (JVM-only) ───────────────
 
-        fun fmtAmt(v: Double, currency: String = ""): String {
+        fun fmtAmt(v: Double): String {
             val sign   = if (v < 0) "-" else ""
             val absVal = abs(v)
             val int_   = absVal.toLong()
             val frac   = ((absVal - int_) * 100 + 0.5).toLong().coerceIn(0, 99)
             val intStr = int_.toString().reversed().chunked(3).joinToString(".").reversed()
             val str    = "$sign$intStr,${frac.toString().padStart(2, '0')}"
-            return if (currency.isNotEmpty()) "$str $currency" else str
+            return "$str €"
         }
 
         fun fmtPct(v: Double): String {

@@ -52,7 +52,6 @@ fun TransferFundBottomSheet(
     destinations: List<Asset>,
     platforms: List<Platform>,
     assetTransactions: List<AssetTransaction>,
-    currencyCode: String,
     onExecuteTransfer: (
         destinationAssetId: String,
         quantity: Double,
@@ -63,7 +62,6 @@ fun TransferFundBottomSheet(
     ) -> Unit,
     onDismiss: () -> Unit
 ) {
-    val symbol = currencySymbol(currencyCode)
 
     // ── Estado del formulario ────────────────────────────────────────────────
     var selectedDestinationId by remember { mutableStateOf<String?>(null) }
@@ -247,7 +245,7 @@ fun TransferFundBottomSheet(
                 onValueChange = { destinationVL = it.filter { c -> c.isDigit() || c == ',' || c == '.' } },
                 label         = { Text("VL fondo destino (precio por participación)") },
                 placeholder   = { Text("0,00") },
-                trailingIcon  = { Text(symbol, color = TextSecondary, modifier = Modifier.padding(end = 12.dp)) },
+                trailingIcon  = { Text("€", color = TextSecondary, modifier = Modifier.padding(end = 12.dp)) },
                 modifier      = Modifier.fillMaxWidth(),
                 singleLine    = true,
                 shape         = RoundedCornerShape(10.dp),
@@ -493,7 +491,6 @@ private fun TransferFundBottomSheetPreview() {
             destinations = destinationAssets,
             platforms = platforms,
             assetTransactions = transactions,
-            currencyCode = "€",
             onExecuteTransfer = { _, _, _, _, _, _ -> },
             onDismiss = {}
         )

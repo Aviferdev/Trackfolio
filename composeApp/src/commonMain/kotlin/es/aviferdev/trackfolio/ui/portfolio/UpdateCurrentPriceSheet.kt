@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.trackfolio.domain.model.Asset
 import es.aviferdev.trackfolio.ui.theme.*
+import es.aviferdev.trackfolio.ui.theme.formatAmountEuro
 import kotlinx.datetime.Clock
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -29,11 +30,9 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Composable
 fun UpdateCurrentPriceSheet(
     asset: Asset,
-    currencyCode: String,
     onConfirm: (newPrice: Double) -> Unit,
     onDismiss: () -> Unit
 ) {
-    val symbol = currencySymbol(currencyCode)
 
     var price by remember(asset.id) {
         mutableStateOf(asset.currentPrice?.toString() ?: "")
@@ -82,7 +81,7 @@ fun UpdateCurrentPriceSheet(
 
             Spacer(Modifier.height(8.dp))
             val currentLabel = if (asset.currentPrice != null) {
-                "Precio anterior: ${formatAmountWithCurrency(asset.currentPrice!!, currencyCode)}"
+                "Precio anterior: ${formatAmountEuro(asset.currentPrice!!)}"
             } else {
                 "Aún no hay un precio registrado para este activo"
             }
@@ -107,7 +106,7 @@ fun UpdateCurrentPriceSheet(
                 ),
                 trailingIcon = {
                     Text(
-                        symbol,
+                        "€",
                         fontSize = 20.sp,
                         color    = TextSecondary,
                         modifier = Modifier.padding(end = 16.dp)
@@ -172,7 +171,6 @@ private fun UpdateCurrentPriceSheetWithPricePreview() {
                 currentPriceUpdatedAt = Clock.System.now().toEpochMilliseconds(),
                 archived = false
             ),
-            currencyCode = "€",
             onConfirm = {},
             onDismiss = {}
         )
@@ -195,7 +193,6 @@ private fun UpdateCurrentPriceSheetWithoutPricePreview() {
                 currentPriceUpdatedAt = null,
                 archived = false
             ),
-            currencyCode = "€",
             onConfirm = {},
             onDismiss = {}
         )

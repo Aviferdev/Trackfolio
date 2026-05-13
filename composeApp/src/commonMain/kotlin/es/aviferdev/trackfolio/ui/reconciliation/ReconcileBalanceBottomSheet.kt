@@ -45,7 +45,6 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Composable
 fun ReconcileBalanceBottomSheet(
     viewModel: ReconciliationViewModel,
-    currency: String,
     onDismiss: () -> Unit
 ) {
     val state by viewModel.uiState.collectAsState()
@@ -62,7 +61,6 @@ fun ReconcileBalanceBottomSheet(
     ) {
         ReconcileBalanceBottomSheetContent(
             state               = state,
-            currency            = currency,
             keyboardController  = keyboardController,
             onRealBalanceChange = { viewModel.updateRealBalance(it) },
             onReconcile         = { viewModel.reconcile() }
@@ -73,7 +71,6 @@ fun ReconcileBalanceBottomSheet(
 @Composable
 fun ReconcileBalanceBottomSheetContent(
     state: ReconciliationUiState,
-    currency: String,
     keyboardController: SoftwareKeyboardController?,
     onRealBalanceChange: (String) -> Unit,
     onReconcile: () -> Unit
@@ -109,7 +106,7 @@ fun ReconcileBalanceBottomSheetContent(
         )
 
         Text(
-            text       = "${formatAmount(state.computedBalance)} $currency",
+            text       = "${formatAmount(state.computedBalance)} €",
             fontSize   = 24.sp,
             fontWeight = FontWeight.SemiBold,
             color      = TextPrimary
@@ -120,7 +117,7 @@ fun ReconcileBalanceBottomSheetContent(
         OutlinedTextField(
             value           = state.realBalanceInput,
             onValueChange   = onRealBalanceChange,
-            label           = { Text("Saldo real ($currency)") },
+            label           = { Text("Saldo real (€)") },
             placeholder     = { Text("Ej: 1250.00") },
             singleLine      = true,
             keyboardOptions = KeyboardOptions(
@@ -153,7 +150,7 @@ fun ReconcileBalanceBottomSheetContent(
                 else      -> TextSecondary
             }
             Text(
-                text       = "Diferencia: ${sign}${formatAmount(diff)} $currency",
+                text       = "Diferencia: ${sign}${formatAmount(diff)} €",
                 fontSize   = 14.sp,
                 fontWeight = FontWeight.Medium,
                 color      = color,
@@ -208,7 +205,6 @@ private fun ReconcileBalanceBottomSheetContentPreview() {
     es.aviferdev.trackfolio.ui.theme.TrackfolioTheme {
         ReconcileBalanceBottomSheetContent(
             state               = ReconciliationUiState(computedBalance = 1234.56, realBalanceInput = "1250,00"),
-            currency            = "€",
             keyboardController  = null,
             onRealBalanceChange = {},
             onReconcile         = {}

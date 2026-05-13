@@ -28,7 +28,7 @@ import es.aviferdev.trackfolio.ui.theme.formatAmount
 import es.aviferdev.trackfolio.ui.theme.maskAmount
 
 @Composable
-fun FifoOpenLotRow(index: Int, lot: FifoOpenLot, symbol: String, masked: Boolean) {
+fun FifoOpenLotRow(index: Int, lot: FifoOpenLot, masked: Boolean) {
     val partial = lot.remainingQuantity < lot.originalQuantity
     Row(
         modifier = Modifier.fillMaxWidth().padding(horizontal = 14.dp, vertical = 5.dp),
@@ -49,7 +49,7 @@ fun FifoOpenLotRow(index: Int, lot: FifoOpenLot, symbol: String, masked: Boolean
                         formatAmount(lot.pricePerUnit),
                         masked
                     )
-                } $symbol",
+                } €",
                 fontSize = 12.sp, color = TextPrimary, fontWeight = FontWeight.Medium
             )
             Text(
@@ -64,7 +64,7 @@ fun FifoOpenLotRow(index: Int, lot: FifoOpenLot, symbol: String, masked: Boolean
             )
         }
         Text(
-            "${maskAmount(formatAmount(lot.remainingCost), masked)} $symbol",
+            "${maskAmount(formatAmount(lot.remainingCost), masked)} €",
             fontSize = 11.sp,
             color = TextPrimary,
             fontWeight = FontWeight.SemiBold

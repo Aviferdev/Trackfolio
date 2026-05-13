@@ -85,8 +85,7 @@ fun AnnualSummaryScreen(
                         subtitle       = "Año ${uiState.year}",
                         slices         = uiState.expensesByCategory,
                         totalAmount    = uiState.summary?.totalExpense ?: 0.0,
-                        currencyCode   = uiState.currencyCode,
-                        balancesHidden = balancesHidden,
+                                                balancesHidden = balancesHidden,
                         modifier       = Modifier.padding(horizontal = 20.dp, vertical = 16.dp)
                     )
                 }
@@ -96,8 +95,7 @@ fun AnnualSummaryScreen(
                         subtitle       = "Año ${uiState.year}",
                         slices         = uiState.incomeByType,
                         totalAmount    = uiState.summary?.totalIncome ?: 0.0,
-                        currencyCode   = uiState.currencyCode,
-                        balancesHidden = balancesHidden,
+                                                balancesHidden = balancesHidden,
                         modifier       = Modifier.padding(horizontal = 20.dp, vertical = 16.dp)
                     )
                 }
@@ -113,8 +111,7 @@ fun AnnualSummaryScreen(
                         InvestmentBarChart(
                             investments    = uiState.monthlyInvestments,
                             year           = uiState.year,
-                            currencyCode   = uiState.currencyCode,
-                            balancesHidden = balancesHidden
+                                                        balancesHidden = balancesHidden
                         )
                     }
                 }

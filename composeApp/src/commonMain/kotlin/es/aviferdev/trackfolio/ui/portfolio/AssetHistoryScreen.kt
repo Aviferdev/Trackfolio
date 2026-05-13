@@ -84,7 +84,6 @@ import es.aviferdev.trackfolio.ui.theme.TextPrimary
 import es.aviferdev.trackfolio.ui.theme.TextSecondary
 import es.aviferdev.trackfolio.ui.theme.TextTertiary
 import es.aviferdev.trackfolio.ui.theme.TrackfolioTheme
-import es.aviferdev.trackfolio.ui.theme.currencySymbol
 import es.aviferdev.trackfolio.ui.theme.formatAmount
 import es.aviferdev.trackfolio.ui.theme.maskAmount
 import kotlinx.datetime.Clock
@@ -132,8 +131,7 @@ fun AssetHistoryScreen(
             platformsByAsset = state.platformsByAsset,
             categories = state.categories,
             assetTransactions = state.transactionsAsc,
-            currencyCode = state.currencyCode,
-            onSave = { _, type, qty, price, date, platformId, feeNote, notes ->
+                        onSave = { _, type, qty, price, date, platformId, feeNote, notes ->
                 viewModel.saveTransaction(type, qty, price, date, platformId, feeNote, notes)
             },
             onDismiss = { viewModel.closeAddSheet() }
@@ -142,8 +140,7 @@ fun AssetHistoryScreen(
     if (state.showUpdatePriceSheet && state.asset != null) {
         UpdateCurrentPriceSheet(
             asset = state.asset!!,
-            currencyCode = state.currencyCode,
-            onConfirm = { viewModel.refreshCurrentPrice(it) },
+                        onConfirm = { viewModel.refreshCurrentPrice(it) },
             onDismiss = { viewModel.closeUpdatePriceSheet() }
         )
     }
@@ -210,8 +207,7 @@ fun AssetHistoryScreen(
     if (state.showDividendSheet && state.asset != null) {
         AddDividendBottomSheet(
             fixedAssetName = state.asset!!.name,
-            currencyCode = state.currencyCode,
-            onSave = { _, grossAmount, irpfPercent, date ->
+                        onSave = { _, grossAmount, irpfPercent, date ->
                 viewModel.saveDividend(
                     grossAmount,
                     irpfPercent,
@@ -227,8 +223,7 @@ fun AssetHistoryScreen(
             destinations = state.transferableDestinations,
             platforms = state.allPlatforms,
             assetTransactions = state.transactionsAsc,
-            currencyCode = state.currencyCode,
-            onExecuteTransfer = { destId, qty, srcPlat, dstPlat, vl, date ->
+                        onExecuteTransfer = { destId, qty, srcPlat, dstPlat, vl, date ->
                 viewModel.executeTransfer(destId, qty, srcPlat, dstPlat, vl, date)
             },
             onDismiss = { viewModel.closeTransferSheet() }
