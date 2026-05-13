@@ -3,7 +3,6 @@ package es.aviferdev.trackfolio.security
 import android.content.Context
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_STRONG
-import androidx.biometric.BiometricManager.Authenticators.DEVICE_CREDENTIAL
 import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
@@ -25,9 +24,10 @@ actual class BiometricAuthenticator(private val context: Context) {
 
     private fun currentActivity(): FragmentActivity? = activityRef?.get()
 
-    actual fun isAvailable(): Boolean =
-        BiometricManager.from(context).canAuthenticate(BIOMETRIC_STRONG or DEVICE_CREDENTIAL) ==
-                BiometricManager.BIOMETRIC_SUCCESS
+    actual fun isAvailable(): Boolean {
+        val result = BiometricManager.from(context).canAuthenticate(BIOMETRIC_STRONG)
+        return result == BiometricManager.BIOMETRIC_SUCCESS
+    }
 
     actual fun authenticate(
         title: String,
@@ -71,7 +71,8 @@ actual class BiometricAuthenticator(private val context: Context) {
                 BiometricPrompt.PromptInfo.Builder()
                     .setTitle(title)
                     .setSubtitle(subtitle)
-                    .setAllowedAuthenticators(BIOMETRIC_STRONG or DEVICE_CREDENTIAL)
+                    .setNegativeButtonText("Cancelar")
+                    .setAllowedAuthenticators(BIOMETRIC_STRONG)
                     .build()
             )
         } catch (e: Exception) {

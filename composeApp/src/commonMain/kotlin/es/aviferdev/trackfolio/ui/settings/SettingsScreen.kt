@@ -40,13 +40,13 @@ import kotlinx.coroutines.delay
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.qualifier.named
 
 // ─── WRAPPER ────────────────────────────────────────────────────────────────────
 @Composable
 fun SettingsScreen(
     onNavigateToExpenseSettings: () -> Unit = {},
     onNavigateToIncomeSettings: () -> Unit = {},
-    onNavigateToFiscalReport: () -> Unit = {},
     accountViewModel: AccountViewModel = koinViewModel(),
     backupViewModel: BackupViewModel = koinViewModel()
 ) {
@@ -61,6 +61,7 @@ fun SettingsScreen(
 
     val reconciliationIntervalUseCase = koinInject<GetReconciliationReminderIntervalUseCase>()
     var reconciliationInterval by remember { mutableStateOf(reconciliationIntervalUseCase.get()) }
+    val appVersion: String = koinInject(named("appVersion"))
 
     SettingsContent(
         reconciliationInterval = reconciliationInterval,
@@ -95,7 +96,7 @@ fun SettingsScreen(
         },
         onNavigateToExpenseSettings = onNavigateToExpenseSettings,
         onNavigateToIncomeSettings = onNavigateToIncomeSettings,
-        onNavigateToFiscalReport = onNavigateToFiscalReport
+        appVersion = appVersion
     )
 
     // ── Sheets ───────────────────────────────────────────────────────────────
@@ -141,7 +142,7 @@ fun SettingsContent(
     onToggleBiometric: (Boolean) -> Unit,
     onNavigateToExpenseSettings: () -> Unit,
     onNavigateToIncomeSettings: () -> Unit,
-    onNavigateToFiscalReport: () -> Unit,
+    appVersion: String,
     reconciliationInterval: Int = 30,
     onReconciliationIntervalChange: (Int) -> Unit = {},
     modifier: Modifier = Modifier
@@ -194,9 +195,13 @@ fun SettingsContent(
                 item {
                     SettingsSectionHeader(label = "Datos")
                     SettingsGroupCard {
-                        SettingsNavigableRow(icon = "🧾", label = "Informe fiscal IRPF", onClick = onNavigateToFiscalReport)
-                        SettingsRowDivider()
                         SettingsNavigableRow(icon = "💾", label = "Copia de seguridad",   onClick = { })
+                    }
+                }
+
+                item {
+                    SettingsGroupCard {
+                        SettingsInfoRow(label = "Versión", value = appVersion)
                     }
                 }
 
@@ -225,7 +230,7 @@ fun SettingsContentPreview() {
             onToggleBiometric = {},
             onNavigateToExpenseSettings = {},
             onNavigateToIncomeSettings = {},
-            onNavigateToFiscalReport = {}
+            appVersion = "1.0.0"
         )
     }
 }
@@ -263,6 +268,16 @@ private fun SettingsNavigableRow(icon: String, label: String, onClick: () -> Uni
         Spacer(Modifier.width(14.dp))
         Text(label, fontSize = 13.sp, fontWeight = FontWeight.Medium, color = TextPrimary, modifier = Modifier.weight(1f))
         Icon(Icons.Default.KeyboardArrowRight, contentDescription = null, tint = TextTertiary, modifier = Modifier.size(18.dp))
+    }
+}
+
+// ─── Info row (solo texto, sin interactividad) ──────────────────────────────
+@Composable
+private fun SettingsInfoRow(label: String, value: String) {
+    Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) {
+        Spacer(Modifier.width(32.dp))
+        Text(label, fontSize = 13.sp, fontWeight = FontWeight.Medium, color = TextPrimary, modifier = Modifier.weight(1f))
+        Text(value, fontSize = 13.sp, color = TextTertiary)
     }
 }
 
