@@ -8,17 +8,21 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.HelpOutline
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.trackfolio.domain.model.Platform
+import es.aviferdev.trackfolio.ui.common.toMaterialIcon
 import es.aviferdev.trackfolio.ui.theme.*
 import kotlinx.datetime.Clock
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -112,7 +116,12 @@ fun AddEditPlatformSheet(
                             .clickable { icon = ic },
                         contentAlignment = Alignment.Center
                     ) {
-                        Text(ic, fontSize = 18.sp)
+                        Icon(
+                            imageVector = ic.toMaterialIcon(),
+                            contentDescription = null,
+                            tint = if (isSel) PrimaryDark else TextSecondary,
+                            modifier = Modifier.size(22.dp)
+                        )
                     }
                 }
             }
@@ -208,7 +217,7 @@ private fun AddEditPlatformSheetEditPreview() {
             initial = Platform(
                 id = "1",
                 name = "Interactive Brokers",
-                icon = "📊",
+                icon = "📊", // toMaterialIcon() → BarChart
                 sortOrder = 0,
                 archived = false,
                 createdAt = Clock.System.now().toEpochMilliseconds(),

@@ -277,10 +277,10 @@ private fun HeroMetric(label: String, value: String) {
 @Composable
 private fun LoanDetailsGrid(loan: Loan) {
     val items = listOf(
-        Triple("Capital inicial", "${formatAmount(loan.totalAmount)} €",                "💰"),
-        Triple("Tipo",            "${loan.type.emoji} ${loan.type.label}",              "📋"),
-        Triple("Amortización",    "Francés",                                            "📊"),
-        Triple("Entidad",         loan.lenderName ?: "—",                              "🏦"),
+        Triple("Capital inicial", "${formatAmount(loan.totalAmount)} €",                ""),
+        Triple("Tipo",            "${loan.type.emoji} ${loan.type.label}",              ""),
+        Triple("Amortización",    "Francés",                                            ""),
+        Triple("Entidad",         loan.lenderName ?: "—",                              ""),
     )
     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         items.chunked(2).forEach { col ->

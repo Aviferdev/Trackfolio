@@ -17,6 +17,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.trackfolio.domain.model.*
+import es.aviferdev.trackfolio.ui.common.toMaterialIcon
 import es.aviferdev.trackfolio.ui.theme.*
 import kotlinx.datetime.*
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -157,7 +158,12 @@ fun EditFixedIncomeBottomSheet(
                     FilterChip(
                         selected = selectedType == type,
                         onClick = { selectedType = type },
-                        label = { Text("${type.emoji} ${type.label}") },
+                        label = {
+                            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                                Icon(type.toMaterialIcon(), contentDescription = null, modifier = Modifier.size(16.dp))
+                                Text(type.label, maxLines = 1)
+                            }
+                        },
                         colors = FilterChipDefaults.filterChipColors(
                             selectedContainerColor = PrimaryDark,
                             selectedLabelColor = androidx.compose.ui.graphics.Color.White
@@ -485,7 +491,7 @@ fun EditFixedIncomeBottomSheet(
                             FilterChip(
                                 selected = newIssuerIcon == icon,
                                 onClick = { newIssuerIcon = icon },
-                                label = { Text(icon, fontSize = 18.sp) }
+                                label = { Icon(icon.toMaterialIcon(), contentDescription = null, modifier = Modifier.size(20.dp)) }
                             )
                         }
                     }

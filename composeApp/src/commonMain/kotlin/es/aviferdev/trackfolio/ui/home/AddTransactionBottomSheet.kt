@@ -32,6 +32,8 @@ import androidx.compose.material.icons.outlined.CalendarMonth
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.Description
 import androidx.compose.material.icons.outlined.Folder
+import androidx.compose.material.icons.outlined.Assignment
+import androidx.compose.material.icons.outlined.EditNote
 import androidx.compose.material.icons.outlined.Warning
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -370,16 +372,26 @@ private fun AddTransactionSheetContent(
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     ModeChip(
-                        label = "📋 Fiscal",
                         selected = incomeInputMode == IncomeInputMode.FISCAL,
                         onClick = { onIncomeModeChange(IncomeInputMode.FISCAL) },
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier.weight(1f),
+                        label = {
+                            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                                Icon(Icons.Outlined.Assignment, contentDescription = null, modifier = Modifier.size(16.dp))
+                                Text("Fiscal")
+                            }
+                        }
                     )
                     ModeChip(
-                        label = "📝 Solo neto",
                         selected = incomeInputMode == IncomeInputMode.NET_ONLY,
                         onClick = { onIncomeModeChange(IncomeInputMode.NET_ONLY) },
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier.weight(1f),
+                        label = {
+                            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                                Icon(Icons.Outlined.EditNote, contentDescription = null, modifier = Modifier.size(16.dp))
+                                Text("Solo neto")
+                            }
+                        }
                     )
                 }
 
@@ -569,10 +581,10 @@ private fun TypePill(
 
 @Composable
 private fun ModeChip(
-    label: String,
     selected: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    label: @Composable () -> Unit = {},
 ) {
     Box(
         modifier = modifier
@@ -587,12 +599,7 @@ private fun ModeChip(
             .padding(vertical = 8.dp),
         contentAlignment = Alignment.Center
     ) {
-        Text(
-            label,
-            fontSize = 12.sp,
-            fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal,
-            color = if (selected) PrimaryDark else TextSecondary
-        )
+        label()
     }
 }
 

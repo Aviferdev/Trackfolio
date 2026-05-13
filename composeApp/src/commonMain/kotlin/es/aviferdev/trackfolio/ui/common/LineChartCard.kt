@@ -3,8 +3,11 @@ package es.aviferdev.trackfolio.ui.common
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.ShowChart
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -252,7 +255,7 @@ private fun EmptyLineChartState() {
         contentAlignment = Alignment.Center
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text("📈", fontSize = 32.sp)
+            Icon(Icons.Outlined.ShowChart, contentDescription = null, modifier = Modifier.size(32.dp), tint = PrimaryDark)
             Spacer(Modifier.height(8.dp))
             Text(
                 text = "Sin datos suficientes",

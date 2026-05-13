@@ -16,8 +16,11 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.HelpOutline
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -30,6 +33,7 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import es.aviferdev.trackfolio.ui.common.toMaterialIcon
 import es.aviferdev.trackfolio.ui.theme.BorderGray
 import es.aviferdev.trackfolio.ui.theme.CategoryPalette
 import es.aviferdev.trackfolio.ui.theme.SurfaceWhite
@@ -194,10 +198,12 @@ private fun LegendRow(slice: CategorySlice) {
                 .clip(CircleShape)
                 .background(slice.color)
         )
-        Spacer(Modifier.width(8.dp))
-        Text(
-            text     = slice.icon,
-            fontSize = 12.sp
+        Spacer(Modifier.width(6.dp))
+        Icon(
+            imageVector = slice.icon.toMaterialIcon(),
+            contentDescription = null,
+            tint = TextPrimary,
+            modifier = Modifier.size(14.dp)
         )
         Spacer(Modifier.width(4.dp))
         Text(

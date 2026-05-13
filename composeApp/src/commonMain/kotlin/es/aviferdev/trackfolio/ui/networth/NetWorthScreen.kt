@@ -410,7 +410,7 @@ private fun LoanCard(loan: Loan, onClick: () -> Unit) {
                 verticalAlignment     = Alignment.CenterVertically
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(loan.type.emoji, fontSize = 20.sp)
+                    Icon(loan.type.toMaterialIcon(), contentDescription = null, modifier = Modifier.size(22.dp), tint = PrimaryDark)
                     Spacer(Modifier.width(10.dp))
                     Column {
                         Text(loan.name, fontWeight = FontWeight.SemiBold, fontSize = 13.sp, color = TextPrimary)

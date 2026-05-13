@@ -21,6 +21,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.outlined.Refresh
+import androidx.compose.material.icons.outlined.ShowChart
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -46,6 +47,7 @@ import es.aviferdev.trackfolio.domain.model.Transaction
 import es.aviferdev.trackfolio.domain.model.TransactionType
 import es.aviferdev.trackfolio.domain.portfolio.AssetPosition
 import es.aviferdev.trackfolio.ui.common.navigation.TopBarApp
+import es.aviferdev.trackfolio.ui.common.toMaterialIcon
 import es.aviferdev.trackfolio.ui.portfolio.AssetHistoryUiState
 import es.aviferdev.trackfolio.ui.theme.BackgroundGray
 import es.aviferdev.trackfolio.ui.theme.BorderGray
@@ -248,7 +250,7 @@ fun AssetHistoryContent(
                                     fontSize = 14.sp
                                 )
                             },
-                            leadingIcon = { Text("📈", fontSize = 14.sp) },
+                            leadingIcon = { Icon(Icons.Outlined.ShowChart, contentDescription = null, modifier = Modifier.size(18.dp)) },
                             onClick = { onFabDismiss(); onAddDividendClick() }
                         )
                     }

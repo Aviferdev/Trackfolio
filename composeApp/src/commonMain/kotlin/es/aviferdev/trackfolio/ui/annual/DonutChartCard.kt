@@ -16,8 +16,11 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.BarChart
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -236,9 +239,11 @@ private fun EmptyDonutState(title: String, subtitle: String) {
                 color    = TextSecondary
             )
             Spacer(Modifier.height(16.dp))
-            Text(
-                text     = "📊",
-                fontSize = 32.sp
+            Icon(
+                imageVector = Icons.Outlined.BarChart,
+                contentDescription = null,
+                modifier = Modifier.size(32.dp),
+                tint = TextPrimary
             )
             Spacer(Modifier.height(8.dp))
             Text(

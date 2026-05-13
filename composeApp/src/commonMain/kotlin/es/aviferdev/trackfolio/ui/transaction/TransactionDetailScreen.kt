@@ -187,12 +187,6 @@ private fun TransactionDetailContent(
         val absAmount = kotlin.math.abs(transaction.amount)
         val amountPrefix = if (isNegativeAmount) "−" else "+"
 
-        val emoji = when {
-            transaction.isAdjustment   -> "⚖"
-            transaction.isLinkedToAsset -> "📈"
-            incomeTypeEmoji != null    -> incomeTypeEmoji
-            else                       -> "🏷"
-        }
         val categoryIcon = when {
             transaction.isAdjustment   -> Icons.Outlined.SwapHoriz
             transaction.isLinkedToAsset -> Icons.Outlined.ShowChart

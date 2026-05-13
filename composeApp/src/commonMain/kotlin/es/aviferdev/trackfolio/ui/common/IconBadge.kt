@@ -7,16 +7,19 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.AccountBalance
+import androidx.compose.material.icons.outlined.ShowChart
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import es.aviferdev.trackfolio.ui.theme.IncomeGreen
 import es.aviferdev.trackfolio.ui.theme.PrimaryDark
 import es.aviferdev.trackfolio.ui.theme.TrackfolioTheme
@@ -29,13 +32,12 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
  *
  * Usage:
  * ```
- * IconBadge(icon = "📄", color = IncomeGreen, size = 32.dp)
- * IconBadge(icon = "🏦", color = WarnAmber)
+ * IconBadge(icon = Icons.Outlined.AccountBalance, color = IncomeGreen, size = 32.dp)
  * ```
  */
 @Composable
 fun IconBadge(
-    icon: String,
+    icon: ImageVector,
     color: Color = PrimaryDark,
     size: Dp = 38.dp,
     modifier: Modifier = Modifier
@@ -47,11 +49,11 @@ fun IconBadge(
             .background(color.copy(alpha = 0.10f)),
         contentAlignment = Alignment.Center
     ) {
-        Text(
-            text       = icon,
-            fontSize   = (size.value * 0.46f).sp,
-            color      = color,
-            fontWeight = FontWeight.Bold
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            tint        = color,
+            modifier    = Modifier.size(size * 0.54f)
         )
     }
 }
@@ -64,9 +66,9 @@ private fun IconBadgePreview() {
             modifier = Modifier.padding(16.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            IconBadge(icon = "📄", color = IncomeGreen)
-            IconBadge(icon = "🏦", color = WarnAmber)
-            IconBadge(icon = "📈", color = PrimaryDark, size = 48.dp)
+            IconBadge(icon = Icons.Outlined.AccountBalance, color = IncomeGreen)
+            IconBadge(icon = Icons.Outlined.AccountBalance, color = WarnAmber)
+            IconBadge(icon = Icons.Outlined.ShowChart, color = PrimaryDark, size = 48.dp)
         }
     }
 }

@@ -11,13 +11,16 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.outlined.Handshake
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -493,7 +496,7 @@ private fun DebtCard(debt: Debt, hidden: Boolean, onMarkPaid: () -> Unit, onEdit
 private fun EmptyState() {
     Box(modifier = Modifier.fillMaxWidth().padding(40.dp), contentAlignment = Alignment.Center) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text("🤝", fontSize = 44.sp)
+            Icon(Icons.Outlined.Handshake, contentDescription = null, modifier = Modifier.size(44.dp), tint = PrimaryDark)
             Spacer(Modifier.height(14.dp))
             Text("Sin deudas", fontSize = 17.sp, fontWeight = FontWeight.Bold, color = TextPrimary)
             Spacer(Modifier.height(8.dp))

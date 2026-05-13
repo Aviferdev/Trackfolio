@@ -21,7 +21,12 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Assignment
+import androidx.compose.material.icons.outlined.Balance
+import androidx.compose.material.icons.outlined.BarChart
+import androidx.compose.material.icons.outlined.Handshake
 import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material.icons.outlined.ShowChart
 import androidx.compose.material.icons.outlined.Visibility
 import androidx.compose.material.icons.outlined.VisibilityOff
 import androidx.compose.material3.Card
@@ -43,6 +48,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -59,6 +65,7 @@ import es.aviferdev.trackfolio.security.BiometricAuthenticator
 import es.aviferdev.trackfolio.security.BiometricResult
 import es.aviferdev.trackfolio.ui.account.AccountSelectorBar
 import es.aviferdev.trackfolio.ui.account.AccountViewModel
+import es.aviferdev.trackfolio.ui.common.toMaterialIcon
 import es.aviferdev.trackfolio.ui.reconciliation.ReconcileBalanceBottomSheet
 import es.aviferdev.trackfolio.ui.reconciliation.ReconciliationReminderBanner
 import es.aviferdev.trackfolio.ui.reconciliation.ReconciliationViewModel
@@ -618,16 +625,14 @@ private fun TransactionRow(
         isIncome -> IncomeGreen
         else -> ExpenseRed
     }
-    val emoji = when {
-        isAdjustment -> null
-        isLinked -> null
-        isIncome -> transaction.incomeType?.emoji
+    val avatarIcon = when {
+        isAdjustment -> Icons.Outlined.Balance
+        isLinked -> Icons.Outlined.ShowChart
+        isIncome && transaction.incomeType != null -> transaction.incomeType.toMaterialIcon()
         else -> null
     }
-    val initial = when {
-        isAdjustment -> "⚖"
-        isLinked -> "📈"
-        emoji != null -> emoji
+    val avatarText = when {
+        avatarIcon != null -> null
         else -> categoryName.firstOrNull()?.uppercaseChar()?.toString() ?: "?"
     }
 
@@ -664,7 +669,11 @@ private fun TransactionRow(
                 .background(avatarBg),
             contentAlignment = Alignment.Center
         ) {
-            Text(initial, fontSize = 15.sp, fontWeight = FontWeight.Bold, color = Color.White)
+            if (avatarIcon != null) {
+                Icon(avatarIcon, contentDescription = null, tint = Color.White, modifier = Modifier.size(22.dp))
+            } else {
+                Text(avatarText ?: "?", fontSize = 15.sp, fontWeight = FontWeight.Bold, color = Color.White)
+            }
         }
 
         Spacer(Modifier.width(12.dp))
@@ -715,19 +724,19 @@ private fun QuickAccessSection(
             horizontalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             QuickCard(
-                emoji = "📊",
+                icon = Icons.Outlined.BarChart,
                 label = "Resumen",
                 onClick = onNavigateToCharts,
                 modifier = Modifier.weight(1f)
             )
             QuickCard(
-                emoji = "🤝",
+                icon = Icons.Outlined.Handshake,
                 label = "Deudas",
                 onClick = onNavigateToDebts,
                 modifier = Modifier.weight(1f)
             )
             QuickCard(
-                emoji = "📋",
+                icon = Icons.Outlined.Assignment,
                 label = "Fiscal",
                 onClick = onNavigateToFiscalReport,
                 modifier = Modifier.weight(1f)
@@ -738,7 +747,7 @@ private fun QuickAccessSection(
 
 @Composable
 private fun QuickCard(
-    emoji: String,
+    icon: ImageVector,
     label: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -758,7 +767,7 @@ private fun QuickCard(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(5.dp)
         ) {
-            Text(emoji, fontSize = 18.sp)
+            Icon(icon, contentDescription = null, tint = PrimaryDark, modifier = Modifier.size(22.dp))
             Text(
                 text = label,
                 fontSize = 10.sp,

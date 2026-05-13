@@ -10,6 +10,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.outlined.Archive
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -104,7 +105,7 @@ fun AssetCategoryDetailScreen(
         AlertDialog(
             onDismissRequest = { viewModel.cancelArchive() },
             containerColor = SurfaceWhite,
-            icon = { Text("📦", fontSize = 28.sp) },
+            icon = { Icon(Icons.Outlined.Archive, contentDescription = null, modifier = Modifier.size(28.dp), tint = PrimaryDark) },
             title = {
                 Text(
                     "Archivar activo",

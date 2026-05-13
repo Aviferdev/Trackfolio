@@ -7,12 +7,15 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.BarChart
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -348,7 +351,7 @@ private fun CategoryExpenseList(
                 modifier = Modifier.fillMaxWidth().padding(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text("📊", fontSize = 32.sp)
+                Icon(Icons.Outlined.BarChart, contentDescription = null, modifier = Modifier.size(32.dp), tint = PrimaryDark)
                 Spacer(Modifier.height(8.dp))
                 Text(
                     "Sin datos",
@@ -603,7 +606,7 @@ private fun LegendItem(color: Color, label: String) {
 private fun EmptyYearState() {
     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text("📊", fontSize = 48.sp)
+            Icon(Icons.Outlined.BarChart, contentDescription = null, modifier = Modifier.size(48.dp), tint = PrimaryDark)
             Spacer(Modifier.height(12.dp))
             Text("Sin datos para este año", fontSize = 17.sp, fontWeight = FontWeight.Medium, color = TextPrimary)
             Spacer(Modifier.height(6.dp))

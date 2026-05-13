@@ -15,6 +15,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.trackfolio.domain.model.IncomeType
+import es.aviferdev.trackfolio.ui.common.toMaterialIcon
 import es.aviferdev.trackfolio.ui.common.navigation.TopBarApp
 import es.aviferdev.trackfolio.ui.theme.*
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -48,7 +49,7 @@ fun IncomeSettingsScreen(
                                 .padding(horizontal = 16.dp, vertical = 14.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Text(incomeType.emoji, fontSize = 18.sp, modifier = Modifier.size(28.dp))
+                            Icon(incomeType.toMaterialIcon(), contentDescription = null, modifier = Modifier.size(22.dp), tint = PrimaryDark)
                             Spacer(Modifier.width(12.dp))
                             Text(
                                 text = incomeType.label,

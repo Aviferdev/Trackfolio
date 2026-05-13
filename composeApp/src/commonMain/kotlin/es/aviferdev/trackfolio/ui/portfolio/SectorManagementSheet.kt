@@ -16,10 +16,12 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.trackfolio.domain.model.AssetSector
+import es.aviferdev.trackfolio.ui.common.toMaterialIcon
 import es.aviferdev.trackfolio.domain.usecase.assetmetadata.DeleteSectorUseCase
 import es.aviferdev.trackfolio.domain.usecase.assetmetadata.GetSectorsUseCase
 import es.aviferdev.trackfolio.domain.usecase.assetmetadata.SaveSectorUseCase
@@ -112,7 +114,12 @@ fun SectorManagementSheet(
                         .border(1.dp, BorderGray, RoundedCornerShape(8.dp)),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text(newIcon, fontSize = 20.sp)
+                    Icon(
+                        newIcon.toMaterialIcon(),
+                        contentDescription = null,
+                        tint = PrimaryDark,
+                        modifier = Modifier.size(22.dp)
+                    )
                 }
                 Spacer(Modifier.width(12.dp))
                 OutlinedTextField(
@@ -166,7 +173,12 @@ fun SectorManagementSheet(
                             .clickable { newIcon = icon },
                         contentAlignment = Alignment.Center
                     ) {
-                        Text(icon, fontSize = 18.sp)
+                        Icon(
+                            icon.toMaterialIcon(),
+                            contentDescription = null,
+                            tint = if (newIcon == icon) PrimaryDark else TextSecondary,
+                            modifier = Modifier.size(20.dp)
+                        )
                     }
                 }
             }
@@ -216,7 +228,12 @@ private fun SectorItem(
             .padding(horizontal = 12.dp, vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(sector.icon, fontSize = 20.sp)
+        Icon(
+            sector.icon.toMaterialIcon(),
+            contentDescription = null,
+            tint = TextPrimary,
+            modifier = Modifier.size(24.dp)
+        )
         Spacer(Modifier.width(12.dp))
         Text(
             sector.name,

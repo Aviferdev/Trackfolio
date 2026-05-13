@@ -65,6 +65,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.trackfolio.ui.account.AccountViewModel
 import es.aviferdev.trackfolio.ui.common.DeltaIndicator
+import es.aviferdev.trackfolio.ui.common.toMaterialIcon
 import es.aviferdev.trackfolio.ui.common.LineChartCard
 import es.aviferdev.trackfolio.ui.common.button.IconButtomApp
 import es.aviferdev.trackfolio.ui.common.navigation.TopBarApp
@@ -473,7 +474,7 @@ fun PortfolioContent(
                 )
                 DropdownMenuItem(
                     text = { Text("Nuevo bono/depósito", color = TextPrimary, fontSize = 14.sp) },
-                    leadingIcon = { Text("🏦", fontSize = 14.sp) },
+                    leadingIcon = { Icon("🏦".toMaterialIcon(), contentDescription = null, modifier = Modifier.size(18.dp)) },
                     onClick = { fabMenuOpen = false; onOpenCreateFixedIncomeSheet() }
                 )
             }
@@ -1035,7 +1036,7 @@ private fun FixedIncomeSectionHeader(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text("🏦", fontSize = 15.sp)
+        Icon("🏦".toMaterialIcon(), contentDescription = null, tint = TextPrimary, modifier = Modifier.size(18.dp))
         Spacer(Modifier.width(6.dp))
         Text(
             text = "Renta fija",
@@ -1141,7 +1142,7 @@ private fun ClosedFixedIncomeCard(
 private fun EmptyPortfolioState() {
     Box(Modifier.fillMaxWidth().padding(40.dp), contentAlignment = Alignment.Center) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text("📈", fontSize = 44.sp)
+            Icon("📈".toMaterialIcon(), contentDescription = null, modifier = Modifier.size(44.dp), tint = PrimaryDark)
             Spacer(Modifier.height(14.dp))
             Text(
                 "Sin posiciones",

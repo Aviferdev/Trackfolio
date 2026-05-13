@@ -15,12 +15,18 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.KeyboardArrowRight
+import androidx.compose.material.icons.outlined.Fingerprint
+import androidx.compose.material.icons.outlined.SaveAlt
+import androidx.compose.material.icons.outlined.Sync
+import androidx.compose.material.icons.outlined.TrendingDown
+import androidx.compose.material.icons.outlined.TrendingUp
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -172,9 +178,9 @@ fun SettingsContent(
 
                 item {
                     SettingsGroupCard {
-                        SettingsNavigableRow(icon = "📉", label = "Categorías de gastos", onClick = onNavigateToExpenseSettings)
+                        SettingsNavigableRow(icon = Icons.Outlined.TrendingDown, label = "Categorías de gastos", onClick = onNavigateToExpenseSettings)
                         SettingsRowDivider()
-                        SettingsNavigableRow(icon = "📈", label = "Tipos de ingresos",   onClick = onNavigateToIncomeSettings)
+                        SettingsNavigableRow(icon = Icons.Outlined.TrendingUp,   label = "Tipos de ingresos",   onClick = onNavigateToIncomeSettings)
                     }
                 }
 
@@ -198,7 +204,7 @@ fun SettingsContent(
                 item {
                     SettingsSectionHeader(label = "Datos")
                     SettingsGroupCard {
-                        SettingsNavigableRow(icon = "💾", label = "Copia de seguridad",   onClick = { })
+                        SettingsNavigableRow(icon = Icons.Outlined.SaveAlt, label = "Copia de seguridad",   onClick = { })
                     }
                 }
 
@@ -265,9 +271,9 @@ private fun SettingsRowDivider() {
 
 // ─── Navigable row ────────────────────────────────────────────────────────────
 @Composable
-private fun SettingsNavigableRow(icon: String, label: String, onClick: () -> Unit) {
+private fun SettingsNavigableRow(icon: ImageVector, label: String, onClick: () -> Unit) {
     Row(modifier = Modifier.fillMaxWidth().clickable(onClick = onClick).padding(horizontal = 16.dp, vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) {
-        Text(icon, fontSize = 18.sp)
+        Icon(icon, contentDescription = null, tint = TextPrimary, modifier = Modifier.size(20.dp))
         Spacer(Modifier.width(14.dp))
         Text(label, fontSize = 13.sp, fontWeight = FontWeight.Medium, color = TextPrimary, modifier = Modifier.weight(1f))
         Icon(Icons.Default.KeyboardArrowRight, contentDescription = null, tint = TextTertiary, modifier = Modifier.size(18.dp))
@@ -288,7 +294,7 @@ private fun SettingsInfoRow(label: String, value: String) {
 @Composable
 private fun SettingsBiometricRow(enabled: Boolean, onToggle: (Boolean) -> Unit) {
     Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) {
-        Text("🔐", fontSize = 18.sp)
+        Icon(Icons.Outlined.Fingerprint, contentDescription = null, tint = TextPrimary, modifier = Modifier.size(20.dp))
         Spacer(Modifier.width(14.dp))
         Column(modifier = Modifier.weight(1f)) {
             Text("Bloqueo biométrico", fontSize = 13.sp, fontWeight = FontWeight.Medium, color = TextPrimary)
@@ -314,7 +320,7 @@ private fun SettingsReconciliationIntervalRow(
 
     Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Text("🔄", fontSize = 18.sp)
+            Icon(Icons.Outlined.Sync, contentDescription = null, tint = TextPrimary, modifier = Modifier.size(20.dp))
             Spacer(Modifier.width(14.dp))
             Column(modifier = Modifier.weight(1f)) {
                 Text("Recordatorio de reconciliación", fontSize = 13.sp, fontWeight = FontWeight.Medium, color = TextPrimary)

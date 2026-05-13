@@ -10,6 +10,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material.icons.outlined.Assignment
 import androidx.compose.material.icons.outlined.Warning
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -30,6 +31,7 @@ import es.aviferdev.trackfolio.domain.model.DebtDirection
 import es.aviferdev.trackfolio.domain.model.FiscalIncomeTaxBreakdown
 import es.aviferdev.trackfolio.domain.model.FiscalReportData
 import es.aviferdev.trackfolio.domain.model.MonthlyTotals
+import es.aviferdev.trackfolio.ui.common.toMaterialIcon
 import es.aviferdev.trackfolio.ui.common.navigation.TopBarApp
 import es.aviferdev.trackfolio.ui.theme.*
 import kotlinx.datetime.Clock
@@ -161,7 +163,7 @@ fun FiscalReportContent(
                             contentAlignment = Alignment.Center
                         ) {
                             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                Text("📋", fontSize = 44.sp)
+                                Icon(Icons.Outlined.Assignment, contentDescription = null, modifier = Modifier.size(44.dp), tint = PrimaryDark)
                                 Spacer(Modifier.height(12.dp))
                                 Text(
                                     "No hay datos para ${state.selectedYear}",
@@ -396,7 +398,7 @@ private fun IncomeTaxBreakdownCard(report: FiscalReportData) {
 private fun TaxBreakdownRow(item: FiscalIncomeTaxBreakdown) {
     Row(Modifier.fillMaxWidth().padding(vertical = 6.dp), verticalAlignment = Alignment.CenterVertically) {
         Row(Modifier.weight(3f), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-            Text(item.incomeType.emoji, fontSize = 13.sp)
+            Icon(item.incomeType.toMaterialIcon(), contentDescription = null, modifier = Modifier.size(18.dp), tint = TextPrimary)
             Column {
                 Text(item.incomeType.label, fontSize = 11.sp, color = TextPrimary, fontWeight = FontWeight.Medium, lineHeight = 13.sp)
                 Text("${item.count} ingreso${if (item.count != 1) "s" else ""}", fontSize = 9.sp, color = TextTertiary)

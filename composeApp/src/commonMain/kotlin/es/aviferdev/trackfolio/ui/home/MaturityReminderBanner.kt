@@ -9,6 +9,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -21,6 +22,7 @@ import androidx.compose.ui.unit.sp
 import es.aviferdev.trackfolio.domain.model.FixedIncomePosition
 import es.aviferdev.trackfolio.domain.model.FixedIncomeType
 import es.aviferdev.trackfolio.domain.model.InterestFrequency
+import es.aviferdev.trackfolio.ui.common.toMaterialIcon
 import es.aviferdev.trackfolio.ui.theme.TextSecondary
 import es.aviferdev.trackfolio.ui.theme.TrackfolioTheme
 import es.aviferdev.trackfolio.ui.theme.WarnAmber
@@ -80,7 +82,7 @@ fun MaturityReminderBanner(
                         .clickable { onViewDetails(position.id) },
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(position.type.emoji, fontSize = 14.sp)
+                    Icon(position.type.toMaterialIcon(), contentDescription = null, modifier = Modifier.size(16.dp), tint = WarnAmber)
                     Spacer(Modifier.width(8.dp))
                     Text(
                         text       = position.name,

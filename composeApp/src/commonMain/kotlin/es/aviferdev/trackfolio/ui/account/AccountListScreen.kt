@@ -12,6 +12,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.outlined.AccountBalance
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -301,7 +302,7 @@ private fun AccountCard(
 private fun EmptyAccountsState(modifier: Modifier, onAdd: () -> Unit) {
     Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text("🏦", fontSize = 56.sp)
+            Icon(Icons.Outlined.AccountBalance, contentDescription = null, modifier = Modifier.size(56.dp), tint = PrimaryDark)
             Spacer(Modifier.height(16.dp))
             Text("Sin cuentas todavía", fontSize = 18.sp, fontWeight = FontWeight.Bold, color = TextPrimary)
             Spacer(Modifier.height(8.dp))

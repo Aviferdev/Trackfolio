@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBalance
+import androidx.compose.material.icons.outlined.Savings
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -52,7 +53,7 @@ fun FixedIncomeSection(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text("🏦", fontSize = 20.sp)
+                        Icon(Icons.Filled.AccountBalance, contentDescription = null, tint = PrimaryDark, modifier = Modifier.size(22.dp))
                         Spacer(Modifier.width(8.dp))
                         Text(
                             text = "Renta Fija",
@@ -237,7 +238,7 @@ fun FixedIncomePositionCard(
                             contentPadding = PaddingValues(0.dp)
                         ) {
                             Text(
-                                text = "💰 Registrar",
+                                text = "Registrar",
                                 fontSize = 10.sp,
                                 color = PrimaryDark
                             )

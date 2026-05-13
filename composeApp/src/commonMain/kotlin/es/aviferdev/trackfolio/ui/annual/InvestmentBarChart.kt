@@ -10,11 +10,15 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.ShowChart
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -169,7 +173,7 @@ private fun EmptyInvestmentState(year: String) {
                 color      = TextPrimary
             )
             Spacer(Modifier.height(16.dp))
-            Text("📈", fontSize = 32.sp)
+            Icon(Icons.Outlined.ShowChart, contentDescription = null, modifier = Modifier.size(32.dp), tint = PrimaryDark)
             Spacer(Modifier.height(8.dp))
             Text(
                 text     = "Sin inversiones este año",
