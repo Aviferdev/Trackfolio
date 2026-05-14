@@ -34,6 +34,7 @@ import es.aviferdev.trackfolio.ui.portfolio.AssetDetailScreen
 import es.aviferdev.trackfolio.ui.portfolio.AssetHistoryScreen
 import es.aviferdev.trackfolio.ui.portfolio.PortfolioScreen
 import es.aviferdev.trackfolio.ui.portfolio.PortfolioSettingsScreen
+import es.aviferdev.trackfolio.ui.settings.AboutScreen
 import es.aviferdev.trackfolio.ui.settings.ExpenseSettingsScreen
 import es.aviferdev.trackfolio.ui.settings.IncomeSettingsScreen
 import es.aviferdev.trackfolio.ui.settings.IncomeTypeDetailScreen
@@ -305,7 +306,17 @@ fun TrackfolioNavHost() {
                             navController.navigate(Screen.IncomeSettings.route) {
                                 launchSingleTop = true
                             }
+                        },
+                        onNavigateToAbout = {
+                            navController.navigate(Screen.About.route) {
+                                launchSingleTop = true
+                            }
                         }
+                    )
+                }
+                composable(Screen.About.route) {
+                    AboutScreen(
+                        onBack = { navController.popBackStack() }
                     )
                 }
                 composable(Screen.ExpenseSettings.route) {

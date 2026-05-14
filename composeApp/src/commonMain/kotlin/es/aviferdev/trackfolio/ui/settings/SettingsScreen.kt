@@ -16,6 +16,7 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.outlined.Fingerprint
+import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.SaveAlt
 import androidx.compose.material.icons.outlined.Sync
 import androidx.compose.material.icons.outlined.TrendingDown
@@ -48,7 +49,6 @@ import kotlinx.coroutines.delay
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
-import org.koin.core.qualifier.named
 
 // ─── WRAPPER ────────────────────────────────────────────────────────────────────
 @Composable
@@ -56,6 +56,7 @@ fun SettingsScreen(
     navigateBack: () -> Unit = {},
     onNavigateToExpenseSettings: () -> Unit = {},
     onNavigateToIncomeSettings: () -> Unit = {},
+    onNavigateToAbout: () -> Unit = {},
     accountViewModel: AccountViewModel = koinViewModel(),
     backupViewModel: BackupViewModel = koinViewModel()
 ) {
@@ -73,7 +74,6 @@ fun SettingsScreen(
 
     val backupIntervalUseCase = koinInject<GetBackupReminderIntervalUseCase>()
     var backupInterval by remember { mutableStateOf(backupIntervalUseCase.get()) }
-    val appVersion: String = koinInject(named("appVersion"))
 
     SettingsContent(
         navigateBack = navigateBack,
@@ -115,7 +115,7 @@ fun SettingsScreen(
         onBackupClick = { backupViewModel.openExport() },
         onNavigateToExpenseSettings = onNavigateToExpenseSettings,
         onNavigateToIncomeSettings = onNavigateToIncomeSettings,
-        appVersion = appVersion
+        onNavigateToAbout = onNavigateToAbout
     )
 
     // ── Sheets ───────────────────────────────────────────────────────────────
@@ -181,7 +181,7 @@ fun SettingsContent(
     onToggleBiometric: (Boolean) -> Unit,
     onNavigateToExpenseSettings: () -> Unit,
     onNavigateToIncomeSettings: () -> Unit,
-    appVersion: String,
+    onNavigateToAbout: () -> Unit = {},
     navigateBack: () -> Unit = {},
     reconciliationInterval: Int = 30,
     onReconciliationIntervalChange: (Int) -> Unit = {},
@@ -248,8 +248,9 @@ fun SettingsContent(
                 }
 
                 item {
+                    SettingsSectionHeader(label = "Información")
                     SettingsGroupCard {
-                        SettingsInfoRow(label = "Versión", value = appVersion)
+                        SettingsNavigableRow(icon = Icons.Outlined.Info, label = "Acerca de", onClick = onNavigateToAbout)
                     }
                 }
 
@@ -278,7 +279,7 @@ fun SettingsContentPreview() {
             onToggleBiometric = {},
             onNavigateToExpenseSettings = {},
             onNavigateToIncomeSettings = {},
-            appVersion = "1.0.0"
+            onNavigateToAbout = {}
         )
     }
 }

@@ -49,6 +49,8 @@ sealed class Screen(val route: String) {
         fun buildRoute(transactionId: String): String = "transaction_detail/$transactionId"
     }
 
+    data object About : Screen("settings_about")
+
     data object CategoryPicker : Screen("category_picker/{initialType}") {
         const val ARG_INITIAL_TYPE = "initialType"
         fun buildRoute(initialType: String): String = "category_picker/$initialType"
