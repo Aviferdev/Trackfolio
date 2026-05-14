@@ -18,6 +18,7 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.font.FontWeight
@@ -58,7 +59,9 @@ fun LineChartCard(
     points: List<Pair<Long, Double>>,
     lineColor: Color,
     balancesHidden: Boolean,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    rotateXLabels: Boolean = false,
+    timeRangeLabel: String? = null
 ) {
     val textMeasurer = rememberTextMeasurer()
 
@@ -82,6 +85,14 @@ fun LineChartCard(
                 fontSize = 11.sp,
                 color = TextSecondary
             )
+            if (timeRangeLabel != null) {
+                Spacer(Modifier.height(2.dp))
+                Text(
+                    text = timeRangeLabel,
+                    fontSize = 10.sp,
+                    color = TextSecondary.copy(alpha = 0.7f)
+                )
+            }
 
             Spacer(Modifier.height(16.dp))
 
@@ -93,6 +104,7 @@ fun LineChartCard(
                     lineColor = lineColor,
                     balancesHidden = balancesHidden,
                     textMeasurer = textMeasurer,
+                    rotateXLabels = rotateXLabels,
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(200.dp)
@@ -110,6 +122,7 @@ private fun LineChartCanvas(
     lineColor: Color,
     balancesHidden: Boolean,
     textMeasurer: androidx.compose.ui.text.TextMeasurer,
+    rotateXLabels: Boolean = false,
     modifier: Modifier = Modifier
 ) {
     val guideColor = TextSecondary.copy(alpha = 0.15f)
@@ -125,13 +138,13 @@ private fun LineChartCanvas(
     val ySteps = computeNiceYAxisSteps(minVal, maxVal, targetSteps = 4)
 
     // Calcular labels del eje X (meses)
-    val xLabels = selectXAxisLabels(points)
+    val xLabels = selectXAxisLabels(points, compact = rotateXLabels)
 
     Canvas(modifier = modifier) {
         val leftPad = 56.dp.toPx()
         val rightPad = 12.dp.toPx()
         val topPad = 8.dp.toPx()
-        val bottomPad = 32.dp.toPx() // Mayor espacio para labels X
+        val bottomPad = if (rotateXLabels) 36.dp.toPx() else 32.dp.toPx()
         val chartW = size.width - leftPad - rightPad
         val chartH = size.height - topPad - bottomPad
 
@@ -186,24 +199,43 @@ private fun LineChartCanvas(
 
         // ── Labels del eje X ───────────────────────────────────────────
         val xLabelStyle = TextStyle(
-            fontSize = 9.sp,
+            fontSize = if (rotateXLabels) 8.sp else 9.sp,
             color = labelColor
         )
         xLabels.forEach { xLabel ->
             val x = leftPad + chartW * xLabel.index / (points.size - 1).toFloat()
-            val labelText = if (xLabel.yearSuffix != null) {
-                "${xLabel.monthAbbr} '${xLabel.yearSuffix}"
+
+            if (rotateXLabels) {
+                // ── Modo rotado: formato "MM/YY" a -65° ──────────────
+                val labelText = xLabel.compactFormat
+                val textResult = textMeasurer.measure(labelText, xLabelStyle)
+                val pivotX = x
+                val pivotY = topPad + chartH + 4.dp.toPx()
+                rotate(degrees = -65f, pivot = Offset(pivotX, pivotY)) {
+                    drawText(
+                        textLayoutResult = textResult,
+                        topLeft = Offset(
+                            -textResult.size.width / 2f,
+                            -textResult.size.height.toFloat()
+                        )
+                    )
+                }
             } else {
-                xLabel.monthAbbr
-            }
-            val textResult = textMeasurer.measure(labelText, xLabelStyle)
-            drawText(
-                textLayoutResult = textResult,
-                topLeft = Offset(
-                    x - textResult.size.width / 2f,
-                    topPad + chartH + 6.dp.toPx()
+                // ── Modo normal (sin rotación) ─────────────────────────
+                val labelText = if (xLabel.yearSuffix != null) {
+                    "${xLabel.monthAbbr} '${xLabel.yearSuffix}"
+                } else {
+                    xLabel.monthAbbr
+                }
+                val textResult = textMeasurer.measure(labelText, xLabelStyle)
+                drawText(
+                    textLayoutResult = textResult,
+                    topLeft = Offset(
+                        x - textResult.size.width / 2f,
+                        topPad + chartH + 6.dp.toPx()
+                    )
                 )
-            )
+            }
         }
 
         // ── Mapear puntos a coordenadas ─────────────────────────────────
@@ -328,96 +360,132 @@ private fun computeNiceYAxisSteps(minVal: Double, maxVal: Double, targetSteps: I
 private data class XAxisLabel(
     val index: Int,           // Índice del punto en la lista
     val monthAbbr: String,    // Abreviatura del mes (ene, feb, etc.)
-    val yearSuffix: String?   // Sufijo del año (24, 25...) o null si no mostrar
-)
+    val yearSuffix: String?,  // Sufijo del año (24, 25...) o null si no mostrar
+    val monthNum: Int = 0,    // Número de mes (1-12) para formato compacto
+    val yearNum: Int = 0      // Año completo para formato compacto
+) {
+    /** Formato compacto "MM/YY" para labels rotadas. */
+    val compactFormat: String
+        get() {
+            val mm = monthNum.toString().padStart(2, '0')
+            val yy = yearNum.toString().takeLast(2)
+            return "$mm/$yy"
+        }
+}
 
 /**
  * Selecciona qué labels mostrar en el eje X.
- * Muestra ~4 meses por año (enero, abril, julio, octubre).
+ *
+ * @param compact Si es true, usa formato compacto "MM/YY" y muestra más marcas
+ *                (1 cada 2 meses para datos densos, todas si ≤12 puntos).
+ *                Si es false, usa el formato normal "ene '24" con ~4 marcas/año.
  * Siempre incluye el primer y último punto.
  */
-private fun selectXAxisLabels(points: List<Pair<Long, Double>>): List<XAxisLabel> {
+private fun selectXAxisLabels(
+    points: List<Pair<Long, Double>>,
+    compact: Boolean = false
+): List<XAxisLabel> {
     if (points.isEmpty()) return emptyList()
 
-    // Si hay pocos puntos, mostrar todos
-    if (points.size <= 6) {
-        return points.mapIndexed { idx, (epoch, _) ->
-            val instant = Instant.fromEpochMilliseconds(epoch)
-            val local = instant.toLocalDateTime(TimeZone.currentSystemDefault())
-            XAxisLabel(
-                index = idx,
-                monthAbbr = MONTH_ABBR[local.monthNumber - 1],
-                yearSuffix = local.year.toString().takeLast(2)
-            )
+    // Construir lista completa de labels potenciales con todos los campos
+    val allLabels = points.mapIndexed { idx, (epoch, _) ->
+        val instant = Instant.fromEpochMilliseconds(epoch)
+        val local = instant.toLocalDateTime(TimeZone.currentSystemDefault())
+        XAxisLabel(
+            index = idx,
+            monthAbbr = MONTH_ABBR[local.monthNumber - 1],
+            yearSuffix = local.year.toString().takeLast(2),
+            monthNum = local.monthNumber,
+            yearNum = local.year
+        )
+    }
+
+    return if (compact) selectCompactLabels(allLabels)
+    else selectNormalLabels(points, allLabels)
+}
+
+/**
+ * Modo compacto: formato "MM/YY".
+ * - ≤ 12 puntos → mostrar todos
+ * - > 12 puntos → mostrar 1 de cada 2 (meses impares: enero, marzo, mayo, etc.)
+ * - Siempre incluye el primer y último punto.
+ */
+private fun selectCompactLabels(allLabels: List<XAxisLabel>): List<XAxisLabel> {
+    if (allLabels.size <= 12) return allLabels
+
+    val result = mutableListOf<XAxisLabel>()
+    result.add(allLabels.first())
+
+    for (label in allLabels) {
+        if (label.index == 0 || label.index == allLabels.lastIndex) continue
+        // Meses impares: 1, 3, 5, 7, 9, 11 → ~6 labels/año
+        if (label.monthNum % 2 == 1) {
+            val last = result.lastOrNull()
+            if (last == null || (label.index - last.index) >= 2) {
+                result.add(label)
+            }
         }
     }
 
-    // Determinar años presentes en los datos
-    val years = points.map { Instant.fromEpochMilliseconds(it.first).toLocalDateTime(TimeZone.currentSystemDefault()).year }.toSet()
+    if (result.lastOrNull()?.index != allLabels.lastIndex) {
+        result.add(allLabels.last())
+    }
+
+    return result
+}
+
+/**
+ * Modo normal: formato "ene '24".
+ * Muestra ~4 meses por año (enero, abril, julio, octubre).
+ */
+private fun selectNormalLabels(
+    points: List<Pair<Long, Double>>,
+    allLabels: List<XAxisLabel>
+): List<XAxisLabel> {
+    if (points.size <= 6) return allLabels
+
+    val years = points.map {
+        Instant.fromEpochMilliseconds(it.first)
+            .toLocalDateTime(TimeZone.currentSystemDefault()).year
+    }.toSet()
     val showYearSuffix = years.size > 1
 
     val labels = mutableListOf<XAxisLabel>()
 
-    // Siempre incluir primer punto
-    val firstInstant = Instant.fromEpochMilliseconds(points.first().first)
-    val firstLocal = firstInstant.toLocalDateTime(TimeZone.currentSystemDefault())
-    labels.add(
-        XAxisLabel(
-            index = 0,
-            monthAbbr = MONTH_ABBR[firstLocal.monthNumber - 1],
-            yearSuffix = if (showYearSuffix) firstLocal.year.toString().takeLast(2) else null
-        )
-    )
+    // Primer punto
+    labels.add(allLabels.first().copy(
+        yearSuffix = if (showYearSuffix) allLabels.first().yearSuffix else null
+    ))
 
-    // Procesar puntos intermedios
+    // Puntos intermedios: meses 1, 4, 7, 10
     points.forEachIndexed { idx, (epoch, _) ->
         if (idx == 0 || idx == points.lastIndex) return@forEachIndexed
-
         val instant = Instant.fromEpochMilliseconds(epoch)
         val local = instant.toLocalDateTime(TimeZone.currentSystemDefault())
         val month = local.monthNumber
 
-        // Mostrar meses: 1 (ene), 4 (abr), 7 (jul), 10 (oct) - aproximadamente 4 por año
         val shouldShow = month == 1 || month == 4 || month == 7 || month == 10
-
         if (shouldShow) {
-            // Añadir sufijo de año solo si es enero (cambio de año) o si hay múltiples años
             val yearSuffix = if (month == 1 && showYearSuffix) {
                 local.year.toString().takeLast(2)
             } else if (showYearSuffix) {
-                // Para otros meses, solo mostrar año si es el primer label de ese año
                 val prevLabel = labels.lastOrNull()
                 if (prevLabel?.yearSuffix != null) null else local.year.toString().takeLast(2)
             } else {
                 null
             }
-
-            // Evitar duplicados muy cercanos
             val lastLabel = labels.lastOrNull()
             if (lastLabel == null || (idx - lastLabel.index) >= 2) {
-                labels.add(
-                    XAxisLabel(
-                        index = idx,
-                        monthAbbr = MONTH_ABBR[month - 1],
-                        yearSuffix = yearSuffix
-                    )
-                )
+                labels.add(allLabels[idx].copy(yearSuffix = yearSuffix))
             }
         }
     }
 
-    // Siempre incluir último punto si no está ya
-    val lastIdx = points.lastIndex
-    if (labels.lastOrNull()?.index != lastIdx) {
-        val lastInstant = Instant.fromEpochMilliseconds(points.last().first)
-        val lastLocal = lastInstant.toLocalDateTime(TimeZone.currentSystemDefault())
-        labels.add(
-            XAxisLabel(
-                index = lastIdx,
-                monthAbbr = MONTH_ABBR[lastLocal.monthNumber - 1],
-                yearSuffix = if (showYearSuffix) lastLocal.year.toString().takeLast(2) else null
-            )
-        )
+    // Último punto
+    if (labels.lastOrNull()?.index != points.lastIndex) {
+        labels.add(allLabels.last().copy(
+            yearSuffix = if (showYearSuffix) allLabels.last().yearSuffix else null
+        ))
     }
 
     return labels

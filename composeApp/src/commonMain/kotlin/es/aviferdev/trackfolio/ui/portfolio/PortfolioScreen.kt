@@ -67,7 +67,9 @@ import es.aviferdev.trackfolio.ui.account.AccountViewModel
 import es.aviferdev.trackfolio.ui.common.DeltaIndicator
 import es.aviferdev.trackfolio.ui.common.toMaterialIcon
 import es.aviferdev.trackfolio.ui.common.LineChartCard
+import es.aviferdev.trackfolio.ui.common.chart.TimeRange
 import es.aviferdev.trackfolio.ui.common.component.EmptyStateView
+import es.aviferdev.trackfolio.ui.common.component.TimeRangeChipRow
 import es.aviferdev.trackfolio.ui.common.button.IconButtonApp
 import es.aviferdev.trackfolio.ui.common.navigation.TopBarApp
 import es.aviferdev.trackfolio.ui.fixedincome.CreateFixedIncomeBottomSheet
@@ -97,6 +99,7 @@ import es.aviferdev.trackfolio.domain.model.AssetCategory
 import es.aviferdev.trackfolio.domain.model.FixedIncomePosition
 import es.aviferdev.trackfolio.domain.model.PortfolioValuePoint
 import es.aviferdev.trackfolio.domain.portfolio.AssetPosition
+import kotlinx.datetime.Clock
 import es.aviferdev.trackfolio.ui.theme.TrackfolioTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -249,6 +252,17 @@ fun PortfolioContent(
 ) {
     var closedExpanded by remember { mutableStateOf(false) }
     var fabMenuOpen by remember { mutableStateOf(false) }
+    var selectedTimeRange by remember { mutableStateOf(TimeRange.ALL_TIME) }
+
+    val nowMillis = remember { Clock.System.now().toEpochMilliseconds() }
+    val filteredHistory = remember(valueHistory, selectedTimeRange) {
+        if (selectedTimeRange == TimeRange.ALL_TIME) {
+            valueHistory
+        } else {
+            val cutoff = nowMillis - selectedTimeRange.windowDays * 86_400_000L
+            valueHistory.filter { it.date >= cutoff }
+        }
+    }
 
     Box(
         modifier = modifier
@@ -286,13 +300,30 @@ fun PortfolioContent(
 
             if (valueHistory.isNotEmpty()) {
                 item {
+                    Column {
+                        TimeRangeChipRow(
+                            selected = selectedTimeRange,
+                            onSelect = { selectedTimeRange = it },
+                            modifier = Modifier.padding(horizontal = 16.dp)
+                        )
+                        Spacer(Modifier.height(8.dp))
+                    }
+                }
+                item {
                     LineChartCard(
                         title = "Evolución del valor",
                         subtitle = "Valor mensual del portfolio",
-                        points = valueHistory.map { it.date to it.value },
+                        points = filteredHistory.map { it.date to it.value },
                         lineColor = PrimaryDark,
-                        
                         balancesHidden = balancesHidden,
+                        rotateXLabels = true,
+                        timeRangeLabel = if (selectedTimeRange != TimeRange.ALL_TIME) {
+                            when (selectedTimeRange) {
+                                TimeRange.LAST_MONTH -> "Último mes"
+                                TimeRange.LAST_YEAR -> "Último año"
+                                else -> null
+                            }
+                        } else null,
                         modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
                     )
                 }

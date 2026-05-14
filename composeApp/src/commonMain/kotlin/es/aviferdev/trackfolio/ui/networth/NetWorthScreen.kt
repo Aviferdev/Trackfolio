@@ -26,10 +26,13 @@ import es.aviferdev.trackfolio.domain.model.NetWorthData
 import es.aviferdev.trackfolio.domain.model.NetWorthHistoryPoint
 import es.aviferdev.trackfolio.ui.annual.DonutChartCard
 import es.aviferdev.trackfolio.ui.common.*
+import es.aviferdev.trackfolio.ui.common.chart.TimeRange
+import es.aviferdev.trackfolio.ui.common.component.TimeRangeChipRow
 import es.aviferdev.trackfolio.ui.common.navigation.TopBarApp
 import es.aviferdev.trackfolio.ui.loan.AddEditLoanBottomSheet
 import es.aviferdev.trackfolio.ui.theme.*
 import kotlinx.coroutines.delay
+import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
@@ -102,6 +105,36 @@ fun NetWorthContent(
     modifier: Modifier = Modifier
 ) {
 
+    var selectedTimeRange by remember { mutableStateOf(TimeRange.ALL_TIME) }
+
+    val nowMillis = remember { Clock.System.now().toEpochMilliseconds() }
+
+    val historyPoints = remember(netWorthHistory) {
+        netWorthHistory.map { point ->
+            val parts   = point.yearMonth.split("-")
+            val year    = parts[0].toInt()
+            val month   = parts[1].toInt()
+            val lastDay = when (month) {
+                2        -> if (year % 4 == 0 && (year % 100 != 0 || year % 400 == 0)) 29 else 28
+                4,6,9,11 -> 30
+                else     -> 31
+            }
+            val epoch = LocalDateTime(year, month, lastDay, 23, 59, 59)
+                .toInstant(TimeZone.currentSystemDefault())
+                .toEpochMilliseconds()
+            epoch to point.netWorth
+        }
+    }
+
+    val filteredHistory = remember(historyPoints, selectedTimeRange) {
+        if (selectedTimeRange == TimeRange.ALL_TIME) {
+            historyPoints
+        } else {
+            val cutoff = nowMillis - selectedTimeRange.windowDays * 86_400_000L
+            historyPoints.filter { it.first >= cutoff }
+        }
+    }
+
     Column(modifier.fillMaxSize().background(BackgroundGray)) {
         TopBarApp(title = "Patrimonio")
 
@@ -128,25 +161,28 @@ fun NetWorthContent(
                     visible = chartVisible,
                     enter = fadeIn() + slideInVertically(initialOffsetY = { it / 10 })
                 ) {
-                    LineChartCard(
-                        title          = "Evolución del patrimonio",
-                        subtitle       = "Patrimonio neto mensual",
-                        points         = netWorthHistory.map { point ->
-                            val parts   = point.yearMonth.split("-")
-                            val year    = parts[0].toInt()
-                            val month   = parts[1].toInt()
-                            val lastDay = when (month) {
-                                2        -> if (year % 4 == 0 && (year % 100 != 0 || year % 400 == 0)) 29 else 28
-                                4,6,9,11 -> 30
-                                else     -> 31
-                            }
-                            LocalDateTime(year, month, lastDay, 23, 59, 59)
-                                .toInstant(TimeZone.currentSystemDefault())
-                                .toEpochMilliseconds() to point.netWorth
-                        },
-                        lineColor      = PrimaryDark,
-                                                balancesHidden = balancesHidden
-                    )
+                    Column {
+                        TimeRangeChipRow(
+                            selected = selectedTimeRange,
+                            onSelect = { selectedTimeRange = it }
+                        )
+                        Spacer(Modifier.height(8.dp))
+                        LineChartCard(
+                            title          = "Evolución del patrimonio",
+                            subtitle       = "Patrimonio neto mensual",
+                            points         = filteredHistory,
+                            lineColor      = PrimaryDark,
+                            balancesHidden = balancesHidden,
+                            rotateXLabels  = true,
+                            timeRangeLabel = if (selectedTimeRange != TimeRange.ALL_TIME) {
+                                when (selectedTimeRange) {
+                                    TimeRange.LAST_MONTH -> "Último mes"
+                                    TimeRange.LAST_YEAR -> "Último año"
+                                    else -> null
+                                }
+                            } else null
+                        )
+                    }
                 }
             }
         }
