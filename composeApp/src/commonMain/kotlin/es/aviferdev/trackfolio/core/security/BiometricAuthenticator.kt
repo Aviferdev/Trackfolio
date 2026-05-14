@@ -1,4 +1,4 @@
-package es.aviferdev.trackfolio.security
+package es.aviferdev.trackfolio.core.security
 
 /**
  * Resultado de un intento de autenticación biométrica.

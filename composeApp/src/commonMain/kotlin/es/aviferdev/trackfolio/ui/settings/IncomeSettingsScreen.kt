@@ -15,6 +15,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.trackfolio.domain.model.IncomeType
+import es.aviferdev.trackfolio.ui.common.SectionHeader
 import es.aviferdev.trackfolio.ui.common.toMaterialIcon
 import es.aviferdev.trackfolio.ui.common.navigation.TopBarApp
 import es.aviferdev.trackfolio.ui.theme.*
@@ -39,7 +40,7 @@ fun IncomeSettingsScreen(
             contentPadding = PaddingValues(horizontal = 20.dp, vertical = 20.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            item { SectionHeader(title = "TIPOS DE INGRESO") }
+            item { SectionHeader(label = "TIPOS DE INGRESO") }
             item {
                 SettingsGroupCard {
                     HOME_INCOME_TYPES.forEachIndexed { index, incomeType ->
@@ -75,26 +76,7 @@ fun IncomeSettingsScreen(
     }
 }
 
-// ─── Private components ──────────────────────────────────────────────────────
-@Composable
-private fun SectionHeader(title: String, actionLabel: String? = null, onAction: (() -> Unit)? = null) {
-    Row(
-        modifier = Modifier.fillMaxWidth().padding(top = 14.dp, start = 16.dp, end = 16.dp, bottom = 6.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(title.uppercase(), fontSize = 10.sp, fontWeight = FontWeight.Bold, color = TextTertiary, letterSpacing = 0.7.sp)
-        if (actionLabel != null && onAction != null) {
-            Text(
-                text = actionLabel,
-                fontSize = 11.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = PrimaryDark,
-                modifier = Modifier.clickable { onAction() }
-            )
-        }
-    }
-}
+// SectionHeader reemplazado por es.aviferdev.trackfolio.ui.common.SectionHeader
 
 @Composable
 private fun SettingsGroupCard(content: @Composable ColumnScope.() -> Unit) {

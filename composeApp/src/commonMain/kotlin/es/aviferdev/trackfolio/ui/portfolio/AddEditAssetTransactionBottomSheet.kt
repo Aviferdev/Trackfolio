@@ -818,11 +818,4 @@ private fun EmptyPlatformsInlineHint() {
     }
 }
 
-internal fun formatQty(value: Double): String {
-    if (value == value.toLong().toDouble()) return value.toLong().toString()
-    val rounded = (value * 10000).toLong()
-    val intPart = rounded / 10000
-    val decPart = rounded % 10000
-    val decStr = decPart.toString().padStart(4, '0').trimEnd('0').ifEmpty { "0" }
-    return "$intPart,$decStr"
-}
+internal fun formatQty(value: Double): String = es.aviferdev.trackfolio.ui.theme.formatQty(value)

@@ -287,18 +287,18 @@ class AddTransactionViewModel(
         if (transaction.isIncome) {
             selectedIncomeType       = transaction.incomeType
             incomeInputMode          = if (transaction.isNetOnlyIncome) IncomeInputMode.NET_ONLY else IncomeInputMode.FISCAL
-            netAmount                = if (transaction.isNetOnlyIncome) transaction.amount.toString().replace('.', ',') else ""
-            grossAmount              = transaction.grossAmount?.toString()?.replace('.', ',') ?: ""
-            irpfPercent              = transaction.irpfPercent?.toString()?.replace('.', ',') ?: ""
-            socialSecurityAmount     = transaction.socialSecurityAmount?.toString()?.replace('.', ',') ?: ""
-            commissionAmount         = transaction.commissionAmount?.toString()?.replace('.', ',') ?: ""
+            netAmount                = if (transaction.isNetOnlyIncome) formatAmountForEdit(transaction.amount) else ""
+            grossAmount              = formatAmountForEdit(transaction.grossAmount)
+            irpfPercent              = formatAmountForEdit(transaction.irpfPercent)
+            socialSecurityAmount     = formatAmountForEdit(transaction.socialSecurityAmount)
+            commissionAmount         = formatAmountForEdit(transaction.commissionAmount)
             selectedIssuerId         = transaction.issuerId
             amount                   = ""
             selectedCategoryId       = ""
             transaction.incomeType?.let { loadIssuersForType(it) }
         } else {
             clearIncomeFields()
-            amount = transaction.amount.toString().replace('.', ',')
+            amount = formatAmountForEdit(transaction.amount)
             loadCategoriesAndSelect(transaction.type, transaction.categoryId)
         }
     }
@@ -489,6 +489,17 @@ class AddTransactionViewModel(
                 }
                 .launchIn(viewModelScope)
         }
+    }
+
+    /** Formatea un importe Double para el campo de edición: redondea a 2 decimales, usa coma. */
+    private fun formatAmountForEdit(amount: Double?): String {
+        if (amount == null) return ""
+        val abs = kotlin.math.abs(amount)
+        val rounded = (abs * 100 + 0.5).toLong()
+        val euros = rounded / 100
+        val cents = rounded % 100
+        val sign = if (amount < 0) "-" else ""
+        return "$sign$euros,${cents.toString().padStart(2, '0')}"
     }
 
     private fun filterDecimal(value: String): String =

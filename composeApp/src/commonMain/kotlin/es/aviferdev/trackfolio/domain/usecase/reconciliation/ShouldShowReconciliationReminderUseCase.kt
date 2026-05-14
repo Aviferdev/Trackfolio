@@ -1,6 +1,6 @@
 package es.aviferdev.trackfolio.domain.usecase.reconciliation
 
-import es.aviferdev.trackfolio.security.AppSettings
+import es.aviferdev.trackfolio.core.security.AppSettings
 import kotlinx.datetime.Clock
 
 /**

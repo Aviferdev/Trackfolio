@@ -23,8 +23,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import es.aviferdev.trackfolio.ui.common.button.IconButtomApp
+import es.aviferdev.trackfolio.ui.common.button.IconButtonApp
 import es.aviferdev.trackfolio.ui.common.separator.SpacerHorizontalApp
+import es.aviferdev.trackfolio.ui.common.separator.SpacerVerticalApp
 import es.aviferdev.trackfolio.ui.theme.BorderGray
 import es.aviferdev.trackfolio.ui.theme.SurfaceElevated
 import es.aviferdev.trackfolio.ui.theme.SurfaceWhite
@@ -41,75 +42,46 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
  */
 @Composable
 fun TimeStepperHeader(
-    title: String,
     currentValue: String,
     currentValueSecondary: String? = null,
     canGoBack: Boolean,
     onPrevious: () -> Unit,
     onNext: () -> Unit,
-    navigateBack: (() -> Unit)? = null
 ) {
-    Surface(color = SurfaceWhite) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(SurfaceWhite)
+            .padding(horizontal = 8.dp)
+            .padding(top = 8.dp, bottom = 8.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        SpacerHorizontalApp(8.dp)
+        StepperArrowButton(enabled = canGoBack, onClick = onPrevious, label = "‹")
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 8.dp)
-                .padding(top = 8.dp, bottom = 8.dp)
+            modifier = Modifier.weight(1f),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                // Botón de retroceso
-                navigateBack?.let {
-                    IconButtomApp(
-                        clickButton = it,
-                        icon = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Volver"
-                    )
-                    SpacerHorizontalApp(8.dp)
-                }
-
-                // Título
+            Text(
+                text = currentValue,
+                fontSize = 15.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = TextPrimary
+            )
+            if (currentValueSecondary != null) {
                 Text(
-                    text = title,
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = TextPrimary,
-                    letterSpacing = (-0.3).sp,
-                    modifier = Modifier.weight(1f)
+                    text = currentValueSecondary,
+                    fontSize = 11.sp,
+                    fontWeight = FontWeight.Normal,
+                    color = TextTertiary
                 )
             }
-
-            Spacer(Modifier.height(10.dp))
-
-            // Stepper
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                StepperArrowButton(enabled = canGoBack, onClick = onPrevious, label = "‹")
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(
-                        text = currentValue,
-                        fontSize = 15.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        color = TextPrimary
-                    )
-                    if (currentValueSecondary != null) {
-                        Text(
-                            text = currentValueSecondary,
-                            fontSize = 11.sp,
-                            fontWeight = FontWeight.Normal,
-                            color = TextTertiary
-                        )
-                    }
-                }
-                StepperArrowButton(enabled = true, onClick = onNext, label = "›")
-            }
         }
-        HorizontalDivider(color = BorderGray, thickness = 0.5.dp)
+        StepperArrowButton(enabled = true, onClick = onNext, label = "›")
+        SpacerHorizontalApp(8.dp)
     }
+    HorizontalDivider(color = BorderGray, thickness = 0.5.dp)
 }
 
 @Composable
@@ -135,7 +107,6 @@ private fun StepperArrowButton(enabled: Boolean, onClick: () -> Unit, label: Str
 @Composable
 private fun TimeStepperHeaderPreview() {
     TimeStepperHeader(
-        title = "Movimientos",
         currentValue = "Marzo",
         currentValueSecondary = "2026",
         canGoBack = true,

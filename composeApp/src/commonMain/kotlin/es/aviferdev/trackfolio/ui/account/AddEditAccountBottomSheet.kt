@@ -24,7 +24,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddEditAccountBottomSheet(
-    account: es.aviferdev.trackfolio.domain.model.Account?,  // null = crear
+    account: Account?,  // null = crear
     onSave: (name: String, accountType: AccountType) -> Unit,
     onDismiss: () -> Unit
 ) {

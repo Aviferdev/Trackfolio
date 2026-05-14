@@ -14,8 +14,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import es.aviferdev.trackfolio.security.BiometricAuthenticator
-import es.aviferdev.trackfolio.security.BiometricResult
+import es.aviferdev.trackfolio.core.security.BiometricAuthenticator
+import es.aviferdev.trackfolio.core.security.BiometricResult
 import es.aviferdev.trackfolio.ui.theme.*
 import org.koin.compose.koinInject
 

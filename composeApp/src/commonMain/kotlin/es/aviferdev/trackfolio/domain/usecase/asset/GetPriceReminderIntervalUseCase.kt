@@ -1,6 +1,6 @@
 package es.aviferdev.trackfolio.domain.usecase.asset
 
-import es.aviferdev.trackfolio.security.AppSettings
+import es.aviferdev.trackfolio.core.security.AppSettings
 
 /**
  * Lee y escribe el intervalo (en días) del recordatorio de precios.

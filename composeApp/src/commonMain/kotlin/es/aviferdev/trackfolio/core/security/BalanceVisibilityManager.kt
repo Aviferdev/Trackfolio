@@ -1,4 +1,4 @@
-package es.aviferdev.trackfolio.security
+package es.aviferdev.trackfolio.core.security
 
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

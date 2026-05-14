@@ -5,7 +5,7 @@ import es.aviferdev.trackfolio.data.database.DatabaseInitializer
 import es.aviferdev.trackfolio.domain.model.Transaction
 import es.aviferdev.trackfolio.domain.model.TransactionType
 import es.aviferdev.trackfolio.domain.repository.TransactionRepository
-import es.aviferdev.trackfolio.security.AppSettings
+import es.aviferdev.trackfolio.core.security.AppSettings
 import es.aviferdev.trackfolio.ui.theme.formatAmount
 import kotlinx.datetime.Clock
 

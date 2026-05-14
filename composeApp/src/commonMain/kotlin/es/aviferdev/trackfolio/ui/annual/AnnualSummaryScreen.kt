@@ -23,15 +23,15 @@ import androidx.compose.ui.unit.sp
 import es.aviferdev.trackfolio.domain.model.AnnualSummary
 import es.aviferdev.trackfolio.domain.model.MonthlyTotals
 import es.aviferdev.trackfolio.ui.common.ProgressBar
+import es.aviferdev.trackfolio.ui.common.component.EmptyStateView
 import es.aviferdev.trackfolio.ui.common.navigation.TimeStepperHeader
+import es.aviferdev.trackfolio.ui.common.navigation.TopBarApp
 import es.aviferdev.trackfolio.ui.theme.*
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.math.abs
 
-private val MONTH_LABELS = listOf(
-    "E", "F", "M", "A", "M", "J", "J", "A", "S", "O", "N", "D"
-)
+import es.aviferdev.trackfolio.ui.theme.MONTH_LABELS
 
 enum class AnnualTab {
     RESUMEN, GASTOS, INGRESOS, INVERSIONES
@@ -51,13 +51,13 @@ fun AnnualSummaryScreen(
             .fillMaxSize()
             .background(BackgroundGray)
     ) {
+        TopBarApp(title = "Resumen anual", navigateBack = navigateBack)
+
         TimeStepperHeader(
-            title = "Resumen anual",
             currentValue = uiState.year,
             canGoBack = uiState.canGoBack,
             onPrevious = { viewModel.previousYear() },
             onNext = { viewModel.nextYear() },
-            navigateBack = navigateBack
         )
 
         // Tabs
@@ -80,7 +80,11 @@ fun AnnualSummaryScreen(
                             balancesHidden = balancesHidden
                         )
                     } else {
-                        EmptyYearState()
+                        EmptyStateView(
+                            icon = Icons.Outlined.BarChart,
+                            title = "Sin datos para este año",
+                            subtitle = "Añade movimientos para ver el resumen"
+                        )
                     }
                 }
                 AnnualTab.GASTOS -> {
@@ -601,40 +605,5 @@ private fun LegendItem(color: Color, label: String) {
     }
 }
 
-// ─── Empty state ────────────────────────────────────────────────────────────────
-@Composable
-private fun EmptyYearState() {
-    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Icon(Icons.Outlined.BarChart, contentDescription = null, modifier = Modifier.size(48.dp), tint = PrimaryDark)
-            Spacer(Modifier.height(12.dp))
-            Text("Sin datos para este año", fontSize = 17.sp, fontWeight = FontWeight.Medium, color = TextPrimary)
-            Spacer(Modifier.height(6.dp))
-            Text("Añade movimientos para ver el resumen", fontSize = 13.sp, color = TextSecondary)
-        }
-    }
-}
-
-// ─── Formateo de utilidad ───────────────────────────────────────────────────────
-private fun formatAmount(amount: Double): String {
-    val abs     = abs(amount)
-    val rounded = (abs * 100).toLong()
-    val euros   = rounded / 100
-    val cents   = rounded % 100
-    val eurosStr = buildString {
-        euros.toString().reversed().forEachIndexed { i, c ->
-            if (i > 0 && i % 3 == 0) append('.')
-            append(c)
-        }
-    }.reversed()
-    return "$eurosStr,${cents.toString().padStart(2, '0')}"
-}
-
-private fun formatPercent(value: Double): String {
-    val abs = abs(value)
-    return if (abs == abs.toLong().toDouble()) abs.toLong().toString()
-    else {
-        val rounded = (abs * 10).toLong()
-        "${rounded / 10},${rounded % 10}"
-    }
-}
+// EmptyYearState reemplazado por EmptyStateView de ui.common.component
+// formatAmount y formatPercent se importan de ui.theme

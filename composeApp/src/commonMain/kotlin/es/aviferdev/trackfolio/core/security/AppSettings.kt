@@ -1,4 +1,4 @@
-package es.aviferdev.trackfolio.security
+package es.aviferdev.trackfolio.core.security
 
 /**
  * Almacenamiento clave-valor simple multiplataforma.

@@ -1,4 +1,4 @@
-package es.aviferdev.trackfolio.security
+package es.aviferdev.trackfolio.core.security
 
 /**
  * Aplica un fichero `<dbName>.pending` (importación de backup) si existe,

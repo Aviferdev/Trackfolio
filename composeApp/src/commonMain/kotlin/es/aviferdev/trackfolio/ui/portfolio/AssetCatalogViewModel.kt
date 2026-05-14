@@ -162,7 +162,7 @@ class AssetCatalogViewModel(
             val txs = assetTransactionRepository.getByAsset(asset.id).first()
             val position = PortfolioCalculator.calculate(txs, asset.currentPrice)
             if (position.netQuantity > 0.0) {
-                _error.value = "No se puede archivar «${asset.ticker}» porque tiene posiciones abiertas (${formatQtySimple(position.netQuantity)} uds.). Cierra o traspasa las posiciones primero."
+                _error.value = "No se puede archivar «${asset.ticker}» porque tiene posiciones abiertas (${formatQty(position.netQuantity)} uds.). Cierra o traspasa las posiciones primero."
             } else {
                 _pendingArchive.value = asset
             }
@@ -349,11 +349,6 @@ class AssetCatalogViewModel(
     }
 
     fun clearError() { _error.value = null }
-
-    private fun formatQtySimple(v: Double): String {
-        return if (v == v.toLong().toDouble()) v.toLong().toString()
-        else v.toString().replace('.', ',')
-    }
 
     private data class SheetPart1(
         val show: Boolean,

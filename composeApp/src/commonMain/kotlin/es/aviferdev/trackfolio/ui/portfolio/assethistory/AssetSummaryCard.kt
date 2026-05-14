@@ -31,6 +31,7 @@ import es.aviferdev.trackfolio.ui.theme.TextPrimary
 import es.aviferdev.trackfolio.ui.theme.TextSecondary
 import es.aviferdev.trackfolio.ui.theme.TextTertiary
 import es.aviferdev.trackfolio.ui.theme.formatAmount
+import es.aviferdev.trackfolio.ui.theme.formatPercent
 import kotlin.math.abs
 
 
@@ -160,13 +161,7 @@ fun AssetSummaryCard(
                         Spacer(Modifier.width(8.dp))
                         val isPositive = pctChange >= 0
                         Text(
-                            "${if (isPositive) "+" else "−"}${
-                                formatPercent1(
-                                    abs(
-                                        pctChange
-                                    )
-                                )
-                            }%",
+                            "${if (isPositive) "+" else "−"}${formatPercent(abs(pctChange))}%",
                             fontSize = 11.sp,
                             fontWeight = FontWeight.Bold,
                             color = if (isPositive) IncomeGreen else ExpenseRed
@@ -177,10 +172,4 @@ fun AssetSummaryCard(
         }
     }
 }
-
-
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-fun formatPercent1(value: Double): String {
-    val r = (value * 10).toLong()
-    return "${r / 10},${r % 10}"
-}
+// Nota: formatPercent se importa de ui.theme

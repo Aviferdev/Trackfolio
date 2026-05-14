@@ -2,8 +2,8 @@ package es.aviferdev.trackfolio.ui.settings.backup
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import es.aviferdev.trackfolio.security.BackupResult
-import es.aviferdev.trackfolio.security.DatabaseBackupManager
+import es.aviferdev.trackfolio.core.security.BackupResult
+import es.aviferdev.trackfolio.core.security.DatabaseBackupManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

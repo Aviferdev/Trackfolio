@@ -13,6 +13,7 @@ import androidx.compose.runtime.*
 import es.aviferdev.trackfolio.domain.model.Asset
 import es.aviferdev.trackfolio.domain.model.Platform
 import es.aviferdev.trackfolio.domain.usecase.asset.GetPriceReminderIntervalUseCase
+import es.aviferdev.trackfolio.ui.common.SectionHeader
 import es.aviferdev.trackfolio.ui.common.navigation.TopBarApp
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -241,7 +242,7 @@ fun PortfolioSettingsContent(
             item { Spacer(Modifier.height(8.dp)) }
             item {
                 SectionHeader(
-                    title       = "PLATAFORMAS",
+                    label       = "PLATAFORMAS",
                     actionLabel = "Añadir",
                     onAction    = onOpenPlatformAdd
                 )
@@ -298,7 +299,7 @@ fun PortfolioSettingsContent(
             item { Spacer(Modifier.height(8.dp)) }
             item {
                 SectionHeader(
-                    title       = "SECTORES",
+                    label       = "SECTORES",
                     actionLabel = "Gestionar",
                     onAction    = onOpenSectorSheet
                 )
@@ -344,7 +345,7 @@ fun PortfolioSettingsContent(
             item { Spacer(Modifier.height(8.dp)) }
             item {
                 SectionHeader(
-                    title       = "REGIONES",
+                    label       = "REGIONES",
                     actionLabel = "Gestionar",
                     onAction    = onOpenRegionSheet
                 )
@@ -429,22 +430,7 @@ private fun PortfolioSettingsContentPreview() {
 }
 
 // ── Componentes locales ──────────────────────────────────────────────────────
-
-@Composable
-private fun SectionHeader(title: String, actionLabel: String? = null, onAction: (() -> Unit)? = null) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(title, fontSize = 11.sp, fontWeight = FontWeight.SemiBold, color = TextSecondary)
-        if (actionLabel != null && onAction != null) {
-            TextButton(onClick = onAction, contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp)) {
-                Text(actionLabel, fontSize = 13.sp, color = PrimaryDark, fontWeight = FontWeight.Medium)
-            }
-        }
-    }
-}
+// SectionHeader reemplazado por es.aviferdev.trackfolio.ui.common.SectionHeader
 
 @Composable
 private fun SettingsGroupCard(content: @Composable ColumnScope.() -> Unit) {

@@ -48,6 +48,7 @@ import es.aviferdev.trackfolio.ui.common.InitialsAvatar
 import es.aviferdev.trackfolio.ui.common.TrackfolioLabel
 import es.aviferdev.trackfolio.ui.common.button.LargeButtonApp
 import es.aviferdev.trackfolio.ui.common.navigation.TopBarApp
+import es.aviferdev.trackfolio.ui.common.component.EmptyStateView
 import es.aviferdev.trackfolio.ui.common.row.SwipeRowApp
 import es.aviferdev.trackfolio.ui.common.separator.SpacerVerticalApp
 import es.aviferdev.trackfolio.ui.theme.BackgroundGray
@@ -269,7 +270,13 @@ fun DebtListContent(
                 }
 
                 if (uiState.debtsTheyOwe.isEmpty() && uiState.debtsIOwe.isEmpty()) {
-                    item { EmptyState() }
+                    item {
+                        EmptyStateView(
+                            icon = Icons.Outlined.Handshake,
+                            title = "Sin deudas",
+                            subtitle = "Pulsa \"Nueva deuda\" para registrar\nuna deuda pendiente"
+                        )
+                    }
                 }
 
                 item {
@@ -492,20 +499,4 @@ private fun DebtCard(debt: Debt, hidden: Boolean, onMarkPaid: () -> Unit, onEdit
     }
 }
 
-@Composable
-private fun EmptyState() {
-    Box(modifier = Modifier.fillMaxWidth().padding(40.dp), contentAlignment = Alignment.Center) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Icon(Icons.Outlined.Handshake, contentDescription = null, modifier = Modifier.size(44.dp), tint = PrimaryDark)
-            Spacer(Modifier.height(14.dp))
-            Text("Sin deudas", fontSize = 17.sp, fontWeight = FontWeight.Bold, color = TextPrimary)
-            Spacer(Modifier.height(8.dp))
-            Text(
-                "Pulsa \"Nueva deuda\" para registrar\nuna deuda pendiente",
-                fontSize = 13.sp,
-                color = TextTertiary,
-                textAlign = TextAlign.Center
-            )
-        }
-    }
-}
+// EmptyState reemplazado por EmptyStateView de ui.common.component

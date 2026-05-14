@@ -10,31 +10,62 @@
 
 ## Arquitectura
 Clean Architecture + MVVM:
+- **Core Layer:** Infraestructura transversal (seguridad, cifrado, preferencias)
 - **UI Layer:** `@Composable` + `ViewModel()` (estado + eventos UI)
-- **Domain Layer:** modelos, repos interfaces, use cases
+- **Domain Layer:** modelos, repos interfaces, use cases, calculadoras
 - **Data Layer:** datasources, repos implementations, database (SQLDelight)
 
 ## Estructura de Paquetes
 ```
 es.aviferdev.trackfolio/
-├── ui/{feature}/          # screens, viewmodel (home, account, portfolio, transaction, settings)
+├── App.kt                     # Composable raíz
+├── core/                      # Infraestructura transversal
+│   └── security/              # Cifrado, biometría, backup, preferencias
+├── di/                        # Módulos Koin (Database, Repository, UseCase, UI)
 ├── domain/
-│   ├── model/             # modelos dominio
-│   ├── repository/        # interfaces repositorio
-│   └── usecase/           # casos de uso
+│   ├── model/                 # Modelos de dominio (44 clases)
+│   ├── repository/            # Interfaces de repositorio (18 interfaces)
+│   ├── usecase/               # Casos de uso (96 clases en 65 archivos)
+│   ├── calculator/            # Calculadoras de dominio (amortización, cartera, RF)
+│   └── report/                # Generación de informes (PDF expect)
 ├── data/
-│   ├── datasource/        # fuentes datos local
-│   ├── repository/        # implementaciones repositorio
-│   └── database/          # SQLDelight (mappers, init)
-└── di/                    # módulos Koin
+│   ├── database/              # SQLDelight (driver, init, mappers)
+│   ├── datasource/            # 9 fuentes de datos locales (interfaz + impl)
+│   └── repository/            # Implementaciones de repositorio (18 clases)
+└── ui/
+    ├── theme/                 # Tema oscuro, colores, formateo
+    ├── navigation/            # Rutas (Screen.kt), NavHost, barras (TopBar, BottomNav, TimeStepper)
+    ├── common/                # Componentes UI compartidos
+    │   ├── component/         # Atómicos: EmptyStateView, IconActionButton, SelectablePill/Chip, SectionHeader
+    │   ├── chart/             # Gráficos: DonutSlice, LineChartCard, MonthlyBarChart
+    │   ├── input/             # Formularios: SearchBar, AmountInputField, DatePickerRow, InlineAmountField
+    │   ├── metric/            # Datos: TransactionRow, MetricCell
+    │   ├── dialog/            # Diálogos: DeleteConfirmDialog
+    │   └── loading/           # Global loading overlay
+    ├── home/                  # HomeScreen, HeroCard, QuickAccessSection, RecentTransactionsSection, BottomSheets
+    ├── account/               # AccountListScreen, AccountSelectorBar, AccountSession
+    ├── portfolio/             # PortfolioScreen, AssetCard, PortfolioSummaryCard, AssetDetailScreen, etc.
+    ├── transaction/           # TransactionListScreen, TransactionDetailScreen
+    ├── fixedincome/           # FixedIncomeDetailScreen, BottomSheets de RF
+    ├── loan/                  # LoanDetailScreen, AddEditLoanBottomSheet
+    ├── debt/                  # DebtListScreen, AddDebtBottomSheet
+    ├── networth/              # NetWorthScreen
+    ├── fiscal/                # FiscalReportScreen (+ subcomponentes)
+    ├── annual/                # AnnualSummaryScreen, gráficos anuales
+    ├── settings/              # SettingsScreen, Income/Expense settings, backup
+    ├── reconciliation/        # ReconciliationReminderBanner, ReconcileBalanceBottomSheet
+    └── security/              # LockScreen
 ```
 
 ## Convenciones de Código
 - **ViewModels:** `XxxViewModel` (ej: `PortfolioViewModel`)
 - **Repositorios:** `XxxRepository`, `XxxRepositoryImpl`
 - **DataSources:** `XxxLocalDataSource`, `XxxLocalDataSourceImpl`
-- **UseCases:** `XxxUseCase` o `XxxUseCases.kt`
-- **Paquetes UI:** por funcionalidad (`home`, `account`, `portfolio`)
+- **UseCases:** `XxxUseCase` para lógica compleja; `XxxUseCases.kt` para CRUD simple agrupado
+- **Componentes UI:** un archivo por componente `@Composable` público; los componentes extraídos de screens van en su propio archivo
+- **Componentes comunes:** en `ui/common/` categorizados por tipo (`component/`, `input/`, `metric/`, `dialog/`, `chart/`, `loading/`)
+- **Previews:** cada componente público debe tener al menos un `@Preview`
+- **Paquetes UI:** por funcionalidad (`home`, `account`, `portfolio`, `fixedincome`, etc.)
 
 ## Build Commands
 
@@ -42,6 +73,7 @@ es.aviferdev.trackfolio/
 ```bash
 ./gradlew :composeApp:assembleDebug    # Debug APK
 ./gradlew :composeApp:build            # Build completo
+./gradlew :composeApp:compileDebugKotlinAndroid  # Solo compilación Kotlin
 ```
 
 ### iOS
@@ -58,22 +90,44 @@ es.aviferdev.trackfolio/
 
 | Feature | Screens/Componentes |
 |---------|---------------------|
-| **home** | HomeScreen, AddTransactionBottomSheet, SetInitialBalanceBottomSheet, PriceUpdateBottomSheet, PriceReminderBanner |
-| **account** | AccountListScreen, AddEditAccountBottomSheet, AccountSelectorBar, AccountSession |
-| **portfolio** | PortfolioScreen, AssetDetailScreen, AssetHistoryScreen, AssetCategoryDetailScreen, PortfolioSettingsScreen |
-| **transaction** | TransactionListScreen |
-| **settings** | SettingsScreen, IncomeSettingsScreen, ExpenseSettingsScreen, CategoryViewModel |
-| **debt** | DebtListScreen, AddDebtBottomSheet |
-| **fiscal** | FiscalReportScreen |
-| **annual** | AnnualSummaryScreen |
-| **reconciliation** | ReconciliationReminderBanner, ReconcileBalanceBottomSheet |
+| **home** | HomeScreen, HomeViewModel, HeroCard, QuickAccessSection, RecentTransactionsSection, AddTransactionBottomSheet, SetInitialBalanceBottomSheet, PriceUpdateBottomSheet, PriceReminderBanner, MaturityReminderBanner, CategoryPickerScreen, CategoryPickerViewModel, AddTransactionViewModel |
+| **account** | AccountListScreen, AccountViewModel, AddEditAccountBottomSheet, AccountSelectorBar, AccountSession |
+| **portfolio** | PortfolioScreen, PortfolioViewModel, PortfolioSummaryCard, CategoryGroupHeader, AssetCard, ClosedAssetCard, ClosedFixedIncomeCard, ClosedPositionsHeader, FixedIncomeSectionHeader, PortfolioDistributionCard, AssetDetailScreen, AssetDetailViewModel, AssetHistoryScreen, AssetHistoryViewModel, AssetCategoryDetailScreen, AssetCategoryDetailViewModel, PortfolioSettingsScreen, AddEditAssetBottomSheet, AddEditAssetTransactionBottomSheet, AddDividendBottomSheet, TransferFundBottomSheet, UpdateCurrentPriceSheet, SectorManagementSheet, RegionManagementSheet, AddEditPlatformSheet, LinkPlatformToCategorySheet, AssetCatalogViewModel, AssetCategoryViewModel, PlatformViewModel |
+| **fixedincome** | FixedIncomeDetailScreen, FixedIncomeDetailViewModel, FixedIncomeCard, FixedIncomePositionCard, CreateFixedIncomeBottomSheet, EditFixedIncomeBottomSheet, CloseFixedIncomeBottomSheet, RegisterCouponBottomSheet |
+| **loan** | LoanDetailScreen, LoanDetailViewModel, AddEditLoanBottomSheet, UpdateLoanRateSheet |
+| **debt** | DebtListScreen, DebtViewModel, AddDebtBottomSheet |
+| **networth** | NetWorthScreen, NetWorthViewModel |
+| **transaction** | TransactionListScreen, TransactionViewModel, TransactionDetailScreen, TransactionDetailViewModel |
+| **fiscal** | FiscalReportScreen, FiscalReportViewModel |
+| **annual** | AnnualSummaryScreen, AnnualViewModel, DonutChartCard, InvestmentBarChart, CategoryExpenseComparison |
+| **settings** | SettingsScreen, IncomeSettingsScreen, ExpenseSettingsScreen, IncomeTypeDetailScreen, CategoryViewModel, CategorySheets, IssuerSheet, IssuerViewModel, BackupPasswordSheet, BackupViewModel |
+| **reconciliation** | ReconciliationReminderBanner, ReconcileBalanceBottomSheet, ReconciliationViewModel |
 | **security** | LockScreen |
 
+## Componentes UI Compartidos (`ui/common/`)
+
+| Categoría | Componentes |
+|-----------|-------------|
+| **component/** | `EmptyStateView`, `IconActionButton`, `IconButtonApp`, `SelectablePill`, `SelectableChip`, `SectionHeader`, `TrackfolioLabel`, `SectionLabel`, `DeltaIndicator`, `AlertBanner`, `InfoRow`, `StatusTag`, `ProgressBar`, `SwipeRowApp`, `InitialsAvatar`, `IconBadge` |
+| **chart/** | `DonutSlice`, `LineChartCard`, `MonthlyBarChart`, `LegendItem`, `VariationBadge` |
+| **input/** | `SearchBar`, `AmountInputField`, `DatePickerRow`, `InlineAmountField` |
+| **metric/** | `MetricCell`, `TransactionRow`, `ReportCard` |
+| **dialog/** | `DeleteConfirmDialog` |
+| **loading/** | `GlobalLoadingManager`, `GlobalLoadingOverlay` |
+| **icon/** | `MaterialIconMapper` |
+
+## Core (infraestructura transversal)
+
+| Paquete | Componentes |
+|---------|-------------|
+| **core.security** | `AesCrypto` (AES-256-CBC), `AppSettings` (expect/actual), `AppLockManager`, `BalanceVisibilityManager`, `BiometricAuthenticator` (expect/actual), `DatabaseBackupManager` (expect/actual), `PendingImport` |
 
 ## Notas
 - Proyecto Kotlin Multiplatform (Android + iOS)
-- DI con Koin: módulos separados (PlatformModule, DatabaseModule, RepositoryModule, UseCaseModule)
+- DI con Koin: `DatabaseModule`, `RepositoryModule`, `UseCaseModule`, `UIModule`, `KoinInitializer` (common) + `AndroidModule`/`IosModule` (plataforma)
 - Navigation: Navigation Compose 2.8.0-alpha10
+- Los componentes de UI grandes (>300 líneas) se dividen en archivos por componente dentro del paquete de la feature
+- Los patrones UI que aparecen en ≥2 features se extraen a `ui/common/`
 
 ## Workflow de Agentes
 

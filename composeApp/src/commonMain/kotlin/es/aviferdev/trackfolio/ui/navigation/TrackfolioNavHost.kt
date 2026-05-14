@@ -224,7 +224,7 @@ fun TrackfolioNavHost() {
                     val savedStateHandle = navController.currentBackStackEntry?.savedStateHandle
                     val editTxId = savedStateHandle?.get<String>("edit_transaction_id")
                     if (editTxId != null) {
-                        savedStateHandle?.remove<String>("edit_transaction_id")
+                        savedStateHandle.remove<String>("edit_transaction_id")
                     }
 
                     TransactionListScreen(

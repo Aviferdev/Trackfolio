@@ -29,7 +29,6 @@ fun AccountSelectorBar(
     accounts: List<Account>,
     selectedAccountId: String?,
     onAccountSelected: (String) -> Unit,
-    showBalance: Boolean = false,
     modifier: Modifier = Modifier
 ) {
     if (accounts.isEmpty()) return

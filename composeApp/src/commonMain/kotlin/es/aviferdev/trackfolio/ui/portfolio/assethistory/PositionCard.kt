@@ -24,6 +24,7 @@ import es.aviferdev.trackfolio.domain.portfolio.AssetPosition
 import es.aviferdev.trackfolio.ui.portfolio.formatQty
 import es.aviferdev.trackfolio.ui.theme.PrimaryDark
 import es.aviferdev.trackfolio.ui.theme.formatAmount
+import es.aviferdev.trackfolio.ui.theme.formatPercent
 import es.aviferdev.trackfolio.ui.theme.maskAmount
 import kotlin.math.abs
 
@@ -124,10 +125,8 @@ fun PositionCard(
                     Spacer(Modifier.width(8.dp))
                     Text(
                         "${if (position.totalPnLPercent >= 0) "+" else "−"}${
-                            formatPercent1(
-                                abs(
-                                    position.totalPnLPercent
-                                )
+                            formatPercent(
+                                abs(position.totalPnLPercent)
                             )
                         }%",
                         fontSize = 12.sp,

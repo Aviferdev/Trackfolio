@@ -84,6 +84,9 @@ import es.aviferdev.trackfolio.ui.theme.TextSecondary
 import es.aviferdev.trackfolio.ui.theme.TextTertiary
 import es.aviferdev.trackfolio.ui.theme.TrackfolioTheme
 import es.aviferdev.trackfolio.ui.theme.formatAmount
+import es.aviferdev.trackfolio.ui.common.component.EmptyStateView
+import es.aviferdev.trackfolio.ui.common.dialog.DeleteConfirmDialog
+import es.aviferdev.trackfolio.ui.common.navigation.TopBarApp
 import es.aviferdev.trackfolio.ui.theme.formatDate
 import es.aviferdev.trackfolio.ui.theme.maskAmount
 import kotlinx.coroutines.delay
@@ -133,6 +136,8 @@ fun TransactionListScreen(
     // ── Dialogs / Sheets ──────────────────────────────────────────────────────
     txToDelete?.let { tx ->
         DeleteConfirmDialog(
+            title = "Eliminar movimiento",
+            message = "¿Seguro que quieres eliminar este movimiento? Esta acción no se puede deshacer.",
             onConfirm = { viewModel.deleteTransaction(tx.id); txToDelete = null },
             onDismiss = { txToDelete = null }
         )
@@ -182,16 +187,14 @@ fun TransactionListContent(
             .fillMaxSize()
             .background(BackgroundGray)
     ) {
-        val monthName =
-            MONTH_NAMES.getOrElse(uiState.month.toIntOrNull()?.minus(1) ?: 0) { uiState.month }
+        TopBarApp(title = "Movimientos", navigateBack = onBack)
+
         TimeStepperHeader(
-            title = "Movimientos",
-            currentValue = monthName,
+            currentValue = MONTH_NAMES.getOrElse(uiState.month.toIntOrNull()?.minus(1) ?: 0) { uiState.month },
             currentValueSecondary = uiState.year,
             canGoBack = uiState.canGoBack,
             onPrevious = onPreviousMonth,
             onNext = onNextMonth,
-            navigateBack = onBack
         )
 
         AnimatedVisibility(
@@ -217,11 +220,17 @@ fun TransactionListContent(
                 contentAlignment = Alignment.Center
             ) { CircularProgressIndicator(color = PrimaryDark) }
 
-            uiState.filteredTransactions.isEmpty() -> EmptyState(
-                month = uiState.month,
-                year = uiState.year,
-                isSearch = searchQuery.isNotBlank()
-            )
+            uiState.filteredTransactions.isEmpty() -> {
+                val monthName = uiState.month.toIntOrNull()?.let { mn ->
+                    listOf("enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre").getOrNull(mn - 1) ?: uiState.month
+                } ?: uiState.month
+                EmptyStateView(
+                    icon = Icons.Outlined.Search,
+                    title = if (searchQuery.isNotBlank()) "Sin resultados" else "Sin movimientos",
+                    subtitle = if (searchQuery.isNotBlank()) "No hay movimientos que coincidan con tu búsqueda"
+                    else "No hay movimientos en $monthName ${uiState.year}"
+                )
+            }
 
             else -> LazyColumn(
                 modifier = Modifier.fillMaxSize(),
@@ -283,7 +292,7 @@ fun TransactionListContentPreview() {
             id = "tx_1", accountId = "acc_1", amount = 1500.0,
             type = TransactionType.INCOME, categoryId = null,
             date = now, notes = "Nómina", createdAt = now,
-            incomeType = es.aviferdev.trackfolio.domain.model.IncomeType.SALARY,
+            incomeType = IncomeType.SALARY,
             grossAmount = 2000.0, irpfPercent = 19.0
         ),
         Transaction(
@@ -295,7 +304,7 @@ fun TransactionListContentPreview() {
             id = "tx_3", accountId = "acc_1", amount = 25.0,
             type = TransactionType.INCOME, categoryId = null,
             date = now, notes = "Dividendo AAPL", createdAt = now,
-            incomeType = es.aviferdev.trackfolio.domain.model.IncomeType.DIVIDEND,
+            incomeType = IncomeType.DIVIDEND,
             linkedAssetTransactionId = "linked_1"
         )
     )
@@ -324,7 +333,8 @@ fun TransactionListContentPreview() {
             onSearchQueryChange = {},
             onDeleteTransaction = {},
             onEditTransaction = {},
-            onTransactionClick = {}
+            onTransactionClick = {},
+            onBack = {}
         )
     }
 }
@@ -649,64 +659,4 @@ private fun SwipeToDeleteContainer(onDelete: () -> Unit, content: @Composable ()
     ) { Surface(color = SurfaceWhite) { content() } }
 }
 
-@Composable
-private fun EmptyState(month: String, year: String, isSearch: Boolean) {
-    val monthName = MONTH_NAMES.getOrElse(month.toIntOrNull()?.minus(1) ?: 0) { month }
-    Box(modifier = Modifier.fillMaxSize().padding(32.dp), contentAlignment = Alignment.Center) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(
-                if (isSearch) "Sin resultados" else "Sin movimientos",
-                fontSize = 16.sp, fontWeight = FontWeight.SemiBold,
-                color = TextPrimary, textAlign = TextAlign.Center
-            )
-            Spacer(Modifier.height(8.dp))
-            Text(
-                if (isSearch) "No hay movimientos que coincidan con tu búsqueda"
-                else "No hay movimientos en $monthName $year",
-                fontSize = 13.sp, color = TextTertiary, textAlign = TextAlign.Center
-            )
-        }
-    }
-}
-
-@Composable
-private fun DeleteConfirmDialog(onConfirm: () -> Unit, onDismiss: () -> Unit) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        containerColor = SurfaceWhite,
-        title = {
-            Text(
-                "Eliminar movimiento",
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Bold,
-                color = TextPrimary
-            )
-        },
-        text = {
-            Text(
-                "¿Seguro que quieres eliminar este movimiento? Esta acción no se puede deshacer.",
-                fontSize = 13.sp,
-                color = TextSecondary
-            )
-        },
-        confirmButton = {
-            TextButton(onClick = onConfirm) {
-                Text(
-                    "Eliminar",
-                    color = ExpenseRed,
-                    fontWeight = FontWeight.SemiBold
-                )
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text(
-                    "Cancelar",
-                    color = PrimaryDark,
-                    fontWeight = FontWeight.Medium
-                )
-            }
-        },
-        shape = RoundedCornerShape(16.dp)
-    )
-}
+// EmptyState y DeleteConfirmDialog reemplazados por versiones de ui.common

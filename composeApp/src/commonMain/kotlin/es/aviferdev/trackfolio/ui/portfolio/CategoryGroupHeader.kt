@@ -1,0 +1,105 @@
+package es.aviferdev.trackfolio.ui.portfolio
+
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import es.aviferdev.trackfolio.ui.common.DeltaIndicator
+import es.aviferdev.trackfolio.ui.theme.ExpenseRed
+import es.aviferdev.trackfolio.ui.theme.IncomeGreen
+import es.aviferdev.trackfolio.ui.theme.TextPrimary
+import es.aviferdev.trackfolio.ui.theme.TextSecondary
+import es.aviferdev.trackfolio.ui.theme.TextTertiary
+import es.aviferdev.trackfolio.ui.theme.TrackfolioTheme
+import es.aviferdev.trackfolio.ui.theme.formatAmount
+import es.aviferdev.trackfolio.ui.theme.formatPercent
+import es.aviferdev.trackfolio.ui.theme.maskAmount
+import org.jetbrains.compose.ui.tooling.preview.Preview
+import kotlin.math.abs
+
+@Composable
+fun CategoryGroupHeader(
+    group: CategoryGroup,
+    balancesHidden: Boolean
+) {
+    val pnlColor = when {
+        group.totalPnL > 0 -> IncomeGreen
+        group.totalPnL < 0 -> ExpenseRed
+        else -> TextSecondary
+    }
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp)
+            .padding(top = 16.dp, bottom = 4.dp)
+    ) {
+        Row(
+            Modifier.fillMaxWidth(),
+            Arrangement.SpaceBetween,
+            Alignment.CenterVertically
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(group.displayIcon, fontSize = 17.sp)
+                Spacer(Modifier.width(8.dp))
+                Text(
+                    group.displayName,
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = TextPrimary
+                )
+                Spacer(Modifier.width(6.dp))
+                Text("(${group.rowCount})", fontSize = 11.sp, color = TextTertiary)
+            }
+            if (group.totalPnL != 0.0) {
+                DeltaIndicator(
+                    value = "${if (group.totalPnLPercent >= 0) "+" else "−"}${formatPercent(abs(group.totalPnLPercent))}%",
+                    isPositive = group.totalPnLPercent >= 0
+                )
+            }
+        }
+        Spacer(Modifier.height(5.dp))
+        Row(Modifier.fillMaxWidth(), Arrangement.SpaceBetween) {
+            Text(
+                "Invertido: ${maskAmount(formatAmount(group.totalInvested), balancesHidden)} €",
+                fontSize = 11.sp,
+                color = TextTertiary
+            )
+            Text(
+                "Actual: ${maskAmount(formatAmount(group.totalCurrentValue), balancesHidden)} €",
+                fontSize = 11.sp,
+                color = TextTertiary
+            )
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun CategoryGroupHeaderPreview() {
+    TrackfolioTheme {
+        CategoryGroupHeader(
+            group = CategoryGroup(
+                category = null,
+                rows = emptyList(),
+                totalInvested = 5000.0,
+                totalCurrentValue = 5500.0,
+                totalUnrealizedPnL = 500.0,
+                totalRealizedPnL = 0.0,
+                totalPnL = 500.0,
+                totalPnLPercent = 10.0
+            ),
+            balancesHidden = false
+        )
+    }
+}

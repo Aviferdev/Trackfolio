@@ -13,8 +13,8 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import es.aviferdev.trackfolio.data.database.DatabaseInitializer
-import es.aviferdev.trackfolio.security.AppLockManager
-import es.aviferdev.trackfolio.security.BalanceVisibilityManager
+import es.aviferdev.trackfolio.core.security.AppLockManager
+import es.aviferdev.trackfolio.core.security.BalanceVisibilityManager
 import es.aviferdev.trackfolio.ui.navigation.TrackfolioNavHost
 import es.aviferdev.trackfolio.ui.security.LockScreen
 import es.aviferdev.trackfolio.ui.theme.LocalBalanceHidden

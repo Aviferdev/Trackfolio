@@ -52,8 +52,9 @@ import es.aviferdev.trackfolio.domain.model.FixedIncomeEvent
 import es.aviferdev.trackfolio.domain.portfolio.ScheduledCoupon
 import es.aviferdev.trackfolio.ui.common.StatusTag
 import es.aviferdev.trackfolio.ui.common.navigation.TopBarApp
-import es.aviferdev.trackfolio.ui.fixedincome.formatPercent1
+import es.aviferdev.trackfolio.ui.theme.formatPercent
 import es.aviferdev.trackfolio.ui.theme.*
+import es.aviferdev.trackfolio.ui.theme.LocalBalanceHidden
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -76,8 +77,11 @@ fun FixedIncomeDetailScreen(
 
     var fabMenuOpen by remember { mutableStateOf(false) }
 
+    val balancesHidden = LocalBalanceHidden.current
+
     FixedIncomeDetailContent(
         state = state,
+        balancesHidden = balancesHidden,
         onBack = onBack,
         onDeleteEvent = { event -> viewModel.showDeleteEventDialog(event) },
         onUpdateRegionSector = { region, sector ->
@@ -136,6 +140,7 @@ fun FixedIncomeDetailScreen(
 @Composable
 fun FixedIncomeDetailContent(
     state: FixedIncomeDetailUiState,
+    balancesHidden: Boolean,
     onBack: () -> Unit,
     onDeleteEvent: (FixedIncomeEvent) -> Unit,
     onUpdateRegionSector: (String?, String?) -> Unit,
@@ -175,7 +180,7 @@ fun FixedIncomeDetailContent(
                     FixedIncomeDetailHeader(
                         position = position,
                         row = row,
-                        balancesHidden = false
+                        balancesHidden = balancesHidden
                     )
                 }
 
@@ -184,7 +189,7 @@ fun FixedIncomeDetailContent(
                         Spacer(Modifier.height(16.dp))
                         CouponTimelineSection(
                             schedule = state.couponSchedule,
-                                balancesHidden = false
+                                balancesHidden = balancesHidden
                         )
                     }
                 }
@@ -194,7 +199,7 @@ fun FixedIncomeDetailContent(
                         Spacer(Modifier.height(16.dp))
                         MaturitySimulatorCard(
                             simulation = state.maturitySimulation!!,
-                                balancesHidden = false
+                                balancesHidden = balancesHidden
                         )
                     }
                 }
@@ -203,7 +208,7 @@ fun FixedIncomeDetailContent(
                     Spacer(Modifier.height(16.dp))
                     EventsHistorySection(
                         events = state.events,
-                        balancesHidden = false,
+                        balancesHidden = balancesHidden,
                         onDeleteEvent = onDeleteEvent
                     )
                 }
@@ -336,6 +341,7 @@ fun FixedIncomeDetailContent(
 fun FixedIncomeDetailContentPreview() {
     TrackfolioTheme {
         FixedIncomeDetailContent(
+            balancesHidden = false,
             state = FixedIncomeDetailUiState(
                 isLoading = false,
                 row = es.aviferdev.trackfolio.domain.model.FixedIncomeRow(
@@ -398,7 +404,7 @@ private fun DistributionSection(
 ) {
     // Valores predefinidos para región y sector
     val regions = listOf("Europa", "EE.UU.", "España", "Emerging Markets", "Global")
-    val sectors = listOf("Gobierno", "Corporativo", "Banca", " Energía", "Inmobiliario", "Otro")
+    val sectors = listOf("Gobierno", "Corporativo", "Banca", "Energía", "Inmobiliario", "Otro")
 
     var showRegionDialog by remember { mutableStateOf(false) }
     var showSectorDialog by remember { mutableStateOf(false) }
@@ -589,7 +595,7 @@ private fun FixedIncomeDetailHeader(
                 // Cupón anual
                 DetailCell(
                     label = "Cupón anual",
-                    value = "${position.interestRate?.let { "${formatPercent1(it)}%" } ?: "—"} · ${maskAmount(formatAmount(position.principal * (position.interestRate ?: 0.0) / 100.0), balancesHidden)} €",
+                    value = "${position.interestRate?.let { "${formatPercent(it)}%" } ?: "—"} · ${maskAmount(formatAmount(position.principal * (position.interestRate ?: 0.0) / 100.0), balancesHidden)} €",
                     modifier = Modifier.weight(1f)
                 )
                 // Vencimiento
@@ -607,7 +613,7 @@ private fun FixedIncomeDetailHeader(
                 // TIR estimada (placeholder - would need actual calculation)
                 DetailCell(
                     label = "TIR estimada",
-                    value = position.interestRate?.let { "${formatPercent1(it)}%" } ?: "—",
+                    value = position.interestRate?.let { "${formatPercent(it)}%" } ?: "—",
                     modifier = Modifier.weight(1f)
                 )
                 // Plataforma (placeholder)
@@ -907,7 +913,7 @@ private fun EventItem(
             Row {
                 if (event.irpfPercent > 0) {
                     Text(
-                        text = "IRPF ${formatPercent1(event.irpfPercent)}%",
+                        text = "IRPF ${formatPercent(event.irpfPercent)}%",
                         fontSize = 10.sp,
                         color = NegativeRed
                     )

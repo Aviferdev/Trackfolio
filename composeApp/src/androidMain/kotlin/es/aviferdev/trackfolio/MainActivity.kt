@@ -8,9 +8,9 @@ import androidx.fragment.app.FragmentActivity
 import es.aviferdev.trackfolio.di.androidModule
 import es.aviferdev.trackfolio.di.initKoin
 import es.aviferdev.trackfolio.domain.pdf.PdfReportGenerator
-import es.aviferdev.trackfolio.security.BiometricAuthenticator
-import es.aviferdev.trackfolio.security.DatabaseBackupManager
-import es.aviferdev.trackfolio.security.setAppContextForPendingImport
+import es.aviferdev.trackfolio.core.security.BiometricAuthenticator
+import es.aviferdev.trackfolio.core.security.DatabaseBackupManager
+import es.aviferdev.trackfolio.core.security.setAppContextForPendingImport
 import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidContext
 

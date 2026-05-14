@@ -2,11 +2,11 @@ package es.aviferdev.trackfolio.di
 
 import es.aviferdev.trackfolio.data.database.DatabaseDriverFactory
 import es.aviferdev.trackfolio.domain.pdf.PdfReportGenerator
-import es.aviferdev.trackfolio.security.AppLockManager
-import es.aviferdev.trackfolio.security.AppSettings
-import es.aviferdev.trackfolio.security.BalanceVisibilityManager
-import es.aviferdev.trackfolio.security.BiometricAuthenticator
-import es.aviferdev.trackfolio.security.DatabaseBackupManager
+import es.aviferdev.trackfolio.core.security.AppLockManager
+import es.aviferdev.trackfolio.core.security.AppSettings
+import es.aviferdev.trackfolio.core.security.BalanceVisibilityManager
+import es.aviferdev.trackfolio.core.security.BiometricAuthenticator
+import es.aviferdev.trackfolio.core.security.DatabaseBackupManager
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import platform.Foundation.NSBundle

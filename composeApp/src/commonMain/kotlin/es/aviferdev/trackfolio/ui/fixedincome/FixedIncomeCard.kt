@@ -24,6 +24,10 @@ import es.aviferdev.trackfolio.domain.model.FixedIncomeType
 import es.aviferdev.trackfolio.domain.model.InterestFrequency
 import es.aviferdev.trackfolio.ui.common.StatusTag
 import es.aviferdev.trackfolio.ui.theme.*
+import es.aviferdev.trackfolio.ui.theme.formatAmount
+import es.aviferdev.trackfolio.ui.theme.formatDateShort
+import es.aviferdev.trackfolio.ui.theme.formatPercent
+import es.aviferdev.trackfolio.ui.theme.maskAmount
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import kotlin.math.abs
 import kotlinx.datetime.Clock
@@ -122,7 +126,7 @@ fun FixedIncomeSection(
                         }
                         val sign = if (summary.totalNetProfit >= 0) "+" else ""
                         Text(
-                            text = "$sign${maskAmount(formatAmount(summary.totalNetProfit), balancesHidden)} € (${formatPercent1(summary.totalNetProfitPercent)})",
+                            text = "$sign${maskAmount(formatAmount(summary.totalNetProfit), balancesHidden)} € (${formatPercent(summary.totalNetProfitPercent)}%)",
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Medium,
                             color = pnlColor
@@ -205,7 +209,7 @@ fun FixedIncomePositionCard(
                     "Al vencimiento"
                 }
                 Text(
-                    text = "Vence ${formatDate(position.maturityDate)} · $frequencyLabel · ${maskAmount(formatAmount(position.principal), balancesHidden)} €",
+                    text = "Vence ${formatDateShort(position.maturityDate)} · $frequencyLabel · ${maskAmount(formatAmount(position.principal), balancesHidden)} €",
                     fontSize = 10.sp,
                     color = TextTertiary
                 )
@@ -313,39 +317,7 @@ fun Badge(count: Int, color: Color) {
     }
 }
 
-fun formatAmount(amount: Double): String {
-    val negative = amount < 0
-    val abs = if (negative) -amount else amount
-    val rounded = (abs * 100).toLong()
-    val euros = rounded / 100
-    val cents = rounded % 100
-    val eurosStr = buildString {
-        euros.toString().reversed().forEachIndexed { i, c ->
-            if (i > 0 && i % 3 == 0) append('.')
-            append(c)
-        }
-    }.reversed()
-    val formatted = "$eurosStr,${cents.toString().padStart(2, '0')}"
-    return if (negative) "-$formatted" else formatted
-}
-
-fun maskAmount(amount: String, hidden: Boolean): String =
-    if (hidden) "••••" else amount
-
-fun formatPercent1(value: Double): String {
-    val absVal = if (value < 0) -value else value
-    val intPart = absVal.toLong()
-    val decPart = ((absVal - intPart) * 10).toInt()
-    val sign = if (value < 0) "-" else ""
-    return "$sign$intPart.$decPart"
-}
-
-fun formatDate(timestamp: Long): String {
-    val instant = kotlinx.datetime.Instant.fromEpochMilliseconds(timestamp)
-    val tz = kotlinx.datetime.TimeZone.currentSystemDefault()
-    val dateTime = instant.toLocalDateTime(tz)
-    return "${dateTime.dayOfMonth}/${dateTime.monthNumber}/${dateTime.year}"
-}
+// Nota: formatAmount, maskAmount, formatPercent, formatDate se importan desde ui.theme
 
 private fun createMockSummary(): FixedIncomeSummary {
     val now = Clock.System.now().toEpochMilliseconds()

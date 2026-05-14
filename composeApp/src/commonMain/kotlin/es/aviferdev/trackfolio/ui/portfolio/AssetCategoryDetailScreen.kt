@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.sp
 import es.aviferdev.trackfolio.domain.model.Asset
 import es.aviferdev.trackfolio.domain.model.AssetCategory
 import es.aviferdev.trackfolio.domain.model.Platform
+import es.aviferdev.trackfolio.ui.common.SectionHeader
 import es.aviferdev.trackfolio.ui.common.navigation.TopBarApp
 import es.aviferdev.trackfolio.ui.fixedincome.FixedIncomePositionCard
 import es.aviferdev.trackfolio.ui.theme.*
@@ -178,8 +179,8 @@ fun AssetCategoryDetailContent(
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             item {
-                SectionHeaderWithAction(
-                    title = "ACTIVOS",
+                SectionHeader(
+                    label = "ACTIVOS",
                     actionLabel = "+ Nuevo",
                     onAction = onOpenAddSheet
                 )
@@ -228,8 +229,8 @@ fun AssetCategoryDetailContent(
             if (state.activeFixedIncome.isNotEmpty()) {
                 item { Spacer(Modifier.height(8.dp)) }
                 item {
-                    SectionHeaderWithAction(
-                        title = "RENTA FIJA",
+                    SectionHeader(
+                        label = "RENTA FIJA",
                         actionLabel = "(${state.activeFixedIncome.size})",
                         onAction = { }
                     )
@@ -265,8 +266,8 @@ fun AssetCategoryDetailContent(
             if (state.category != null) {
                 item { Spacer(Modifier.height(8.dp)) }
                 item {
-                    SectionHeaderWithAction(
-                        title = "PLATAFORMAS",
+                    SectionHeader(
+                        label = "PLATAFORMAS",
                         actionLabel = "Gestionar",
                         onAction = onOpenLinkPlatformSheet
                     )
@@ -490,19 +491,4 @@ private fun ArchivedAssetRow(
     }
 }
 
-@Composable
-private fun SectionHeaderWithAction(title: String, actionLabel: String, onAction: () -> Unit) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(title, fontSize = 11.sp, fontWeight = FontWeight.SemiBold, color = TextSecondary)
-        TextButton(
-            onClick = onAction,
-            contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp)
-        ) {
-            Text(actionLabel, fontSize = 13.sp, color = PrimaryDark, fontWeight = FontWeight.Medium)
-        }
-    }
-}
+// SectionHeaderWithAction reemplazado por es.aviferdev.trackfolio.ui.common.SectionHeader

@@ -26,6 +26,8 @@ import androidx.compose.ui.unit.sp
 import es.aviferdev.trackfolio.domain.model.Account
 import es.aviferdev.trackfolio.domain.model.AccountType
 import es.aviferdev.trackfolio.ui.common.navigation.TopBarApp
+import es.aviferdev.trackfolio.ui.common.component.EmptyStateView
+import es.aviferdev.trackfolio.ui.common.dialog.DeleteConfirmDialog
 import es.aviferdev.trackfolio.ui.home.SetInitialBalanceBottomSheet
 import es.aviferdev.trackfolio.ui.theme.BackgroundGray
 import es.aviferdev.trackfolio.ui.theme.BorderGray
@@ -36,6 +38,7 @@ import es.aviferdev.trackfolio.ui.theme.SurfaceWhite
 import es.aviferdev.trackfolio.ui.theme.TextPrimary
 import es.aviferdev.trackfolio.ui.theme.TextSecondary
 import es.aviferdev.trackfolio.ui.theme.TrackfolioTheme
+import es.aviferdev.trackfolio.ui.theme.formatAmount
 import es.aviferdev.trackfolio.ui.theme.maskAmount
 import kotlinx.datetime.Clock
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -87,8 +90,9 @@ fun AccountListScreen(
         )
     }
     if (uiState.showDeleteConfirm && uiState.accountToDelete != null) {
-        DeleteAccountDialog(
-            account   = uiState.accountToDelete!!,
+        DeleteConfirmDialog(
+            title = "Eliminar cuenta",
+            message = "Se eliminará «${uiState.accountToDelete!!.name}» junto con todos sus movimientos y deudas. Esta acción no se puede deshacer.",
             onConfirm = { viewModel.confirmDelete() },
             onDismiss = { viewModel.cancelDelete() }
         )
@@ -124,9 +128,12 @@ fun AccountListContent(
         )
 
         if (uiState.accounts.isEmpty()) {
-            EmptyAccountsState(
-                modifier = Modifier.fillMaxSize(),
-                onAdd    = onAddClick
+            EmptyStateView(
+                icon = Icons.Outlined.AccountBalance,
+                title = "Sin cuentas todavía",
+                subtitle = "Crea tu primera cuenta desde\nAjustes para empezar",
+                actionLabel = "Añadir cuenta",
+                onAction = onAddClick
             )
         } else {
             LazyColumn(
@@ -298,62 +305,4 @@ private fun AccountCard(
     }
 }
 
-@Composable
-private fun EmptyAccountsState(modifier: Modifier, onAdd: () -> Unit) {
-    Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Icon(Icons.Outlined.AccountBalance, contentDescription = null, modifier = Modifier.size(56.dp), tint = PrimaryDark)
-            Spacer(Modifier.height(16.dp))
-            Text("Sin cuentas todavía", fontSize = 18.sp, fontWeight = FontWeight.Bold, color = TextPrimary)
-            Spacer(Modifier.height(8.dp))
-            Text(
-                "Crea tu primera cuenta desde\nAjustes para empezar",
-                fontSize = 14.sp, color = TextSecondary, textAlign = TextAlign.Center
-            )
-            Spacer(Modifier.height(24.dp))
-            Button(onClick = onAdd, shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = PrimaryDark)) {
-                Icon(Icons.Default.Add, contentDescription = null)
-                Spacer(Modifier.width(8.dp))
-                Text("Añadir cuenta")
-            }
-        }
-    }
-}
-
-@Composable
-private fun DeleteAccountDialog(account: Account, onConfirm: () -> Unit, onDismiss: () -> Unit) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        containerColor   = SurfaceWhite,
-        icon             = { Text("⚠️", fontSize = 32.sp) },
-        title            = { Text("Eliminar cuenta", fontWeight = FontWeight.SemiBold) },
-        text             = {
-            Text(
-                "Se eliminará «${account.name}» junto con todos sus movimientos y deudas. Esta acción no se puede deshacer.",
-                fontSize = 14.sp, color = TextSecondary
-            )
-        },
-        confirmButton = {
-            TextButton(onClick = onConfirm) { Text("Eliminar", color = ExpenseRed, fontWeight = FontWeight.Medium) }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) { Text("Cancelar", color = PrimaryDark, fontWeight = FontWeight.Medium) }
-        },
-        shape = RoundedCornerShape(16.dp)
-    )
-}
-
-private fun formatAmount(amount: Double): String {
-    val abs     = if (amount < 0) -amount else amount
-    val rounded = (abs * 100).toLong()
-    val euros   = rounded / 100
-    val cents   = rounded % 100
-    val eurosStr = buildString {
-        euros.toString().reversed().forEachIndexed { i, c ->
-            if (i > 0 && i % 3 == 0) append('.')
-            append(c)
-        }
-    }.reversed()
-    return "$eurosStr,${cents.toString().padStart(2, '0')}"
-}
+// EmptyState y DeleteConfirmDialog reemplazados por versiones de ui.common

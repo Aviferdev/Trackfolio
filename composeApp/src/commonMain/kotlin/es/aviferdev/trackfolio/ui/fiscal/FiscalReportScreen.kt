@@ -656,12 +656,4 @@ private fun formatPct(value: Double): String {
     return "$i,${f}%"
 }
 
-private fun formatQty(value: Double): String {
-    if (value == value.toLong().toDouble()) return value.toLong().toString()
-    val sign   = if (value < 0) "-" else ""
-    val absVal = abs(value)
-    val intPart = absVal.toLong()
-    val fracStr = ((absVal - intPart) * 1_000_000 + .5).toLong()
-        .toString().padStart(6,'0').trimEnd('0')
-    return "$sign$intPart${if (fracStr.isNotEmpty()) ",$fracStr" else ""}"
-}
+// formatQty se importa de ui.theme

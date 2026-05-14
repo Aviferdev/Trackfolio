@@ -4,10 +4,20 @@ import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 
-private val MONTH_SHORT = listOf(
+/** Nombres completos de meses (español). */
+val MONTH_NAMES = listOf(
+    "enero", "febrero", "marzo", "abril", "mayo", "junio",
+    "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"
+)
+
+/** Abreviaturas de 3 letras para meses. */
+val MONTH_SHORT = listOf(
     "ene", "feb", "mar", "abr", "may", "jun",
     "jul", "ago", "sep", "oct", "nov", "dic"
 )
+
+/** Etiquetas ultra-cortas de 1 letra para gráficos de 12 columnas. */
+val MONTH_LABELS = listOf("E", "F", "M", "A", "M", "J", "J", "A", "S", "O", "N", "D")
 
 fun formatDate(epochMillis: Long): String {
     val todayMillis = kotlinx.datetime.Clock.System.now().toEpochMilliseconds()
@@ -44,6 +54,63 @@ fun formatAmount(amount: Double, addPositive: Boolean = false): String {
     } else {
         formatted
     }
+}
+
+/**
+ * Formatea una fecha como "14/5/2026" (día/mes/año sin padding).
+ * Útil para vencimientos y fechas absolutas donde no aplica el formato relativo.
+ */
+fun formatDateShort(epochMillis: Long): String {
+    val instant = kotlinx.datetime.Instant.fromEpochMilliseconds(epochMillis)
+    val tz = kotlinx.datetime.TimeZone.currentSystemDefault()
+    val dateTime = instant.toLocalDateTime(tz)
+    return "${dateTime.dayOfMonth}/${dateTime.monthNumber}/${dateTime.year}"
+}
+
+// ─── Porcentaje ───────────────────────────────────────────────────────────────
+
+/**
+ * Formatea un número como porcentaje con 1 decimal (formato español).
+ * Ej: 25.5 → "25,5", 3.0 → "3,0"
+ */
+fun formatPercent(value: Double): String {
+    val absVal = if (value < 0) -value else value
+    val intPart = absVal.toLong()
+    val decPart = ((absVal - intPart) * 10 + 0.5).toInt()
+    val sign = if (value < 0) "-" else ""
+    return "$sign$intPart,$decPart"
+}
+
+/**
+ * Formatea un número como porcentaje con 1 decimal (formato español con coma),
+ * añadiendo signo explícito para valores positivos.
+ * Ej: 25.5 → "+25,5%", -5.0 → "-5,0%"
+ */
+fun formatPercentSigned(value: Double): String {
+    val sign = if (value >= 0) "+" else ""
+    return "$sign${formatPercent(value)}%"
+}
+
+// ─── Cantidades (unidades / participaciones) ──────────────────────────────────
+
+/**
+ * Formatea una cantidad de unidades/participaciones con redondeo a 2 decimales.
+ * Ej: 14.6667 → "14,67", 5.0 → "5".
+ *
+ * @param value Cantidad a formatear.
+ * @param decimals Número de decimales (por defecto 2; usar 3 para criptomonedas).
+ */
+fun formatQty(value: Double, decimals: Int = 2): String {
+    if (value == value.toLong().toDouble()) return value.toLong().toString()
+    val multiplier = when (decimals) {
+        2 -> 100L; 3 -> 1000L; 4 -> 10000L; 6 -> 1_000_000L
+        else -> 100L
+    }
+    val rounded = (value * multiplier + 0.5).toLong()
+    val intPart = rounded / multiplier
+    val decPart = rounded % multiplier
+    val decStr = decPart.toString().padStart(decimals, '0').trimEnd('0').ifEmpty { "0" }
+    return "$intPart,$decStr"
 }
 
 // ─── Moneda ──────────────────────────────────────────────────────────────────

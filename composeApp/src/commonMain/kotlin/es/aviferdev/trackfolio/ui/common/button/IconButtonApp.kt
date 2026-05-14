@@ -19,7 +19,7 @@ import es.aviferdev.trackfolio.ui.theme.TextTertiary
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-fun IconButtomApp(
+fun IconButtonApp(
     clickButton: () -> Unit,
     icon: ImageVector,
     contentDescription: String = "none"
@@ -44,7 +44,7 @@ fun IconButtomApp(
 @Preview
 @Composable
 private fun CustomIconButtonPreview() {
-    IconButtomApp(
+    IconButtonApp(
         clickButton = {},
         Icons.AutoMirrored.Filled.ArrowBack
     )

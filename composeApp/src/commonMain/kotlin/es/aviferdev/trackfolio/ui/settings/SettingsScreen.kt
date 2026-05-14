@@ -33,9 +33,9 @@ import androidx.compose.ui.unit.sp
 import es.aviferdev.trackfolio.domain.model.Account
 import es.aviferdev.trackfolio.domain.model.AccountType
 import es.aviferdev.trackfolio.domain.usecase.reconciliation.GetReconciliationReminderIntervalUseCase
-import es.aviferdev.trackfolio.security.AppLockManager
-import es.aviferdev.trackfolio.security.BiometricAuthenticator
-import es.aviferdev.trackfolio.security.BiometricResult
+import es.aviferdev.trackfolio.core.security.AppLockManager
+import es.aviferdev.trackfolio.core.security.BiometricAuthenticator
+import es.aviferdev.trackfolio.core.security.BiometricResult
 import es.aviferdev.trackfolio.ui.account.AccountViewModel
 import es.aviferdev.trackfolio.ui.account.AddEditAccountBottomSheet
 import es.aviferdev.trackfolio.ui.common.*

@@ -2,7 +2,7 @@ package es.aviferdev.trackfolio.domain.usecase.asset
 
 import es.aviferdev.trackfolio.domain.model.Asset
 import es.aviferdev.trackfolio.domain.repository.AssetRepository
-import es.aviferdev.trackfolio.security.AppSettings
+import es.aviferdev.trackfolio.core.security.AppSettings
 import kotlinx.coroutines.flow.Flow
 import kotlinx.datetime.Clock
 

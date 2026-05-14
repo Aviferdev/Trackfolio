@@ -1,4 +1,4 @@
-package es.aviferdev.trackfolio.security
+package es.aviferdev.trackfolio.core.security
 
 private const val KEY_BIOMETRIC_ENABLED = "biometric_enabled"
 

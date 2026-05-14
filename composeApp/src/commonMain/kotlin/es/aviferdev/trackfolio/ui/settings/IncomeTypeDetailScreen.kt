@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.sp
 import es.aviferdev.trackfolio.domain.model.IncomeType
 import es.aviferdev.trackfolio.domain.model.Issuer
 import es.aviferdev.trackfolio.domain.model.IssuerType
+import es.aviferdev.trackfolio.ui.common.SectionHeader
 import es.aviferdev.trackfolio.ui.common.navigation.TopBarApp
 import es.aviferdev.trackfolio.ui.theme.*
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -140,7 +141,7 @@ fun IncomeTypeDetailContent(
         ) {
             item {
                 SectionHeader(
-                    title = sectionLabel,
+                    label = sectionLabel,
                     actionLabel = "+ Nuevo",
                     onAction = onAdd
                 )
@@ -225,25 +226,7 @@ fun IncomeTypeDetailContentPreview() {
 }
 
 // ─── Private components ──────────────────────────────────────────────────────
-@Composable
-private fun SectionHeader(title: String, actionLabel: String? = null, onAction: (() -> Unit)? = null) {
-    Row(
-        modifier = Modifier.fillMaxWidth().padding(top = 14.dp, start = 16.dp, end = 16.dp, bottom = 6.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(title.uppercase(), fontSize = 10.sp, fontWeight = FontWeight.Bold, color = TextTertiary, letterSpacing = 0.7.sp)
-        if (actionLabel != null && onAction != null) {
-            Text(
-                text = actionLabel,
-                fontSize = 11.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = PrimaryDark,
-                modifier = Modifier.clickable { onAction() }
-            )
-        }
-    }
-}
+// SectionHeader reemplazado por es.aviferdev.trackfolio.ui.common.SectionHeader
 
 @Composable
 private fun SettingsGroupCard(content: @Composable ColumnScope.() -> Unit) {
