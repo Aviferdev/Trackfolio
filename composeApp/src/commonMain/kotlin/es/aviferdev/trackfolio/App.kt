@@ -12,10 +12,12 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import es.aviferdev.trackfolio.core.security.AppSettings
 import es.aviferdev.trackfolio.data.database.DatabaseInitializer
 import es.aviferdev.trackfolio.core.security.AppLockManager
 import es.aviferdev.trackfolio.core.security.BalanceVisibilityManager
 import es.aviferdev.trackfolio.ui.navigation.TrackfolioNavHost
+import es.aviferdev.trackfolio.ui.onboarding.OnboardingScreen
 import es.aviferdev.trackfolio.ui.security.LockScreen
 import es.aviferdev.trackfolio.ui.theme.LocalBalanceHidden
 import es.aviferdev.trackfolio.ui.theme.TrackfolioTheme
@@ -23,11 +25,18 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.koin.compose.koinInject
 
+private const val KEY_ONBOARDING_DONE = "onboarding_done"
+
 @Composable
 fun App() {
     val databaseInitializer = koinInject<DatabaseInitializer>()
     val appLockManager = koinInject<AppLockManager>()
     val balanceVisibility = koinInject<BalanceVisibilityManager>()
+    val settings = koinInject<AppSettings>()
+
+    var onboardingDone by remember {
+        mutableStateOf(settings.getBool(KEY_ONBOARDING_DONE, false))
+    }
 
     var isLocked by remember {
         appLockManager.onAppStart()
@@ -64,7 +73,14 @@ fun App() {
 
     TrackfolioTheme {
         CompositionLocalProvider(LocalBalanceHidden provides balancesHidden) {
-            if (isLocked) {
+            if (!onboardingDone) {
+                OnboardingScreen(
+                    onComplete = {
+                        settings.putBool(KEY_ONBOARDING_DONE, true)
+                        onboardingDone = true
+                    }
+                )
+            } else if (isLocked) {
                 LockScreen(
                     onUnlocked = {
                         appLockManager.onUnlocked()
