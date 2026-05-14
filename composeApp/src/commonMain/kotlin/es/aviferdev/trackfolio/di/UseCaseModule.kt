@@ -1,5 +1,10 @@
 package es.aviferdev.trackfolio.di
 
+import es.aviferdev.trackfolio.domain.usecase.backup.GetBackupReminderIntervalUseCase
+import es.aviferdev.trackfolio.domain.usecase.backup.GetLastBackupDateUseCase
+import es.aviferdev.trackfolio.domain.usecase.backup.SaveBackupReminderIntervalUseCase
+import es.aviferdev.trackfolio.domain.usecase.backup.SaveLastBackupDateUseCase
+import es.aviferdev.trackfolio.domain.usecase.backup.ShouldShowBackupReminderUseCase
 import es.aviferdev.trackfolio.domain.usecase.account.DeleteAccountUseCase
 import es.aviferdev.trackfolio.domain.usecase.account.GetAccountByIdUseCase
 import es.aviferdev.trackfolio.domain.usecase.account.GetAccountsUseCase
@@ -231,6 +236,13 @@ val useCaseModule = module {
     factory { RenameIssuerUseCase(get()) }
     factory { ArchiveIssuerUseCase(get()) }
 
+    // ── Backup ──────────────────────────────────────────────────────────────────
+    factory { SaveLastBackupDateUseCase(get()) }
+    factory { GetLastBackupDateUseCase(get()) }
+    factory { GetBackupReminderIntervalUseCase(get()) }
+    factory { SaveBackupReminderIntervalUseCase(get()) }
+    factory { ShouldShowBackupReminderUseCase(get()) }
+
     // ── Reconciliation ──────────────────────────────────────────────────────────
     factory { ReconcileBalanceUseCase(get(), get()) }
     factory { ShouldShowReconciliationReminderUseCase(get()) }
@@ -436,7 +448,7 @@ val useCaseModule = module {
             savePlatform            = get()
         )
     }
-    viewModel { BackupViewModel(get()) }
+    viewModel { BackupViewModel(get(), get()) }
     viewModel { CategoryViewModel(get()) }
     viewModel {
         IssuerViewModel(

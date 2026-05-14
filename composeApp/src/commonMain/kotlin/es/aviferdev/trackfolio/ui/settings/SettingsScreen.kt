@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.trackfolio.domain.model.Account
 import es.aviferdev.trackfolio.domain.model.AccountType
+import es.aviferdev.trackfolio.domain.usecase.backup.GetBackupReminderIntervalUseCase
 import es.aviferdev.trackfolio.domain.usecase.reconciliation.GetReconciliationReminderIntervalUseCase
 import es.aviferdev.trackfolio.core.security.AppLockManager
 import es.aviferdev.trackfolio.core.security.BiometricAuthenticator
@@ -40,6 +41,7 @@ import es.aviferdev.trackfolio.ui.account.AccountViewModel
 import es.aviferdev.trackfolio.ui.account.AddEditAccountBottomSheet
 import es.aviferdev.trackfolio.ui.common.*
 import es.aviferdev.trackfolio.ui.common.navigation.TopBarApp
+import es.aviferdev.trackfolio.ui.settings.backup.BackupPasswordSheet
 import es.aviferdev.trackfolio.ui.settings.backup.BackupViewModel
 import es.aviferdev.trackfolio.ui.theme.*
 import kotlinx.coroutines.delay
@@ -68,6 +70,9 @@ fun SettingsScreen(
 
     val reconciliationIntervalUseCase = koinInject<GetReconciliationReminderIntervalUseCase>()
     var reconciliationInterval by remember { mutableStateOf(reconciliationIntervalUseCase.get()) }
+
+    val backupIntervalUseCase = koinInject<GetBackupReminderIntervalUseCase>()
+    var backupInterval by remember { mutableStateOf(backupIntervalUseCase.get()) }
     val appVersion: String = koinInject(named("appVersion"))
 
     SettingsContent(
@@ -76,6 +81,11 @@ fun SettingsScreen(
         onReconciliationIntervalChange = { days ->
             reconciliationInterval = days
             reconciliationIntervalUseCase.set(days)
+        },
+        backupInterval = backupInterval,
+        onBackupIntervalChange = { days ->
+            backupInterval = days
+            backupIntervalUseCase.set(days)
         },
         accounts = accountState.accounts,
         selectedId = selectedId,
@@ -102,6 +112,7 @@ fun SettingsScreen(
                 biometricEnabled = false
             }
         },
+        onBackupClick = { backupViewModel.openExport() },
         onNavigateToExpenseSettings = onNavigateToExpenseSettings,
         onNavigateToIncomeSettings = onNavigateToIncomeSettings,
         appVersion = appVersion
@@ -135,6 +146,26 @@ fun SettingsScreen(
             shape            = RoundedCornerShape(16.dp)
         )
     }
+
+    // ── Backup sheet ─────────────────────────────────────────────────────────
+    if (backupState.action != es.aviferdev.trackfolio.ui.settings.backup.BackupAction.NONE) {
+        BackupPasswordSheet(
+            state = backupState,
+            onPasswordChange = { backupViewModel.onPasswordChange(it) },
+            onConfirmPasswordChange = { backupViewModel.onConfirmPasswordChange(it) },
+            onConfirm = {
+                when (backupState.action) {
+                    es.aviferdev.trackfolio.ui.settings.backup.BackupAction.EXPORT -> backupViewModel.confirmExport()
+                    es.aviferdev.trackfolio.ui.settings.backup.BackupAction.IMPORT -> backupViewModel.confirmImport()
+                    else -> {}
+                }
+            },
+            onDismiss = {
+                backupViewModel.dismiss()
+                backupViewModel.clearResult()
+            }
+        )
+    }
 }
 
 // ─── CONTENT ────────────────────────────────────────────────────────────────────
@@ -154,6 +185,9 @@ fun SettingsContent(
     navigateBack: () -> Unit = {},
     reconciliationInterval: Int = 30,
     onReconciliationIntervalChange: (Int) -> Unit = {},
+    backupInterval: Int = 30,
+    onBackupIntervalChange: (Int) -> Unit = {},
+    onBackupClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     var contentVisible by remember { mutableStateOf(false) }
@@ -198,13 +232,18 @@ fun SettingsContent(
                             interval    = reconciliationInterval,
                             onIntervalChange = onReconciliationIntervalChange
                         )
+                        SettingsRowDivider()
+                        SettingsBackupReminderIntervalRow(
+                            interval    = backupInterval,
+                            onIntervalChange = onBackupIntervalChange
+                        )
                     }
                 }
 
                 item {
                     SettingsSectionHeader(label = "Datos")
                     SettingsGroupCard {
-                        SettingsNavigableRow(icon = Icons.Outlined.SaveAlt, label = "Copia de seguridad",   onClick = { })
+                        SettingsNavigableRow(icon = Icons.Outlined.SaveAlt, label = "Copia de seguridad",   onClick = onBackupClick)
                     }
                 }
 
@@ -324,6 +363,62 @@ private fun SettingsReconciliationIntervalRow(
             Spacer(Modifier.width(14.dp))
             Column(modifier = Modifier.weight(1f)) {
                 Text("Recordatorio de reconciliación", fontSize = 13.sp, fontWeight = FontWeight.Medium, color = TextPrimary)
+                Text(label, fontSize = 11.sp, color = TextTertiary)
+            }
+        }
+        Spacer(Modifier.height(10.dp))
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            options.forEach { (days, text) ->
+                val selected = interval == days
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(if (selected) PrimaryDark.copy(alpha = 0.15f) else Color.Transparent)
+                        .border(
+                            if (selected) 1.5.dp else 0.5.dp,
+                            if (selected) PrimaryDark else BorderGray,
+                            RoundedCornerShape(8.dp)
+                        )
+                        .clickable { onIntervalChange(days) }
+                        .padding(vertical = 6.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text,
+                        fontSize   = 10.sp,
+                        fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal,
+                        color      = if (selected) PrimaryDark else TextSecondary
+                    )
+                }
+            }
+        }
+    }
+}
+
+// ─── Backup reminder interval row ──────────────────────────────────────────
+@Composable
+private fun SettingsBackupReminderIntervalRow(
+    interval: Int,
+    onIntervalChange: (Int) -> Unit,
+) {
+    val options = listOf(
+        0  to "Desactivado",
+        7  to "7 días",
+        15 to "15 días",
+        30 to "30 días"
+    )
+    val label = options.find { it.first == interval }?.second ?: "30 días"
+
+    Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp)) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Icon(Icons.Outlined.SaveAlt, contentDescription = null, tint = TextPrimary, modifier = Modifier.size(20.dp))
+            Spacer(Modifier.width(14.dp))
+            Column(modifier = Modifier.weight(1f)) {
+                Text("Recordatorio de copia de seguridad", fontSize = 13.sp, fontWeight = FontWeight.Medium, color = TextPrimary)
                 Text(label, fontSize = 11.sp, color = TextTertiary)
             }
         }

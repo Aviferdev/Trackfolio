@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import es.aviferdev.trackfolio.core.security.BackupResult
 import es.aviferdev.trackfolio.core.security.DatabaseBackupManager
+import es.aviferdev.trackfolio.domain.usecase.backup.SaveLastBackupDateUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -28,7 +29,8 @@ data class BackupSheetState(
 )
 
 class BackupViewModel(
-    private val backupManager: DatabaseBackupManager
+    private val backupManager: DatabaseBackupManager,
+    private val saveLastBackupDate: SaveLastBackupDateUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(BackupSheetState())
@@ -75,6 +77,13 @@ class BackupViewModel(
             println("[BackupVM] · dentro de viewModelScope.launch → llamando a backupManager.exportEncrypted")
             backupManager.exportEncrypted(s.password) { result ->
                 println("[BackupVM] · callback de exportEncrypted recibido: $result")
+                when (result) {
+                    is BackupResult.Success -> {
+                        saveLastBackupDate()
+                        println("[BackupVM] · fecha de último backup guardada")
+                    }
+                    is BackupResult.Error -> { /* no hacer nada extra */ }
+                }
                 _state.value = when (result) {
                     is BackupResult.Success -> _state.value.copy(
                         backupState = BackupUiState.Success

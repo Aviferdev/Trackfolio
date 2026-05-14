@@ -48,12 +48,18 @@ import es.aviferdev.trackfolio.domain.model.TransactionType
 import es.aviferdev.trackfolio.core.security.BalanceVisibilityManager
 import es.aviferdev.trackfolio.core.security.BiometricAuthenticator
 import es.aviferdev.trackfolio.core.security.BiometricResult
+import es.aviferdev.trackfolio.domain.usecase.backup.GetBackupReminderIntervalUseCase
+import es.aviferdev.trackfolio.domain.usecase.backup.GetLastBackupDateUseCase
+import es.aviferdev.trackfolio.domain.usecase.backup.SaveBackupReminderIntervalUseCase
+import es.aviferdev.trackfolio.domain.usecase.backup.ShouldShowBackupReminderUseCase
 import es.aviferdev.trackfolio.ui.account.AccountSelectorBar
 import es.aviferdev.trackfolio.ui.account.AccountViewModel
 import es.aviferdev.trackfolio.ui.common.component.IconActionButton
 import es.aviferdev.trackfolio.ui.reconciliation.ReconcileBalanceBottomSheet
 import es.aviferdev.trackfolio.ui.reconciliation.ReconciliationReminderBanner
 import es.aviferdev.trackfolio.ui.reconciliation.ReconciliationViewModel
+import es.aviferdev.trackfolio.ui.settings.backup.BackupPasswordSheet
+import es.aviferdev.trackfolio.ui.settings.backup.BackupViewModel
 import es.aviferdev.trackfolio.ui.theme.BackgroundGray
 import es.aviferdev.trackfolio.ui.theme.ExpenseRed
 import es.aviferdev.trackfolio.ui.theme.LocalBalanceHidden
@@ -83,7 +89,8 @@ fun HomeScreen(
     onConsumeReopen: () -> Unit = {},
     viewModel: HomeViewModel = koinViewModel(),
     accountViewModel: AccountViewModel = koinViewModel(),
-    reconciliationViewModel: ReconciliationViewModel = koinViewModel()
+    reconciliationViewModel: ReconciliationViewModel = koinViewModel(),
+    backupViewModel: BackupViewModel = koinViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val priceReminder by viewModel.priceReminderState.collectAsState()
@@ -91,9 +98,39 @@ fun HomeScreen(
     val accountState by accountViewModel.uiState.collectAsState()
     val selectedId by accountViewModel.selectedAccountId.collectAsState()
     val reconciliationState by reconciliationViewModel.uiState.collectAsState()
+    val backupSheetState by backupViewModel.state.collectAsState()
     val balanceVisibility = koinInject<BalanceVisibilityManager>()
     val authenticator: BiometricAuthenticator = koinInject()
     val balancesHidden = LocalBalanceHidden.current
+
+    // ── Backup reminder state ────────────────────────────────────────────────
+    val shouldShowBackupReminder = koinInject<ShouldShowBackupReminderUseCase>()
+    val getLastBackupDate = koinInject<GetLastBackupDateUseCase>()
+    val getBackupReminderInterval = koinInject<GetBackupReminderIntervalUseCase>()
+    val saveBackupReminderInterval = koinInject<SaveBackupReminderIntervalUseCase>()
+
+    var showBackupBanner by remember { mutableStateOf(false) }
+    var neverBackup by remember { mutableStateOf(false) }
+    var daysSinceLastBackup by remember { mutableStateOf(0) }
+    var showBackupIntervalDialog by remember { mutableStateOf(false) }
+
+    // Comprobar si debe mostrarse el banner de backup al iniciar
+    LaunchedEffect(Unit) {
+        val shouldShow = shouldShowBackupReminder()
+        if (shouldShow) {
+            val lastBackupMillis = getLastBackupDate()
+            if (lastBackupMillis == 0L) {
+                neverBackup = true
+                daysSinceLastBackup = 0
+            } else {
+                neverBackup = false
+                val now = kotlinx.datetime.Clock.System.now().toEpochMilliseconds()
+                val diffDays = ((now - lastBackupMillis) / (24 * 60 * 60 * 1000)).toInt()
+                daysSinceLastBackup = maxOf(diffDays, 1)
+            }
+            showBackupBanner = true
+        }
+    }
 
     var showAddTransaction by remember { mutableStateOf(false) }
     var showInitialBalance by remember { mutableStateOf(false) }
@@ -174,7 +211,12 @@ fun HomeScreen(
                     onDismissNearMaturity = { viewModel.dismissNearMaturityBanner() },
                     showReconciliationBanner = reconciliationState.showBanner && currentAccount?.isCash == true,
                     onReconcileNow = { reconciliationViewModel.openBottomSheet(state.balance.selectedAccountBalance) },
-                    onReconcileRemindLater = { reconciliationViewModel.dismissBanner() }
+                    onReconcileRemindLater = { reconciliationViewModel.dismissBanner() },
+                    showBackupBanner = showBackupBanner,
+                    neverBackup = neverBackup,
+                    daysSinceLastBackup = daysSinceLastBackup,
+                    onBackupNow = { backupViewModel.openExport() },
+                    onBackupRemindLater = { showBackupIntervalDialog = true }
                 )
             }
         }
@@ -233,6 +275,38 @@ fun HomeScreen(
             onDismiss = { reconciliationViewModel.closeBottomSheet() }
         )
     }
+
+    // ── Backup sheets ────────────────────────────────────────────────────────
+    if (showBackupIntervalDialog) {
+        BackupReminderIntervalDialog(
+            currentInterval = getBackupReminderInterval.get(),
+            onIntervalSelected = { days ->
+                saveBackupReminderInterval(days)
+                showBackupIntervalDialog = false
+                showBackupBanner = false
+            },
+            onDismiss = { showBackupIntervalDialog = false }
+        )
+    }
+
+    if (backupSheetState.action != es.aviferdev.trackfolio.ui.settings.backup.BackupAction.NONE) {
+        BackupPasswordSheet(
+            state = backupSheetState,
+            onPasswordChange = { backupViewModel.onPasswordChange(it) },
+            onConfirmPasswordChange = { backupViewModel.onConfirmPasswordChange(it) },
+            onConfirm = {
+                when (backupSheetState.action) {
+                    es.aviferdev.trackfolio.ui.settings.backup.BackupAction.EXPORT -> backupViewModel.confirmExport()
+                    es.aviferdev.trackfolio.ui.settings.backup.BackupAction.IMPORT -> backupViewModel.confirmImport()
+                    else -> {}
+                }
+            },
+            onDismiss = {
+                backupViewModel.dismiss()
+                backupViewModel.clearResult()
+            }
+        )
+    }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -259,7 +333,12 @@ fun HomeContent(
     onDismissNearMaturity: () -> Unit = {},
     showReconciliationBanner: Boolean = false,
     onReconcileNow: () -> Unit = {},
-    onReconcileRemindLater: () -> Unit = {}
+    onReconcileRemindLater: () -> Unit = {},
+    showBackupBanner: Boolean = false,
+    neverBackup: Boolean = false,
+    daysSinceLastBackup: Int = 0,
+    onBackupNow: () -> Unit = {},
+    onBackupRemindLater: () -> Unit = {}
 ) {
     Column(
         modifier = Modifier
@@ -338,6 +417,16 @@ fun HomeContent(
             modifier = Modifier.padding(horizontal = 16.dp)
         )
         if (showReconciliationBanner) Spacer(Modifier.height(8.dp))
+
+        BackupReminderBanner(
+            visible = showBackupBanner,
+            neverBackup = neverBackup,
+            daysSinceLastBackup = daysSinceLastBackup,
+            onBackupClick = onBackupNow,
+            onDismiss = onBackupRemindLater,
+            modifier = Modifier.padding(horizontal = 16.dp)
+        )
+        if (showBackupBanner) Spacer(Modifier.height(8.dp))
 
         MaturityReminderBanner(
             positions = nearMaturityState.positions,
