@@ -52,7 +52,9 @@ data class BottomNavItem(
 )
 
 @Composable
-fun TrackfolioNavHost() {
+fun TrackfolioNavHost(
+    onResetOnboarding: () -> Unit = {}
+) {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
@@ -311,7 +313,8 @@ fun TrackfolioNavHost() {
                             navController.navigate(Screen.About.route) {
                                 launchSingleTop = true
                             }
-                        }
+                        },
+                        onResetOnboarding = onResetOnboarding
                     )
                 }
                 composable(Screen.About.route) {

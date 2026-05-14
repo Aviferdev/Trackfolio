@@ -88,7 +88,9 @@ fun App() {
                     }
                 )
             } else {
-                TrackfolioNavHost()
+                TrackfolioNavHost(
+                    onResetOnboarding = { onboardingDone = false }
+                )
             }
         }
     }

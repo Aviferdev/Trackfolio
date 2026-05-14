@@ -17,6 +17,7 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.outlined.Fingerprint
 import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material.icons.outlined.SaveAlt
 import androidx.compose.material.icons.outlined.Sync
 import androidx.compose.material.icons.outlined.TrendingDown
@@ -36,6 +37,7 @@ import es.aviferdev.trackfolio.domain.model.AccountType
 import es.aviferdev.trackfolio.domain.usecase.backup.GetBackupReminderIntervalUseCase
 import es.aviferdev.trackfolio.domain.usecase.reconciliation.GetReconciliationReminderIntervalUseCase
 import es.aviferdev.trackfolio.core.security.AppLockManager
+import es.aviferdev.trackfolio.core.security.AppSettings
 import es.aviferdev.trackfolio.core.security.BiometricAuthenticator
 import es.aviferdev.trackfolio.core.security.BiometricResult
 import es.aviferdev.trackfolio.ui.account.AccountViewModel
@@ -57,6 +59,7 @@ fun SettingsScreen(
     onNavigateToExpenseSettings: () -> Unit = {},
     onNavigateToIncomeSettings: () -> Unit = {},
     onNavigateToAbout: () -> Unit = {},
+    onResetOnboarding: () -> Unit = {},
     accountViewModel: AccountViewModel = koinViewModel(),
     backupViewModel: BackupViewModel = koinViewModel()
 ) {
@@ -74,6 +77,12 @@ fun SettingsScreen(
 
     val backupIntervalUseCase = koinInject<GetBackupReminderIntervalUseCase>()
     var backupInterval by remember { mutableStateOf(backupIntervalUseCase.get()) }
+
+    val settings: AppSettings = koinInject()
+    val handleResetOnboarding: () -> Unit = {
+        settings.putBool("onboarding_done", false)
+        onResetOnboarding()
+    }
 
     SettingsContent(
         navigateBack = navigateBack,
@@ -115,7 +124,8 @@ fun SettingsScreen(
         onBackupClick = { backupViewModel.openExport() },
         onNavigateToExpenseSettings = onNavigateToExpenseSettings,
         onNavigateToIncomeSettings = onNavigateToIncomeSettings,
-        onNavigateToAbout = onNavigateToAbout
+        onNavigateToAbout = onNavigateToAbout,
+        onResetOnboarding = handleResetOnboarding
     )
 
     // ── Sheets ───────────────────────────────────────────────────────────────
@@ -182,6 +192,7 @@ fun SettingsContent(
     onNavigateToExpenseSettings: () -> Unit,
     onNavigateToIncomeSettings: () -> Unit,
     onNavigateToAbout: () -> Unit = {},
+    onResetOnboarding: () -> Unit = {},
     navigateBack: () -> Unit = {},
     reconciliationInterval: Int = 30,
     onReconciliationIntervalChange: (Int) -> Unit = {},
@@ -251,6 +262,8 @@ fun SettingsContent(
                     SettingsSectionHeader(label = "Información")
                     SettingsGroupCard {
                         SettingsNavigableRow(icon = Icons.Outlined.Info, label = "Acerca de", onClick = onNavigateToAbout)
+                        SettingsRowDivider()
+                        SettingsNavigableRow(icon = Icons.Outlined.Refresh, label = "Ver introducción", onClick = onResetOnboarding)
                     }
                 }
 
