@@ -1,0 +1,8 @@
+// Configuración de desarrollo (Debug)
+TEAM_ID=
+
+PRODUCT_NAME=Trackfolio DEV
+PRODUCT_BUNDLE_IDENTIFIER=es.aviferdev.trackfolio.dev
+
+CURRENT_PROJECT_VERSION=1
+MARKETING_VERSION=1.0-dev
