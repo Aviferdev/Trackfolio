@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidApplication)
@@ -7,6 +9,8 @@ plugins {
 }
 
 kotlin {
+    jvmToolchain(21)
+
     androidTarget {
         compilations.all {
             kotlinOptions {
@@ -80,14 +84,67 @@ android {
         versionCode = 1
         versionName = "1.0.0"
     }
+
+    // ─── Signing (lectura de keystore.properties) ──────────────
+    val keystorePropertiesFile = file("keystore.properties")
+    val keystoreProperties = if (keystorePropertiesFile.exists()) {
+        Properties().apply {
+            load(keystorePropertiesFile.inputStream())
+        }
+    } else {
+        null
+    }
+
+    fun prop(key: String): String? = keystoreProperties?.getProperty(key)
+
+    signingConfigs {
+        create("release") {
+            prop("storeFile")?.let { storeFile = file(it) }
+            prop("storePassword")?.let { storePassword = it }
+            prop("keyAlias")?.let { keyAlias = it }
+            prop("keyPassword")?.let { keyPassword = it }
+        }
+    }
+
+    // ─── Build Types ───────────────────────────────────────────
+    buildTypes {
+        debug {
+            applicationIdSuffix = ".debug"
+            isMinifyEnabled = false
+            versionNameSuffix = "-dev"
+            signingConfig = signingConfigs.getByName("debug")
+            resValue("string", "app_name", "Trackfolio DEV")
+            buildConfigField("String", "ENVIRONMENT", "\"dev\"")
+            buildConfigField("boolean", "IS_DEBUG", "true")
+            buildConfigField("String", "APP_DISPLAY_NAME", "\"Trackfolio DEV\"")
+        }
+        release {
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+            signingConfig = if (keystoreProperties != null) {
+                signingConfigs.getByName("release")
+            } else {
+                signingConfigs.getByName("debug")
+            }
+            resValue("string", "app_name", "Trackfolio")
+            buildConfigField("String", "ENVIRONMENT", "\"prod\"")
+            buildConfigField("boolean", "IS_DEBUG", "false")
+            buildConfigField("String", "APP_DISPLAY_NAME", "\"Trackfolio\"")
+        }
+    }
+
+    // ─── Build Features ────────────────────────────────────────
+    buildFeatures {
+        buildConfig = true
+    }
+
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
-        }
-    }
-    buildTypes {
-        getByName("release") {
-            isMinifyEnabled = false
         }
     }
     compileOptions {
