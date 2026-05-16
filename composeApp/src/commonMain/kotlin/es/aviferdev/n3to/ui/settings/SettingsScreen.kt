@@ -6,7 +6,19 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -22,8 +34,23 @@ import androidx.compose.material.icons.outlined.SaveAlt
 import androidx.compose.material.icons.outlined.Sync
 import androidx.compose.material.icons.outlined.TrendingDown
 import androidx.compose.material.icons.outlined.TrendingUp
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -32,21 +59,31 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import es.aviferdev.n3to.domain.model.Account
-import es.aviferdev.n3to.domain.model.AccountType
-import es.aviferdev.n3to.domain.usecase.backup.GetBackupReminderIntervalUseCase
-import es.aviferdev.n3to.domain.usecase.reconciliation.GetReconciliationReminderIntervalUseCase
 import es.aviferdev.n3to.core.security.AppLockManager
 import es.aviferdev.n3to.core.security.AppSettings
 import es.aviferdev.n3to.core.security.BiometricAuthenticator
 import es.aviferdev.n3to.core.security.BiometricResult
+import es.aviferdev.n3to.domain.model.Account
+import es.aviferdev.n3to.domain.model.AccountType
+import es.aviferdev.n3to.domain.usecase.backup.GetBackupReminderIntervalUseCase
+import es.aviferdev.n3to.domain.usecase.reconciliation.GetReconciliationReminderIntervalUseCase
 import es.aviferdev.n3to.ui.account.AccountViewModel
 import es.aviferdev.n3to.ui.account.AddEditAccountBottomSheet
-import es.aviferdev.n3to.ui.common.*
+import es.aviferdev.n3to.ui.common.N3toLabel
 import es.aviferdev.n3to.ui.common.navigation.TopBarApp
 import es.aviferdev.n3to.ui.settings.backup.BackupPasswordSheet
 import es.aviferdev.n3to.ui.settings.backup.BackupViewModel
-import es.aviferdev.n3to.ui.theme.*
+import es.aviferdev.n3to.ui.theme.BackgroundGray
+import es.aviferdev.n3to.ui.theme.BorderGray
+import es.aviferdev.n3to.ui.theme.ExpenseRed
+import es.aviferdev.n3to.ui.theme.N3toTheme
+import es.aviferdev.n3to.ui.theme.PrimaryDark
+import es.aviferdev.n3to.ui.theme.SurfaceElevated
+import es.aviferdev.n3to.ui.theme.SurfaceWhite
+import es.aviferdev.n3to.ui.theme.TextPrimary
+import es.aviferdev.n3to.ui.theme.TextSecondary
+import es.aviferdev.n3to.ui.theme.TextTertiary
+import es.aviferdev.n3to.ui.theme.formatAmount
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.koinInject
@@ -56,6 +93,7 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun SettingsScreen(
     navigateBack: () -> Unit = {},
+    onNavigateToPrivacySettings: () -> Unit = {},
     onNavigateToExpenseSettings: () -> Unit = {},
     onNavigateToIncomeSettings: () -> Unit = {},
     onNavigateToAbout: () -> Unit = {},
@@ -122,6 +160,7 @@ fun SettingsScreen(
             }
         },
         onBackupClick = { backupViewModel.openExport() },
+        onNavigateToPrivacySettings = onNavigateToPrivacySettings,
         onNavigateToExpenseSettings = onNavigateToExpenseSettings,
         onNavigateToIncomeSettings = onNavigateToIncomeSettings,
         onNavigateToAbout = onNavigateToAbout,
@@ -189,6 +228,7 @@ fun SettingsContent(
     onEditAccount: (Account) -> Unit,
     onDeleteAccount: (Account) -> Unit,
     onToggleBiometric: (Boolean) -> Unit,
+    onNavigateToPrivacySettings: () -> Unit = {},
     onNavigateToExpenseSettings: () -> Unit,
     onNavigateToIncomeSettings: () -> Unit,
     onNavigateToAbout: () -> Unit = {},
@@ -247,6 +287,17 @@ fun SettingsContent(
                         SettingsBackupReminderIntervalRow(
                             interval    = backupInterval,
                             onIntervalChange = onBackupIntervalChange
+                        )
+                    }
+                }
+
+                item {
+                    SettingsSectionHeader(label = "Privacidad")
+                    SettingsGroupCard {
+                        SettingsNavigableRow(
+                            icon = Icons.Outlined.Info,
+                            label = "Privacidad y datos",
+                            onClick = onNavigateToPrivacySettings
                         )
                     }
                 }

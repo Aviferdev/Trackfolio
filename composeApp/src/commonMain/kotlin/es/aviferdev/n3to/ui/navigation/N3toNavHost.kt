@@ -29,16 +29,17 @@ import es.aviferdev.n3to.ui.home.CategoryPickerScreen
 import es.aviferdev.n3to.ui.home.HomeScreen
 import es.aviferdev.n3to.ui.loan.LoanDetailScreen
 import es.aviferdev.n3to.ui.networth.NetWorthScreen
-import es.aviferdev.n3to.ui.realestate.RealEstateDetailScreen
 import es.aviferdev.n3to.ui.portfolio.AssetCategoryDetailScreen
 import es.aviferdev.n3to.ui.portfolio.AssetDetailScreen
 import es.aviferdev.n3to.ui.portfolio.AssetHistoryScreen
 import es.aviferdev.n3to.ui.portfolio.PortfolioScreen
 import es.aviferdev.n3to.ui.portfolio.PortfolioSettingsScreen
+import es.aviferdev.n3to.ui.realestate.RealEstateDetailScreen
 import es.aviferdev.n3to.ui.settings.AboutScreen
 import es.aviferdev.n3to.ui.settings.ExpenseSettingsScreen
 import es.aviferdev.n3to.ui.settings.IncomeSettingsScreen
 import es.aviferdev.n3to.ui.settings.IncomeTypeDetailScreen
+import es.aviferdev.n3to.ui.settings.PrivacySettingsScreen
 import es.aviferdev.n3to.ui.settings.SettingsScreen
 import es.aviferdev.n3to.ui.transaction.TransactionDetailScreen
 import es.aviferdev.n3to.ui.transaction.TransactionListScreen
@@ -305,6 +306,11 @@ fun N3toNavHost(
                 composable(Screen.Settings.route) {
                     SettingsScreen(
                         navigateBack = { navController.popBackStack() },
+                        onNavigateToPrivacySettings = {
+                            navController.navigate(Screen.PrivacySettings.route) {
+                                launchSingleTop = true
+                            }
+                        },
                         onNavigateToExpenseSettings = {
                             navController.navigate(Screen.ExpenseSettings.route) {
                                 launchSingleTop = true
@@ -325,6 +331,11 @@ fun N3toNavHost(
                 }
                 composable(Screen.About.route) {
                     AboutScreen(
+                        onBack = { navController.popBackStack() }
+                    )
+                }
+                composable(Screen.PrivacySettings.route) {
+                    PrivacySettingsScreen(
                         onBack = { navController.popBackStack() }
                     )
                 }

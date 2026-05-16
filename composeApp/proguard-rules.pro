@@ -42,3 +42,15 @@
 
 # ─── AppConfig (por si se usa reflexión) ───────────────
 -keep class es.aviferdev.n3to.core.AppConfig { *; }
+
+# ─── Firebase Analytics ──────────────────────────────
+-keep class com.google.firebase.** { *; }
+-dontwarn com.google.firebase.**
+
+# ─── Firebase Crashlytics ─────────────────────────────
+-keep class com.google.firebase.crashlytics.** { *; }
+-keepattributes SourceFile, LineNumberTable
+
+# ─── RevenueCat ───────────────────────────────────────
+-keep class com.revenuecat.** { *; }
+-dontwarn com.revenuecat.**

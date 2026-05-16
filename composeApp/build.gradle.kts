@@ -6,6 +6,8 @@ plugins {
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.sqldelight)
+    alias(libs.plugins.google.services)
+    alias(libs.plugins.firebase.crashlytics)
 }
 
 kotlin {
@@ -37,6 +39,8 @@ kotlin {
             implementation(libs.koin.android)
             implementation(libs.androidx.biometric)
             implementation(libs.pdfbox.android)
+            implementation(libs.firebase.analytics.ktx)
+            implementation(libs.firebase.crashlytics.ktx)
         }
         iosMain.dependencies {
             implementation(libs.sqldelight.native.driver)
@@ -60,6 +64,7 @@ kotlin {
             implementation(libs.uuid)
             implementation(libs.kotlinx.datetime)
             implementation(libs.navigation.compose)
+            // implementation(libs.revenuecat.purchases.kmp) // TODO: Descomentar cuando RevenueCat esté disponible
         }
     }
 }
@@ -88,9 +93,7 @@ android {
     // ─── Signing (lectura de keystore.properties) ──────────────
     val keystorePropertiesFile = file("keystore.properties")
     val keystoreProperties = if (keystorePropertiesFile.exists()) {
-        Properties().apply {
-            load(keystorePropertiesFile.inputStream())
-        }
+        Properties().apply { load(keystorePropertiesFile.inputStream()) }
     } else {
         null
     }
@@ -106,17 +109,32 @@ android {
         }
     }
 
+    // ─── Flavors (entornos) ───────────────────────────────────
+    flavorDimensions += "environment"
+    productFlavors {
+        create("dev") {
+            applicationIdSuffix = ".dev"
+            versionNameSuffix = "-dev"
+            resValue("string", "app_name", "Trackfolio DEV")
+            buildConfigField("String", "ENVIRONMENT", "\"dev\"")
+            buildConfigField("boolean", "IS_DEBUG", "true")
+            buildConfigField("String", "APP_DISPLAY_NAME", "\"Trackfolio DEV\"")
+            buildConfigField("String", "REVENUECAT_API_KEY", "\"INSERT_REVENUECAT_DEV_KEY\"")
+        }
+        create("prod") {
+            resValue("string", "app_name", "Trackfolio")
+            buildConfigField("String", "ENVIRONMENT", "\"prod\"")
+            buildConfigField("boolean", "IS_DEBUG", "false")
+            buildConfigField("String", "APP_DISPLAY_NAME", "\"Trackfolio\"")
+            buildConfigField("String", "REVENUECAT_API_KEY", "\"INSERT_REVENUECAT_PROD_KEY\"")
+        }
+    }
+
     // ─── Build Types ───────────────────────────────────────────
     buildTypes {
         debug {
-            applicationIdSuffix = ".debug"
             isMinifyEnabled = false
-            versionNameSuffix = "-dev"
             signingConfig = signingConfigs.getByName("debug")
-            resValue("string", "app_name", "N3to DEV")
-            buildConfigField("String", "ENVIRONMENT", "\"dev\"")
-            buildConfigField("boolean", "IS_DEBUG", "true")
-            buildConfigField("String", "APP_DISPLAY_NAME", "\"N3to DEV\"")
         }
         release {
             isMinifyEnabled = true
@@ -130,14 +148,9 @@ android {
             } else {
                 signingConfigs.getByName("debug")
             }
-            resValue("string", "app_name", "N3to")
-            buildConfigField("String", "ENVIRONMENT", "\"prod\"")
-            buildConfigField("boolean", "IS_DEBUG", "false")
-            buildConfigField("String", "APP_DISPLAY_NAME", "\"N3to\"")
         }
     }
 
-    // ─── Build Features ────────────────────────────────────────
     buildFeatures {
         buildConfig = true
     }
@@ -153,6 +166,4 @@ android {
     }
 }
 
-dependencies {
-    debugImplementation(libs.compose.ui.tooling)
-}
+

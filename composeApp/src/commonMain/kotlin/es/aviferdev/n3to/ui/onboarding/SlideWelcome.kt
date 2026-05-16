@@ -7,7 +7,6 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -38,9 +37,6 @@ import es.aviferdev.n3to.ui.theme.N3toTheme
 import es.aviferdev.n3to.ui.theme.PrimaryDark
 import es.aviferdev.n3to.ui.theme.TextPrimary
 import es.aviferdev.n3to.ui.theme.TextSecondary
-import n3to.composeapp.generated.resources.Res
-import n3to.composeapp.generated.resources.compose_multiplatform
-import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import kotlin.math.min
 
@@ -57,10 +53,6 @@ fun SlideWelcome(modifier: Modifier = Modifier) {
     var visible by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) { visible = true }
 
-    val iconAlpha by animateFloatAsState(
-        targetValue = if (visible) 1f else 0f,
-        animationSpec = tween(durationMillis = 550, easing = EaseInOutCubic)
-    )
     val titleAlpha by animateFloatAsState(
         targetValue = if (visible) 1f else 0f,
         animationSpec = tween(
@@ -80,14 +72,6 @@ fun SlideWelcome(modifier: Modifier = Modifier) {
 
     // ── Floating animation (infinite) ────────────────────
     val infiniteTransition = rememberInfiniteTransition()
-    val floatOffset by infiniteTransition.animateFloat(
-        initialValue = 0f,
-        targetValue = -6f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(durationMillis = 3200, easing = EaseInOutCubic),
-            repeatMode = RepeatMode.Reverse
-        )
-    )
 
     Column(
         modifier = modifier
@@ -125,16 +109,7 @@ fun SlideWelcome(modifier: Modifier = Modifier) {
             )
 
             // App icon
-            Image(
-                painter = painterResource(Res.drawable.compose_multiplatform),
-                contentDescription = "N3to",
-                modifier = Modifier
-                    .size(128.dp)
-                    .graphicsLayer {
-                        translationY = floatOffset
-                        alpha = iconAlpha
-                    }
-            )
+
         }
 
         Spacer(Modifier.height(24.dp))

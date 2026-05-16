@@ -18,6 +18,7 @@ fun initKoin(
         appDeclaration()
         modules(
             platformModule,
+            consentModule,
             databaseModule,
             repositoryModule,
             useCaseModule,
