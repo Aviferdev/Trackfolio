@@ -69,4 +69,7 @@ class TransactionRepositoryImpl(
 
     override fun getDividendsByAsset(assetId: String): Flow<List<Transaction>> =
         dataSource.getDividendsByAsset(assetId)
+
+    override fun getByLinkedProperty(propertyId: String): Flow<List<Transaction>> =
+        dataSource.getByLinkedProperty(propertyId)
 }

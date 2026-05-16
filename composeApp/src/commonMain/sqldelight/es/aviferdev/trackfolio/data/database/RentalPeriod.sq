@@ -1,0 +1,35 @@
+CREATE TABLE RentalPeriodEntity (
+    id          TEXT    NOT NULL PRIMARY KEY,
+    propertyId  TEXT    NOT NULL,
+    startDate   INTEGER NOT NULL,
+    endDate     INTEGER,
+    monthlyRent REAL    NOT NULL,
+    notes       TEXT,
+    FOREIGN KEY (propertyId) REFERENCES RealEstatePropertyEntity(id)
+);
+
+CREATE INDEX idx_rental_period_property ON RentalPeriodEntity(propertyId);
+
+-- ═══ LECTURA ═══
+
+selectByProperty:
+SELECT * FROM RentalPeriodEntity
+WHERE propertyId = :propertyId
+ORDER BY startDate DESC;
+
+selectActiveByProperty:
+SELECT * FROM RentalPeriodEntity
+WHERE propertyId = :propertyId AND endDate IS NULL
+LIMIT 1;
+
+-- ═══ ESCRITURA ═══
+
+insert:
+INSERT INTO RentalPeriodEntity(
+    id, propertyId, startDate, endDate, monthlyRent, notes
+) VALUES (?, ?, ?, ?, ?, ?);
+
+closePeriod:
+UPDATE RentalPeriodEntity
+SET endDate = :endDate
+WHERE id = :id;

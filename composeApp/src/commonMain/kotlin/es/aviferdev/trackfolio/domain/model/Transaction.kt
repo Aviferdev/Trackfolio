@@ -38,6 +38,10 @@ data class Transaction(
     /** ID del préstamo vinculado. Si != null, este gasto es una cuota de préstamo. */
     val linkedLoanId: String? = null,
 
+    // ── Vínculo con propiedad inmobiliaria ───────────────────────────────────────
+    /** ID de la propiedad inmobiliaria vinculada (ingreso por alquiler, gasto asociado). */
+    val linkedPropertyId: String? = null,
+
     // ── Reconciliación ────────────────────────────────────────────────────────
     /** Si true, esta transacción se excluye del informe fiscal (IRPF). */
     val excludeFromFiscal: Boolean = false,

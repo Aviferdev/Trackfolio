@@ -63,9 +63,12 @@ class NetWorthViewModel(
             initialValue = NetWorthUiState.Loading
         )
 
-    // ── Estado para el bottom sheet de crear préstamo ─────────────────────────
+    // ── Estado para los bottom sheets ──────────────────────────────────────────
     private val _showAddLoanSheet = MutableStateFlow(false)
     val showAddLoanSheet: StateFlow<Boolean> = _showAddLoanSheet
+
+    private val _showAddPropertySheet = MutableStateFlow(false)
+    val showAddPropertySheet: StateFlow<Boolean> = _showAddPropertySheet
 
     init {
         viewModelScope.launch {
@@ -81,11 +84,15 @@ class NetWorthViewModel(
     fun openAddLoanSheet() { _showAddLoanSheet.value = true }
     fun closeAddLoanSheet() { _showAddLoanSheet.value = false }
 
+    fun openAddPropertySheet() { _showAddPropertySheet.value = true }
+    fun closeAddPropertySheet() { _showAddPropertySheet.value = false }
+
     companion object {
         private val AssetColors = listOf(
             Color(0xFF4CAF50), // Cuentas — verde
             Color(0xFF2196F3), // Inversiones — azul
-            Color(0xFFFF9800)  // Renta fija — ámbar
+            Color(0xFFFF9800), // Renta fija — ámbar
+            Color(0xFF8D6E63)  // Inmuebles — marrón
         )
 
         private fun buildAssetDistribution(data: NetWorthData): List<DonutSlice> {
@@ -94,13 +101,16 @@ class NetWorthViewModel(
 
             val items = mutableListOf<Triple<String, String, Double>>() // icon, name, value
             if (data.totalAccountBalance > 0.0) {
-                items.add(Triple("🏦", "Cuentas", data.totalAccountBalance))
+                items.add(Triple("\uD83C\uDFE6", "Cuentas", data.totalAccountBalance))
             }
             if (data.totalPortfolioValue > 0.0) {
-                items.add(Triple("📈", "Inversiones", data.totalPortfolioValue))
+                items.add(Triple("\uD83D\uDCC8", "Inversiones", data.totalPortfolioValue))
             }
             if (data.totalFixedIncomeValue > 0.0) {
-                items.add(Triple("🏛️", "Renta fija", data.totalFixedIncomeValue))
+                items.add(Triple("\uD83C\uDFDB\uFE0F", "Renta fija", data.totalFixedIncomeValue))
+            }
+            if (data.totalRealEstateValue > 0.0) {
+                items.add(Triple("\uD83C\uDFE0", "Inmuebles", data.totalRealEstateValue))
             }
 
             return items.mapIndexed { idx, (icon, name, value) ->

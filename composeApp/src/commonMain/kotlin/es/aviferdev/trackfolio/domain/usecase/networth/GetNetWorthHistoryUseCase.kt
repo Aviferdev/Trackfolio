@@ -6,9 +6,11 @@ import es.aviferdev.trackfolio.domain.model.Loan
 import es.aviferdev.trackfolio.domain.model.MonthlyTotals
 import es.aviferdev.trackfolio.domain.model.NetWorthHistoryPoint
 import es.aviferdev.trackfolio.domain.model.PortfolioValuePoint
+import es.aviferdev.trackfolio.domain.model.RealEstateProperty
 import es.aviferdev.trackfolio.domain.repository.AccountRepository
 import es.aviferdev.trackfolio.domain.repository.DebtRepository
 import es.aviferdev.trackfolio.domain.repository.LoanRepository
+import es.aviferdev.trackfolio.domain.repository.RealEstatePropertyRepository
 import es.aviferdev.trackfolio.domain.repository.TransactionRepository
 import es.aviferdev.trackfolio.domain.usecase.portfolio.GetPortfolioValueHistoryUseCase
 import kotlinx.coroutines.flow.Flow
@@ -25,8 +27,8 @@ import kotlinx.datetime.toLocalDateTime
  * Calcula la evolución mensual del patrimonio neto.
  *
  * Para cada mes:
- *  - Activos = balance cuentas (initialBalance + transacciones acumuladas) + valor portfolio
- *  - Pasivos = préstamos pendientes + deudas I_OWE pendientes
+ *  - Activos = balance cuentas (initialBalance + transacciones acumuladas) + valor portfolio + valor inmuebles
+ *  - Pasivos = préstamos pendientes (ajustados por propiedad vinculada) + deudas I_OWE pendientes
  *  - Patrimonio neto = activos − pasivos
  */
 class GetNetWorthHistoryUseCase(
@@ -34,26 +36,30 @@ class GetNetWorthHistoryUseCase(
     private val transactionRepository: TransactionRepository,
     private val loanRepository: LoanRepository,
     private val debtRepository: DebtRepository,
-    private val getPortfolioValueHistory: GetPortfolioValueHistoryUseCase
+    private val getPortfolioValueHistory: GetPortfolioValueHistoryUseCase,
+    private val propertyRepository: RealEstatePropertyRepository
 ) {
     operator fun invoke(accountId: String): Flow<List<NetWorthHistoryPoint>> {
         val accountsFlow = accountRepository.getAllAccounts()
         val loansFlow = loanRepository.getByAccount(accountId)
         val debtsFlow = debtRepository.getActiveByAccount(accountId)
+        val propertiesFlow = propertyRepository.getPropertiesByAccount(accountId)
 
         val liabilitiesFlow = combine(loansFlow, debtsFlow) { loans, debts ->
             Pair(loans, debts)
         }
 
         val assetsFlow = combine(
-            accountsFlow,
-            getPortfolioValueHistory(accountId)
-        ) { accounts, portfolioHistory ->
-            Pair(accounts, portfolioHistory)
+            combine(accountsFlow, getPortfolioValueHistory(accountId)) { accounts, portfolioHistory ->
+                Pair(accounts, portfolioHistory)
+            },
+            propertiesFlow
+        ) { (accounts, portfolioHistory), properties ->
+            Triple(accounts, portfolioHistory, properties)
         }
 
-        return combine(assetsFlow, liabilitiesFlow) { (accounts, portfolioHistory), (loans, debts) ->
-            buildNetWorthHistory(accountId, accounts, portfolioHistory, loans, debts)
+        return combine(assetsFlow, liabilitiesFlow) { (accounts, portfolioHistory, properties), (loans, debts) ->
+            buildNetWorthHistory(accountId, accounts, portfolioHistory, loans, debts, properties)
         }
     }
 
@@ -62,7 +68,8 @@ class GetNetWorthHistoryUseCase(
         accounts: List<Account>,
         portfolioHistory: List<PortfolioValuePoint>,
         loans: List<Loan>,
-        debts: List<es.aviferdev.trackfolio.domain.model.Debt>
+        debts: List<es.aviferdev.trackfolio.domain.model.Debt>,
+        properties: List<RealEstateProperty>
     ): List<NetWorthHistoryPoint> {
         if (accounts.isEmpty()) return emptyList()
 
@@ -161,7 +168,18 @@ class GetNetWorthHistoryUseCase(
                 }
                 .sumOf { it.amount }
 
-            val totalAssets = accountBalance + portfolioValue
+            // ═══ Valor histórico de propiedades ═══
+            // Simplificación: se usa currentEstimatedValue como constante desde acquisitionDate.
+            val propertiesValue = properties
+                .filter { !it.archived }
+                .sumOf { property ->
+                    val acquisitionYearMonth = epochToYearMonth(property.acquisitionDate)
+                    if (monthKey >= acquisitionYearMonth) {
+                        property.currentEstimatedValue * (property.ownershipPercentage / 100.0)
+                    } else 0.0
+                }
+
+            val totalAssets = accountBalance + portfolioValue + propertiesValue
             val totalLiabilities = loansOutstanding + debtsOwing
 
             NetWorthHistoryPoint(
@@ -171,6 +189,11 @@ class GetNetWorthHistoryUseCase(
                 totalLiabilities = totalLiabilities
             )
         }
+    }
+
+    private fun epochToYearMonth(epochMillis: Long): String {
+        val local = Instant.fromEpochMilliseconds(epochMillis).toLocalDateTime(TimeZone.currentSystemDefault())
+        return "${local.year}-${local.monthNumber.toString().padStart(2, '0')}"
     }
 
     private fun generateMonthEnds(

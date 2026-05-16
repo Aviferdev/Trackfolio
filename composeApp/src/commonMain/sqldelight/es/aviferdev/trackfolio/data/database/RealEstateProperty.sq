@@ -1,0 +1,72 @@
+CREATE TABLE RealEstatePropertyEntity (
+    id                          TEXT    NOT NULL PRIMARY KEY,
+    accountId                   TEXT    NOT NULL,
+    name                        TEXT    NOT NULL,
+    address                     TEXT    NOT NULL,
+    propertyType                TEXT    NOT NULL,
+    purchaseValue               REAL    NOT NULL,
+    currentEstimatedValue       REAL    NOT NULL,
+    acquisitionDate             INTEGER NOT NULL,
+    ownershipPercentage         REAL    NOT NULL,
+    linkedLoanId                TEXT,
+    rentalStatus                TEXT    NOT NULL,
+    monthlyRent                 REAL,
+    mortgageReminderDismissed   INTEGER NOT NULL DEFAULT 0,
+    archived                    INTEGER NOT NULL DEFAULT 0,
+    FOREIGN KEY (accountId) REFERENCES AccountEntity(id),
+    FOREIGN KEY (linkedLoanId) REFERENCES LoanEntity(id)
+);
+
+CREATE INDEX idx_real_estate_account ON RealEstatePropertyEntity(accountId);
+CREATE INDEX idx_real_estate_loan  ON RealEstatePropertyEntity(linkedLoanId);
+
+-- ═══ LECTURA ═══
+
+selectByAccount:
+SELECT * FROM RealEstatePropertyEntity
+WHERE accountId = :accountId
+ORDER BY archived ASC, name ASC;
+
+selectActiveByAccount:
+SELECT * FROM RealEstatePropertyEntity
+WHERE accountId = :accountId AND archived = 0
+ORDER BY name ASC;
+
+selectById:
+SELECT * FROM RealEstatePropertyEntity
+WHERE id = :id;
+
+-- ═══ ESCRITURA ═══
+
+insert:
+INSERT OR REPLACE INTO RealEstatePropertyEntity(
+    id, accountId, name, address, propertyType,
+    purchaseValue, currentEstimatedValue, acquisitionDate,
+    ownershipPercentage, linkedLoanId,
+    rentalStatus, monthlyRent,
+    mortgageReminderDismissed, archived
+) VALUES (
+    :id, :accountId, :name, :address, :propertyType,
+    :purchaseValue, :currentEstimatedValue, :acquisitionDate,
+    :ownershipPercentage, :linkedLoanId,
+    :rentalStatus, :monthlyRent,
+    :mortgageReminderDismissed, :archived
+);
+
+updateEstimatedValue:
+UPDATE RealEstatePropertyEntity
+SET currentEstimatedValue = :value
+WHERE id = :id;
+
+updateLinkedLoan:
+UPDATE RealEstatePropertyEntity
+SET linkedLoanId = :loanId, mortgageReminderDismissed = 1
+WHERE id = :id;
+
+dismissMortgageReminder:
+UPDATE RealEstatePropertyEntity
+SET mortgageReminderDismissed = 1
+WHERE id = :id;
+
+archive:
+UPDATE RealEstatePropertyEntity SET archived = 1 WHERE id = :id;

@@ -983,7 +983,8 @@ class DatabaseInitializer(
         issuerId = issuerId,
         issuerName = issuerName,
         linkedAssetTransactionId = linkedAssetTransactionId,
-        linkedLoanId = linkedLoanId
+        linkedLoanId = linkedLoanId,
+        linkedPropertyId = linkedPropertyId
     )
 
     private fun Debt.toEntity(): DebtEntity = DebtEntity(

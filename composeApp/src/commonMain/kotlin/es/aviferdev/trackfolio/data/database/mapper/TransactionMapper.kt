@@ -24,7 +24,8 @@ fun TransactionEntity.toDomain(): Transaction = Transaction(
     issuerId                   = issuerId,
     issuerName                 = issuerName,
     linkedAssetTransactionId   = linkedAssetTransactionId,
-    linkedLoanId               = linkedLoanId
+    linkedLoanId               = linkedLoanId,
+    linkedPropertyId           = linkedPropertyId
 )
 
 fun Transaction.toEntity(): TransactionEntity = TransactionEntity(
@@ -46,5 +47,6 @@ fun Transaction.toEntity(): TransactionEntity = TransactionEntity(
     issuerId                   = issuerId,
     issuerName                 = issuerName,
     linkedAssetTransactionId   = linkedAssetTransactionId,
-    linkedLoanId               = linkedLoanId
+    linkedLoanId               = linkedLoanId,
+    linkedPropertyId           = linkedPropertyId
 )

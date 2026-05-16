@@ -87,6 +87,11 @@ private val SLIDES = listOf(
         body = "Categorías inteligentes y campos específicos por tipo: alquileres, gasolina, nóminas, facturas…"
     ),
     SlideInfo(
+        id = "realestate",
+        title = "Registra tu vivienda",
+        body = "Añade tu vivienda al patrimonio desde la sección Patrimonio. Vincula tu hipoteca para un cálculo preciso y registra los ingresos y gastos del alquiler."
+    ),
+    SlideInfo(
         id = "fiscal",
         title = "Informe fiscal listo",
         body = "Trackfolio prepara automáticamente tu base imponible, IRPF y ganancias patrimoniales."

@@ -122,7 +122,8 @@ class TransactionLocalDataSourceImpl(
                     issuerId                 = entity.issuerId,
                     issuerName               = entity.issuerName,
                     linkedAssetTransactionId = entity.linkedAssetTransactionId,
-                    linkedLoanId             = entity.linkedLoanId
+                    linkedLoanId             = entity.linkedLoanId,
+                    linkedPropertyId         = entity.linkedPropertyId
                 )
             }
         }
@@ -148,6 +149,7 @@ class TransactionLocalDataSourceImpl(
                     issuerName               = entity.issuerName,
                     linkedAssetTransactionId = entity.linkedAssetTransactionId,
                     linkedLoanId             = entity.linkedLoanId,
+                    linkedPropertyId         = entity.linkedPropertyId,
                     id                       = entity.id
                 )
             }
@@ -184,6 +186,11 @@ class TransactionLocalDataSourceImpl(
             .asFlow()
             .mapToList(Dispatchers.IO)
             .map { list -> list.map { it.toDomain() } }
+
+    override fun getByLinkedProperty(propertyId: String): Flow<List<Transaction>> =
+        queries.selectByLinkedProperty(propertyId)
+            .asFlow().mapToList(Dispatchers.IO)
+            .map { list -> list.map { tx -> tx.toDomain() } }
 
     override fun getExpensesByCategoryPerYear(accountId: String, year: String): Flow<List<CategoryBreakdown>> =
         queries.getExpensesByCategoryPerYear(accountId, year)

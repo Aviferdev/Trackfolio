@@ -106,6 +106,16 @@ import es.aviferdev.trackfolio.domain.usecase.transaction.GetTransactionsByMonth
 import es.aviferdev.trackfolio.domain.usecase.transaction.SaveTransactionUseCase
 import es.aviferdev.trackfolio.domain.usecase.transaction.UpdateTransactionUseCase
 import es.aviferdev.trackfolio.domain.usecase.assettransaction.GetMonthlyInvestmentsUseCase
+import es.aviferdev.trackfolio.domain.usecase.realestate.SavePropertyUseCase
+import es.aviferdev.trackfolio.domain.usecase.realestate.UpdatePropertyValueUseCase
+import es.aviferdev.trackfolio.domain.usecase.realestate.ArchivePropertyUseCase
+import es.aviferdev.trackfolio.domain.usecase.realestate.GetPropertiesByAccountUseCase
+import es.aviferdev.trackfolio.domain.usecase.realestate.DismissMortgageReminderUseCase
+import es.aviferdev.trackfolio.domain.usecase.realestate.ChangeRentalStatusUseCase
+import es.aviferdev.trackfolio.domain.usecase.realestate.GetRentalPeriodsUseCase
+import es.aviferdev.trackfolio.domain.usecase.realestate.GetTransactionsByPropertyUseCase
+import es.aviferdev.trackfolio.domain.usecase.realestate.GetPropertyFinancialSummaryUseCase
+import es.aviferdev.trackfolio.domain.usecase.realestate.LinkLoanUseCase
 import es.aviferdev.trackfolio.ui.account.AccountSession
 import es.aviferdev.trackfolio.ui.account.AccountViewModel
 import es.aviferdev.trackfolio.ui.annual.AnnualViewModel
@@ -130,11 +140,11 @@ import es.aviferdev.trackfolio.ui.settings.IssuerViewModel
 import es.aviferdev.trackfolio.ui.home.CategoryPickerViewModel
 import es.aviferdev.trackfolio.ui.transaction.TransactionDetailViewModel
 import es.aviferdev.trackfolio.ui.transaction.TransactionViewModel
+import es.aviferdev.trackfolio.ui.realestate.RealEstateDetailViewModel
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
 val useCaseModule = module {
-    // Sesión compartida
     single { AccountSession() }
 
     // ── Account ──────────────────────────────────────────────────────────────
@@ -160,17 +170,14 @@ val useCaseModule = module {
 
     // ── Asset Transaction (inversiones) ─────────────────────────────────────
     factory { GetMonthlyInvestmentsUseCase(get()) }
-
     // ── Home ──────────────────────────────────────────────────────────────────
     factory { GetHomeBalanceUseCase(get(), get(), get()) }
-
     // ── Debts ─────────────────────────────────────────────────────────────────
     factory { GetActiveDebtsUseCase(get()) }
     factory { SaveDebtUseCase(get()) }
     factory { UpdateDebtUseCase(get()) }
     factory { MarkDebtAsPaidUseCase(get()) }
     factory { DeleteDebtUseCase(get()) }
-
     // ── Asset (catálogo) ──────────────────────────────────────────────────────
     factory { GetAssetsByAccountUseCase(get()) }
     factory { SaveAssetUseCase(get(), get()) }
@@ -182,7 +189,6 @@ val useCaseModule = module {
     factory { ShouldShowPriceReminderUseCase(get()) }
     factory { SavePriceReminderShownUseCase(get()) }
     factory { GetPriceReminderIntervalUseCase(get()) }
-
     // ── Asset Transaction ─────────────────────────────────────────────────────
     factory { GetTransactionsByAssetUseCase(get()) }
     factory { GetTransactionsByAssetDescUseCase(get()) }
@@ -192,14 +198,12 @@ val useCaseModule = module {
     factory { DeleteAssetTransactionUseCase(get()) }
     factory { SyncAssetTransactionToLedgerUseCase(get()) }
     factory { ExecuteFundTransferUseCase(get()) }
-
     // ── Asset Category ────────────────────────────────────────────────────────
     factory { GetAssetCategoriesUseCase(get()) }
     factory { GetAllAssetCategoriesIncludingArchivedUseCase(get()) }
     factory { SaveAssetCategoryUseCase(get()) }
     factory { RenameAssetCategoryUseCase(get()) }
     factory { ArchiveAssetCategoryUseCase(get()) }
-
     // ── Asset Tag ─────────────────────────────────────────────────────────────
     factory { GetAssetTagsUseCase(get()) }
     factory { GetAssetTagsByCategoryUseCase(get()) }
@@ -209,7 +213,6 @@ val useCaseModule = module {
     factory { GetAssetTagAssignmentsUseCase(get()) }
     factory { UpsertAssetTagAssignmentUseCase(get()) }
     factory { RemoveAssetTagAssignmentUseCase(get()) }
-
     // ── Asset Metadata (Sectors & Regions) ─────────────────────────────────────
     factory { GetSectorsUseCase(get()) }
     factory { SaveSectorUseCase(get()) }
@@ -217,37 +220,31 @@ val useCaseModule = module {
     factory { GetRegionsUseCase(get()) }
     factory { SaveRegionUseCase(get()) }
     factory { DeleteRegionUseCase(get()) }
-
     // ── Platform ──────────────────────────────────────────────────────────────
     factory { GetPlatformsUseCase(get()) }
     factory { GetAllPlatformsIncludingArchivedUseCase(get()) }
     factory { SavePlatformUseCase(get()) }
     factory { RenamePlatformUseCase(get()) }
     factory { ArchivePlatformUseCase(get()) }
-
     // ── Category (solo gastos) ────────────────────────────────────────────────
     factory { GetCategoriesByTypeUseCase(get()) }
     factory { GetAllCategoriesIncludingArchivedUseCase(get()) }
-
-    // ── Issuer (entidades emisoras de ingresos) ───────────────────────────────
+    // ── Issuer ────────────────────────────────────────────────────────────────
     factory { GetIssuersUseCase(get()) }
     factory { GetAllIssuersIncludingArchivedUseCase(get()) }
     factory { SaveIssuerUseCase(get()) }
     factory { RenameIssuerUseCase(get()) }
     factory { ArchiveIssuerUseCase(get()) }
-
     // ── Backup ──────────────────────────────────────────────────────────────────
     factory { SaveLastBackupDateUseCase(get()) }
     factory { GetLastBackupDateUseCase(get()) }
     factory { GetBackupReminderIntervalUseCase(get()) }
     factory { SaveBackupReminderIntervalUseCase(get()) }
     factory { ShouldShowBackupReminderUseCase(get()) }
-
     // ── Reconciliation ──────────────────────────────────────────────────────────
     factory { ReconcileBalanceUseCase(get(), get()) }
     factory { ShouldShowReconciliationReminderUseCase(get()) }
     factory { GetReconciliationReminderIntervalUseCase(get()) }
-
     // ── Fixed Income ────────────────────────────────────────────────────────────
     factory { CreateLedgerTransactionUseCase(get()) }
     factory { RecordIncomeTransactionUseCase(get()) }
@@ -263,18 +260,33 @@ val useCaseModule = module {
     factory { ArchiveFixedIncomePositionUseCase(get()) }
     factory { DeleteLinkedTransactionUseCase(get()) }
     factory { DeleteFixedIncomeEventUseCase(get(), get()) }
-
     // ── Fiscal ────────────────────────────────────────────────────────────────
-    factory {
-        GetFiscalReportDataUseCase(
-            accountRepository          = get(),
-            transactionRepository      = get(),
-            debtRepository             = get(),
-            assetRepository            = get(),
-            assetTransactionRepository = get(),
-            assetCategoryRepository    = get()
-        )
-    }
+    factory { GetFiscalReportDataUseCase(get(), get(), get(), get(), get(), get()) }
+
+    // ── Loan ─────────────────────────────────────────────────────────────────────
+    factory { SaveLoanUseCase(get()) }
+    factory { UpdateLoanUseCase(get()) }
+    factory { UpdateLoanRateUseCase(get(), get()) }
+    factory { GetLoansByAccountUseCase(get()) }
+    factory { GetAmortizationScheduleUseCase(get(), get()) }
+    factory { ArchiveLoanUseCase(get()) }
+
+    // ── Real Estate ──────────────────────────────────────────────────────────────
+    factory { SavePropertyUseCase(get()) }
+    factory { UpdatePropertyValueUseCase(get()) }
+    factory { ArchivePropertyUseCase(get()) }
+    factory { GetPropertiesByAccountUseCase(get()) }
+    factory { DismissMortgageReminderUseCase(get()) }
+    factory { ChangeRentalStatusUseCase(get(), get()) }
+    factory { GetRentalPeriodsUseCase(get()) }
+    factory { GetTransactionsByPropertyUseCase(get()) }
+    factory { GetPropertyFinancialSummaryUseCase(get()) }
+    factory { LinkLoanUseCase(get()) }
+
+    // ── Net Worth ────────────────────────────────────────────────────────────────
+    factory { GetNetWorthDataUseCase(get(), get(), get(), get(), get(), get(), get()) }
+    single { GetPortfolioValueHistoryUseCase(get(), get(), get(), get()) }
+    factory { GetNetWorthHistoryUseCase(get(), get(), get(), get(), get(), get()) }
 
     // ── ViewModels ────────────────────────────────────────────────────────────
     viewModel {
@@ -481,20 +493,7 @@ val useCaseModule = module {
         )
     }
 
-    // ── Loan ─────────────────────────────────────────────────────────────────────
-    factory { SaveLoanUseCase(get()) }
-    factory { UpdateLoanUseCase(get()) }
-    factory { UpdateLoanRateUseCase(get(), get()) }
-    factory { GetLoansByAccountUseCase(get()) }
-    factory { GetAmortizationScheduleUseCase(get(), get()) }
-    factory { ArchiveLoanUseCase(get()) }
-
-    // ── Net Worth ────────────────────────────────────────────────────────────────
-    factory { GetNetWorthDataUseCase(get(), get(), get(), get(), get(), get()) }
-    single { GetPortfolioValueHistoryUseCase(get(), get(), get(), get()) }
-    factory { GetNetWorthHistoryUseCase(get(), get(), get(), get(), get()) }
-
-    // ── ViewModels (Loan / NetWorth) ─────────────────────────────────────────────
+    // ── NetWorth ViewModel ─────────────────────────────────────────────────────
     viewModel {
         NetWorthViewModel(
             getNetWorthData      = get(),
@@ -504,6 +503,8 @@ val useCaseModule = module {
             loadingManager       = get()
         )
     }
+
+    // ── Loan ViewModel ─────────────────────────────────────────────────────────
     viewModel { (loanId: String) ->
         LoanDetailViewModel(
             loanId                    = loanId,
@@ -515,10 +516,24 @@ val useCaseModule = module {
             rateChangeRepository      = get()
         )
     }
-    viewModel { (initialTypeName: String) ->
-        CategoryPickerViewModel(
-            initialTypeName    = initialTypeName,
-            getCategoriesByType = get()
+
+    // ── Real Estate ViewModel ──────────────────────────────────────────────────
+    viewModel { (propertyId: String) ->
+        RealEstateDetailViewModel(
+            propertyId              = propertyId,
+            propertyRepository      = get(),
+            savePropertyUseCase     = get(),
+            updatePropertyValue     = get(),
+            archiveProperty         = get(),
+            getRentalPeriods        = get(),
+            getTransactionsByProperty = get(),
+            getFinancialSummary     = get(),
+            changeRentalStatus      = get(),
+            dismissMortgageReminder = get(),
+            linkLoanUseCase         = get(),
+            getLoan                 = get()
         )
     }
+
+    viewModel { (initialTypeName: String) -> CategoryPickerViewModel(initialTypeName, get()) }
 }

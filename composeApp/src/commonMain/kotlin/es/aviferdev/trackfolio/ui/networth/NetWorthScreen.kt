@@ -30,6 +30,8 @@ import es.aviferdev.trackfolio.ui.common.chart.TimeRange
 import es.aviferdev.trackfolio.ui.common.component.TimeRangeChipRow
 import es.aviferdev.trackfolio.ui.common.navigation.TopBarApp
 import es.aviferdev.trackfolio.ui.loan.AddEditLoanBottomSheet
+import es.aviferdev.trackfolio.ui.realestate.AddEditPropertyBottomSheet
+import es.aviferdev.trackfolio.ui.realestate.PropertyCard
 import es.aviferdev.trackfolio.ui.theme.*
 import kotlinx.coroutines.delay
 import kotlinx.datetime.Clock
@@ -43,10 +45,12 @@ import kotlin.math.abs
 @Composable
 fun NetWorthScreen(
     onLoanClick: (String) -> Unit = {},
+    onPropertyClick: (String) -> Unit = {},
     viewModel: NetWorthViewModel = koinViewModel()
 ) {
-    val uiState          by viewModel.uiState.collectAsState()
-    val showAddLoanSheet by viewModel.showAddLoanSheet.collectAsState()
+    val uiState              by viewModel.uiState.collectAsState()
+    val showAddLoanSheet     by viewModel.showAddLoanSheet.collectAsState()
+    val showAddPropertySheet by viewModel.showAddPropertySheet.collectAsState()
     val balancesHidden = LocalBalanceHidden.current
 
     var heroVisible by remember { mutableStateOf(false) }
@@ -62,6 +66,19 @@ fun NetWorthScreen(
 
     if (showAddLoanSheet) {
         AddEditLoanBottomSheet(onDismiss = { viewModel.closeAddLoanSheet() })
+    }
+
+    if (showAddPropertySheet) {
+        val state = uiState
+        if (state is NetWorthUiState.Success) {
+            AddEditPropertyBottomSheet(
+                accountId      = state.data.loans.firstOrNull()?.accountId ?: "",
+                existingProperty = null,
+                availableLoans = state.data.loans,
+                onDismiss      = { viewModel.closeAddPropertySheet() },
+                onSave         = { viewModel.closeAddPropertySheet() }
+            )
+        }
     }
 
     when (val state = uiState) {
@@ -81,7 +98,9 @@ fun NetWorthScreen(
             assetDistribution = state.assetDistribution,
             balancesHidden    = balancesHidden,
             onLoanClick       = onLoanClick,
+            onPropertyClick   = onPropertyClick,
             onAddLoan         = { viewModel.openAddLoanSheet() },
+            onAddProperty     = { viewModel.openAddPropertySheet() },
             heroVisible       = heroVisible,
             chartVisible      = chartVisible,
             assetsVisible     = assetsVisible,
@@ -97,7 +116,9 @@ fun NetWorthContent(
     assetDistribution: List<DonutSlice>,
     balancesHidden: Boolean,
     onLoanClick: (String) -> Unit,
+    onPropertyClick: (String) -> Unit = {},
     onAddLoan: () -> Unit,
+    onAddProperty: () -> Unit = {},
     heroVisible: Boolean = true,
     chartVisible: Boolean = true,
     assetsVisible: Boolean = true,
@@ -208,6 +229,64 @@ fun NetWorthContent(
                     }
 
                     AssetsSummaryCard(data = data, balancesHidden = balancesHidden)
+
+                    // ── Sección Inmuebles (dentro de Activos) ─────────────────
+                    if (data.properties.isNotEmpty()) {
+                        Spacer(Modifier.height(12.dp))
+                        TrackfolioLabel(text = "Inmuebles", modifier = Modifier.padding(bottom = 8.dp))
+                    }
+                }
+            }
+        }
+
+        // ── Cards de propiedades (dentro de Activos, fuera del AnimatedVisibility de activos) ─
+        items(data.properties, key = { it.id }) { property ->
+            AnimatedVisibility(
+                visible = assetsVisible,
+                enter = fadeIn() + slideInVertically(initialOffsetY = { it / 10 })
+            ) {
+                val linkedLoan = data.loans.find { it.id == property.linkedLoanId }
+                PropertyCard(
+                    property   = property,
+                    linkedLoan = linkedLoan,
+                    onClick    = { onPropertyClick(property.id) }
+                )
+            }
+        }
+
+        // Botón añadir propiedad (dentro de Activos)
+        if (data.properties.isNotEmpty() || true) {
+            item {
+                AnimatedVisibility(
+                    visible = assetsVisible,
+                    enter = fadeIn() + slideInVertically(initialOffsetY = { it / 10 })
+                ) {
+                    Row(
+                        modifier              = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Start,
+                        verticalAlignment     = Alignment.CenterVertically
+                    ) {
+                        IconButton(
+                            onClick  = onAddProperty,
+                            modifier = Modifier
+                                .size(28.dp)
+                                .clip(RoundedCornerShape(8.dp))
+                                .background(PrimaryAlpha)
+                        ) {
+                            Icon(
+                                Icons.Outlined.Add,
+                                contentDescription = "Añadir propiedad",
+                                tint               = PrimaryDark,
+                                modifier           = Modifier.size(15.dp)
+                            )
+                        }
+                        Spacer(Modifier.width(8.dp))
+                        Text(
+                            "Añadir propiedad",
+                            fontSize = 13.sp,
+                            color = TextTertiary
+                        )
+                    }
                 }
             }
         }
@@ -497,9 +576,11 @@ fun NetWorthContentPreview() {
                 totalAccountBalance = 25000.0,
                 totalPortfolioValue = 75000.0,
                 totalFixedIncomeValue = 15000.0,
+                totalRealEstateValue = 250000.0,
                 totalLoansOutstanding = 30000.0,
                 totalDebtsOwing = 2000.0,
-                loans = emptyList()
+                loans = emptyList(),
+                properties = emptyList()
             ),
             netWorthHistory = listOf(
                 NetWorthHistoryPoint("2026-01", 75000.0, 110000.0, 35000.0),
@@ -509,11 +590,14 @@ fun NetWorthContentPreview() {
             assetDistribution = listOf(
                 DonutSlice("Cuentas", "🏦", 25000.0, 21.74, Color(0xFF4CAF50)),
                 DonutSlice("Inversiones", "📈", 75000.0, 65.22, Color(0xFF2196F3)),
-                DonutSlice("Renta fija", "🏛️", 15000.0, 13.04, Color(0xFFFF9800))
+                DonutSlice("Renta fija", "🏛️", 15000.0, 13.04, Color(0xFFFF9800)),
+                DonutSlice("Inmuebles", "🏠", 250000.0, 68.49, Color(0xFF8D6E63))
             ),
             balancesHidden = false,
             onLoanClick = {},
-            onAddLoan = {}
+            onPropertyClick = {},
+            onAddLoan = {},
+            onAddProperty = {}
         )
     }
 }

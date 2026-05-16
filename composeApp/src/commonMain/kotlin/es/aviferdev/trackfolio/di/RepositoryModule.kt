@@ -36,6 +36,10 @@ import es.aviferdev.trackfolio.data.datasource.platform.PlatformLocalDataSource
 import es.aviferdev.trackfolio.data.datasource.platform.PlatformLocalDataSourceImpl
 import es.aviferdev.trackfolio.data.datasource.transaction.TransactionLocalDataSource
 import es.aviferdev.trackfolio.data.datasource.transaction.TransactionLocalDataSourceImpl
+import es.aviferdev.trackfolio.data.datasource.realestate.RealEstatePropertyLocalDataSource
+import es.aviferdev.trackfolio.data.datasource.realestate.RealEstatePropertyLocalDataSourceImpl
+import es.aviferdev.trackfolio.data.datasource.realestate.RentalPeriodLocalDataSource
+import es.aviferdev.trackfolio.data.datasource.realestate.RentalPeriodLocalDataSourceImpl
 import es.aviferdev.trackfolio.data.repository.account.AccountRepositoryImpl
 import es.aviferdev.trackfolio.data.repository.asset.AssetCategoryRepositoryImpl
 import es.aviferdev.trackfolio.data.repository.asset.AssetMetadataRepositoryImpl
@@ -54,6 +58,8 @@ import es.aviferdev.trackfolio.data.repository.issuer.IssuerRepositoryImpl
 import es.aviferdev.trackfolio.data.repository.platform.PlatformCategoryRepositoryImpl
 import es.aviferdev.trackfolio.data.repository.platform.PlatformRepositoryImpl
 import es.aviferdev.trackfolio.data.repository.transaction.TransactionRepositoryImpl
+import es.aviferdev.trackfolio.data.repository.realestate.RealEstatePropertyRepositoryImpl
+import es.aviferdev.trackfolio.data.repository.realestate.RentalPeriodRepositoryImpl
 import es.aviferdev.trackfolio.domain.repository.AccountRepository
 import es.aviferdev.trackfolio.domain.repository.AssetCategoryRepository
 import es.aviferdev.trackfolio.domain.repository.AssetMetadataRepository
@@ -72,44 +78,55 @@ import es.aviferdev.trackfolio.domain.repository.IssuerRepository
 import es.aviferdev.trackfolio.domain.repository.PlatformCategoryRepository
 import es.aviferdev.trackfolio.domain.repository.PlatformRepository
 import es.aviferdev.trackfolio.domain.repository.TransactionRepository
+import es.aviferdev.trackfolio.domain.repository.RealEstatePropertyRepository
+import es.aviferdev.trackfolio.domain.repository.RentalPeriodRepository
 import org.koin.dsl.module
 
 val repositoryModule = module {
-    single<AccountLocalDataSource>          { AccountLocalDataSourceImpl(get()) }
-    single<TransactionLocalDataSource>      { TransactionLocalDataSourceImpl(get()) }
-    single<TransactionCategoryLocalDataSource>         { TransactionCategoryLocalDataSourceImpl(get()) }
-    single<DebtLocalDataSource>             { DebtLocalDataSourceImpl(get()) }
-    single<AssetLocalDataSource>            { AssetLocalDataSourceImpl(get()) }
-    single<AssetCategoryLocalDataSource>    { AssetCategoryLocalDataSourceImpl(get()) }
-    single<AssetTagLocalDataSource>         { AssetTagLocalDataSourceImpl(get()) }
-    single<PlatformLocalDataSource>         { PlatformLocalDataSourceImpl(get()) }
-    single<PlatformCategoryLocalDataSource>  { PlatformCategoryLocalDataSourceImpl(get()) }
-    single<AssetTransactionLocalDataSource> { AssetTransactionLocalDataSourceImpl(get()) }
-    single<AssetPlatformLocalDataSource>    { AssetPlatformLocalDataSourceImpl(get()) }
-    single<AssetPriceHistoryLocalDataSource>  { AssetPriceHistoryLocalDataSourceImpl(get()) }
-    single<AssetMetadataLocalDataSource>   { AssetMetadataLocalDataSourceImpl(get()) }
-    single<IssuerLocalDataSource>           { IssuerLocalDataSourceImpl(get()) }
-    single<FixedIncomeLocalDataSource>      { FixedIncomeLocalDataSourceImpl(get()) }
-    single<FixedIncomeEventLocalDataSource> { FixedIncomeEventLocalDataSourceImpl(get()) }
-    single<LoanLocalDataSource>             { LoanLocalDataSourceImpl(get()) }
-    single<LoanRateChangeLocalDataSource>   { LoanRateChangeLocalDataSourceImpl(get()) }
+    single<AccountLocalDataSource>              { AccountLocalDataSourceImpl(get()) }
+    single<TransactionLocalDataSource>          { TransactionLocalDataSourceImpl(get()) }
+    single<TransactionCategoryLocalDataSource>  { TransactionCategoryLocalDataSourceImpl(get()) }
+    single<DebtLocalDataSource>                 { DebtLocalDataSourceImpl(get()) }
+    single<AssetLocalDataSource>                { AssetLocalDataSourceImpl(get()) }
+    single<AssetCategoryLocalDataSource>        { AssetCategoryLocalDataSourceImpl(get()) }
+    single<AssetTagLocalDataSource>             { AssetTagLocalDataSourceImpl(get()) }
+    single<PlatformLocalDataSource>             { PlatformLocalDataSourceImpl(get()) }
+    single<PlatformCategoryLocalDataSource>     { PlatformCategoryLocalDataSourceImpl(get()) }
+    single<AssetTransactionLocalDataSource>     { AssetTransactionLocalDataSourceImpl(get()) }
+    single<AssetPlatformLocalDataSource>        { AssetPlatformLocalDataSourceImpl(get()) }
+    single<AssetPriceHistoryLocalDataSource>    { AssetPriceHistoryLocalDataSourceImpl(get()) }
+    single<AssetMetadataLocalDataSource>        { AssetMetadataLocalDataSourceImpl(get()) }
+    single<IssuerLocalDataSource>               { IssuerLocalDataSourceImpl(get()) }
+    single<FixedIncomeLocalDataSource>          { FixedIncomeLocalDataSourceImpl(get()) }
+    single<FixedIncomeEventLocalDataSource>     { FixedIncomeEventLocalDataSourceImpl(get()) }
+    single<LoanLocalDataSource>                 { LoanLocalDataSourceImpl(get()) }
+    single<LoanRateChangeLocalDataSource>       { LoanRateChangeLocalDataSourceImpl(get()) }
 
-    single<AccountRepository>          { AccountRepositoryImpl(get()) }
-    single<TransactionRepository>      { TransactionRepositoryImpl(get()) }
-    single<CategoryRepository>         { CategoryRepositoryImpl(get()) }
-    single<DebtRepository>             { DebtRepositoryImpl(get()) }
-    single<AssetRepository>            { AssetRepositoryImpl(get()) }
-    single<AssetCategoryRepository>    { AssetCategoryRepositoryImpl(get()) }
-    single<AssetMetadataRepository> { AssetMetadataRepositoryImpl(get()) }
-    single<AssetTagRepository>         { AssetTagRepositoryImpl(get()) }
-    single<PlatformRepository>         { PlatformRepositoryImpl(get()) }
-    single<PlatformCategoryRepository>  { PlatformCategoryRepositoryImpl(get()) }
-    single<AssetTransactionRepository> { AssetTransactionRepositoryImpl(get()) }
-    single<AssetPlatformRepository>    { AssetPlatformRepositoryImpl(get()) }
-    single<AssetPriceHistoryRepository>       { AssetPriceHistoryRepositoryImpl(get()) }
-    single<IssuerRepository>           { IssuerRepositoryImpl(get()) }
-    single<FixedIncomeRepository>      { FixedIncomeRepositoryImpl(get()) }
-    single<FixedIncomeEventRepository> { FixedIncomeEventRepositoryImpl(get()) }
-    single<LoanRepository>             { LoanRepositoryImpl(get()) }
-    single<LoanRateChangeRepository>   { LoanRateChangeRepositoryImpl(get()) }
+    // ── Real Estate ────────────────────────────────────────────────────────────
+    single<RealEstatePropertyLocalDataSource>   { RealEstatePropertyLocalDataSourceImpl(get()) }
+    single<RentalPeriodLocalDataSource>          { RentalPeriodLocalDataSourceImpl(get()) }
+
+    // ── Repositories ────────────────────────────────────────────────────────────
+    single<AccountRepository>                   { AccountRepositoryImpl(get()) }
+    single<TransactionRepository>               { TransactionRepositoryImpl(get()) }
+    single<CategoryRepository>                  { CategoryRepositoryImpl(get()) }
+    single<DebtRepository>                      { DebtRepositoryImpl(get()) }
+    single<AssetRepository>                     { AssetRepositoryImpl(get()) }
+    single<AssetCategoryRepository>             { AssetCategoryRepositoryImpl(get()) }
+    single<AssetMetadataRepository>             { AssetMetadataRepositoryImpl(get()) }
+    single<AssetTagRepository>                  { AssetTagRepositoryImpl(get()) }
+    single<PlatformRepository>                  { PlatformRepositoryImpl(get()) }
+    single<PlatformCategoryRepository>          { PlatformCategoryRepositoryImpl(get()) }
+    single<AssetTransactionRepository>          { AssetTransactionRepositoryImpl(get()) }
+    single<AssetPlatformRepository>             { AssetPlatformRepositoryImpl(get()) }
+    single<AssetPriceHistoryRepository>         { AssetPriceHistoryRepositoryImpl(get()) }
+    single<IssuerRepository>                    { IssuerRepositoryImpl(get()) }
+    single<FixedIncomeRepository>               { FixedIncomeRepositoryImpl(get()) }
+    single<FixedIncomeEventRepository>          { FixedIncomeEventRepositoryImpl(get()) }
+    single<LoanRepository>                      { LoanRepositoryImpl(get()) }
+    single<LoanRateChangeRepository>            { LoanRateChangeRepositoryImpl(get()) }
+
+    // ── Real Estate Repositories ────────────────────────────────────────────────
+    single<RealEstatePropertyRepository>        { RealEstatePropertyRepositoryImpl(get()) }
+    single<RentalPeriodRepository>              { RentalPeriodRepositoryImpl(get()) }
 }

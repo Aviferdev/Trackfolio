@@ -29,6 +29,7 @@ import es.aviferdev.trackfolio.ui.home.CategoryPickerScreen
 import es.aviferdev.trackfolio.ui.home.HomeScreen
 import es.aviferdev.trackfolio.ui.loan.LoanDetailScreen
 import es.aviferdev.trackfolio.ui.networth.NetWorthScreen
+import es.aviferdev.trackfolio.ui.realestate.RealEstateDetailScreen
 import es.aviferdev.trackfolio.ui.portfolio.AssetCategoryDetailScreen
 import es.aviferdev.trackfolio.ui.portfolio.AssetDetailScreen
 import es.aviferdev.trackfolio.ui.portfolio.AssetHistoryScreen
@@ -290,6 +291,11 @@ fun TrackfolioNavHost(
                             navController.navigate(Screen.LoanDetail.buildRoute(loanId)) {
                                 launchSingleTop = true
                             }
+                        },
+                        onPropertyClick = { propertyId ->
+                            navController.navigate(Screen.RealEstateDetail.buildRoute(propertyId)) {
+                                launchSingleTop = true
+                            }
                         }
                     )
                 }
@@ -446,6 +452,26 @@ fun TrackfolioNavHost(
                     FixedIncomeDetailScreen(
                         positionId = positionId,
                         onBack = { navController.popBackStack() }
+                    )
+                }
+                composable(
+                    route = Screen.RealEstateDetail.route,
+                    arguments = listOf(
+                        navArgument(Screen.RealEstateDetail.ARG_PROPERTY_ID) {
+                            type = NavType.StringType
+                        }
+                    )
+                ) { backStackEntry ->
+                    val propertyId = backStackEntry.arguments
+                        ?.getString(Screen.RealEstateDetail.ARG_PROPERTY_ID).orEmpty()
+                    RealEstateDetailScreen(
+                        propertyId = propertyId,
+                        onNavigateBack = { navController.popBackStack() },
+                        onNavigateToLoan = { loanId ->
+                            navController.navigate(Screen.LoanDetail.buildRoute(loanId)) {
+                                launchSingleTop = true
+                            }
+                        }
                     )
                 }
                 composable(
