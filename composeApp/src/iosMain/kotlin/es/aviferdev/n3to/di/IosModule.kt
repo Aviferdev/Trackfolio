@@ -10,9 +10,12 @@ import es.aviferdev.n3to.domain.pdf.PdfReportGenerator
 import es.aviferdev.n3to.platform.AnalyticsTracker
 import es.aviferdev.n3to.platform.CrashlyticsTracker
 import es.aviferdev.n3to.platform.PurchaseManager
+import es.aviferdev.n3to.platform.VersionRemoteConfig
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import platform.Foundation.NSBundle
+import platform.Foundation.NSURL
+import platform.UIKit.UIApplication
 
 val iosModule = module {
     single { DatabaseDriverFactory() }
@@ -25,7 +28,16 @@ val iosModule = module {
     single { AnalyticsTracker() }
     single { CrashlyticsTracker() }
     single { PurchaseManager() }
+    single { VersionRemoteConfig() }
     single(named("appVersion")) {
         NSBundle.mainBundle.infoDictionary?.get("CFBundleShortVersionString") as? String ?: "1.0.0"
+    }
+    single(named("openStore")) {
+        {
+            val url = NSURL.URLWithString("itms-apps://apps.apple.com/app/idXXXXXXXXX")
+            if (url != null) {
+                UIApplication.sharedApplication.openURL(url)
+            }
+        } as () -> Unit
     }
 }

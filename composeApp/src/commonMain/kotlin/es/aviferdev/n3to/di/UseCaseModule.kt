@@ -1,10 +1,6 @@
 package es.aviferdev.n3to.di
 
-import es.aviferdev.n3to.domain.usecase.backup.GetBackupReminderIntervalUseCase
-import es.aviferdev.n3to.domain.usecase.backup.GetLastBackupDateUseCase
-import es.aviferdev.n3to.domain.usecase.backup.SaveBackupReminderIntervalUseCase
-import es.aviferdev.n3to.domain.usecase.backup.SaveLastBackupDateUseCase
-import es.aviferdev.n3to.domain.usecase.backup.ShouldShowBackupReminderUseCase
+import es.aviferdev.n3to.core.VersionManager
 import es.aviferdev.n3to.domain.usecase.account.DeleteAccountUseCase
 import es.aviferdev.n3to.domain.usecase.account.GetAccountByIdUseCase
 import es.aviferdev.n3to.domain.usecase.account.GetAccountsUseCase
@@ -12,13 +8,13 @@ import es.aviferdev.n3to.domain.usecase.account.SaveAccountUseCase
 import es.aviferdev.n3to.domain.usecase.account.SetInitialBalanceUseCase
 import es.aviferdev.n3to.domain.usecase.account.UpdateAccountUseCase
 import es.aviferdev.n3to.domain.usecase.asset.ArchiveAssetUseCase
-import es.aviferdev.n3to.domain.usecase.asset.UnarchiveAssetUseCase
 import es.aviferdev.n3to.domain.usecase.asset.GetAssetsByAccountUseCase
 import es.aviferdev.n3to.domain.usecase.asset.GetOutdatedAssetsUseCase
 import es.aviferdev.n3to.domain.usecase.asset.GetPriceReminderIntervalUseCase
 import es.aviferdev.n3to.domain.usecase.asset.SaveAssetUseCase
 import es.aviferdev.n3to.domain.usecase.asset.SavePriceReminderShownUseCase
 import es.aviferdev.n3to.domain.usecase.asset.ShouldShowPriceReminderUseCase
+import es.aviferdev.n3to.domain.usecase.asset.UnarchiveAssetUseCase
 import es.aviferdev.n3to.domain.usecase.asset.UpdateAssetCurrentPriceUseCase
 import es.aviferdev.n3to.domain.usecase.asset.UpdateAssetUseCase
 import es.aviferdev.n3to.domain.usecase.assetcategory.ArchiveAssetCategoryUseCase
@@ -40,14 +36,20 @@ import es.aviferdev.n3to.domain.usecase.assettag.RemoveAssetTagAssignmentUseCase
 import es.aviferdev.n3to.domain.usecase.assettag.RenameAssetTagUseCase
 import es.aviferdev.n3to.domain.usecase.assettag.SaveAssetTagUseCase
 import es.aviferdev.n3to.domain.usecase.assettag.UpsertAssetTagAssignmentUseCase
-import es.aviferdev.n3to.domain.usecase.assettransaction.ExecuteFundTransferUseCase
 import es.aviferdev.n3to.domain.usecase.assettransaction.DeleteAssetTransactionUseCase
+import es.aviferdev.n3to.domain.usecase.assettransaction.ExecuteFundTransferUseCase
+import es.aviferdev.n3to.domain.usecase.assettransaction.GetMonthlyInvestmentsUseCase
 import es.aviferdev.n3to.domain.usecase.assettransaction.GetTransactionsByAccountUseCase
 import es.aviferdev.n3to.domain.usecase.assettransaction.GetTransactionsByAssetDescUseCase
 import es.aviferdev.n3to.domain.usecase.assettransaction.GetTransactionsByAssetUseCase
 import es.aviferdev.n3to.domain.usecase.assettransaction.SaveAssetTransactionUseCase
 import es.aviferdev.n3to.domain.usecase.assettransaction.SyncAssetTransactionToLedgerUseCase
 import es.aviferdev.n3to.domain.usecase.assettransaction.UpdateAssetTransactionUseCase
+import es.aviferdev.n3to.domain.usecase.backup.GetBackupReminderIntervalUseCase
+import es.aviferdev.n3to.domain.usecase.backup.GetLastBackupDateUseCase
+import es.aviferdev.n3to.domain.usecase.backup.SaveBackupReminderIntervalUseCase
+import es.aviferdev.n3to.domain.usecase.backup.SaveLastBackupDateUseCase
+import es.aviferdev.n3to.domain.usecase.backup.ShouldShowBackupReminderUseCase
 import es.aviferdev.n3to.domain.usecase.category.GetAllCategoriesIncludingArchivedUseCase
 import es.aviferdev.n3to.domain.usecase.category.GetCategoriesByTypeUseCase
 import es.aviferdev.n3to.domain.usecase.debt.DeleteDebtUseCase
@@ -55,15 +57,27 @@ import es.aviferdev.n3to.domain.usecase.debt.GetActiveDebtsUseCase
 import es.aviferdev.n3to.domain.usecase.debt.MarkDebtAsPaidUseCase
 import es.aviferdev.n3to.domain.usecase.debt.SaveDebtUseCase
 import es.aviferdev.n3to.domain.usecase.debt.UpdateDebtUseCase
-import es.aviferdev.n3to.domain.usecase.reconciliation.BalanceAlreadyMatchesException
-import es.aviferdev.n3to.domain.usecase.reconciliation.GetReconciliationReminderIntervalUseCase
-import es.aviferdev.n3to.domain.usecase.reconciliation.ReconcileBalanceUseCase
-import es.aviferdev.n3to.domain.usecase.reconciliation.ShouldShowReconciliationReminderUseCase
+import es.aviferdev.n3to.domain.usecase.fiscal.GetFiscalReportDataUseCase
+import es.aviferdev.n3to.domain.usecase.fixedincome.ArchiveFixedIncomePositionUseCase
+import es.aviferdev.n3to.domain.usecase.fixedincome.CloseFixedIncomeUseCase
 import es.aviferdev.n3to.domain.usecase.fixedincome.CreateFixedIncomePositionUseCase
 import es.aviferdev.n3to.domain.usecase.fixedincome.CreateLedgerTransactionUseCase
-import es.aviferdev.n3to.domain.usecase.fixedincome.CloseFixedIncomeUseCase
 import es.aviferdev.n3to.domain.usecase.fixedincome.DeleteFixedIncomeEventUseCase
 import es.aviferdev.n3to.domain.usecase.fixedincome.DeleteLinkedTransactionUseCase
+import es.aviferdev.n3to.domain.usecase.fixedincome.GetCouponScheduleUseCase
+import es.aviferdev.n3to.domain.usecase.fixedincome.GetFixedIncomePositionDetailUseCase
+import es.aviferdev.n3to.domain.usecase.fixedincome.GetFixedIncomeSummaryUseCase
+import es.aviferdev.n3to.domain.usecase.fixedincome.GetNearMaturityPositionsUseCase
+import es.aviferdev.n3to.domain.usecase.fixedincome.RecordIncomeTransactionUseCase
+import es.aviferdev.n3to.domain.usecase.fixedincome.RecordSettlementTransactionUseCase
+import es.aviferdev.n3to.domain.usecase.fixedincome.RegisterCouponUseCase
+import es.aviferdev.n3to.domain.usecase.fixedincome.UpdateFixedIncomePositionUseCase
+import es.aviferdev.n3to.domain.usecase.home.GetHomeBalanceUseCase
+import es.aviferdev.n3to.domain.usecase.issuer.ArchiveIssuerUseCase
+import es.aviferdev.n3to.domain.usecase.issuer.GetAllIssuersIncludingArchivedUseCase
+import es.aviferdev.n3to.domain.usecase.issuer.GetIssuersUseCase
+import es.aviferdev.n3to.domain.usecase.issuer.RenameIssuerUseCase
+import es.aviferdev.n3to.domain.usecase.issuer.SaveIssuerUseCase
 import es.aviferdev.n3to.domain.usecase.loan.ArchiveLoanUseCase
 import es.aviferdev.n3to.domain.usecase.loan.GetAmortizationScheduleUseCase
 import es.aviferdev.n3to.domain.usecase.loan.GetLoansByAccountUseCase
@@ -72,28 +86,25 @@ import es.aviferdev.n3to.domain.usecase.loan.UpdateLoanRateUseCase
 import es.aviferdev.n3to.domain.usecase.loan.UpdateLoanUseCase
 import es.aviferdev.n3to.domain.usecase.networth.GetNetWorthDataUseCase
 import es.aviferdev.n3to.domain.usecase.networth.GetNetWorthHistoryUseCase
-import es.aviferdev.n3to.domain.usecase.portfolio.GetPortfolioValueHistoryUseCase
-import es.aviferdev.n3to.domain.usecase.fixedincome.GetCouponScheduleUseCase
-import es.aviferdev.n3to.domain.usecase.fixedincome.GetFixedIncomePositionDetailUseCase
-import es.aviferdev.n3to.domain.usecase.fixedincome.GetFixedIncomeSummaryUseCase
-import es.aviferdev.n3to.domain.usecase.fixedincome.GetNearMaturityPositionsUseCase
-import es.aviferdev.n3to.domain.usecase.fixedincome.ArchiveFixedIncomePositionUseCase
-import es.aviferdev.n3to.domain.usecase.fixedincome.UpdateFixedIncomePositionUseCase
-import es.aviferdev.n3to.domain.usecase.fixedincome.RegisterCouponUseCase
-import es.aviferdev.n3to.domain.usecase.fixedincome.RecordIncomeTransactionUseCase
-import es.aviferdev.n3to.domain.usecase.fixedincome.RecordSettlementTransactionUseCase
-import es.aviferdev.n3to.domain.usecase.fiscal.GetFiscalReportDataUseCase
-import es.aviferdev.n3to.domain.usecase.home.GetHomeBalanceUseCase
-import es.aviferdev.n3to.domain.usecase.issuer.ArchiveIssuerUseCase
-import es.aviferdev.n3to.domain.usecase.issuer.GetAllIssuersIncludingArchivedUseCase
-import es.aviferdev.n3to.domain.usecase.issuer.GetIssuersUseCase
-import es.aviferdev.n3to.domain.usecase.issuer.RenameIssuerUseCase
-import es.aviferdev.n3to.domain.usecase.issuer.SaveIssuerUseCase
 import es.aviferdev.n3to.domain.usecase.platform.ArchivePlatformUseCase
 import es.aviferdev.n3to.domain.usecase.platform.GetAllPlatformsIncludingArchivedUseCase
 import es.aviferdev.n3to.domain.usecase.platform.GetPlatformsUseCase
 import es.aviferdev.n3to.domain.usecase.platform.RenamePlatformUseCase
 import es.aviferdev.n3to.domain.usecase.platform.SavePlatformUseCase
+import es.aviferdev.n3to.domain.usecase.portfolio.GetPortfolioValueHistoryUseCase
+import es.aviferdev.n3to.domain.usecase.realestate.ArchivePropertyUseCase
+import es.aviferdev.n3to.domain.usecase.realestate.ChangeRentalStatusUseCase
+import es.aviferdev.n3to.domain.usecase.realestate.DismissMortgageReminderUseCase
+import es.aviferdev.n3to.domain.usecase.realestate.GetPropertiesByAccountUseCase
+import es.aviferdev.n3to.domain.usecase.realestate.GetPropertyFinancialSummaryUseCase
+import es.aviferdev.n3to.domain.usecase.realestate.GetRentalPeriodsUseCase
+import es.aviferdev.n3to.domain.usecase.realestate.GetTransactionsByPropertyUseCase
+import es.aviferdev.n3to.domain.usecase.realestate.LinkLoanUseCase
+import es.aviferdev.n3to.domain.usecase.realestate.SavePropertyUseCase
+import es.aviferdev.n3to.domain.usecase.realestate.UpdatePropertyValueUseCase
+import es.aviferdev.n3to.domain.usecase.reconciliation.GetReconciliationReminderIntervalUseCase
+import es.aviferdev.n3to.domain.usecase.reconciliation.ReconcileBalanceUseCase
+import es.aviferdev.n3to.domain.usecase.reconciliation.ShouldShowReconciliationReminderUseCase
 import es.aviferdev.n3to.domain.usecase.transaction.DeleteTransactionUseCase
 import es.aviferdev.n3to.domain.usecase.transaction.GetAnnualSummaryUseCase
 import es.aviferdev.n3to.domain.usecase.transaction.GetExpensesByCategoryUseCase
@@ -105,43 +116,35 @@ import es.aviferdev.n3to.domain.usecase.transaction.GetTransactionByIdUseCase
 import es.aviferdev.n3to.domain.usecase.transaction.GetTransactionsByMonthUseCase
 import es.aviferdev.n3to.domain.usecase.transaction.SaveTransactionUseCase
 import es.aviferdev.n3to.domain.usecase.transaction.UpdateTransactionUseCase
-import es.aviferdev.n3to.domain.usecase.assettransaction.GetMonthlyInvestmentsUseCase
-import es.aviferdev.n3to.domain.usecase.realestate.SavePropertyUseCase
-import es.aviferdev.n3to.domain.usecase.realestate.UpdatePropertyValueUseCase
-import es.aviferdev.n3to.domain.usecase.realestate.ArchivePropertyUseCase
-import es.aviferdev.n3to.domain.usecase.realestate.GetPropertiesByAccountUseCase
-import es.aviferdev.n3to.domain.usecase.realestate.DismissMortgageReminderUseCase
-import es.aviferdev.n3to.domain.usecase.realestate.ChangeRentalStatusUseCase
-import es.aviferdev.n3to.domain.usecase.realestate.GetRentalPeriodsUseCase
-import es.aviferdev.n3to.domain.usecase.realestate.GetTransactionsByPropertyUseCase
-import es.aviferdev.n3to.domain.usecase.realestate.GetPropertyFinancialSummaryUseCase
-import es.aviferdev.n3to.domain.usecase.realestate.LinkLoanUseCase
+import es.aviferdev.n3to.domain.usecase.version.DismissVersionBannerUseCase
+import es.aviferdev.n3to.domain.usecase.version.GetVersionInfoUseCase
 import es.aviferdev.n3to.ui.account.AccountSession
 import es.aviferdev.n3to.ui.account.AccountViewModel
 import es.aviferdev.n3to.ui.annual.AnnualViewModel
 import es.aviferdev.n3to.ui.debt.DebtViewModel
 import es.aviferdev.n3to.ui.fiscal.FiscalReportViewModel
 import es.aviferdev.n3to.ui.fixedincome.FixedIncomeDetailViewModel
+import es.aviferdev.n3to.ui.home.AddTransactionViewModel
+import es.aviferdev.n3to.ui.home.CategoryPickerViewModel
+import es.aviferdev.n3to.ui.home.HomeViewModel
 import es.aviferdev.n3to.ui.loan.LoanDetailViewModel
 import es.aviferdev.n3to.ui.networth.NetWorthViewModel
-import es.aviferdev.n3to.ui.home.AddTransactionViewModel
-import es.aviferdev.n3to.ui.home.HomeViewModel
 import es.aviferdev.n3to.ui.portfolio.AssetCatalogViewModel
 import es.aviferdev.n3to.ui.portfolio.AssetCategoryDetailViewModel
-import es.aviferdev.n3to.ui.portfolio.AssetDetailViewModel
 import es.aviferdev.n3to.ui.portfolio.AssetCategoryViewModel
+import es.aviferdev.n3to.ui.portfolio.AssetDetailViewModel
 import es.aviferdev.n3to.ui.portfolio.AssetHistoryViewModel
 import es.aviferdev.n3to.ui.portfolio.PlatformViewModel
 import es.aviferdev.n3to.ui.portfolio.PortfolioViewModel
+import es.aviferdev.n3to.ui.realestate.RealEstateDetailViewModel
 import es.aviferdev.n3to.ui.reconciliation.ReconciliationViewModel
-import es.aviferdev.n3to.ui.settings.backup.BackupViewModel
 import es.aviferdev.n3to.ui.settings.CategoryViewModel
 import es.aviferdev.n3to.ui.settings.IssuerViewModel
-import es.aviferdev.n3to.ui.home.CategoryPickerViewModel
+import es.aviferdev.n3to.ui.settings.backup.BackupViewModel
 import es.aviferdev.n3to.ui.transaction.TransactionDetailViewModel
 import es.aviferdev.n3to.ui.transaction.TransactionViewModel
-import es.aviferdev.n3to.ui.realestate.RealEstateDetailViewModel
 import org.koin.core.module.dsl.viewModel
+import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 val useCaseModule = module {
@@ -288,6 +291,11 @@ val useCaseModule = module {
     single { GetPortfolioValueHistoryUseCase(get(), get(), get(), get()) }
     factory { GetNetWorthHistoryUseCase(get(), get(), get(), get(), get(), get()) }
 
+    // ── Version (Remote Config) ──────────────────────────────────────────────────
+    factory { GetVersionInfoUseCase(get()) }
+    factory { DismissVersionBannerUseCase(get()) }
+    single { VersionManager(get(), get(), get(named("appVersion"))) }
+
     // ── ViewModels ────────────────────────────────────────────────────────────
     viewModel {
         AccountViewModel(
@@ -311,7 +319,8 @@ val useCaseModule = module {
             savePriceReminderShown    = get(),
             getNearMaturityPositions  = get(),
             loadingManager            = get(),
-            getPortfolioValueHistory  = get()
+            getPortfolioValueHistory = get(),
+            versionManager = get()
         )
     }
     viewModel {

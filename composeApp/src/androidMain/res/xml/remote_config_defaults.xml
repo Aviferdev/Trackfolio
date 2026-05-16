@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<defaultsMap>
+    <entry>
+        <key>app_min_version</key>
+        <value>1.0.0</value>
+    </entry>
+    <entry>
+        <key>app_latest_version</key>
+        <value>1.0.0</value>
+    </entry>
+    <entry>
+        <key>app_update_url_android</key>
+        <value></value>
+    </entry>
+    <entry>
+        <key>app_update_url_ios</key>
+        <value></value>
+    </entry>
+</defaultsMap>

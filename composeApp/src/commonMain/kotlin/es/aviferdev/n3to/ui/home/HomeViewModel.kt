@@ -2,19 +2,20 @@ package es.aviferdev.n3to.ui.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import es.aviferdev.n3to.core.VersionManager
 import es.aviferdev.n3to.domain.model.Asset
 import es.aviferdev.n3to.domain.model.FixedIncomePosition
 import es.aviferdev.n3to.domain.model.HomeBalance
 import es.aviferdev.n3to.domain.model.TransactionType
-import es.aviferdev.n3to.domain.usecase.fixedincome.GetNearMaturityPositionsUseCase
 import es.aviferdev.n3to.domain.usecase.account.SetInitialBalanceUseCase
 import es.aviferdev.n3to.domain.usecase.asset.GetOutdatedAssetsUseCase
 import es.aviferdev.n3to.domain.usecase.asset.SavePriceReminderShownUseCase
 import es.aviferdev.n3to.domain.usecase.asset.ShouldShowPriceReminderUseCase
 import es.aviferdev.n3to.domain.usecase.asset.UpdateAssetCurrentPriceUseCase
 import es.aviferdev.n3to.domain.usecase.category.GetCategoriesByTypeUseCase
-import es.aviferdev.n3to.domain.usecase.portfolio.GetPortfolioValueHistoryUseCase
+import es.aviferdev.n3to.domain.usecase.fixedincome.GetNearMaturityPositionsUseCase
 import es.aviferdev.n3to.domain.usecase.home.GetHomeBalanceUseCase
+import es.aviferdev.n3to.domain.usecase.portfolio.GetPortfolioValueHistoryUseCase
 import es.aviferdev.n3to.ui.account.AccountSession
 import es.aviferdev.n3to.ui.common.loading.GlobalLoadingManager
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -64,7 +65,8 @@ class HomeViewModel(
     private val savePriceReminderShown: SavePriceReminderShownUseCase,
     private val getNearMaturityPositions: GetNearMaturityPositionsUseCase? = null,
     private val loadingManager: GlobalLoadingManager,
-    private val getPortfolioValueHistory: GetPortfolioValueHistoryUseCase
+    private val getPortfolioValueHistory: GetPortfolioValueHistoryUseCase,
+    private val versionManager: VersionManager
 ) : ViewModel() {
 
     val uiState: StateFlow<HomeUiState> = session.selectedAccountId
@@ -94,6 +96,9 @@ class HomeViewModel(
 
     private val _nearMaturityState = MutableStateFlow(NearMaturityState())
     val nearMaturityState: StateFlow<NearMaturityState> = _nearMaturityState.asStateFlow()
+
+    /** Estado de actualización de versión (delegado en [VersionManager]). */
+    val versionStatus: StateFlow<VersionManager.Status> = versionManager.status
 
     init {
         // Observar cambios de estado para mostrar/ocultar loading global
@@ -145,6 +150,10 @@ class HomeViewModel(
                     )
                 }
         }
+    }
+
+    fun dismissVersionBanner(latestVersion: String) {
+        versionManager.dismissBanner(latestVersion)
     }
 
     fun dismissNearMaturityBanner() {

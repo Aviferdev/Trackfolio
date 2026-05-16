@@ -1,6 +1,8 @@
 package es.aviferdev.n3to.di
 
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
 import es.aviferdev.n3to.core.security.AppLockManager
 import es.aviferdev.n3to.core.security.AppSettings
@@ -12,6 +14,7 @@ import es.aviferdev.n3to.domain.pdf.PdfReportGenerator
 import es.aviferdev.n3to.platform.AnalyticsTracker
 import es.aviferdev.n3to.platform.CrashlyticsTracker
 import es.aviferdev.n3to.platform.PurchaseManager
+import es.aviferdev.n3to.platform.VersionRemoteConfig
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
@@ -27,6 +30,7 @@ val androidModule = module {
     single { AnalyticsTracker() }
     single { CrashlyticsTracker() }
     single { PurchaseManager() }
+    single { VersionRemoteConfig() }
     single(named("appVersion")) {
         val ctx   = androidContext()
         val pm    = ctx.packageManager
@@ -38,5 +42,27 @@ val androidModule = module {
             pm.getPackageInfo(pName, 0)
         }
         info.versionName ?: "1.0.0"
+    }
+    single(named("openStore")) {
+        {
+            try {
+                val ctx = androidContext()
+                val intent = Intent(Intent.ACTION_VIEW).apply {
+                    data = Uri.parse("market://details?id=es.aviferdev.n3to")
+                    setPackage("com.android.vending")
+                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                }
+                ctx.startActivity(intent)
+            } catch (_: Exception) {
+                // Si no hay Play Store, abrir en navegador
+                val ctx = androidContext()
+                val intent = Intent(Intent.ACTION_VIEW).apply {
+                    data =
+                        Uri.parse("https://play.google.com/store/apps/details?id=es.aviferdev.n3to")
+                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                }
+                ctx.startActivity(intent)
+            }
+        } as () -> Unit
     }
 }

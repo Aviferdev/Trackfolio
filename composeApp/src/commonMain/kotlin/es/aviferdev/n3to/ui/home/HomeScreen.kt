@@ -24,7 +24,6 @@ import androidx.compose.material.icons.outlined.VisibilityOff
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -39,15 +38,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import es.aviferdev.n3to.core.VersionManager
+import es.aviferdev.n3to.core.security.BalanceVisibilityManager
+import es.aviferdev.n3to.core.security.BiometricAuthenticator
+import es.aviferdev.n3to.core.security.BiometricResult
 import es.aviferdev.n3to.domain.model.Account
 import es.aviferdev.n3to.domain.model.AccountType
 import es.aviferdev.n3to.domain.model.HomeBalance
 import es.aviferdev.n3to.domain.model.IncomeType
 import es.aviferdev.n3to.domain.model.Transaction
 import es.aviferdev.n3to.domain.model.TransactionType
-import es.aviferdev.n3to.core.security.BalanceVisibilityManager
-import es.aviferdev.n3to.core.security.BiometricAuthenticator
-import es.aviferdev.n3to.core.security.BiometricResult
 import es.aviferdev.n3to.domain.usecase.backup.GetBackupReminderIntervalUseCase
 import es.aviferdev.n3to.domain.usecase.backup.GetLastBackupDateUseCase
 import es.aviferdev.n3to.domain.usecase.backup.SaveBackupReminderIntervalUseCase
@@ -63,16 +63,18 @@ import es.aviferdev.n3to.ui.settings.backup.BackupViewModel
 import es.aviferdev.n3to.ui.theme.BackgroundGray
 import es.aviferdev.n3to.ui.theme.ExpenseRed
 import es.aviferdev.n3to.ui.theme.LocalBalanceHidden
+import es.aviferdev.n3to.ui.theme.N3toTheme
 import es.aviferdev.n3to.ui.theme.PrimaryDark
 import es.aviferdev.n3to.ui.theme.TextPrimary
 import es.aviferdev.n3to.ui.theme.TextSecondary
 import es.aviferdev.n3to.ui.theme.TextTertiary
-import es.aviferdev.n3to.ui.theme.N3toTheme
+import es.aviferdev.n3to.ui.version.VersionUpdateBanner
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.qualifier.named
 
 // ─────────────────────────────────────────────────────────────────────────────
 //  HomeScreen — entry point (sin cambios de lógica/VM)
@@ -99,6 +101,8 @@ fun HomeScreen(
     val selectedId by accountViewModel.selectedAccountId.collectAsState()
     val reconciliationState by reconciliationViewModel.uiState.collectAsState()
     val backupSheetState by backupViewModel.state.collectAsState()
+    val versionStatus by viewModel.versionStatus.collectAsState()
+    val openStore: () -> Unit = koinInject(named("openStore"))
     val balanceVisibility = koinInject<BalanceVisibilityManager>()
     val authenticator: BiometricAuthenticator = koinInject()
     val balancesHidden = LocalBalanceHidden.current
@@ -174,6 +178,9 @@ fun HomeScreen(
                     if (currentAccount?.isCash == true) reconciliationViewModel.checkReminder()
                 }
 
+                val showVersionBanner = versionStatus is VersionManager.Status.UpdateAvailable
+                val versionInfo = (versionStatus as? VersionManager.Status.UpdateAvailable)?.info
+
                 HomeContent(
                     balance = state.balance,
                     categoryNames = state.categoryNames,
@@ -216,7 +223,11 @@ fun HomeScreen(
                     neverBackup = neverBackup,
                     daysSinceLastBackup = daysSinceLastBackup,
                     onBackupNow = { backupViewModel.openExport() },
-                    onBackupRemindLater = { showBackupIntervalDialog = true }
+                    onBackupRemindLater = { showBackupIntervalDialog = true },
+                    showVersionBanner = showVersionBanner,
+                    versionLatestVersion = versionInfo?.latestVersion,
+                    onVersionUpdateNow = openStore,
+                    onDismissVersionBanner = { versionInfo?.let { viewModel.dismissVersionBanner(it.latestVersion) } }
                 )
             }
         }
@@ -316,7 +327,7 @@ fun HomeScreen(
 fun HomeContent(
     balance: HomeBalance,
     categoryNames: Map<String, String>,
-    accounts: List<es.aviferdev.n3to.domain.model.Account>,
+    accounts: List<Account>,
     selectedAccountId: String?,
     balancesHidden: Boolean,
     onToggleBalances: () -> Unit,
@@ -338,7 +349,11 @@ fun HomeContent(
     neverBackup: Boolean = false,
     daysSinceLastBackup: Int = 0,
     onBackupNow: () -> Unit = {},
-    onBackupRemindLater: () -> Unit = {}
+    onBackupRemindLater: () -> Unit = {},
+    showVersionBanner: Boolean = false,
+    versionLatestVersion: String? = null,
+    onVersionUpdateNow: () -> Unit = {},
+    onDismissVersionBanner: () -> Unit = {}
 ) {
     Column(
         modifier = Modifier
@@ -401,6 +416,15 @@ fun HomeContent(
         Spacer(Modifier.height(14.dp))
 
         // ── Banners contextuales ──────────────────────────────────────────────
+        VersionUpdateBanner(
+            visible = showVersionBanner,
+            latestVersion = versionLatestVersion ?: "",
+            onUpdateNow = onVersionUpdateNow,
+            onDismiss = onDismissVersionBanner,
+            modifier = Modifier.padding(horizontal = 16.dp)
+        )
+        if (showVersionBanner) Spacer(Modifier.height(8.dp))
+
         PriceReminderBanner(
             outdatedCount = priceReminderState.outdatedAssets.size,
             visible = priceReminderState.showBanner,
