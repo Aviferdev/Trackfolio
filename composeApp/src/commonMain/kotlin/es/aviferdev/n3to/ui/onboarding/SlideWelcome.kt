@@ -7,8 +7,7 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.background
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,7 +17,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -28,24 +26,21 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.graphics.StrokeJoin
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import es.aviferdev.n3to.ui.theme.N3toTheme
 import es.aviferdev.n3to.ui.theme.PrimaryDark
 import es.aviferdev.n3to.ui.theme.TextPrimary
 import es.aviferdev.n3to.ui.theme.TextSecondary
-import es.aviferdev.n3to.ui.theme.N3toTheme
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.compose_multiplatform
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import kotlin.math.min
 
@@ -130,78 +125,16 @@ fun SlideWelcome(modifier: Modifier = Modifier) {
             )
 
             // App icon
-            Box(
+            Image(
+                painter = painterResource(Res.drawable.compose_multiplatform),
+                contentDescription = "N3to",
                 modifier = Modifier
                     .size(128.dp)
                     .graphicsLayer {
                         translationY = floatOffset
                         alpha = iconAlpha
                     }
-                    .clip(RoundedCornerShape(32.dp))
-                    .background(
-                        brush = Brush.linearGradient(
-                            colors = listOf(Color(0xFF1A1A3A), Color(0xFF0D0D0D)),
-                            start = Offset(0f, 0f),
-                            end = Offset(0f, Float.POSITIVE_INFINITY)
-                        )
-                    ),
-                contentAlignment = Alignment.Center
-            ) {
-                // Chart drawn inside icon
-                Canvas(modifier = Modifier.size(100.dp)) {
-                    val scale = size.width / 200f
-
-                    // Bottom bar
-                    drawRoundRect(
-                        color = PrimaryDark,
-                        topLeft = Offset(50f * scale, 56f * scale),
-                        size = androidx.compose.ui.geometry.Size(
-                            100f * scale,
-                            20f * scale
-                        ),
-                        cornerRadius = androidx.compose.ui.geometry.CornerRadius(
-                            6f * scale
-                        )
-                    )
-
-                    // Tall bar
-                    drawRoundRect(
-                        color = PrimaryDark,
-                        topLeft = Offset(90f * scale, 56f * scale),
-                        size = androidx.compose.ui.geometry.Size(
-                            20f * scale,
-                            88f * scale
-                        ),
-                        cornerRadius = androidx.compose.ui.geometry.CornerRadius(
-                            6f * scale
-                        )
-                    )
-
-                    // Line path
-                    val linePath = Path().apply {
-                        moveTo(56f * scale, 138f * scale)
-                        lineTo(90f * scale, 116f * scale)
-                        lineTo(110f * scale, 124f * scale)
-                        lineTo(152f * scale, 78f * scale)
-                    }
-                    drawPath(
-                        path = linePath,
-                        color = Color.White,
-                        style = Stroke(
-                            width = 9f * scale,
-                            cap = StrokeCap.Round,
-                            join = StrokeJoin.Round
-                        )
-                    )
-
-                    // End dot
-                    drawCircle(
-                        color = Color.White,
-                        radius = 7f * scale,
-                        center = Offset(152f * scale, 78f * scale)
-                    )
-                }
-            }
+            )
         }
 
         Spacer(Modifier.height(24.dp))
