@@ -116,17 +116,17 @@ android {
         create("dev") {
             applicationIdSuffix = ".dev"
             versionNameSuffix = "-dev"
-            resValue("string", "app_name", "Trackfolio DEV")
+            resValue("string", "app_name", "N3to DEV")
             buildConfigField("String", "ENVIRONMENT", "\"dev\"")
             buildConfigField("boolean", "IS_DEBUG", "true")
-            buildConfigField("String", "APP_DISPLAY_NAME", "\"Trackfolio DEV\"")
+            buildConfigField("String", "APP_DISPLAY_NAME", "\"N3to DEV\"")
             buildConfigField("String", "REVENUECAT_API_KEY", "\"INSERT_REVENUECAT_DEV_KEY\"")
         }
         create("prod") {
-            resValue("string", "app_name", "Trackfolio")
+            resValue("string", "app_name", "N3to")
             buildConfigField("String", "ENVIRONMENT", "\"prod\"")
             buildConfigField("boolean", "IS_DEBUG", "false")
-            buildConfigField("String", "APP_DISPLAY_NAME", "\"Trackfolio\"")
+            buildConfigField("String", "APP_DISPLAY_NAME", "\"N3to\"")
             buildConfigField("String", "REVENUECAT_API_KEY", "\"INSERT_REVENUECAT_PROD_KEY\"")
         }
     }
