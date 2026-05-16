@@ -88,8 +88,8 @@ private val SLIDES = listOf(
     ),
     SlideInfo(
         id = "realestate",
-        title = "Registra tu vivienda",
-        body = "Añade tu vivienda al patrimonio desde la sección Patrimonio. Vincula tu hipoteca para un cálculo preciso y registra los ingresos y gastos del alquiler."
+        title = "¿Tienes vivienda?",
+        body = "Regístrala en Patrimonio para verla junto al resto de tus activos, con su valor estimado y la hipoteca pendiente."
     ),
     SlideInfo(
         id = "fiscal",
@@ -269,6 +269,7 @@ private fun SlidePage(slide: SlideInfo) {
                 "portfolio" -> SlidePortfolio()
                 "movim"     -> SlideMovimientos()
                 "fiscal"    -> SlideFiscal()
+                "realestate" -> OnboardingRealEstatePage(isVisible = true)
             }
         }
 
