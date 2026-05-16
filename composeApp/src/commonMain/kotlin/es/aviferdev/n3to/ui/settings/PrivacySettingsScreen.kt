@@ -38,6 +38,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -46,6 +48,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -56,6 +59,9 @@ import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import org.koin.compose.viewmodel.koinViewModel
+
+/** URL de la política de privacidad (reemplazar antes del release) */
+const val PRIVACY_POLICY_URL = "https://TU_DOMINIO/privacy-policy"
 
 /**
  * Pantalla unificada de Privacidad y datos.
@@ -71,15 +77,30 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun PrivacySettingsScreen(
     onBack: () -> Unit,
+    onNavigateToPremium: () -> Unit = {},
     viewModel: PrivacySettingsViewModel = koinViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val uriHandler = LocalUriHandler.current
+    val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(uiState.revokeCompleted) {
         if (uiState.revokeCompleted) {
             viewModel.onRevokeCompletedHandled()
             onBack()
+        }
+    }
+
+    // Observar eventos de restauración
+    LaunchedEffect(Unit) {
+        viewModel.restoreEvent.collect { result ->
+            when (result) {
+                is RestoreResult.Success ->
+                    snackbarHostState.showSnackbar("Compras restauradas correctamente")
+
+                is RestoreResult.Error ->
+                    snackbarHostState.showSnackbar("Error: ${result.message}")
+            }
         }
     }
 
@@ -114,7 +135,8 @@ fun PrivacySettingsScreen(
                     }
                 }
             )
-        }
+        },
+        snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { padding ->
         if (uiState.isLoading) {
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -223,6 +245,12 @@ fun PrivacySettingsScreen(
                             value = "Gratuito"
                         )
                         HorizontalDivider(modifier = Modifier.padding(start = 52.dp))
+                        PremiumNavigableRow(
+                            icon = Icons.Default.Star,
+                            label = "Hazte Premium",
+                            onClick = onNavigateToPremium
+                        )
+                        HorizontalDivider(modifier = Modifier.padding(start = 52.dp))
                         PremiumInfoRow(
                             icon = Icons.Default.CheckCircle,
                             label = "Sin anuncios",
@@ -233,7 +261,7 @@ fun PrivacySettingsScreen(
                     PremiumNavigableRow(
                         icon = Icons.Default.Restore,
                         label = "Restaurar compra",
-                        onClick = { /* TODO: conectar con PurchaseManager.restorePurchases() */ }
+                        onClick = { viewModel.restorePurchases() }
                     )
                 }
             }
@@ -309,8 +337,7 @@ fun PrivacySettingsScreen(
 
             TextButton(
                 onClick = {
-                    uriHandler.openUri("https://TU_DOMINIO/privacy-policy")
-                    // TODO: Reemplazar con la URL real de tu política de privacidad
+                    uriHandler.openUri(PRIVACY_POLICY_URL)
                 },
                 modifier = Modifier.padding(horizontal = 16.dp)
             ) {

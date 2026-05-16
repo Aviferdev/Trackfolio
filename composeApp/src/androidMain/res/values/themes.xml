@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+        Tema base de la aplicación.
+        Hereda del sistema Material Light sin ActionBar (la app usa Compose para la UI).
+    -->
+    <style name="Theme.N3to" parent="@android:style/Theme.Material.Light.NoActionBar" />
+
+    <!--
+        Tema para el splash screen nativo.
+        Usa el mismo fondo oscuro que la app (BackgroundGray = #0D0D0D)
+        para evitar el flash blanco al arrancar.
+        El SplashScreen API de Android muestra el icono ic_launcher sobre este fondo.
+    -->
+    <style name="Theme.N3to.Splash" parent="Theme.N3to">
+        <item name="android:windowBackground">#FF0D0D0D</item>
+    </style>
+</resources>

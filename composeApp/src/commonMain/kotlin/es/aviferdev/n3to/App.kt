@@ -18,10 +18,10 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import es.aviferdev.n3to.core.AppConfig
 import es.aviferdev.n3to.core.VersionManager
 import es.aviferdev.n3to.core.premium.PremiumManager
 import es.aviferdev.n3to.core.security.AppLockManager
-import es.aviferdev.n3to.core.security.AppSettings
 import es.aviferdev.n3to.core.security.BalanceVisibilityManager
 import es.aviferdev.n3to.data.database.DatabaseInitializer
 import es.aviferdev.n3to.domain.usecase.consent.GetConsentUseCase
@@ -30,8 +30,8 @@ import es.aviferdev.n3to.platform.AnalyticsTracker
 import es.aviferdev.n3to.platform.CrashlyticsTracker
 import es.aviferdev.n3to.ui.consent.ConsentScreen
 import es.aviferdev.n3to.ui.navigation.N3toNavHost
-import es.aviferdev.n3to.ui.onboarding.OnboardingScreen
 import es.aviferdev.n3to.ui.security.LockScreen
+import es.aviferdev.n3to.ui.splash.SplashScreen
 import es.aviferdev.n3to.ui.theme.BackgroundGray
 import es.aviferdev.n3to.ui.theme.LocalBalanceHidden
 import es.aviferdev.n3to.ui.theme.N3toTheme
@@ -42,14 +42,11 @@ import kotlinx.coroutines.withContext
 import org.koin.compose.koinInject
 import org.koin.core.qualifier.named
 
-private const val KEY_ONBOARDING_DONE = "onboarding_done"
-
 @Composable
 fun App() {
     val databaseInitializer = koinInject<DatabaseInitializer>()
     val appLockManager = koinInject<AppLockManager>()
     val balanceVisibility = koinInject<BalanceVisibilityManager>()
-    val settings = koinInject<AppSettings>()
     val hasUserDecided = koinInject<HasUserDecidedUseCase>()
     val getConsent = koinInject<GetConsentUseCase>()
     val analyticsTracker = koinInject<AnalyticsTracker>()
@@ -57,13 +54,11 @@ fun App() {
     val versionManager = koinInject<VersionManager>()
     val openStore: () -> Unit = koinInject(named("openStore"))
     val currentVersion: String = koinInject(named("appVersion"))
-    koinInject<PremiumManager>()
-
-    var onboardingDone by remember {
-        mutableStateOf(settings.getBool(KEY_ONBOARDING_DONE, false))
-    }
+    val premiumManager = koinInject<PremiumManager>()
 
     var needsConsent by remember { mutableStateOf<Boolean?>(null) }
+
+    var splashFinished by remember { mutableStateOf(false) }
 
     var isLocked by remember {
         appLockManager.onAppStart()
@@ -72,25 +67,32 @@ fun App() {
 
     val balancesHidden by balanceVisibility.balancesHidden.collectAsState()
     val versionStatus by versionManager.status.collectAsState()
+    val premiumStatus by premiumManager.status.collectAsState()
 
-    // Inicializar base de datos y cargar estado de consentimiento
-    LaunchedEffect(onboardingDone) {
+    // Control de tema: solo usuarios Premium pueden usar tema claro.
+    // Gratuito → siempre oscuro. Premium → puede alternar (por ahora siempre oscuro,
+    // pendiente de implementar selector en Ajustes).
+    val isDarkTheme = true
+    premiumStatus.isPremium
+
+    // Inicializar base de datos, cargar estado de consentimiento y PremiumManager
+    LaunchedEffect(Unit) {
         withContext(Dispatchers.Default) {
             databaseInitializer.initializeIfNeeded()
         }
-        if (onboardingDone) {
-            val decided = hasUserDecided()
-            needsConsent = !decided
-            if (decided) {
-                val prefs = getConsent()
-                analyticsTracker.setEnabled(prefs.analytics)
-                crashlyticsTracker.setCrashReportingEnabled(prefs.crashReporting)
-            }
+        val decided = hasUserDecided()
+        needsConsent = !decided
+        if (decided) {
+            val prefs = getConsent()
+            analyticsTracker.setEnabled(prefs.analytics)
+            crashlyticsTracker.setCrashReportingEnabled(prefs.crashReporting)
         }
+        // Inicializar PremiumManager (RevenueCat SDK se activará al actualizar Kotlin)
+        premiumManager.initialize(AppConfig.revenueCatApiKey)
     }
 
-    // Lanzar el chequeo de versión una vez que la app está lista (onboarding + consent resueltos)
-    val appReady = onboardingDone && !(needsConsent ?: true)
+    // Lanzar el chequeo de versión una vez que consent está resuelto
+    val appReady = !(needsConsent ?: true)
     LaunchedEffect(appReady) {
         if (appReady) {
             versionManager.checkVersion()
@@ -115,27 +117,24 @@ fun App() {
         onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
     }
 
-    N3toTheme {
+    N3toTheme(darkTheme = isDarkTheme) {
         CompositionLocalProvider(LocalBalanceHidden provides balancesHidden) {
             when {
-                // Paso 1: Onboarding (slides de bienvenida)
-                !onboardingDone -> {
-                    OnboardingScreen(
-                        onComplete = {
-                            settings.putBool(KEY_ONBOARDING_DONE, true)
-                            onboardingDone = true
-                        }
+                // Paso 0: Splash screen con el icono de la app
+                !splashFinished -> {
+                    SplashScreen(
+                        onSplashFinished = { splashFinished = true }
                     )
                 }
 
-                // Paso 2: Consentimiento (GDPR)
+                // Paso 1: Consentimiento (GDPR)
                 needsConsent == true -> {
                     ConsentScreen(
                         onConsentSaved = { needsConsent = false }
                     )
                 }
 
-                // Paso 3: Estado de carga mientras se chequea la versión
+                // Paso 2: Estado de carga mientras se chequea la versión
                 versionStatus is VersionManager.Status.Checking -> {
                     Box(
                         modifier = Modifier.fillMaxSize().background(BackgroundGray),
@@ -145,7 +144,7 @@ fun App() {
                     }
                 }
 
-                // Paso 4: Bloqueo por versión (hard block)
+                // Paso 3: Bloqueo por versión (hard block)
                 versionStatus is VersionManager.Status.UpdateRequired -> {
                     val info = (versionStatus as VersionManager.Status.UpdateRequired).info
                     VersionBlockScreen(
@@ -155,7 +154,7 @@ fun App() {
                     )
                 }
 
-                // Paso 5: Bloqueo de seguridad
+                // Paso 4: Bloqueo de seguridad
                 isLocked -> {
                     LockScreen(
                         onUnlocked = {
@@ -165,7 +164,7 @@ fun App() {
                     )
                 }
 
-                // Paso 6: App principal
+                // Paso 5: App principal
                 else -> {
                     N3toNavHost()
                 }
@@ -173,5 +172,3 @@ fun App() {
         }
     }
 }
-
-

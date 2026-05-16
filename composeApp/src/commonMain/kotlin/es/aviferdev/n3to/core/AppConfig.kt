@@ -21,4 +21,7 @@ expect object AppConfig {
 
     /** Nombre de la aplicación para mostrar en UI */
     val appDisplayName: String
+
+    /** RevenueCat API key para el entorno actual */
+    val revenueCatApiKey: String
 }

@@ -27,6 +27,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.WorkspacePremium
 import androidx.compose.material.icons.outlined.Fingerprint
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Refresh
@@ -59,12 +60,14 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import es.aviferdev.n3to.core.premium.PremiumManager
+import es.aviferdev.n3to.core.premium.PremiumStatus
 import es.aviferdev.n3to.core.security.AppLockManager
-import es.aviferdev.n3to.core.security.AppSettings
 import es.aviferdev.n3to.core.security.BiometricAuthenticator
 import es.aviferdev.n3to.core.security.BiometricResult
 import es.aviferdev.n3to.domain.model.Account
 import es.aviferdev.n3to.domain.model.AccountType
+import es.aviferdev.n3to.domain.model.PremiumConstants
 import es.aviferdev.n3to.domain.usecase.backup.GetBackupReminderIntervalUseCase
 import es.aviferdev.n3to.domain.usecase.reconciliation.GetReconciliationReminderIntervalUseCase
 import es.aviferdev.n3to.ui.account.AccountViewModel
@@ -94,6 +97,7 @@ import org.koin.compose.viewmodel.koinViewModel
 fun SettingsScreen(
     navigateBack: () -> Unit = {},
     onNavigateToPrivacySettings: () -> Unit = {},
+    onNavigateToPremium: () -> Unit = {},
     onNavigateToExpenseSettings: () -> Unit = {},
     onNavigateToIncomeSettings: () -> Unit = {},
     onNavigateToAbout: () -> Unit = {},
@@ -106,6 +110,8 @@ fun SettingsScreen(
     val backupState  by backupViewModel.state.collectAsState()
     val authenticator: BiometricAuthenticator = koinInject()
     val lockManager: AppLockManager           = koinInject()
+    val premiumManager: PremiumManager = koinInject()
+    val premiumStatus by premiumManager.status.collectAsState()
 
     var biometricEnabled by remember { mutableStateOf(lockManager.biometricEnabled) }
     var biometricError   by remember { mutableStateOf<String?>(null) }
@@ -116,9 +122,7 @@ fun SettingsScreen(
     val backupIntervalUseCase = koinInject<GetBackupReminderIntervalUseCase>()
     var backupInterval by remember { mutableStateOf(backupIntervalUseCase.get()) }
 
-    val settings: AppSettings = koinInject()
     val handleResetOnboarding: () -> Unit = {
-        settings.putBool("onboarding_done", false)
         onResetOnboarding()
     }
 
@@ -161,10 +165,12 @@ fun SettingsScreen(
         },
         onBackupClick = { backupViewModel.openExport() },
         onNavigateToPrivacySettings = onNavigateToPrivacySettings,
+        onNavigateToPremium = onNavigateToPremium,
         onNavigateToExpenseSettings = onNavigateToExpenseSettings,
         onNavigateToIncomeSettings = onNavigateToIncomeSettings,
         onNavigateToAbout = onNavigateToAbout,
-        onResetOnboarding = handleResetOnboarding
+        onResetOnboarding = handleResetOnboarding,
+        premiumStatus = premiumStatus
     )
 
     // ── Sheets ───────────────────────────────────────────────────────────────
@@ -193,6 +199,44 @@ fun SettingsScreen(
             text             = { Text(msg, fontSize = 13.sp, color = TextSecondary) },
             confirmButton    = { TextButton(onClick = { biometricError = null }) { Text("Aceptar", color = PrimaryDark, fontWeight = FontWeight.SemiBold) } },
             shape            = RoundedCornerShape(16.dp)
+        )
+    }
+
+    // ── Premium limit warning ────────────────────────────────────────────────
+    if (accountState.showPremiumLimitWarning) {
+        AlertDialog(
+            onDismissRequest = { accountViewModel.dismissPremiumLimitWarning() },
+            containerColor = SurfaceWhite,
+            title = {
+                Text(
+                    "Límite de cuentas gratuitas",
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = TextPrimary
+                )
+            },
+            text = {
+                Text(
+                    "Has alcanzado el límite de ${PremiumConstants.MAX_FREE_ACCOUNTS} cuentas del plan gratuito. " +
+                            "Hazte Premium para añadir cuentas ilimitadas.",
+                    fontSize = 13.sp,
+                    color = TextSecondary
+                )
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    accountViewModel.dismissPremiumLimitWarning()
+                    onNavigateToPremium()
+                }) {
+                    Text("Hazte Premium", color = PrimaryDark, fontWeight = FontWeight.SemiBold)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { accountViewModel.dismissPremiumLimitWarning() }) {
+                    Text("Ahora no", color = TextTertiary)
+                }
+            },
+            shape = RoundedCornerShape(16.dp)
         )
     }
 
@@ -229,6 +273,7 @@ fun SettingsContent(
     onDeleteAccount: (Account) -> Unit,
     onToggleBiometric: (Boolean) -> Unit,
     onNavigateToPrivacySettings: () -> Unit = {},
+    onNavigateToPremium: () -> Unit = {},
     onNavigateToExpenseSettings: () -> Unit,
     onNavigateToIncomeSettings: () -> Unit,
     onNavigateToAbout: () -> Unit = {},
@@ -239,6 +284,7 @@ fun SettingsContent(
     backupInterval: Int = 30,
     onBackupIntervalChange: (Int) -> Unit = {},
     onBackupClick: () -> Unit = {},
+    premiumStatus: PremiumStatus = PremiumStatus(),
     modifier: Modifier = Modifier
 ) {
     var contentVisible by remember { mutableStateOf(false) }
@@ -294,6 +340,20 @@ fun SettingsContent(
                 item {
                     SettingsSectionHeader(label = "Privacidad")
                     SettingsGroupCard {
+                        if (premiumStatus.isPremium) {
+                            SettingsInfoRow(
+                                label = "Trackfolio Premium",
+                                value = if (premiumStatus.isLifetime) "Vitalicio" else "Activo"
+                            )
+                            SettingsRowDivider()
+                        } else {
+                            SettingsNavigableRow(
+                                icon = Icons.Default.WorkspacePremium,
+                                label = "Hazte Premium",
+                                onClick = onNavigateToPremium
+                            )
+                            SettingsRowDivider()
+                        }
                         SettingsNavigableRow(
                             icon = Icons.Outlined.Info,
                             label = "Privacidad y datos",

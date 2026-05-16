@@ -1,7 +1,9 @@
 package es.aviferdev.n3to.core.premium
 
 import es.aviferdev.n3to.platform.CustomerInfo
+import es.aviferdev.n3to.platform.ProductDetails
 import es.aviferdev.n3to.platform.PurchaseManager
+import es.aviferdev.n3to.platform.PurchaseResult
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -34,6 +36,22 @@ class PremiumManager(
     }
 
     fun shouldShowAds(): Boolean = !_status.value.isPremium
+
+    suspend fun purchase(productId: String): PurchaseResult {
+        return purchaseManager.purchase(productId)
+    }
+
+    suspend fun restorePurchases(): PurchaseResult {
+        return purchaseManager.restorePurchases()
+    }
+
+    suspend fun getProducts(): List<ProductDetails> {
+        return purchaseManager.getProducts()
+    }
+
+    suspend fun getManagementUrl(): String? {
+        return purchaseManager.getManagementUrl()
+    }
 }
 
 private fun CustomerInfo.toPremiumStatus() = PremiumStatus(

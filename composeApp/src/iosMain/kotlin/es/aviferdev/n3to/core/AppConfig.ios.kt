@@ -12,4 +12,5 @@ actual object AppConfig {
     actual val environment: String = "dev"
     actual val isDebug: Boolean = true
     actual val appDisplayName: String = "N3to DEV"
+    actual val revenueCatApiKey: String = "INSERT_REVENUECAT_IOS_KEY"
 }

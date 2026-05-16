@@ -35,6 +35,7 @@ kotlin {
     sourceSets {
         androidMain.dependencies {
             implementation(libs.androidx.activity.compose)
+            implementation(libs.androidx.core.splashscreen)
             implementation(libs.sqldelight.android.driver)
             implementation(libs.koin.android)
             implementation(libs.androidx.biometric)
@@ -65,7 +66,7 @@ kotlin {
             implementation(libs.uuid)
             implementation(libs.kotlinx.datetime)
             implementation(libs.navigation.compose)
-            // implementation(libs.revenuecat.purchases.kmp) // TODO: Descomentar cuando RevenueCat esté disponible
+            implementation(libs.revenuecat.purchases.kmp)
         }
     }
 }
@@ -120,7 +121,7 @@ android {
             buildConfigField("String", "ENVIRONMENT", "\"dev\"")
             buildConfigField("boolean", "IS_DEBUG", "true")
             buildConfigField("String", "APP_DISPLAY_NAME", "\"N3to DEV\"")
-            buildConfigField("String", "REVENUECAT_API_KEY", "\"INSERT_REVENUECAT_DEV_KEY\"")
+            buildConfigField("String", "REVENUECAT_API_KEY", "\"test_HWEegZVCRozCvGJFPwPxjkmEMkf\"")
         }
         create("prod") {
             resValue("string", "app_name", "N3to")

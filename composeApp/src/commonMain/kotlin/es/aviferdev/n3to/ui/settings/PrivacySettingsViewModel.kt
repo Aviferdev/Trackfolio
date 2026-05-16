@@ -10,8 +10,12 @@ import es.aviferdev.n3to.domain.usecase.consent.RevokeConsentUseCase
 import es.aviferdev.n3to.domain.usecase.consent.SaveConsentUseCase
 import es.aviferdev.n3to.platform.AnalyticsTracker
 import es.aviferdev.n3to.platform.CrashlyticsTracker
+import es.aviferdev.n3to.platform.PurchaseResult
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -88,4 +92,24 @@ class PrivacySettingsViewModel(
     }
 
     fun onRevokeCompletedHandled() = _uiState.update { it.copy(revokeCompleted = false) }
+
+    // ─── Restore purchases ────────────────────────────────────────
+
+    private val _restoreEvent = MutableSharedFlow<RestoreResult>()
+    val restoreEvent: SharedFlow<RestoreResult> = _restoreEvent.asSharedFlow()
+
+    fun restorePurchases() {
+        viewModelScope.launch {
+            when (val result = premiumManager.restorePurchases()) {
+                is PurchaseResult.Success -> _restoreEvent.emit(RestoreResult.Success)
+                is PurchaseResult.Error -> _restoreEvent.emit(RestoreResult.Error(result.message))
+                is PurchaseResult.Cancelled -> _restoreEvent.emit(RestoreResult.Error("Restauración cancelada"))
+            }
+        }
+    }
+}
+
+sealed class RestoreResult {
+    data object Success : RestoreResult()
+    data class Error(val message: String) : RestoreResult()
 }

@@ -304,7 +304,8 @@ val useCaseModule = module {
             updateAccount     = get(),
             deleteAccount     = get(),
             setInitialBalance = get(),
-            session           = get()
+            session = get(),
+            premiumManager = get()
         )
     }
     viewModel {

@@ -188,8 +188,7 @@ fun ConsentScreen(
 
             // ── Política de privacidad ───────────────────────────────
             TextButton(onClick = {
-                uriHandler.openUri("https://TU_DOMINIO/privacy-policy")
-                // TODO: Reemplazar con la URL real de tu política de privacidad
+                uriHandler.openUri(es.aviferdev.n3to.ui.settings.PRIVACY_POLICY_URL)
             }) {
                 Text("Ver Política de Privacidad", style = MaterialTheme.typography.bodySmall)
             }

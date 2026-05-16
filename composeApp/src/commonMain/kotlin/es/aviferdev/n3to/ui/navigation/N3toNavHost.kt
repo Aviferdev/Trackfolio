@@ -34,6 +34,7 @@ import es.aviferdev.n3to.ui.portfolio.AssetDetailScreen
 import es.aviferdev.n3to.ui.portfolio.AssetHistoryScreen
 import es.aviferdev.n3to.ui.portfolio.PortfolioScreen
 import es.aviferdev.n3to.ui.portfolio.PortfolioSettingsScreen
+import es.aviferdev.n3to.ui.premium.PremiumScreen
 import es.aviferdev.n3to.ui.realestate.RealEstateDetailScreen
 import es.aviferdev.n3to.ui.settings.AboutScreen
 import es.aviferdev.n3to.ui.settings.ExpenseSettingsScreen
@@ -311,6 +312,11 @@ fun N3toNavHost(
                                 launchSingleTop = true
                             }
                         },
+                        onNavigateToPremium = {
+                            navController.navigate(Screen.Premium.route) {
+                                launchSingleTop = true
+                            }
+                        },
                         onNavigateToExpenseSettings = {
                             navController.navigate(Screen.ExpenseSettings.route) {
                                 launchSingleTop = true
@@ -336,6 +342,16 @@ fun N3toNavHost(
                 }
                 composable(Screen.PrivacySettings.route) {
                     PrivacySettingsScreen(
+                        onBack = { navController.popBackStack() },
+                        onNavigateToPremium = {
+                            navController.navigate(Screen.Premium.route) {
+                                launchSingleTop = true
+                            }
+                        }
+                    )
+                }
+                composable(Screen.Premium.route) {
+                    PremiumScreen(
                         onBack = { navController.popBackStack() }
                     )
                 }

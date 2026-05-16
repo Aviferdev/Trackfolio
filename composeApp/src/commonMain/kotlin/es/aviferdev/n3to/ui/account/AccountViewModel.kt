@@ -2,8 +2,10 @@ package es.aviferdev.n3to.ui.account
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import es.aviferdev.n3to.core.premium.PremiumManager
 import es.aviferdev.n3to.domain.model.Account
 import es.aviferdev.n3to.domain.model.AccountType
+import es.aviferdev.n3to.domain.model.PremiumConstants
 import es.aviferdev.n3to.domain.usecase.account.DeleteAccountUseCase
 import es.aviferdev.n3to.domain.usecase.account.GetAccountsUseCase
 import es.aviferdev.n3to.domain.usecase.account.SaveAccountUseCase
@@ -24,7 +26,8 @@ data class AccountUiState(
     val editingAccount: Account?    = null,
     val showDeleteConfirm: Boolean  = false,
     val accountToDelete: Account?   = null,
-    val pendingInitialBalanceAccount: Account? = null
+    val pendingInitialBalanceAccount: Account? = null,
+    val showPremiumLimitWarning: Boolean = false
 )
 
 class AccountViewModel(
@@ -33,7 +36,8 @@ class AccountViewModel(
     private val updateAccount: UpdateAccountUseCase,
     private val deleteAccount: DeleteAccountUseCase,
     private val setInitialBalance: SetInitialBalanceUseCase,
-    private val session: AccountSession
+    private val session: AccountSession,
+    private val premiumManager: PremiumManager
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(AccountUiState())
@@ -83,11 +87,21 @@ class AccountViewModel(
     }
 
     fun openAddSheet() {
-        _uiState.value = _uiState.value.copy(showAddSheet = true)
+        if (!premiumManager.status.value.isPremium &&
+            _uiState.value.accounts.size >= PremiumConstants.MAX_FREE_ACCOUNTS
+        ) {
+            _uiState.value = _uiState.value.copy(showPremiumLimitWarning = true)
+        } else {
+            _uiState.value = _uiState.value.copy(showAddSheet = true)
+        }
     }
 
     fun closeAddSheet() {
         _uiState.value = _uiState.value.copy(showAddSheet = false)
+    }
+
+    fun dismissPremiumLimitWarning() {
+        _uiState.value = _uiState.value.copy(showPremiumLimitWarning = false)
     }
 
     fun openEditSheet(account: Account) {

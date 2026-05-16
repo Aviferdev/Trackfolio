@@ -53,6 +53,8 @@ sealed class Screen(val route: String) {
 
     data object PrivacySettings : Screen("settings_privacy")
 
+    data object Premium : Screen("premium")
+
     data object CategoryPicker : Screen("category_picker/{initialType}") {
         const val ARG_INITIAL_TYPE = "initialType"
         fun buildRoute(initialType: String): String = "category_picker/$initialType"

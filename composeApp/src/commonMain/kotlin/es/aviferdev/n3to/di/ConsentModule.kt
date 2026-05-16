@@ -10,6 +10,7 @@ import es.aviferdev.n3to.domain.usecase.consent.HasUserDecidedUseCase
 import es.aviferdev.n3to.domain.usecase.consent.RevokeConsentUseCase
 import es.aviferdev.n3to.domain.usecase.consent.SaveConsentUseCase
 import es.aviferdev.n3to.ui.consent.ConsentViewModel
+import es.aviferdev.n3to.ui.premium.PremiumViewModel
 import es.aviferdev.n3to.ui.settings.PrivacySettingsViewModel
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
@@ -54,6 +55,11 @@ val consentModule = module {
             revokeConsentUseCase = get(),
             analyticsTracker = get(),
             crashlyticsTracker = get(),
+            premiumManager = get()
+        )
+    }
+    viewModel {
+        PremiumViewModel(
             premiumManager = get()
         )
     }

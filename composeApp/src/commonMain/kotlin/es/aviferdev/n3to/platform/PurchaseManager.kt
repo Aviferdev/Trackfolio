@@ -15,10 +15,24 @@ data class CustomerInfo(
     val isLifetime: Boolean = false
 )
 
+/**
+ * Información de un producto disponible para compra,
+ * obtenida desde RevenueCat Offerings.
+ */
+data class ProductDetails(
+    val identifier: String,
+    val title: String,
+    val price: String,
+    val currencyCode: String,
+    val description: String = ""
+)
+
 expect class PurchaseManager {
     fun configure(apiKey: String)
     suspend fun purchase(productId: String): PurchaseResult
     suspend fun restorePurchases(): PurchaseResult
     fun observeCustomerInfo(): Flow<CustomerInfo>
     fun isPremium(): Boolean
+    suspend fun getProducts(): List<ProductDetails>
+    suspend fun getManagementUrl(): String?
 }
