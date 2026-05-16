@@ -31,7 +31,7 @@ Implementar código de calidad siguiendo las especificaciones técnicas proporci
 
 ## Convenciones del proyecto
 - **Paquetes por funcionalidad**: `home`, `account`, `portfolio`, `settings`, `transaction`
-- **命名惯例**:
+- **Convenciones de nombres**:
   - ViewModels: `XxxViewModel` (ej: `PortfolioViewModel`)
   - Repositorios: `XxxRepository`, `XxxRepositoryImpl`
   - DataSources: `XxxLocalDataSource`, `XxxLocalDataSourceImpl`
