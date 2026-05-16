@@ -21,6 +21,7 @@ import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Restore
 import androidx.compose.material.icons.filled.Settings
@@ -52,16 +53,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import es.aviferdev.n3to.core.browser.rememberUrlOpener
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import org.koin.compose.viewmodel.koinViewModel
 
-/** URL de la política de privacidad (reemplazar antes del release) */
-const val PRIVACY_POLICY_URL = "https://TU_DOMINIO/privacy-policy"
+/** URL de la política de privacidad */
+const val PRIVACY_POLICY_URL = "https://www.n3to.avifer.dev/privacy-policy"
 
 /**
  * Pantalla unificada de Privacidad y datos.
@@ -81,7 +82,7 @@ fun PrivacySettingsScreen(
     viewModel: PrivacySettingsViewModel = koinViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    val uriHandler = LocalUriHandler.current
+    val urlOpener = rememberUrlOpener()
     val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(uiState.revokeCompleted) {
@@ -235,7 +236,7 @@ fun PrivacySettingsScreen(
                             PremiumNavigableRow(
                                 icon = Icons.Default.Settings,
                                 label = "Gestionar suscripción",
-                                onClick = { uriHandler.openUri(uiState.premiumStatus.managementUrl!!) }
+                                onClick = { urlOpener.openUrl(uiState.premiumStatus.managementUrl!!) }
                             )
                         }
                     } else {
@@ -305,6 +306,12 @@ fun PrivacySettingsScreen(
                         label = "Información personal",
                         active = false
                     )
+                    HorizontalDivider(modifier = Modifier.padding(start = 52.dp))
+                    DataInfoRow(
+                        icon = Icons.Default.Info,
+                        label = "Gestión de suscripción (RevenueCat)",
+                        active = true
+                    )
                 }
             }
 
@@ -337,7 +344,7 @@ fun PrivacySettingsScreen(
 
             TextButton(
                 onClick = {
-                    uriHandler.openUri(PRIVACY_POLICY_URL)
+                    urlOpener.openUrl(PRIVACY_POLICY_URL)
                 },
                 modifier = Modifier.padding(horizontal = 16.dp)
             ) {

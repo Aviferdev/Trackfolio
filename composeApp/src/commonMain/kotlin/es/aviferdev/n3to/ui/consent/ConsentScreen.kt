@@ -32,11 +32,11 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import es.aviferdev.n3to.core.browser.rememberUrlOpener
 import org.koin.compose.viewmodel.koinViewModel
 
 /**
@@ -52,7 +52,7 @@ fun ConsentScreen(
     viewModel: ConsentViewModel = koinViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    val uriHandler = LocalUriHandler.current
+    val urlOpener = rememberUrlOpener()
 
     LaunchedEffect(uiState.navigateToHome) {
         if (uiState.navigateToHome) {
@@ -133,9 +133,26 @@ fun ConsentScreen(
                         "• Tu ubicación",
                         style = MaterialTheme.typography.bodySmall
                     )
+                    Spacer(Modifier.height(10.dp))
+                    Text(
+                        "💳 Si adquieres Trackfolio Premium:",
+                        fontWeight = FontWeight.Bold,
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                    Spacer(Modifier.height(4.dp))
+                    Text(
+                        "• RevenueCat procesa un identificador anónimo y tu historial de suscripción " +
+                                "para gestionar tu compra (necesario para el servicio)",
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                    Text(
+                        "• No compartimos tus datos financieros con RevenueCat",
+                        style = MaterialTheme.typography.bodySmall
+                    )
                     Spacer(Modifier.height(8.dp))
                     Text(
-                        "💡 Todo es 100% anónimo. Sin servidores, sin nube, sin terceros.",
+                        "💡 Tus datos financieros nunca salen de tu dispositivo.",
                         fontWeight = FontWeight.Medium,
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -188,7 +205,7 @@ fun ConsentScreen(
 
             // ── Política de privacidad ───────────────────────────────
             TextButton(onClick = {
-                uriHandler.openUri(es.aviferdev.n3to.ui.settings.PRIVACY_POLICY_URL)
+                urlOpener.openUrl(es.aviferdev.n3to.ui.settings.PRIVACY_POLICY_URL)
             }) {
                 Text("Ver Política de Privacidad", style = MaterialTheme.typography.bodySmall)
             }

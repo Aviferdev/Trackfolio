@@ -35,6 +35,7 @@ kotlin {
     sourceSets {
         androidMain.dependencies {
             implementation(libs.androidx.activity.compose)
+            implementation(libs.androidx.browser)
             implementation(libs.androidx.core.splashscreen)
             implementation(libs.sqldelight.android.driver)
             implementation(libs.koin.android)
@@ -128,7 +129,7 @@ android {
             buildConfigField("String", "ENVIRONMENT", "\"prod\"")
             buildConfigField("boolean", "IS_DEBUG", "false")
             buildConfigField("String", "APP_DISPLAY_NAME", "\"N3to\"")
-            buildConfigField("String", "REVENUECAT_API_KEY", "\"INSERT_REVENUECAT_PROD_KEY\"")
+            buildConfigField("String", "REVENUECAT_API_KEY", "\"test_HWEegZVCRozCvGJFPwPxjkmEMkf\"")
         }
     }
 
@@ -157,6 +158,10 @@ android {
         buildConfig = true
     }
 
+    lint {
+        checkReleaseBuilds = false
+    }
+
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
@@ -168,4 +173,8 @@ android {
     }
 }
 
+afterEvaluate {
+    tasks.matching { it.name.startsWith("uploadCrashlyticsMappingFile") && it.name.contains("Dev") }
+        .configureEach { enabled = false }
+}
 

@@ -65,4 +65,21 @@ val androidModule = module {
             }
         } as () -> Unit
     }
+    single(named("shareApp")) {
+        {
+            val ctx = androidContext()
+            val shareIntent = Intent(Intent.ACTION_SEND).apply {
+                type = "text/plain"
+                putExtra(Intent.EXTRA_SUBJECT, "N3to - Controla tus finanzas")
+                putExtra(
+                    Intent.EXTRA_TEXT,
+                    "📱 Descarga N3to y controla tus finanzas personales:\n" +
+                            "https://n3to.avifer.dev"
+                )
+            }
+            val chooser = Intent.createChooser(shareIntent, "Compartir N3to")
+            chooser.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            ctx.startActivity(chooser)
+        } as () -> Unit
+    }
 }

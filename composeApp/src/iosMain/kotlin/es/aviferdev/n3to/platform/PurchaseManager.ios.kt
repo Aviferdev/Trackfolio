@@ -2,7 +2,6 @@ package es.aviferdev.n3to.platform
 
 import com.revenuecat.purchases.kmp.Purchases
 import com.revenuecat.purchases.kmp.PurchasesDelegate
-import com.revenuecat.purchases.kmp.configure
 import com.revenuecat.purchases.kmp.models.Offering
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -16,7 +15,11 @@ actual class PurchaseManager {
     private var currentOffering: Offering? = null
 
     actual fun configure(apiKey: String) {
-        Purchases.configure(apiKey)
+        Purchases.configure(
+            com.revenuecat.purchases.kmp.PurchasesConfiguration.Builder(apiKey)
+                .diagnosticsEnabled(false)
+                .build()
+        )
     }
 
     actual suspend fun getProducts(): List<ProductDetails> =
@@ -145,13 +148,17 @@ actual class PurchaseManager {
     actual suspend fun getManagementUrl(): String? =
         currentRCInfo?.managementUrlString
 
+    actual fun getAppUserId(): String =
+        Purchases.sharedInstance.appUserID
+
     private fun com.revenuecat.purchases.kmp.models.CustomerInfo.toDomain(): CustomerInfo {
         val ent = entitlements["premium"]
         return CustomerInfo(
             isPremium = ent?.isActive == true,
             entitlementExpiryDate = ent?.expirationDateMillis,
             managementUrl = managementUrlString,
-            isLifetime = ent?.isActive == true && ent?.expirationDateMillis == null
+            isLifetime = ent?.isActive == true && ent?.expirationDateMillis == null,
+            appUserId = Purchases.sharedInstance.appUserID
         )
     }
 }

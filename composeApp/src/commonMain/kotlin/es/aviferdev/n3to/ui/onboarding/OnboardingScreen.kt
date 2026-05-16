@@ -1,6 +1,5 @@
 package es.aviferdev.n3to.ui.onboarding
 
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -35,23 +34,30 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import es.aviferdev.n3to.domain.usecase.onboarding.MarkOnboardingCompletedUseCase
 import es.aviferdev.n3to.ui.theme.BackgroundGray
 import es.aviferdev.n3to.ui.theme.BorderGray2
+import es.aviferdev.n3to.ui.theme.N3toTheme
 import es.aviferdev.n3to.ui.theme.PrimaryDark
 import es.aviferdev.n3to.ui.theme.TextPrimary
 import es.aviferdev.n3to.ui.theme.TextSecondary
-import es.aviferdev.n3to.ui.theme.N3toTheme
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.koin.compose.koinInject
 
 // ─── ViewModel ─────────────────────────────────────────────
 
 class OnboardingViewModel(
+    private val markCompleted: MarkOnboardingCompletedUseCase,
     private val onComplete: () -> Unit
 ) : ViewModel() {
 
     fun complete() {
-        onComplete()
+        viewModelScope.launch {
+            markCompleted()
+            onComplete()
+        }
     }
 }
 
@@ -102,7 +108,8 @@ private val SLIDES = listOf(
 
 @Composable
 fun OnboardingScreen(onComplete: () -> Unit) {
-    val viewModel = remember { OnboardingViewModel(onComplete) }
+    val markCompleted = koinInject<MarkOnboardingCompletedUseCase>()
+    val viewModel = remember { OnboardingViewModel(markCompleted, onComplete) }
     val pagerState = rememberPagerState(pageCount = { SLIDES.size })
     var currentSlide by remember { mutableStateOf(0) }
     val coroutineScope = rememberCoroutineScope()

@@ -12,7 +12,8 @@ data class CustomerInfo(
     val isPremium: Boolean,
     val entitlementExpiryDate: Long? = null,
     val managementUrl: String? = null,
-    val isLifetime: Boolean = false
+    val isLifetime: Boolean = false,
+    val appUserId: String = ""
 )
 
 /**
@@ -35,4 +36,5 @@ expect class PurchaseManager {
     fun isPremium(): Boolean
     suspend fun getProducts(): List<ProductDetails>
     suspend fun getManagementUrl(): String?
+    fun getAppUserId(): String
 }

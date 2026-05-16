@@ -51,6 +51,7 @@ val CategoryPalette: List<Color> = listOf(
     Color(0xFF8FA3B0)
 )
 
+val N3toSparkline = Color(0xFF00C897)
 val UncategorizedColor: Color = Color(0xFF6E7480)
 
 // ─── Material color schemes ────────────────────────────────────────────────────

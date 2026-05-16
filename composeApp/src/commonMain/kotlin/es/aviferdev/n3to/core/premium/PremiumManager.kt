@@ -10,13 +10,15 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 data class PremiumStatus(
     val isPremium: Boolean = false,
     val expiryDate: Long? = null,
     val isLifetime: Boolean = false,
-    val managementUrl: String? = null
+    val managementUrl: String? = null,
+    val appUserId: String = ""
 )
 
 class PremiumManager(
@@ -28,6 +30,7 @@ class PremiumManager(
 
     fun initialize(apiKey: String) {
         purchaseManager.configure(apiKey)
+        _status.update { it.copy(appUserId = purchaseManager.getAppUserId()) }
         scope.launch {
             purchaseManager.observeCustomerInfo().collect { info ->
                 _status.value = info.toPremiumStatus()
@@ -58,5 +61,6 @@ private fun CustomerInfo.toPremiumStatus() = PremiumStatus(
     isPremium = isPremium,
     expiryDate = entitlementExpiryDate,
     isLifetime = isLifetime,
-    managementUrl = managementUrl
+    managementUrl = managementUrl,
+    appUserId = appUserId
 )

@@ -3,7 +3,6 @@ package es.aviferdev.n3to.platform
 import android.app.Activity
 import com.revenuecat.purchases.kmp.Purchases
 import com.revenuecat.purchases.kmp.PurchasesDelegate
-import com.revenuecat.purchases.kmp.configure
 import com.revenuecat.purchases.kmp.models.Offering
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -17,6 +16,7 @@ actual class PurchaseManager {
     private var activityRef: WeakReference<Activity>? = null
     private var currentRCInfo: com.revenuecat.purchases.kmp.models.CustomerInfo? = null
     private var currentOffering: Offering? = null
+    private var isConfigured = false
 
     fun bindActivity(activity: Activity) {
         activityRef = WeakReference(activity)
@@ -28,11 +28,18 @@ actual class PurchaseManager {
     }
 
     actual fun configure(apiKey: String) {
-        Purchases.configure(apiKey)
+        if (apiKey.startsWith("test_")) return
+        Purchases.configure(
+            com.revenuecat.purchases.kmp.PurchasesConfiguration.Builder(apiKey)
+                .diagnosticsEnabled(false)
+                .build()
+        )
+        isConfigured = true
     }
 
-    actual suspend fun getProducts(): List<ProductDetails> =
-        suspendCancellableCoroutine { continuation ->
+    actual suspend fun getProducts(): List<ProductDetails> {
+        if (!isConfigured) return emptyList()
+        return suspendCancellableCoroutine { continuation ->
             Purchases.sharedInstance.getOfferings(
                 onError = { error ->
                     continuation.resume(emptyList())
@@ -53,9 +60,11 @@ actual class PurchaseManager {
                 }
             )
         }
+    }
 
-    actual suspend fun purchase(productId: String): PurchaseResult =
-        suspendCancellableCoroutine { continuation ->
+    actual suspend fun purchase(productId: String): PurchaseResult {
+        if (!isConfigured) return PurchaseResult.Error("Purchases not available in this build")
+        return suspendCancellableCoroutine { continuation ->
             val activity = activityRef?.get()
             if (activity == null) {
                 continuation.resume(PurchaseResult.Error("Activity not bound"))
@@ -93,6 +102,7 @@ actual class PurchaseManager {
             }
             doPurchase(pkg, continuation)
         }
+    }
 
     private fun doPurchase(
         pkg: com.revenuecat.purchases.kmp.models.Package,
@@ -120,8 +130,9 @@ actual class PurchaseManager {
         )
     }
 
-    actual suspend fun restorePurchases(): PurchaseResult =
-        suspendCancellableCoroutine { continuation ->
+    actual suspend fun restorePurchases(): PurchaseResult {
+        if (!isConfigured) return PurchaseResult.Error("Purchases not available in this build")
+        return suspendCancellableCoroutine { continuation ->
             Purchases.sharedInstance.restorePurchases(
                 onError = { error ->
                     continuation.resume(
@@ -134,9 +145,11 @@ actual class PurchaseManager {
                 }
             )
         }
+    }
 
-    actual fun observeCustomerInfo(): Flow<CustomerInfo> =
-        callbackFlow {
+    actual fun observeCustomerInfo(): Flow<CustomerInfo> {
+        if (!isConfigured) return kotlinx.coroutines.flow.emptyFlow()
+        return callbackFlow {
             @OptIn(com.revenuecat.purchases.kmp.ExperimentalRevenueCatApi::class)
             val delegate = object : PurchasesDelegate {
                 override fun onCustomerInfoUpdated(
@@ -161,6 +174,7 @@ actual class PurchaseManager {
                 Purchases.sharedInstance.delegate = null
             }
         }
+    }
 
     actual fun isPremium(): Boolean =
         currentRCInfo?.entitlements?.get("premium")?.isActive == true
@@ -168,13 +182,17 @@ actual class PurchaseManager {
     actual suspend fun getManagementUrl(): String? =
         currentRCInfo?.managementUrlString
 
+    actual fun getAppUserId(): String =
+        if (isConfigured) Purchases.sharedInstance.appUserID else ""
+
     private fun com.revenuecat.purchases.kmp.models.CustomerInfo.toDomain(): CustomerInfo {
         val ent = entitlements["premium"]
         return CustomerInfo(
             isPremium = ent?.isActive == true,
             entitlementExpiryDate = ent?.expirationDateMillis,
             managementUrl = managementUrlString,
-            isLifetime = ent?.isActive == true && ent?.expirationDateMillis == null
+            isLifetime = ent?.isActive == true && ent?.expirationDateMillis == null,
+            appUserId = Purchases.sharedInstance.appUserID
         )
     }
 }

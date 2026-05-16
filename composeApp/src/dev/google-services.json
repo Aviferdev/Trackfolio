@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "1094802767346",
-    "project_id": "n3to-ed9bf",
-    "storage_bucket": "n3to-ed9bf.firebasestorage.app"
+    "project_number": "565165176783",
+    "project_id": "n3to-ed9bf-dev",
+    "storage_bucket": "n3to-ed9bf-dev.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1094802767346:android:41983167faa8b094ad7f6b",
+        "mobilesdk_app_id": "1:565165176783:android:dd60f6f579fe793b1d44ba",
         "android_client_info": {
           "package_name": "es.aviferdev.n3to.dev"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyD8NQ326JIrPNTtDHW0qnzC4aglHPK5NSo"
+          "current_key": "AIzaSyChv6Lk9IxRlJQM8x0MgLVZVVbNLr8tmtQ"
         }
       ],
       "services": {
