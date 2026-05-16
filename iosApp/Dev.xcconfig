@@ -1,8 +1,8 @@
 // Configuración de desarrollo (Debug)
 TEAM_ID=
 
-INFOPLIST_KEY_CFBundleDisplayName=Trackfolio DEV
-PRODUCT_BUNDLE_IDENTIFIER=es.aviferdev.trackfolio.dev
+INFOPLIST_KEY_CFBundleDisplayName=N3to DEV
+PRODUCT_BUNDLE_IDENTIFIER=es.aviferdev.n3to.dev
 
 CURRENT_PROJECT_VERSION=1
 MARKETING_VERSION=1.0.0-dev

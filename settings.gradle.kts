@@ -1,4 +1,4 @@
-rootProject.name = "Trackfolio"
+rootProject.name = "N3to"
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 pluginManagement {

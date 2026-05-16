@@ -1,4 +1,4 @@
-# AGENTS.md - Trackfolio
+# AGENTS.md - N3to
 
 ## Stack Tecnológico
 - **Kotlin:** 2.1.0
@@ -17,7 +17,7 @@ Clean Architecture + MVVM:
 
 ## Estructura de Paquetes
 ```
-es.aviferdev.trackfolio/
+es.aviferdev.n3to/
 ├── App.kt                     # Composable raíz
 ├── core/                      # Infraestructura transversal
 │   └── security/              # Cifrado, biometría, backup, preferencias
@@ -83,8 +83,8 @@ es.aviferdev.trackfolio/
 ```
 
 ### SQLDelight
-- **Paquete generado:** `es.aviferdev.trackfolio.data.database`
-- **Base de datos:** `TrackfolioDatabase`
+- **Paquete generado:** `es.aviferdev.n3to.data.database`
+- **Base de datos:** `N3toDatabase`
 
 ## Screens y Features
 
@@ -108,7 +108,7 @@ es.aviferdev.trackfolio/
 
 | Categoría | Componentes |
 |-----------|-------------|
-| **component/** | `EmptyStateView`, `IconActionButton`, `IconButtonApp`, `SelectablePill`, `SelectableChip`, `SectionHeader`, `TrackfolioLabel`, `SectionLabel`, `DeltaIndicator`, `AlertBanner`, `InfoRow`, `StatusTag`, `ProgressBar`, `SwipeRowApp`, `InitialsAvatar`, `IconBadge` |
+| **component/** | `EmptyStateView`, `IconActionButton`, `IconButtonApp`, `SelectablePill`, `SelectableChip`, `SectionHeader`, `N3toLabel`, `SectionLabel`, `DeltaIndicator`, `AlertBanner`, `InfoRow`, `StatusTag`, `ProgressBar`, `SwipeRowApp`, `InitialsAvatar`, `IconBadge` |
 | **chart/** | `DonutSlice`, `LineChartCard`, `MonthlyBarChart`, `LegendItem`, `VariationBadge` |
 | **input/** | `SearchBar`, `AmountInputField`, `DatePickerRow`, `InlineAmountField` |
 | **metric/** | `MetricCell`, `TransactionRow`, `ReportCard` |

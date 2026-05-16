@@ -26,7 +26,7 @@ kotlin {
         iosTarget.binaries.framework {
             baseName = "ComposeApp"
             isStatic = true
-            binaryOption("bundleId", "es.aviferdev.trackfolio.framework")
+            binaryOption("bundleId", "es.aviferdev.n3to.framework")
         }
     }
 
@@ -66,19 +66,19 @@ kotlin {
 
 sqldelight {
     databases {
-        create("TrackfolioDatabase") {
-            packageName.set("es.aviferdev.trackfolio.data.database")
+        create("N3toDatabase") {
+            packageName.set("es.aviferdev.n3to.data.database")
             version = 1
         }
     }
 }
 
 android {
-    namespace = "es.aviferdev.trackfolio"
+    namespace = "es.aviferdev.n3to"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     defaultConfig {
-        applicationId = "es.aviferdev.trackfolio"
+        applicationId = "es.aviferdev.n3to"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1
@@ -113,10 +113,10 @@ android {
             isMinifyEnabled = false
             versionNameSuffix = "-dev"
             signingConfig = signingConfigs.getByName("debug")
-            resValue("string", "app_name", "Trackfolio DEV")
+            resValue("string", "app_name", "N3to DEV")
             buildConfigField("String", "ENVIRONMENT", "\"dev\"")
             buildConfigField("boolean", "IS_DEBUG", "true")
-            buildConfigField("String", "APP_DISPLAY_NAME", "\"Trackfolio DEV\"")
+            buildConfigField("String", "APP_DISPLAY_NAME", "\"N3to DEV\"")
         }
         release {
             isMinifyEnabled = true
@@ -130,10 +130,10 @@ android {
             } else {
                 signingConfigs.getByName("debug")
             }
-            resValue("string", "app_name", "Trackfolio")
+            resValue("string", "app_name", "N3to")
             buildConfigField("String", "ENVIRONMENT", "\"prod\"")
             buildConfigField("boolean", "IS_DEBUG", "false")
-            buildConfigField("String", "APP_DISPLAY_NAME", "\"Trackfolio\"")
+            buildConfigField("String", "APP_DISPLAY_NAME", "\"N3to\"")
         }
     }
 

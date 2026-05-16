@@ -10,7 +10,7 @@
 }
 
 # ─── SQLDelight ────────────────────────────────────────
--keep class es.aviferdev.trackfolio.data.database.** { *; }
+-keep class es.aviferdev.n3to.data.database.** { *; }
 
 # ─── Koin ──────────────────────────────────────────────
 -keep class org.koin.** { *; }
@@ -34,11 +34,11 @@
 -keep class com.benasher44.uuid.** { *; }
 
 # ─── Keep data classes (usados por SQLDelight/Serialization) ──
--keep class es.aviferdev.trackfolio.domain.model.** { *; }
+-keep class es.aviferdev.n3to.domain.model.** { *; }
 
 # ─── AndroidX Lifecycle ────────────────────────────────
 -keep class * extends androidx.lifecycle.ViewModel { *; }
 -keep class androidx.lifecycle.** { *; }
 
 # ─── AppConfig (por si se usa reflexión) ───────────────
--keep class es.aviferdev.trackfolio.core.AppConfig { *; }
+-keep class es.aviferdev.n3to.core.AppConfig { *; }
