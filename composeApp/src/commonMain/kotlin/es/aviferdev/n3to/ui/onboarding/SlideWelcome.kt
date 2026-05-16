@@ -7,6 +7,7 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -26,8 +27,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -37,6 +40,9 @@ import es.aviferdev.n3to.ui.theme.N3toTheme
 import es.aviferdev.n3to.ui.theme.PrimaryDark
 import es.aviferdev.n3to.ui.theme.TextPrimary
 import es.aviferdev.n3to.ui.theme.TextSecondary
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.app_icon
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import kotlin.math.min
 
@@ -53,6 +59,10 @@ fun SlideWelcome(modifier: Modifier = Modifier) {
     var visible by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) { visible = true }
 
+    val iconAlpha by animateFloatAsState(
+        targetValue = if (visible) 1f else 0f,
+        animationSpec = tween(durationMillis = 550, easing = EaseInOutCubic)
+    )
     val titleAlpha by animateFloatAsState(
         targetValue = if (visible) 1f else 0f,
         animationSpec = tween(
@@ -72,6 +82,14 @@ fun SlideWelcome(modifier: Modifier = Modifier) {
 
     // ── Floating animation (infinite) ────────────────────
     val infiniteTransition = rememberInfiniteTransition()
+    val floatOffset by infiniteTransition.animateFloat(
+        initialValue = 0f,
+        targetValue = -6f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(durationMillis = 3200, easing = EaseInOutCubic),
+            repeatMode = RepeatMode.Reverse
+        )
+    )
 
     Column(
         modifier = modifier
@@ -108,8 +126,36 @@ fun SlideWelcome(modifier: Modifier = Modifier) {
                     }
             )
 
-            // App icon
-
+            // App icon (navy rounded rect + foreground PNG)
+            Box(
+                modifier = Modifier
+                    .size(128.dp)
+                    .graphicsLayer {
+                        translationY = floatOffset
+                        alpha = iconAlpha
+                    },
+                contentAlignment = Alignment.Center
+            ) {
+                // Navy rounded rect background (rx ≈ 22% del lado, como el SVG original)
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .drawBehind {
+                            val cornerRadiusPx = size.width * 225f / 1024f
+                            drawRoundRect(
+                                color = Color(0xFF0A1628),
+                                cornerRadius = CornerRadius(cornerRadiusPx, cornerRadiusPx),
+                                size = size
+                            )
+                        }
+                )
+                // Foreground layer (N3to + sparkline)
+                Image(
+                    painter = painterResource(Res.drawable.app_icon),
+                    contentDescription = "N3to",
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
         }
 
         Spacer(Modifier.height(24.dp))
