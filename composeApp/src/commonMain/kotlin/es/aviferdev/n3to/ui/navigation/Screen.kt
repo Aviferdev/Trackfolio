@@ -67,6 +67,8 @@ sealed class Screen(val route: String) {
 
     data object GoalSettings : Screen("goals_settings")
 
+    data object EmergencyFundSettings : Screen("settings_emergency_fund")
+
     data object TaxProfileSettings : Screen("settings_tax_profile")
 
     data object AccountConfig : Screen("settings_account_config/{accountId}") {

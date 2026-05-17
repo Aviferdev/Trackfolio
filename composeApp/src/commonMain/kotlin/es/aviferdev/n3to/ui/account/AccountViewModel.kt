@@ -56,6 +56,7 @@ class AccountViewModel(
                 _uiState.value = _uiState.value.copy(accounts = accounts)
                 if (session.selectedAccountId.value == null && accounts.isNotEmpty()) {
                     val ready = accounts.firstOrNull { !it.needsInitialBalance }
+                        ?: accounts.firstOrNull()
                     ready?.let { session.selectAccount(it.id) }
                 }
                 val currentId = session.selectedAccountId.value

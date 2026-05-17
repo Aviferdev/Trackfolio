@@ -43,6 +43,7 @@ import es.aviferdev.n3to.core.security.BalanceVisibilityManager
 import es.aviferdev.n3to.core.security.BiometricAuthenticator
 import es.aviferdev.n3to.core.security.BiometricResult
 import es.aviferdev.n3to.domain.model.Account
+import es.aviferdev.n3to.domain.model.EmergencyFundStatus
 import es.aviferdev.n3to.domain.model.HomeBalance
 import es.aviferdev.n3to.domain.model.IncomeType
 import es.aviferdev.n3to.domain.model.MonthlyGoalProgress
@@ -87,6 +88,7 @@ fun HomeScreen(
     onNavigateToDebts: () -> Unit = {},
     onNavigateToFiscalReport: () -> Unit = {},
     onNavigateToSettings: () -> Unit = {},
+    onNavigateToEmergencyFundSettings: () -> Unit = {},
     onNavigateToFixedIncomeDetail: (String) -> Unit = {},
     onNavigateToCategoryPicker: ((TransactionType) -> Unit)? = null,
     reopenFromPicker: Boolean = false,
@@ -100,6 +102,7 @@ fun HomeScreen(
     val priceReminder by viewModel.priceReminderState.collectAsState()
     val nearMaturity by viewModel.nearMaturityState.collectAsState()
     val goalProgress by viewModel.goalProgressState.collectAsState()
+    val emergencyFund by viewModel.emergencyFundStatus.collectAsState()
     val accountState by accountViewModel.uiState.collectAsState()
     val selectedId by accountViewModel.selectedAccountId.collectAsState()
     val reconciliationState by reconciliationViewModel.uiState.collectAsState()
@@ -214,6 +217,7 @@ fun HomeScreen(
                     onNavigateToDebts = onNavigateToDebts,
                     onNavigateToFiscalReport = onNavigateToFiscalReport,
                     onNavigateToSettings = onNavigateToSettings,
+                    onNavigateToEmergencyFundSettings = onNavigateToEmergencyFundSettings,
                     onNavigateToFixedIncomeDetail = onNavigateToFixedIncomeDetail,
                     priceReminderState = priceReminder,
                     onUpdateNow = { viewModel.openUpdateSheet() },
@@ -232,7 +236,8 @@ fun HomeScreen(
                     versionLatestVersion = versionInfo?.latestVersion,
                     onVersionUpdateNow = openStore,
                     onDismissVersionBanner = { versionInfo?.let { viewModel.dismissVersionBanner(it.latestVersion) } },
-                    goalProgressState = goalProgress
+                    goalProgressState = goalProgress,
+                    emergencyFundStatus = emergencyFund
                 )
             }
         }
@@ -342,6 +347,7 @@ fun HomeContent(
     onNavigateToDebts: () -> Unit,
     onNavigateToFiscalReport: () -> Unit,
     onNavigateToSettings: () -> Unit,
+    onNavigateToEmergencyFundSettings: () -> Unit = {},
     onNavigateToFixedIncomeDetail: (String) -> Unit = {},
     priceReminderState: PriceReminderState = PriceReminderState(),
     onUpdateNow: () -> Unit = {},
@@ -360,7 +366,8 @@ fun HomeContent(
     versionLatestVersion: String? = null,
     onVersionUpdateNow: () -> Unit = {},
     onDismissVersionBanner: () -> Unit = {},
-    goalProgressState: GoalProgressState = GoalProgressState()
+    goalProgressState: GoalProgressState = GoalProgressState(),
+    emergencyFundStatus: EmergencyFundStatus = EmergencyFundStatus.NOT_CONFIGURED
 ) {
     Column(
         modifier = Modifier
@@ -491,6 +498,19 @@ fun HomeContent(
                 investmentActual = 0.0
             ),
             onNavigateToSettings = onNavigateToSettings,
+            modifier = Modifier.padding(horizontal = 16.dp)
+        )
+
+        // ── Fondo de emergencia ───────────────────────────────────────────────
+        Spacer(Modifier.height(24.dp))
+        SectionHeader(
+            label = "Fondo de emergencia",
+            modifier = Modifier.padding(horizontal = 16.dp)
+        )
+        Spacer(Modifier.height(10.dp))
+        EmergencyFundCard(
+            status = emergencyFundStatus,
+            onNavigateToSettings = onNavigateToEmergencyFundSettings,
             modifier = Modifier.padding(horizontal = 16.dp)
         )
 

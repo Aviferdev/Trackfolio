@@ -213,12 +213,12 @@ class DatabaseInitializer(
         }
 
         // Insertar datos de prueba si no existen cuentas
-        accountDataSource?.let { accountDs ->
-            val accountCount = accountDs.count().firstOrNull() ?: 0L
-            if (accountCount == 0L) {
-                insertTestData()
-            }
-        }
+//        accountDataSource?.let { accountDs ->
+//            val accountCount = accountDs.count().firstOrNull() ?: 0L
+//            if (accountCount == 0L) {
+//                insertTestData()
+//            }
+//        }
     }
 
     private suspend fun insertTestData() {

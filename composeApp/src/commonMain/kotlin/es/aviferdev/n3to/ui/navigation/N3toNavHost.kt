@@ -43,6 +43,7 @@ import es.aviferdev.n3to.ui.settings.IncomeTypeDetailScreen
 import es.aviferdev.n3to.ui.settings.PrivacySettingsScreen
 import es.aviferdev.n3to.ui.settings.AccountConfigScreen
 import es.aviferdev.n3to.ui.settings.SettingsScreen
+import es.aviferdev.n3to.ui.settings.emergencyfund.EmergencyFundSettingsScreen
 import es.aviferdev.n3to.ui.settings.goal.GoalSettingsScreen
 import es.aviferdev.n3to.ui.settings.taxprofile.TaxProfileSettingsScreen
 import es.aviferdev.n3to.ui.transaction.TransactionDetailScreen
@@ -133,6 +134,9 @@ fun N3toNavHost(
                         onNavigateToSettings = {
                             navController.navigate(Screen.Settings.route) { launchSingleTop = true }
                         },
+                        onNavigateToEmergencyFundSettings = {
+                            navController.navigate(Screen.EmergencyFundSettings.route) { launchSingleTop = true }
+                        },
                         onNavigateToFixedIncomeDetail = { positionId ->
                             navController.navigate(Screen.FixedIncomeDetail.buildRoute(positionId)) {
                                 launchSingleTop = true
@@ -189,6 +193,9 @@ fun N3toNavHost(
                         },
                         onNavigateToSettings = {
                             navController.navigate(Screen.Settings.route) { launchSingleTop = true }
+                        },
+                        onNavigateToEmergencyFundSettings = {
+                            navController.navigate(Screen.EmergencyFundSettings.route) { launchSingleTop = true }
                         },
                         onNavigateToFixedIncomeDetail = { positionId ->
                             navController.navigate(Screen.FixedIncomeDetail.buildRoute(positionId)) {
@@ -362,11 +369,19 @@ fun N3toNavHost(
                         },
                         onNavigateToGoals = {
                             navController.navigate(Screen.GoalSettings.route) { launchSingleTop = true }
+                        },
+                        onNavigateToEmergencyFund = {
+                            navController.navigate(Screen.EmergencyFundSettings.route) { launchSingleTop = true }
                         }
                     )
                 }
                 composable(Screen.GoalSettings.route) {
                     GoalSettingsScreen(
+                        navigateBack = { navController.popBackStack() }
+                    )
+                }
+                composable(Screen.EmergencyFundSettings.route) {
+                    EmergencyFundSettingsScreen(
                         navigateBack = { navController.popBackStack() }
                     )
                 }

@@ -33,7 +33,8 @@ fun AccountConfigScreen(
     onNavigateToExpenseSettings: () -> Unit = {},
     onNavigateToIncomeSettings: () -> Unit = {},
     onNavigateToTaxProfile: () -> Unit = {},
-    onNavigateToGoals: () -> Unit = {}
+    onNavigateToGoals: () -> Unit = {},
+    onNavigateToEmergencyFund: () -> Unit = {}
 ) {
     val viewModel: AccountConfigViewModel = koinViewModel { parametersOf(accountId) }
     val state by viewModel.uiState.collectAsState()
@@ -96,6 +97,12 @@ fun AccountConfigScreen(
                             icon = Icons.Outlined.GpsFixed,
                             label = "Objetivos mensuales",
                             onClick = onNavigateToGoals
+                        )
+                        SettingsRowDivider()
+                        SettingsNavigableRow(
+                            icon = Icons.Outlined.Shield,
+                            label = "Fondo de emergencia",
+                            onClick = onNavigateToEmergencyFund
                         )
                     }
                 }

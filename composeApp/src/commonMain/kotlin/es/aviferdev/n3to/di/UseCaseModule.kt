@@ -45,6 +45,9 @@ import es.aviferdev.n3to.domain.usecase.assettransaction.ExecuteFundTransferUseC
 import es.aviferdev.n3to.domain.usecase.assettransaction.GetMonthlyInvestmentsUseCase
 import es.aviferdev.n3to.domain.usecase.assettransaction.GetMonthlyNetInvestmentsUseCase
 import es.aviferdev.n3to.domain.usecase.assettransaction.GetTransactionsByAccountUseCase
+import es.aviferdev.n3to.domain.usecase.emergencyfund.GetEmergencyFundUseCase
+import es.aviferdev.n3to.domain.usecase.emergencyfund.GetEmergencyFundStatusUseCase
+import es.aviferdev.n3to.domain.usecase.emergencyfund.SaveEmergencyFundUseCase
 import es.aviferdev.n3to.domain.usecase.goal.GetCurrentMonthProgressUseCase
 import es.aviferdev.n3to.domain.usecase.goal.GetMonthlyGoalsUseCase
 import es.aviferdev.n3to.domain.usecase.goal.GetYearlyGoalProgressUseCase
@@ -142,6 +145,7 @@ import es.aviferdev.n3to.ui.fixedincome.FixedIncomeDetailViewModel
 import es.aviferdev.n3to.ui.home.AddTransactionViewModel
 import es.aviferdev.n3to.ui.home.CategoryPickerViewModel
 import es.aviferdev.n3to.ui.home.HomeViewModel
+import es.aviferdev.n3to.ui.settings.emergencyfund.EmergencyFundSettingsViewModel
 import es.aviferdev.n3to.ui.settings.goal.GoalSettingsViewModel
 import es.aviferdev.n3to.ui.settings.taxprofile.TaxProfileSettingsViewModel
 import es.aviferdev.n3to.ui.loan.LoanDetailViewModel
@@ -198,6 +202,10 @@ val useCaseModule = module {
     factory { SaveMonthlyGoalsUseCase(get()) }
     factory { GetCurrentMonthProgressUseCase(get(), get(), get()) }
     factory { GetYearlyGoalProgressUseCase(get(), get(), get()) }
+    // ── Emergency Fund ─────────────────────────────────────────────────────────
+    factory { GetEmergencyFundUseCase(get()) }
+    factory { SaveEmergencyFundUseCase(get()) }
+    factory { GetEmergencyFundStatusUseCase(get(), get(), get()) }
     // ── Home ──────────────────────────────────────────────────────────────────
     factory { GetHomeBalanceUseCase(get(), get(), get()) }
     // ── Debts ─────────────────────────────────────────────────────────────────
@@ -367,7 +375,8 @@ val useCaseModule = module {
             loadingManager            = get(),
             getPortfolioValueHistory = get(),
             versionManager = get(),
-            getCurrentMonthProgress = get()
+            getCurrentMonthProgress = get(),
+            getEmergencyFundStatus   = get()
         )
     }
     viewModel {
@@ -603,6 +612,16 @@ val useCaseModule = module {
     viewModel {
         GoalSettingsViewModel(
             goalRepository = get(),
+            session = get()
+        )
+    }
+
+    // ── Emergency Fund Settings ──────────────────────────────────────────────────
+    viewModel {
+        EmergencyFundSettingsViewModel(
+            getEmergencyFund = get(),
+            saveEmergencyFund = get(),
+            getCategoriesByType = get(),
             session = get()
         )
     }

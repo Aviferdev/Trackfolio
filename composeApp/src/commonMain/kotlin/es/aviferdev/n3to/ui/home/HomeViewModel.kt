@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import es.aviferdev.n3to.core.VersionManager
 import es.aviferdev.n3to.domain.model.Asset
+import es.aviferdev.n3to.domain.model.EmergencyFundStatus
 import es.aviferdev.n3to.domain.model.FixedIncomePosition
 import es.aviferdev.n3to.domain.model.HomeBalance
 import es.aviferdev.n3to.domain.model.MonthlyGoalProgress
@@ -14,6 +15,7 @@ import es.aviferdev.n3to.domain.usecase.asset.SavePriceReminderShownUseCase
 import es.aviferdev.n3to.domain.usecase.asset.ShouldShowPriceReminderUseCase
 import es.aviferdev.n3to.domain.usecase.asset.UpdateAssetCurrentPriceUseCase
 import es.aviferdev.n3to.domain.usecase.category.GetCategoriesByTypeUseCase
+import es.aviferdev.n3to.domain.usecase.emergencyfund.GetEmergencyFundStatusUseCase
 import es.aviferdev.n3to.domain.usecase.fixedincome.GetNearMaturityPositionsUseCase
 import es.aviferdev.n3to.domain.usecase.goal.GetCurrentMonthProgressUseCase
 import es.aviferdev.n3to.domain.usecase.home.GetHomeBalanceUseCase
@@ -74,7 +76,8 @@ class HomeViewModel(
     private val loadingManager: GlobalLoadingManager,
     private val getPortfolioValueHistory: GetPortfolioValueHistoryUseCase,
     private val versionManager: VersionManager,
-    private val getCurrentMonthProgress: GetCurrentMonthProgressUseCase? = null
+    private val getCurrentMonthProgress: GetCurrentMonthProgressUseCase? = null,
+    private val getEmergencyFundStatus: GetEmergencyFundStatusUseCase
 ) : ViewModel() {
 
     val uiState: StateFlow<HomeUiState> = session.selectedAccountId
@@ -108,6 +111,9 @@ class HomeViewModel(
     private val _goalProgressState = MutableStateFlow(GoalProgressState())
     val goalProgressState: StateFlow<GoalProgressState> = _goalProgressState.asStateFlow()
 
+    private val _emergencyFundStatusState = MutableStateFlow(EmergencyFundStatus.NOT_CONFIGURED)
+    val emergencyFundStatus: StateFlow<EmergencyFundStatus> = _emergencyFundStatusState.asStateFlow()
+
     /** Estado de actualización de versión (delegado en [VersionManager]). */
     val versionStatus: StateFlow<VersionManager.Status> = versionManager.status
 
@@ -124,6 +130,7 @@ class HomeViewModel(
         checkPriceReminder()
         loadNearMaturityPositions()
         loadGoalProgress()
+        loadEmergencyFundStatus()
     }
 
     private fun checkPriceReminder() {
@@ -241,10 +248,28 @@ class HomeViewModel(
         }
     }
 
+    private fun loadEmergencyFundStatus() {
+        viewModelScope.launch {
+            session.selectedAccountId
+                .flatMapLatest { accountId ->
+                    if (accountId == null) {
+                        emptyFlow()
+                    } else {
+                        getEmergencyFundStatus(accountId)
+                    }
+                }
+                .collect { status ->
+                    _emergencyFundStatusState.value = status
+                }
+        }
+    }
+
     fun setInitialBalance(amount: Double) {
-        val accountId = session.selectedAccountId.value ?: return
+        val accountId = (uiState.value as? HomeUiState.Success)
+            ?.balance?.selectedAccount?.id ?: return
         viewModelScope.launch {
             setInitialBalance.invoke(accountId, amount)
+            session.selectAccount(accountId)
         }
     }
 }
