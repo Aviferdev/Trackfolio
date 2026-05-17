@@ -10,6 +10,6 @@ import org.koin.dsl.module
 val databaseModule = module {
     single { get<DatabaseDriverFactory>().createDriver() }
     single { N3toDatabase(get()) }
-    single { DatabaseInitializer(get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { DatabaseInitializer(get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single<PortfolioLocalDataSource> { PortfolioLocalDataSourceImpl(get()) }
 }

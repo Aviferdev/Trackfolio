@@ -7,7 +7,12 @@ import es.aviferdev.n3to.data.datasource.asset.AssetPriceHistoryLocalDataSource
 import es.aviferdev.n3to.data.datasource.asset.AssetTransactionLocalDataSource
 import es.aviferdev.n3to.data.datasource.assetmetadata.AssetMetadataLocalDataSource
 import es.aviferdev.n3to.data.datasource.debt.DebtLocalDataSource
+import es.aviferdev.n3to.data.datasource.emergencyfund.EmergencyFundLocalDataSource
+import es.aviferdev.n3to.data.datasource.goal.GoalLocalDataSource
+import es.aviferdev.n3to.data.datasource.loan.LoanLocalDataSource
+import es.aviferdev.n3to.data.datasource.loan.LoanRateChangeLocalDataSource
 import es.aviferdev.n3to.data.datasource.platform.PlatformLocalDataSource
+import es.aviferdev.n3to.data.datasource.realestate.RealEstatePropertyLocalDataSource
 import es.aviferdev.n3to.data.datasource.transaction.TransactionCategoryLocalDataSource
 import es.aviferdev.n3to.data.datasource.transaction.TransactionLocalDataSource
 import es.aviferdev.n3to.domain.model.Account
@@ -20,7 +25,16 @@ import es.aviferdev.n3to.domain.model.AssetTransaction
 import es.aviferdev.n3to.domain.model.AssetTransactionType
 import es.aviferdev.n3to.domain.model.Debt
 import es.aviferdev.n3to.domain.model.DebtDirection
+import es.aviferdev.n3to.domain.model.EmergencyFund
+import es.aviferdev.n3to.domain.model.EmergencyFundMethod
+import es.aviferdev.n3to.domain.model.Loan
+import es.aviferdev.n3to.domain.model.LoanRateChange
+import es.aviferdev.n3to.domain.model.LoanType
+import es.aviferdev.n3to.domain.model.MonthlyGoal
 import es.aviferdev.n3to.domain.model.Platform
+import es.aviferdev.n3to.domain.model.PropertyType
+import es.aviferdev.n3to.domain.model.RealEstateProperty
+import es.aviferdev.n3to.domain.model.RentalStatus
 import es.aviferdev.n3to.domain.model.Transaction
 import es.aviferdev.n3to.domain.model.TransactionType
 import kotlinx.coroutines.flow.firstOrNull
@@ -36,7 +50,12 @@ class DatabaseInitializer(
     private val assetTransactionDataSource: AssetTransactionLocalDataSource? = null,
     private val platformDataSource: PlatformLocalDataSource? = null,
     private val debtDataSource: DebtLocalDataSource? = null,
-    private val priceHistoryDataSource: AssetPriceHistoryLocalDataSource? = null
+    private val priceHistoryDataSource: AssetPriceHistoryLocalDataSource? = null,
+    private val realEstateDataSource: RealEstatePropertyLocalDataSource? = null,
+    private val loanDataSource: LoanLocalDataSource? = null,
+    private val loanRateChangeDataSource: LoanRateChangeLocalDataSource? = null,
+    private val goalDataSource: GoalLocalDataSource? = null,
+    private val emergencyFundDataSource: EmergencyFundLocalDataSource? = null
 ) {
     companion object {
 
@@ -213,18 +232,18 @@ class DatabaseInitializer(
         }
 
         // Insertar datos de prueba si no existen cuentas
-//        accountDataSource?.let { accountDs ->
-//            val accountCount = accountDs.count().firstOrNull() ?: 0L
-//            if (accountCount == 0L) {
-//                insertTestData()
-//            }
-//        }
+        accountDataSource?.let { accountDs ->
+            val accountCount = accountDs.count().firstOrNull() ?: 0L
+            if (accountCount == 0L) {
+                insertTestData()
+            }
+        }
     }
 
     private suspend fun insertTestData() {
         val random = Random(42)
-        val startTime = 1672531200000L
-        val endTime = 1746979200000L
+        val startTime = 1735689600000L // 2025-01-01 00:00:00 UTC
+        val endTime = 1779062400000L   // 2026-05-17 00:00:00 UTC
         val oneDay = 24 * 60 * 60 * 1000L
         val totalDays = ((endTime - startTime) / oneDay)
 
@@ -477,9 +496,9 @@ class DatabaseInitializer(
                 type = AssetTransactionType.SELL,
                 quantity = 5.0,
                 pricePerUnit = 850.0,
-                date = startTime + 700 * oneDay,
+                date = startTime + 470 * oneDay,
                 platformId = "plat_ibkr",
-                createdAt = startTime + 700 * oneDay
+                createdAt = startTime + 470 * oneDay
             )
         )
 
@@ -607,7 +626,8 @@ class DatabaseInitializer(
             "cat_exp_05",
             "cat_exp_06",
             "cat_exp_07",
-            "cat_exp_08"
+            "cat_exp_08",
+            "cat_exp_loan"
         )
         val expenseDescriptions = mapOf(
             "cat_exp_01" to listOf(
@@ -698,6 +718,12 @@ class DatabaseInitializer(
                 "Suscripción",
                 "Peluquería",
                 "Tintorería"
+            ),
+            "cat_exp_loan" to listOf(
+                "Cuota hipoteca",
+                "Cuota préstamo personal",
+                "Cuota préstamo coche",
+                "Amortización anticipada"
             )
         )
 
@@ -725,38 +751,28 @@ class DatabaseInitializer(
 
                 if (isIncome) {
                     val incomeType = incomeTypes.random(random)
-                    val amount: Double
                     val gross: Double
-                    val irpf: Double
-                    val ss: Double?
+                    val amount: Double
 
                     when (incomeType) {
                         es.aviferdev.n3to.domain.model.IncomeType.SALARY -> {
                             gross = 3500.0 + random.nextDouble(-500.0, 500.0)
                             amount = gross * 0.8 - 500
-                            irpf = 20.0
-                            ss = 500.0
                         }
 
                         es.aviferdev.n3to.domain.model.IncomeType.DIVIDEND -> {
                             gross = 100.0 + random.nextDouble(0.0, 200.0)
                             amount = gross * 0.81
-                            irpf = 19.0
-                            ss = null
                         }
 
                         es.aviferdev.n3to.domain.model.IncomeType.BANK_INTEREST -> {
                             gross = 20.0 + random.nextDouble(0.0, 80.0)
                             amount = gross * 0.81
-                            irpf = 19.0
-                            ss = null
                         }
 
                         else -> {
                             gross = 50.0 + random.nextDouble(0.0, 150.0)
                             amount = gross * 0.81
-                            irpf = 19.0
-                            ss = null
                         }
                     }
 
@@ -786,6 +802,7 @@ class DatabaseInitializer(
                         "cat_exp_05" -> 20.0 + random.nextDouble(0.0, 100.0)
                         "cat_exp_06" -> 20.0 + random.nextDouble(0.0, 150.0)
                         "cat_exp_07" -> 15.0 + random.nextDouble(0.0, 200.0)
+                        "cat_exp_loan" -> 300.0 + random.nextDouble(0.0, 700.0)
                         else -> 10.0 + random.nextDouble(0.0, 100.0)
                     }
 
@@ -883,7 +900,7 @@ class DatabaseInitializer(
                 createdAt = startTime + 250 * oneDay,
                 assetCategoryId = "fixed_cat_fixedincome",
                 currentPrice = null,
-                maturityDate = startTime + 700 * oneDay
+                maturityDate = startTime + 798 * oneDay // 18 meses desde creación en +250d
             ),
             Asset(
                 id = "deposit_03",
@@ -898,6 +915,31 @@ class DatabaseInitializer(
             )
         ).forEach { assetDataSource?.insert(it) }
 
+        listOf(
+            Asset(
+                id = "crowd_01",
+                accountId = "acc_main",
+                ticker = "RAISIN_CL_01",
+                name = "Crowdlending Raisin 6.5%",
+                notes = "Cartera diversificada Raisin",
+                createdAt = startTime + 60 * oneDay,
+                assetCategoryId = "fixed_cat_crowdlending",
+                currentPrice = null,
+                maturityDate = startTime + 425 * oneDay // 12 meses desde creación en +60d
+            )
+        ).forEach { assetDataSource?.insert(it) }
+        assetTransactionDataSource?.insert(
+            AssetTransaction(
+                id = "at_crowd_01",
+                assetId = "crowd_01",
+                type = AssetTransactionType.BUY,
+                quantity = 1.0,
+                pricePerUnit = 5000.0,
+                date = startTime + 60 * oneDay,
+                platformId = "plat_raisin",
+                createdAt = startTime + 60 * oneDay
+            )
+        )
 
         listOf(
             Asset(
@@ -910,7 +952,7 @@ class DatabaseInitializer(
                 assetCategoryId = "fixed_cat_fixedincome",
                 currentPrice = 98.5,
                 currentPriceUpdatedAt = endTime,
-                maturityDate = startTime + 1095 * oneDay
+                maturityDate = startTime + 730 * oneDay // vence ene-2027
             ),
             Asset(
                 id = "bond_02",
@@ -922,7 +964,7 @@ class DatabaseInitializer(
                 assetCategoryId = "fixed_cat_fixedincome",
                 currentPrice = 101.2,
                 currentPriceUpdatedAt = endTime,
-                maturityDate = startTime + 1460 * oneDay
+                maturityDate = startTime + 1095 * oneDay // vence ene-2028
             )
         ).forEach { asset ->
             assetDataSource?.insert(asset)
@@ -937,6 +979,137 @@ class DatabaseInitializer(
                 )
             }
         }
+
+        // Letras del Tesoro (renta fija a corto plazo)
+        listOf(
+            Asset(
+                id = "letra_01",
+                accountId = "acc_main",
+                ticker = "LETRA_6M_25",
+                name = "Letra del Tesoro 6M 3.2%",
+                notes = "Renta fija soberana a corto plazo",
+                createdAt = startTime + 20 * oneDay,
+                assetCategoryId = "fixed_cat_fixedincome",
+                currentPrice = null,
+                maturityDate = startTime + 200 * oneDay
+            ),
+            Asset(
+                id = "letra_02",
+                accountId = "acc_main",
+                ticker = "LETRA_12M_25",
+                name = "Letra del Tesoro 12M 2.8%",
+                notes = "Renta fija soberana a corto plazo",
+                createdAt = startTime + 20 * oneDay,
+                assetCategoryId = "fixed_cat_fixedincome",
+                currentPrice = null,
+                maturityDate = startTime + 385 * oneDay
+            )
+        ).forEach { assetDataSource?.insert(it) }
+
+        assetTransactionDataSource?.insert(
+            AssetTransaction(
+                id = "at_letra_01",
+                assetId = "letra_01",
+                type = AssetTransactionType.BUY,
+                quantity = 1.0,
+                pricePerUnit = 9853.0, // nominal 10.000 €, rendimiento ~3.2%
+                date = startTime + 20 * oneDay,
+                platformId = "plat_singular",
+                createdAt = startTime + 20 * oneDay
+            )
+        )
+        assetTransactionDataSource?.insert(
+            AssetTransaction(
+                id = "at_letra_02",
+                assetId = "letra_02",
+                type = AssetTransactionType.BUY,
+                quantity = 1.0,
+                pricePerUnit = 14590.0, // nominal 15.000 €, rendimiento ~2.8%
+                date = startTime + 20 * oneDay,
+                platformId = "plat_singular",
+                createdAt = startTime + 20 * oneDay
+            )
+        )
+
+        // Hipoteca — iniciada en enero 2023, 25 años, variable Euribor + 0.89%
+        val mortgageStart = startTime - 730 * oneDay
+        val mortgageEnd   = mortgageStart + 300L * 30 * oneDay // ~25 años
+
+        loanDataSource?.insert(
+            Loan(
+                id = "loan_mortgage_01",
+                accountId = "acc_main",
+                name = "Hipoteca vivienda habitual",
+                type = LoanType.MORTGAGE,
+                totalAmount = 220000.0,
+                outstandingPrincipal = 200423.0, // tras 40 cuotas pagadas
+                currentInterestRate = 3.2,       // post revisión anual ene-2026
+                monthlyPayment = 1070.0,         // recalculada tras bajada de tipo
+                totalInstallments = 300,
+                paidInstallments = 40,            // ene-2023 → may-2026 ≈ 40 meses
+                startDate = mortgageStart,
+                endDate = mortgageEnd,
+                lenderName = "Banco Santander",
+                notes = "Hipoteca variable Euribor + 0.89%",
+                archived = false,
+                createdAt = mortgageStart
+            )
+        )
+
+        // Revisión anual del Euribor en enero 2026 → bajada de 3.5% a 3.2%
+        loanRateChangeDataSource?.insert(
+            LoanRateChange(
+                id = "rate_change_01",
+                loanId = "loan_mortgage_01",
+                newRate = 3.2,
+                previousRate = 3.5,
+                effectiveDate = startTime + 365 * oneDay,
+                createdAt = startTime + 365 * oneDay
+            )
+        )
+
+        // Vivienda habitual vinculada a la hipoteca
+        realEstateDataSource?.insert(
+            RealEstateProperty(
+                id = "prop_main_home",
+                accountId = "acc_main",
+                name = "Vivienda habitual",
+                address = "Calle Mayor 15, Madrid",
+                propertyType = PropertyType.PRIMARY_HOME,
+                purchaseValue = 280000.0,
+                currentEstimatedValue = 295000.0,
+                acquisitionDate = mortgageStart,
+                ownershipPercentage = 100.0,
+                linkedLoanId = "loan_mortgage_01",
+                rentalStatus = RentalStatus.OWN_USE,
+                monthlyRent = null,
+                mortgageReminderDismissed = false,
+                archived = false
+            )
+        )
+
+        // Fondo de emergencia: 6 meses de gastos estimados a 2.500 €/mes = 15.000 €
+        emergencyFundDataSource?.saveEmergencyFund(
+            EmergencyFund(
+                accountId = "acc_main",
+                targetMonths = 6,
+                calculationMethod = EmergencyFundMethod.MANUAL,
+                manualMonthlyExpense = 2500.0,
+                excludedCategoryIds = emptyList()
+            )
+        )
+
+        // Objetivos mensuales (mes "00" = base del año, "01".."12" = overrides)
+        listOf(
+            MonthlyGoal(accountId = "acc_main", year = "2025", month = "00", savingsTarget = 500.0,  investmentTarget = 300.0),
+            MonthlyGoal(accountId = "acc_main", year = "2025", month = "06", savingsTarget = 200.0,  investmentTarget = 100.0), // julio: vacaciones
+            MonthlyGoal(accountId = "acc_main", year = "2025", month = "07", savingsTarget = 150.0,  investmentTarget = 100.0), // agosto: vacaciones
+            MonthlyGoal(accountId = "acc_main", year = "2025", month = "12", savingsTarget = 300.0,  investmentTarget = 150.0), // diciembre: navidad
+            MonthlyGoal(accountId = "acc_main", year = "2026", month = "00", savingsTarget = 600.0,  investmentTarget = 400.0),
+            MonthlyGoal(accountId = "acc_main", year = "2026", month = "01", savingsTarget = 800.0,  investmentTarget = 500.0), // enero: propósitos año nuevo
+            MonthlyGoal(accountId = "acc_main", year = "2026", month = "03", savingsTarget = 700.0,  investmentTarget = 400.0), // marzo: sin gastos extras
+            MonthlyGoal(accountId = "acc_main", year = "2026", month = "05", savingsTarget = 550.0,  investmentTarget = 350.0)  // mayo: fin del periodo
+        ).forEach { goalDataSource?.upsert(it) }
     }
 
     private fun Transaction.toEntity(): TransactionEntity = TransactionEntity(
