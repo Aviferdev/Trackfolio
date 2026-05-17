@@ -1,35 +1,56 @@
-This is a Kotlin Multiplatform project targeting Android, iOS.
+# Trackfolio
 
-* [/composeApp](./composeApp/src) is for code that will be shared across your Compose Multiplatform applications.
-  It contains several subfolders:
-  - [commonMain](./composeApp/src/commonMain/kotlin) is for code that’s common for all targets.
-  - Other folders are for Kotlin code that will be compiled for only the platform indicated in the folder name.
-    For example, if you want to use Apple’s CoreCrypto for the iOS part of your Kotlin app,
-    the [iosMain](./composeApp/src/iosMain/kotlin) folder would be the right place for such calls.
-    Similarly, if you want to edit the Desktop (JVM) specific part, the [jvmMain](./composeApp/src/jvmMain/kotlin)
-    folder is the appropriate location.
+Aplicación de gestión financiera personal construida con **Kotlin Multiplatform** y **Compose Multiplatform**,
+compartiendo UI y lógica de negocio entre Android e iOS.
 
-* [/iosApp](./iosApp/iosApp) contains iOS applications. Even if you’re sharing your UI with Compose Multiplatform,
-  you need this entry point for your iOS app. This is also where you should add SwiftUI code for your project.
+## Stack tecnológico
 
-### Build and Run Android Application
+| Propósito | Tecnología |
+|-----------|-----------|
+| Lenguaje | Kotlin 2.1.0 |
+| UI | Compose Multiplatform 1.7.3 |
+| DI | Koin 4.0.0 |
+| Persistencia | SQLDelight 2.0.2 |
+| Async | Coroutines 1.9.0 |
+| Navegación | Navigation Compose 2.8.0 |
+| Min SDK / Compile SDK | 24 / 34 |
 
-To build and run the development version of the Android app, use the run configuration from the run widget
-in your IDE’s toolbar or build it directly from the terminal:
-- on macOS/Linux
-  ```shell
-  ./gradlew :composeApp:assembleDebug
-  ```
-- on Windows
-  ```shell
-  .\gradlew.bat :composeApp:assembleDebug
-  ```
+Ver [ADR-0001](./docs/adr/0001-decisiones-tecnologicas-iniciales.md) para la justificación
+completa del stack.
 
-### Build and Run iOS Application
+## Arquitectura
 
-To build and run the development version of the iOS app, use the run configuration from the run widget
-in your IDE’s toolbar or open the [/iosApp](./iosApp) directory in Xcode and run it from there.
+Clean Architecture + MVVM:
 
----
+```
+core/      → Infraestructura transversal (seguridad, cifrado, preferencias)
+domain/    → Modelos, interfaces de repositorio, casos de uso, calculadoras
+data/      → SQLDelight, datasources, implementaciones de repositorios
+ui/        → Componibles, ViewModels, navegación, tema
+```
 
-Learn more about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html)…
+Ver [AGENTS.md](./AGENTS.md) para la estructura detallada de paquetes y convenciones.
+
+## Documentación de decisiones (ADR)
+
+Las decisiones importantes de arquitectura y diseño se documentan como
+**Architecture Decision Records** en [docs/adr/](./docs/adr/).
+
+Cada ADR explica el contexto, las opciones consideradas y la justificación
+de la decisión, para que cualquier desarrollador futuro entienda el «por qué»
+detrás del código.
+
+📖 [Índice de ADRs](./docs/adr/README.md)
+
+## Build
+
+### Android
+```bash
+./gradlew :composeApp:assembleDebug
+./gradlew :composeApp:build
+```
+
+### iOS
+```bash
+./gradlew :composeApp:compileKotlinIosArm64
+```

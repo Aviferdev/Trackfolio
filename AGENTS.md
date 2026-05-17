@@ -122,6 +122,33 @@ es.aviferdev.n3to/
 |---------|-------------|
 | **core.security** | `AesCrypto` (AES-256-CBC), `AppSettings` (expect/actual), `AppLockManager`, `BalanceVisibilityManager`, `BiometricAuthenticator` (expect/actual), `DatabaseBackupManager` (expect/actual), `PendingImport` |
 
+## Sistema ADR (Architecture Decision Records)
+
+Las decisiones importantes de arquitectura y diseño se documentan en `docs/adr/`
+siguiendo el formato de **Architecture Decision Records**.
+
+- **Ubicación:** `docs/adr/NNNN-slug-descriptivo.md`
+- **Índice:** `docs/adr/README.md`
+- **Plantilla:** `docs/adr/template.md`
+
+### Cuándo crear un ADR
+
+- Elección entre librerías, frameworks o tecnologías.
+- Cambios en la arquitectura o patrones de diseño.
+- Decisiones con trade-offs significativos (rendimiento vs. mantenibilidad, etc.).
+
+### Cuándo NO crear un ADR
+
+- Implementación rutinaria de features.
+- Corrección de bugs.
+- Refactors menores.
+
+### Reglas
+
+- Numeración secuencial: `0001`, `0002`, etc.
+- Una vez aprobado, un ADR es inmutable. Si la decisión cambia, se crea uno nuevo.
+- Incluir el ADR en el mismo PR que implementa la decisión.
+
 ## Notas
 - Proyecto Kotlin Multiplatform (Android + iOS)
 - DI con Koin: `DatabaseModule`, `RepositoryModule`, `UseCaseModule`, `UIModule`, `KoinInitializer` (common) + `AndroidModule`/`IosModule` (plataforma)
