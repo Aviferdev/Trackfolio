@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -18,6 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -42,9 +44,11 @@ fun HeroCard(
 
     val gradient = Brush.linearGradient(
         colors = listOf(
-            Color(0xFF7470FF),
-            Color(0xFF4440D4)
-        )
+            Color(0xFF0D1B2A),
+            Color(0xFF162B44)
+        ),
+        start = Offset(0f, 0f),
+        end = Offset(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY)
     )
 
     Box(
@@ -52,12 +56,32 @@ fun HeroCard(
             .fillMaxWidth()
             .clip(RoundedCornerShape(20.dp))
             .background(gradient)
-            .padding(horizontal = 22.dp, vertical = 22.dp)
     ) {
-        Column {
+        // Glow orb decorativo en la esquina superior derecha
+        Box(
+            modifier = Modifier
+                .size(220.dp)
+                .align(Alignment.TopEnd)
+                .offset(x = 60.dp, y = (-60).dp)
+                .background(
+                    Brush.radialGradient(
+                        colors = listOf(
+                            Color(0xFF22D3EE).copy(alpha = 0.16f),
+                            Color.Transparent
+                        )
+                    ),
+                    CircleShape
+                )
+        )
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 22.dp, vertical = 22.dp)
+        ) {
             Box(
                 modifier = Modifier
-                    .background(Color.White.copy(alpha = 0.14f), RoundedCornerShape(20.dp))
+                    .background(Color(0xFF38BDF8).copy(alpha = 0.12f), RoundedCornerShape(20.dp))
                     .padding(horizontal = 10.dp, vertical = 4.dp)
             ) {
                 Text(
@@ -125,7 +149,7 @@ fun HeroCard(
                     text = "${maskAmount(formatAmount(netWithDebts), balancesHidden)} €",
                     fontSize = 14.sp,
                     fontWeight = FontWeight.SemiBold,
-                    color = Color.White.copy(alpha = 0.92f)
+                    color = Color(0xFF7DD3FC)
                 )
             }
         }
@@ -141,7 +165,7 @@ private fun DebtStatCard(
 ) {
     Box(
         modifier = modifier
-            .background(Color.White.copy(alpha = 0.10f), RoundedCornerShape(12.dp))
+            .background(Color(0xFF38BDF8).copy(alpha = 0.08f), RoundedCornerShape(12.dp))
             .padding(horizontal = 12.dp, vertical = 10.dp)
     ) {
         Column {
