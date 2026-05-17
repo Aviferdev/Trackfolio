@@ -37,15 +37,25 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
  * es inferior a la versión mínima requerida. El usuario no puede salir
  * de esta pantalla hasta que actualice la aplicación desde la store.
  *
+ * Los textos (título, mensaje, botón) provienen de Firebase Remote Config
+ * y se inyectan como parámetros, permitiendo su configuración remota sin
+ * necesidad de actualizar la app.
+ *
  * Diseño inspirado en [LockScreen]: fondo PrimaryDark, icono centrado,
  * título, subtítulo informativo y botón de acción para abrir la store.
  *
+ * @param title          Título principal de la pantalla (desde Firebase RC).
+ * @param message        Mensaje explicativo (desde Firebase RC).
+ * @param buttonText     Texto del botón de acción (desde Firebase RC).
  * @param currentVersion Versión actual instalada (para mostrar al usuario).
  * @param minVersion     Versión mínima requerida (para mostrar al usuario).
  * @param onOpenStore    Lambda para abrir Play Store / App Store.
  */
 @Composable
 fun VersionBlockScreen(
+    title: String,
+    message: String,
+    buttonText: String,
     currentVersion: String,
     minVersion: String,
     onOpenStore: () -> Unit
@@ -78,9 +88,9 @@ fun VersionBlockScreen(
 
             Spacer(Modifier.height(28.dp))
 
-            // Título
+            // Título (configurable desde Firebase)
             Text(
-                text = "Actualización requerida",
+                text = title,
                 fontSize = 22.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.White
@@ -88,9 +98,9 @@ fun VersionBlockScreen(
 
             Spacer(Modifier.height(12.dp))
 
-            // Subtítulo
+            // Subtítulo (configurable desde Firebase)
             Text(
-                text = "Debes actualizar N3to para continuar utilizando la aplicación.",
+                text = message,
                 fontSize = 14.sp,
                 color = Color.White.copy(alpha = 0.70f),
                 textAlign = TextAlign.Center
@@ -107,7 +117,7 @@ fun VersionBlockScreen(
 
             Spacer(Modifier.height(40.dp))
 
-            // Botón de actualizar
+            // Botón de acción (texto configurable desde Firebase)
             Button(
                 onClick = onOpenStore,
                 modifier = Modifier
@@ -119,7 +129,7 @@ fun VersionBlockScreen(
                 )
             ) {
                 Text(
-                    text = "Actualizar",
+                    text = buttonText,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.SemiBold,
                     color = PrimaryDark
@@ -134,6 +144,9 @@ fun VersionBlockScreen(
 private fun VersionBlockScreenPreview() {
     N3toTheme {
         VersionBlockScreen(
+            title = "Actualización requerida",
+            message = "Debes actualizar N3to para continuar utilizando la aplicación.",
+            buttonText = "Actualizar",
             currentVersion = "1.1.0",
             minVersion = "1.2.0",
             onOpenStore = {}

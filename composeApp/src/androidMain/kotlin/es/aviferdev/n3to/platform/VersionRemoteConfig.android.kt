@@ -18,7 +18,10 @@ actual class VersionRemoteConfig {
                 "app_min_version" to "1.0.0",
                 "app_latest_version" to "1.0.0",
                 "app_update_url_android" to "",
-                "app_update_url_ios" to ""
+                "app_update_url_ios" to "",
+                "app_block_title" to "Actualización requerida",
+                "app_block_message" to "Debes actualizar N3to para continuar utilizando la aplicación.",
+                "app_block_button_text" to "Actualizar"
             )
         )
 

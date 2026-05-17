@@ -18,7 +18,10 @@ class GetVersionInfoUseCase(
             minVersion = remoteConfig.getString("app_min_version"),
             latestVersion = remoteConfig.getString("app_latest_version"),
             updateUrlAndroid = remoteConfig.getString("app_update_url_android"),
-            updateUrlIos = remoteConfig.getString("app_update_url_ios")
+            updateUrlIos = remoteConfig.getString("app_update_url_ios"),
+            blockTitle = remoteConfig.getString("app_block_title"),
+            blockMessage = remoteConfig.getString("app_block_message"),
+            blockButtonText = remoteConfig.getString("app_block_button_text")
         )
     }
 }

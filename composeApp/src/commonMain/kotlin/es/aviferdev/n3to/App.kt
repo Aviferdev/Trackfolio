@@ -153,6 +153,9 @@ fun App() {
                 versionStatus is VersionManager.Status.UpdateRequired -> {
                     val info = (versionStatus as VersionManager.Status.UpdateRequired).info
                     VersionBlockScreen(
+                        title = info.blockTitle,
+                        message = info.blockMessage,
+                        buttonText = info.blockButtonText,
                         currentVersion = currentVersion,
                         minVersion = info.minVersion,
                         onOpenStore = openStore

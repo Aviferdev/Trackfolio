@@ -16,4 +16,16 @@
         <key>app_update_url_ios</key>
         <value></value>
     </entry>
+    <entry>
+        <key>app_block_title</key>
+        <value>Actualización requerida</value>
+    </entry>
+    <entry>
+        <key>app_block_message</key>
+        <value>Debes actualizar N3to para continuar utilizando la aplicación.</value>
+    </entry>
+    <entry>
+        <key>app_block_button_text</key>
+        <value>Actualizar</value>
+    </entry>
 </defaultsMap>
