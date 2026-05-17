@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -21,13 +22,23 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import es.aviferdev.n3to.ui.theme.CyanAccent
+import es.aviferdev.n3to.ui.theme.CyanGlow
 import es.aviferdev.n3to.ui.theme.N3toTheme
-import es.aviferdev.n3to.ui.theme.PrimaryDark
+import es.aviferdev.n3to.ui.theme.NavyBorder
+import es.aviferdev.n3to.ui.theme.NavyDeep
+import es.aviferdev.n3to.ui.theme.NavySurface
+import es.aviferdev.n3to.ui.theme.TextPrimary
+import es.aviferdev.n3to.ui.theme.TextSecondary
+import es.aviferdev.n3to.ui.theme.TextTertiary
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 /**
@@ -40,9 +51,6 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
  * Los textos (título, mensaje, botón) provienen de Firebase Remote Config
  * y se inyectan como parámetros, permitiendo su configuración remota sin
  * necesidad de actualizar la app.
- *
- * Diseño inspirado en [LockScreen]: fondo PrimaryDark, icono centrado,
- * título, subtítulo informativo y botón de acción para abrir la store.
  *
  * @param title          Título principal de la pantalla (desde Firebase RC).
  * @param message        Mensaje explicativo (desde Firebase RC).
@@ -63,9 +71,23 @@ fun VersionBlockScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(PrimaryDark),
+            .background(NavyDeep),
         contentAlignment = Alignment.Center
     ) {
+        // Orb decorativo cian (esquina superior derecha)
+        Box(
+            modifier = Modifier
+                .size(320.dp)
+                .align(Alignment.TopEnd)
+                .offset(x = 100.dp, y = (-100).dp)
+                .background(
+                    Brush.radialGradient(
+                        colors = listOf(CyanGlow.copy(alpha = 0.10f), Color.Transparent)
+                    ),
+                    CircleShape
+                )
+        )
+
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.padding(horizontal = 40.dp)
@@ -74,15 +96,25 @@ fun VersionBlockScreen(
             Box(
                 modifier = Modifier
                     .size(80.dp)
-                    .clip(CircleShape)
-                    .background(Color.White.copy(alpha = 0.12f)),
+                    .drawBehind {
+                        val cornerRadius = size.width * 0.22f
+                        drawRoundRect(
+                            color = NavySurface,
+                            cornerRadius = androidx.compose.ui.geometry.CornerRadius(cornerRadius)
+                        )
+                        drawRoundRect(
+                            color = NavyBorder,
+                            cornerRadius = androidx.compose.ui.geometry.CornerRadius(cornerRadius),
+                            style = androidx.compose.ui.graphics.drawscope.Stroke(width = 1.dp.toPx())
+                        )
+                    },
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     imageVector = Icons.Outlined.SystemUpdate,
                     contentDescription = null,
-                    tint = Color.White,
-                    modifier = Modifier.size(40.dp)
+                    tint = CyanAccent,
+                    modifier = Modifier.size(36.dp)
                 )
             }
 
@@ -93,7 +125,8 @@ fun VersionBlockScreen(
                 text = title,
                 fontSize = 22.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color.White
+                color = TextPrimary,
+                letterSpacing = (-0.3).sp
             )
 
             Spacer(Modifier.height(12.dp))
@@ -102,7 +135,7 @@ fun VersionBlockScreen(
             Text(
                 text = message,
                 fontSize = 14.sp,
-                color = Color.White.copy(alpha = 0.70f),
+                color = TextSecondary,
                 textAlign = TextAlign.Center
             )
 
@@ -111,7 +144,7 @@ fun VersionBlockScreen(
             Text(
                 text = "Versión mínima: $minVersion · Tu versión: $currentVersion",
                 fontSize = 12.sp,
-                color = Color.White.copy(alpha = 0.50f),
+                color = TextTertiary,
                 textAlign = TextAlign.Center
             )
 
@@ -125,14 +158,14 @@ fun VersionBlockScreen(
                     .height(52.dp),
                 shape = RoundedCornerShape(14.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.White
+                    containerColor = CyanAccent
                 )
             ) {
                 Text(
                     text = buttonText,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.SemiBold,
-                    color = PrimaryDark
+                    color = NavyDeep
                 )
             }
         }

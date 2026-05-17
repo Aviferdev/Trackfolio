@@ -16,12 +16,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import es.aviferdev.n3to.ui.theme.PrimaryDark
+import es.aviferdev.n3to.ui.theme.CyanAccent
+import es.aviferdev.n3to.ui.theme.NavyDeep
 import es.aviferdev.n3to.ui.theme.TextSecondary
 
 /**
@@ -40,22 +40,18 @@ fun GlobalLoadingOverlay(
     modifier: Modifier = Modifier
 ) {
     AnimatedVisibility(
-        visible = isLoading,
-        enter   = fadeIn(animationSpec = tween(250)),
-        exit    = fadeOut(animationSpec = tween(250)),
+        visible  = isLoading,
+        enter    = fadeIn(animationSpec = tween(250)),
+        exit     = fadeOut(animationSpec = tween(250)),
         modifier = modifier
     ) {
-        // Box que consume TODOS los eventos táctiles para bloquear interacción.
-        // pointerInput sin handlers internos absorbe cualquier pointer event,
-        // impidiendo que llegue al Scaffold/toolbar/bottombar subyacentes.
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color.Black.copy(alpha = 0.5f))
+                .background(NavyDeep.copy(alpha = 0.78f))
                 .pointerInput(Unit) {
                     awaitPointerEventScope {
                         while (true) {
-                            // Consume cada evento de puntero sin hacer nada
                             awaitPointerEvent()
                         }
                     }
@@ -64,17 +60,17 @@ fun GlobalLoadingOverlay(
         ) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 CircularProgressIndicator(
-                    modifier = Modifier.size(40.dp),
-                    color    = PrimaryDark,
+                    modifier    = Modifier.size(40.dp),
+                    color       = CyanAccent,
                     strokeWidth = 3.dp
                 )
                 if (message != null) {
                     Spacer(Modifier.height(16.dp))
                     Text(
-                        text     = message,
-                        fontSize = 14.sp,
+                        text       = message,
+                        fontSize   = 14.sp,
                         fontWeight = FontWeight.Medium,
-                        color    = TextSecondary
+                        color      = TextSecondary
                     )
                 }
             }

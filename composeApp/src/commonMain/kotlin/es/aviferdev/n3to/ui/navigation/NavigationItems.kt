@@ -1,25 +1,30 @@
 package es.aviferdev.n3to.ui.navigation
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.AccountBalance
-import androidx.compose.material.icons.outlined.DateRange
-import androidx.compose.material.icons.outlined.Home
-import androidx.compose.material.icons.outlined.Star
+import androidx.compose.material.icons.filled.AccountBalanceWallet
+import androidx.compose.material.icons.filled.PieChart
+import androidx.compose.material.icons.filled.ShowChart
+import androidx.compose.material.icons.outlined.AccountBalanceWallet
+import androidx.compose.material.icons.outlined.PieChart
+import androidx.compose.material.icons.outlined.ShowChart
 
 fun bottomNavItems() = listOf(
     BottomNavItem(
         screen = Screen.Home,
         label = "Inicio",
-        icon = Icons.Outlined.Home
+        icon = Icons.Outlined.AccountBalanceWallet,
+        selectedIcon = Icons.Filled.AccountBalanceWallet
     ),
     BottomNavItem(
         screen = Screen.Portfolio,
-        label = "Portfolio",
-        icon = Icons.Outlined.Star
+        label = "Cartera",
+        icon = Icons.Outlined.ShowChart,
+        selectedIcon = Icons.Filled.ShowChart
     ),
     BottomNavItem(
         screen = Screen.NetWorth,
         label = "Patrimonio",
-        icon = Icons.Outlined.AccountBalance
+        icon = Icons.Outlined.PieChart,
+        selectedIcon = Icons.Filled.PieChart
     ),
 )

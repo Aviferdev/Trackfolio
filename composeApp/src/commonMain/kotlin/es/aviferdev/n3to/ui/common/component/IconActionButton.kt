@@ -1,6 +1,7 @@
 package es.aviferdev.n3to.ui.common.component
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
@@ -19,7 +20,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import es.aviferdev.n3to.ui.theme.SurfaceElevated
+import es.aviferdev.n3to.ui.theme.NavyBorder
+import es.aviferdev.n3to.ui.theme.NavySurface
 import es.aviferdev.n3to.ui.theme.TextPrimary
 import es.aviferdev.n3to.ui.theme.TextTertiary
 import es.aviferdev.n3to.ui.theme.N3toTheme
@@ -37,10 +39,12 @@ fun IconActionButton(
     iconTint: Color = TextTertiary,
     modifier: Modifier = Modifier
 ) {
+    val shape = RoundedCornerShape(10.dp)
     Box(
         modifier = modifier
-            .clip(RoundedCornerShape(10.dp))
-            .background(SurfaceElevated)
+            .clip(shape)
+            .background(NavySurface)
+            .border(1.dp, NavyBorder, shape)
             .clickable(onClick = onClick)
             .padding(10.dp),
         contentAlignment = Alignment.Center
