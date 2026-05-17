@@ -22,3 +22,22 @@ node_modules/
 *.jks
 *.keystore
 keystore.properties
+*.p12
+*.pem
+*.key
+signing.properties
+
+# Firebase / Google Services (contienen API keys)
+**/google-services.json
+**/GoogleService-Info.plist
+
+# Variables de entorno
+.env
+.env.*
+
+# Credenciales y secretos genéricos
+**/service-account*.json
+**/*credential*
+**/*secret*
+**/api_key*
+**/api_keys.xml

@@ -42,15 +42,59 @@ detrás del código.
 
 📖 [Índice de ADRs](./docs/adr/README.md)
 
+## Ficheros sensibles (excluidos del repositorio)
+
+Por seguridad, los siguientes ficheros con credenciales y claves están excluidos
+del control de versiones mediante `.gitignore`. A continuación se indica cómo
+generarlos u obtenerlos.
+
+### Firebase (Android)
+
+Se necesitan dos ficheros `google-services.json` (uno por flavor):
+
+1. **Crea dos proyectos/aplicaciones en Firebase Console**:
+   - **Dev**: paquete `es.aviferdev.n3to.dev`  → `composeApp/src/dev/google-services.json`
+   - **Prod**: paquete `es.aviferdev.n3to`      → `composeApp/src/prod/google-services.json`
+
+2. **Habilita** Analytics, Crashlytics y Remote Config en ambos.
+
+3. **Descarga** el `google-services.json` de cada aplicación y colócalo en la
+   ruta indicada.
+
+### Firebase (iOS)
+
+Si se añade Firebase en el futuro, descarga `GoogleService-Info.plist` para
+cada bundle identifier e intégralo en el proyecto de Xcode.
+
+### Firma de release (Android)
+
+1. **Genera un keystore** (por ejemplo, `n3to-release.jks`) y colócalo en
+   `composeApp/`.
+
+2. **Crea** `composeApp/keystore.properties` con el siguiente contenido:
+
+   ```properties
+   storeFile=n3to-release.jks
+   storePassword=tu_password_del_keystore
+   keyAlias=tu_alias
+   keyPassword=tu_password_del_alias
+   ```
+
+> **Nota:** `storeFile` es una ruta relativa a `composeApp/`.
+
 ## Build
 
 ### Android
-```bash
-./gradlew :composeApp:assembleDebug
-./gradlew :composeApp:build
-```
+
+| Comando | Resultado |
+|---------|-----------|
+| `./gradlew :composeApp:assembleDevDebug` | Debug (dev flavor) |
+| `./gradlew :composeApp:assembleDevRelease` | Release (dev flavor) |
+| `./gradlew :composeApp:assembleProdRelease` | Release (prod flavor) |
+| `./gradlew :composeApp:build` | Build completo |
 
 ### iOS
+
 ```bash
 ./gradlew :composeApp:compileKotlinIosArm64
 ```
