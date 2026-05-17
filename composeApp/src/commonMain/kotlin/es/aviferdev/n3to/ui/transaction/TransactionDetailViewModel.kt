@@ -48,10 +48,10 @@ class TransactionDetailViewModel(
     private fun loadTransaction() {
         viewModelScope.launch {
             getTransactionById(transactionId)
-                .combine(
-                    getAllCategoriesIncludingArchived()
-                ) { tx, categories ->
-                    tx to categories
+                .flatMapLatest { tx ->
+                    if (tx == null) flowOf(null to emptyList<Category>())
+                    else getAllCategoriesIncludingArchived(tx.accountId)
+                        .map { categories -> tx to categories }
                 }
                 .onStart { _uiState.value = TransactionDetailUiState.Loading }
                 .catch { e ->

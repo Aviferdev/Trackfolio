@@ -6,6 +6,7 @@ import es.aviferdev.n3to.domain.model.Category
 import es.aviferdev.n3to.domain.model.IncomeType
 import es.aviferdev.n3to.domain.model.TransactionType
 import es.aviferdev.n3to.domain.usecase.category.GetCategoriesByTypeUseCase
+import es.aviferdev.n3to.ui.account.AccountSession
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -27,6 +28,7 @@ data class CategoryPickerUiState(
 class CategoryPickerViewModel(
     private val initialTypeName: String,
     private val getCategoriesByType: GetCategoriesByTypeUseCase,
+    private val session: AccountSession
 ) : ViewModel() {
 
     private val initialType: TransactionType =
@@ -36,14 +38,12 @@ class CategoryPickerViewModel(
     val uiState: StateFlow<CategoryPickerUiState> = _uiState.asStateFlow()
 
     init {
-        // Reiniciar estado por si el ViewModel se reutiliza
         _uiState.value = CategoryPickerUiState(type = initialType)
         loadCategories(initialType)
     }
 
     private fun loadCategories(type: TransactionType) {
         if (type == TransactionType.INCOME) {
-            // Para ingresos, mostramos IncomeType (excluye los gestionados desde Portfolio)
             val types = IncomeType.entries.filter {
                 it != IncomeType.DIVIDEND &&
                 it != IncomeType.BOND_DEPOSIT &&
@@ -56,9 +56,9 @@ class CategoryPickerViewModel(
                 isLoading       = false,
             )
         } else {
-            // Para gastos, cargamos categorías de BD
+            val accountId = session.selectedAccountId.value ?: return
             viewModelScope.launch {
-                getCategoriesByType(type)
+                getCategoriesByType(accountId, type)
                     .onStart { _uiState.value = _uiState.value.copy(isLoading = true) }
                     .collect { categories ->
                         val freq = categories.take(4)

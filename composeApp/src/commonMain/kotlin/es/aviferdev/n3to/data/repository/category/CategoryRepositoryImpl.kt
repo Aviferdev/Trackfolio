@@ -13,17 +13,17 @@ class CategoryRepositoryImpl(
     private val dataSource: TransactionCategoryLocalDataSource
 ) : CategoryRepository {
 
-    override fun getAll(): Flow<List<Category>> =
-        dataSource.getAll().map { list -> list.map { it.toDomain() } }
+    override fun getByAccount(accountId: String): Flow<List<Category>> =
+        dataSource.getByAccount(accountId).map { list -> list.map { it.toDomain() } }
 
-    override fun getByType(type: TransactionType): Flow<List<Category>> =
-        dataSource.getByType(type.name).map { list -> list.map { it.toDomain() } }
+    override fun getByTypeAndAccount(accountId: String, type: TransactionType): Flow<List<Category>> =
+        dataSource.getByTypeAndAccount(accountId, type.name).map { list -> list.map { it.toDomain() } }
 
-    override fun getAllIncludingArchived(): Flow<List<Category>> =
-        dataSource.getAllIncludingArchived().map { list -> list.map { it.toDomain() } }
+    override fun getAllIncludingArchivedByAccount(accountId: String): Flow<List<Category>> =
+        dataSource.getAllIncludingArchivedByAccount(accountId).map { list -> list.map { it.toDomain() } }
 
-    override fun count(): Flow<Long> =
-        dataSource.count()
+    override fun countByAccount(accountId: String): Flow<Long> =
+        dataSource.countByAccount(accountId)
 
     override suspend fun save(category: Category): Result<Unit> =
         dataSource.insert(category.toEntity())

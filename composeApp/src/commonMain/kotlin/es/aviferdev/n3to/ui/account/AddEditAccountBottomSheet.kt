@@ -10,14 +10,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.Account
-import es.aviferdev.n3to.domain.model.AccountType
 import es.aviferdev.n3to.ui.theme.*
 import kotlinx.datetime.Clock
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 /**
  * Bottom sheet para crear o editar una cuenta.
- * En creación solo pide nombre y tipo — el saldo inicial se configura
+ * En creación solo pide nombre — el saldo inicial se configura
  * en un paso posterior obligatorio (SetInitialBalanceBottomSheet).
  * Todas las cuentas usan euros (€).
  */
@@ -25,13 +24,12 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Composable
 fun AddEditAccountBottomSheet(
     account: Account?,  // null = crear
-    onSave: (name: String, accountType: AccountType) -> Unit,
+    onSave: (name: String) -> Unit,
     onDismiss: () -> Unit
 ) {
     val isEditing = account != null
 
     var name      by remember { mutableStateOf(account?.name ?: "") }
-    var isCash    by remember { mutableStateOf(account?.accountType == AccountType.CASH) }
     var nameError by remember { mutableStateOf(false) }
 
     ModalBottomSheet(
@@ -71,38 +69,6 @@ fun AddEditAccountBottomSheet(
                 )
             )
 
-            Spacer(Modifier.height(16.dp))
-
-            // Tipo de cuenta: efectivo
-            Row(
-                modifier          = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text       = "\uD83D\uDCB5 Cuenta de efectivo",
-                        fontSize   = 15.sp,
-                        color      = TextPrimary,
-                        fontWeight = FontWeight.Medium
-                    )
-                    Text(
-                        text     = "Permite reconciliar el saldo con el efectivo real",
-                        fontSize = 12.sp,
-                        color    = TextSecondary
-                    )
-                }
-                Switch(
-                    checked         = isCash,
-                    onCheckedChange = { isCash = it },
-                    colors          = SwitchDefaults.colors(
-                        checkedThumbColor   = SurfaceWhite,
-                        checkedTrackColor   = PrimaryDark,
-                        uncheckedThumbColor = SurfaceWhite,
-                        uncheckedTrackColor = BorderGray
-                    )
-                )
-            }
-
             if (!isEditing) {
                 Spacer(Modifier.height(12.dp))
                 Text(
@@ -117,8 +83,7 @@ fun AddEditAccountBottomSheet(
             Button(
                 onClick = {
                     if (name.isBlank()) { nameError = true; return@Button }
-                    val type = if (isCash) AccountType.CASH else AccountType.GENERAL
-                    onSave(name.trim(), type)
+                    onSave(name.trim())
                 },
                 modifier = Modifier.fillMaxWidth().height(52.dp),
                 shape    = RoundedCornerShape(10.dp),
@@ -140,7 +105,7 @@ private fun AddEditAccountBottomSheetCreatePreview() {
     N3toTheme {
         AddEditAccountBottomSheet(
             account = null,
-            onSave = { _, _ -> },
+            onSave = {},
             onDismiss = {}
         )
     }
@@ -156,10 +121,9 @@ private fun AddEditAccountBottomSheetEditPreview() {
                 name = "Cuenta Principal",
                 initialBalance = 5000.0,
                 computedBalance = 5200.0,
-                createdAt = Clock.System.now().toEpochMilliseconds(),
-                accountType = AccountType.GENERAL
+                createdAt = Clock.System.now().toEpochMilliseconds()
             ),
-            onSave = { _, _ -> },
+            onSave = {},
             onDismiss = {}
         )
     }

@@ -5,6 +5,7 @@
 CREATE TABLE FixedIncomePositionEntity (
     id                  TEXT    NOT NULL PRIMARY KEY,
     accountId           TEXT    NOT NULL,
+    portfolioId         TEXT,
     assetCategoryId     TEXT,
     name                TEXT    NOT NULL,
     ticker              TEXT    NOT NULL DEFAULT '',
@@ -68,15 +69,25 @@ SELECT * FROM FixedIncomePositionEntity
 WHERE accountId = :accountId AND assetCategoryId = :categoryId AND archived = 0
 ORDER BY maturityDate ASC;
 
+selectByPortfolio:
+SELECT * FROM FixedIncomePositionEntity
+WHERE portfolioId = :portfolioId AND archived = 0
+ORDER BY maturityDate ASC;
+
+selectWithoutPortfolio:
+SELECT * FROM FixedIncomePositionEntity
+WHERE accountId = :accountId AND portfolioId IS NULL AND archived = 0
+ORDER BY maturityDate ASC;
+
 -- ─── Escritura ────────────────────────────────────────────────────────────────
 
 insert:
 INSERT INTO FixedIncomePositionEntity(
-    id, accountId, assetCategoryId, name, ticker, type, notes, principal, quantity,
+    id, accountId, portfolioId, assetCategoryId, name, ticker, type, notes, principal, quantity,
     nominalPerUnit, interestRate, interestFrequency, startDate, maturityDate,
     platformId, issuerId, autoRenew, archived, closedAt, closeType, feeNote, createdAt
 ) VALUES (
-    ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, NULL, NULL, ?, ?
+    ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, NULL, NULL, ?, ?
 );
 
 update:

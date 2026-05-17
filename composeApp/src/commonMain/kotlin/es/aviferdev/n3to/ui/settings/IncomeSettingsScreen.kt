@@ -79,15 +79,6 @@ fun IncomeSettingsScreen(
     }
 }
 
-// SectionHeader reemplazado por es.aviferdev.n3to.ui.common.SectionHeader
-
-@Composable
-private fun SettingsGroupCard(content: @Composable ColumnScope.() -> Unit) {
-    Card(modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(12.dp), colors = CardDefaults.cardColors(containerColor = SurfaceWhite), elevation = CardDefaults.cardElevation(0.dp)) {
-        Column(content = content)
-    }
-}
-
 @Preview
 @Composable
 private fun IncomeSettingsScreenPreview() {

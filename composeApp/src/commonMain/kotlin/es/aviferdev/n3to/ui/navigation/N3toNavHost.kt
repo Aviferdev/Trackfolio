@@ -41,6 +41,7 @@ import es.aviferdev.n3to.ui.settings.ExpenseSettingsScreen
 import es.aviferdev.n3to.ui.settings.IncomeSettingsScreen
 import es.aviferdev.n3to.ui.settings.IncomeTypeDetailScreen
 import es.aviferdev.n3to.ui.settings.PrivacySettingsScreen
+import es.aviferdev.n3to.ui.settings.AccountConfigScreen
 import es.aviferdev.n3to.ui.settings.SettingsScreen
 import es.aviferdev.n3to.ui.settings.goal.GoalSettingsScreen
 import es.aviferdev.n3to.ui.settings.taxprofile.TaxProfileSettingsScreen
@@ -329,23 +330,8 @@ fun N3toNavHost(
                                 launchSingleTop = true
                             }
                         },
-                        onNavigateToExpenseSettings = {
-                            navController.navigate(Screen.ExpenseSettings.route) {
-                                launchSingleTop = true
-                            }
-                        },
-                        onNavigateToIncomeSettings = {
-                            navController.navigate(Screen.IncomeSettings.route) {
-                                launchSingleTop = true
-                            }
-                        },
-                        onNavigateToGoalSettings = {
-                            navController.navigate(Screen.GoalSettings.route) {
-                                launchSingleTop = true
-                            }
-                        },
-                        onNavigateToTaxProfileSettings = {
-                            navController.navigate(Screen.TaxProfileSettings.route) {
+                        onNavigateToAccountConfig = { accountId ->
+                            navController.navigate(Screen.AccountConfig.createRoute(accountId)) {
                                 launchSingleTop = true
                             }
                         },
@@ -355,6 +341,28 @@ fun N3toNavHost(
                             }
                         },
                         onResetOnboarding = onResetOnboarding
+                    )
+                }
+                composable(
+                    route = Screen.AccountConfig.route,
+                    arguments = listOf(navArgument(Screen.AccountConfig.ARG_ACCOUNT_ID) { type = NavType.StringType })
+                ) { backStackEntry ->
+                    val accountId = backStackEntry.arguments?.getString(Screen.AccountConfig.ARG_ACCOUNT_ID) ?: return@composable
+                    AccountConfigScreen(
+                        accountId = accountId,
+                        onBack = { navController.popBackStack() },
+                        onNavigateToExpenseSettings = {
+                            navController.navigate(Screen.ExpenseSettings.route) { launchSingleTop = true }
+                        },
+                        onNavigateToIncomeSettings = {
+                            navController.navigate(Screen.IncomeSettings.route) { launchSingleTop = true }
+                        },
+                        onNavigateToTaxProfile = {
+                            navController.navigate(Screen.TaxProfileSettings.route) { launchSingleTop = true }
+                        },
+                        onNavigateToGoals = {
+                            navController.navigate(Screen.GoalSettings.route) { launchSingleTop = true }
+                        }
                     )
                 }
                 composable(Screen.GoalSettings.route) {

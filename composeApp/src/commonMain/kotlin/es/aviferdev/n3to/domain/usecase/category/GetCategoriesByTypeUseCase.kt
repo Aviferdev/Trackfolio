@@ -6,5 +6,6 @@ import es.aviferdev.n3to.domain.repository.CategoryRepository
 import kotlinx.coroutines.flow.Flow
 
 class GetCategoriesByTypeUseCase(private val repository: CategoryRepository) {
-    operator fun invoke(type: TransactionType): Flow<List<Category>> = repository.getByType(type)
+    operator fun invoke(accountId: String, type: TransactionType): Flow<List<Category>> =
+        repository.getByTypeAndAccount(accountId, type)
 }

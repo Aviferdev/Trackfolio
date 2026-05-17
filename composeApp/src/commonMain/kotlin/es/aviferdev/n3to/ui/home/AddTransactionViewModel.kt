@@ -531,7 +531,8 @@ class AddTransactionViewModel(
     private fun loadCategories() { loadCategoriesAndSelect(type, null) }
 
     private fun loadCategoriesAndSelect(forType: TransactionType, selectId: String?) {
-        getCategoriesByType(forType)
+        val accountId = session.selectedAccountId.value ?: return
+        getCategoriesByType(accountId, forType)
             .onEach { list ->
                 categories = list
                 selectedCategoryId = if (selectId != null && list.any { it.id == selectId })

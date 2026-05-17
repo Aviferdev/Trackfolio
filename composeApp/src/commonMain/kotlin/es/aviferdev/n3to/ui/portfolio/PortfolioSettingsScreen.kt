@@ -8,11 +8,18 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import kotlinx.coroutines.launch
 import es.aviferdev.n3to.domain.model.Asset
 import es.aviferdev.n3to.domain.model.Platform
+import es.aviferdev.n3to.domain.model.Portfolio
 import es.aviferdev.n3to.domain.usecase.asset.GetPriceReminderIntervalUseCase
+import es.aviferdev.n3to.domain.usecase.portfolio.DeletePortfolioUseCase
+import es.aviferdev.n3to.domain.usecase.portfolio.UpdatePortfolioUseCase
+import es.aviferdev.n3to.ui.account.AccountSession
 import es.aviferdev.n3to.ui.common.SectionHeader
 import es.aviferdev.n3to.ui.common.navigation.TopBarApp
 import androidx.compose.ui.Alignment
@@ -47,6 +54,17 @@ fun PortfolioSettingsScreen(
     val reminderIntervalUseCase = koinInject<GetPriceReminderIntervalUseCase>()
     var selectedInterval by remember { mutableIntStateOf(reminderIntervalUseCase.get()) }
 
+    // ── Portfolio management ────────────────────────────────────────────────
+    val session = koinInject<AccountSession>()
+    val portfolioVM = koinInject<PortfolioViewModel>()
+    val updatePortfolio = koinInject<UpdatePortfolioUseCase>()
+    val deletePortfolio = koinInject<DeletePortfolioUseCase>()
+
+    val portCoroutine = rememberCoroutineScope()
+    val portfolios by portfolioVM.portfolios.collectAsState()
+    var editingPortfolio by remember { mutableStateOf<Portfolio?>(null) }
+    var deletingPortfolio by remember { mutableStateOf<Portfolio?>(null) }
+
     PortfolioSettingsContent(
         assetCatalogState = assetCatalogState,
         platformState = platformState,
@@ -61,7 +79,10 @@ fun PortfolioSettingsScreen(
         onOpenPlatformAdd = { platformViewModel.openAddSheet() },
         onOpenPlatformEdit = { platform -> platformViewModel.openEditSheet(platform) },
         onOpenSectorSheet = { showSectorSheet = true },
-        onOpenRegionSheet = { showRegionSheet = true }
+        onOpenRegionSheet = { showRegionSheet = true },
+        portfolios = portfolios,
+        onEditPortfolio = { editingPortfolio = it },
+        onDeletePortfolio = { deletingPortfolio = it }
     )
 
     if (platformState.showAddSheet) {
@@ -103,6 +124,40 @@ fun PortfolioSettingsScreen(
             onDismiss = { showRegionSheet = false }
         )
     }
+
+    // ── Portfolio sheets ─────────────────────────────────────────────────────
+    if (editingPortfolio != null) {
+        AddEditPortfolioBottomSheet(
+            existing = editingPortfolio,
+            onSave = { name, desc ->
+                portCoroutine.launch {
+                    updatePortfolio(editingPortfolio!!.copy(name = name, description = desc))
+                }
+                editingPortfolio = null
+            },
+            onDismiss = { editingPortfolio = null }
+        )
+    }
+    if (deletingPortfolio != null) {
+        AlertDialog(
+            onDismissRequest = { deletingPortfolio = null },
+            containerColor = SurfaceWhite,
+            title = { Text("Eliminar cartera", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = TextPrimary) },
+            text = { Text("¿Eliminar \"${deletingPortfolio!!.name}\"? Los activos pasarán a \"Sin cartera\".", fontSize = 13.sp, color = TextSecondary) },
+            confirmButton = {
+                    TextButton(onClick = {
+                        portCoroutine.launch {
+                            deletePortfolio(deletingPortfolio!!.id)
+                        }
+                        deletingPortfolio = null
+                    }) { Text("Eliminar", color = ExpenseRed, fontWeight = FontWeight.SemiBold) }
+            },
+            dismissButton = {
+                TextButton(onClick = { deletingPortfolio = null }) { Text("Cancelar", color = PrimaryDark) }
+            },
+            shape = RoundedCornerShape(16.dp)
+        )
+    }
 }
 
 @Composable
@@ -118,7 +173,10 @@ fun PortfolioSettingsContent(
     onOpenPlatformEdit: (Platform) -> Unit,
     onOpenSectorSheet: () -> Unit,
     onOpenRegionSheet: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    portfolios: List<Portfolio> = emptyList(),
+    onEditPortfolio: (Portfolio) -> Unit = {},
+    onDeletePortfolio: (Portfolio) -> Unit = {}
 ) {
     val categories = assetCatalogState.categories
     val assetsByCategory = remember(assetCatalogState.assets) {
@@ -174,6 +232,54 @@ fun PortfolioSettingsContent(
                                 thickness = 0.5.dp,
                                 modifier = Modifier.padding(start = 52.dp)
                             )
+                        }
+                    }
+                }
+            }
+
+            // ── Carteras ──────────────────────────────────────────────────────
+            item { Spacer(Modifier.height(8.dp)) }
+            item {
+                Text(
+                    "CARTERAS",
+                    fontSize   = 11.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color      = TextSecondary
+                )
+            }
+            item {
+                SettingsGroupCard {
+                    if (portfolios.isEmpty()) {
+                        Text(
+                            "No hay carteras. Crea una desde la pantalla de Portfolio.",
+                            fontSize = 13.sp,
+                            color = TextSecondary,
+                            modifier = Modifier.padding(16.dp)
+                        )
+                    } else {
+                        portfolios.forEachIndexed { index, portfolio ->
+                            Row(
+                                modifier = Modifier.fillMaxWidth()
+                                    .padding(horizontal = 16.dp, vertical = 10.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Column(modifier = Modifier.weight(1f)) {
+                                    Text(portfolio.name, fontSize = 14.sp, fontWeight = FontWeight.Medium, color = TextPrimary)
+                                    if (portfolio.description != null) {
+                                        Text(portfolio.description, fontSize = 11.sp, color = TextSecondary)
+                                    }
+                                }
+                                Spacer(Modifier.width(8.dp))
+                                IconButton(onClick = { onEditPortfolio(portfolio) }, modifier = Modifier.size(32.dp)) {
+                                    Icon(Icons.Default.Edit, contentDescription = "Editar", tint = TextSecondary, modifier = Modifier.size(16.dp))
+                                }
+                                IconButton(onClick = { onDeletePortfolio(portfolio) }, modifier = Modifier.size(32.dp)) {
+                                    Icon(Icons.Default.Delete, contentDescription = "Eliminar", tint = ExpenseRed, modifier = Modifier.size(16.dp))
+                                }
+                            }
+                            if (index < portfolios.lastIndex) {
+                                HorizontalDivider(color = BorderGray, thickness = 0.5.dp, modifier = Modifier.padding(start = 52.dp))
+                            }
                         }
                     }
                 }

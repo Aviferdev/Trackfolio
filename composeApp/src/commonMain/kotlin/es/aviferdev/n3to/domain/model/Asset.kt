@@ -16,6 +16,7 @@ package es.aviferdev.n3to.domain.model
 data class Asset(
     val id: String,
     val accountId: String,
+    val portfolioId: String? = null,
     val ticker: String,
     val name: String,
     val notes: String?,

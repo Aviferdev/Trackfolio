@@ -11,6 +11,7 @@
 CREATE TABLE AssetEntity (
     id                     TEXT    NOT NULL PRIMARY KEY,
     accountId              TEXT    NOT NULL,
+    portfolioId            TEXT,
     ticker                 TEXT    NOT NULL,
     name                   TEXT    NOT NULL,
     notes                  TEXT,
@@ -21,7 +22,8 @@ CREATE TABLE AssetEntity (
     archived               INTEGER NOT NULL DEFAULT 0,
     maturityDate           INTEGER,
     FOREIGN KEY (accountId)       REFERENCES AccountEntity(id) ON DELETE CASCADE,
-    FOREIGN KEY (assetCategoryId) REFERENCES AssetCategoryEntity(id) ON DELETE SET NULL
+    FOREIGN KEY (assetCategoryId) REFERENCES AssetCategoryEntity(id) ON DELETE SET NULL,
+    FOREIGN KEY (portfolioId)     REFERENCES PortfolioEntity(id) ON DELETE SET NULL
 );
 
 CREATE INDEX idx_asset_account  ON AssetEntity(accountId);
@@ -55,9 +57,19 @@ SELECT * FROM AssetEntity WHERE id = :id;
 
 -- ─── Escritura ────────────────────────────────────────────────────────────────
 
+selectByPortfolio:
+SELECT * FROM AssetEntity
+WHERE portfolioId = :portfolioId AND archived = 0
+ORDER BY createdAt DESC;
+
+selectByAccountWithoutPortfolio:
+SELECT * FROM AssetEntity
+WHERE accountId = :accountId AND portfolioId IS NULL AND archived = 0
+ORDER BY createdAt DESC;
+
 insert:
-INSERT INTO AssetEntity(id, accountId, ticker, name, notes, createdAt, assetCategoryId, currentPrice, currentPriceUpdatedAt, archived, maturityDate)
-VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 0, ?);
+INSERT INTO AssetEntity(id, accountId, portfolioId, ticker, name, notes, createdAt, assetCategoryId, currentPrice, currentPriceUpdatedAt, archived, maturityDate)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, ?);
 
 update:
 UPDATE AssetEntity

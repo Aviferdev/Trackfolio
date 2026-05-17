@@ -6,6 +6,7 @@ import es.aviferdev.n3to.domain.model.*
 fun FixedIncomePositionEntity.toDomain(): FixedIncomePosition = FixedIncomePosition(
     id                = id,
     accountId         = accountId,
+    portfolioId       = portfolioId,
     assetCategoryId   = assetCategoryId,
     name              = name,
     ticker            = ticker,
@@ -31,6 +32,7 @@ fun FixedIncomePositionEntity.toDomain(): FixedIncomePosition = FixedIncomePosit
 fun FixedIncomePosition.toEntity(): FixedIncomePositionEntity = FixedIncomePositionEntity(
     id                = id,
     accountId         = accountId,
+    portfolioId       = portfolioId,
     assetCategoryId   = assetCategoryId,
     name              = name,
     ticker            = ticker,

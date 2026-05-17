@@ -14,6 +14,10 @@ import es.aviferdev.n3to.domain.usecase.asset.GetPriceReminderIntervalUseCase
 import es.aviferdev.n3to.domain.usecase.asset.SaveAssetUseCase
 import es.aviferdev.n3to.domain.usecase.asset.SavePriceReminderShownUseCase
 import es.aviferdev.n3to.domain.usecase.asset.ShouldShowPriceReminderUseCase
+import es.aviferdev.n3to.domain.usecase.portfolio.DeletePortfolioUseCase
+import es.aviferdev.n3to.domain.usecase.portfolio.GetPortfoliosByAccountUseCase
+import es.aviferdev.n3to.domain.usecase.portfolio.SavePortfolioUseCase
+import es.aviferdev.n3to.domain.usecase.portfolio.UpdatePortfolioUseCase
 import es.aviferdev.n3to.domain.usecase.asset.UnarchiveAssetUseCase
 import es.aviferdev.n3to.domain.usecase.asset.UpdateAssetCurrentPriceUseCase
 import es.aviferdev.n3to.domain.usecase.asset.UpdateAssetUseCase
@@ -58,6 +62,7 @@ import es.aviferdev.n3to.domain.usecase.backup.SaveLastBackupDateUseCase
 import es.aviferdev.n3to.domain.usecase.backup.ShouldShowBackupReminderUseCase
 import es.aviferdev.n3to.domain.usecase.category.GetAllCategoriesIncludingArchivedUseCase
 import es.aviferdev.n3to.domain.usecase.category.GetCategoriesByTypeUseCase
+import es.aviferdev.n3to.domain.usecase.category.SeedDefaultCategoriesUseCase
 import es.aviferdev.n3to.domain.usecase.debt.DeleteDebtUseCase
 import es.aviferdev.n3to.domain.usecase.debt.GetActiveDebtsUseCase
 import es.aviferdev.n3to.domain.usecase.debt.MarkDebtAsPaidUseCase
@@ -142,6 +147,7 @@ import es.aviferdev.n3to.ui.settings.taxprofile.TaxProfileSettingsViewModel
 import es.aviferdev.n3to.ui.loan.LoanDetailViewModel
 import es.aviferdev.n3to.ui.networth.NetWorthViewModel
 import es.aviferdev.n3to.ui.portfolio.AssetCatalogViewModel
+import es.aviferdev.n3to.ui.settings.AccountConfigViewModel
 import es.aviferdev.n3to.ui.portfolio.AssetCategoryDetailViewModel
 import es.aviferdev.n3to.ui.portfolio.AssetCategoryViewModel
 import es.aviferdev.n3to.ui.portfolio.AssetDetailViewModel
@@ -211,6 +217,11 @@ val useCaseModule = module {
     factory { ShouldShowPriceReminderUseCase(get()) }
     factory { SavePriceReminderShownUseCase(get()) }
     factory { GetPriceReminderIntervalUseCase(get()) }
+    // ── Portfolio ────────────────────────────────────────────────────────────────
+    factory { GetPortfoliosByAccountUseCase(get()) }
+    factory { SavePortfolioUseCase(get()) }
+    factory { UpdatePortfolioUseCase(get()) }
+    factory { DeletePortfolioUseCase(get()) }
     // ── Asset Transaction ─────────────────────────────────────────────────────
     factory { GetTransactionsByAssetUseCase(get()) }
     factory { GetTransactionsByAssetDescUseCase(get()) }
@@ -251,6 +262,7 @@ val useCaseModule = module {
     // ── Category (solo gastos) ────────────────────────────────────────────────
     factory { GetCategoriesByTypeUseCase(get()) }
     factory { GetAllCategoriesIncludingArchivedUseCase(get()) }
+    factory { SeedDefaultCategoriesUseCase(get()) }
     // ── Issuer ────────────────────────────────────────────────────────────────
     factory { GetIssuersUseCase(get()) }
     factory { GetAllIssuersIncludingArchivedUseCase(get()) }
@@ -322,6 +334,13 @@ val useCaseModule = module {
     single { VersionManager(get(), get(), get(named("appVersion"))) }
 
     // ── ViewModels ────────────────────────────────────────────────────────────
+    viewModel { (accountId: String) ->
+        AccountConfigViewModel(
+            accountId         = accountId,
+            accountRepository = get(),
+            getReminderInterval = get()
+        )
+    }
     viewModel {
         AccountViewModel(
             getAccounts       = get(),
@@ -329,8 +348,9 @@ val useCaseModule = module {
             updateAccount     = get(),
             deleteAccount     = get(),
             setInitialBalance = get(),
-            session = get(),
-            premiumManager = get()
+            seedCategories    = get(),
+            session           = get(),
+            premiumManager    = get()
         )
     }
     viewModel {
@@ -415,7 +435,10 @@ val useCaseModule = module {
             createFixedIncomePosition           = get(),
             getBondIssuers                      = get(),
             saveBondIssuer                      = get(),
-            getPortfolioValueHistory            = get()
+            getPortfolioValueHistory            = get(),
+            getPortfoliosByAccount              = get(),
+            savePortfolio                       = get(),
+            deletePortfolio                     = get()
         )
     }
     viewModel {
@@ -499,7 +522,7 @@ val useCaseModule = module {
         )
     }
     viewModel { BackupViewModel(get(), get()) }
-    viewModel { CategoryViewModel(get()) }
+    viewModel { CategoryViewModel(get(), get()) }
     viewModel {
         IssuerViewModel(
             getIssuers    = get(),
@@ -574,7 +597,7 @@ val useCaseModule = module {
         )
     }
 
-    viewModel { (initialTypeName: String) -> CategoryPickerViewModel(initialTypeName, get()) }
+    viewModel { (initialTypeName: String) -> CategoryPickerViewModel(initialTypeName, get(), get()) }
 
     // ── Goal Settings ────────────────────────────────────────────────────────────
     viewModel {

@@ -5,6 +5,8 @@ import kotlinx.coroutines.flow.Flow
 
 interface AssetRepository {
     fun getAssetsByAccount(accountId: String): Flow<List<Asset>>
+    fun getAssetsByPortfolio(portfolioId: String): Flow<List<Asset>>
+    fun getAssetsWithoutPortfolio(accountId: String): Flow<List<Asset>>
     fun getAllByAccountIncludingArchived(accountId: String): Flow<List<Asset>>
     fun getAssetById(id: String): Flow<Asset?>
     suspend fun saveAsset(asset: Asset): Result<Unit>

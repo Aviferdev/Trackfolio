@@ -13,7 +13,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.Account
-import es.aviferdev.n3to.domain.model.AccountType
 import es.aviferdev.n3to.ui.theme.BorderGray
 import es.aviferdev.n3to.ui.theme.PrimaryAlpha
 import es.aviferdev.n3to.ui.theme.PrimaryDark
@@ -97,24 +96,21 @@ private fun createMockAccounts(): List<Account> {
             name = "Cuenta Principal",
             initialBalance = 5000.0,
             computedBalance = 5200.0,
-            createdAt = now,
-            accountType = AccountType.GENERAL
+            createdAt = now
         ),
         Account(
             id = "2",
             name = "Efectivo",
             initialBalance = 0.0,
             computedBalance = 0.0,
-            createdAt = now,
-            accountType = AccountType.CASH
+            createdAt = now
         ),
         Account(
             id = "3",
             name = "USD Savings",
             initialBalance = 1000.0,
             computedBalance = 1050.0,
-            createdAt = now,
-            accountType = AccountType.GENERAL
+            createdAt = now
         )
     )
 }

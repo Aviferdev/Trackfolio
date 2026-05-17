@@ -6,6 +6,7 @@ import es.aviferdev.n3to.domain.model.TransactionType
 
 fun CategoryEntity.toDomain(): Category = Category(
     id = id,
+    accountId = accountId,
     name = name,
     type = TransactionType.valueOf(type),
     isDefault = isDefault != 0L
@@ -13,6 +14,7 @@ fun CategoryEntity.toDomain(): Category = Category(
 
 fun Category.toEntity(): CategoryEntity = CategoryEntity(
     id = id,
+    accountId = accountId,
     name = name,
     type = type.name,
     isDefault = if (isDefault) 1L else 0L,

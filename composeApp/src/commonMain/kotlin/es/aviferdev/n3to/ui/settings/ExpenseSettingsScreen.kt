@@ -203,8 +203,8 @@ fun ExpenseSettingsContentPreview() {
     N3toTheme {
         ExpenseSettingsContent(
             expenseCategories = listOf(
-                CategoryEntity(id = "1", name = "Comida", type = "EXPENSE", isDefault = 0, archived = 0),
-                CategoryEntity(id = "2", name = "Transporte", type = "EXPENSE", isDefault = 0, archived = 0)
+                CategoryEntity(id = "1", accountId = "preview", name = "Comida", type = "EXPENSE", isDefault = 0, archived = 0),
+                CategoryEntity(id = "2", accountId = "preview", name = "Transporte", type = "EXPENSE", isDefault = 0, archived = 0)
             ),
             onAdd = {},
             onEdit = {},
@@ -214,12 +214,4 @@ fun ExpenseSettingsContentPreview() {
     }
 }
 
-// ─── Private components ──────────────────────────────────────────────────────
-// SectionHeader reemplazado por es.aviferdev.n3to.ui.common.SectionHeader
 
-@Composable
-private fun SettingsGroupCard(content: @Composable ColumnScope.() -> Unit) {
-    Card(modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(12.dp), colors = CardDefaults.cardColors(containerColor = SurfaceWhite), elevation = CardDefaults.cardElevation(0.dp)) {
-        Column(content = content)
-    }
-}

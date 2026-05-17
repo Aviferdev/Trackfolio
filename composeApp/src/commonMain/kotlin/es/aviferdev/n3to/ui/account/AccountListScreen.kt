@@ -24,7 +24,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.Account
-import es.aviferdev.n3to.domain.model.AccountType
 import es.aviferdev.n3to.ui.common.navigation.TopBarApp
 import es.aviferdev.n3to.ui.common.component.EmptyStateView
 import es.aviferdev.n3to.ui.common.dialog.DeleteConfirmDialog
@@ -70,7 +69,7 @@ fun AccountListScreen(
     if (uiState.showAddSheet) {
         AddEditAccountBottomSheet(
             account   = null,
-            onSave    = { name, type -> viewModel.addAccount(name, type) },
+            onSave    = { name -> viewModel.addAccount(name) },
             onDismiss = { viewModel.closeAddSheet() }
         )
     }
@@ -83,8 +82,8 @@ fun AccountListScreen(
     if (uiState.showEditSheet && uiState.editingAccount != null) {
         AddEditAccountBottomSheet(
             account   = uiState.editingAccount,
-            onSave    = { name, type ->
-                viewModel.editAccount(uiState.editingAccount!!, name, type)
+            onSave    = { name ->
+                viewModel.editAccount(uiState.editingAccount!!, name)
             },
             onDismiss = { viewModel.closeEditSheet() }
         )
@@ -166,11 +165,11 @@ fun AccountListContentPreview() {
     val now = Clock.System.now().toEpochMilliseconds()
     val fakeAccounts = listOf(
         Account(id = "1", name = "Cuenta Principal",
-            initialBalance = 5000.0, computedBalance = 5200.0, createdAt = now, accountType = AccountType.GENERAL),
+            initialBalance = 5000.0, computedBalance = 5200.0, createdAt = now),
         Account(id = "2", name = "Efectivo",
-            initialBalance = 0.0, computedBalance = 0.0, createdAt = now, accountType = AccountType.CASH),
+            initialBalance = 0.0, computedBalance = 0.0, createdAt = now),
         Account(id = "3", name = "USD Savings",
-            initialBalance = 1000.0, computedBalance = 1050.0, createdAt = now, accountType = AccountType.GENERAL)
+            initialBalance = 1000.0, computedBalance = 1050.0, createdAt = now)
     )
 
     N3toTheme {

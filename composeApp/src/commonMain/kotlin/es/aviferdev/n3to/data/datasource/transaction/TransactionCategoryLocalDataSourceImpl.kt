@@ -17,26 +17,30 @@ class TransactionCategoryLocalDataSourceImpl(
 
     private val queries = database.categoryQueries
 
-    override fun getAll(): Flow<List<CategoryEntity>> =
-        queries.selectAll().asFlow().mapToList(Dispatchers.IO)
+    override fun getByAccount(accountId: String): Flow<List<CategoryEntity>> =
+        queries.selectAll(accountId).asFlow().mapToList(Dispatchers.IO)
 
-    override fun getByType(type: String): Flow<List<CategoryEntity>> =
-        queries.selectByType(type).asFlow().mapToList(Dispatchers.IO)
+    override fun getByTypeAndAccount(accountId: String, type: String): Flow<List<CategoryEntity>> =
+        queries.selectByType(accountId, type).asFlow().mapToList(Dispatchers.IO)
 
-    override fun getAllIncludingArchived(): Flow<List<CategoryEntity>> =
-        queries.selectAllIncludingArchived().asFlow().mapToList(Dispatchers.IO)
+    override fun getAllIncludingArchivedByAccount(accountId: String): Flow<List<CategoryEntity>> =
+        queries.selectAllIncludingArchived(accountId).asFlow().mapToList(Dispatchers.IO)
+
+    override fun getByTypeIncludingArchivedByAccount(accountId: String, type: String): Flow<List<CategoryEntity>> =
+        queries.selectByTypeIncludingArchived(accountId, type).asFlow().mapToList(Dispatchers.IO)
 
     override fun getById(id: String): Flow<CategoryEntity?> =
         queries.selectById(id).asFlow().mapToOneOrNull(Dispatchers.IO)
 
-    override fun count(): Flow<Long> =
-        queries.countAll().asFlow().mapToOne(Dispatchers.IO)
+    override fun countByAccount(accountId: String): Flow<Long> =
+        queries.countAll(accountId).asFlow().mapToOne(Dispatchers.IO)
 
     override suspend fun insert(entity: CategoryEntity): Result<Unit> =
         runCatching {
             withContext(Dispatchers.IO) {
                 queries.insert(
                     id        = entity.id,
+                    accountId = entity.accountId,
                     name      = entity.name,
                     type      = entity.type,
                     isDefault = entity.isDefault

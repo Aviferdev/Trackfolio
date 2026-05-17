@@ -25,6 +25,18 @@ class AssetLocalDataSourceImpl(
             .mapToList(Dispatchers.IO)
             .map { list -> list.map { it.toDomain() } }
 
+    override fun getByPortfolio(portfolioId: String): Flow<List<Asset>> =
+        queries.selectByPortfolio(portfolioId)
+            .asFlow()
+            .mapToList(Dispatchers.IO)
+            .map { list -> list.map { it.toDomain() } }
+
+    override fun getByAccountWithoutPortfolio(accountId: String): Flow<List<Asset>> =
+        queries.selectByAccountWithoutPortfolio(accountId)
+            .asFlow()
+            .mapToList(Dispatchers.IO)
+            .map { list -> list.map { it.toDomain() } }
+
     override fun getAllByAccountIncludingArchived(accountId: String): Flow<List<Asset>> =
         queries.selectAllByAccountIncludingArchived(accountId)
             .asFlow()
@@ -44,6 +56,7 @@ class AssetLocalDataSourceImpl(
                 queries.insert(
                     id                    = e.id,
                     accountId             = e.accountId,
+                    portfolioId           = e.portfolioId,
                     ticker                = e.ticker,
                     name                  = e.name,
                     notes                 = e.notes,

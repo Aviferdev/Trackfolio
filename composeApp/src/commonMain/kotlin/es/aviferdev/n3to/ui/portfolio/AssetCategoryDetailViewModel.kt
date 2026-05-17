@@ -236,7 +236,8 @@ class AssetCategoryDetailViewModel(
         maturityDate: Long? = null,
         fixedIncomePercent: Int = 0,
         sectorIds: Set<String> = emptySet(),
-        regionPercents: Map<String, Int> = emptyMap()
+        regionPercents: Map<String, Int> = emptyMap(),
+        portfolioId: String? = null
     ) {
         val accountId = session.selectedAccountId.value ?: run {
             _error.value = "Selecciona primero una cuenta"
@@ -257,6 +258,7 @@ class AssetCategoryDetailViewModel(
                 name            = nameTrim,
                 notes           = notes?.ifBlank { null },
                 createdAt       = now,
+                portfolioId     = portfolioId,
                 assetCategoryId = categoryId,
                 currentPrice    = currentPrice,
                 currentPriceUpdatedAt = if (currentPrice != null) now else null,
@@ -312,7 +314,8 @@ class AssetCategoryDetailViewModel(
         maturityDate: Long? = null,
         fixedIncomePercent: Int = 0,
         sectorIds: Set<String> = emptySet(),
-        regionPercents: Map<String, Int> = emptyMap()
+        regionPercents: Map<String, Int> = emptyMap(),
+        portfolioId: String? = null
     ) {
         val tickerTrim = ticker.trim().uppercase()
         val nameTrim   = name.trim()
@@ -334,7 +337,8 @@ class AssetCategoryDetailViewModel(
                     assetCategoryId       = assetCategoryId,
                     currentPrice          = currentPrice,
                     currentPriceUpdatedAt = updatedAt,
-                    maturityDate          = maturityDate
+                    maturityDate          = maturityDate,
+                    portfolioId           = portfolioId
                 )
             ).onSuccess {
                 if (fixedIncomePercent > 0) {

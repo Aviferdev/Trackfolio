@@ -24,6 +24,12 @@ class FixedIncomeRepositoryImpl(
     override fun getByAccountAndCategory(accountId: String, categoryId: String): Flow<List<FixedIncomePosition>> =
         localDataSource.getByAccountAndCategory(accountId, categoryId)
 
+    override fun getByPortfolio(portfolioId: String): Flow<List<FixedIncomePosition>> =
+        localDataSource.getByPortfolio(portfolioId)
+
+    override fun getWithoutPortfolio(accountId: String): Flow<List<FixedIncomePosition>> =
+        localDataSource.getWithoutPortfolio(accountId)
+
     override suspend fun insert(position: FixedIncomePosition): Result<Unit> =
         localDataSource.insert(position)
 

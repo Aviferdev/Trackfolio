@@ -74,9 +74,6 @@ class TransactionViewModel(
         }
     }
 
-    private val categoryNamesFlow = getAllCategoriesIncludingArchived()
-        .map { all -> all.associate { it.id to it.name } }
-
     val uiState: StateFlow<TransactionListUiState> = combine(
         session.selectedAccountId,
         _selectedPeriod,
@@ -102,8 +99,10 @@ class TransactionViewModel(
         val canGoBack =
             oldest == null || prevMonth.first > oldest.first || (prevMonth.first == oldest.first && prevMonth.second >= oldest.second)
 
-        if (params.accountId == null) {
-            categoryNamesFlow.map { categoryNames ->
+        val accountId = params.accountId
+        if (accountId == null) {
+            getAllCategoriesIncludingArchived("").map { all ->
+                val categoryNames = all.associate { it.id to it.name }
                 TransactionListUiState(
                     categoryNames = categoryNames,
                     year = year,
@@ -115,9 +114,9 @@ class TransactionViewModel(
             }
         } else {
             combine(
-                getTransactionsByMonth(params.accountId, year, month),
-                getMonthlyTotals(params.accountId, year, month),
-                categoryNamesFlow
+                getTransactionsByMonth(accountId, year, month),
+                getMonthlyTotals(accountId, year, month),
+                getAllCategoriesIncludingArchived(accountId).map { all -> all.associate { it.id to it.name } }
             ) { transactions, totals, categoryNames ->
                 val filtered = if (query.isBlank()) transactions
                 else transactions.filter { t ->

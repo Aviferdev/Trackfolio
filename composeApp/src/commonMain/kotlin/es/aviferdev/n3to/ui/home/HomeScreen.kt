@@ -43,7 +43,6 @@ import es.aviferdev.n3to.core.security.BalanceVisibilityManager
 import es.aviferdev.n3to.core.security.BiometricAuthenticator
 import es.aviferdev.n3to.core.security.BiometricResult
 import es.aviferdev.n3to.domain.model.Account
-import es.aviferdev.n3to.domain.model.AccountType
 import es.aviferdev.n3to.domain.model.HomeBalance
 import es.aviferdev.n3to.domain.model.IncomeType
 import es.aviferdev.n3to.domain.model.MonthlyGoalProgress
@@ -179,7 +178,7 @@ fun HomeScreen(
                 }
                 val currentAccount = state.balance.selectedAccount
                 LaunchedEffect(currentAccount) {
-                    if (currentAccount?.isCash == true) reconciliationViewModel.checkReminder()
+                    currentAccount?.let { reconciliationViewModel.checkReminder(it.id) }
                 }
 
                 val showVersionBanner = versionStatus is VersionManager.Status.UpdateAvailable
@@ -221,7 +220,7 @@ fun HomeScreen(
                     onRemindLater = { viewModel.dismissReminder() },
                     nearMaturityState = nearMaturity,
                     onDismissNearMaturity = { viewModel.dismissNearMaturityBanner() },
-                    showReconciliationBanner = reconciliationState.showBanner && currentAccount?.isCash == true,
+                    showReconciliationBanner = reconciliationState.showBanner,
                     onReconcileNow = { reconciliationViewModel.openBottomSheet(state.balance.selectedAccountBalance) },
                     onReconcileRemindLater = { reconciliationViewModel.dismissBanner() },
                     showBackupBanner = showBackupBanner,
@@ -527,8 +526,7 @@ private fun HomeContentPreview() {
         name = "Cuenta Corriente",
         initialBalance = 1000.0,
         computedBalance = 3500.0,
-        createdAt = 0L,
-        accountType = AccountType.GENERAL
+        createdAt = 0L
     )
     val fakeTransactions = listOf(
         Transaction(

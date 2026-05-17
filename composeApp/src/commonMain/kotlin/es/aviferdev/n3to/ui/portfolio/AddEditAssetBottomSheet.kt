@@ -5,6 +5,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -52,7 +53,9 @@ import es.aviferdev.n3to.domain.model.Asset
 import es.aviferdev.n3to.domain.model.AssetCategory
 import es.aviferdev.n3to.domain.model.AssetCategoryType
 import es.aviferdev.n3to.domain.model.Platform
+import es.aviferdev.n3to.domain.model.Portfolio
 import es.aviferdev.n3to.ui.theme.BorderGray
+import es.aviferdev.n3to.ui.theme.PrimaryAlpha
 import es.aviferdev.n3to.ui.theme.ExpenseRed
 import es.aviferdev.n3to.ui.theme.PrimaryDark
 import es.aviferdev.n3to.ui.theme.SurfaceWhite
@@ -80,6 +83,8 @@ fun AddEditAssetBottomSheet(
     allRegions: List<es.aviferdev.n3to.domain.model.AssetRegion> = emptyList(),
     linkedRegionPercents: Map<String, Int> = emptyMap(),
     linkedFixedIncomePercent: Int = 0,
+    portfolios: List<Portfolio> = emptyList(),
+    selectedPortfolioId: String? = null,
     onSave: (
         ticker: String,
         name: String,
@@ -90,7 +95,8 @@ fun AddEditAssetBottomSheet(
         maturityDate: Long?,
         fixedIncomePercent: Int,
         sectorIds: Set<String>,
-        regionPercents: Map<String, Int>
+        regionPercents: Map<String, Int>,
+        portfolioId: String?
     ) -> Unit,
     onDismiss: () -> Unit
 ) {
@@ -106,6 +112,8 @@ fun AddEditAssetBottomSheet(
 
     var selectedPlatformIds by remember(linkedPlatformIds) { mutableStateOf(linkedPlatformIds) }
     var fixedIncomePercent by remember(linkedFixedIncomePercent) { mutableStateOf(linkedFixedIncomePercent) }
+    var currentPortfolioId by remember { mutableStateOf(selectedPortfolioId ?: asset?.portfolioId) }
+    var showPortfolioMenu by remember { mutableStateOf(false) }
     var selectedSectorIds by remember(linkedSectorIds) { mutableStateOf(linkedSectorIds) }
     var regionPercents by remember(allRegions, linkedRegionPercents) {
         mutableStateOf(
@@ -197,6 +205,37 @@ fun AddEditAssetBottomSheet(
                 if (selectedCategoryId == null) {
                     Spacer(Modifier.height(4.dp))
                     Text("Selecciona una categoría", fontSize = 11.sp, color = ExpenseRed)
+                }
+                Spacer(Modifier.height(16.dp))
+            }
+
+            // ── Selector de cartera ─────────────────────────────────────────
+            if (portfolios.isNotEmpty()) {
+                Text(
+                    text       = "Cartera",
+                    fontSize   = 12.sp,
+                    color      = TextSecondary,
+                    fontWeight = FontWeight.Medium
+                )
+                Spacer(Modifier.height(8.dp))
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .horizontalScroll(rememberScrollState()),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    PortfolioChipSimple(
+                        label      = "Sin cartera",
+                        isSelected = currentPortfolioId == null,
+                        onClick    = { currentPortfolioId = null }
+                    )
+                    portfolios.forEach { portfolio ->
+                        PortfolioChipSimple(
+                            label      = portfolio.name,
+                            isSelected = currentPortfolioId == portfolio.id,
+                            onClick    = { currentPortfolioId = portfolio.id }
+                        )
+                    }
                 }
                 Spacer(Modifier.height(16.dp))
             }
@@ -549,7 +588,8 @@ Spacer(Modifier.height(12.dp))
                         maturityToSave,
                         compositionToSave,
                         sectorsToSave,
-                        regionsToSave
+                        regionsToSave,
+                        currentPortfolioId
                     )
                 },
                 enabled  = isValid,
@@ -743,8 +783,35 @@ private fun AddEditAssetBottomSheetPreview() {
             allRegions = emptyList(),
             linkedRegionPercents = emptyMap(),
             linkedFixedIncomePercent = 0,
-            onSave = { _, _, _, _, _, _, _, _, _, _ -> },
+            onSave = { _, _, _, _, _, _, _, _, _, _, _ -> },
             onDismiss = {}
+        )
+    }
+}
+
+@Composable
+private fun PortfolioChipSimple(
+    label: String,
+    isSelected: Boolean,
+    onClick: () -> Unit
+) {
+    val bg = if (isSelected) PrimaryAlpha else androidx.compose.ui.graphics.Color.Transparent
+    val border = if (isSelected) PrimaryDark else BorderGray
+    val textColor = if (isSelected) PrimaryDark else TextSecondary
+
+    Box(
+        modifier = Modifier
+            .clip(RoundedCornerShape(20.dp))
+            .background(bg)
+            .border(1.dp, border, RoundedCornerShape(20.dp))
+            .clickable { onClick() }
+            .padding(horizontal = 14.dp, vertical = 6.dp)
+    ) {
+        Text(
+            text = label,
+            fontSize = 12.sp,
+            fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
+            color = textColor
         )
     }
 }

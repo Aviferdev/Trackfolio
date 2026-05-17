@@ -4,13 +4,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import es.aviferdev.n3to.core.premium.PremiumManager
 import es.aviferdev.n3to.domain.model.Account
-import es.aviferdev.n3to.domain.model.AccountType
 import es.aviferdev.n3to.domain.model.PremiumConstants
 import es.aviferdev.n3to.domain.usecase.account.DeleteAccountUseCase
 import es.aviferdev.n3to.domain.usecase.account.GetAccountsUseCase
 import es.aviferdev.n3to.domain.usecase.account.SaveAccountUseCase
 import es.aviferdev.n3to.domain.usecase.account.SetInitialBalanceUseCase
 import es.aviferdev.n3to.domain.usecase.account.UpdateAccountUseCase
+import es.aviferdev.n3to.domain.usecase.category.SeedDefaultCategoriesUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -36,6 +36,7 @@ class AccountViewModel(
     private val updateAccount: UpdateAccountUseCase,
     private val deleteAccount: DeleteAccountUseCase,
     private val setInitialBalance: SetInitialBalanceUseCase,
+    private val seedCategories: SeedDefaultCategoriesUseCase,
     private val session: AccountSession,
     private val premiumManager: PremiumManager
 ) : ViewModel() {
@@ -120,7 +121,7 @@ class AccountViewModel(
         _uiState.value = _uiState.value.copy(showDeleteConfirm = false, accountToDelete = null)
     }
 
-    fun addAccount(name: String, accountType: AccountType = AccountType.GENERAL) {
+    fun addAccount(name: String) {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true)
             val newAccount = Account(
@@ -128,11 +129,11 @@ class AccountViewModel(
                 name            = name,
                 initialBalance  = 0.0,
                 computedBalance = 0.0,
-                createdAt       = Clock.System.now().toEpochMilliseconds(),
-                accountType     = accountType
+                createdAt       = Clock.System.now().toEpochMilliseconds()
             )
             saveAccount(newAccount)
                 .onSuccess {
+                    seedCategories(newAccount.id)
                     _uiState.value = _uiState.value.copy(
                         isLoading    = false,
                         showAddSheet = false,
@@ -154,13 +155,10 @@ class AccountViewModel(
         }
     }
 
-    fun editAccount(account: Account, newName: String, accountType: AccountType? = null) {
+    fun editAccount(account: Account, newName: String) {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true)
-            val updated = account.copy(
-                name        = newName,
-                accountType = accountType ?: account.accountType
-            )
+            val updated = account.copy(name = newName)
             updateAccount(updated)
                 .onSuccess {
                     _uiState.value = _uiState.value.copy(

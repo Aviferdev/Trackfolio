@@ -5,11 +5,9 @@ import androidx.lifecycle.viewModelScope
 import es.aviferdev.n3to.data.database.CategoryEntity
 import es.aviferdev.n3to.data.datasource.transaction.TransactionCategoryLocalDataSource
 import es.aviferdev.n3to.domain.model.TransactionType
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.stateIn
+import es.aviferdev.n3to.ui.account.AccountSession
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 
@@ -21,8 +19,10 @@ data class CategoryListUiState(
     val error: String?                          = null
 )
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class CategoryViewModel(
-    private val dataSource: TransactionCategoryLocalDataSource
+    private val dataSource: TransactionCategoryLocalDataSource,
+    private val session: AccountSession
 ) : ViewModel() {
 
     private val _showAddSheet  = MutableStateFlow(false)
@@ -31,7 +31,10 @@ class CategoryViewModel(
     private val _error         = MutableStateFlow<String?>(null)
 
     val uiState: StateFlow<CategoryListUiState> = combine(
-        dataSource.getByType(TransactionType.EXPENSE.name),
+        session.selectedAccountId.flatMapLatest { accountId ->
+            if (accountId == null) flowOf(emptyList<CategoryEntity>())
+            else dataSource.getByTypeAndAccount(accountId, TransactionType.EXPENSE.name)
+        },
         combine(_showAddSheet, _editing, _pendingDelete, _error) { s, e, p, err ->
             Quadruple(s, e, p, err)
         }
@@ -44,10 +47,10 @@ class CategoryViewModel(
             error             = q.d
         )
     }.stateIn(
-        scope        = viewModelScope,
-        started      = SharingStarted.WhileSubscribed(5_000),
-        initialValue = CategoryListUiState()
-    )
+            scope        = viewModelScope,
+            started      = SharingStarted.WhileSubscribed(5_000),
+            initialValue = CategoryListUiState()
+        )
 
     // ── Añadir ────────────────────────────────────────────────────────────────
     fun openAddSheet() {
@@ -60,6 +63,8 @@ class CategoryViewModel(
         val trimmed = name.trim()
         if (trimmed.isBlank()) return
 
+        val accountId = session.selectedAccountId.value ?: return
+
         if (uiState.value.expenseCategories.any { it.name.equals(trimmed, ignoreCase = true) }) {
             _error.value = "Ya existe una categoría con ese nombre"
             return
@@ -70,6 +75,7 @@ class CategoryViewModel(
             dataSource.insert(
                 CategoryEntity(
                     id        = id,
+                    accountId = accountId,
                     name      = trimmed,
                     type      = TransactionType.EXPENSE.name,
                     isDefault = 0L,

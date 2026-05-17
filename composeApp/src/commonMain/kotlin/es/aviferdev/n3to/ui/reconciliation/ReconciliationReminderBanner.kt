@@ -54,7 +54,7 @@ fun ReconciliationReminderBanner(
             )
             Spacer(Modifier.width(10.dp))
             Text(
-                text       = "Hace tiempo que no reconcilias el saldo de efectivo",
+                text       = "Hace tiempo que no reconcilias el saldo",
                 fontSize   = 12.sp,
                 color      = SecondaryTeal,
                 fontWeight = FontWeight.Medium,

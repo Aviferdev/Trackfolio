@@ -25,6 +25,7 @@ import es.aviferdev.n3to.domain.model.Platform
 fun AssetEntity.toDomain(): Asset = Asset(
     id                    = id,
     accountId             = accountId,
+    portfolioId           = portfolioId,
     ticker                = ticker,
     name                  = name,
     notes                 = notes,
@@ -39,6 +40,7 @@ fun AssetEntity.toDomain(): Asset = Asset(
 fun Asset.toEntity(): AssetEntity = AssetEntity(
     id                    = id,
     accountId             = accountId,
+    portfolioId           = portfolioId,
     ticker                = ticker,
     name                  = name,
     notes                 = notes,

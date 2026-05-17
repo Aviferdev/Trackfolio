@@ -70,6 +70,7 @@ import es.aviferdev.n3to.ui.common.LineChartCard
 import es.aviferdev.n3to.ui.common.chart.TimeRange
 import es.aviferdev.n3to.ui.common.component.EmptyStateView
 import es.aviferdev.n3to.ui.common.component.TimeRangeChipRow
+import es.aviferdev.n3to.ui.fixedincome.EditFixedIncomeBottomSheet
 import es.aviferdev.n3to.ui.common.button.IconButtonApp
 import es.aviferdev.n3to.ui.common.navigation.TopBarApp
 import es.aviferdev.n3to.ui.fixedincome.CreateFixedIncomeBottomSheet
@@ -97,6 +98,7 @@ import kotlin.math.abs
 import es.aviferdev.n3to.domain.model.Asset
 import es.aviferdev.n3to.domain.model.AssetCategory
 import es.aviferdev.n3to.domain.model.FixedIncomePosition
+import es.aviferdev.n3to.domain.model.Portfolio
 import es.aviferdev.n3to.domain.model.PortfolioValuePoint
 import es.aviferdev.n3to.domain.portfolio.AssetPosition
 import kotlinx.datetime.Clock
@@ -119,11 +121,18 @@ fun PortfolioScreen(
     val platformState by platformViewModel.uiState.collectAsState()
     val availableCategories by viewModel.availableCategories.collectAsState()
     val valueHistory by viewModel.portfolioValueHistory.collectAsState()
+    val portfolios by viewModel.portfolios.collectAsState()
+    val selectedPortfolioId by viewModel.selectedPortfolioId.collectAsState()
+    val showAddPortfolioSheet by viewModel.showAddPortfolioSheet.collectAsState()
     val balancesHidden = LocalBalanceHidden.current
 
     accountViewModel.selectAccount()
 
     PortfolioContent(
+        portfolios = portfolios,
+        selectedPortfolioId = selectedPortfolioId,
+        onSelectPortfolio = { viewModel.selectPortfolio(it) },
+        onAddPortfolio = { viewModel.openAddPortfolioSheet() },
         state = state,
         valueHistory = valueHistory,
         balancesHidden = balancesHidden,
@@ -185,8 +194,9 @@ fun PortfolioScreen(
             linkedSectorIds = emptySet(),
             allRegions = state.allRegions,
             linkedRegionPercents = emptyMap(),
-            onSave = { ticker, name, notes, categoryId, currentPrice, platformIds, _, fixedPct, sectorIds, regionPercents ->
-                catalogViewModel.addAsset(ticker, name, notes, categoryId, currentPrice, platformIds, fixedPct, sectorIds, regionPercents)
+            portfolios = portfolios,
+            onSave = { ticker, name, notes, categoryId, currentPrice, platformIds, _, fixedPct, sectorIds, regionPercents, portfolioId ->
+                catalogViewModel.addAsset(ticker, name, notes, categoryId, currentPrice, platformIds, fixedPct, sectorIds, regionPercents, portfolioId)
             },
             onDismiss = { catalogViewModel.closeAddSheet() }
         )
@@ -203,10 +213,19 @@ fun PortfolioScreen(
             allRegions = state.allRegions,
             linkedRegionPercents = catalogState.editingRegionPercents,
             linkedFixedIncomePercent = catalogState.editingFixedIncomePercent,
-            onSave = { ticker, name, notes, categoryId, currentPrice, platformIds, _, fixedPct, sectorIds, regionPercents ->
-                catalogViewModel.editAsset(editing, ticker, name, notes, categoryId, currentPrice, platformIds, fixedPct, sectorIds, regionPercents)
+            portfolios = portfolios,
+            selectedPortfolioId = editing.portfolioId,
+            onSave = { ticker, name, notes, categoryId, currentPrice, platformIds, _, fixedPct, sectorIds, regionPercents, portfolioId ->
+                catalogViewModel.editAsset(editing, ticker, name, notes, categoryId, currentPrice, platformIds, fixedPct, sectorIds, regionPercents, portfolioId)
             },
             onDismiss = { catalogViewModel.closeEditSheet() }
+        )
+    }
+    if (showAddPortfolioSheet) {
+        AddEditPortfolioBottomSheet(
+            existing = null,
+            onSave = { name, desc -> viewModel.addPortfolio(name, desc) },
+            onDismiss = { viewModel.closeAddPortfolioSheet() }
         )
     }
     if (platformState.showAddSheet) {
@@ -248,6 +267,10 @@ fun PortfolioContent(
     onOpenCreateFixedIncomeSheet: () -> Unit,
     onOpenUpdatePriceSheet: (Asset) -> Unit,
     onShowRegisterCouponSheet: (FixedIncomePosition) -> Unit,
+    portfolios: List<Portfolio> = emptyList(),
+    selectedPortfolioId: String? = null,
+    onSelectPortfolio: (String?) -> Unit = {},
+    onAddPortfolio: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     var closedExpanded by remember { mutableStateOf(false) }
@@ -277,6 +300,13 @@ fun PortfolioContent(
                         Icon(Icons.Outlined.Settings, contentDescription = "Ajustes de portfolio", tint = TextSecondary)
                     }
                 }
+            )
+
+            PortfolioSelectorBar(
+                portfolios = portfolios,
+                selectedPortfolioId = selectedPortfolioId,
+                onSelectPortfolio = onSelectPortfolio,
+                onAddPortfolio = onAddPortfolio
             )
 
             LazyColumn(

@@ -12,6 +12,12 @@ class AssetRepositoryImpl(
     override fun getAssetsByAccount(accountId: String): Flow<List<Asset>> =
         dataSource.getByAccount(accountId)
 
+    override fun getAssetsByPortfolio(portfolioId: String): Flow<List<Asset>> =
+        dataSource.getByPortfolio(portfolioId)
+
+    override fun getAssetsWithoutPortfolio(accountId: String): Flow<List<Asset>> =
+        dataSource.getByAccountWithoutPortfolio(accountId)
+
     override fun getAllByAccountIncludingArchived(accountId: String): Flow<List<Asset>> =
         dataSource.getAllByAccountIncludingArchived(accountId)
 

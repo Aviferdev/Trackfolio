@@ -49,6 +49,18 @@ class FixedIncomeLocalDataSourceImpl(
             .mapToList(Dispatchers.IO)
             .map { list -> list.map { it.toDomain() } }
 
+    override fun getByPortfolio(portfolioId: String): Flow<List<FixedIncomePosition>> =
+        queries.selectByPortfolio(portfolioId)
+            .asFlow()
+            .mapToList(Dispatchers.IO)
+            .map { list -> list.map { it.toDomain() } }
+
+    override fun getWithoutPortfolio(accountId: String): Flow<List<FixedIncomePosition>> =
+        queries.selectWithoutPortfolio(accountId)
+            .asFlow()
+            .mapToList(Dispatchers.IO)
+            .map { list -> list.map { it.toDomain() } }
+
     override suspend fun insert(position: FixedIncomePosition): Result<Unit> =
         runCatching {
             withContext(Dispatchers.IO) {
@@ -56,6 +68,7 @@ class FixedIncomeLocalDataSourceImpl(
                 queries.insert(
                     id                = e.id,
                     accountId         = e.accountId,
+                    portfolioId       = e.portfolioId,
                     assetCategoryId   = e.assetCategoryId,
                     name              = e.name,
                     ticker            = e.ticker,

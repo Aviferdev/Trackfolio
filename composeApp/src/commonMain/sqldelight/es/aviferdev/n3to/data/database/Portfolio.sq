@@ -1,0 +1,38 @@
+CREATE TABLE PortfolioEntity (
+    id          TEXT    NOT NULL PRIMARY KEY,
+    accountId   TEXT    NOT NULL REFERENCES AccountEntity(id) ON DELETE CASCADE,
+    name        TEXT    NOT NULL,
+    description TEXT,
+    color       TEXT,
+    sortOrder   INTEGER NOT NULL DEFAULT 0,
+    createdAt   INTEGER NOT NULL
+);
+
+CREATE INDEX idx_portfolio_account ON PortfolioEntity(accountId);
+
+-- ─── Lectura ──────────────────────────────────────────────────────────────────
+
+selectByAccount:
+SELECT * FROM PortfolioEntity
+WHERE accountId = :accountId
+ORDER BY sortOrder ASC, name ASC;
+
+selectById:
+SELECT * FROM PortfolioEntity WHERE id = :id;
+
+countByAccount:
+SELECT COUNT(*) FROM PortfolioEntity WHERE accountId = :accountId;
+
+-- ─── Escritura ────────────────────────────────────────────────────────────────
+
+insert:
+INSERT INTO PortfolioEntity(id, accountId, name, description, color, sortOrder, createdAt)
+VALUES (?, ?, ?, ?, ?, ?, ?);
+
+update:
+UPDATE PortfolioEntity
+SET name = :name, description = :description, color = :color, sortOrder = :sortOrder
+WHERE id = :id;
+
+delete:
+DELETE FROM PortfolioEntity WHERE id = :id;

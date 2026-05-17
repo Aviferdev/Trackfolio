@@ -10,7 +10,7 @@ import es.aviferdev.n3to.ui.theme.formatAmount
 import kotlinx.datetime.Clock
 
 /**
- * Reconcilia el saldo de una cuenta de efectivo.
+ * Reconcilia el saldo de una cuenta.
  * Calcula la diferencia entre saldo calculado y saldo real,
  * y crea una transacción ADJUSTMENT automática.
  *
@@ -52,14 +52,14 @@ class ReconcileBalanceUseCase(
         val result = transactionRepository.saveTransaction(transaction)
 
         if (result.isSuccess) {
-            appSettings.putLong(KEY_LAST_RECONCILIATION_DATE, now)
+            appSettings.putLong(keyLastDate(accountId), now)
         }
 
         return result.map { transaction }
     }
 
     companion object {
-        const val KEY_LAST_RECONCILIATION_DATE = "last_reconciliation_date"
+        fun keyLastDate(accountId: String) = "last_reconciliation_$accountId"
     }
 }
 

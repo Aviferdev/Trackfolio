@@ -49,7 +49,7 @@ class AccountLocalDataSourceImpl(
                 name        = account.name,
                 balance     = account.initialBalance,
                 createdAt   = account.createdAt,
-                accountType = account.accountType.name,
+                accountType = "GENERAL",  // columna legacy, siempre GENERAL
                 currency    = account.currency
             )
         }
@@ -58,9 +58,8 @@ class AccountLocalDataSourceImpl(
     override suspend fun updateAccount(account: Account) {
         withContext(Dispatchers.IO) {
             queries.update(
-                name        = account.name,
-                accountType = account.accountType.name,
-                id          = account.id
+                name = account.name,
+                id   = account.id
             )
         }
     }
@@ -69,10 +68,6 @@ class AccountLocalDataSourceImpl(
         withContext(Dispatchers.IO) {
             queries.updateInitialBalance(balance = amount, id = accountId)
         }
-    }
-
-    override suspend fun updateAccountType(accountId: String, accountType: String) {
-        // No-op: accountType se persistirá vía migrations en futuro
     }
 
     override suspend fun deleteAccount(accountId: String) {

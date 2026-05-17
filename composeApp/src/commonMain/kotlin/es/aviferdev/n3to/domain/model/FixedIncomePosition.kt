@@ -9,6 +9,7 @@ import kotlinx.datetime.daysUntil
 data class FixedIncomePosition(
     val id: String,
     val accountId: String,
+    val portfolioId: String? = null,
     val assetCategoryId: String? = null,
     val name: String,
     val ticker: String,

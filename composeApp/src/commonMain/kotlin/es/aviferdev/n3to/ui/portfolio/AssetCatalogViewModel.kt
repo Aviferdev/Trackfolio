@@ -179,7 +179,8 @@ class AssetCatalogViewModel(
         platformIds: Set<String> = emptySet(),
         fixedIncomePercent: Int = 0,
         sectorIds: Set<String> = emptySet(),
-        regionPercents: Map<String, Int> = emptyMap()
+        regionPercents: Map<String, Int> = emptyMap(),
+        portfolioId: String? = null
     ) {
         val accountId = session.selectedAccountId.value ?: run {
             _error.value = "Selecciona primero una cuenta"
@@ -202,6 +203,7 @@ class AssetCatalogViewModel(
             val asset = Asset(
                 id              = "asset_${now}_${(0..9999).random()}",
                 accountId       = accountId,
+                portfolioId     = portfolioId,
                 ticker          = tickerTrim,
                 name            = nameTrim,
                 notes           = notes?.ifBlank { null },
@@ -264,7 +266,8 @@ class AssetCatalogViewModel(
         platformIds: Set<String> = emptySet(),
         fixedIncomePercent: Int = 0,
         sectorIds: Set<String> = emptySet(),
-        regionPercents: Map<String, Int> = emptyMap()
+        regionPercents: Map<String, Int> = emptyMap(),
+        portfolioId: String? = null
     ) {
         val tickerTrim = ticker.trim().uppercase()
         val nameTrim   = name.trim()
@@ -285,7 +288,8 @@ class AssetCatalogViewModel(
                     notes                 = notes?.ifBlank { null },
                     assetCategoryId       = assetCategoryId,
                     currentPrice          = currentPrice,
-                    currentPriceUpdatedAt = updatedAt
+                    currentPriceUpdatedAt = updatedAt,
+                    portfolioId           = portfolioId
                 )
             ).onSuccess {
                 // Guardar composición RF/RV

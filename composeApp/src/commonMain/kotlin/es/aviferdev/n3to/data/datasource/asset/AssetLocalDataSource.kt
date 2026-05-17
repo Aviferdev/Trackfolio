@@ -5,6 +5,8 @@ import kotlinx.coroutines.flow.Flow
 
 interface AssetLocalDataSource {
     fun getByAccount(accountId: String): Flow<List<Asset>>
+    fun getByPortfolio(portfolioId: String): Flow<List<Asset>>
+    fun getByAccountWithoutPortfolio(accountId: String): Flow<List<Asset>>
     fun getAllByAccountIncludingArchived(accountId: String): Flow<List<Asset>>
     fun getById(id: String): Flow<Asset?>
     suspend fun insert(asset: Asset): Result<Unit>

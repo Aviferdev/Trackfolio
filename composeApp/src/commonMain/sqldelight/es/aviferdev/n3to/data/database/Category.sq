@@ -1,58 +1,64 @@
 CREATE TABLE CategoryEntity (
     id        TEXT    NOT NULL PRIMARY KEY,
+    accountId TEXT    NOT NULL DEFAULT '',
     name      TEXT    NOT NULL,
     type      TEXT    NOT NULL,
     isDefault INTEGER NOT NULL DEFAULT 0,
     archived  INTEGER NOT NULL DEFAULT 0
 );
 
+CREATE INDEX idx_category_account ON CategoryEntity(accountId);
 CREATE INDEX idx_category_archived ON CategoryEntity(archived);
 
--- ─── Lectura: usuarios finales (ocultan archivadas) ────────────────────────────
+-- ─── Lectura por cuenta (filtradas por accountId + no archivadas) ──────────
 
 selectAll:
 SELECT * FROM CategoryEntity
-WHERE archived = 0
+WHERE accountId = :accountId AND archived = 0
 ORDER BY name ASC;
 
 selectByType:
 SELECT * FROM CategoryEntity
-WHERE type = :type AND archived = 0
+WHERE accountId = :accountId AND type = :type AND archived = 0
 ORDER BY name ASC;
 
--- ─── Lectura: incluye archivadas (para resolver nombres en transacciones) ──────
-
 selectAllIncludingArchived:
-SELECT * FROM CategoryEntity ORDER BY name ASC;
+SELECT * FROM CategoryEntity
+WHERE accountId = :accountId
+ORDER BY name ASC;
 
 selectByTypeIncludingArchived:
 SELECT * FROM CategoryEntity
-WHERE type = :type
+WHERE accountId = :accountId AND type = :type
 ORDER BY name ASC;
+
+-- ─── Consultas legacy (sin accountId, para migración) ────────────────────
+
+selectAllGlobal:
+SELECT * FROM CategoryEntity WHERE archived = 0 ORDER BY name ASC;
+
+selectByTypeGlobal:
+SELECT * FROM CategoryEntity WHERE type = :type AND archived = 0 ORDER BY name ASC;
+
+-- ─── Lectura por ID (no necesita accountId) ──────────────────────────────
 
 selectById:
 SELECT * FROM CategoryEntity WHERE id = :id;
 
 countAll:
-SELECT COUNT(*) FROM CategoryEntity WHERE archived = 0;
+SELECT COUNT(*) FROM CategoryEntity WHERE accountId = :accountId AND archived = 0;
 
--- ─── Escritura ─────────────────────────────────────────────────────────────────
+-- ─── Escritura ───────────────────────────────────────────────────────────
 
 insert:
-INSERT OR IGNORE INTO CategoryEntity(id, name, type, isDefault, archived)
-VALUES (?, ?, ?, ?, 0);
+INSERT OR IGNORE INTO CategoryEntity(id, accountId, name, type, isDefault, archived)
+VALUES (?, ?, ?, ?, ?, 0);
 
 updateName:
-UPDATE CategoryEntity
-SET name = :name
-WHERE id = :id;
+UPDATE CategoryEntity SET name = :name WHERE id = :id;
 
 archive:
-UPDATE CategoryEntity
-SET archived = 1
-WHERE id = :id;
+UPDATE CategoryEntity SET archived = 1 WHERE id = :id;
 
 unarchive:
-UPDATE CategoryEntity
-SET archived = 0
-WHERE id = :id;
+UPDATE CategoryEntity SET archived = 0 WHERE id = :id;

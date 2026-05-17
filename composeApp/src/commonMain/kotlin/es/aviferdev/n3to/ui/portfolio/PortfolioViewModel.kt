@@ -7,9 +7,11 @@ import com.benasher44.uuid.uuid4
 import es.aviferdev.n3to.domain.model.Account
 import es.aviferdev.n3to.domain.model.Asset
 import es.aviferdev.n3to.domain.model.AssetCategory
-import es.aviferdev.n3to.domain.model.AssetPriceHistory
-import es.aviferdev.n3to.domain.model.AssetCategoryType
 import es.aviferdev.n3to.domain.model.AssetTransaction
+import es.aviferdev.n3to.domain.model.Portfolio
+import es.aviferdev.n3to.domain.usecase.portfolio.GetPortfoliosByAccountUseCase
+import es.aviferdev.n3to.domain.usecase.portfolio.SavePortfolioUseCase
+import es.aviferdev.n3to.domain.usecase.portfolio.DeletePortfolioUseCase
 import es.aviferdev.n3to.domain.model.AssetTransactionType
 import es.aviferdev.n3to.domain.model.FixedIncomeEvent
 import es.aviferdev.n3to.domain.model.FixedIncomePosition
@@ -40,6 +42,8 @@ import es.aviferdev.n3to.domain.usecase.issuer.GetIssuersUseCase
 import es.aviferdev.n3to.domain.usecase.issuer.SaveIssuerUseCase
 import es.aviferdev.n3to.domain.usecase.platform.GetPlatformsUseCase
 import es.aviferdev.n3to.domain.usecase.portfolio.GetPortfolioValueHistoryUseCase
+import es.aviferdev.n3to.domain.model.AssetCategoryType
+import es.aviferdev.n3to.domain.model.AssetPriceHistory
 import es.aviferdev.n3to.domain.model.PortfolioValuePoint
 import es.aviferdev.n3to.ui.account.AccountSession
 import es.aviferdev.n3to.ui.theme.CategoryPalette
@@ -49,6 +53,7 @@ import es.aviferdev.n3to.ui.theme.WarnAmber
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
@@ -190,11 +195,36 @@ class PortfolioViewModel(
     private val getBondIssuers: GetIssuersUseCase,
     private val saveBondIssuer: SaveIssuerUseCase,
     private val getPortfolioValueHistory: GetPortfolioValueHistoryUseCase,
-    private val registerCoupon: es.aviferdev.n3to.domain.usecase.fixedincome.RegisterCouponUseCase? = null
+    private val registerCoupon: es.aviferdev.n3to.domain.usecase.fixedincome.RegisterCouponUseCase? = null,
+    private val getPortfoliosByAccount: GetPortfoliosByAccountUseCase,
+    private val savePortfolio: SavePortfolioUseCase,
+    private val deletePortfolio: DeletePortfolioUseCase
 ) : ViewModel() {
 
     private val _sheetState = MutableStateFlow(SheetState())
     private val _selectedDistributionView = MutableStateFlow(DistributionView.CATEGORY)
+
+    // ── Portfolio (cartera) ────────────────────────────────────────────────────
+    private val _selectedPortfolioId = MutableStateFlow<String?>(null)
+    val selectedPortfolioId: StateFlow<String?> = _selectedPortfolioId.asStateFlow()
+
+    private val _showAddPortfolioSheet = MutableStateFlow(false)
+    val showAddPortfolioSheet: StateFlow<Boolean> = _showAddPortfolioSheet.asStateFlow()
+
+    private val _portfolios = MutableStateFlow<List<Portfolio>>(emptyList())
+    val portfolios: StateFlow<List<Portfolio>> = _portfolios.asStateFlow()
+
+    fun selectPortfolio(id: String?) { _selectedPortfolioId.value = id }
+    fun openAddPortfolioSheet() { _showAddPortfolioSheet.value = true }
+    fun closeAddPortfolioSheet() { _showAddPortfolioSheet.value = false }
+
+    fun addPortfolio(name: String, description: String?) {
+        val accountId = session.selectedAccountId.value ?: return
+        viewModelScope.launch {
+            savePortfolio(accountId, name, description)
+            _showAddPortfolioSheet.value = false
+        }
+    }
 
     /** Historial de valor mensual del portfolio (inversiones + renta fija). */
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -256,6 +286,7 @@ class PortfolioViewModel(
                 flowOf(PortfolioUiState(isLoading = false))
             } else {
                 val fiFlow = getFixedIncomeSummary(accountId)
+                val portfoliosFlow = getPortfoliosByAccount(accountId)
 
                 val nearMaturityFlow = if (getNearMaturityPositions != null) {
                     getNearMaturityPositions(accountId)
@@ -275,6 +306,10 @@ class PortfolioViewModel(
                     BasicPortfolioData(assets, categories, account, txs, platforms)
                 }
 
+                // Cargar portfolios en segundo plano
+                viewModelScope.launch {
+                    portfoliosFlow.collect { _portfolios.value = it }
+                }
                 combine(baseDataFlow, fiFlow, nearMaturityFlow, bondIssuersFlow, bankIssuersFlow) { baseData, fiSummary, nearMaturity, bondIssuers, bankIssuers ->
                     BasicPortfolioDataWithFI(
                         assets = baseData.assets,
@@ -377,12 +412,23 @@ class PortfolioViewModel(
     ): PortfolioUiState {
         val allSectorsList = allSectors.value
         val allRegionsList = allRegions.value
+        // Filtrar por cartera seleccionada
+        val selectedPort = _selectedPortfolioId.value
+        val filteredAssets = if (selectedPort == null) assets
+        else assets.filter { it.portfolioId == selectedPort }
+        val assetsForBuild = filteredAssets.ifEmpty {
+            if (selectedPort != null) emptyList() else assets
+        }
         // Agrupar movimientos por activo.
         val txByAsset: Map<String, List<AssetTransaction>> =
             transactions.groupBy { it.assetId }
 
         // Group fixed income by category
-        val fiRows = fiSummary?.positions ?: emptyList()
+        val allFiRows = fiSummary?.positions ?: emptyList()
+        val fiRows = if (selectedPort == null) allFiRows
+        else allFiRows.filter { it.position.portfolioId == selectedPort }
+        val closedFiRows = if (selectedPort == null) (fiSummary?.closedPositions ?: emptyList())
+        else (fiSummary?.closedPositions ?: emptyList()).filter { it.position.portfolioId == selectedPort }
         val fiByCategory = fiRows.groupBy { it.position.assetCategoryId }
         val categoryById = categories.associateBy { it.id }
 
@@ -395,7 +441,7 @@ class PortfolioViewModel(
         //                 o solo compras sin cerrar — no aplica aquí)
         val openRows   = mutableListOf<AssetRow>()
         val closedRows = mutableListOf<AssetRow>()
-        for (asset in assets) {
+        for (asset in assetsForBuild) {
             val txs = txByAsset[asset.id].orEmpty()
             val pos = PortfolioCalculator.calculate(txs, asset.currentPrice)
             val hasSales = txs.any { it.type == AssetTransactionType.SELL }
@@ -626,7 +672,7 @@ class PortfolioViewModel(
             regionGroups       = regionGroups,
             sectorGroups       = sectorGroups,
             closedPositions    = closedRows.sortedByDescending { it.position.realizedPnL },
-            closedFixedIncomePositions = fiSummary?.closedPositions ?: emptyList(),
+            closedFixedIncomePositions = closedFiRows,
             distribution       = distribution,
             compositionDistribution = compositionSlices,
             regionDistribution       = regionSlices,

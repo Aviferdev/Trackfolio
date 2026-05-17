@@ -20,15 +20,10 @@ INSERT OR REPLACE INTO AccountEntity(id, name, balance, createdAt, accountType, 
 VALUES (?, ?, ?, ?, ?, ?);
 
 update:
-UPDATE AccountEntity
-SET name = :name, accountType = :accountType
-WHERE id = :id;
+UPDATE AccountEntity SET name = :name WHERE id = :id;
 
 updateInitialBalance:
 UPDATE AccountEntity SET balance = :balance WHERE id = :id;
-
-updateAccountType:
-UPDATE AccountEntity SET accountType = :accountType WHERE id = :id;
 
 delete:
 DELETE FROM AccountEntity WHERE id = :id;

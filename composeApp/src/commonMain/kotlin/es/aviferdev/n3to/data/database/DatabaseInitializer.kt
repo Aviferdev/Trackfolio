@@ -11,7 +11,6 @@ import es.aviferdev.n3to.data.datasource.platform.PlatformLocalDataSource
 import es.aviferdev.n3to.data.datasource.transaction.TransactionCategoryLocalDataSource
 import es.aviferdev.n3to.data.datasource.transaction.TransactionLocalDataSource
 import es.aviferdev.n3to.domain.model.Account
-import es.aviferdev.n3to.domain.model.AccountType
 import es.aviferdev.n3to.domain.model.Asset
 import es.aviferdev.n3to.domain.model.AssetPriceHistory
 import es.aviferdev.n3to.domain.model.AssetCategory
@@ -141,75 +140,49 @@ class DatabaseInitializer(
             AssetRegion(id = "region_spain", name = "España", createdAt = 0),
         )
 
-        val DEFAULT_EXPENSE_CATEGORIES = listOf(
+        fun defaultExpenseCategories(accountId: String): List<CategoryEntity> = listOf(
             CategoryEntity(
-                id = "cat_exp_01",
-                name = "Alimentación",
-                type = TransactionType.EXPENSE.name,
-                isDefault = 1L,
-                archived = 0L
+                id = "cat_exp_01", accountId = accountId,
+                name = "Alimentación", type = TransactionType.EXPENSE.name, isDefault = 1L, archived = 0L
             ),
             CategoryEntity(
-                id = "cat_exp_02",
-                name = "Transporte",
-                type = TransactionType.EXPENSE.name,
-                isDefault = 1L,
-                archived = 0L
+                id = "cat_exp_02", accountId = accountId,
+                name = "Transporte", type = TransactionType.EXPENSE.name, isDefault = 1L, archived = 0L
             ),
             CategoryEntity(
-                id = "cat_exp_03",
-                name = "Hogar",
-                type = TransactionType.EXPENSE.name,
-                isDefault = 1L,
-                archived = 0L
+                id = "cat_exp_03", accountId = accountId,
+                name = "Hogar", type = TransactionType.EXPENSE.name, isDefault = 1L, archived = 0L
             ),
             CategoryEntity(
-                id = "cat_exp_04",
-                name = "Salud",
-                type = TransactionType.EXPENSE.name,
-                isDefault = 1L,
-                archived = 0L
+                id = "cat_exp_04", accountId = accountId,
+                name = "Salud", type = TransactionType.EXPENSE.name, isDefault = 1L, archived = 0L
             ),
             CategoryEntity(
-                id = "cat_exp_05",
-                name = "Ocio",
-                type = TransactionType.EXPENSE.name,
-                isDefault = 1L,
-                archived = 0L
+                id = "cat_exp_05", accountId = accountId,
+                name = "Ocio", type = TransactionType.EXPENSE.name, isDefault = 1L, archived = 0L
             ),
             CategoryEntity(
-                id = "cat_exp_06",
-                name = "Ropa",
-                type = TransactionType.EXPENSE.name,
-                isDefault = 1L,
-                archived = 0L
+                id = "cat_exp_06", accountId = accountId,
+                name = "Ropa", type = TransactionType.EXPENSE.name, isDefault = 1L, archived = 0L
             ),
             CategoryEntity(
-                id = "cat_exp_07",
-                name = "Educación",
-                type = TransactionType.EXPENSE.name,
-                isDefault = 1L,
-                archived = 0L
+                id = "cat_exp_07", accountId = accountId,
+                name = "Educación", type = TransactionType.EXPENSE.name, isDefault = 1L, archived = 0L
             ),
             CategoryEntity(
-                id = "cat_exp_08",
-                name = "Otros",
-                type = TransactionType.EXPENSE.name,
-                isDefault = 1L,
-                archived = 0L
+                id = "cat_exp_08", accountId = accountId,
+                name = "Otros", type = TransactionType.EXPENSE.name, isDefault = 1L, archived = 0L
             ),
             CategoryEntity(
-                id = "cat_exp_loan",
-                name = "Cuota préstamo",
-                type = TransactionType.EXPENSE.name,
-                isDefault = 1L,
-                archived = 0L
+                id = "cat_exp_loan", accountId = accountId,
+                name = "Cuota préstamo", type = TransactionType.EXPENSE.name, isDefault = 1L, archived = 0L
             ),
         )
 
         /** Categoría especial para transacciones de ajuste / reconciliación. */
         val ADJUSTMENT_CATEGORY = CategoryEntity(
             id = ADJUSTMENT_CATEGORY_ID,
+            accountId = "",  // global, compartida entre todas las cuentas
             name = "Ajuste de saldo",
             type = TransactionType.ADJUSTMENT.name,
             isDefault = 1L,
@@ -217,10 +190,13 @@ class DatabaseInitializer(
         )
     }
 
+    /** Siembra las categorías de gasto por defecto para una cuenta nueva. */
+    suspend fun seedDefaultCategoriesForAccount(accountId: String) {
+        defaultExpenseCategories(accountId).forEach { transactionCategoryDataSource.insert(it) }
+    }
+
     suspend fun initializeIfNeeded() {
-        if (transactionCategoryDataSource.count().firstOrNull() == 0L) {
-            DEFAULT_EXPENSE_CATEGORIES.forEach { transactionCategoryDataSource.insert(it) }
-        }
+        // Categoría de ajuste (global, sin accountId porque la usan todas las cuentas)
         transactionCategoryDataSource.insert(ADJUSTMENT_CATEGORY)
 
         if (assetCategoryDataSource.count().firstOrNull() == 0L) {
@@ -296,10 +272,11 @@ class DatabaseInitializer(
                 name = "Cuenta Principal",
                 initialBalance = 50000.0,
                 computedBalance = 50000.0,
-                createdAt = startTime,
-                accountType = AccountType.GENERAL
+                createdAt = startTime
             )
         )
+        // Sembrar categorías de gasto por defecto para la cuenta demo
+        seedDefaultCategoriesForAccount("acc_main")
 
         listOf(
             Asset(

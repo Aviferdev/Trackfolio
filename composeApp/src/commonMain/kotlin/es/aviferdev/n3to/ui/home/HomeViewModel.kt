@@ -81,7 +81,7 @@ class HomeViewModel(
         .flatMapLatest { accountId ->
             combine(
                 getHomeBalance(accountId),
-                getCategoriesByType(TransactionType.EXPENSE)
+                getCategoriesByType(accountId ?: "", TransactionType.EXPENSE)
             ) { balance, expenseCategories ->
                 val categoryNames = expenseCategories.associate { it.id to it.name }
                 HomeUiState.Success(

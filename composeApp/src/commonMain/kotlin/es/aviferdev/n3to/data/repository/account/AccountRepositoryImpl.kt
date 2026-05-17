@@ -2,7 +2,6 @@ package es.aviferdev.n3to.data.repository.account
 
 import es.aviferdev.n3to.data.datasource.account.AccountLocalDataSource
 import es.aviferdev.n3to.domain.model.Account
-import es.aviferdev.n3to.domain.model.AccountType
 import es.aviferdev.n3to.domain.repository.AccountRepository
 import kotlinx.coroutines.flow.Flow
 
@@ -27,9 +26,6 @@ class AccountRepositoryImpl(
 
     override suspend fun setInitialBalance(accountId: String, amount: Double): Result<Unit> =
         runCatching { dataSource.updateInitialBalance(accountId, amount) }
-
-    override suspend fun updateAccountType(accountId: String, accountType: AccountType): Result<Unit> =
-        runCatching { dataSource.updateAccountType(accountId, accountType.name) }
 
     override suspend fun deleteAccount(accountId: String): Result<Unit> =
         runCatching { dataSource.deleteAccount(accountId) }

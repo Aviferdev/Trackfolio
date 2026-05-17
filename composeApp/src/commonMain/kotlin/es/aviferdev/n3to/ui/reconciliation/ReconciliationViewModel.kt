@@ -33,9 +33,9 @@ class ReconciliationViewModel(
     private val _uiState = MutableStateFlow(ReconciliationUiState())
     val uiState: StateFlow<ReconciliationUiState> = _uiState.asStateFlow()
 
-    fun checkReminder() {
+    fun checkReminder(accountId: String) {
         _uiState.value = _uiState.value.copy(
-            showBanner = shouldShowReminder()
+            showBanner = shouldShowReminder(accountId)
         )
     }
 
@@ -117,10 +117,10 @@ class ReconciliationViewModel(
         }
     }
 
-    fun getReminderIntervalDays(): Int = getReminderInterval.get()
+    fun getReminderIntervalDays(accountId: String): Int = getReminderInterval.get(accountId)
 
-    fun setReminderIntervalDays(days: Int) {
-        getReminderInterval.set(days)
-        checkReminder()
+    fun setReminderIntervalDays(accountId: String, days: Int) {
+        getReminderInterval.set(accountId, days)
+        checkReminder(accountId)
     }
 }

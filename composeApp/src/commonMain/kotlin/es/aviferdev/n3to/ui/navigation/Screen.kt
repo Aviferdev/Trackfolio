@@ -68,6 +68,11 @@ sealed class Screen(val route: String) {
     data object GoalSettings : Screen("goals_settings")
 
     data object TaxProfileSettings : Screen("settings_tax_profile")
+
+    data object AccountConfig : Screen("settings_account_config/{accountId}") {
+        const val ARG_ACCOUNT_ID = "accountId"
+        fun createRoute(accountId: String): String = "settings_account_config/$accountId"
+    }
 }
 
 /**

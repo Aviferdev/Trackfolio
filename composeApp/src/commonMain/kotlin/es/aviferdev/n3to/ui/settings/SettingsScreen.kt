@@ -70,10 +70,8 @@ import es.aviferdev.n3to.core.security.ThemeManager
 import es.aviferdev.n3to.core.security.BiometricAuthenticator
 import es.aviferdev.n3to.core.security.BiometricResult
 import es.aviferdev.n3to.domain.model.Account
-import es.aviferdev.n3to.domain.model.AccountType
 import es.aviferdev.n3to.domain.model.PremiumConstants
 import es.aviferdev.n3to.domain.usecase.backup.GetBackupReminderIntervalUseCase
-import es.aviferdev.n3to.domain.usecase.reconciliation.GetReconciliationReminderIntervalUseCase
 import es.aviferdev.n3to.ui.account.AccountViewModel
 import es.aviferdev.n3to.ui.account.AddEditAccountBottomSheet
 import es.aviferdev.n3to.ui.common.N3toLabel
@@ -102,10 +100,7 @@ fun SettingsScreen(
     navigateBack: () -> Unit = {},
     onNavigateToPrivacySettings: () -> Unit = {},
     onNavigateToPremium: () -> Unit = {},
-    onNavigateToExpenseSettings: () -> Unit = {},
-    onNavigateToIncomeSettings: () -> Unit = {},
-    onNavigateToGoalSettings: () -> Unit = {},
-    onNavigateToTaxProfileSettings: () -> Unit = {},
+    onNavigateToAccountConfig: (String) -> Unit = {},
     onNavigateToAbout: () -> Unit = {},
     onResetOnboarding: () -> Unit = {},
     accountViewModel: AccountViewModel = koinViewModel(),
@@ -124,9 +119,6 @@ fun SettingsScreen(
     var biometricEnabled by remember { mutableStateOf(lockManager.biometricEnabled) }
     var biometricError   by remember { mutableStateOf<String?>(null) }
 
-    val reconciliationIntervalUseCase = koinInject<GetReconciliationReminderIntervalUseCase>()
-    var reconciliationInterval by remember { mutableStateOf(reconciliationIntervalUseCase.get()) }
-
     val backupIntervalUseCase = koinInject<GetBackupReminderIntervalUseCase>()
     var backupInterval by remember { mutableStateOf(backupIntervalUseCase.get()) }
 
@@ -136,11 +128,6 @@ fun SettingsScreen(
 
     SettingsContent(
         navigateBack = navigateBack,
-        reconciliationInterval = reconciliationInterval,
-        onReconciliationIntervalChange = { days ->
-            reconciliationInterval = days
-            reconciliationIntervalUseCase.set(days)
-        },
         backupInterval = backupInterval,
         onBackupIntervalChange = { days ->
             backupInterval = days
@@ -174,10 +161,7 @@ fun SettingsScreen(
         onBackupClick = { backupViewModel.openExport() },
         onNavigateToPrivacySettings = onNavigateToPrivacySettings,
         onNavigateToPremium = onNavigateToPremium,
-        onNavigateToExpenseSettings = onNavigateToExpenseSettings,
-        onNavigateToIncomeSettings = onNavigateToIncomeSettings,
-        onNavigateToGoalSettings = onNavigateToGoalSettings,
-        onNavigateToTaxProfileSettings = onNavigateToTaxProfileSettings,
+        onNavigateToAccountConfig = onNavigateToAccountConfig,
         onNavigateToAbout = onNavigateToAbout,
         onResetOnboarding = handleResetOnboarding,
         premiumStatus = premiumStatus,
@@ -187,10 +171,10 @@ fun SettingsScreen(
 
     // ── Sheets ───────────────────────────────────────────────────────────────
     if (accountState.showAddSheet) {
-        AddEditAccountBottomSheet(account = null, onSave = { name, type -> accountViewModel.addAccount(name, type) }, onDismiss = { accountViewModel.closeAddSheet() })
+        AddEditAccountBottomSheet(account = null, onSave = { name -> accountViewModel.addAccount(name) }, onDismiss = { accountViewModel.closeAddSheet() })
     }
     if (accountState.showEditSheet && accountState.editingAccount != null) {
-        AddEditAccountBottomSheet(account = accountState.editingAccount, onSave = { name, type -> accountViewModel.editAccount(accountState.editingAccount!!, name, type) }, onDismiss = { accountViewModel.closeEditSheet() })
+        AddEditAccountBottomSheet(account = accountState.editingAccount, onSave = { name -> accountViewModel.editAccount(accountState.editingAccount!!, name) }, onDismiss = { accountViewModel.closeEditSheet() })
     }
     if (accountState.showDeleteConfirm && accountState.accountToDelete != null) {
         AlertDialog(onDismissRequest = { accountViewModel.cancelDelete() }, containerColor = SurfaceWhite,
@@ -286,15 +270,10 @@ fun SettingsContent(
     onToggleBiometric: (Boolean) -> Unit,
     onNavigateToPrivacySettings: () -> Unit = {},
     onNavigateToPremium: () -> Unit = {},
-    onNavigateToExpenseSettings: () -> Unit,
-    onNavigateToIncomeSettings: () -> Unit,
-    onNavigateToGoalSettings: () -> Unit = {},
-    onNavigateToTaxProfileSettings: () -> Unit = {},
+    onNavigateToAccountConfig: (String) -> Unit = {},
     onNavigateToAbout: () -> Unit = {},
     onResetOnboarding: () -> Unit = {},
     navigateBack: () -> Unit = {},
-    reconciliationInterval: Int = 30,
-    onReconciliationIntervalChange: (Int) -> Unit = {},
     backupInterval: Int = 30,
     onBackupIntervalChange: (Int) -> Unit = {},
     onBackupClick: () -> Unit = {},
@@ -319,27 +298,13 @@ fun SettingsContent(
                     item { EmptyAccountsCard(onAdd = onAddAccount) }
                 } else {
                     items(accounts, key = { it.id }) { account ->
-                        SettingsAccountCard(account = account, isSelected = account.id == selectedId, onSelect = { onSelectAccount(account.id) }, onEdit = { onEditAccount(account) }, onDelete = { onDeleteAccount(account) })
-                    }
-                }
-
-                item {
-                    SettingsGroupCard {
-                        SettingsNavigableRow(icon = Icons.Outlined.TrendingDown,     label = "Categorías de gastos", onClick = onNavigateToExpenseSettings)
-                        SettingsRowDivider()
-                        SettingsNavigableRow(icon = Icons.Outlined.TrendingUp,       label = "Tipos de ingresos",    onClick = onNavigateToIncomeSettings)
-                        SettingsRowDivider()
-                        SettingsNavigableRow(icon = Icons.Outlined.AccountBalance,   label = "Perfil fiscal",        onClick = onNavigateToTaxProfileSettings)
-                    }
-                }
-
-                item {
-                    SettingsSectionHeader(label = "Planificación")
-                    SettingsGroupCard {
-                        SettingsNavigableRow(
-                            icon = Icons.Outlined.GpsFixed,
-                            label = "Objetivos mensuales",
-                            onClick = onNavigateToGoalSettings
+                        SettingsAccountCard(
+                            account = account,
+                            isSelected = account.id == selectedId,
+                            onSelect = { onSelectAccount(account.id) },
+                            onEdit = { onEditAccount(account) },
+                            onDelete = { onDeleteAccount(account) },
+                            onConfigure = { onNavigateToAccountConfig(account.id) }
                         )
                     }
                 }
@@ -354,11 +319,6 @@ fun SettingsContent(
                 item {
                     SettingsSectionHeader(label = "Recordatorios")
                     SettingsGroupCard {
-                        SettingsReconciliationIntervalRow(
-                            interval    = reconciliationInterval,
-                            onIntervalChange = onReconciliationIntervalChange
-                        )
-                        SettingsRowDivider()
                         SettingsBackupReminderIntervalRow(
                             interval    = backupInterval,
                             onIntervalChange = onBackupIntervalChange
@@ -427,8 +387,8 @@ fun SettingsContentPreview() {
     N3toTheme {
         SettingsContent(
             accounts = listOf(
-                Account(id = "1", name = "Cuenta principal", initialBalance = 1000.0, computedBalance = 1500.0, createdAt = 0L, accountType = AccountType.GENERAL),
-                Account(id = "2", name = "Efectivo", initialBalance = 0.0, computedBalance = 500.0, createdAt = 0L, accountType = AccountType.CASH)
+                Account(id = "1", name = "Cuenta principal", initialBalance = 1000.0, computedBalance = 1500.0, createdAt = 0L),
+                Account(id = "2", name = "Efectivo", initialBalance = 0.0, computedBalance = 500.0, createdAt = 0L)
             ),
             selectedId = "1",
             biometricEnabled = false,
@@ -437,8 +397,6 @@ fun SettingsContentPreview() {
             onEditAccount = {},
             onDeleteAccount = {},
             onToggleBiometric = {},
-            onNavigateToExpenseSettings = {},
-            onNavigateToIncomeSettings = {},
             onNavigateToAbout = {}
         )
     }
@@ -446,7 +404,7 @@ fun SettingsContentPreview() {
 
 // ─── Settings section header ──────────────────────────────────────────────────
 @Composable
-private fun SettingsSectionHeader(label: String, actionLabel: String? = null, onAction: (() -> Unit)? = null) {
+fun SettingsSectionHeader(label: String, actionLabel: String? = null, onAction: (() -> Unit)? = null) {
     Row(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
         N3toLabel(text = label)
         if (actionLabel != null && onAction != null) {
@@ -457,7 +415,7 @@ private fun SettingsSectionHeader(label: String, actionLabel: String? = null, on
 
 // ─── Settings group card ─────────────────────────────────────────────────────
 @Composable
-private fun SettingsGroupCard(content: @Composable ColumnScope.() -> Unit) {
+fun SettingsGroupCard(content: @Composable ColumnScope.() -> Unit) {
     Card(modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(12.dp), colors = CardDefaults.cardColors(containerColor = SurfaceWhite), elevation = CardDefaults.cardElevation(0.dp)) {
         Column(content = content)
     }
@@ -465,13 +423,13 @@ private fun SettingsGroupCard(content: @Composable ColumnScope.() -> Unit) {
 
 // ─── Row divider ─────────────────────────────────────────────────────────────
 @Composable
-private fun SettingsRowDivider() {
+fun SettingsRowDivider() {
     HorizontalDivider(modifier = Modifier.padding(start = 52.dp), color = BorderGray, thickness = 0.5.dp)
 }
 
 // ─── Navigable row ────────────────────────────────────────────────────────────
 @Composable
-private fun SettingsNavigableRow(icon: ImageVector, label: String, onClick: () -> Unit) {
+fun SettingsNavigableRow(icon: ImageVector, label: String, onClick: () -> Unit) {
     Row(modifier = Modifier.fillMaxWidth().clickable(onClick = onClick).padding(horizontal = 16.dp, vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) {
         Icon(icon, contentDescription = null, tint = TextPrimary, modifier = Modifier.size(20.dp))
         Spacer(Modifier.width(14.dp))
@@ -520,7 +478,7 @@ private fun SettingsThemeRow(isDark: Boolean, onToggle: (Boolean) -> Unit) {
 
 // ─── Reconciliation interval row ──────────────────────────────────────────────
 @Composable
-private fun SettingsReconciliationIntervalRow(
+fun SettingsReconciliationIntervalRow(
     interval: Int,
     onIntervalChange: (Int) -> Unit,
 ) {
@@ -644,13 +602,14 @@ private fun EmptyAccountsCard(onAdd: () -> Unit) {
 
 // ─── Settings account card ──────────────────────────────────────────────────
 @Composable
-private fun SettingsAccountCard(account: Account, isSelected: Boolean, onSelect: () -> Unit, onEdit: () -> Unit, onDelete: () -> Unit) {
+private fun SettingsAccountCard(account: Account, isSelected: Boolean, onSelect: () -> Unit, onEdit: () -> Unit, onDelete: () -> Unit, onConfigure: () -> Unit = {}) {
     Card(modifier = Modifier.fillMaxWidth().then(if (isSelected) Modifier.border(1.dp, PrimaryDark, RoundedCornerShape(12.dp)) else Modifier), shape = RoundedCornerShape(12.dp), colors = CardDefaults.cardColors(containerColor = SurfaceWhite), elevation = CardDefaults.cardElevation(0.dp)) {
-        Row(modifier = Modifier.fillMaxWidth().clickable(onClick = onSelect).padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
+        Row(modifier = Modifier.fillMaxWidth().clickable(onClick = onSelect).padding(start = 16.dp, top = 8.dp, bottom = 8.dp, end = 4.dp), verticalAlignment = Alignment.CenterVertically) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(account.name, fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary)
                 Text("€ · ${formatAmount(account.computedBalance)}", fontSize = 11.sp, color = TextTertiary)
             }
+            IconButton(onClick = onConfigure, modifier = Modifier.size(32.dp)) { Icon(Icons.Outlined.AccountBalance, contentDescription = "Configurar", tint = PrimaryDark, modifier = Modifier.size(18.dp)) }
             IconButton(onClick = onEdit, modifier = Modifier.size(32.dp)) { Icon(Icons.Default.Edit, contentDescription = "Editar", tint = TextSecondary, modifier = Modifier.size(16.dp)) }
             IconButton(onClick = onDelete, modifier = Modifier.size(32.dp)) { Icon(Icons.Default.Delete, contentDescription = "Eliminar", tint = ExpenseRed, modifier = Modifier.size(16.dp)) }
         }
