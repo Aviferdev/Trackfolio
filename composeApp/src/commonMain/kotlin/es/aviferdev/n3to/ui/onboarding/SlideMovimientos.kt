@@ -37,6 +37,9 @@ import es.aviferdev.n3to.ui.theme.PrimaryDark
 import es.aviferdev.n3to.ui.theme.TextPrimary
 import es.aviferdev.n3to.ui.theme.TextTertiary
 import es.aviferdev.n3to.ui.theme.N3toTheme
+import es.aviferdev.n3to.ui.theme.CategoryOrange
+import es.aviferdev.n3to.ui.theme.SecondaryTeal
+import es.aviferdev.n3to.ui.theme.WarnAmber
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -60,11 +63,11 @@ fun SlideMovimientos(modifier: Modifier = Modifier) {
     )
 
     val transactions = listOf(
-        TxRow("🏠", "Alquiler", "Hogar", "−850,00 €", ExpenseRed, Color(0xFFF97316).copy(alpha = 0.13f)),
+        TxRow("🏠", "Alquiler", "Hogar", "−850,00 €", ExpenseRed, CategoryOrange.copy(alpha = 0.13f)),
         TxRow("💼", "Nómina", "Trabajo · 15% IRPF", "+2.800,00 €", IncomeGreen, IncomeGreen.copy(alpha = 0.13f)),
-        TxRow("🚗", "Gasolina", "Transporte", "−65,40 €", ExpenseRed, Color(0xFF06B6D4).copy(alpha = 0.13f)),
+        TxRow("🚗", "Gasolina", "Transporte", "−65,40 €", ExpenseRed, SecondaryTeal.copy(alpha = 0.13f)),
         TxRow("🛒", "Mercadona", "Alimentación", "−112,30 €", ExpenseRed, IncomeGreen.copy(alpha = 0.13f)),
-        TxRow("🎬", "Netflix", "Ocio", "−15,99 €", ExpenseRed, Color(0xFFF59E0B).copy(alpha = 0.13f))
+        TxRow("🎬", "Netflix", "Ocio", "−15,99 €", ExpenseRed, WarnAmber.copy(alpha = 0.13f))
     )
 
     // ── Staggered entrance animations ────────────────────

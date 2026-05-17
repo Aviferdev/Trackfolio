@@ -20,7 +20,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import es.aviferdev.n3to.ui.theme.TextPrimary
+import es.aviferdev.n3to.ui.theme.CyanAccent
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 /**
@@ -34,7 +34,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
  */
 @Composable
 fun SplashLoader(
-    color: Color = TextPrimary.copy(alpha = 0.55f),
+    color: Color = CyanAccent.copy(alpha = 0.70f),
     modifier: Modifier = Modifier
 ) {
     val infiniteTransition = rememberInfiniteTransition()

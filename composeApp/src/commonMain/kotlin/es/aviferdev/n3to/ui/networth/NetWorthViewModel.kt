@@ -1,6 +1,10 @@
 package es.aviferdev.n3to.ui.networth
 
 import androidx.compose.ui.graphics.Color
+import es.aviferdev.n3to.ui.theme.DonutAccounts
+import es.aviferdev.n3to.ui.theme.DonutInvestments
+import es.aviferdev.n3to.ui.theme.DonutRealEstate
+import es.aviferdev.n3to.ui.theme.WarnOrange
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import es.aviferdev.n3to.domain.model.Loan
@@ -89,10 +93,10 @@ class NetWorthViewModel(
 
     companion object {
         private val AssetColors = listOf(
-            Color(0xFF4CAF50), // Cuentas — verde
-            Color(0xFF2196F3), // Inversiones — azul
-            Color(0xFFFF9800), // Renta fija — ámbar
-            Color(0xFF8D6E63)  // Inmuebles — marrón
+            DonutAccounts, // Cuentas — verde
+            DonutInvestments, // Inversiones — azul
+            WarnOrange, // Renta fija — ámbar
+            DonutRealEstate  // Inmuebles — marrón
         )
 
         private fun buildAssetDistribution(data: NetWorthData): List<DonutSlice> {

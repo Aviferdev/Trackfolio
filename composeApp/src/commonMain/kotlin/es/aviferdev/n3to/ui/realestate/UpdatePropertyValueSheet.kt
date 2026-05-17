@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.RealEstateProperty
 import es.aviferdev.n3to.ui.common.DeltaIndicator
 import es.aviferdev.n3to.ui.theme.*
+import es.aviferdev.n3to.ui.theme.DragHandleColor
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -42,7 +43,7 @@ fun UpdatePropertyValueSheet(
         containerColor   = SurfaceWhite,
         dragHandle = {
             Box(Modifier.padding(top = 12.dp, bottom = 4.dp).width(40.dp).height(4.dp)
-                .clip(RoundedCornerShape(2.dp)).background(Color(0xFFBDBDBD)))
+                .clip(RoundedCornerShape(2.dp)).background(DragHandleColor))
         }
     ) {
         Column(Modifier.fillMaxWidth().padding(horizontal = 20.dp).padding(bottom = 32.dp)) {

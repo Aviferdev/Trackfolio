@@ -10,14 +10,17 @@ import androidx.compose.ui.graphics.Color
 val PrimaryDark = Color(0xFF5B57F5)
 val PrimaryVariant = Color(0xFF4440D4)
 val PrimaryAlpha = Color(0x335B57F5)
+val PrimaryLight = Color(0xFF8B89F8)
 val IncomeGreen = Color(0xFF2DC265)
 val PositiveGreen = IncomeGreen
 val ExpenseRed = Color(0xFFEC4246)
 val NegativeRed = ExpenseRed
 val WarnAmber = Color(0xFFF59E0B)
+val WarnOrange = Color(0xFFFF9800)
+val CategoryOrange = Color(0xFFF97316)
 val SecondaryTeal = Color(0xFF06B6D4)
 
-// Dark mode
+// Dark mode surfaces
 val BackgroundGray = Color(0xFF0D0D0D)
 val SurfaceWhite = Color(0xFF141414)
 val SurfaceElevated = Color(0xFF1C1C1C)
@@ -30,12 +33,43 @@ val TextSecondary = Color(0xB8FFFFFF)
 val TextTertiary = Color(0x6BFFFFFF)
 val TextDisabled = Color(0x3DFFFFFF)
 
-// Light mode
+// ─── Navy / Fintech design system ─────────────────────────────────────────────
+val NavyDeep         = Color(0xFF07111E)   // fondo de pantalla home
+val NavySurface      = Color(0xFF0D1B2A)   // superficie de cards
+val NavySurfaceLight = Color(0xFF162B44)   // card elevada / extremo gradiente hero
+val NavySelected     = Color(0xFF1A3A5C)   // fondo estado seleccionado (avatar, chip)
+val NavyBorder       = Color(0xFF1E3558)   // separadores en contexto navy
+val CyanAccent       = Color(0xFF38BDF8)   // acento interactivo principal
+val CyanGlow         = Color(0xFF22D3EE)   // orb decorativo / glow
+val CyanSubtle       = Color(0xFF7DD3FC)   // valores secundarios destacados
+
+// ─── Portfolio / P&L ──────────────────────────────────────────────────────────
+val PnLPositive     = Color(0xFF86EFAC)   // chip text — saturated green
+val PnLNegative     = Color(0xFFFCA5A5)   // chip text — saturated red
+val PnLPositiveSoft = Color(0xFFB4FFB4)   // badge bg — soft green
+val PnLNegativeSoft = Color(0xFFFFB4B4)   // badge bg — soft red
+
+// ─── Donut net worth ──────────────────────────────────────────────────────────
+val DonutAccounts    = Color(0xFF4CAF50)
+val DonutInvestments = Color(0xFF2196F3)
+val DonutRealEstate  = Color(0xFF8D6E63)
+
+// ─── Utilidades compartidas ────────────────────────────────────────────────────
+val DragHandleColor = Color(0xFFBDBDBD)
+
+// Light mode surfaces
 val BackgroundWhite = Color(0xFFF5F5F5)
 val SurfaceLight = Color(0xFFFFFFFF)
 val SurfaceLightElevated = Color(0xFFF0F0F0)
+val SelectionLight = Color(0xFFE8EDF5)
+val ChipBgLight = Color(0xFFE8E8E8)
 val BorderLight = Color(0xFFE0E0E0)
 val BorderLight2 = Color(0xFFD0D0D0)
+val DividerLight = Color(0xFFE0E0E0)
+val ErrorBgLight = Color(0xFFFFEBEE)
+val ErrorDark = Color(0xFFE53935)
+val ErrorSoft = Color(0xFFEF9A9A)
+val WarnBgLight = Color(0xFFFFF3E0)
 val TextPrimaryLight = Color(0xFF1A1A1A)
 val TextSecondaryLight = Color(0xFF666666)
 val TextTertiaryLight = Color(0xFF999999)

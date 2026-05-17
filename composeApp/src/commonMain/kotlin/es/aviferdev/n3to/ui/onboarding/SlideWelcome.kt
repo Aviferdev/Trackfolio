@@ -40,6 +40,7 @@ import es.aviferdev.n3to.ui.theme.N3toTheme
 import es.aviferdev.n3to.ui.theme.PrimaryDark
 import es.aviferdev.n3to.ui.theme.TextPrimary
 import es.aviferdev.n3to.ui.theme.TextSecondary
+import es.aviferdev.n3to.ui.theme.NavyDeep
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.app_icon
 import org.jetbrains.compose.resources.painterResource
@@ -143,7 +144,7 @@ fun SlideWelcome(modifier: Modifier = Modifier) {
                         .drawBehind {
                             val cornerRadiusPx = size.width * 225f / 1024f
                             drawRoundRect(
-                                color = Color(0xFF0A1628),
+                                color = NavyDeep,
                                 cornerRadius = CornerRadius(cornerRadiusPx, cornerRadiusPx),
                                 size = size
                             )

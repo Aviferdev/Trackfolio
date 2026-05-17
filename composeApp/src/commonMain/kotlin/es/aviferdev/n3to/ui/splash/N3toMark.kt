@@ -12,6 +12,9 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
+import es.aviferdev.n3to.ui.theme.NavyBorder
+import es.aviferdev.n3to.ui.theme.NavySurface
+import es.aviferdev.n3to.ui.theme.NavyDeep
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import n3to.composeapp.generated.resources.Res
@@ -39,18 +42,16 @@ fun N3toMark(
         modifier = modifier
             .size(containerSize)
             .drawBehind {
-                // Fondo navy del contenedor
                 drawRoundRect(
-                    color = Color(0xFF0A1628),
+                    color = NavySurface,
                     cornerRadius = CornerRadius(
                         x = size.width * 0.22f,
                         y = size.height * 0.22f
                     ),
                     size = size
                 )
-                // Borde sutil
                 drawRoundRect(
-                    color = Color.White.copy(alpha = 0.08f),
+                    color = NavyBorder,
                     cornerRadius = CornerRadius(
                         x = size.width * 0.22f,
                         y = size.height * 0.22f

@@ -28,6 +28,11 @@ import es.aviferdev.n3to.ui.theme.formatAmount
 import es.aviferdev.n3to.ui.theme.formatDateShort
 import es.aviferdev.n3to.ui.theme.formatPercent
 import es.aviferdev.n3to.ui.theme.maskAmount
+import es.aviferdev.n3to.ui.theme.DividerLight
+import es.aviferdev.n3to.ui.theme.ErrorBgLight
+import es.aviferdev.n3to.ui.theme.ErrorDark
+import es.aviferdev.n3to.ui.theme.WarnBgLight
+import es.aviferdev.n3to.ui.theme.WarnOrange
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import kotlin.math.abs
 import kotlinx.datetime.Clock
@@ -69,7 +74,7 @@ fun FixedIncomeSection(
                     if (summary.nearMaturityCount > 0) {
                         Badge(
                             count = summary.nearMaturityCount,
-                            color = Color(0xFFFF9800)
+                            color = WarnOrange
                         )
                     }
                 }
@@ -265,7 +270,7 @@ fun FixedIncomeProgressBar(
             .fillMaxWidth()
             .height(8.dp)
             .clip(RoundedCornerShape(4.dp))
-            .background(Color(0xFFE0E0E0))
+            .background(DividerLight)
     ) {
         Box(
             modifier = Modifier
@@ -282,9 +287,9 @@ fun NearMaturityBadge(
     isMatured: Boolean
 ) {
     val (bgColor, textColor, label) = if (isMatured) {
-        Triple(Color(0xFFFFEBEE), Color(0xFFE53935), "Vencido")
+        Triple(ErrorBgLight, ErrorDark, "Vencido")
     } else {
-        Triple(Color(0xFFFFF3E0), Color(0xFFFF9800), "$remainingDays días")
+        Triple(WarnBgLight, WarnOrange, "$remainingDays días")
     }
 
     Surface(

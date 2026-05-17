@@ -42,6 +42,7 @@ import es.aviferdev.n3to.domain.model.LoanType
 import es.aviferdev.n3to.domain.usecase.loan.SaveLoanUseCase
 import es.aviferdev.n3to.ui.account.AccountSession
 import es.aviferdev.n3to.ui.theme.*
+import es.aviferdev.n3to.ui.theme.DragHandleColor
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
@@ -95,7 +96,7 @@ fun AddEditLoanBottomSheet(
                     .padding(top = 12.dp, bottom = 4.dp)
                     .width(40.dp).height(4.dp)
                     .clip(RoundedCornerShape(2.dp))
-                    .background(Color(0xFFBDBDBD))
+                    .background(DragHandleColor)
             )
         }
     ) {

@@ -2,6 +2,7 @@ package es.aviferdev.n3to.ui.home
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,6 +13,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Assignment
 import androidx.compose.material.icons.outlined.BarChart
 import androidx.compose.material.icons.outlined.Handshake
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -19,15 +22,16 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import es.aviferdev.n3to.ui.theme.BorderGray
-import es.aviferdev.n3to.ui.theme.PrimaryDark
-import es.aviferdev.n3to.ui.theme.SurfaceWhite
-import es.aviferdev.n3to.ui.theme.TextPrimary
+import es.aviferdev.n3to.ui.theme.CyanAccent
+import es.aviferdev.n3to.ui.theme.ExpenseRed
+import es.aviferdev.n3to.ui.theme.NavyBorder
+import es.aviferdev.n3to.ui.theme.NavySurface
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -36,6 +40,7 @@ fun QuickAccessSection(
     onNavigateToCharts: () -> Unit,
     onNavigateToDebts: () -> Unit,
     onNavigateToFiscalReport: () -> Unit,
+    hasDebts: Boolean = false,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
@@ -53,6 +58,7 @@ fun QuickAccessSection(
                 icon = Icons.Outlined.Handshake,
                 label = "Deudas",
                 onClick = onNavigateToDebts,
+                showBadge = hasDebts,
                 modifier = Modifier.weight(1f)
             )
             QuickCard(
@@ -70,15 +76,16 @@ fun QuickCard(
     icon: ImageVector,
     label: String,
     onClick: () -> Unit,
+    showBadge: Boolean = false,
     modifier: Modifier = Modifier
 ) {
     Card(
         onClick = onClick,
         modifier = modifier,
         shape = RoundedCornerShape(11.dp),
-        colors = CardDefaults.cardColors(containerColor = SurfaceWhite),
+        colors = CardDefaults.cardColors(containerColor = NavySurface),
         elevation = CardDefaults.cardElevation(0.dp),
-        border = BorderStroke(1.dp, BorderGray)
+        border = BorderStroke(0.5.dp, NavyBorder)
     ) {
         Column(
             modifier = Modifier
@@ -87,11 +94,17 @@ fun QuickCard(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(5.dp)
         ) {
-            Icon(icon, contentDescription = null, tint = PrimaryDark, modifier = Modifier.size(22.dp))
+            BadgedBox(
+                badge = {
+                    if (showBadge) Badge(containerColor = ExpenseRed)
+                }
+            ) {
+                Icon(icon, contentDescription = null, tint = CyanAccent, modifier = Modifier.size(22.dp))
+            }
             Text(
                 text = label,
                 fontSize = 10.sp,
-                color = TextPrimary,
+                color = Color.White.copy(alpha = 0.85f),
                 textAlign = TextAlign.Center,
                 fontWeight = FontWeight.SemiBold
             )

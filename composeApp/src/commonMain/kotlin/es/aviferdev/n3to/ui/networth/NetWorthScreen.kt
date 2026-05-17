@@ -400,7 +400,7 @@ private fun NetWorthHeroCard(data: NetWorthData, balancesHidden: Boolean) {
                 NetWorthMetric(
                     label          = "Activos",
                     value          = "+${maskAmount(formatCurrency(data.totalAssets), balancesHidden)}",
-                    color          = Color(0xFFB4FFB4)
+                    color          = PnLPositiveSoft
                 )
                 Box(
                     Modifier
@@ -412,7 +412,7 @@ private fun NetWorthHeroCard(data: NetWorthData, balancesHidden: Boolean) {
                 NetWorthMetric(
                     label          = "Pasivos",
                     value          = "−${maskAmount(formatCurrency(data.totalLiabilities), balancesHidden)}",
-                    color          = Color(0xFFFFB4B4)
+                    color          = PnLNegativeSoft
                 )
             }
         }
@@ -588,10 +588,10 @@ fun NetWorthContentPreview() {
                 NetWorthHistoryPoint("2026-03", 83000.0, 118000.0, 35000.0)
             ),
             assetDistribution = listOf(
-                DonutSlice("Cuentas", "🏦", 25000.0, 21.74, Color(0xFF4CAF50)),
-                DonutSlice("Inversiones", "📈", 75000.0, 65.22, Color(0xFF2196F3)),
-                DonutSlice("Renta fija", "🏛️", 15000.0, 13.04, Color(0xFFFF9800)),
-                DonutSlice("Inmuebles", "🏠", 250000.0, 68.49, Color(0xFF8D6E63))
+                DonutSlice("Cuentas", "🏦", 25000.0, 21.74, DonutAccounts),
+                DonutSlice("Inversiones", "📈", 75000.0, 65.22, DonutInvestments),
+                DonutSlice("Renta fija", "🏛️", 15000.0, 13.04, WarnOrange),
+                DonutSlice("Inmuebles", "🏠", 250000.0, 68.49, DonutRealEstate)
             ),
             balancesHidden = false,
             onLoanClick = {},

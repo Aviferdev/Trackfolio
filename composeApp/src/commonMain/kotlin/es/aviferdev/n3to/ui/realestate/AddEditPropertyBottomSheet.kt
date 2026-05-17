@@ -38,6 +38,7 @@ import es.aviferdev.n3to.domain.usecase.realestate.SavePropertyUseCase
 import es.aviferdev.n3to.ui.account.AccountSession
 import es.aviferdev.n3to.ui.common.component.SelectableChip
 import es.aviferdev.n3to.ui.theme.*
+import es.aviferdev.n3to.ui.theme.DragHandleColor
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
@@ -126,7 +127,7 @@ fun AddEditPropertyBottomSheet(
                     .padding(top = 12.dp, bottom = 4.dp)
                     .width(40.dp).height(4.dp)
                     .clip(RoundedCornerShape(2.dp))
-                    .background(Color(0xFFBDBDBD))
+                    .background(DragHandleColor)
             )
         }
     ) {

@@ -19,10 +19,12 @@ import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.*
 import es.aviferdev.n3to.ui.common.toMaterialIcon
 import es.aviferdev.n3to.ui.theme.*
+import es.aviferdev.n3to.ui.theme.DragHandleColor
 import kotlinx.datetime.*
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import kotlin.time.ExperimentalTime
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalTime::class)
 @Composable
 fun EditFixedIncomeBottomSheet(
     position: FixedIncomePosition,
@@ -261,7 +263,7 @@ fun EditFixedIncomeBottomSheet(
                 readOnly = true,
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = PrimaryDark,
-                    unfocusedBorderColor = androidx.compose.ui.graphics.Color(0xFFBDBDBD)
+                    unfocusedBorderColor = DragHandleColor
                 ),
                 supportingText = { Text("Calculada automáticamente", color = TextSecondary, fontSize = 11.sp) }
             )

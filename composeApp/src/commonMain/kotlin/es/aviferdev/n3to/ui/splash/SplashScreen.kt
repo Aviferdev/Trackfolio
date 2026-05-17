@@ -25,7 +25,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import es.aviferdev.n3to.ui.theme.BackgroundGray
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import es.aviferdev.n3to.ui.theme.CyanGlow
+import es.aviferdev.n3to.ui.theme.NavyDeep
 import es.aviferdev.n3to.ui.theme.TextPrimary
 import es.aviferdev.n3to.ui.theme.TextTertiary
 import kotlinx.coroutines.delay
@@ -99,9 +105,26 @@ fun SplashScreen(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(BackgroundGray),
+                .background(NavyDeep),
             contentAlignment = Alignment.Center
         ) {
+            // Orb decorativo cian (esquina superior derecha, igual que HeroCard)
+            Box(
+                modifier = Modifier
+                    .size(320.dp)
+                    .align(Alignment.TopEnd)
+                    .offset(x = 100.dp, y = (-100).dp)
+                    .background(
+                        Brush.radialGradient(
+                            colors = listOf(
+                                CyanGlow.copy(alpha = 0.10f),
+                                Color.Transparent
+                            )
+                        ),
+                        CircleShape
+                    )
+            )
+
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(22.dp)

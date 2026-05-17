@@ -56,6 +56,7 @@ import es.aviferdev.n3to.ui.theme.formatPercent
 import kotlin.math.pow
 import es.aviferdev.n3to.ui.theme.*
 import es.aviferdev.n3to.ui.theme.LocalBalanceHidden
+import es.aviferdev.n3to.ui.theme.DividerLight
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -709,7 +710,7 @@ private fun CouponTimelineSection(
 
                 if (index < schedule.lastIndex) {
                     HorizontalDivider(
-                        color = Color(0xFFE0E0E0),
+                        color = DividerLight,
                         modifier = Modifier.padding(start = 20.dp)
                     )
                 }
@@ -859,7 +860,7 @@ private fun EventsHistorySection(
                     )
                     if (events.last() != event) {
                         HorizontalDivider(
-                            color = Color(0xFFE0E0E0),
+                            color = DividerLight,
                             modifier = Modifier.padding(vertical = 8.dp)
                         )
                     }

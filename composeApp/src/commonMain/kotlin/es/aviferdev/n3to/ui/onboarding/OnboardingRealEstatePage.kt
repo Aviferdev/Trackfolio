@@ -42,6 +42,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.ui.theme.*
+import es.aviferdev.n3to.ui.theme.PrimaryLight
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 /** Radio del halo detrás de la card. */
@@ -53,12 +54,12 @@ private val CardBg = SurfaceWhite
 private val BadgeBg = Surface3
 private val AccentGradient = Brush.verticalGradient(
     0f to PrimaryDark,
-    1f to Color(0xFF8B89F8)
+    1f to PrimaryLight
 )
 private val PillBg = SurfaceWhite
 private val PillBorder = BorderGray
-private val HintBg = Color(0x335B57F5)  // PrimaryAlpha
-private val HintBorder = Color(0x405B57F5) // PrimaryDark al 25%
+private val HintBg = PrimaryAlpha
+private val HintBorder = PrimaryDark.copy(alpha = 0.25f)
 
 // ─── Animación del dot pulsante ──────────────────────────────────────────────
 private val PulseSpec: androidx.compose.animation.core.InfiniteRepeatableSpec<Float> = infiniteRepeatable(

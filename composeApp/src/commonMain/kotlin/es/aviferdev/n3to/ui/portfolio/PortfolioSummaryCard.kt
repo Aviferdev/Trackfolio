@@ -24,6 +24,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.ui.theme.IncomeGreen
 import es.aviferdev.n3to.ui.theme.ExpenseRed
+import es.aviferdev.n3to.ui.theme.PnLNegative
+import es.aviferdev.n3to.ui.theme.PnLPositive
 import es.aviferdev.n3to.ui.theme.PrimaryDark
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import es.aviferdev.n3to.ui.theme.formatAmount
@@ -103,8 +105,8 @@ fun PortfolioSummaryCard(
                     secondary = if (totalPnL == 0.0) null
                     else "${if (totalPnLPercent >= 0) "+" else "−"}${formatPercent(abs(totalPnLPercent))}%",
                     color = when {
-                        totalPnL > 0 -> Color(0xFF86EFAC)
-                        totalPnL < 0 -> Color(0xFFFCA5A5)
+                        totalPnL > 0 -> PnLPositive
+                        totalPnL < 0 -> PnLNegative
                         else -> Color.White
                     },
                     modifier = Modifier.weight(1f).padding(start = 16.dp)
@@ -154,8 +156,8 @@ fun PortfolioMetric(
 @Composable
 fun PnLChip(label: String, amount: Double, masked: Boolean) {
     val color = when {
-        amount > 0 -> Color(0xFF86EFAC)
-        amount < 0 -> Color(0xFFFCA5A5)
+        amount > 0 -> PnLPositive
+        amount < 0 -> PnLNegative
         else -> Color.White.copy(alpha = 0.5f)
     }
     Column {

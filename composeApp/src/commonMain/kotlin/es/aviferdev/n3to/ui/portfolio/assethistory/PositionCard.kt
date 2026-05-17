@@ -22,6 +22,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.portfolio.AssetPosition
 import es.aviferdev.n3to.ui.portfolio.formatQty
+import es.aviferdev.n3to.ui.theme.PnLNegative
+import es.aviferdev.n3to.ui.theme.PnLPositive
 import es.aviferdev.n3to.ui.theme.PrimaryDark
 import es.aviferdev.n3to.ui.theme.formatAmount
 import es.aviferdev.n3to.ui.theme.formatPercent
@@ -38,8 +40,8 @@ fun PositionCard(
 ) {
     val isOpen = position.netQuantity > 0.0
     val pnlColor = when {
-        position.totalPnL > 0 -> Color(0xFF86EFAC)
-        position.totalPnL < 0 -> Color(0xFFFCA5A5)
+        position.totalPnL > 0 -> PnLPositive
+        position.totalPnL < 0 -> PnLNegative
         else -> Color.White
     }
 

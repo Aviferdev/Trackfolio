@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.TransactionType
 import es.aviferdev.n3to.ui.theme.*
+import es.aviferdev.n3to.ui.theme.DragHandleColor
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -40,7 +41,7 @@ fun AddCategorySheet(
                     .padding(top = 12.dp, bottom = 4.dp)
                     .width(40.dp).height(4.dp)
                     .clip(RoundedCornerShape(2.dp))
-                    .background(Color(0xFFBDBDBD))
+                    .background(DragHandleColor)
             )
         }
     ) {
@@ -134,7 +135,7 @@ fun EditCategorySheet(
                     .padding(top = 12.dp, bottom = 4.dp)
                     .width(40.dp).height(4.dp)
                     .clip(RoundedCornerShape(2.dp))
-                    .background(Color(0xFFBDBDBD))
+                    .background(DragHandleColor)
             )
         }
     ) {

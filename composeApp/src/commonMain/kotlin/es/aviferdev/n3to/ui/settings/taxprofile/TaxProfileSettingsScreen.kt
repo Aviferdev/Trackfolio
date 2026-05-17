@@ -56,6 +56,7 @@ import es.aviferdev.n3to.ui.theme.SurfaceWhite
 import es.aviferdev.n3to.ui.theme.TextPrimary
 import es.aviferdev.n3to.ui.theme.TextSecondary
 import es.aviferdev.n3to.ui.theme.TextTertiary
+import es.aviferdev.n3to.ui.theme.DragHandleColor
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -237,7 +238,7 @@ private fun AddTaxProfileSheet(
                 modifier = Modifier
                     .padding(top = 12.dp, bottom = 4.dp)
                     .width(40.dp).height(4.dp)
-                    .background(Color(0xFFBDBDBD), RoundedCornerShape(2.dp))
+                    .background(DragHandleColor, RoundedCornerShape(2.dp))
             )
         }
     ) {

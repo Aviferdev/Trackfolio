@@ -41,6 +41,7 @@ import es.aviferdev.n3to.ui.theme.TextPrimary
 import es.aviferdev.n3to.ui.theme.TextSecondary
 import es.aviferdev.n3to.ui.theme.TextTertiary
 import es.aviferdev.n3to.ui.theme.N3toTheme
+import es.aviferdev.n3to.ui.theme.PrimaryLight
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -94,7 +95,7 @@ fun SlideFiscal(modifier: Modifier = Modifier) {
                 .graphicsLayer { alpha = cardAlpha }
                 .background(
                     brush = Brush.linearGradient(
-                        colors = listOf(PrimaryDark, Color(0xFF8B89F8)),
+                        colors = listOf(PrimaryDark, PrimaryLight),
                         start = Offset.Zero,
                         end = Offset(600f, 600f)
                     ),

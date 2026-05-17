@@ -26,10 +26,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.MonthlyGoalProgress
 import es.aviferdev.n3to.ui.common.ProgressBar
+import es.aviferdev.n3to.ui.theme.CyanAccent
 import es.aviferdev.n3to.ui.theme.ExpenseRed
 import es.aviferdev.n3to.ui.theme.IncomeGreen
-import es.aviferdev.n3to.ui.theme.PrimaryDark
-import es.aviferdev.n3to.ui.theme.SurfaceWhite
+import es.aviferdev.n3to.ui.theme.NavySurface
 import es.aviferdev.n3to.ui.theme.TextPrimary
 import es.aviferdev.n3to.ui.theme.TextSecondary
 import es.aviferdev.n3to.ui.theme.TextTertiary
@@ -55,11 +55,10 @@ fun GoalProgressCard(
     Card(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(14.dp),
-        colors = CardDefaults.cardColors(containerColor = SurfaceWhite),
+        colors = CardDefaults.cardColors(containerColor = NavySurface),
         elevation = CardDefaults.cardElevation(0.dp)
     ) {
         if (!progress.hasAnyGoal) {
-            // Estado vacío: invitar a definir objetivos
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -70,7 +69,7 @@ fun GoalProgressCard(
                 Icon(
                     Icons.Outlined.GpsFixed,
                     contentDescription = null,
-                    tint = PrimaryDark.copy(alpha = 0.6f),
+                    tint = CyanAccent.copy(alpha = 0.7f),
                     modifier = Modifier.size(28.dp)
                 )
                 Spacer(Modifier.height(8.dp))
@@ -78,7 +77,7 @@ fun GoalProgressCard(
                     text = "Define tus objetivos mensuales",
                     fontSize = 13.sp,
                     fontWeight = FontWeight.Medium,
-                    color = PrimaryDark
+                    color = CyanAccent
                 )
                 Spacer(Modifier.height(4.dp))
                 Text(

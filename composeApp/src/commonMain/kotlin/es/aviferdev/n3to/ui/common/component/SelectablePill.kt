@@ -18,6 +18,8 @@ import es.aviferdev.n3to.ui.theme.PrimaryDark
 import es.aviferdev.n3to.ui.theme.TextPrimary
 import es.aviferdev.n3to.ui.theme.TextTertiary
 import es.aviferdev.n3to.ui.theme.N3toTheme
+import es.aviferdev.n3to.ui.theme.ExpenseRed
+import es.aviferdev.n3to.ui.theme.IncomeGreen
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 /**
@@ -62,13 +64,13 @@ private fun SelectablePillRowPreview() {
             SelectablePill(
                 label = "Gasto",
                 selected = true,
-                selectedColor = Color(0xFFEC4246),
+                selectedColor = ExpenseRed,
                 onClick = {}
             )
             SelectablePill(
                 label = "Ingreso",
                 selected = false,
-                selectedColor = Color(0xFF2DC265),
+                selectedColor = IncomeGreen,
                 onClick = {}
             )
         }

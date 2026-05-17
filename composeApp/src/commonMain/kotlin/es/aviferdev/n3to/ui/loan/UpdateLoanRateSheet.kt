@@ -14,6 +14,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.ui.theme.*
+import es.aviferdev.n3to.ui.theme.DragHandleColor
 import kotlinx.datetime.Clock
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -38,7 +39,7 @@ fun UpdateLoanRateSheet(
                     .padding(top = 12.dp, bottom = 4.dp)
                     .width(40.dp).height(4.dp)
                     .clip(RoundedCornerShape(2.dp))
-                    .background(Color(0xFFBDBDBD))
+                    .background(DragHandleColor)
             )
         }
     ) {

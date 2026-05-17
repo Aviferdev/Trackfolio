@@ -39,6 +39,7 @@ import es.aviferdev.n3to.ui.theme.TextSecondary
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import es.aviferdev.n3to.ui.theme.formatAmount
 import es.aviferdev.n3to.ui.theme.maskAmount
+import es.aviferdev.n3to.ui.theme.SelectionLight
 import kotlinx.datetime.Clock
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
@@ -206,7 +207,7 @@ private fun AccountCard(
         label       = "borderColor"
     )
     val containerColor by animateColorAsState(
-        targetValue = if (isSelected) Color(0xFFE8EDF5) else SurfaceWhite,
+        targetValue = if (isSelected) SelectionLight else SurfaceWhite,
         label       = "containerColor"
     )
 

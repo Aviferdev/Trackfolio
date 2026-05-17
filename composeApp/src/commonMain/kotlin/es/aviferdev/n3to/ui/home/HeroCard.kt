@@ -11,9 +11,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -26,9 +26,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.HomeBalance
-import es.aviferdev.n3to.ui.theme.ExpenseRed
-import es.aviferdev.n3to.ui.theme.IncomeGreen
+import es.aviferdev.n3to.ui.theme.CyanGlow
+import es.aviferdev.n3to.ui.theme.CyanSubtle
 import es.aviferdev.n3to.ui.theme.N3toTheme
+import es.aviferdev.n3to.ui.theme.NavySurface
+import es.aviferdev.n3to.ui.theme.NavySurfaceLight
 import es.aviferdev.n3to.ui.theme.formatAmount
 import es.aviferdev.n3to.ui.theme.maskAmount
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -39,13 +41,12 @@ fun HeroCard(
     balancesHidden: Boolean,
     modifier: Modifier = Modifier
 ) {
-    val accountLabel = balance.selectedAccount?.name ?: "Sin cuenta"
     val netWithDebts = balance.selectedAccountBalance + balance.totalOwed - balance.totalOwing
 
     val gradient = Brush.linearGradient(
         colors = listOf(
-            Color(0xFF0D1B2A),
-            Color(0xFF162B44)
+            NavySurface,
+            NavySurfaceLight
         ),
         start = Offset(0f, 0f),
         end = Offset(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY)
@@ -54,19 +55,19 @@ fun HeroCard(
     Box(
         modifier = modifier
             .fillMaxWidth()
+            .wrapContentHeight()
             .clip(RoundedCornerShape(20.dp))
             .background(gradient)
     ) {
-        // Glow orb decorativo en la esquina superior derecha
         Box(
             modifier = Modifier
-                .size(220.dp)
+                .size(180.dp)
                 .align(Alignment.TopEnd)
-                .offset(x = 60.dp, y = (-60).dp)
+                .offset(x = 50.dp, y = (-50).dp)
                 .background(
                     Brush.radialGradient(
                         colors = listOf(
-                            Color(0xFF22D3EE).copy(alpha = 0.16f),
+                            CyanGlow.copy(alpha = 0.14f),
                             Color.Transparent
                         )
                     ),
@@ -77,124 +78,48 @@ fun HeroCard(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 22.dp, vertical = 22.dp)
+                .wrapContentHeight()
+                .padding(horizontal = 22.dp, vertical = 18.dp)
         ) {
-            Box(
-                modifier = Modifier
-                    .background(Color(0xFF38BDF8).copy(alpha = 0.12f), RoundedCornerShape(20.dp))
-                    .padding(horizontal = 10.dp, vertical = 4.dp)
-            ) {
-                Text(
-                    text = accountLabel.uppercase(),
-                    fontSize = 10.sp,
-                    letterSpacing = 1.sp,
-                    color = Color.White.copy(alpha = 0.85f),
-                    fontWeight = FontWeight.SemiBold
-                )
-            }
-
-            Spacer(Modifier.height(16.dp))
-
             Text(
                 text = "${maskAmount(formatAmount(balance.selectedAccountBalance), balancesHidden)} €",
-                fontSize = 42.sp,
+                fontSize = 36.sp,
                 fontWeight = FontWeight.ExtraBold,
                 color = Color.White,
-                letterSpacing = (-2).sp,
-                lineHeight = 42.sp
+                letterSpacing = (-1.5).sp,
+                lineHeight = 36.sp
             )
-            Spacer(Modifier.height(4.dp))
+            Spacer(Modifier.height(3.dp))
             Text(
                 text = "Saldo en cuenta",
-                fontSize = 12.sp,
-                color = Color.White.copy(alpha = 0.50f),
+                fontSize = 11.sp,
+                color = Color.White.copy(alpha = 0.45f),
                 fontWeight = FontWeight.Normal
             )
-
-            Spacer(Modifier.height(20.dp))
-            HorizontalDivider(color = Color.White.copy(alpha = 0.12f), thickness = 0.5.dp)
-            Spacer(Modifier.height(16.dp))
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(10.dp)
-            ) {
-                DebtStatCard(
-                    label = "Me deben",
-                    amount = "${maskAmount(formatAmount(balance.totalOwed), balancesHidden)} €",
-                    color = IncomeGreen,
-                    modifier = Modifier.weight(1f)
-                )
-                DebtStatCard(
-                    label = "Debo yo",
-                    amount = "${maskAmount(formatAmount(balance.totalOwing), balancesHidden)} €",
-                    color = ExpenseRed,
-                    modifier = Modifier.weight(1f)
-                )
-            }
 
             Spacer(Modifier.height(14.dp))
 
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().wrapContentHeight(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
                     text = "Neto con deudas",
-                    fontSize = 12.sp,
-                    color = Color.White.copy(alpha = 0.48f)
+                    fontSize = 11.sp,
+                    color = Color.White.copy(alpha = 0.45f)
                 )
                 Text(
                     text = "${maskAmount(formatAmount(netWithDebts), balancesHidden)} €",
-                    fontSize = 14.sp,
+                    fontSize = 13.sp,
                     fontWeight = FontWeight.SemiBold,
-                    color = Color(0xFF7DD3FC)
+                    color = CyanSubtle
                 )
             }
         }
     }
 }
 
-@Composable
-private fun DebtStatCard(
-    label: String,
-    amount: String,
-    color: Color,
-    modifier: Modifier = Modifier
-) {
-    Box(
-        modifier = modifier
-            .background(Color(0xFF38BDF8).copy(alpha = 0.08f), RoundedCornerShape(12.dp))
-            .padding(horizontal = 12.dp, vertical = 10.dp)
-    ) {
-        Column {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(5.dp)
-            ) {
-                Box(
-                    modifier = Modifier
-                        .size(6.dp)
-                        .background(color, CircleShape)
-                )
-                Text(
-                    text = label,
-                    fontSize = 10.sp,
-                    color = Color.White.copy(alpha = 0.55f),
-                    fontWeight = FontWeight.Medium
-                )
-            }
-            Spacer(Modifier.height(5.dp))
-            Text(
-                text = amount,
-                fontSize = 17.sp,
-                fontWeight = FontWeight.Bold,
-                color = color
-            )
-        }
-    }
-}
 
 @Preview
 @Composable

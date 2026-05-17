@@ -83,6 +83,7 @@ import es.aviferdev.n3to.ui.theme.TextPrimary
 import es.aviferdev.n3to.ui.theme.TextSecondary
 import es.aviferdev.n3to.ui.theme.TextTertiary
 import es.aviferdev.n3to.ui.theme.WarnAmber
+import es.aviferdev.n3to.ui.theme.BorderGray2
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
@@ -112,14 +113,14 @@ fun AddTransactionBottomSheet(
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-        containerColor = Color(0xFF141414),
+        containerColor = SurfaceWhite,
         dragHandle = {
             Box(
                 modifier = Modifier
                     .padding(top = 12.dp, bottom = 4.dp)
                     .width(40.dp).height(4.dp)
                     .clip(RoundedCornerShape(2.dp))
-                    .background(Color(0xFF2C2C2C))
+                    .background(BorderGray2)
             )
         }
     ) {

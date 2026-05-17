@@ -63,11 +63,12 @@ import es.aviferdev.n3to.ui.reconciliation.ReconciliationReminderBanner
 import es.aviferdev.n3to.ui.reconciliation.ReconciliationViewModel
 import es.aviferdev.n3to.ui.settings.backup.BackupPasswordSheet
 import es.aviferdev.n3to.ui.settings.backup.BackupViewModel
-import es.aviferdev.n3to.ui.theme.BackgroundGray
+import es.aviferdev.n3to.ui.theme.CyanAccent
 import es.aviferdev.n3to.ui.theme.ExpenseRed
 import es.aviferdev.n3to.ui.theme.LocalBalanceHidden
 import es.aviferdev.n3to.ui.theme.N3toTheme
-import es.aviferdev.n3to.ui.theme.PrimaryDark
+import es.aviferdev.n3to.ui.theme.NavyDeep
+import es.aviferdev.n3to.ui.theme.NavySurface
 import es.aviferdev.n3to.ui.theme.TextPrimary
 import es.aviferdev.n3to.ui.theme.TextSecondary
 import es.aviferdev.n3to.ui.theme.TextTertiary
@@ -78,6 +79,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.qualifier.named
+
 
 // ─────────────────────────────────────────────────────────────────────────────
 //  HomeScreen — entry point (sin cambios de lógica/VM)
@@ -159,13 +161,13 @@ fun HomeScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(BackgroundGray)
+            .background(NavyDeep)
     ) {
         when (val state = uiState) {
             is HomeUiState.Loading -> {
                 CircularProgressIndicator(
                     modifier = Modifier.align(Alignment.Center),
-                    color = PrimaryDark
+                    color = CyanAccent
                 )
             }
 
@@ -251,14 +253,14 @@ fun HomeScreen(
                 .padding(end = 20.dp, bottom = 136.dp)
                 .size(52.dp),
             shape = RoundedCornerShape(16.dp),
-            containerColor = PrimaryDark,
-            contentColor = Color.White,
+            containerColor = NavySurface,
+            contentColor = CyanAccent,
             elevation = FloatingActionButtonDefaults.elevation(
-                defaultElevation = 4.dp,
-                pressedElevation = 8.dp
+                defaultElevation = 6.dp,
+                pressedElevation = 10.dp
             )
         ) {
-            Text("+", fontSize = 26.sp, fontWeight = FontWeight.Light, color = Color.White)
+            Text("+", fontSize = 26.sp, fontWeight = FontWeight.Light, color = CyanAccent)
         }
     }
 
@@ -523,6 +525,7 @@ fun HomeContent(
             onNavigateToCharts = onNavigateToCharts,
             onNavigateToDebts = onNavigateToDebts,
             onNavigateToFiscalReport = onNavigateToFiscalReport,
+            hasDebts = balance.totalOwed > 0 || balance.totalOwing > 0,
             modifier = Modifier.padding(horizontal = 16.dp)
         )
 

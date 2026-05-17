@@ -21,8 +21,8 @@ import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.Transaction
 import es.aviferdev.n3to.ui.common.SectionHeader
 import es.aviferdev.n3to.ui.common.metric.TransactionRow
-import es.aviferdev.n3to.ui.theme.BorderGray
-import es.aviferdev.n3to.ui.theme.SurfaceWhite
+import es.aviferdev.n3to.ui.theme.NavyBorder
+import es.aviferdev.n3to.ui.theme.NavySurface
 import es.aviferdev.n3to.ui.theme.TextPrimary
 import es.aviferdev.n3to.ui.theme.TextTertiary
 import es.aviferdev.n3to.ui.theme.N3toTheme
@@ -49,7 +49,7 @@ fun RecentTransactionsSection(
         Card(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(14.dp),
-            colors = CardDefaults.cardColors(containerColor = SurfaceWhite),
+            colors = CardDefaults.cardColors(containerColor = NavySurface),
             elevation = CardDefaults.cardElevation(0.dp)
         ) {
             if (transactions.isEmpty()) {
@@ -88,7 +88,7 @@ fun RecentTransactionsSection(
                         if (index < transactions.lastIndex) {
                             HorizontalDivider(
                                 modifier = Modifier.padding(start = 68.dp),
-                                color = BorderGray,
+                                color = NavyBorder,
                                 thickness = 0.5.dp
                             )
                         }

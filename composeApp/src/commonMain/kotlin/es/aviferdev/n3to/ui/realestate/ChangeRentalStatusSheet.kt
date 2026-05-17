@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.RentalStatus
 import es.aviferdev.n3to.ui.common.component.SelectableChip
 import es.aviferdev.n3to.ui.theme.*
+import es.aviferdev.n3to.ui.theme.DragHandleColor
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
@@ -61,7 +62,7 @@ fun ChangeRentalStatusSheet(
         onDismissRequest = onDismiss,
         sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
         containerColor = SurfaceWhite,
-        dragHandle = { Box(Modifier.padding(top = 12.dp, bottom = 4.dp).width(40.dp).height(4.dp).clip(RoundedCornerShape(2.dp)).background(Color(0xFFBDBDBD))) }
+        dragHandle = { Box(Modifier.padding(top = 12.dp, bottom = 4.dp).width(40.dp).height(4.dp).clip(RoundedCornerShape(2.dp)).background(DragHandleColor)) }
     ) {
         Column(Modifier.fillMaxWidth().padding(horizontal = 20.dp).padding(bottom = 32.dp)) {
             Text("Cambiar estado de alquiler", fontWeight = FontWeight.Bold, fontSize = 18.sp, color = TextPrimary)

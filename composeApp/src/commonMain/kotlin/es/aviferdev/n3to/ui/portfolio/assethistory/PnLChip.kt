@@ -10,6 +10,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import es.aviferdev.n3to.ui.theme.PnLNegative
+import es.aviferdev.n3to.ui.theme.PnLPositive
 import es.aviferdev.n3to.ui.theme.formatAmount
 import es.aviferdev.n3to.ui.theme.maskAmount
 import kotlin.math.abs
@@ -33,8 +35,8 @@ fun PnLChip(
     }
     val color = when {
         unavailable -> Color.White.copy(.45f)
-        amount > 0 -> Color(0xFF86EFAC)
-        amount < 0 -> Color(0xFFFCA5A5)
+        amount > 0 -> PnLPositive
+        amount < 0 -> PnLNegative
         else -> Color.White.copy(.55f)
     }
     Column {

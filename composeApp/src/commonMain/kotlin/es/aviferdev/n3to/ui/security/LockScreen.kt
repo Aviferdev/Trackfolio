@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.core.security.BiometricAuthenticator
 import es.aviferdev.n3to.core.security.BiometricResult
 import es.aviferdev.n3to.ui.theme.*
+import es.aviferdev.n3to.ui.theme.ErrorSoft
 import org.koin.compose.koinInject
 
 @Composable
@@ -82,7 +83,7 @@ fun LockScreen(onUnlocked: () -> Unit) {
                         .background(Color.White.copy(alpha = 0.10f))
                         .padding(horizontal = 16.dp, vertical = 8.dp)
                 ) {
-                    Text(msg, fontSize = 13.sp, color = Color(0xFFEF9A9A), textAlign = TextAlign.Center)
+                    Text(msg, fontSize = 13.sp, color = ErrorSoft, textAlign = TextAlign.Center)
                 }
             }
 

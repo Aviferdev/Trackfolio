@@ -49,6 +49,7 @@ import es.aviferdev.n3to.ui.theme.TextPrimary
 import es.aviferdev.n3to.ui.theme.TextSecondary
 import es.aviferdev.n3to.ui.theme.TextTertiary
 import es.aviferdev.n3to.ui.theme.N3toTheme
+import es.aviferdev.n3to.ui.theme.ChipBgLight
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -121,9 +122,9 @@ fun SlidePortfolio(modifier: Modifier = Modifier) {
         val badgeColor: Color
     )
     val stocks = listOf(
-        StockPill("AAPL", "+13,8%", Color(0xFFE8E8E8)),
-        StockPill("NVDA", "+36,4%", Color(0xFF76B900)),
-        StockPill("MSFT", "+9,0%", Color(0xFF00A4EF))
+        StockPill("AAPL", "+13,8%", ChipBgLight),
+        StockPill("NVDA", "+36,4%", Color(0xFF76B900)), // Nvidia brand green
+        StockPill("MSFT", "+9,0%", Color(0xFF00A4EF))  // Microsoft brand blue
     )
     val pillAlphas = listOf(pill1Alpha, pill2Alpha, pill3Alpha)
 
