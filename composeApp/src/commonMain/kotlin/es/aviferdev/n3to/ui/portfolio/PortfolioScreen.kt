@@ -328,6 +328,14 @@ fun PortfolioContent(
                 )
             }
 
+            item {
+                CompoundEffectCard(
+                    compoundEffect = state.compoundEffect,
+                    balancesHidden = balancesHidden,
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
+                )
+            }
+
             if (valueHistory.isNotEmpty()) {
                 item {
                     Column {

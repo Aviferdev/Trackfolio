@@ -24,6 +24,11 @@ import es.aviferdev.n3to.domain.model.Platform
 import es.aviferdev.n3to.domain.repository.AssetMetadataRepository
 import es.aviferdev.n3to.domain.repository.AssetPlatformRepository
 import es.aviferdev.n3to.domain.repository.AssetPriceHistoryRepository
+import es.aviferdev.n3to.domain.repository.TransactionRepository
+import es.aviferdev.n3to.domain.portfolio.CompoundEffectCalculator
+import es.aviferdev.n3to.domain.portfolio.CompoundEffect
+import es.aviferdev.n3to.domain.model.Transaction
+import es.aviferdev.n3to.domain.portfolio.PositionInput
 import es.aviferdev.n3to.domain.portfolio.AssetPosition
 import es.aviferdev.n3to.domain.portfolio.PortfolioCalculator
 import es.aviferdev.n3to.domain.usecase.account.GetAccountByIdUseCase
@@ -55,6 +60,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
@@ -169,7 +175,10 @@ data class PortfolioUiState(
 
     // Sectores y regiones para sheets de activos
     val allSectors: List<es.aviferdev.n3to.domain.model.AssetSector> = emptyList(),
-    val allRegions: List<es.aviferdev.n3to.domain.model.AssetRegion> = emptyList()
+    val allRegions: List<es.aviferdev.n3to.domain.model.AssetRegion> = emptyList(),
+
+    // Efecto compuesto
+    val compoundEffect: CompoundEffect? = null
 )
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -198,7 +207,8 @@ class PortfolioViewModel(
     private val registerCoupon: es.aviferdev.n3to.domain.usecase.fixedincome.RegisterCouponUseCase? = null,
     private val getPortfoliosByAccount: GetPortfoliosByAccountUseCase,
     private val savePortfolio: SavePortfolioUseCase,
-    private val deletePortfolio: DeletePortfolioUseCase
+    private val deletePortfolio: DeletePortfolioUseCase,
+    private val transactionRepository: TransactionRepository
 ) : ViewModel() {
 
     private val _sheetState = MutableStateFlow(SheetState())
@@ -239,6 +249,19 @@ class PortfolioViewModel(
             initialValue = emptyList()
         )
 
+    /**
+     * Observable de dividendos agrupados por activo.
+     * Se refresca automáticamente cuando cambian los activos del portfolio.
+     */
+    private fun observeDividends(assetIds: List<String>): Flow<Map<String, List<Transaction>>> {
+        if (assetIds.isEmpty()) return flowOf(emptyMap())
+        val dividendFlows = assetIds.map { assetId ->
+            transactionRepository.getDividendsByAsset(assetId)
+                .map { dividends -> assetId to dividends }
+        }
+        return combine(dividendFlows) { pairs -> pairs.toMap() }
+    }
+
     private val allSectors: StateFlow<List<es.aviferdev.n3to.domain.model.AssetSector>> =
         assetMetadataRepository.getAllSectors()
             .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
@@ -266,6 +289,13 @@ class PortfolioViewModel(
         val account: Account?,
         val transactions: List<AssetTransaction>,
         val platforms: List<Platform>
+    )
+
+    private data class BasePortfolioData(
+        val platformsByAsset: Map<String, List<Platform>>,
+        val compositions: List<es.aviferdev.n3to.domain.model.AssetComposition>,
+        val sectorRelations: List<es.aviferdev.n3to.domain.model.AssetSectorRelation>,
+        val regionDistributions: List<es.aviferdev.n3to.domain.model.AssetRegionDistribution>
     )
 
     private data class BasicPortfolioDataWithFI(
@@ -336,30 +366,40 @@ class PortfolioViewModel(
                             nearMaturityPositions = basicData.nearMaturityPositions,
                             accountId = basicData.account?.id,
                             bondIssuers = basicData.bondIssuers,
-                            bankIssuers = basicData.bankIssuers
+                            bankIssuers = basicData.bankIssuers,
+                            dividendsByAsset = emptyMap()
                         ))
                     } else {
-                        combine(
+                        val baseCombine = combine(
                             assetPlatformRepository.getPlatformsByAssets(assetIds),
                             assetMetadataRepository.getAllCompositions(),
                             assetMetadataRepository.getSectorsByAssetIds(assetIds),
                             assetMetadataRepository.getRegionDistributionsByAssetIds(assetIds)
                         ) { platformsByAsset, compositions, sectorRelations, regionDistributions ->
+                            BasePortfolioData(
+                                platformsByAsset = platformsByAsset,
+                                compositions = compositions,
+                                sectorRelations = sectorRelations,
+                                regionDistributions = regionDistributions
+                            )
+                        }
+                        combine(baseCombine, observeDividends(assetIds)) { base, dividends ->
                             buildState(
                                 assets = basicData.assets,
                                 categories = basicData.categories,
                                 account = basicData.account,
                                 transactions = basicData.transactions,
                                 platforms = basicData.platforms,
-                                platformsByAsset = platformsByAsset,
+                                platformsByAsset = base.platformsByAsset,
                                 fiSummary = basicData.fiSummary,
                                 nearMaturityPositions = basicData.nearMaturityPositions,
                                 accountId = basicData.account?.id,
-                                compositions = compositions,
-                                sectorRelations = sectorRelations,
-                                regionDistributions = regionDistributions,
+                                compositions = base.compositions,
+                                sectorRelations = base.sectorRelations,
+                                regionDistributions = base.regionDistributions,
                                 bondIssuers = basicData.bondIssuers,
-                                bankIssuers = basicData.bankIssuers
+                                bankIssuers = basicData.bankIssuers,
+                                dividendsByAsset = dividends
                             )
                         }
                     }
@@ -408,7 +448,8 @@ class PortfolioViewModel(
         sectorRelations: List<es.aviferdev.n3to.domain.model.AssetSectorRelation> = emptyList(),
         regionDistributions: List<es.aviferdev.n3to.domain.model.AssetRegionDistribution> = emptyList(),
         bondIssuers: List<Issuer> = emptyList(),
-        bankIssuers: List<Issuer> = emptyList()
+        bankIssuers: List<Issuer> = emptyList(),
+        dividendsByAsset: Map<String, List<Transaction>> = emptyMap()
     ): PortfolioUiState {
         val allSectorsList = allSectors.value
         val allRegionsList = allRegions.value
@@ -536,6 +577,13 @@ class PortfolioViewModel(
                                  closedRows.sumOf { it.position.realizedPnL }
         val totalUnrealizedPnL = allGroups.sumOf { it.totalUnrealizedPnL }
         val totalPnL           = totalRealizedPnL + totalUnrealizedPnL
+
+        // ── Efecto compuesto ────────────────────────────────────────────────
+        val compoundEffect = calculateCompoundEffect(
+            openRows = openRows,
+            txByAsset = txByAsset,
+            dividendsByAsset = dividendsByAsset
+        )
 
         val fiTotalPrincipal    = fiSummary?.totalPrincipal ?: 0.0
         val fiTotalCurrentValue = fiSummary?.totalCurrentValue ?: 0.0
@@ -701,8 +749,32 @@ class PortfolioViewModel(
             combinedUnrealizedPnL = totalUnrealizedPnL + (fiSummary?.totalAccruedInterest ?: 0.0),
             currentAccountId = accountId,
             allSectors = allSectorsList,
-            allRegions = allRegionsList
+            allRegions = allRegionsList,
+            compoundEffect = compoundEffect
         )
+    }
+
+    /**
+     * Calcula el efecto compuesto para las posiciones abiertas de renta variable.
+     * Se excluye la renta fija porque sus cupones se pagan en efectivo.
+     */
+    private fun calculateCompoundEffect(
+        openRows: List<AssetRow>,
+        txByAsset: Map<String, List<AssetTransaction>>,
+        dividendsByAsset: Map<String, List<Transaction>>
+    ): CompoundEffect? {
+        val nowMillis = Clock.System.now().toEpochMilliseconds()
+        val positionInputs = openRows.mapNotNull { row ->
+            val txs = txByAsset[row.asset.id].orEmpty()
+            if (txs.isEmpty()) return@mapNotNull null
+            PositionInput(
+                asset = row.asset,
+                transactions = txs,
+                currentPrice = row.asset.currentPrice,
+                dividends = dividendsByAsset[row.asset.id].orEmpty()
+            )
+        }
+        return CompoundEffectCalculator.calculate(positionInputs, nowMillis)
     }
 
     private fun colorForGroup(group: CategoryGroup, fallbackIndex: Int): Color {

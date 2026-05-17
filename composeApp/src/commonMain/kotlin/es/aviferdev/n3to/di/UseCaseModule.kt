@@ -451,7 +451,8 @@ val useCaseModule = module {
             getPortfolioValueHistory            = get(),
             getPortfoliosByAccount              = get(),
             savePortfolio                       = get(),
-            deletePortfolio                     = get()
+            deletePortfolio                     = get(),
+            transactionRepository              = get()
         )
     }
     viewModel {
