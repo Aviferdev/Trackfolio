@@ -76,7 +76,7 @@ fun NetWorthScreen(
                 existingProperty = null,
                 availableLoans = state.data.loans,
                 onDismiss      = { viewModel.closeAddPropertySheet() },
-                onSave         = { viewModel.closeAddPropertySheet() }
+                onSave         = { _, _ -> viewModel.closeAddPropertySheet() }
             )
         }
     }

@@ -12,4 +12,5 @@ interface RealEstatePropertyLocalDataSource {
     suspend fun updateLinkedLoan(id: String, loanId: String): Result<Unit>
     suspend fun dismissMortgageReminder(id: String): Result<Unit>
     suspend fun archive(id: String): Result<Unit>
+    suspend fun sell(id: String, saleDate: Long, saleValue: Double): Result<Unit>
 }

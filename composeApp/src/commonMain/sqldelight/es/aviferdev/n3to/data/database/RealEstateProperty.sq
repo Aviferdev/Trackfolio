@@ -13,6 +13,8 @@ CREATE TABLE RealEstatePropertyEntity (
     monthlyRent                 REAL,
     mortgageReminderDismissed   INTEGER NOT NULL DEFAULT 0,
     archived                    INTEGER NOT NULL DEFAULT 0,
+    saleDate                    INTEGER,
+    saleValue                   REAL,
     FOREIGN KEY (accountId) REFERENCES AccountEntity(id),
     FOREIGN KEY (linkedLoanId) REFERENCES LoanEntity(id)
 );
@@ -44,13 +46,15 @@ INSERT OR REPLACE INTO RealEstatePropertyEntity(
     purchaseValue, currentEstimatedValue, acquisitionDate,
     ownershipPercentage, linkedLoanId,
     rentalStatus, monthlyRent,
-    mortgageReminderDismissed, archived
+    mortgageReminderDismissed, archived,
+    saleDate, saleValue
 ) VALUES (
     :id, :accountId, :name, :address, :propertyType,
     :purchaseValue, :currentEstimatedValue, :acquisitionDate,
     :ownershipPercentage, :linkedLoanId,
     :rentalStatus, :monthlyRent,
-    :mortgageReminderDismissed, :archived
+    :mortgageReminderDismissed, :archived,
+    :saleDate, :saleValue
 );
 
 updateEstimatedValue:
@@ -70,3 +74,10 @@ WHERE id = :id;
 
 archive:
 UPDATE RealEstatePropertyEntity SET archived = 1 WHERE id = :id;
+
+sellProperty:
+UPDATE RealEstatePropertyEntity
+SET saleDate = :saleDate,
+    saleValue = :saleValue,
+    archived = 1
+WHERE id = :id;

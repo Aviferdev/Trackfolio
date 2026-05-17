@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import es.aviferdev.n3to.domain.model.*
 import es.aviferdev.n3to.domain.repository.RealEstatePropertyRepository
+import es.aviferdev.n3to.domain.usecase.loan.GetLoansByAccountUseCase
 import es.aviferdev.n3to.domain.usecase.realestate.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
@@ -20,6 +21,7 @@ data class RealEstateDetailUiState(
     val showValueSheet: Boolean = false,
     val showChangeRentalStatusSheet: Boolean = false,
     val showArchiveDialog: Boolean = false,
+    val showSellSheet: Boolean = false,
     val isLoading: Boolean = false
 )
 
@@ -41,23 +43,38 @@ class RealEstateDetailViewModel(
     private val changeRentalStatus: ChangeRentalStatusUseCase,
     private val dismissMortgageReminder: DismissMortgageReminderUseCase,
     private val linkLoanUseCase: LinkLoanUseCase,
-    getLoan: es.aviferdev.n3to.domain.usecase.loan.GetLoansByAccountUseCase
+    private val getLoan: GetLoansByAccountUseCase,
+    private val sellPropertyUseCase: SellPropertyUseCase
 ) : ViewModel() {
 
     private val _showEditSheet = MutableStateFlow(false)
     private val _showValueSheet = MutableStateFlow(false)
     private val _showChangeRentalStatusSheet = MutableStateFlow(false)
     private val _showArchiveDialog = MutableStateFlow(false)
+    private val _showSellSheet = MutableStateFlow(false)
 
     private val propertyWithLoans = combine(
         propertyRepository.getPropertyById(propertyId),
         getLoan(propertyId).onStart { emit(emptyList()) }
     ) { property, loans -> PropData(property, loans) }
 
+    private data class SheetStates(
+        val showEdit: Boolean = false,
+        val showValue: Boolean = false,
+        val showRental: Boolean = false,
+        val showArchive: Boolean = false,
+        val showSell: Boolean = false
+    )
+
     val uiState: StateFlow<RealEstateDetailUiState> = combine(
         propertyWithLoans,
-        _showEditSheet, _showValueSheet, _showChangeRentalStatusSheet, _showArchiveDialog
-    ) { (property, loans), showEdit, showValue, showRental, showArchive ->
+        combine(
+            _showEditSheet, _showValueSheet, _showChangeRentalStatusSheet,
+            _showArchiveDialog, _showSellSheet
+        ) { a, b, c, d, e ->
+            SheetStates(showEdit = a, showValue = b, showRental = c, showArchive = d, showSell = e)
+        }
+    ) { (property, loans), sheets ->
         if (property == null) return@combine RealEstateDetailUiState(isLoading = true)
 
         val linkedLoan = property.linkedLoanId?.let { lid -> loans.find { it.id == lid } }
@@ -67,15 +84,16 @@ class RealEstateDetailViewModel(
             property                 = property,
             linkedLoan               = linkedLoan,
             showMortgageReminder     = showReminder,
-            showEditSheet            = showEdit,
-            showValueSheet           = showValue,
-            showChangeRentalStatusSheet = showRental,
-            showArchiveDialog        = showArchive,
+            showEditSheet            = sheets.showEdit,
+            showValueSheet           = sheets.showValue,
+            showChangeRentalStatusSheet = sheets.showRental,
+            showArchiveDialog        = sheets.showArchive,
+            showSellSheet            = sheets.showSell,
             isLoading                = false
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), RealEstateDetailUiState(isLoading = true))
 
-    // ── Cargar datos secundarios (períodos, transacciones, resumen) ──────────
+    // ── Cargar datos secundarios ─────────────────────────────────────────────
     val rentalPeriods: StateFlow<List<RentalPeriod>> = propertyRepository.getPropertyById(propertyId)
         .flatMapLatest { property ->
             if (property != null) getRentalPeriods(property.id)
@@ -96,7 +114,7 @@ class RealEstateDetailViewModel(
         else getFinancialSummary(property, transactions)
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 
-    // ── Acciones ──────────────────────────────────────────────────────────────
+    // ── Controles de sheets ──────────────────────────────────────────────────
     fun showEditSheet() { _showEditSheet.value = true }
     fun hideEditSheet() { _showEditSheet.value = false }
 
@@ -109,9 +127,13 @@ class RealEstateDetailViewModel(
     fun showArchiveDialog() { _showArchiveDialog.value = true }
     fun hideArchiveDialog() { _showArchiveDialog.value = false }
 
-    fun saveProperty(property: RealEstateProperty) {
+    fun showSellSheet() { _showSellSheet.value = true }
+    fun hideSellSheet() { _showSellSheet.value = false }
+
+    // ── Acciones ─────────────────────────────────────────────────────────────
+    fun saveProperty(property: RealEstateProperty, purchaseExpenses: List<PropertyExpense> = emptyList()) {
         viewModelScope.launch {
-            savePropertyUseCase(property)
+            savePropertyUseCase(property, purchaseExpenses)
                 .onSuccess { hideEditSheet() }
         }
     }
@@ -146,6 +168,20 @@ class RealEstateDetailViewModel(
     fun linkLoan(loanId: String) {
         viewModelScope.launch {
             linkLoanUseCase(propertyId, loanId)
+        }
+    }
+
+    fun sellProperty(saleDate: Long, saleValue: Double, expenses: List<PropertyExpense>) {
+        viewModelScope.launch {
+            val property = uiState.value.property ?: return@launch
+            sellPropertyUseCase(
+                propertyId = property.id,
+                saleDate = saleDate,
+                saleValue = saleValue,
+                saleExpenses = expenses,
+                accountId = property.accountId,
+                propertyName = property.name
+            ).onSuccess { hideSellSheet() }
         }
     }
 }

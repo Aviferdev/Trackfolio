@@ -11,27 +11,7 @@ actual class DatabaseDriverFactory(private val context: Context) {
         if (DESTRUCTIVE_MIGRATION_ENABLED) {
             val dbFile = context.getDatabasePath(dbName)
             if (dbFile.exists()) {
-                try {
-                    val existingVersion = readUserVersion(dbFile.absolutePath)
-                    val schemaVersion = N3toDatabase.Schema.version
-                    if (existingVersion != schemaVersion) {
-                        context.deleteDatabase(dbName)
-                        val parent = dbFile.parentFile
-                        if (parent != null) {
-                            listOf("$dbName-wal", "$dbName-shm", "$dbName-journal").forEach { name ->
-                                java.io.File(parent, name).delete()
-                            }
-                        }
-                    }
-                } catch (_: Exception) {
-                    context.deleteDatabase(dbName)
-                    val parent = dbFile.parentFile
-                    if (parent != null) {
-                        listOf("$dbName-wal", "$dbName-shm", "$dbName-journal").forEach { name ->
-                            java.io.File(parent, name).delete()
-                        }
-                    }
-                }
+                deleteDatabaseSafely(context, dbName, dbFile)
             }
         }
 
@@ -42,16 +22,13 @@ actual class DatabaseDriverFactory(private val context: Context) {
         )
     }
 
-    private fun readUserVersion(path: String): Long {
-        val db = android.database.sqlite.SQLiteDatabase.openDatabase(
-            path, null, android.database.sqlite.SQLiteDatabase.OPEN_READONLY
-        )
-        return try {
-            db.rawQuery("PRAGMA user_version", null).use { cursor ->
-                if (cursor.moveToFirst()) cursor.getLong(0) else 0L
+    private fun deleteDatabaseSafely(context: Context, dbName: String, dbFile: java.io.File) {
+        context.deleteDatabase(dbName)
+        val parent = dbFile.parentFile
+        if (parent != null) {
+            listOf("$dbName-wal", "$dbName-shm", "$dbName-journal").forEach { name ->
+                java.io.File(parent, name).delete()
             }
-        } finally {
-            db.close()
         }
     }
 }

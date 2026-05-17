@@ -49,22 +49,34 @@ fun PropertyCard(
                     }
                 }
                 Column(horizontalAlignment = Alignment.End) {
-                    Text(formatAmountEuro(property.effectiveValue), fontWeight = FontWeight.Bold, fontSize = 13.sp, color = IncomeGreen)
-                    DeltaIndicator(value = formatPercentSigned(property.unrealizedGainPercent), isPositive = property.unrealizedGain >= 0)
+                    if (property.isSold) {
+                        Text(formatAmountEuro(property.saleValue ?: 0.0), fontWeight = FontWeight.Bold, fontSize = 13.sp, color = IncomeGreen)
+                        DeltaIndicator(
+                            value = formatPercentSigned(property.realizedGainPercent ?: 0.0),
+                            isPositive = (property.realizedGain ?: 0.0) >= 0
+                        )
+                    } else {
+                        Text(formatAmountEuro(property.effectiveValue), fontWeight = FontWeight.Bold, fontSize = 13.sp, color = IncomeGreen)
+                        DeltaIndicator(value = formatPercentSigned(property.unrealizedGainPercent), isPositive = property.unrealizedGain >= 0)
+                    }
                 }
             }
             Spacer(Modifier.height(8.dp))
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(6.dp), verticalAlignment = Alignment.CenterVertically) {
-                StatusTag(
-                    label = when (property.rentalStatus) {
-                        RentalStatus.RENTED -> "\uD83D\uDCB0 ${formatPercent(property.grossRentalYieldOnCurrent)}% yield"
-                        RentalStatus.VACANT -> "\uD83D\uDD12 Vacía"
-                        RentalStatus.OWN_USE -> "\uD83C\uDFE0 Uso propio"
-                    },
-                    color = when (property.rentalStatus) {
-                        RentalStatus.RENTED -> IncomeGreen; RentalStatus.VACANT -> WarnAmber; RentalStatus.OWN_USE -> TextTertiary
-                    }
-                )
+                if (property.isSold) {
+                    StatusTag(label = "\u2705 Vendida", color = IncomeGreen)
+                } else {
+                    StatusTag(
+                        label = when (property.rentalStatus) {
+                            RentalStatus.RENTED -> "\uD83D\uDCB0 ${formatPercent(property.grossRentalYieldOnCurrent)}% yield"
+                            RentalStatus.VACANT -> "\uD83D\uDD12 Vacía"
+                            RentalStatus.OWN_USE -> "\uD83C\uDFE0 Uso propio"
+                        },
+                        color = when (property.rentalStatus) {
+                            RentalStatus.RENTED -> IncomeGreen; RentalStatus.VACANT -> WarnAmber; RentalStatus.OWN_USE -> TextTertiary
+                        }
+                    )
+                }
                 if (showMortgageReminder) {
                     StatusTag(label = "\uD83C\uDFE0 Sin hipoteca", color = WarnAmber)
                 }

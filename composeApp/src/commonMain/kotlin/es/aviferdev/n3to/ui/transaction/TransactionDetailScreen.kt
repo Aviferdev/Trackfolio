@@ -10,6 +10,7 @@ import androidx.compose.material.icons.outlined.ArrowDownward
 import androidx.compose.material.icons.outlined.ArrowUpward
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.material.icons.outlined.House
 import androidx.compose.material.icons.outlined.ShowChart
 import androidx.compose.material.icons.outlined.SwapHoriz
 import androidx.compose.material3.*
@@ -173,13 +174,16 @@ private fun TransactionDetailContent(
             .padding(top = 8.dp, bottom = 24.dp)
     ) {
         // ── Card superior con tipo, importe y categoría ────────────────────
+        val isPropertyTransaction = transaction.linkedPropertyId != null
         val (typeLabel, typeColor) = when {
             transaction.isAdjustment -> "AJUSTE" to PrimaryDark
             transaction.isLinkedToAsset -> "INVERSIÓN" to PrimaryDark
+            isPropertyTransaction   -> "INMUEBLE" to IncomeGreen
             transaction.isIncome  -> "INGRESO" to IncomeGreen
             else                  -> "GASTO" to ExpenseRed
         }
-        val isNegativeAmount = when {
+        val isLinkedToProperty = transaction.linkedPropertyId != null
+    val isNegativeAmount = when {
             transaction.isAdjustment -> transaction.amount < 0
             transaction.isIncome    -> false
             else                    -> true
@@ -190,6 +194,7 @@ private fun TransactionDetailContent(
         val categoryIcon = when {
             transaction.isAdjustment   -> Icons.Outlined.SwapHoriz
             transaction.isLinkedToAsset -> Icons.Outlined.ShowChart
+            isLinkedToProperty         -> Icons.Outlined.House
             transaction.isIncome       -> Icons.Outlined.ArrowDownward
             else                       -> Icons.Outlined.ArrowUpward
         }
@@ -350,8 +355,9 @@ private fun TransactionDetailContent(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            // Editar (solo si no es linkedToAsset)
-            if (onEdit != null) {
+            val isPropertyTx = transaction.linkedPropertyId != null
+            // Editar (solo si no es linkedToAsset ni linkedToProperty)
+            if (onEdit != null && !isPropertyTx) {
                 OutlinedButton(
                     onClick = onEdit,
                     modifier = Modifier.weight(1f).height(50.dp),
@@ -377,8 +383,9 @@ private fun TransactionDetailContent(
                 }
             }
 
-            // Eliminar (solo si no es linkedToAsset)
-            if (!transaction.isLinkedToAsset) {
+            val isPropertyTxFinal = transaction.linkedPropertyId != null
+            // Eliminar (solo si no es linkedToAsset ni linkedToProperty)
+            if (!transaction.isLinkedToAsset && !isPropertyTxFinal) {
                 Button(
                     onClick = onDelete,
                     modifier = Modifier.weight(1f).height(50.dp),
@@ -401,7 +408,12 @@ private fun TransactionDetailContent(
                     )
                 }
             } else {
-                // Para linked-to-asset: mostrar indicador de portfolio
+                // Para linked-to-asset o linked-to-property: mostrar indicador
+                val linkedLabel = when {
+                    transaction.isLinkedToAsset -> "Movimiento del Portfolio"
+                    isPropertyTxFinal -> "Gestionable desde la propiedad"
+                    else -> "Movimiento vinculado"
+                }
                 Surface(
                     modifier = Modifier.fillMaxWidth().height(50.dp),
                     shape = RoundedCornerShape(12.dp),
@@ -409,7 +421,7 @@ private fun TransactionDetailContent(
                 ) {
                     Box(contentAlignment = Alignment.Center) {
                         Text(
-                            "Movimiento del Portfolio",
+                            linkedLabel,
                             fontSize = 13.sp,
                             fontWeight = FontWeight.Medium,
                             color = PrimaryDark

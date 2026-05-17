@@ -103,7 +103,8 @@ fun AddEditLoanBottomSheet(
             modifier = Modifier
                 .fillMaxWidth()
                 .verticalScroll(rememberScrollState())
-                .padding(horizontal = 20.dp, vertical = 12.dp)
+                .padding(horizontal = 20.dp)
+                .padding(top = 8.dp, bottom = 32.dp)
         ) {
             Text(
                 if (isEditing) "Editar préstamo" else "Nuevo préstamo",

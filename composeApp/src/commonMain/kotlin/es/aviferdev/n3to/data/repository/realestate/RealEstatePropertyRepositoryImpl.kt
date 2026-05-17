@@ -32,4 +32,7 @@ class RealEstatePropertyRepositoryImpl(
 
     override suspend fun dismissMortgageReminder(propertyId: String): Result<Unit> =
         localDataSource.dismissMortgageReminder(propertyId)
+
+    override suspend fun sellProperty(id: String, saleDate: Long, saleValue: Double): Result<Unit> =
+        localDataSource.sell(id, saleDate, saleValue)
 }

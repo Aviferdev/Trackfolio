@@ -19,7 +19,9 @@ fun RealEstatePropertyEntity.toDomain(): RealEstateProperty = RealEstateProperty
     rentalStatus              = RentalStatus.fromName(rentalStatus),
     monthlyRent               = monthlyRent,
     mortgageReminderDismissed = mortgageReminderDismissed != 0L,
-    archived                  = archived != 0L
+    archived                  = archived != 0L,
+    saleDate                  = saleDate,
+    saleValue                 = saleValue
 )
 
 fun RealEstateProperty.toEntity(): RealEstatePropertyEntity = RealEstatePropertyEntity(
@@ -36,5 +38,7 @@ fun RealEstateProperty.toEntity(): RealEstatePropertyEntity = RealEstateProperty
     rentalStatus              = rentalStatus.name,
     monthlyRent               = monthlyRent,
     mortgageReminderDismissed = if (mortgageReminderDismissed) 1L else 0L,
-    archived                  = if (archived) 1L else 0L
+    archived                  = if (archived) 1L else 0L,
+    saleDate                  = saleDate,
+    saleValue                 = saleValue
 )

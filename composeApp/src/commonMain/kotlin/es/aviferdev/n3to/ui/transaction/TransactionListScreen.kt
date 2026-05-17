@@ -243,8 +243,9 @@ fun TransactionListContent(
                     items = uiState.filteredTransactions,
                     key = { _, t -> t.id }
                 ) { index, transaction ->
-                    // Linked-to-asset: no swipe, no edit
-                    if (transaction.isLinkedToAsset) {
+                    val isLinkedToPropertyTx = transaction.linkedPropertyId != null
+                    // Linked-to-asset or linked-to-property: no swipe, no edit
+                    if (transaction.isLinkedToAsset || isLinkedToPropertyTx) {
                         TransactionCard(
                             transaction = transaction,
                             label = TransactionViewModel.resolveLabel(
@@ -459,20 +460,24 @@ private fun TransactionCard(
 ) {
     val isIncome = transaction.isIncome
     val isAdjustment = transaction.isAdjustment
-    val isLinked = transaction.isLinkedToAsset
+    val isLinkedAsset = transaction.isLinkedToAsset
+    val isLinkedProperty = transaction.linkedPropertyId != null
+    val isLinked = isLinkedAsset || isLinkedProperty
     val avatarBg = when {
         isAdjustment -> PrimaryDark; isLinked -> PrimaryDark
         isIncome -> IncomeGreen; else -> ExpenseRed
     }
     val avatarIcon = when {
         isAdjustment -> Icons.Outlined.SwapHoriz
-        isLinked -> Icons.Outlined.ShowChart
+        isLinkedAsset -> Icons.Outlined.ShowChart
+        isLinkedProperty -> Icons.Outlined.House
         isIncome -> Icons.Outlined.ArrowDownward
         else -> Icons.Outlined.ArrowUpward
     }
     val avatarContentDesc = when {
         isAdjustment -> "Ajuste"
-        isLinked -> "Inversión"
+        isLinkedAsset -> "Inversión"
+        isLinkedProperty -> "Inmueble"
         isIncome -> "Ingreso"
         else -> "Gasto"
     }

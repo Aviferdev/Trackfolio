@@ -121,8 +121,6 @@ fun AddDebtBottomSheetContent(
             .padding(horizontal = 20.dp)
             .padding(bottom = 32.dp)
     ) {
-        Spacer(Modifier.height(8.dp))
-
         Text(
             text       = if (isEditing) "Editar deuda" else "Nueva deuda",
             fontSize   = 18.sp,

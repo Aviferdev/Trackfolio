@@ -115,6 +115,7 @@ import es.aviferdev.n3to.domain.usecase.realestate.GetRentalPeriodsUseCase
 import es.aviferdev.n3to.domain.usecase.realestate.GetTransactionsByPropertyUseCase
 import es.aviferdev.n3to.domain.usecase.realestate.LinkLoanUseCase
 import es.aviferdev.n3to.domain.usecase.realestate.SavePropertyUseCase
+import es.aviferdev.n3to.domain.usecase.realestate.SellPropertyUseCase
 import es.aviferdev.n3to.domain.usecase.realestate.UpdatePropertyValueUseCase
 import es.aviferdev.n3to.domain.usecase.reconciliation.GetReconciliationReminderIntervalUseCase
 import es.aviferdev.n3to.domain.usecase.reconciliation.ReconcileBalanceUseCase
@@ -314,7 +315,7 @@ val useCaseModule = module {
     factory { ArchiveLoanUseCase(get()) }
 
     // ── Real Estate ──────────────────────────────────────────────────────────────
-    factory { SavePropertyUseCase(get()) }
+    factory { SavePropertyUseCase(get(), get()) }
     factory { UpdatePropertyValueUseCase(get()) }
     factory { ArchivePropertyUseCase(get()) }
     factory { GetPropertiesByAccountUseCase(get()) }
@@ -324,6 +325,7 @@ val useCaseModule = module {
     factory { GetTransactionsByPropertyUseCase(get()) }
     factory { GetPropertyFinancialSummaryUseCase(get()) }
     factory { LinkLoanUseCase(get()) }
+    factory { SellPropertyUseCase(get(), get()) }
 
     // ── Net Worth ────────────────────────────────────────────────────────────────
     factory { GetNetWorthDataUseCase(get(), get(), get(), get(), get(), get(), get()) }
@@ -602,7 +604,8 @@ val useCaseModule = module {
             changeRentalStatus      = get(),
             dismissMortgageReminder = get(),
             linkLoanUseCase         = get(),
-            getLoan                 = get()
+            getLoan                 = get(),
+            sellPropertyUseCase     = get()
         )
     }
 

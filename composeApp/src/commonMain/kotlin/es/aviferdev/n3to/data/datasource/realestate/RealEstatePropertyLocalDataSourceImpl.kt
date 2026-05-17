@@ -51,7 +51,9 @@ class RealEstatePropertyLocalDataSourceImpl(
                 rentalStatus            = e.rentalStatus,
                 monthlyRent             = e.monthlyRent,
                 mortgageReminderDismissed = e.mortgageReminderDismissed,
-                archived                = e.archived
+                archived                = e.archived,
+                saleDate                = e.saleDate,
+                saleValue               = e.saleValue
             )
         }
     }
@@ -67,4 +69,7 @@ class RealEstatePropertyLocalDataSourceImpl(
 
     override suspend fun archive(id: String): Result<Unit> =
         runCatching { withContext(Dispatchers.IO) { queries.archive(id) } }
+
+    override suspend fun sell(id: String, saleDate: Long, saleValue: Double): Result<Unit> =
+        runCatching { withContext(Dispatchers.IO) { queries.sellProperty(saleDate = saleDate, saleValue = saleValue, id = id) } }
 }

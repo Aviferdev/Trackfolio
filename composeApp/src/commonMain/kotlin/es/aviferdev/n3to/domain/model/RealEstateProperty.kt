@@ -21,7 +21,10 @@ data class RealEstateProperty(
     val rentalStatus: RentalStatus,
     val monthlyRent: Double?,
     val mortgageReminderDismissed: Boolean,
-    val archived: Boolean
+    val archived: Boolean,
+    // ── Datos de venta ──────────────────────────────────────
+    val saleDate: Long? = null,
+    val saleValue: Double? = null
 ) {
     /** Valor efectivo ponderado por el % de propiedad */
     val effectiveValue: Double
@@ -60,4 +63,26 @@ data class RealEstateProperty(
     /** Tiene recordatorio de hipoteca pendiente */
     val hasPendingMortgageReminder: Boolean
         get() = linkedLoanId == null && !mortgageReminderDismissed
+
+    // ── Propiedades de venta ─────────────────────────────────
+
+    /** Indica si la propiedad ha sido vendida (tiene datos de venta y está archivada). */
+    val isSold: Boolean
+        get() = saleDate != null && saleValue != null && archived
+
+    /** Plusvalía realizada (solo si está vendida). */
+    val realizedGain: Double?
+        get() {
+            if (!isSold || saleValue == null) return null
+            val ownership = ownershipPercentage / 100.0
+            return (saleValue * ownership) - (purchaseValue * ownership)
+        }
+
+    /** Plusvalía realizada en % sobre el precio de compra. */
+    val realizedGainPercent: Double?
+        get() {
+            val gain = realizedGain ?: return null
+            val basis = purchaseValue * ownershipPercentage / 100.0
+            return if (basis > 0) (gain / basis) * 100.0 else 0.0
+        }
 }

@@ -196,6 +196,35 @@ class DatabaseInitializer(
                 id = "cat_exp_loan", accountId = accountId,
                 name = "Cuota préstamo", type = TransactionType.EXPENSE.name, isDefault = 1L, archived = 0L
             ),
+            // ── Gastos inmobiliarios (compra/venta vivienda) ────
+            CategoryEntity(
+                id = "cat_exp_prop_notary", accountId = accountId,
+                name = "Notaría", type = TransactionType.EXPENSE.name, isDefault = 1L, archived = 0L
+            ),
+            CategoryEntity(
+                id = "cat_exp_prop_registry", accountId = accountId,
+                name = "Registro", type = TransactionType.EXPENSE.name, isDefault = 1L, archived = 0L
+            ),
+            CategoryEntity(
+                id = "cat_exp_prop_tax", accountId = accountId,
+                name = "Impuestos (ITP/IVA)", type = TransactionType.EXPENSE.name, isDefault = 1L, archived = 0L
+            ),
+            CategoryEntity(
+                id = "cat_exp_prop_agency", accountId = accountId,
+                name = "Comisión inmobiliaria", type = TransactionType.EXPENSE.name, isDefault = 1L, archived = 0L
+            ),
+            CategoryEntity(
+                id = "cat_exp_prop_appraisal", accountId = accountId,
+                name = "Tasación", type = TransactionType.EXPENSE.name, isDefault = 1L, archived = 0L
+            ),
+            CategoryEntity(
+                id = "cat_exp_prop_gestoria", accountId = accountId,
+                name = "Gestoría", type = TransactionType.EXPENSE.name, isDefault = 1L, archived = 0L
+            ),
+            CategoryEntity(
+                id = "cat_exp_prop_municipal", accountId = accountId,
+                name = "Plusvalía municipal", type = TransactionType.EXPENSE.name, isDefault = 1L, archived = 0L
+            ),
         )
 
         /** Categoría especial para transacciones de ajuste / reconciliación. */

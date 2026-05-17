@@ -12,4 +12,5 @@ interface RealEstatePropertyRepository {
     suspend fun archiveProperty(id: String): Result<Unit>
     suspend fun linkLoan(propertyId: String, loanId: String): Result<Unit>
     suspend fun dismissMortgageReminder(propertyId: String): Result<Unit>
+    suspend fun sellProperty(id: String, saleDate: Long, saleValue: Double): Result<Unit>
 }
