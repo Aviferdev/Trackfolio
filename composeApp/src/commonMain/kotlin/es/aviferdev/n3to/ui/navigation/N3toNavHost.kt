@@ -42,6 +42,7 @@ import es.aviferdev.n3to.ui.settings.IncomeSettingsScreen
 import es.aviferdev.n3to.ui.settings.IncomeTypeDetailScreen
 import es.aviferdev.n3to.ui.settings.PrivacySettingsScreen
 import es.aviferdev.n3to.ui.settings.SettingsScreen
+import es.aviferdev.n3to.ui.settings.goal.GoalSettingsScreen
 import es.aviferdev.n3to.ui.transaction.TransactionDetailScreen
 import es.aviferdev.n3to.ui.transaction.TransactionListScreen
 import org.koin.compose.koinInject
@@ -327,12 +328,22 @@ fun N3toNavHost(
                                 launchSingleTop = true
                             }
                         },
+                        onNavigateToGoalSettings = {
+                            navController.navigate(Screen.GoalSettings.route) {
+                                launchSingleTop = true
+                            }
+                        },
                         onNavigateToAbout = {
                             navController.navigate(Screen.About.route) {
                                 launchSingleTop = true
                             }
                         },
                         onResetOnboarding = onResetOnboarding
+                    )
+                }
+                composable(Screen.GoalSettings.route) {
+                    GoalSettingsScreen(
+                        navigateBack = { navController.popBackStack() }
                     )
                 }
                 composable(Screen.About.route) {

@@ -64,6 +64,8 @@ sealed class Screen(val route: String) {
         const val ARG_PROPERTY_ID = "propertyId"
         fun buildRoute(propertyId: String): String = "real_estate_detail/$propertyId"
     }
+
+    data object GoalSettings : Screen("goals_settings")
 }
 
 /**

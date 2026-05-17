@@ -39,7 +39,13 @@ import es.aviferdev.n3to.domain.usecase.assettag.UpsertAssetTagAssignmentUseCase
 import es.aviferdev.n3to.domain.usecase.assettransaction.DeleteAssetTransactionUseCase
 import es.aviferdev.n3to.domain.usecase.assettransaction.ExecuteFundTransferUseCase
 import es.aviferdev.n3to.domain.usecase.assettransaction.GetMonthlyInvestmentsUseCase
+import es.aviferdev.n3to.domain.usecase.assettransaction.GetMonthlyNetInvestmentsUseCase
 import es.aviferdev.n3to.domain.usecase.assettransaction.GetTransactionsByAccountUseCase
+import es.aviferdev.n3to.domain.usecase.goal.GetCurrentMonthProgressUseCase
+import es.aviferdev.n3to.domain.usecase.goal.GetMonthlyGoalsUseCase
+import es.aviferdev.n3to.domain.usecase.goal.GetYearlyGoalProgressUseCase
+import es.aviferdev.n3to.domain.usecase.goal.SaveMonthlyGoalUseCase
+import es.aviferdev.n3to.domain.usecase.goal.SaveMonthlyGoalsUseCase
 import es.aviferdev.n3to.domain.usecase.assettransaction.GetTransactionsByAssetDescUseCase
 import es.aviferdev.n3to.domain.usecase.assettransaction.GetTransactionsByAssetUseCase
 import es.aviferdev.n3to.domain.usecase.assettransaction.SaveAssetTransactionUseCase
@@ -127,6 +133,7 @@ import es.aviferdev.n3to.ui.fixedincome.FixedIncomeDetailViewModel
 import es.aviferdev.n3to.ui.home.AddTransactionViewModel
 import es.aviferdev.n3to.ui.home.CategoryPickerViewModel
 import es.aviferdev.n3to.ui.home.HomeViewModel
+import es.aviferdev.n3to.ui.settings.goal.GoalSettingsViewModel
 import es.aviferdev.n3to.ui.loan.LoanDetailViewModel
 import es.aviferdev.n3to.ui.networth.NetWorthViewModel
 import es.aviferdev.n3to.ui.portfolio.AssetCatalogViewModel
@@ -173,6 +180,13 @@ val useCaseModule = module {
 
     // ── Asset Transaction (inversiones) ─────────────────────────────────────
     factory { GetMonthlyInvestmentsUseCase(get()) }
+    factory { GetMonthlyNetInvestmentsUseCase(get()) }
+    // ── Goals ──────────────────────────────────────────────────────────────────
+    factory { GetMonthlyGoalsUseCase(get()) }
+    factory { SaveMonthlyGoalUseCase(get()) }
+    factory { SaveMonthlyGoalsUseCase(get()) }
+    factory { GetCurrentMonthProgressUseCase(get(), get(), get()) }
+    factory { GetYearlyGoalProgressUseCase(get(), get(), get()) }
     // ── Home ──────────────────────────────────────────────────────────────────
     factory { GetHomeBalanceUseCase(get(), get(), get()) }
     // ── Debts ─────────────────────────────────────────────────────────────────
@@ -321,7 +335,8 @@ val useCaseModule = module {
             getNearMaturityPositions  = get(),
             loadingManager            = get(),
             getPortfolioValueHistory = get(),
-            versionManager = get()
+            versionManager = get(),
+            getCurrentMonthProgress = get()
         )
     }
     viewModel {
@@ -362,6 +377,7 @@ val useCaseModule = module {
             getExpensesByCategory  = get(),
             getIncomeByType        = get(),
             getMonthlyInvestments  = get(),
+            getYearlyGoalProgress = get(),
             session                = get()
         )
     }
@@ -546,4 +562,12 @@ val useCaseModule = module {
     }
 
     viewModel { (initialTypeName: String) -> CategoryPickerViewModel(initialTypeName, get()) }
+
+    // ── Goal Settings ────────────────────────────────────────────────────────────
+    viewModel {
+        GoalSettingsViewModel(
+            goalRepository = get(),
+            session = get()
+        )
+    }
 }

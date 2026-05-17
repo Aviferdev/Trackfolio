@@ -46,6 +46,7 @@ import es.aviferdev.n3to.domain.model.Account
 import es.aviferdev.n3to.domain.model.AccountType
 import es.aviferdev.n3to.domain.model.HomeBalance
 import es.aviferdev.n3to.domain.model.IncomeType
+import es.aviferdev.n3to.domain.model.MonthlyGoalProgress
 import es.aviferdev.n3to.domain.model.Transaction
 import es.aviferdev.n3to.domain.model.TransactionType
 import es.aviferdev.n3to.domain.usecase.backup.GetBackupReminderIntervalUseCase
@@ -54,6 +55,7 @@ import es.aviferdev.n3to.domain.usecase.backup.SaveBackupReminderIntervalUseCase
 import es.aviferdev.n3to.domain.usecase.backup.ShouldShowBackupReminderUseCase
 import es.aviferdev.n3to.ui.account.AccountSelectorBar
 import es.aviferdev.n3to.ui.account.AccountViewModel
+import es.aviferdev.n3to.ui.common.SectionHeader
 import es.aviferdev.n3to.ui.common.component.IconActionButton
 import es.aviferdev.n3to.ui.reconciliation.ReconcileBalanceBottomSheet
 import es.aviferdev.n3to.ui.reconciliation.ReconciliationReminderBanner
@@ -97,6 +99,7 @@ fun HomeScreen(
     val uiState by viewModel.uiState.collectAsState()
     val priceReminder by viewModel.priceReminderState.collectAsState()
     val nearMaturity by viewModel.nearMaturityState.collectAsState()
+    val goalProgress by viewModel.goalProgressState.collectAsState()
     val accountState by accountViewModel.uiState.collectAsState()
     val selectedId by accountViewModel.selectedAccountId.collectAsState()
     val reconciliationState by reconciliationViewModel.uiState.collectAsState()
@@ -227,7 +230,8 @@ fun HomeScreen(
                     showVersionBanner = showVersionBanner,
                     versionLatestVersion = versionInfo?.latestVersion,
                     onVersionUpdateNow = openStore,
-                    onDismissVersionBanner = { versionInfo?.let { viewModel.dismissVersionBanner(it.latestVersion) } }
+                    onDismissVersionBanner = { versionInfo?.let { viewModel.dismissVersionBanner(it.latestVersion) } },
+                    goalProgressState = goalProgress
                 )
             }
         }
@@ -353,7 +357,8 @@ fun HomeContent(
     showVersionBanner: Boolean = false,
     versionLatestVersion: String? = null,
     onVersionUpdateNow: () -> Unit = {},
-    onDismissVersionBanner: () -> Unit = {}
+    onDismissVersionBanner: () -> Unit = {},
+    goalProgressState: GoalProgressState = GoalProgressState()
 ) {
     Column(
         modifier = Modifier
@@ -465,6 +470,25 @@ fun HomeContent(
         HeroCard(
             balance = balance,
             balancesHidden = balancesHidden,
+            modifier = Modifier.padding(horizontal = 16.dp)
+        )
+
+        // ── Progreso de objetivos ─────────────────────────────────────────────
+        Spacer(Modifier.height(24.dp))
+        SectionHeader(
+            label = "Objetivos",
+            modifier = Modifier.padding(horizontal = 16.dp)
+        )
+        Spacer(Modifier.height(10.dp))
+        GoalProgressCard(
+            progress = goalProgressState.progress ?: MonthlyGoalProgress.from(
+                year = "",
+                month = "",
+                goal = null,
+                savingsActual = 0.0,
+                investmentActual = 0.0
+            ),
+            onNavigateToSettings = onNavigateToSettings,
             modifier = Modifier.padding(horizontal = 16.dp)
         )
 

@@ -6,6 +6,7 @@ import es.aviferdev.n3to.core.VersionManager
 import es.aviferdev.n3to.domain.model.Asset
 import es.aviferdev.n3to.domain.model.FixedIncomePosition
 import es.aviferdev.n3to.domain.model.HomeBalance
+import es.aviferdev.n3to.domain.model.MonthlyGoalProgress
 import es.aviferdev.n3to.domain.model.TransactionType
 import es.aviferdev.n3to.domain.usecase.account.SetInitialBalanceUseCase
 import es.aviferdev.n3to.domain.usecase.asset.GetOutdatedAssetsUseCase
@@ -14,6 +15,7 @@ import es.aviferdev.n3to.domain.usecase.asset.ShouldShowPriceReminderUseCase
 import es.aviferdev.n3to.domain.usecase.asset.UpdateAssetCurrentPriceUseCase
 import es.aviferdev.n3to.domain.usecase.category.GetCategoriesByTypeUseCase
 import es.aviferdev.n3to.domain.usecase.fixedincome.GetNearMaturityPositionsUseCase
+import es.aviferdev.n3to.domain.usecase.goal.GetCurrentMonthProgressUseCase
 import es.aviferdev.n3to.domain.usecase.home.GetHomeBalanceUseCase
 import es.aviferdev.n3to.domain.usecase.portfolio.GetPortfolioValueHistoryUseCase
 import es.aviferdev.n3to.ui.account.AccountSession
@@ -53,6 +55,11 @@ data class NearMaturityState(
     val positions: List<FixedIncomePosition> = emptyList()
 )
 
+data class GoalProgressState(
+    val progress: MonthlyGoalProgress? = null,
+    val showCard: Boolean = true
+)
+
 @OptIn(ExperimentalCoroutinesApi::class)
 class HomeViewModel(
     private val getHomeBalance: GetHomeBalanceUseCase,
@@ -66,7 +73,8 @@ class HomeViewModel(
     private val getNearMaturityPositions: GetNearMaturityPositionsUseCase? = null,
     private val loadingManager: GlobalLoadingManager,
     private val getPortfolioValueHistory: GetPortfolioValueHistoryUseCase,
-    private val versionManager: VersionManager
+    private val versionManager: VersionManager,
+    private val getCurrentMonthProgress: GetCurrentMonthProgressUseCase? = null
 ) : ViewModel() {
 
     val uiState: StateFlow<HomeUiState> = session.selectedAccountId
@@ -97,6 +105,9 @@ class HomeViewModel(
     private val _nearMaturityState = MutableStateFlow(NearMaturityState())
     val nearMaturityState: StateFlow<NearMaturityState> = _nearMaturityState.asStateFlow()
 
+    private val _goalProgressState = MutableStateFlow(GoalProgressState())
+    val goalProgressState: StateFlow<GoalProgressState> = _goalProgressState.asStateFlow()
+
     /** Estado de actualización de versión (delegado en [VersionManager]). */
     val versionStatus: StateFlow<VersionManager.Status> = versionManager.status
 
@@ -112,6 +123,7 @@ class HomeViewModel(
         }
         checkPriceReminder()
         loadNearMaturityPositions()
+        loadGoalProgress()
     }
 
     private fun checkPriceReminder() {
@@ -205,6 +217,27 @@ class HomeViewModel(
                     )
                 }
             }
+        }
+    }
+
+    private fun loadGoalProgress() {
+        if (getCurrentMonthProgress == null) return
+
+        viewModelScope.launch {
+            session.selectedAccountId
+                .flatMapLatest { accountId ->
+                    if (accountId == null) {
+                        emptyFlow()
+                    } else {
+                        getCurrentMonthProgress(accountId)
+                    }
+                }
+                .collect { progress ->
+                    _goalProgressState.value = GoalProgressState(
+                        progress = progress,
+                        showCard = true
+                    )
+                }
         }
     }
 

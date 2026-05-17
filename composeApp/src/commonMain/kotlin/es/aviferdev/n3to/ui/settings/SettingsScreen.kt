@@ -29,6 +29,7 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.WorkspacePremium
 import androidx.compose.material.icons.outlined.Fingerprint
+import androidx.compose.material.icons.outlined.GpsFixed
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material.icons.outlined.SaveAlt
@@ -100,6 +101,7 @@ fun SettingsScreen(
     onNavigateToPremium: () -> Unit = {},
     onNavigateToExpenseSettings: () -> Unit = {},
     onNavigateToIncomeSettings: () -> Unit = {},
+    onNavigateToGoalSettings: () -> Unit = {},
     onNavigateToAbout: () -> Unit = {},
     onResetOnboarding: () -> Unit = {},
     accountViewModel: AccountViewModel = koinViewModel(),
@@ -168,6 +170,7 @@ fun SettingsScreen(
         onNavigateToPremium = onNavigateToPremium,
         onNavigateToExpenseSettings = onNavigateToExpenseSettings,
         onNavigateToIncomeSettings = onNavigateToIncomeSettings,
+        onNavigateToGoalSettings = onNavigateToGoalSettings,
         onNavigateToAbout = onNavigateToAbout,
         onResetOnboarding = handleResetOnboarding,
         premiumStatus = premiumStatus
@@ -276,6 +279,7 @@ fun SettingsContent(
     onNavigateToPremium: () -> Unit = {},
     onNavigateToExpenseSettings: () -> Unit,
     onNavigateToIncomeSettings: () -> Unit,
+    onNavigateToGoalSettings: () -> Unit = {},
     onNavigateToAbout: () -> Unit = {},
     onResetOnboarding: () -> Unit = {},
     navigateBack: () -> Unit = {},
@@ -312,6 +316,17 @@ fun SettingsContent(
                         SettingsNavigableRow(icon = Icons.Outlined.TrendingDown, label = "Categorías de gastos", onClick = onNavigateToExpenseSettings)
                         SettingsRowDivider()
                         SettingsNavigableRow(icon = Icons.Outlined.TrendingUp,   label = "Tipos de ingresos",   onClick = onNavigateToIncomeSettings)
+                    }
+                }
+
+                item {
+                    SettingsSectionHeader(label = "Planificación")
+                    SettingsGroupCard {
+                        SettingsNavigableRow(
+                            icon = Icons.Outlined.GpsFixed,
+                            label = "Objetivos mensuales",
+                            onClick = onNavigateToGoalSettings
+                        )
                     }
                 }
 

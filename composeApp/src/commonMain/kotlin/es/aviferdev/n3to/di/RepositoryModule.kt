@@ -19,6 +19,9 @@ import es.aviferdev.n3to.data.datasource.asset.AssetPlatformLocalDataSourceImpl
 import es.aviferdev.n3to.data.datasource.asset.AssetPriceHistoryLocalDataSource
 import es.aviferdev.n3to.data.datasource.asset.AssetPriceHistoryLocalDataSourceImpl
 import es.aviferdev.n3to.data.datasource.assetmetadata.AssetMetadataLocalDataSource
+import es.aviferdev.n3to.data.datasource.goal.GoalLocalDataSource
+import es.aviferdev.n3to.data.datasource.goal.GoalLocalDataSourceImpl
+import es.aviferdev.n3to.data.repository.GoalRepositoryImpl
 import es.aviferdev.n3to.data.datasource.assetmetadata.AssetMetadataLocalDataSourceImpl
 import es.aviferdev.n3to.data.datasource.fixedincome.FixedIncomeEventLocalDataSource
 import es.aviferdev.n3to.data.datasource.fixedincome.FixedIncomeEventLocalDataSourceImpl
@@ -72,6 +75,7 @@ import es.aviferdev.n3to.domain.repository.AssetPlatformRepository
 import es.aviferdev.n3to.domain.repository.AssetPriceHistoryRepository
 import es.aviferdev.n3to.domain.repository.FixedIncomeEventRepository
 import es.aviferdev.n3to.domain.repository.FixedIncomeRepository
+import es.aviferdev.n3to.domain.repository.GoalRepository
 import es.aviferdev.n3to.domain.repository.LoanRepository
 import es.aviferdev.n3to.domain.repository.LoanRateChangeRepository
 import es.aviferdev.n3to.domain.repository.IssuerRepository
@@ -96,6 +100,7 @@ val repositoryModule = module {
     single<AssetPlatformLocalDataSource>        { AssetPlatformLocalDataSourceImpl(get()) }
     single<AssetPriceHistoryLocalDataSource>    { AssetPriceHistoryLocalDataSourceImpl(get()) }
     single<AssetMetadataLocalDataSource>        { AssetMetadataLocalDataSourceImpl(get()) }
+    single<GoalLocalDataSource> { GoalLocalDataSourceImpl(get()) }
     single<IssuerLocalDataSource>               { IssuerLocalDataSourceImpl(get()) }
     single<FixedIncomeLocalDataSource>          { FixedIncomeLocalDataSourceImpl(get()) }
     single<FixedIncomeEventLocalDataSource>     { FixedIncomeEventLocalDataSourceImpl(get()) }
@@ -120,6 +125,7 @@ val repositoryModule = module {
     single<AssetTransactionRepository>          { AssetTransactionRepositoryImpl(get()) }
     single<AssetPlatformRepository>             { AssetPlatformRepositoryImpl(get()) }
     single<AssetPriceHistoryRepository>         { AssetPriceHistoryRepositoryImpl(get()) }
+    single<GoalRepository> { GoalRepositoryImpl(get()) }
     single<IssuerRepository>                    { IssuerRepositoryImpl(get()) }
     single<FixedIncomeRepository>               { FixedIncomeRepositoryImpl(get()) }
     single<FixedIncomeEventRepository>          { FixedIncomeEventRepositoryImpl(get()) }

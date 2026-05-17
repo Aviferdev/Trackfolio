@@ -9,6 +9,7 @@ import es.aviferdev.n3to.data.database.mapper.toDomain
 import es.aviferdev.n3to.data.database.mapper.toEntity
 import es.aviferdev.n3to.domain.model.AssetTransaction
 import es.aviferdev.n3to.domain.model.MonthlyInvestment
+import es.aviferdev.n3to.domain.model.MonthlyNetInvestment
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
@@ -92,6 +93,40 @@ class AssetTransactionLocalDataSourceImpl(
                         year  = year,
                         month = row.month ?: "01",
                         amount = row.totalInvested ?: 0.0
+                    )
+                }
+            }
+
+    override fun getMonthlyNetInvestmentsByYear(
+        accountId: String,
+        year: String
+    ): Flow<List<MonthlyNetInvestment>> =
+        queries.getMonthlyNetInvestmentsByYear(accountId, year)
+            .asFlow()
+            .mapToList(Dispatchers.IO)
+            .map { rows ->
+                rows.map { row ->
+                    MonthlyNetInvestment(
+                        year = year,
+                        month = row.month ?: "01",
+                        netAmount = row.netInvested ?: 0.0
+                    )
+                }
+            }
+
+    override fun getMonthlyNetInvestmentByMonth(
+        accountId: String,
+        yearMonth: String
+    ): Flow<MonthlyNetInvestment?> =
+        queries.getMonthlyNetInvestmentByMonth(accountId, yearMonth)
+            .asFlow()
+            .mapToOneOrNull(Dispatchers.IO)
+            .map { row ->
+                row?.let {
+                    MonthlyNetInvestment(
+                        year = yearMonth.substringBefore("-"),
+                        month = yearMonth.substringAfter("-"),
+                        netAmount = it.netInvested ?: 0.0
                     )
                 }
             }

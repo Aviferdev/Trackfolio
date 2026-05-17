@@ -3,6 +3,7 @@ package es.aviferdev.n3to.data.repository.asset
 import es.aviferdev.n3to.data.datasource.asset.AssetTransactionLocalDataSource
 import es.aviferdev.n3to.domain.model.AssetTransaction
 import es.aviferdev.n3to.domain.model.MonthlyInvestment
+import es.aviferdev.n3to.domain.model.MonthlyNetInvestment
 import es.aviferdev.n3to.domain.repository.AssetTransactionRepository
 import kotlinx.coroutines.flow.Flow
 
@@ -27,6 +28,18 @@ class AssetTransactionRepositoryImpl(
 
     override fun getMonthlyInvestmentsByYear(accountId: String, year: String): Flow<List<MonthlyInvestment>> =
         dataSource.getMonthlyInvestmentsByYear(accountId, year)
+
+    override fun getMonthlyNetInvestmentsByYear(
+        accountId: String,
+        year: String
+    ): Flow<List<MonthlyNetInvestment>> =
+        dataSource.getMonthlyNetInvestmentsByYear(accountId, year)
+
+    override fun getMonthlyNetInvestmentByMonth(
+        accountId: String,
+        yearMonth: String
+    ): Flow<MonthlyNetInvestment?> =
+        dataSource.getMonthlyNetInvestmentByMonth(accountId, yearMonth)
 
     override suspend fun save(tx: AssetTransaction): Result<Unit> = dataSource.insert(tx)
     override suspend fun update(tx: AssetTransaction): Result<Unit> = dataSource.update(tx)

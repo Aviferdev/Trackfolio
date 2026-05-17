@@ -1,14 +1,15 @@
 package es.aviferdev.n3to.ui.annual
 
-import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import es.aviferdev.n3to.domain.model.AnnualSummary
 import es.aviferdev.n3to.domain.model.CategoryBreakdown
 import es.aviferdev.n3to.domain.model.IncomeTypeBreakdown
+import es.aviferdev.n3to.domain.model.MonthlyGoalProgress
 import es.aviferdev.n3to.domain.model.MonthlyInvestment
 import es.aviferdev.n3to.domain.model.MonthlyTotals
 import es.aviferdev.n3to.domain.usecase.assettransaction.GetMonthlyInvestmentsUseCase
+import es.aviferdev.n3to.domain.usecase.goal.GetYearlyGoalProgressUseCase
 import es.aviferdev.n3to.domain.usecase.transaction.GetAnnualSummaryUseCase
 import es.aviferdev.n3to.domain.usecase.transaction.GetExpensesByCategoryUseCase
 import es.aviferdev.n3to.domain.usecase.transaction.GetIncomeByTypeUseCase
@@ -24,7 +25,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
@@ -43,19 +43,21 @@ data class AnnualUiState(
     val monthlyInvestments: List<MonthlyInvestment> = emptyList(),
     // Comparativas interanuales
     val categoryComparisons: List<CategoryExpenseComparison> = emptyList(),
-    val incomeComparisons: List<CategoryExpenseComparison> = emptyList()
+    val incomeComparisons: List<CategoryExpenseComparison> = emptyList(),
+    // Progreso de objetivos anuales
+    val goalProgress: List<MonthlyGoalProgress> = emptyList()
 )
 
 /**
- * Contenedor intermedio para los 5 flows principales del combine.
- * Necesario porque combine() solo soporta hasta 5 parámetros.
+ * Contenedor intermedio para los flows principales del combine.
  */
 private data class MainData(
     val summary: AnnualSummary?,
     val breakdown: List<MonthlyTotals>,
     val expenses: List<CategoryBreakdown>,
     val incomes: List<IncomeTypeBreakdown>,
-    val investments: List<MonthlyInvestment>
+    val investments: List<MonthlyInvestment>,
+    val goalProgress: List<MonthlyGoalProgress>
 )
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -66,6 +68,7 @@ class AnnualViewModel(
     private val getExpensesByCategory: GetExpensesByCategoryUseCase,
     private val getIncomeByType: GetIncomeByTypeUseCase,
     private val getMonthlyInvestments: GetMonthlyInvestmentsUseCase,
+    private val getYearlyGoalProgress: GetYearlyGoalProgressUseCase? = null,
     private val session: AccountSession
 ) : ViewModel() {
 
@@ -106,8 +109,7 @@ class AnnualViewModel(
                 val prevIncomeFlow = if (canGoBack) getIncomeByType(accountId, prevYear)
                                      else flowOf(emptyList())
 
-                // Combinamos los 5 flows principales en uno intermedio,
-                // porque combine() solo soporta hasta 5 flows.
+                // Flujo principal con 5 fuentes de datos
                 val mainFlow = combine(
                     getAnnualSummary(accountId, year),
                     getMonthlyBreakdown(accountId, year),
@@ -115,14 +117,22 @@ class AnnualViewModel(
                     getIncomeByType(accountId, year),
                     getMonthlyInvestments(accountId, year)
                 ) { summary, breakdown, expenses, income, investments ->
-                    MainData(summary, breakdown, expenses, income, investments)
+                    MainData(summary, breakdown, expenses, income, investments, emptyList())
+                }
+
+                // Progreso de objetivos anuales (flow separado)
+                val goalFlow = if (getYearlyGoalProgress != null) {
+                    getYearlyGoalProgress(accountId, year)
+                } else {
+                    flowOf(emptyList())
                 }
 
                 combine(
                     mainFlow,
+                    goalFlow,
                     prevExpensesFlow,
                     prevIncomeFlow
-                ) { main, prevExpenses, prevIncomes ->
+                ) { main, goals, prevExpenses, prevIncomes ->
                     val totalExpense = main.summary?.totalExpense ?: 0.0
                     val totalIncome = main.summary?.totalIncome ?: 0.0
 
@@ -188,7 +198,8 @@ class AnnualViewModel(
                         incomeByType       = incomeSlices,
                         monthlyInvestments = main.investments,
                         categoryComparisons = categoryComparisons,
-                        incomeComparisons   = incomeComparisons
+                        incomeComparisons = incomeComparisons,
+                        goalProgress = goals
                     )
                 }
             }
