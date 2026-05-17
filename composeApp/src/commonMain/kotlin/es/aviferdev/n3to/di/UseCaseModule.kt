@@ -60,6 +60,7 @@ import es.aviferdev.n3to.domain.usecase.assettransaction.SyncAssetTransactionToL
 import es.aviferdev.n3to.domain.usecase.assettransaction.UpdateAssetTransactionUseCase
 import es.aviferdev.n3to.domain.usecase.backup.GetBackupReminderIntervalUseCase
 import es.aviferdev.n3to.domain.usecase.backup.GetLastBackupDateUseCase
+import es.aviferdev.n3to.domain.usecase.backup.SaveBackupReminderDismissedUseCase
 import es.aviferdev.n3to.domain.usecase.backup.SaveBackupReminderIntervalUseCase
 import es.aviferdev.n3to.domain.usecase.backup.SaveLastBackupDateUseCase
 import es.aviferdev.n3to.domain.usecase.backup.ShouldShowBackupReminderUseCase
@@ -283,6 +284,7 @@ val useCaseModule = module {
     factory { GetLastBackupDateUseCase(get()) }
     factory { GetBackupReminderIntervalUseCase(get()) }
     factory { SaveBackupReminderIntervalUseCase(get()) }
+    factory { SaveBackupReminderDismissedUseCase(get()) }
     factory { ShouldShowBackupReminderUseCase(get()) }
     // ── Reconciliation ──────────────────────────────────────────────────────────
     factory { ReconcileBalanceUseCase(get(), get()) }

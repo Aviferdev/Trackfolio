@@ -51,6 +51,7 @@ import es.aviferdev.n3to.domain.model.Transaction
 import es.aviferdev.n3to.domain.model.TransactionType
 import es.aviferdev.n3to.domain.usecase.backup.GetBackupReminderIntervalUseCase
 import es.aviferdev.n3to.domain.usecase.backup.GetLastBackupDateUseCase
+import es.aviferdev.n3to.domain.usecase.backup.SaveBackupReminderDismissedUseCase
 import es.aviferdev.n3to.domain.usecase.backup.SaveBackupReminderIntervalUseCase
 import es.aviferdev.n3to.domain.usecase.backup.ShouldShowBackupReminderUseCase
 import es.aviferdev.n3to.ui.account.AccountSelectorBar
@@ -118,6 +119,7 @@ fun HomeScreen(
     val getLastBackupDate = koinInject<GetLastBackupDateUseCase>()
     val getBackupReminderInterval = koinInject<GetBackupReminderIntervalUseCase>()
     val saveBackupReminderInterval = koinInject<SaveBackupReminderIntervalUseCase>()
+    val saveBackupReminderDismissed = koinInject<SaveBackupReminderDismissedUseCase>()
 
     var showBackupBanner by remember { mutableStateOf(false) }
     var neverBackup by remember { mutableStateOf(false) }
@@ -303,6 +305,7 @@ fun HomeScreen(
             currentInterval = getBackupReminderInterval.get(),
             onIntervalSelected = { days ->
                 saveBackupReminderInterval(days)
+                saveBackupReminderDismissed()
                 showBackupIntervalDialog = false
                 showBackupBanner = false
             },
