@@ -957,8 +957,8 @@ class PortfolioViewModel(
                 accountId   = asset.accountId,
                 assetName   = asset.name,
                 grossAmount = grossAmount,
-                irpfPercent = irpfPercent,
-                date        = date
+                withholdingPercent = irpfPercent,
+                date               = date
             )
             result
                 .onSuccess { closeDividendSheet() }

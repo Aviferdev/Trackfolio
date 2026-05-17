@@ -122,6 +122,10 @@ import es.aviferdev.n3to.domain.usecase.transaction.GetTransactionByIdUseCase
 import es.aviferdev.n3to.domain.usecase.transaction.GetTransactionsByMonthUseCase
 import es.aviferdev.n3to.domain.usecase.transaction.SaveTransactionUseCase
 import es.aviferdev.n3to.domain.usecase.transaction.UpdateTransactionUseCase
+import es.aviferdev.n3to.domain.usecase.taxprofile.DeleteTaxProfileSnapshotUseCase
+import es.aviferdev.n3to.domain.usecase.taxprofile.GetActiveTaxProfileSnapshotUseCase
+import es.aviferdev.n3to.domain.usecase.taxprofile.GetAllTaxProfileSnapshotsUseCase
+import es.aviferdev.n3to.domain.usecase.taxprofile.SaveTaxProfileSnapshotUseCase
 import es.aviferdev.n3to.domain.usecase.version.DismissVersionBannerUseCase
 import es.aviferdev.n3to.domain.usecase.version.GetVersionInfoUseCase
 import es.aviferdev.n3to.ui.account.AccountSession
@@ -134,6 +138,7 @@ import es.aviferdev.n3to.ui.home.AddTransactionViewModel
 import es.aviferdev.n3to.ui.home.CategoryPickerViewModel
 import es.aviferdev.n3to.ui.home.HomeViewModel
 import es.aviferdev.n3to.ui.settings.goal.GoalSettingsViewModel
+import es.aviferdev.n3to.ui.settings.taxprofile.TaxProfileSettingsViewModel
 import es.aviferdev.n3to.ui.loan.LoanDetailViewModel
 import es.aviferdev.n3to.ui.networth.NetWorthViewModel
 import es.aviferdev.n3to.ui.portfolio.AssetCatalogViewModel
@@ -305,6 +310,12 @@ val useCaseModule = module {
     single { GetPortfolioValueHistoryUseCase(get(), get(), get(), get()) }
     factory { GetNetWorthHistoryUseCase(get(), get(), get(), get(), get(), get()) }
 
+    // ── Tax Profile ───────────────────────────────────────────────────────────────
+    factory { GetAllTaxProfileSnapshotsUseCase(get()) }
+    factory { GetActiveTaxProfileSnapshotUseCase(get()) }
+    factory { SaveTaxProfileSnapshotUseCase(get()) }
+    factory { DeleteTaxProfileSnapshotUseCase(get()) }
+
     // ── Version (Remote Config) ──────────────────────────────────────────────────
     factory { GetVersionInfoUseCase(get()) }
     factory { DismissVersionBannerUseCase(get()) }
@@ -341,11 +352,12 @@ val useCaseModule = module {
     }
     viewModel {
         AddTransactionViewModel(
-            saveTransaction     = get(),
-            updateTransaction   = get(),
-            getCategoriesByType = get(),
-            getIssuers          = get(),
-            session             = get()
+            saveTransaction      = get(),
+            updateTransaction    = get(),
+            getCategoriesByType  = get(),
+            getIssuers           = get(),
+            getActiveTaxProfile  = get(),
+            session              = get()
         )
     }
     viewModel {
@@ -500,9 +512,10 @@ val useCaseModule = module {
 
     viewModel {
         FiscalReportViewModel(
-            getFiscalReportData = get(),
-            pdfGenerator        = get(),
-            session             = get()
+            getFiscalReportData  = get(),
+            getActiveTaxProfile  = get(),
+            pdfGenerator         = get(),
+            session              = get()
         )
     }
     viewModel { (positionId: String) ->
@@ -568,6 +581,15 @@ val useCaseModule = module {
         GoalSettingsViewModel(
             goalRepository = get(),
             session = get()
+        )
+    }
+
+    // ── Tax Profile Settings ──────────────────────────────────────────────────────
+    viewModel {
+        TaxProfileSettingsViewModel(
+            getAll = get(),
+            save   = get(),
+            delete = get()
         )
     }
 }

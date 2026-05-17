@@ -1,0 +1,9 @@
+package es.aviferdev.n3to.domain.model
+
+enum class TaxRole {
+    INCOME_TAX,          // IRPF, Income Tax, Federal Tax...
+    REGIONAL_TAX,        // State/regional tax (US states, Länder...)
+    SOCIAL_CONTRIBUTION, // Seg. Social, National Insurance, FICA...
+    CONSUMPTION_TAX,     // IVA, VAT, GST...
+    OTHER
+}

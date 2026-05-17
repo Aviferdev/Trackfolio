@@ -88,6 +88,7 @@ fun HomeScreen(
     onNavigateToDebts: () -> Unit = {},
     onNavigateToFiscalReport: () -> Unit = {},
     onNavigateToSettings: () -> Unit = {},
+    onNavigateToFixedIncomeDetail: (String) -> Unit = {},
     onNavigateToCategoryPicker: ((TransactionType) -> Unit)? = null,
     reopenFromPicker: Boolean = false,
     onConsumeReopen: () -> Unit = {},
@@ -214,6 +215,7 @@ fun HomeScreen(
                     onNavigateToDebts = onNavigateToDebts,
                     onNavigateToFiscalReport = onNavigateToFiscalReport,
                     onNavigateToSettings = onNavigateToSettings,
+                    onNavigateToFixedIncomeDetail = onNavigateToFixedIncomeDetail,
                     priceReminderState = priceReminder,
                     onUpdateNow = { viewModel.openUpdateSheet() },
                     onRemindLater = { viewModel.dismissReminder() },
@@ -341,6 +343,7 @@ fun HomeContent(
     onNavigateToDebts: () -> Unit,
     onNavigateToFiscalReport: () -> Unit,
     onNavigateToSettings: () -> Unit,
+    onNavigateToFixedIncomeDetail: (String) -> Unit = {},
     priceReminderState: PriceReminderState = PriceReminderState(),
     onUpdateNow: () -> Unit = {},
     onRemindLater: () -> Unit = {},
@@ -461,7 +464,7 @@ fun HomeContent(
             positions = nearMaturityState.positions,
             visible = nearMaturityState.showBanner,
             onDismiss = onDismissNearMaturity,
-            onViewDetails = { /* TODO: navigate to fixed income detail */ },
+            onViewDetails = onNavigateToFixedIncomeDetail,
             modifier = Modifier.padding(horizontal = 16.dp)
         )
         if (nearMaturityState.showBanner) Spacer(Modifier.height(8.dp))
@@ -539,8 +542,6 @@ private fun HomeContentPreview() {
             createdAt = 1715500800000L,
             incomeType = IncomeType.SALARY,
             grossAmount = 3000.0,
-            irpfPercent = 19.0,
-            socialSecurityAmount = 250.0,
             issuerName = "Empresa S.L."
         ),
         Transaction(

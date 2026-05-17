@@ -43,6 +43,7 @@ import es.aviferdev.n3to.ui.settings.IncomeTypeDetailScreen
 import es.aviferdev.n3to.ui.settings.PrivacySettingsScreen
 import es.aviferdev.n3to.ui.settings.SettingsScreen
 import es.aviferdev.n3to.ui.settings.goal.GoalSettingsScreen
+import es.aviferdev.n3to.ui.settings.taxprofile.TaxProfileSettingsScreen
 import es.aviferdev.n3to.ui.transaction.TransactionDetailScreen
 import es.aviferdev.n3to.ui.transaction.TransactionListScreen
 import org.koin.compose.koinInject
@@ -131,6 +132,11 @@ fun N3toNavHost(
                         onNavigateToSettings = {
                             navController.navigate(Screen.Settings.route) { launchSingleTop = true }
                         },
+                        onNavigateToFixedIncomeDetail = { positionId ->
+                            navController.navigate(Screen.FixedIncomeDetail.buildRoute(positionId)) {
+                                launchSingleTop = true
+                            }
+                        },
                         onNavigateToCategoryPicker = { type ->
                             navController.navigate(Screen.CategoryPicker.buildRoute(type.name)) {
                                 launchSingleTop = true
@@ -182,6 +188,11 @@ fun N3toNavHost(
                         },
                         onNavigateToSettings = {
                             navController.navigate(Screen.Settings.route) { launchSingleTop = true }
+                        },
+                        onNavigateToFixedIncomeDetail = { positionId ->
+                            navController.navigate(Screen.FixedIncomeDetail.buildRoute(positionId)) {
+                                launchSingleTop = true
+                            }
                         },
                         onNavigateToCategoryPicker = { type ->
                             navController.navigate(Screen.CategoryPicker.buildRoute(type.name)) {
@@ -333,6 +344,11 @@ fun N3toNavHost(
                                 launchSingleTop = true
                             }
                         },
+                        onNavigateToTaxProfileSettings = {
+                            navController.navigate(Screen.TaxProfileSettings.route) {
+                                launchSingleTop = true
+                            }
+                        },
                         onNavigateToAbout = {
                             navController.navigate(Screen.About.route) {
                                 launchSingleTop = true
@@ -344,6 +360,11 @@ fun N3toNavHost(
                 composable(Screen.GoalSettings.route) {
                     GoalSettingsScreen(
                         navigateBack = { navController.popBackStack() }
+                    )
+                }
+                composable(Screen.TaxProfileSettings.route) {
+                    TaxProfileSettingsScreen(
+                        onBack = { navController.popBackStack() }
                     )
                 }
                 composable(Screen.About.route) {

@@ -27,8 +27,11 @@ import androidx.compose.material.icons.outlined.AccountBalance
 import androidx.compose.material.icons.outlined.ArrowDownward
 import androidx.compose.material.icons.outlined.ArrowUpward
 import androidx.compose.material.icons.outlined.Badge
+import androidx.compose.material.icons.outlined.BusinessCenter
 import androidx.compose.material.icons.outlined.CardGiftcard
 import androidx.compose.material.icons.outlined.CheckCircle
+import androidx.compose.material.icons.outlined.EmojiEvents
+import androidx.compose.material.icons.outlined.House
 import androidx.compose.material.icons.outlined.RequestQuote
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.ShowChart
@@ -293,7 +296,7 @@ fun TransactionListContentPreview() {
             type = TransactionType.INCOME, categoryId = null,
             date = now, notes = "Nómina", createdAt = now,
             incomeType = IncomeType.SALARY,
-            grossAmount = 2000.0, irpfPercent = 19.0
+            grossAmount = 2000.0
         ),
         Transaction(
             id = "tx_2", accountId = "acc_1", amount = -45.50,
@@ -591,18 +594,21 @@ private fun TransactionCard(
 }
 
 private fun incomeTypeIcon(incomeType: IncomeType): ImageVector = when (incomeType) {
-    IncomeType.SALARY -> Icons.Outlined.Badge
+    IncomeType.SALARY        -> Icons.Outlined.Badge
     IncomeType.BANK_INTEREST -> Icons.Outlined.AccountBalance
-    IncomeType.BOND_DEPOSIT -> Icons.Outlined.RequestQuote
-    IncomeType.DIVIDEND -> Icons.Outlined.ShowChart
-    IncomeType.BONUS_PRIZE -> Icons.Outlined.CardGiftcard
+    IncomeType.BOND_DEPOSIT  -> Icons.Outlined.RequestQuote
+    IncomeType.DIVIDEND      -> Icons.Outlined.ShowChart
+    IncomeType.BONUS_PRIZE   -> Icons.Outlined.CardGiftcard
+    IncomeType.PRIZE_LOTTERY -> Icons.Outlined.EmojiEvents
+    IncomeType.RENTAL_INCOME -> Icons.Outlined.House
+    IncomeType.FREELANCE     -> Icons.Outlined.BusinessCenter
     IncomeType.EXEMPT_INCOME -> Icons.Outlined.CheckCircle
 }
 
 @Composable
 private fun IncomeBadge(transaction: Transaction) {
     val incType = transaction.incomeType ?: return
-    val pct = transaction.irpfPercent
+    val pct = transaction.taxLines.firstOrNull { it.role == es.aviferdev.n3to.domain.model.TaxRole.INCOME_TAX }?.percent
     Row(
         modifier = Modifier
             .background(PrimaryAlpha, RoundedCornerShape(4.dp))
@@ -618,7 +624,7 @@ private fun IncomeBadge(transaction: Transaction) {
         )
         val text = buildString {
             append(incType.label)
-            if (pct != null && pct > 0) append(" · ${pct.toLong()}% IRPF")
+            if (pct != null && pct > 0) append(" · ${pct.toLong()}% retención")
         }
         Text(text, fontSize = 8.sp, color = PrimaryDark, fontWeight = FontWeight.Medium)
     }

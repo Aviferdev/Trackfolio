@@ -3,8 +3,10 @@ package es.aviferdev.n3to.ui.fiscal
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import es.aviferdev.n3to.domain.model.FiscalReportData
+import es.aviferdev.n3to.domain.model.TaxProfileSnapshot
 import es.aviferdev.n3to.domain.pdf.PdfReportGenerator
 import es.aviferdev.n3to.domain.usecase.fiscal.GetFiscalReportDataUseCase
+import es.aviferdev.n3to.domain.usecase.taxprofile.GetActiveTaxProfileSnapshotUseCase
 import es.aviferdev.n3to.ui.account.AccountSession
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -13,18 +15,20 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 
 data class FiscalReportUiState(
-    val isLoading: Boolean          = true,
+    val isLoading: Boolean            = true,
     val reportData: FiscalReportData? = null,
-    val selectedYear: String        = currentYear(),
-    val isGenerating: Boolean       = false,
-    val showPasswordSheet: Boolean  = false,
-    val successMessage: String?     = null,
-    val errorMessage: String?       = null,
-    val hasNetOnlyIncomes: Boolean  = false
+    val selectedYear: String          = currentYear(),
+    val activeTaxProfile: TaxProfileSnapshot? = null,
+    val isGenerating: Boolean         = false,
+    val showPasswordSheet: Boolean    = false,
+    val successMessage: String?       = null,
+    val errorMessage: String?         = null,
+    val hasNetOnlyIncomes: Boolean    = false
 )
 
 private fun currentYear(): String =
@@ -32,6 +36,7 @@ private fun currentYear(): String =
 
 class FiscalReportViewModel(
     private val getFiscalReportData: GetFiscalReportDataUseCase,
+    private val getActiveTaxProfile: GetActiveTaxProfileSnapshotUseCase,
     private val pdfGenerator: PdfReportGenerator,
     private val session: AccountSession
 ) : ViewModel() {
@@ -49,6 +54,17 @@ class FiscalReportViewModel(
 
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true)
+
+            val today     = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
+            val yearInt   = year.toIntOrNull()
+            val queryDate = when {
+                yearInt == null          -> today
+                yearInt >= today.year    -> today
+                else                     -> LocalDate(yearInt, 12, 31)
+            }
+            val taxProfile = getActiveTaxProfile(queryDate)
+            _uiState.value = _uiState.value.copy(activeTaxProfile = taxProfile)
+
             getFiscalReportData(accountId, year)
                 .catch { e ->
                     _uiState.value = _uiState.value.copy(
@@ -58,8 +74,8 @@ class FiscalReportViewModel(
                 }
                 .collectLatest { data ->
                     _uiState.value = _uiState.value.copy(
-                        isLoading = false,
-                        reportData = data,
+                        isLoading         = false,
+                        reportData        = data,
                         hasNetOnlyIncomes = data.hasNetOnlyIncomes
                     )
                 }

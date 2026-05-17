@@ -3,7 +3,8 @@ CREATE TABLE AccountEntity (
     name        TEXT    NOT NULL,
     balance     REAL    NOT NULL DEFAULT 0.0,
     createdAt   INTEGER NOT NULL,
-    accountType TEXT    NOT NULL DEFAULT 'GENERAL'
+    accountType TEXT    NOT NULL DEFAULT 'GENERAL',
+    currency    TEXT    NOT NULL DEFAULT 'EUR'
 );
 
 -- ─── Queries básicas ──────────────────────────────────────────────────────────
@@ -15,8 +16,8 @@ selectById:
 SELECT * FROM AccountEntity WHERE id = :id;
 
 insert:
-INSERT OR REPLACE INTO AccountEntity(id, name, balance, createdAt, accountType)
-VALUES (?, ?, ?, ?, ?);
+INSERT OR REPLACE INTO AccountEntity(id, name, balance, createdAt, accountType, currency)
+VALUES (?, ?, ?, ?, ?, ?);
 
 update:
 UPDATE AccountEntity
@@ -41,6 +42,7 @@ SELECT
     a.balance AS initialBalance,
     a.createdAt,
     a.accountType,
+    a.currency,
     COALESCE(a.balance, 0.0)
         + COALESCE(SUM(CASE WHEN t.type = 'INCOME'     THEN t.amount ELSE 0.0 END), 0.0)
         - COALESCE(SUM(CASE WHEN t.type = 'EXPENSE'    THEN t.amount ELSE 0.0 END), 0.0)
@@ -58,6 +60,7 @@ SELECT
     a.balance AS initialBalance,
     a.createdAt,
     a.accountType,
+    a.currency,
     COALESCE(a.balance, 0.0)
         + COALESCE(SUM(CASE WHEN t.type = 'INCOME'     THEN t.amount ELSE 0.0 END), 0.0)
         - COALESCE(SUM(CASE WHEN t.type = 'EXPENSE'    THEN t.amount ELSE 0.0 END), 0.0)

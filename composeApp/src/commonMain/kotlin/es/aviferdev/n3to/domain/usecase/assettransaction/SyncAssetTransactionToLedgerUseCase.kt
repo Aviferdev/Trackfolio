@@ -3,6 +3,8 @@ package es.aviferdev.n3to.domain.usecase.assettransaction
 import es.aviferdev.n3to.domain.model.AssetTransaction
 import es.aviferdev.n3to.domain.model.AssetTransactionType
 import es.aviferdev.n3to.domain.model.IncomeType
+import es.aviferdev.n3to.domain.model.TaxLine
+import es.aviferdev.n3to.domain.model.TaxRole
 import es.aviferdev.n3to.domain.model.Transaction
 import es.aviferdev.n3to.domain.model.TransactionType
 import es.aviferdev.n3to.domain.repository.TransactionRepository
@@ -102,14 +104,17 @@ class SyncAssetTransactionToLedgerUseCase(
         accountId: String,
         assetName: String,
         grossAmount: Double,
-        irpfPercent: Double,
+        withholdingPercent: Double,
         date: Long,
         issuerId: String? = null,
         issuerName: String? = null
     ): Result<Unit> {
-        val irpf = grossAmount * irpfPercent / 100.0
-        val netAmount = grossAmount - irpf
+        val withholdingAmount = grossAmount * withholdingPercent / 100.0
+        val netAmount = grossAmount - withholdingAmount
         val label = "Dividendo: $assetName"
+        val taxLines = if (withholdingPercent > 0) listOf(
+            TaxLine(name = "Retención", role = TaxRole.INCOME_TAX, percent = withholdingPercent, amount = withholdingAmount)
+        ) else emptyList()
 
         val existing = transactionRepository
             .getByLinkedAssetTransaction(dividendId)
@@ -123,7 +128,7 @@ class SyncAssetTransactionToLedgerUseCase(
                     notes       = label,
                     incomeType  = IncomeType.DIVIDEND,
                     grossAmount = grossAmount,
-                    irpfPercent = irpfPercent,
+                    taxLines    = taxLines,
                     issuerId    = issuerId,
                     issuerName  = issuerName
                 )
@@ -141,7 +146,7 @@ class SyncAssetTransactionToLedgerUseCase(
                 createdAt                = now,
                 incomeType               = IncomeType.DIVIDEND,
                 grossAmount              = grossAmount,
-                irpfPercent              = irpfPercent,
+                taxLines                 = taxLines,
                 issuerId                 = issuerId,
                 issuerName               = issuerName,
                 linkedAssetTransactionId = dividendId
@@ -160,15 +165,18 @@ class SyncAssetTransactionToLedgerUseCase(
         accountId: String,
         assetName: String,
         grossAmount: Double,
-        irpfPercent: Double,
+        withholdingPercent: Double,
         commissionAmount: Double,
         date: Long,
         issuerId: String? = null,
         issuerName: String? = null
     ): Result<Unit> {
-        val irpf = grossAmount * irpfPercent / 100.0
-        val netAmount = grossAmount - irpf - commissionAmount
+        val withholdingAmount = grossAmount * withholdingPercent / 100.0
+        val netAmount = grossAmount - withholdingAmount - commissionAmount
         val label = "Rendimiento bono/depósito: $assetName"
+        val taxLines = if (withholdingPercent > 0) listOf(
+            TaxLine(name = "Retención", role = TaxRole.INCOME_TAX, percent = withholdingPercent, amount = withholdingAmount)
+        ) else emptyList()
 
         val existing = transactionRepository
             .getByLinkedAssetTransaction(bondDepositId)
@@ -182,7 +190,7 @@ class SyncAssetTransactionToLedgerUseCase(
                     notes            = label,
                     incomeType       = IncomeType.BOND_DEPOSIT,
                     grossAmount      = grossAmount,
-                    irpfPercent      = irpfPercent,
+                    taxLines         = taxLines,
                     commissionAmount = commissionAmount,
                     issuerId         = issuerId,
                     issuerName       = issuerName
@@ -201,7 +209,7 @@ class SyncAssetTransactionToLedgerUseCase(
                 createdAt                = now,
                 incomeType               = IncomeType.BOND_DEPOSIT,
                 grossAmount              = grossAmount,
-                irpfPercent              = irpfPercent,
+                taxLines                 = taxLines,
                 commissionAmount         = commissionAmount,
                 issuerId                 = issuerId,
                 issuerName               = issuerName,

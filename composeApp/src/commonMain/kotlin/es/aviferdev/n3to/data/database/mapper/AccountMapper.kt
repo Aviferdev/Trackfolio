@@ -11,7 +11,8 @@ fun GetComputedBalance.toDomain(): Account = Account(
     initialBalance  = initialBalance,
     computedBalance = computedBalance,
     createdAt       = createdAt,
-    accountType     = AccountType.fromName(accountType)
+    accountType     = AccountType.fromName(accountType),
+    currency        = currency
 )
 
 fun GetAllComputedBalances.toDomain(): Account = Account(
@@ -20,5 +21,6 @@ fun GetAllComputedBalances.toDomain(): Account = Account(
     initialBalance  = initialBalance,
     computedBalance = computedBalance,
     createdAt       = createdAt,
-    accountType     = AccountType.fromName(accountType)
+    accountType     = AccountType.fromName(accountType),
+    currency        = currency
 )

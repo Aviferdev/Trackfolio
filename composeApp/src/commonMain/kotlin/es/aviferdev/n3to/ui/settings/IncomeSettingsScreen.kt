@@ -23,7 +23,10 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 
 /** Tipos de ingreso visibles en la Home (excluye los gestionados desde Portfolio). */
 private val HOME_INCOME_TYPES = IncomeType.entries.filter {
-    it != IncomeType.DIVIDEND && it != IncomeType.BOND_DEPOSIT
+    it != IncomeType.DIVIDEND &&
+    it != IncomeType.BOND_DEPOSIT &&
+    it != IncomeType.BONUS_PRIZE &&
+    it != IncomeType.RENTAL_INCOME
 }
 
 @Composable

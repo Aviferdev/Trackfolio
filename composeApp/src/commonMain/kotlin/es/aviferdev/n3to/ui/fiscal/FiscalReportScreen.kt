@@ -31,6 +31,7 @@ import es.aviferdev.n3to.domain.model.DebtDirection
 import es.aviferdev.n3to.domain.model.FiscalIncomeTaxBreakdown
 import es.aviferdev.n3to.domain.model.FiscalReportData
 import es.aviferdev.n3to.domain.model.MonthlyTotals
+import es.aviferdev.n3to.domain.model.TaxProfileSnapshot
 import es.aviferdev.n3to.ui.common.toMaterialIcon
 import es.aviferdev.n3to.ui.common.navigation.TopBarApp
 import es.aviferdev.n3to.ui.theme.*
@@ -85,7 +86,8 @@ fun FiscalReportContent(
     onPreviousYear: () -> Unit,
     onNextYear: () -> Unit,
     onGeneratePdf: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    taxProfile: TaxProfileSnapshot? = state.activeTaxProfile
 ) {
     Column(
         modifier = modifier
@@ -150,6 +152,7 @@ fun FiscalReportContent(
                 ) {
                     val report = state.reportData
                     if (report != null) {
+                        if (taxProfile != null) TaxProfileBadge(taxProfile)
                         AnnualSummaryCard(report)
                         if (report.incomeTaxBreakdown.isNotEmpty()) IncomeTaxBreakdownCard(report)
                         MonthlyBreakdownCard(report)
@@ -292,17 +295,17 @@ private fun AnnualSummaryCard(report: FiscalReportData) {
         // 2x2 grid (matching JSX design)
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                // Rendimientos trabajo
+                // Ingresos totales
                 FiscalMetricCell(
-                    "Rendimientos trabajo",
+                    "Ingresos totales",
                     s.totalIncome,
                     IncomeGreen,
                     Modifier.weight(1f)
                 )
-                // Retenciones IRPF
+                // Retenciones fiscales
                 FiscalMetricCell(
-                    "Retenciones (IRPF)",
-                    s.totalIncome * 0.12, // Approximate - would need actual IRPF data
+                    "Retenciones fiscales",
+                    report.incomeTaxBreakdown.sumOf { it.irpfTotal },
                     ExpenseRed,
                     Modifier.weight(1f)
                 )
@@ -359,17 +362,17 @@ private fun IncomeTaxBreakdownCard(report: FiscalReportData) {
     val totalSS    = bk.sumOf { it.socialSecurityTotal }
     val totalComm  = bk.sumOf { it.commissionTotal }
 
-    ReportCard("🏛️ Desglose IRPF ${report.year}") {
+    ReportCard("🏛️ Desglose fiscal ${report.year}") {
         Row(Modifier.fillMaxWidth(), Arrangement.spacedBy(8.dp)) {
-            MetricCell("Bruto total",   totalGross, TextPrimary, Modifier.weight(1f))
-            MetricCell("IRPF retenido", totalIrpf,  ExpenseRed,  Modifier.weight(1f))
-            MetricCell("Neto total",    totalNet,   IncomeGreen, Modifier.weight(1f))
+            MetricCell("Bruto total",       totalGross, TextPrimary, Modifier.weight(1f))
+            MetricCell("Retención fiscal",  totalIrpf,  ExpenseRed,  Modifier.weight(1f))
+            MetricCell("Neto total",        totalNet,   IncomeGreen, Modifier.weight(1f))
         }
         if (totalSS > 0 || totalComm > 0) {
             Spacer(Modifier.height(8.dp))
             Row(Modifier.fillMaxWidth(), Arrangement.spacedBy(8.dp)) {
-                if (totalSS   > 0) MetricCell("Seg. Social", totalSS,   WarnAmber, Modifier.weight(1f))
-                if (totalComm > 0) MetricCell("Comisiones",  totalComm, WarnAmber, Modifier.weight(1f))
+                if (totalSS   > 0) MetricCell("Cotizaciones",  totalSS,   WarnAmber, Modifier.weight(1f))
+                if (totalComm > 0) MetricCell("Comisiones",    totalComm, WarnAmber, Modifier.weight(1f))
                 if (totalSS > 0 && totalComm == 0.0) Spacer(Modifier.weight(1f))
                 if (totalSS == 0.0 && totalComm > 0) Spacer(Modifier.weight(1f))
             }
@@ -380,7 +383,7 @@ private fun IncomeTaxBreakdownCard(report: FiscalReportData) {
         Row(Modifier.fillMaxWidth()) {
             Text("Tipo de ingreso", fontSize = 10.sp, color = TextTertiary, modifier = Modifier.weight(3f))
             Text("Bruto",  fontSize = 10.sp, color = TextTertiary, modifier = Modifier.weight(2f), textAlign = TextAlign.End)
-            Text("IRPF",   fontSize = 10.sp, color = TextTertiary, modifier = Modifier.weight(2f), textAlign = TextAlign.End)
+            Text("Retención", fontSize = 10.sp, color = TextTertiary, modifier = Modifier.weight(2f), textAlign = TextAlign.End)
             Text("Neto",   fontSize = 10.sp, color = TextTertiary, modifier = Modifier.weight(2f), textAlign = TextAlign.End)
             Text("%",      fontSize = 10.sp, color = TextTertiary, modifier = Modifier.weight(1f), textAlign = TextAlign.End)
         }
@@ -527,6 +530,44 @@ private fun PortfolioCard(report: FiscalReportData) {
                     Text(formatAmt(pos.totalSold),   fontSize = 11.sp, color = ExpenseRed,  modifier = Modifier.weight(1.5f), textAlign = TextAlign.End)
                     Text(formatAmt(pos.realizedPnl), fontSize = 11.sp, color = if (pos.realizedPnl >= 0) IncomeGreen else ExpenseRed, fontWeight = FontWeight.SemiBold, modifier = Modifier.weight(1.5f), textAlign = TextAlign.End)
                 }
+            }
+        }
+    }
+}
+
+// ─── Tax profile badge ────────────────────────────────────────────────────────
+@Composable
+private fun TaxProfileBadge(snapshot: TaxProfileSnapshot) {
+    val flag = when (snapshot.profile.countryCode) {
+        "ES" -> "🇪🇸"; "GB" -> "🇬🇧"; "US" -> "🇺🇸"; "DE" -> "🇩🇪"; else -> "🌐"
+    }
+    val label = when (snapshot.profile.countryCode) {
+        "ES" -> "España"; "GB" -> "Reino Unido"; "US" -> "EE.UU."; "DE" -> "Alemania"
+        else -> "Personalizado"
+    }
+    Surface(
+        shape = RoundedCornerShape(8.dp),
+        color = PrimaryDark.copy(alpha = 0.08f),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Text(flag, fontSize = 18.sp)
+            Column {
+                Text(
+                    "Perfil fiscal activo: $label",
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = PrimaryDark
+                )
+                Text(
+                    "${snapshot.profile.currency}  ·  vigente desde ${snapshot.effectiveFrom}",
+                    fontSize = 10.sp,
+                    color = PrimaryDark.copy(alpha = 0.65f)
+                )
             }
         }
     }

@@ -49,7 +49,8 @@ class AccountLocalDataSourceImpl(
                 name        = account.name,
                 balance     = account.initialBalance,
                 createdAt   = account.createdAt,
-                accountType = account.accountType.name
+                accountType = account.accountType.name,
+                currency    = account.currency
             )
         }
     }

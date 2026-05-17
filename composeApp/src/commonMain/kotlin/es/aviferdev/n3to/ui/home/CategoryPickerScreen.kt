@@ -9,13 +9,20 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBalance
+import androidx.compose.material.icons.filled.Assignment
 import androidx.compose.material.icons.filled.Build
+import androidx.compose.material.icons.filled.BusinessCenter
 import androidx.compose.material.icons.filled.CardGiftcard
+import androidx.compose.material.icons.filled.EmojiEvents
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Flight
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.House
 import androidx.compose.material.icons.filled.LocalGroceryStore
 import androidx.compose.material.icons.filled.Pets
+import androidx.compose.material.icons.filled.ReceiptLong
+import androidx.compose.material.icons.filled.ShowChart
+import androidx.compose.material.icons.filled.Work
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.*
@@ -65,12 +72,15 @@ private fun iconForCategory(name: String): ImageVector =
 
 @Composable
 private fun incomeTypeIcon(incomeType: IncomeType): ImageVector = when (incomeType) {
-    IncomeType.SALARY        -> Icons.Filled.AccountBalance
+    IncomeType.SALARY        -> Icons.Filled.Work
     IncomeType.BANK_INTEREST -> Icons.Filled.AccountBalance
-    IncomeType.BOND_DEPOSIT  -> Icons.Filled.AccountBalance
-    IncomeType.DIVIDEND      -> Icons.Filled.AccountBalance
+    IncomeType.BOND_DEPOSIT  -> Icons.Filled.ReceiptLong
+    IncomeType.DIVIDEND      -> Icons.Filled.ShowChart
     IncomeType.BONUS_PRIZE   -> Icons.Filled.CardGiftcard
-    IncomeType.EXEMPT_INCOME -> Icons.Filled.Home
+    IncomeType.PRIZE_LOTTERY -> Icons.Filled.EmojiEvents
+    IncomeType.RENTAL_INCOME -> Icons.Filled.House
+    IncomeType.FREELANCE     -> Icons.Filled.BusinessCenter
+    IncomeType.EXEMPT_INCOME -> Icons.Filled.Assignment
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -427,9 +437,9 @@ private fun IncomeTypeRow(
                 fontWeight = FontWeight.Medium,
                 color      = TextPrimary
             )
-            if (incomeType.hasIrpf) {
+            if (incomeType.hasWithholdingTax) {
                 Text(
-                    "Retención IRPF aplicable",
+                    "Retención fiscal aplicable",
                     fontSize = 11.sp,
                     color    = TextTertiary
                 )

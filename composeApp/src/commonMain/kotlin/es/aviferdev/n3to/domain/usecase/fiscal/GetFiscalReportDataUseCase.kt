@@ -87,7 +87,7 @@ class GetFiscalReportDataUseCase(
                     activeDebts        = base.debts,
                     assetPositions     = positions,
                     incomeTaxBreakdown = fullBreakdown,
-                    hasNetOnlyIncomes  = base.yearIncomes.any { it.isNetOnlyIncome }
+                    hasNetOnlyIncomes  = base.yearIncomes.any { it.isNetOnly }
                 )
             }
         }
@@ -101,8 +101,8 @@ class GetFiscalReportDataUseCase(
             .map { (incomeType, txs) ->
                 val grossTotal = txs.sumOf { it.grossAmount ?: it.amount }
                 val netTotal   = txs.sumOf { it.amount }
-                val irpfTotal  = txs.sumOf { it.irpfAmount ?: 0.0 }
-                val ssTotal    = txs.sumOf { it.socialSecurityAmount ?: 0.0 }
+                val irpfTotal  = txs.sumOf { tx -> tx.taxLines.filter { it.role == es.aviferdev.n3to.domain.model.TaxRole.INCOME_TAX }.sumOf { it.amount } }
+                val ssTotal    = txs.sumOf { tx -> tx.taxLines.filter { it.role == es.aviferdev.n3to.domain.model.TaxRole.SOCIAL_CONTRIBUTION }.sumOf { it.amount } }
                 val commTotal  = txs.sumOf { it.commissionAmount ?: 0.0 }
                 val avgPct     = if (grossTotal > 0.0) (irpfTotal / grossTotal) * 100.0 else 0.0
                 FiscalIncomeTaxBreakdown(

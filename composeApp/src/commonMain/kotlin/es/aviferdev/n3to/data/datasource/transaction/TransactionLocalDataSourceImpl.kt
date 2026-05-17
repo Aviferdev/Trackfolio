@@ -11,6 +11,8 @@ import es.aviferdev.n3to.domain.model.CategoryBreakdown
 import es.aviferdev.n3to.domain.model.IncomeTypeBreakdown
 import es.aviferdev.n3to.domain.model.IncomeType
 import es.aviferdev.n3to.domain.model.MonthlyTotals
+import es.aviferdev.n3to.domain.model.TaxLine
+import es.aviferdev.n3to.domain.model.TaxRole
 import es.aviferdev.n3to.domain.model.Transaction
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -23,12 +25,26 @@ class TransactionLocalDataSourceImpl(
 ) : TransactionLocalDataSource {
 
     private val queries = database.transactionQueries
+    private val taxLineQueries = database.taxLineQueries
+
+    private fun loadTaxLines(transactionId: String): List<TaxLine> =
+        taxLineQueries.selectByTransaction(transactionId).executeAsList().map { entity ->
+            TaxLine(
+                name    = entity.name,
+                role    = TaxRole.valueOf(entity.role),
+                percent = entity.percent,
+                amount  = entity.amount
+            )
+        }
+
+    private fun List<TransactionEntity>.toDomainWithTaxLines(): List<Transaction> =
+        map { entity -> entity.toDomain(loadTaxLines(entity.id)) }
 
     override fun getById(id: String): Flow<Transaction?> =
         queries.selectById(id)
             .asFlow()
             .mapToOneOrNull(Dispatchers.IO)
-            .map { it?.toDomain() }
+            .map { it?.toDomain(loadTaxLines(it.id)) }
 
     override fun getByMonthAndAccount(
         accountId: String, year: String, month: String
@@ -36,7 +52,7 @@ class TransactionLocalDataSourceImpl(
         queries.selectByMonthAndAccount(accountId, year, month)
             .asFlow()
             .mapToList(Dispatchers.IO)
-            .map { list -> list.map { it.toDomain() } }
+            .map { it.toDomainWithTaxLines() }
 
     override fun getMonthlyTotalsByAccount(
         accountId: String, year: String, month: String
@@ -77,7 +93,7 @@ class TransactionLocalDataSourceImpl(
         queries.selectRecentByAccount(accountId, limit)
             .asFlow()
             .mapToList(Dispatchers.IO)
-            .map { list -> list.map { it.toDomain() } }
+            .map { it.toDomainWithTaxLines() }
 
     override fun getMonthlyBreakdown(accountId: String, year: String): Flow<List<MonthlyTotals>> =
         queries.getMonthlyBreakdownByAccount(accountId, year)
@@ -98,7 +114,7 @@ class TransactionLocalDataSourceImpl(
         queries.getIncomeByYear(accountId, year)
             .asFlow()
             .mapToList(Dispatchers.IO)
-            .map { list -> list.map { it.toDomain() } }
+            .map { it.toDomainWithTaxLines() }
 
     override suspend fun insert(entity: TransactionEntity): Result<Unit> =
         runCatching {
@@ -113,14 +129,14 @@ class TransactionLocalDataSourceImpl(
                     notes                    = entity.notes,
                     createdAt                = entity.createdAt,
                     excludeFromFiscal        = entity.excludeFromFiscal,
-                    isNetOnlyIncome          = entity.isNetOnlyIncome,
                     incomeType               = entity.incomeType,
                     grossAmount              = entity.grossAmount,
-                    irpfPercent              = entity.irpfPercent,
-                    socialSecurityAmount     = entity.socialSecurityAmount,
                     commissionAmount         = entity.commissionAmount,
                     issuerId                 = entity.issuerId,
                     issuerName               = entity.issuerName,
+                    originalCurrency         = entity.originalCurrency,
+                    originalAmount           = entity.originalAmount,
+                    exchangeRate             = entity.exchangeRate,
                     linkedAssetTransactionId = entity.linkedAssetTransactionId,
                     linkedLoanId             = entity.linkedLoanId,
                     linkedPropertyId         = entity.linkedPropertyId
@@ -139,14 +155,14 @@ class TransactionLocalDataSourceImpl(
                     date                     = entity.date,
                     notes                    = entity.notes,
                     excludeFromFiscal        = entity.excludeFromFiscal,
-                    isNetOnlyIncome          = entity.isNetOnlyIncome,
                     incomeType               = entity.incomeType,
                     grossAmount              = entity.grossAmount,
-                    irpfPercent              = entity.irpfPercent,
-                    socialSecurityAmount     = entity.socialSecurityAmount,
                     commissionAmount         = entity.commissionAmount,
                     issuerId                 = entity.issuerId,
                     issuerName               = entity.issuerName,
+                    originalCurrency         = entity.originalCurrency,
+                    originalAmount           = entity.originalAmount,
+                    exchangeRate             = entity.exchangeRate,
                     linkedAssetTransactionId = entity.linkedAssetTransactionId,
                     linkedLoanId             = entity.linkedLoanId,
                     linkedPropertyId         = entity.linkedPropertyId,
@@ -173,7 +189,7 @@ class TransactionLocalDataSourceImpl(
         queries.selectByLinkedAssetTransaction(assetTxId)
             .asFlow()
             .mapToOneOrNull(Dispatchers.IO)
-            .map { it?.toDomain() }
+            .map { it?.toDomain(it.id.let(::loadTaxLines)) }
 
     override fun getOldestDate(accountId: String): Flow<Long?> =
         queries.getOldestDateByAccount(accountId)
@@ -185,12 +201,13 @@ class TransactionLocalDataSourceImpl(
         queries.getDividendsByAssetId(assetId)
             .asFlow()
             .mapToList(Dispatchers.IO)
-            .map { list -> list.map { it.toDomain() } }
+            .map { it.toDomainWithTaxLines() }
 
     override fun getByLinkedProperty(propertyId: String): Flow<List<Transaction>> =
         queries.selectByLinkedProperty(propertyId)
-            .asFlow().mapToList(Dispatchers.IO)
-            .map { list -> list.map { tx -> tx.toDomain() } }
+            .asFlow()
+            .mapToList(Dispatchers.IO)
+            .map { it.toDomainWithTaxLines() }
 
     override fun getExpensesByCategoryPerYear(accountId: String, year: String): Flow<List<CategoryBreakdown>> =
         queries.getExpensesByCategoryPerYear(accountId, year)

@@ -33,6 +33,8 @@ import androidx.compose.material.icons.outlined.GpsFixed
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material.icons.outlined.SaveAlt
+import androidx.compose.material.icons.outlined.AccountBalance
+import androidx.compose.material.icons.outlined.Lightbulb
 import androidx.compose.material.icons.outlined.Sync
 import androidx.compose.material.icons.outlined.TrendingDown
 import androidx.compose.material.icons.outlined.TrendingUp
@@ -64,6 +66,7 @@ import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.core.premium.PremiumManager
 import es.aviferdev.n3to.core.premium.PremiumStatus
 import es.aviferdev.n3to.core.security.AppLockManager
+import es.aviferdev.n3to.core.security.ThemeManager
 import es.aviferdev.n3to.core.security.BiometricAuthenticator
 import es.aviferdev.n3to.core.security.BiometricResult
 import es.aviferdev.n3to.domain.model.Account
@@ -102,6 +105,7 @@ fun SettingsScreen(
     onNavigateToExpenseSettings: () -> Unit = {},
     onNavigateToIncomeSettings: () -> Unit = {},
     onNavigateToGoalSettings: () -> Unit = {},
+    onNavigateToTaxProfileSettings: () -> Unit = {},
     onNavigateToAbout: () -> Unit = {},
     onResetOnboarding: () -> Unit = {},
     accountViewModel: AccountViewModel = koinViewModel(),
@@ -114,6 +118,8 @@ fun SettingsScreen(
     val lockManager: AppLockManager           = koinInject()
     val premiumManager: PremiumManager = koinInject()
     val premiumStatus by premiumManager.status.collectAsState()
+    val themeManager: ThemeManager = koinInject()
+    val isDarkTheme by themeManager.isDark.collectAsState()
 
     var biometricEnabled by remember { mutableStateOf(lockManager.biometricEnabled) }
     var biometricError   by remember { mutableStateOf<String?>(null) }
@@ -171,9 +177,12 @@ fun SettingsScreen(
         onNavigateToExpenseSettings = onNavigateToExpenseSettings,
         onNavigateToIncomeSettings = onNavigateToIncomeSettings,
         onNavigateToGoalSettings = onNavigateToGoalSettings,
+        onNavigateToTaxProfileSettings = onNavigateToTaxProfileSettings,
         onNavigateToAbout = onNavigateToAbout,
         onResetOnboarding = handleResetOnboarding,
-        premiumStatus = premiumStatus
+        premiumStatus = premiumStatus,
+        isDarkTheme = isDarkTheme,
+        onToggleTheme = { themeManager.set(!isDarkTheme) }
     )
 
     // ── Sheets ───────────────────────────────────────────────────────────────
@@ -280,6 +289,7 @@ fun SettingsContent(
     onNavigateToExpenseSettings: () -> Unit,
     onNavigateToIncomeSettings: () -> Unit,
     onNavigateToGoalSettings: () -> Unit = {},
+    onNavigateToTaxProfileSettings: () -> Unit = {},
     onNavigateToAbout: () -> Unit = {},
     onResetOnboarding: () -> Unit = {},
     navigateBack: () -> Unit = {},
@@ -289,6 +299,8 @@ fun SettingsContent(
     onBackupIntervalChange: (Int) -> Unit = {},
     onBackupClick: () -> Unit = {},
     premiumStatus: PremiumStatus = PremiumStatus(),
+    isDarkTheme: Boolean = true,
+    onToggleTheme: (Boolean) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     var contentVisible by remember { mutableStateOf(false) }
@@ -313,9 +325,11 @@ fun SettingsContent(
 
                 item {
                     SettingsGroupCard {
-                        SettingsNavigableRow(icon = Icons.Outlined.TrendingDown, label = "Categorías de gastos", onClick = onNavigateToExpenseSettings)
+                        SettingsNavigableRow(icon = Icons.Outlined.TrendingDown,     label = "Categorías de gastos", onClick = onNavigateToExpenseSettings)
                         SettingsRowDivider()
-                        SettingsNavigableRow(icon = Icons.Outlined.TrendingUp,   label = "Tipos de ingresos",   onClick = onNavigateToIncomeSettings)
+                        SettingsNavigableRow(icon = Icons.Outlined.TrendingUp,       label = "Tipos de ingresos",    onClick = onNavigateToIncomeSettings)
+                        SettingsRowDivider()
+                        SettingsNavigableRow(icon = Icons.Outlined.AccountBalance,   label = "Perfil fiscal",        onClick = onNavigateToTaxProfileSettings)
                     }
                 }
 
@@ -349,6 +363,13 @@ fun SettingsContent(
                             interval    = backupInterval,
                             onIntervalChange = onBackupIntervalChange
                         )
+                    }
+                }
+
+                item {
+                    SettingsSectionHeader(label = "Apariencia")
+                    SettingsGroupCard {
+                        SettingsThemeRow(isDark = isDarkTheme, onToggle = onToggleTheme)
                     }
                 }
 
@@ -480,6 +501,20 @@ private fun SettingsBiometricRow(enabled: Boolean, onToggle: (Boolean) -> Unit) 
             Text(if (enabled) "Activado" else "Desactivado", fontSize = 11.sp, color = TextTertiary)
         }
         Switch(checked = enabled, onCheckedChange = onToggle, colors = SwitchDefaults.colors(checkedThumbColor = Color.White, checkedTrackColor = PrimaryDark, uncheckedThumbColor = Color.White, uncheckedTrackColor = SurfaceElevated))
+    }
+}
+
+// ─── Theme toggle row ────────────────────────────────────────────────────────
+@Composable
+private fun SettingsThemeRow(isDark: Boolean, onToggle: (Boolean) -> Unit) {
+    Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) {
+        Icon(Icons.Outlined.Lightbulb, contentDescription = null, tint = TextPrimary, modifier = Modifier.size(20.dp))
+        Spacer(Modifier.width(14.dp))
+        Column(modifier = Modifier.weight(1f)) {
+            Text("Tema oscuro", fontSize = 13.sp, fontWeight = FontWeight.Medium, color = TextPrimary)
+            Text(if (isDark) "Activado" else "Desactivado", fontSize = 11.sp, color = TextTertiary)
+        }
+        Switch(checked = isDark, onCheckedChange = onToggle, colors = SwitchDefaults.colors(checkedThumbColor = Color.White, checkedTrackColor = PrimaryDark, uncheckedThumbColor = Color.White, uncheckedTrackColor = SurfaceElevated))
     }
 }
 

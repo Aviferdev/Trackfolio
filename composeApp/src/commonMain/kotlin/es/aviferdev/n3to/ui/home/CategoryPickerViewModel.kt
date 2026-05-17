@@ -43,8 +43,13 @@ class CategoryPickerViewModel(
 
     private fun loadCategories(type: TransactionType) {
         if (type == TransactionType.INCOME) {
-            // Para ingresos, mostramos IncomeType
-            val types = IncomeType.entries.toList()
+            // Para ingresos, mostramos IncomeType (excluye los gestionados desde Portfolio)
+            val types = IncomeType.entries.filter {
+                it != IncomeType.DIVIDEND &&
+                it != IncomeType.BOND_DEPOSIT &&
+                it != IncomeType.BONUS_PRIZE &&
+                it != IncomeType.RENTAL_INCOME
+            }
             _uiState.value = CategoryPickerUiState(
                 type            = type,
                 incomeTypes     = types,

@@ -24,6 +24,7 @@ import es.aviferdev.n3to.core.VersionManager
 import es.aviferdev.n3to.core.premium.PremiumManager
 import es.aviferdev.n3to.core.security.AppLockManager
 import es.aviferdev.n3to.core.security.BalanceVisibilityManager
+import es.aviferdev.n3to.core.security.ThemeManager
 import es.aviferdev.n3to.data.database.DatabaseInitializer
 import es.aviferdev.n3to.domain.usecase.consent.GetConsentUseCase
 import es.aviferdev.n3to.domain.usecase.consent.HasUserDecidedUseCase
@@ -80,11 +81,8 @@ fun App() {
 
     val scope = rememberCoroutineScope()
 
-    // Control de tema: solo usuarios Premium pueden usar tema claro.
-    // Gratuito → siempre oscuro. Premium → puede alternar (por ahora siempre oscuro,
-    // pendiente de implementar selector en Ajustes).
-    val isDarkTheme = true
-    premiumStatus.isPremium
+    val themeManager = koinInject<ThemeManager>()
+    val isDarkTheme by themeManager.isDark.collectAsState()
 
     // Inicializar base de datos, estado de consentimiento y estado de onboarding
     LaunchedEffect(Unit) {

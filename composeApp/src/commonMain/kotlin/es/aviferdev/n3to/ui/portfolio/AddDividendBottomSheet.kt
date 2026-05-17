@@ -168,7 +168,7 @@ fun AddDividendBottomSheet(
 
             // \u2500\u2500 Retenci\u00f3n IRPF \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
             Column(modifier = Modifier.fillMaxWidth()) {
-                Text("Retenci\u00f3n IRPF", fontSize = 12.sp, color = TextSecondary)
+                Text("Retenci\u00f3n fiscal", fontSize = 12.sp, color = TextSecondary)
                 Spacer(Modifier.height(4.dp))
                 OutlinedTextField(
                     value           = irpfPercentText,
@@ -198,7 +198,7 @@ fun AddDividendBottomSheet(
                         horizontalArrangement = Arrangement.SpaceEvenly
                     ) {
                         SummaryItem("Bruto", grossAmount, TextPrimary)
-                        if (irpfAmount > 0) SummaryItem("IRPF", irpfAmount, ExpenseRed)
+                        if (irpfAmount > 0) SummaryItem("Retención", irpfAmount, ExpenseRed)
                         SummaryItem("Neto", netAmount ?: 0.0, IncomeGreen)
                     }
                 }

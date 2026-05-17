@@ -53,6 +53,7 @@ import es.aviferdev.n3to.domain.portfolio.ScheduledCoupon
 import es.aviferdev.n3to.ui.common.StatusTag
 import es.aviferdev.n3to.ui.common.navigation.TopBarApp
 import es.aviferdev.n3to.ui.theme.formatPercent
+import kotlin.math.pow
 import es.aviferdev.n3to.ui.theme.*
 import es.aviferdev.n3to.ui.theme.LocalBalanceHidden
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -180,7 +181,8 @@ fun FixedIncomeDetailContent(
                     FixedIncomeDetailHeader(
                         position = position,
                         row = row,
-                        balancesHidden = balancesHidden
+                        balancesHidden = balancesHidden,
+                        simulation = state.maturitySimulation
                     )
                 }
 
@@ -539,8 +541,8 @@ private fun DistributionSection(
 private fun FixedIncomeDetailHeader(
     position: es.aviferdev.n3to.domain.model.FixedIncomePosition,
     row: es.aviferdev.n3to.domain.model.FixedIncomeRow,
-
-    balancesHidden: Boolean
+    balancesHidden: Boolean,
+    simulation: es.aviferdev.n3to.domain.portfolio.MaturitySimulation? = null
 ) {
     // Hero card with WarnAmber background (matching JSX design)
     Card(
@@ -610,13 +612,15 @@ private fun FixedIncomeDetailHeader(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                // TIR estimada (placeholder - would need actual calculation)
+                val tirNet = if (simulation != null && position.totalTermDays > 0) {
+                    val ratio = simulation.netAtMaturity / simulation.capitalInvested
+                    (ratio.pow(365.0 / position.totalTermDays) - 1.0) * 100.0
+                } else position.interestRate
                 DetailCell(
-                    label = "TIR estimada",
-                    value = position.interestRate?.let { "${formatPercent(it)}%" } ?: "—",
+                    label = "TIR neta est.",
+                    value = "${formatPercent(tirNet)}%",
                     modifier = Modifier.weight(1f)
                 )
-                // Plataforma (placeholder)
                 DetailCell(
                     label = "Plataforma",
                     value = position.platformId.ifEmpty { "—" },
@@ -750,7 +754,7 @@ private fun MaturitySimulatorCard(
                 valueColor = TextSecondary
             )
             SimulatorRow(
-                label = "IRPF estimado (19%)",
+                label = "Retención estimada (19%)",
                 value = "- ${maskAmount(formatAmount(simulation.estimatedIrpf), balancesHidden)}",
                 valueColor = NegativeRed
             )
@@ -913,7 +917,7 @@ private fun EventItem(
             Row {
                 if (event.irpfPercent > 0) {
                     Text(
-                        text = "IRPF ${formatPercent(event.irpfPercent)}%",
+                        text = "Retención ${formatPercent(event.irpfPercent)}%",
                         fontSize = 10.sp,
                         color = NegativeRed
                     )

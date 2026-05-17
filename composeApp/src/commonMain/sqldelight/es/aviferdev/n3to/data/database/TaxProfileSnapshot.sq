@@ -1,0 +1,24 @@
+CREATE TABLE TaxProfileSnapshotEntity (
+    id            TEXT NOT NULL PRIMARY KEY,
+    countryCode   TEXT,
+    currency      TEXT NOT NULL,
+    effectiveFrom TEXT NOT NULL  -- ISO date "YYYY-MM-DD"
+);
+
+-- ─── Queries ──────────────────────────────────────────────────────────────────
+
+selectAll:
+SELECT * FROM TaxProfileSnapshotEntity ORDER BY effectiveFrom ASC;
+
+selectActive:
+SELECT * FROM TaxProfileSnapshotEntity
+WHERE effectiveFrom <= :isoDate
+ORDER BY effectiveFrom DESC
+LIMIT 1;
+
+insert:
+INSERT INTO TaxProfileSnapshotEntity(id, countryCode, currency, effectiveFrom)
+VALUES (?, ?, ?, ?);
+
+delete:
+DELETE FROM TaxProfileSnapshotEntity WHERE id = :id;

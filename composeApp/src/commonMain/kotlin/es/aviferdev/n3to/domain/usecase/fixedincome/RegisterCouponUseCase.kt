@@ -46,7 +46,6 @@ class RecordIncomeTransactionUseCase(
             categoryId          = null,
             incomeType          = IncomeType.BOND_DEPOSIT,
             grossAmount         = null,
-            irpfPercent         = null,
             commissionAmount    = null,
             notes               = notes,
             linkedAssetTransactionId = linkedEventId,

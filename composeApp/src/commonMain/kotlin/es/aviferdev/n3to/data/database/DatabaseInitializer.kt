@@ -793,9 +793,7 @@ class DatabaseInitializer(
                         notes = "Ingreso generado",
                         createdAt = date,
                         incomeType = incomeType,
-                        grossAmount = gross,
-                        irpfPercent = irpf,
-                        socialSecurityAmount = ss
+                        grossAmount = gross
                     )
                     transactionDataSource?.insert(tx.toEntity())
 
@@ -974,12 +972,12 @@ class DatabaseInitializer(
         notes = notes,
         createdAt = createdAt,
         excludeFromFiscal = if (excludeFromFiscal) 1L else 0L,
-        isNetOnlyIncome   = if (isNetOnlyIncome) 1L else 0L,
         incomeType = incomeType?.name,
         grossAmount = grossAmount,
-        irpfPercent = irpfPercent,
-        socialSecurityAmount = socialSecurityAmount,
         commissionAmount = commissionAmount,
+        originalCurrency = originalCurrency,
+        originalAmount = originalAmount,
+        exchangeRate = exchangeRate,
         issuerId = issuerId,
         issuerName = issuerName,
         linkedAssetTransactionId = linkedAssetTransactionId,

@@ -5,10 +5,10 @@ package es.aviferdev.n3to.domain.model
  * que determina en qué tabla se persiste el emisor.
  */
 enum class IssuerType(val label: String) {
-    EMPLOYER("Empresa"),
+    EMPLOYER("Empresa / Cliente"),
     BANK("Entidad bancaria"),
     BOND_ISSUER("Emisor del bono / depósito"),
     DIVIDEND_SOURCE("Acción"),
-    PROMOTION_PLATFORM("Plataforma"),
+    PROMOTION_PLATFORM("Plataforma / sorteo"),
     EXEMPT_SOURCE("Fuente de ingreso")
 }

@@ -7,6 +7,7 @@ import android.os.Build
 import es.aviferdev.n3to.core.security.AppLockManager
 import es.aviferdev.n3to.core.security.AppSettings
 import es.aviferdev.n3to.core.security.BalanceVisibilityManager
+import es.aviferdev.n3to.core.security.ThemeManager
 import es.aviferdev.n3to.core.security.BiometricAuthenticator
 import es.aviferdev.n3to.core.security.DatabaseBackupManager
 import es.aviferdev.n3to.data.database.DatabaseDriverFactory
@@ -25,6 +26,7 @@ val androidModule = module {
     single { BiometricAuthenticator(androidContext()) }
     single { AppLockManager(get()) }
     single { BalanceVisibilityManager(get(), get(), get()) }
+    single { ThemeManager(get()) }
     single { DatabaseBackupManager(androidContext()) }
     single { PdfReportGenerator(androidContext()) }
     single { AnalyticsTracker() }

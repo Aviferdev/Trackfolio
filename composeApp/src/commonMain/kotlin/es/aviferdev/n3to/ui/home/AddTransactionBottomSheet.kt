@@ -153,6 +153,10 @@ fun AddTransactionBottomSheet(
             onIrpfFixedAmountChange = { viewModel.onIrpfFixedAmountChange(it) },
             commissionAmount = viewModel.commissionAmount,
             onCommissionChange = { viewModel.onCommissionChange(it) },
+            withholdingTaxLabel = viewModel.withholdingTaxLabel,
+            socialContributionLabel = viewModel.socialContributionLabel,
+            showWithholdingField = viewModel.showWithholdingField,
+            showSocialContributionField = viewModel.showSocialContributionField,
             issuers = viewModel.issuers,
             selectedIssuerId = viewModel.selectedIssuerId,
             onIssuerSelected = { viewModel.onIssuerSelected(it) },
@@ -203,6 +207,10 @@ private fun AddTransactionSheetContent(
     onIrpfFixedAmountChange: (String) -> Unit,
     commissionAmount: String,
     onCommissionChange: (String) -> Unit,
+    withholdingTaxLabel: String,
+    socialContributionLabel: String,
+    showWithholdingField: Boolean,
+    showSocialContributionField: Boolean,
     issuers: List<Issuer>,
     selectedIssuerId: String?,
     onIssuerSelected: (String) -> Unit,
@@ -363,7 +371,7 @@ private fun AddTransactionSheetContent(
                     issuers        = issuers,
                     selectedId     = selectedIssuerId,
                     onSelect       = onIssuerSelected,
-                    issuerTypeLabel = incType.issuerType.label
+                    issuerTypeLabel = incType.issuerLabel
                 )
             } else {
                 // ── Toggle de modo: Fiscal / Solo neto ────────────────────────
@@ -416,7 +424,7 @@ private fun AddTransactionSheetContent(
                             )
                             Spacer(Modifier.width(8.dp))
                             Text(
-                                "Este ingreso no se reflejará correctamente en el informe fiscal IRPF",
+                                "Sin detalle fiscal: este ingreso no aparecerá desglosado en el informe",
                                 fontSize = 11.sp,
                                 color = WarnAmber,
                                 lineHeight = 14.sp
@@ -438,7 +446,7 @@ private fun AddTransactionSheetContent(
                         issuers = issuers,
                         selectedId = selectedIssuerId,
                         onSelect = onIssuerSelected,
-                        issuerTypeLabel = incType.issuerType.label
+                        issuerTypeLabel = incType.issuerLabel
                     )
                 } else {
                     // ── MODO FISCAL ────────────────────────────────────────────
@@ -453,11 +461,12 @@ private fun AddTransactionSheetContent(
                             onValueChange = onGrossAmountChange,
                             placeholder = "0,00",
                             suffix = "€",
-                            modifier = Modifier.weight(if (incType.hasIrpf) 1f else 1f)
+                            modifier = Modifier.weight(1f)
                         )
 
-                        if (incType.hasIrpf) {
+                        if (showWithholdingField) {
                             IrpfCompactField(
+                                label = withholdingTaxLabel,
                                 irpfInputMode = irpfInputMode,
                                 onIrpfInputModeChange = onIrpfInputModeChange,
                                 irpfPercent = irpfPercent,
@@ -469,10 +478,10 @@ private fun AddTransactionSheetContent(
                         }
                     }
 
-                    if (incType.hasSocialSecurity) {
+                    if (showSocialContributionField) {
                         Spacer(Modifier.height(10.dp))
                         DarkInlineField(
-                            label = "Cotizaciones Seg. Social",
+                            label = socialContributionLabel,
                             value = socialSecurityAmount,
                             onValueChange = onSocialSecurityChange,
                             placeholder = "0,00",
@@ -503,7 +512,7 @@ private fun AddTransactionSheetContent(
                         issuers = issuers,
                         selectedId = selectedIssuerId,
                         onSelect = onIssuerSelected,
-                        issuerTypeLabel = incType.issuerType.label
+                        issuerTypeLabel = incType.issuerLabel
                     )
                 }
             }
@@ -875,91 +884,8 @@ private fun DarkInlineField(
 }
 
 @Composable
-private fun IrpfSection(
-    irpfInputMode: IrpfInputMode,
-    onIrpfInputModeChange: (IrpfInputMode) -> Unit,
-    irpfPercent: String,
-    onIrpfPercentChange: (String) -> Unit,
-    irpfFixedAmount: String,
-    onIrpfFixedAmountChange: (String) -> Unit,
-) {
-    Column(modifier = Modifier.fillMaxWidth()) {
-        Text(
-            "Retención IRPF",
-            fontSize = 10.sp,
-            fontWeight = FontWeight.SemiBold,
-            color = TextSecondary
-        )
-        Spacer(Modifier.height(8.dp))
-        Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-            IrpfModeChip(
-                label = "%",
-                selected = irpfInputMode == IrpfInputMode.PERCENT,
-                onClick = { onIrpfInputModeChange(IrpfInputMode.PERCENT) }
-            )
-            IrpfModeChip(
-                label = "€",
-                selected = irpfInputMode == IrpfInputMode.AMOUNT,
-                onClick = { onIrpfInputModeChange(IrpfInputMode.AMOUNT) }
-            )
-        }
-        Spacer(Modifier.height(6.dp))
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(10.dp))
-                .background(SurfaceElevated)
-                .padding(horizontal = 14.dp, vertical = 10.dp)
-        ) {
-            BasicTextField(
-                value = if (irpfInputMode == IrpfInputMode.PERCENT) irpfPercent else irpfFixedAmount,
-                onValueChange = {
-                    if (irpfInputMode == IrpfInputMode.PERCENT) onIrpfPercentChange(it) else onIrpfFixedAmountChange(
-                        it
-                    )
-                },
-                singleLine = true,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                textStyle = TextStyle(
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = Color.Transparent
-                ),
-                decorationBox = { inner ->
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        val currentValue =
-                            if (irpfInputMode == IrpfInputMode.PERCENT) irpfPercent else irpfFixedAmount
-                        if (currentValue.isEmpty()) {
-                            Text(
-                                if (irpfInputMode == IrpfInputMode.PERCENT) "0 %" else "0,00 €",
-                                fontSize = 14.sp,
-                                color = TextTertiary
-                            )
-                        } else {
-                            Text(
-                                currentValue,
-                                fontSize = 14.sp,
-                                fontWeight = FontWeight.Medium,
-                                color = TextPrimary
-                            )
-                        }
-                        inner()
-                        Text(
-                            if (irpfInputMode == IrpfInputMode.PERCENT) "%" else "€",
-                            fontSize = 14.sp,
-                            color = TextSecondary,
-                            fontWeight = FontWeight.Medium
-                        )
-                    }
-                },
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
-    }
-}
-
-@Composable
 private fun IrpfCompactField(
+    label: String,
     irpfInputMode: IrpfInputMode,
     onIrpfInputModeChange: (IrpfInputMode) -> Unit,
     irpfPercent: String,
@@ -970,7 +896,7 @@ private fun IrpfCompactField(
 ) {
     Column(modifier = modifier) {
         Text(
-            "Retención IRPF",
+            label,
             fontSize = 10.sp,
             fontWeight = FontWeight.SemiBold,
             color = TextSecondary

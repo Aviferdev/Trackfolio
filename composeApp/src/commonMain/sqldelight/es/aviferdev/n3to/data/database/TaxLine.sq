@@ -1,0 +1,23 @@
+CREATE TABLE TaxLineEntity (
+    id            TEXT NOT NULL PRIMARY KEY,
+    transactionId TEXT NOT NULL,
+    name          TEXT NOT NULL,
+    role          TEXT NOT NULL,
+    percent       REAL,
+    amount        REAL NOT NULL,
+    FOREIGN KEY (transactionId) REFERENCES TransactionEntity(id) ON DELETE CASCADE
+);
+
+CREATE INDEX idx_taxline_transaction ON TaxLineEntity(transactionId);
+
+-- ─── Queries ──────────────────────────────────────────────────────────────────
+
+selectByTransaction:
+SELECT * FROM TaxLineEntity WHERE transactionId = :transactionId;
+
+insert:
+INSERT INTO TaxLineEntity(id, transactionId, name, role, percent, amount)
+VALUES (?, ?, ?, ?, ?, ?);
+
+deleteByTransaction:
+DELETE FROM TaxLineEntity WHERE transactionId = :transactionId;

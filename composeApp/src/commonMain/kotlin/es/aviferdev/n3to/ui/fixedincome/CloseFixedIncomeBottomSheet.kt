@@ -141,7 +141,7 @@ fun CloseFixedIncomeBottomSheet(
                 OutlinedTextField(
                     value = irpfPercentStr,
                     onValueChange = { irpfPercentStr = it.filter { c -> c.isDigit() || c == '.' } },
-                    label = { Text("IRPF (%)") },
+                    label = { Text("Retención (%)") },
                     modifier = Modifier.weight(1f),
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),

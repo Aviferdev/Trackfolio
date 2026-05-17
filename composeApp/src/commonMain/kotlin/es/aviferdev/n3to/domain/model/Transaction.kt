@@ -16,48 +16,47 @@ data class Transaction(
     // ── Campos de ingreso ─────────────────────────────────────────────────────
     /** Tipo de ingreso. Null para gastos. */
     val incomeType: IncomeType? = null,
-    /** Importe bruto antes de retenciones. Null si no aplica. */
+    /** Importe bruto antes de deducciones. Null si solo se registró neto. */
     val grossAmount: Double? = null,
-    /** Porcentaje de retención de IRPF (ej. 19.0). Null si no aplica. */
-    val irpfPercent: Double? = null,
-    /** Cotizaciones a la Seguridad Social. Solo para SALARY. */
-    val socialSecurityAmount: Double? = null,
     /** Comisiones aplicadas. Solo para BOND_DEPOSIT. */
     val commissionAmount: Double? = null,
-    /** ID de la entidad emisora. Null si no aplica (EXEMPT o gastos). */
+    /** ID de la entidad emisora. */
     val issuerId: String? = null,
     /** Nombre desnormalizado del emisor para queries rápidas. */
     val issuerName: String? = null,
+    /** Líneas fiscales (impuestos, cotizaciones...). Vacío = solo neto registrado. */
+    val taxLines: List<TaxLine> = emptyList(),
+
+    // ── Divisa original (si difiere de la divisa de la cuenta) ───────────────
+    /** Código ISO de la divisa original (ej. "USD"). Null si coincide con la cuenta. */
+    val originalCurrency: String? = null,
+    /** Importe en la divisa original antes de conversión. */
+    val originalAmount: Double? = null,
+    /** Tipo de cambio aplicado: 1 originalCurrency = exchangeRate accountCurrency. */
+    val exchangeRate: Double? = null,
 
     // ── Vínculo con portfolio ─────────────────────────────────────────────────
-    /** ID de la AssetTransaction vinculada. Si != null, este movimiento es
-     *  de solo lectura — se gestiona desde Portfolio. */
     val linkedAssetTransactionId: String? = null,
 
-    // ── Vínculo con préstamo ────────────────────────────────────────────────────
-    /** ID del préstamo vinculado. Si != null, este gasto es una cuota de préstamo. */
+    // ── Vínculo con préstamo ──────────────────────────────────────────────────
     val linkedLoanId: String? = null,
 
-    // ── Vínculo con propiedad inmobiliaria ───────────────────────────────────────
-    /** ID de la propiedad inmobiliaria vinculada (ingreso por alquiler, gasto asociado). */
+    // ── Vínculo con propiedad inmobiliaria ────────────────────────────────────
     val linkedPropertyId: String? = null,
 
     // ── Reconciliación ────────────────────────────────────────────────────────
-    /** Si true, esta transacción se excluye del informe fiscal (IRPF). */
-    val excludeFromFiscal: Boolean = false,
-    /** Si true, solo se registró el neto (sin desglose fiscal). */
-    val isNetOnlyIncome: Boolean = false
+    /** Si true, esta transacción se excluye del informe fiscal. */
+    val excludeFromFiscal: Boolean = false
 ) {
-    /** Importe retenido por IRPF = bruto − cotizaciones − comisiones − neto. */
-    val irpfAmount: Double?
-        get() {
-            if (grossAmount == null) return null
-            val gross = grossAmount
-            val pct = irpfPercent ?: return null
-            return gross * pct / 100.0
-        }
+    /** True si tiene desglose fiscal completo (modo bruto). */
+    val hasFiscalBreakdown: Boolean get() = grossAmount != null && taxLines.isNotEmpty()
 
-    /** Label descriptivo para mostrar en listados de ingresos. */
+    /** True si se registró solo el importe neto, sin desglose. */
+    val isNetOnly: Boolean get() = !hasFiscalBreakdown
+
+    /** True si este ingreso fue en una divisa distinta a la de la cuenta. */
+    val hasCurrencyConversion: Boolean get() = originalCurrency != null
+
     val incomeLabel: String
         get() = incomeType?.label ?: categoryId ?: "Ingreso"
 
@@ -65,10 +64,7 @@ data class Transaction(
     val isExpense: Boolean get() = type == TransactionType.EXPENSE
     val isAdjustment: Boolean get() = type == TransactionType.ADJUSTMENT
 
-    /** True si este movimiento está vinculado a una inversión del portfolio. */
     val isLinkedToAsset: Boolean get() = linkedAssetTransactionId != null
-
-    /** True si este gasto está vinculado a un préstamo. */
     val isLinkedToLoan: Boolean get() = linkedLoanId != null
 }
 

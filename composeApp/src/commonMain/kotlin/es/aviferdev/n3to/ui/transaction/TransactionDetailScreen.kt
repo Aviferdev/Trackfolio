@@ -313,27 +313,13 @@ private fun TransactionDetailContent(
                             isLast = false
                         )
                     }
-                    val socialSecurityAmount = transaction.socialSecurityAmount
-                    if (socialSecurityAmount != null && socialSecurityAmount > 0) {
-                        DetailRow(
-                            label = "Seg. Social",
-                            value = "${formatAmount(socialSecurityAmount)} €",
-                            isLast = false
-                        )
-                    }
-                    val irpfPercent = transaction.irpfPercent
-                    val irpfAmount = transaction.irpfAmount
-                    if (irpfPercent != null && irpfPercent > 0) {
-                        val irpfText = if (irpfAmount != null) {
-                            "$irpfPercent% (${formatAmount(irpfAmount)} €)"
+                    transaction.taxLines.forEach { taxLine ->
+                        val lineText = if (taxLine.percent != null) {
+                            "${taxLine.percent}% (${formatAmount(taxLine.amount)} €)"
                         } else {
-                            "$irpfPercent%"
+                            "${formatAmount(taxLine.amount)} €"
                         }
-                        DetailRow(
-                            label = "Ret. IRPF",
-                            value = irpfText,
-                            isLast = false
-                        )
+                        DetailRow(label = taxLine.name, value = lineText, isLast = false)
                     }
                     val commissionAmount = transaction.commissionAmount
                     if (commissionAmount != null && commissionAmount > 0) {
@@ -498,8 +484,7 @@ private fun DetailRow(
 private fun shouldShowIncomeDetails(transaction: Transaction): Boolean {
     if (!transaction.isIncome) return false
     return transaction.grossAmount != null
-            || transaction.irpfPercent != null
-            || transaction.socialSecurityAmount != null
+            || transaction.taxLines.isNotEmpty()
             || transaction.commissionAmount != null
             || !transaction.issuerName.isNullOrBlank()
 }

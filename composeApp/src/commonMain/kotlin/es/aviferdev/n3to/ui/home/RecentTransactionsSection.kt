@@ -121,8 +121,8 @@ private fun RecentTransactionsSectionPreview() {
                 Transaction(
                     id = "1", accountId = "1", amount = 2500.0, type = TransactionType.INCOME,
                     categoryId = null, date = 1715500800000L, notes = null, createdAt = 1715500800000L,
-                    incomeType = IncomeType.SALARY, grossAmount = 3000.0, irpfPercent = 19.0,
-                    socialSecurityAmount = 250.0, issuerName = "Empresa S.L."
+                    incomeType = IncomeType.SALARY, grossAmount = 3000.0,
+                    issuerName = "Empresa S.L."
                 ),
                 Transaction(
                     id = "2", accountId = "1", amount = 85.50, type = TransactionType.EXPENSE,

@@ -43,8 +43,8 @@ fun IncomeTypeDetailScreen(
     IncomeTypeDetailContent(
         issuers = issuers,
         title = "${incomeType.emoji} ${incomeType.label}",
-        sectionLabel = issuerType.label.uppercase(),
-        emptyLabel = "Sin ${issuerType.label.lowercase()}s",
+        sectionLabel = incomeType.issuerLabel.uppercase(),
+        emptyLabel = "Sin ${incomeType.issuerLabel.lowercase()}s",
         onAdd = { issuerViewModel.openAddSheet(issuerType) },
         onEdit = { issuer -> issuerViewModel.openEditSheet(issuer) },
         onDelete = { issuer -> issuerViewModel.requestDelete(issuer) },

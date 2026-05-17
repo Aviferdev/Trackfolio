@@ -45,8 +45,7 @@ fun DividendRow(
     modifier: Modifier = Modifier
 ) {
     val gross = dividend.grossAmount ?: dividend.amount
-    val irpf = if (dividend.grossAmount != null && dividend.irpfPercent != null)
-        dividend.grossAmount * dividend.irpfPercent / 100.0 else 0.0
+    val irpf = dividend.taxLines.firstOrNull { it.role == es.aviferdev.n3to.domain.model.TaxRole.INCOME_TAX }?.amount ?: 0.0
 
     Card(
         modifier = modifier.fillMaxWidth(),
@@ -79,7 +78,7 @@ fun DividendRow(
                                 formatAmount(gross),
                                 balancesHidden
                             )
-                        } €  ·  IRPF: ${
+                        } €  ·  Retención: ${
                             maskAmount(
                                 formatAmount(irpf),
                                 balancesHidden

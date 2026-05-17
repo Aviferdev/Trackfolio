@@ -94,6 +94,9 @@ fun IncomeType.toMaterialIcon(): ImageVector = when (this) {
     IncomeType.BOND_DEPOSIT     -> Icons.Outlined.ReceiptLong
     IncomeType.DIVIDEND         -> Icons.Outlined.ShowChart
     IncomeType.BONUS_PRIZE      -> Icons.Outlined.CardGiftcard
+    IncomeType.PRIZE_LOTTERY    -> Icons.Outlined.EmojiEvents
+    IncomeType.RENTAL_INCOME    -> Icons.Outlined.House
+    IncomeType.FREELANCE        -> Icons.Outlined.BusinessCenter
     IncomeType.EXEMPT_INCOME    -> Icons.Outlined.Assignment
 }
 

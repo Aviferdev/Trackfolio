@@ -66,6 +66,8 @@ sealed class Screen(val route: String) {
     }
 
     data object GoalSettings : Screen("goals_settings")
+
+    data object TaxProfileSettings : Screen("settings_tax_profile")
 }
 
 /**
