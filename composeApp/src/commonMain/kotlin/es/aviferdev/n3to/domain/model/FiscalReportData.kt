@@ -15,7 +15,9 @@ data class FiscalReportData(
     /** Desglose de ingresos por tipo de rendimiento IRPF (vacío si no hay datos fiscales). */
     val incomeTaxBreakdown: List<FiscalIncomeTaxBreakdown> = emptyList(),
     /** Indica si hay ingresos registrados solo con neto (sin desglose fiscal). */
-    val hasNetOnlyIncomes: Boolean = false
+    val hasNetOnlyIncomes: Boolean = false,
+    /** Transacciones de ingreso individuales del año para el desglose detallado en el PDF. */
+    val yearlyIncomes: List<Transaction> = emptyList()
 )
 
 /**

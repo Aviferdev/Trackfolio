@@ -87,7 +87,8 @@ class GetFiscalReportDataUseCase(
                     activeDebts        = base.debts,
                     assetPositions     = positions,
                     incomeTaxBreakdown = fullBreakdown,
-                    hasNetOnlyIncomes  = base.yearIncomes.any { it.isNetOnly }
+                    hasNetOnlyIncomes  = base.yearIncomes.any { it.isNetOnly },
+                    yearlyIncomes      = base.yearIncomes
                 )
             }
         }

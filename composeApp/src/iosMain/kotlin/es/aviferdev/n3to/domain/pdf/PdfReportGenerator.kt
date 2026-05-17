@@ -1,8 +1,12 @@
 package es.aviferdev.n3to.domain.pdf
 
+import es.aviferdev.n3to.domain.model.AssetTransactionType
 import es.aviferdev.n3to.domain.model.DebtDirection
 import es.aviferdev.n3to.domain.model.FiscalIncomeTaxBreakdown
 import es.aviferdev.n3to.domain.model.FiscalReportData
+import es.aviferdev.n3to.domain.model.IncomeType
+import es.aviferdev.n3to.domain.model.TaxRole
+import es.aviferdev.n3to.domain.model.Transaction
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.useContents
 import platform.CoreGraphics.CGContextAddLineToPoint
@@ -147,6 +151,10 @@ actual class PdfReportGenerator {
                 drawSection("DESGLOSE FISCAL IRPF ${data.year}")
                 drawIrpfTable()
             }
+            if (data.yearlyIncomes.isNotEmpty()) {
+                drawSection("DETALLE DE INGRESOS POR TIPO DE PAGO")
+                drawIncomeDetailSection()
+            }
             drawSection("DESGLOSE MENSUAL")
             drawMonthlyTable()
             if (data.activeDebts.isNotEmpty()) { drawSection("DEUDAS ACTIVAS"); drawDebtsTable() }
@@ -263,6 +271,83 @@ actual class PdfReportGenerator {
             y += 10.0
         }
 
+        // ── Detalle de ingresos por tipo de pago ──────────────────────────────
+        fun drawIncomeDetailSection() {
+            val byType = data.yearlyIncomes
+                .groupBy { it.incomeType ?: IncomeType.EXEMPT_INCOME }
+                .toSortedMap(compareBy { it.ordinal })
+
+            val cols   = listOf("Fecha", "Bruto", "IRPF", "SS", "Com.", "Neto")
+            val widths = listOf(55.0, 75.0, 70.0, 70.0, 60.0, 75.0)
+
+            for ((incomeType, txs) in byType) {
+                checkBreak(40.0)
+                // Sub-cabecera del tipo de ingreso
+                drawText("${incomeType.emoji} ${incomeType.label}", MARGIN, y, fontSection, colorPrimary)
+                y += 14.0
+
+                val byIssuer = txs.groupBy { it.issuerName ?: "(sin emisor)" }
+                for ((issuer, issuerTxs) in byIssuer) {
+                    checkBreak(30.0)
+                    // Nombre del emisor (identado, gris)
+                    drawText(issuer, MARGIN + 10.0, y, fontBold, colorGray)
+                    y += 13.0
+
+                    drawTableHeader(cols, widths)
+
+                    var issuerGross = 0.0; var issuerIrpf = 0.0
+                    var issuerSs = 0.0; var issuerComm = 0.0; var issuerNet = 0.0
+
+                    for (tx in issuerTxs) {
+                        checkBreak(14.0)
+                        val gross = tx.grossAmount ?: tx.amount
+                        val irpf  = tx.taxLines.filter { it.role == TaxRole.INCOME_TAX }.sumOf { it.amount }
+                        val ss    = tx.taxLines.filter { it.role == TaxRole.SOCIAL_CONTRIBUTION }.sumOf { it.amount }
+                        val comm  = tx.commissionAmount ?: 0.0
+                        val net   = tx.amount
+
+                        issuerGross += gross; issuerIrpf += irpf
+                        issuerSs += ss; issuerComm += comm; issuerNet += net
+
+                        drawTableRow(
+                            listOf(formatDate(tx.date), fmtAmt(gross), fmtAmt(irpf), fmtAmt(ss), fmtAmt(comm), fmtAmt(net)),
+                            widths,
+                            listOf(UIColor.blackColor, UIColor.blackColor, colorRed, colorGray, colorGray, colorGreen)
+                        )
+                    }
+
+                    // Subtotal por emisor
+                    checkBreak(14.0)
+                    drawTableRow(
+                        listOf("Subtotal $issuer", fmtAmt(issuerGross), fmtAmt(issuerIrpf), fmtAmt(issuerSs), fmtAmt(issuerComm), fmtAmt(issuerNet)),
+                        widths,
+                        listOf(UIColor.blackColor, UIColor.blackColor, colorRed, colorGray, colorGray, colorGreen)
+                    )
+                    y += 2.0
+                }
+
+                // Total por tipo de ingreso
+                val typeGross = txs.sumOf { it.grossAmount ?: it.amount }
+                val typeIrpf  = txs.sumOf { tx -> tx.taxLines.filter { it.role == TaxRole.INCOME_TAX }.sumOf { it.amount } }
+                val typeSs    = txs.sumOf { tx -> tx.taxLines.filter { it.role == TaxRole.SOCIAL_CONTRIBUTION }.sumOf { it.amount } }
+                val typeComm  = txs.sumOf { it.commissionAmount ?: 0.0 }
+                val typeNet   = txs.sumOf { it.amount }
+
+                checkBreak(14.0)
+                drawTableRow(
+                    listOf("TOTAL", fmtAmt(typeGross), fmtAmt(typeIrpf), fmtAmt(typeSs), fmtAmt(typeComm), fmtAmt(typeNet)),
+                    widths,
+                    listOf(UIColor.blackColor, UIColor.blackColor, colorRed, colorGray, colorGray, colorGreen)
+                )
+
+                // Separador entre tipos de ingreso
+                checkBreak(4.0)
+                val totalW = widths.sum()
+                strokeLine(MARGIN, y, MARGIN + totalW, y, colorLightGray)
+                y += 6.0
+            }
+        }
+
         // ── Tabla mensual ─────────────────────────────────────────────────────
         fun drawMonthlyTable() {
             val cols   = listOf("Mes", "Ingresos", "Gastos", "Balance")
@@ -314,15 +399,43 @@ actual class PdfReportGenerator {
                 )
             }
             y += 10.0; checkBreak(20.0)
-            drawText("Actividad del año ${data.year}", MARGIN, y, fontSection, colorPrimary); y += 14.0
-            val cols2   = listOf("Ticker","Nombre","Total comprado","Total vendido","P&L Realizado año")
-            val widths2 = listOf(45.0, 100.0, 110.0, 110.0, 130.0)
+            drawText("OPERACIONES DEL AÑO ${data.year}", MARGIN, y, fontSection, colorPrimary); y += 14.0
+            val cols2   = listOf("Fecha", "Tipo", "Cantidad", "Precio", "Importe", "Comisión")
+            val widths2 = listOf(55.0, 50.0, 65.0, 70.0, 80.0, 55.0)
             drawTableHeader(cols2, widths2)
             for (pos in data.assetPositions) {
-                if (pos.totalBought == 0.0 && pos.totalSold == 0.0) continue
+                val yearTxs = pos.yearTransactions
+                if (yearTxs.isEmpty()) continue
+                checkBreak(28.0)
+                // Sub-cabecera del activo
+                drawText("${pos.ticker} — ${pos.name.take(20)}", MARGIN + 4.0, y, fontBold, colorGray)
+                y += 13.0
+                var sumBought = 0.0; var sumSold = 0.0
+                for (tx in yearTxs) {
+                    checkBreak(14.0)
+                    val tipo = when (tx.type) {
+                        AssetTransactionType.BUY          -> "Compra"
+                        AssetTransactionType.SELL         -> "Venta"
+                        AssetTransactionType.TRANSFER_IN  -> "Trasp. In"
+                        AssetTransactionType.TRANSFER_OUT -> "Trasp. Out"
+                    }
+                    val tipoColor = if (tx.isBuy) colorGreen else if (tx.isSell) colorRed else UIColor.blackColor
+                    val commStr   = tx.feeNote?.take(12) ?: "-"
+                    if (tx.isBuy) sumBought += tx.grossAmount
+                    if (tx.isSell) sumSold += tx.grossAmount
+                    drawTableRow(
+                        listOf(formatDate(tx.date), tipo, fmtQty(tx.quantity), fmtAmt(tx.pricePerUnit), fmtAmt(tx.grossAmount), commStr),
+                        widths2,
+                        listOf(UIColor.blackColor, tipoColor, UIColor.blackColor, UIColor.blackColor, UIColor.blackColor, colorGray)
+                    )
+                }
+                // Subtotal por activo
                 checkBreak(14.0)
-                val pnlColor = if (pos.realizedPnl >= 0) colorGreen else colorRed
-                drawTableRow(listOf(pos.ticker, pos.name.take(20), fmtAmt(pos.totalBought), fmtAmt(pos.totalSold), fmtAmt(pos.realizedPnl)), widths2, listOf(UIColor.blackColor, UIColor.blackColor, colorGreen, colorRed, pnlColor))
+                drawText(
+                    "Compras: ${fmtAmt(sumBought)}  |  Ventas: ${fmtAmt(sumSold)}  |  P&L: ${fmtAmt(pos.realizedPnl)}",
+                    MARGIN, y, fontBold, colorPrimary
+                )
+                y += 12.0; y += 2.0
             }
             y += 4.0
         }

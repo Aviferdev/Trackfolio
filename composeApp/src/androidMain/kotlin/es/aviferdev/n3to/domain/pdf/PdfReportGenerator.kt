@@ -13,10 +13,14 @@ import com.tom_roush.pdfbox.pdmodel.PDDocument
 import com.tom_roush.pdfbox.pdmodel.encryption.AccessPermission
 import com.tom_roush.pdfbox.pdmodel.encryption.StandardProtectionPolicy
 import es.aviferdev.n3to.domain.model.AssetPosition
+import es.aviferdev.n3to.domain.model.AssetTransactionType
 import es.aviferdev.n3to.domain.model.DebtDirection
 import es.aviferdev.n3to.domain.model.FiscalIncomeTaxBreakdown
 import es.aviferdev.n3to.domain.model.FiscalReportData
+import es.aviferdev.n3to.domain.model.IncomeType
 import es.aviferdev.n3to.domain.model.MonthlyTotals
+import es.aviferdev.n3to.domain.model.TaxRole
+import es.aviferdev.n3to.domain.model.Transaction
 import java.io.File
 import java.io.FileOutputStream
 import java.lang.ref.WeakReference
@@ -146,6 +150,10 @@ actual class PdfReportGenerator(private val context: Context) {
                 drawSection("DESGLOSE FISCAL IRPF ${data.year}")
                 drawIrpfTable()
             }
+            if (data.yearlyIncomes.isNotEmpty()) {
+                drawSection("DETALLE DE INGRESOS POR TIPO DE PAGO")
+                drawIncomeDetailSection()
+            }
             drawSection("DESGLOSE MENSUAL")
             drawMonthlyTable()
             if (data.activeDebts.isNotEmpty()) {
@@ -236,6 +244,83 @@ actual class PdfReportGenerator(private val context: Context) {
             y += 10f
         }
 
+        private fun drawIncomeDetailSection() {
+            val byType = data.yearlyIncomes
+                .groupBy { it.incomeType ?: IncomeType.EXEMPT_INCOME }
+                .toSortedMap(compareBy { it.ordinal })
+
+            val cols   = listOf("Fecha", "Bruto", "IRPF", "SS", "Com.", "Neto")
+            val widths = listOf(55f, 75f, 70f, 70f, 60f, 75f)
+
+            for ((incomeType, txs) in byType) {
+                checkBreak(40f)
+                // Sub-cabecera del tipo de ingreso (emoji + label)
+                val typeHead = Paint(pHead).apply { textSize = 10f }
+                canvas.drawText("${incomeType.emoji} ${incomeType.label}", MARGIN, y + 9f, typeHead)
+                y += 14f
+
+                val byIssuer = txs.groupBy { it.issuerName ?: "(sin emisor)" }
+                for ((issuer, issuerTxs) in byIssuer) {
+                    checkBreak(30f)
+                    // Nombre del emisor (identado, gris, bold)
+                    val issuerPaint = Paint(pBold).apply { color = C_GRAY }
+                    canvas.drawText(issuer, MARGIN + 10f, y + 9f, issuerPaint)
+                    y += 13f
+
+                    drawTableHeader(cols, widths)
+
+                    var issuerGross = 0.0; var issuerIrpf = 0.0
+                    var issuerSs = 0.0; var issuerComm = 0.0; var issuerNet = 0.0
+
+                    for (tx in issuerTxs) {
+                        checkBreak(14f)
+                        val gross = tx.grossAmount ?: tx.amount
+                        val irpf  = tx.taxLines.filter { it.role == TaxRole.INCOME_TAX }.sumOf { it.amount }
+                        val ss    = tx.taxLines.filter { it.role == TaxRole.SOCIAL_CONTRIBUTION }.sumOf { it.amount }
+                        val comm  = tx.commissionAmount ?: 0.0
+                        val net   = tx.amount
+
+                        issuerGross += gross; issuerIrpf += irpf
+                        issuerSs += ss; issuerComm += comm; issuerNet += net
+
+                        drawTableRow(
+                            listOf(formatDate(tx.date), fmtAmt(gross), fmtAmt(irpf), fmtAmt(ss), fmtAmt(comm), fmtAmt(net)),
+                            widths,
+                            listOf(pNormal, pNormal, pRed, pLabel, pLabel, pGreen)
+                        )
+                    }
+
+                    // Subtotal por emisor
+                    checkBreak(14f)
+                    drawTableRow(
+                        listOf("Subtotal $issuer", fmtAmt(issuerGross), fmtAmt(issuerIrpf), fmtAmt(issuerSs), fmtAmt(issuerComm), fmtAmt(issuerNet)),
+                        widths,
+                        listOf(pBold, pBold, pRed, pLabel, pLabel, pGreen)
+                    )
+                    y += 2f
+                }
+
+                // Total por tipo de ingreso
+                val typeGross = txs.sumOf { it.grossAmount ?: it.amount }
+                val typeIrpf  = txs.sumOf { tx -> tx.taxLines.filter { it.role == TaxRole.INCOME_TAX }.sumOf { it.amount } }
+                val typeSs    = txs.sumOf { tx -> tx.taxLines.filter { it.role == TaxRole.SOCIAL_CONTRIBUTION }.sumOf { it.amount } }
+                val typeComm  = txs.sumOf { it.commissionAmount ?: 0.0 }
+                val typeNet   = txs.sumOf { it.amount }
+
+                checkBreak(14f)
+                drawTableRow(
+                    listOf("TOTAL", fmtAmt(typeGross), fmtAmt(typeIrpf), fmtAmt(typeSs), fmtAmt(typeComm), fmtAmt(typeNet)),
+                    widths,
+                    listOf(pBold, pBold, pRed, pLabel, pLabel, pGreen)
+                )
+
+                // Separador entre tipos de ingreso
+                checkBreak(4f)
+                canvas.drawLine(MARGIN, y, MARGIN + widths.sum(), y, pLine)
+                y += 6f
+            }
+        }
+
         private fun drawMonthlyTable() {
             val cols   = listOf("Mes", "Ingresos", "Gastos", "Balance")
             val widths = listOf(60f, 110f, 110f, 110f)
@@ -281,15 +366,45 @@ actual class PdfReportGenerator(private val context: Context) {
             }
             y += 10f; checkBreak(20f)
             val labelPaint = Paint(pHead).apply { textSize = 10f; color = C_PRIMARY }
-            canvas.drawText("Actividad del año ${data.year}", MARGIN, y, labelPaint); y += 14f
-            val cols2   = listOf("Ticker", "Nombre", "Total comprado", "Total vendido", "P&L Realizado año")
-            val widths2 = listOf(45f, 100f, 110f, 110f, 130f)
+            canvas.drawText("OPERACIONES DEL AÑO ${data.year}", MARGIN, y, labelPaint); y += 14f
+            val cols2   = listOf("Fecha", "Tipo", "Cantidad", "Precio", "Importe", "Comisión")
+            val widths2 = listOf(55f, 50f, 65f, 70f, 80f, 55f)
             drawTableHeader(cols2, widths2)
             for (pos in data.assetPositions) {
-                if (pos.totalBought == 0.0 && pos.totalSold == 0.0) continue
+                val yearTxs = pos.yearTransactions
+                if (yearTxs.isEmpty()) continue
+                checkBreak(28f)
+                // Sub-cabecera del activo
+                val assetHead = Paint(pBold).apply { color = C_GRAY }
+                canvas.drawText("${pos.ticker} — ${pos.name.take(20)}", MARGIN + 4f, y + 9f, assetHead)
+                y += 13f
+                var sumBought = 0.0; var sumSold = 0.0
+                for (tx in yearTxs) {
+                    checkBreak(14f)
+                    val tipo = when (tx.type) {
+                        AssetTransactionType.BUY          -> "Compra"
+                        AssetTransactionType.SELL         -> "Venta"
+                        AssetTransactionType.TRANSFER_IN  -> "Trasp. In"
+                        AssetTransactionType.TRANSFER_OUT -> "Trasp. Out"
+                    }
+                    val tipoPaint = if (tx.isBuy) pGreen else if (tx.isSell) pRed else pNormal
+                    val commStr   = tx.feeNote?.take(12) ?: "-"
+                    if (tx.isBuy) sumBought += tx.grossAmount
+                    if (tx.isSell) sumSold += tx.grossAmount
+                    drawTableRow(
+                        listOf(formatDate(tx.date), tipo, fmtQty(tx.quantity), fmtAmt(tx.pricePerUnit), fmtAmt(tx.grossAmount), commStr),
+                        widths2,
+                        listOf(pNormal, tipoPaint, pNormal, pNormal, pNormal, pLabel)
+                    )
+                }
+                // Subtotal por activo
                 checkBreak(14f)
-                val pnlPaint = if (pos.realizedPnl >= 0) pGreen else pRed
-                drawTableRow(listOf(pos.ticker, pos.name.take(20), fmtAmt(pos.totalBought), fmtAmt(pos.totalSold), fmtAmt(pos.realizedPnl)), widths2, listOf(pBold, pNormal, pGreen, pRed, pnlPaint))
+                val subtotalPaint = Paint(pBold).apply { color = C_PRIMARY; textSize = 9f }
+                canvas.drawText(
+                    "Compras: ${fmtAmt(sumBought)}  |  Ventas: ${fmtAmt(sumSold)}  |  P&L: ${fmtAmt(pos.realizedPnl)}",
+                    MARGIN, y + 9f, subtotalPaint
+                )
+                y += 12f; y += 2f
             }
             y += 4f
         }
