@@ -9,6 +9,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -31,37 +32,39 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RadialGradient
-import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.graphics.drawscope.DrawScope
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import es.aviferdev.n3to.ui.theme.*
-import es.aviferdev.n3to.ui.theme.PrimaryLight
+import es.aviferdev.n3to.ui.theme.CyanAccent
+import es.aviferdev.n3to.ui.theme.ExpenseRed
+import es.aviferdev.n3to.ui.theme.IncomeGreen
+import es.aviferdev.n3to.ui.theme.N3toTheme
+import es.aviferdev.n3to.ui.theme.NavyBorder
+import es.aviferdev.n3to.ui.theme.NavyDeep
+import es.aviferdev.n3to.ui.theme.NavySelected
+import es.aviferdev.n3to.ui.theme.NavySurface
+import es.aviferdev.n3to.ui.theme.NavySurfaceLight
+import es.aviferdev.n3to.ui.theme.TextPrimary
+import es.aviferdev.n3to.ui.theme.TextSecondary
+import es.aviferdev.n3to.ui.theme.TextTertiary
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
-/** Radio del halo detrás de la card. */
-private const val HALO_RADIUS_PX = 480f
-
-// ─── Constantes de colores del diseño ─────────────────────────────────────────
-private val CardBorder = BorderGray
-private val CardBg = SurfaceWhite
-private val BadgeBg = Surface3
+// ─── Constantes de colores del sistema navy ─────────────────
+private val CardBorder    = NavyBorder
+private val CardBg        = NavySurface
+private val BadgeBg       = NavySurfaceLight
+private val PillBg        = NavySurface
+private val PillBorder    = NavyBorder
+private val HintBg        = CyanAccent.copy(alpha = 0.10f)
+private val HintBorder    = NavyBorder
 private val AccentGradient = Brush.verticalGradient(
-    0f to PrimaryDark,
-    1f to PrimaryLight
+    0f to NavySelected,
+    1f to NavySurface
 )
-private val PillBg = SurfaceWhite
-private val PillBorder = BorderGray
-private val HintBg = PrimaryAlpha
-private val HintBorder = PrimaryDark.copy(alpha = 0.25f)
 
-// ─── Animación del dot pulsante ──────────────────────────────────────────────
 private val PulseSpec: androidx.compose.animation.core.InfiniteRepeatableSpec<Float> = infiniteRepeatable(
     animation = tween<Float>(1200, easing = androidx.compose.animation.core.FastOutSlowInEasing),
     repeatMode = RepeatMode.Reverse
@@ -79,53 +82,30 @@ fun OnboardingRealEstatePage(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Halo (se dibuja detrás de todo)
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(0.3f),
-            contentAlignment = Alignment.Center
-        ) {
-            // No dibujamos el halo como Box porque no tenemos acceso a drawBehind
-            // Lo simulamos con un Box transparente que contiene el contenido
-        }
-
-        // ── Pill indicador ────────────────────────────────────────────────
         AnimatedVisibility(
             visible = isVisible,
             enter = fadeIn(animationSpec = tween(400)) +
-                    slideInVertically(
-                        animationSpec = tween(400),
-                        initialOffsetY = { it / 4 }
-                    )
+                    slideInVertically(animationSpec = tween(400), initialOffsetY = { it / 4 })
         ) {
             SectionPill()
         }
 
         Spacer(Modifier.height(20.dp))
 
-        // ── Card principal ────────────────────────────────────────────────
         AnimatedVisibility(
             visible = isVisible,
             enter = fadeIn(animationSpec = tween(400, delayMillis = 150)) +
-                    slideInVertically(
-                        animationSpec = tween(400, delayMillis = 150),
-                        initialOffsetY = { it / 4 }
-                    )
+                    slideInVertically(animationSpec = tween(400, delayMillis = 150), initialOffsetY = { it / 4 })
         ) {
             ViviendaMockCard()
         }
 
         Spacer(Modifier.height(16.dp))
 
-        // ── Hint pill ─────────────────────────────────────────────────────
         AnimatedVisibility(
             visible = isVisible,
             enter = fadeIn(animationSpec = tween(400, delayMillis = 350)) +
-                    slideInVertically(
-                        animationSpec = tween(400, delayMillis = 350),
-                        initialOffsetY = { it / 4 }
-                    )
+                    slideInVertically(animationSpec = tween(400, delayMillis = 350), initialOffsetY = { it / 4 })
         ) {
             HintPill()
         }
@@ -145,16 +125,16 @@ private fun SectionPill() {
         modifier = Modifier
             .clip(RoundedCornerShape(999.dp))
             .background(PillBg)
+            .border(1.dp, PillBorder, RoundedCornerShape(999.dp))
             .padding(horizontal = 12.dp, vertical = 6.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        // Dot pulsante
         Box(
             modifier = Modifier
                 .size(6.dp)
                 .clip(RoundedCornerShape(3.dp))
-                .background(PrimaryDark.copy(alpha = pulseAlpha))
+                .background(CyanAccent.copy(alpha = pulseAlpha))
         )
         Text(
             text = "SECCIÓN · PATRIMONIO",
@@ -174,15 +154,12 @@ private fun ViviendaMockCard() {
             .fillMaxWidth()
             .clip(RoundedCornerShape(18.dp))
             .background(CardBg)
+            .border(1.dp, CardBorder, RoundedCornerShape(18.dp))
             .padding(18.dp)
     ) {
         Column {
-            // Fila 1: icono + título + badge
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                // Icono círculo gradiente
+            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
+                // Icono gradiente navy
                 Box(
                     modifier = Modifier
                         .size(46.dp)
@@ -190,23 +167,14 @@ private fun ViviendaMockCard() {
                         .background(AccentGradient),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text(text = "\uD83C\uDFE0", fontSize = 22.sp)
+                    Text(text = "🏠", fontSize = 22.sp)
                 }
 
                 Spacer(Modifier.width(12.dp))
 
                 Column(Modifier.weight(1f)) {
-                    Text(
-                        text = "Mi vivienda",
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = TextPrimary
-                    )
-                    Text(
-                        text = "Activo inmobiliario",
-                        fontSize = 10.sp,
-                        color = TextTertiary
-                    )
+                    Text(text = "Mi vivienda", fontSize = 14.sp, fontWeight = FontWeight.Bold, color = TextPrimary)
+                    Text(text = "Activo inmobiliario", fontSize = 10.sp, color = TextTertiary)
                 }
 
                 // Badge EJEMPLO
@@ -227,44 +195,16 @@ private fun ViviendaMockCard() {
             HorizontalDividerCustom()
             Spacer(Modifier.height(12.dp))
 
-            // Grid 2 columnas: VALOR ESTIMADO | HIPOTECA
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(10.dp)
-            ) {
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                 Column(Modifier.weight(1f)) {
-                    Text(
-                        text = "VALOR ESTIMADO",
-                        fontSize = 9.sp,
-                        fontWeight = FontWeight.Bold,
-                        letterSpacing = 0.5.sp,
-                        color = TextTertiary
-                    )
+                    Text(text = "VALOR ESTIMADO", fontSize = 9.sp, fontWeight = FontWeight.Bold, letterSpacing = 0.5.sp, color = TextTertiary)
                     Spacer(Modifier.height(3.dp))
-                    Text(
-                        text = "285.000 €",
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.ExtraBold,
-                        letterSpacing = (-0.4).sp,
-                        color = TextPrimary
-                    )
+                    Text(text = "285.000 €", fontSize = 16.sp, fontWeight = FontWeight.ExtraBold, letterSpacing = (-0.4).sp, color = TextPrimary)
                 }
                 Column(Modifier.weight(1f)) {
-                    Text(
-                        text = "HIPOTECA",
-                        fontSize = 9.sp,
-                        fontWeight = FontWeight.Bold,
-                        letterSpacing = 0.5.sp,
-                        color = TextTertiary
-                    )
+                    Text(text = "HIPOTECA", fontSize = 9.sp, fontWeight = FontWeight.Bold, letterSpacing = 0.5.sp, color = TextTertiary)
                     Spacer(Modifier.height(3.dp))
-                    Text(
-                        text = "−142.300 €",
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.ExtraBold,
-                        letterSpacing = (-0.4).sp,
-                        color = ExpenseRed
-                    )
+                    Text(text = "−142.300 €", fontSize = 16.sp, fontWeight = FontWeight.ExtraBold, letterSpacing = (-0.4).sp, color = ExpenseRed)
                 }
             }
 
@@ -272,25 +212,9 @@ private fun ViviendaMockCard() {
             HorizontalDividerCustom()
             Spacer(Modifier.height(12.dp))
 
-            // Fila final: "Aporta a tu patrimonio" + neto
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.Bottom
-            ) {
-                Text(
-                    text = "Aporta a tu patrimonio",
-                    fontSize = 11.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    color = TextSecondary
-                )
-                Text(
-                    text = "+142.700 €",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.ExtraBold,
-                    letterSpacing = (-0.5).sp,
-                    color = IncomeGreen
-                )
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.Bottom) {
+                Text(text = "Aporta a tu patrimonio", fontSize = 11.sp, fontWeight = FontWeight.SemiBold, color = TextSecondary)
+                Text(text = "+142.700 €", fontSize = 18.sp, fontWeight = FontWeight.ExtraBold, letterSpacing = (-0.5).sp, color = IncomeGreen)
             }
         }
     }
@@ -304,15 +228,16 @@ private fun HintPill() {
             .fillMaxWidth()
             .clip(RoundedCornerShape(12.dp))
             .background(HintBg)
+            .border(1.dp, HintBorder, RoundedCornerShape(12.dp))
             .padding(horizontal = 12.dp, vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(10.dp)
     ) {
-        Text(text = "\u2728", fontSize = 16.sp)
+        Text(text = "✨", fontSize = 16.sp)
         Text(
             text = buildAnnotatedString {
                 append("Cuando entres, podrás registrarla desde ")
-                withStyle(SpanStyle(color = PrimaryDark, fontWeight = FontWeight.ExtraBold)) {
+                withStyle(SpanStyle(color = CyanAccent, fontWeight = FontWeight.ExtraBold)) {
                     append("Patrimonio")
                 }
                 append(".")
@@ -325,15 +250,10 @@ private fun HintPill() {
     }
 }
 
-// ─── Divisor personalizado ────────────────────────────────────────────────────
+// ─── Divisor ──────────────────────────────────────────────────────────────────
 @Composable
 private fun HorizontalDividerCustom() {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(1.dp)
-            .background(BorderGray)
-    )
+    Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(NavyBorder))
 }
 
 @Preview
@@ -341,9 +261,7 @@ private fun HorizontalDividerCustom() {
 private fun OnboardingRealEstatePagePreview() {
     N3toTheme {
         Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(BackgroundGray),
+            modifier = Modifier.fillMaxSize().background(NavyDeep),
             contentAlignment = Alignment.Center
         ) {
             OnboardingRealEstatePage(isVisible = true)

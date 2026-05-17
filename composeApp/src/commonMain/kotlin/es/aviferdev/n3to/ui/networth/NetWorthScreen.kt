@@ -18,7 +18,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.Loan
@@ -28,7 +27,6 @@ import es.aviferdev.n3to.ui.annual.DonutChartCard
 import es.aviferdev.n3to.ui.common.*
 import es.aviferdev.n3to.ui.common.chart.TimeRange
 import es.aviferdev.n3to.ui.common.component.TimeRangeChipRow
-import es.aviferdev.n3to.ui.common.navigation.TopBarApp
 import es.aviferdev.n3to.ui.loan.AddEditLoanBottomSheet
 import es.aviferdev.n3to.ui.realestate.AddEditPropertyBottomSheet
 import es.aviferdev.n3to.ui.realestate.PropertyCard
@@ -72,38 +70,38 @@ fun NetWorthScreen(
         val state = uiState
         if (state is NetWorthUiState.Success) {
             AddEditPropertyBottomSheet(
-                accountId      = state.data.loans.firstOrNull()?.accountId ?: "",
+                accountId        = state.data.loans.firstOrNull()?.accountId ?: "",
                 existingProperty = null,
-                availableLoans = state.data.loans,
-                onDismiss      = { viewModel.closeAddPropertySheet() },
-                onSave         = { _, _ -> viewModel.closeAddPropertySheet() }
+                availableLoans   = state.data.loans,
+                onDismiss        = { viewModel.closeAddPropertySheet() },
+                onSave           = { _, _ -> viewModel.closeAddPropertySheet() }
             )
         }
     }
 
     when (val state = uiState) {
         is NetWorthUiState.Loading -> Box(
-            Modifier.fillMaxSize(),
+            Modifier.fillMaxSize().background(NavyDeep),
             contentAlignment = Alignment.Center
-        ) { CircularProgressIndicator(color = PrimaryDark) }
+        ) { CircularProgressIndicator(color = CyanAccent) }
 
         is NetWorthUiState.Error -> Box(
-            Modifier.fillMaxSize(),
+            Modifier.fillMaxSize().background(NavyDeep),
             contentAlignment = Alignment.Center
         ) { Text(state.message, color = ExpenseRed) }
 
         is NetWorthUiState.Success -> NetWorthContent(
-            data              = state.data,
-            netWorthHistory   = state.netWorthHistory,
-            assetDistribution = state.assetDistribution,
-            balancesHidden    = balancesHidden,
-            onLoanClick       = onLoanClick,
-            onPropertyClick   = onPropertyClick,
-            onAddLoan         = { viewModel.openAddLoanSheet() },
-            onAddProperty     = { viewModel.openAddPropertySheet() },
-            heroVisible       = heroVisible,
-            chartVisible      = chartVisible,
-            assetsVisible     = assetsVisible,
+            data               = state.data,
+            netWorthHistory    = state.netWorthHistory,
+            assetDistribution  = state.assetDistribution,
+            balancesHidden     = balancesHidden,
+            onLoanClick        = onLoanClick,
+            onPropertyClick    = onPropertyClick,
+            onAddLoan          = { viewModel.openAddLoanSheet() },
+            onAddProperty      = { viewModel.openAddPropertySheet() },
+            heroVisible        = heroVisible,
+            chartVisible       = chartVisible,
+            assetsVisible      = assetsVisible,
             liabilitiesVisible = liabilitiesVisible
         )
     }
@@ -125,9 +123,7 @@ fun NetWorthContent(
     liabilitiesVisible: Boolean = true,
     modifier: Modifier = Modifier
 ) {
-
     var selectedTimeRange by remember { mutableStateOf(TimeRange.ALL_TIME) }
-
     val nowMillis = remember { Clock.System.now().toEpochMilliseconds() }
 
     val historyPoints = remember(netWorthHistory) {
@@ -156,212 +152,239 @@ fun NetWorthContent(
         }
     }
 
-    Column(modifier.fillMaxSize().background(BackgroundGray)) {
-        TopBarApp(title = "Patrimonio")
+    Column(
+        modifier
+            .fillMaxSize()
+            .background(NavyDeep)
+            .windowInsetsPadding(WindowInsets.statusBars)
+    ) {
+        // ── Cabecera ──────────────────────────────────────────────────────────
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 12.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment     = Alignment.CenterVertically
+        ) {
+            Text(
+                text          = "Patrimonio",
+                fontSize      = 18.sp,
+                fontWeight    = FontWeight.Bold,
+                color         = TextPrimary,
+                letterSpacing = (-0.3).sp
+            )
+        }
 
         LazyColumn(
-            modifier        = Modifier.fillMaxSize(),
-            contentPadding  = PaddingValues(16.dp),
+            modifier            = Modifier.fillMaxSize(),
+            contentPadding      = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
 
-        // ── Hero patrimonio neto (animated) ────────────────────────────────────
-        item {
-            AnimatedVisibility(
-                visible = heroVisible,
-                enter = fadeIn() + slideInVertically(initialOffsetY = { it / 10 })
-            ) {
-                NetWorthHeroCard(data = data, balancesHidden = balancesHidden)
-            }
-        }
-
-        // ── Gráfico evolución (animated) ───────────────────────────────────────
-        if (netWorthHistory.size >= 2) {
+            // ── Hero patrimonio neto ───────────────────────────────────────────
             item {
                 AnimatedVisibility(
-                    visible = chartVisible,
-                    enter = fadeIn() + slideInVertically(initialOffsetY = { it / 10 })
+                    visible = heroVisible,
+                    enter   = fadeIn() + slideInVertically(initialOffsetY = { it / 10 })
                 ) {
-                    Column {
-                        TimeRangeChipRow(
-                            selected = selectedTimeRange,
-                            onSelect = { selectedTimeRange = it }
-                        )
-                        Spacer(Modifier.height(8.dp))
-                        LineChartCard(
-                            title          = "Evolución del patrimonio",
-                            subtitle       = "Patrimonio neto mensual",
-                            points         = filteredHistory,
-                            lineColor      = PrimaryDark,
-                            balancesHidden = balancesHidden,
-                            rotateXLabels  = true,
-                            timeRangeLabel = if (selectedTimeRange != TimeRange.ALL_TIME) {
-                                when (selectedTimeRange) {
-                                    TimeRange.LAST_MONTH -> "Último mes"
-                                    TimeRange.LAST_YEAR -> "Último año"
-                                    else -> null
-                                }
-                            } else null
-                        )
+                    NetWorthHeroCard(data = data, balancesHidden = balancesHidden)
+                }
+            }
+
+            // ── Gráfico evolución ─────────────────────────────────────────────
+            if (netWorthHistory.size >= 2) {
+                item {
+                    AnimatedVisibility(
+                        visible = chartVisible,
+                        enter   = fadeIn() + slideInVertically(initialOffsetY = { it / 10 })
+                    ) {
+                        Column {
+                            TimeRangeChipRow(
+                                selected = selectedTimeRange,
+                                onSelect = { selectedTimeRange = it }
+                            )
+                            Spacer(Modifier.height(8.dp))
+                            LineChartCard(
+                                title          = "Evolución del patrimonio",
+                                subtitle       = "Patrimonio neto mensual",
+                                points         = filteredHistory,
+                                lineColor      = CyanAccent,
+                                balancesHidden = balancesHidden,
+                                rotateXLabels  = true,
+                                timeRangeLabel = if (selectedTimeRange != TimeRange.ALL_TIME) {
+                                    when (selectedTimeRange) {
+                                        TimeRange.LAST_MONTH -> "Último mes"
+                                        TimeRange.LAST_YEAR  -> "Último año"
+                                        else                 -> null
+                                    }
+                                } else null
+                            )
+                        }
                     }
                 }
             }
-        }
 
-        // ── Sección activos (animated) ─────────────────────────────────────────
-        item {
-            AnimatedVisibility(
-                visible = assetsVisible,
-                enter = fadeIn() + slideInVertically(initialOffsetY = { it / 10 })
-            ) {
-                Column {
-                    N3toLabel(text = "Activos", modifier = Modifier.padding(bottom = 8.dp))
-
-                    if (assetDistribution.isNotEmpty()) {
-                        DonutChartCard(
-                            title          = "Distribución · Activos",
-                            subtitle       = "",
-                            slices         = assetDistribution,
-                            totalAmount    = data.totalAssets,
-                                                        balancesHidden = balancesHidden
-                        )
-                        Spacer(Modifier.height(12.dp))
-                    }
-
-                    AssetsSummaryCard(data = data, balancesHidden = balancesHidden)
-
-                    // ── Sección Inmuebles (dentro de Activos) ─────────────────
-                    if (data.properties.isNotEmpty()) {
-                        Spacer(Modifier.height(12.dp))
-                        N3toLabel(text = "Inmuebles", modifier = Modifier.padding(bottom = 8.dp))
-                    }
-                }
-            }
-        }
-
-        // ── Cards de propiedades (dentro de Activos, fuera del AnimatedVisibility de activos) ─
-        items(data.properties, key = { it.id }) { property ->
-            AnimatedVisibility(
-                visible = assetsVisible,
-                enter = fadeIn() + slideInVertically(initialOffsetY = { it / 10 })
-            ) {
-                val linkedLoan = data.loans.find { it.id == property.linkedLoanId }
-                PropertyCard(
-                    property   = property,
-                    linkedLoan = linkedLoan,
-                    onClick    = { onPropertyClick(property.id) }
-                )
-            }
-        }
-
-        // Botón añadir propiedad (dentro de Activos)
-        if (data.properties.isNotEmpty() || true) {
+            // ── Sección: Activos ──────────────────────────────────────────────
             item {
                 AnimatedVisibility(
                     visible = assetsVisible,
-                    enter = fadeIn() + slideInVertically(initialOffsetY = { it / 10 })
+                    enter   = fadeIn() + slideInVertically(initialOffsetY = { it / 10 })
+                ) {
+                    Column {
+                        N3toLabel(
+                            text     = "Activos",
+                            modifier = Modifier.padding(bottom = 8.dp)
+                        )
+                        if (assetDistribution.isNotEmpty()) {
+                            DonutChartCard(
+                                title          = "Distribución · Activos",
+                                subtitle       = "",
+                                slices         = assetDistribution,
+                                totalAmount    = data.totalAssets,
+                                balancesHidden = balancesHidden
+                            )
+                            Spacer(Modifier.height(12.dp))
+                        }
+                        AssetsSummaryCard(data = data, balancesHidden = balancesHidden)
+                    }
+                }
+            }
+
+            // ── Sub-sección: Inmuebles ────────────────────────────────────────
+            item {
+                AnimatedVisibility(
+                    visible = assetsVisible,
+                    enter   = fadeIn() + slideInVertically(initialOffsetY = { it / 10 })
                 ) {
                     Row(
                         modifier              = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Start,
+                        horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment     = Alignment.CenterVertically
                     ) {
+                        N3toLabel(text = "Inmuebles")
                         IconButton(
                             onClick  = onAddProperty,
                             modifier = Modifier
                                 .size(28.dp)
                                 .clip(RoundedCornerShape(8.dp))
-                                .background(PrimaryAlpha)
+                                .background(NavySelected)
                         ) {
                             Icon(
-                                Icons.Outlined.Add,
+                                imageVector        = Icons.Outlined.Add,
                                 contentDescription = "Añadir propiedad",
-                                tint               = PrimaryDark,
+                                tint               = CyanAccent,
                                 modifier           = Modifier.size(15.dp)
                             )
                         }
-                        Spacer(Modifier.width(8.dp))
-                        Text(
-                            "Añadir propiedad",
-                            fontSize = 13.sp,
-                            color = TextTertiary
-                        )
                     }
                 }
             }
-        }
 
-        // ── Sección pasivos (animated) ─────────────────────────────────────────
-        item {
-            AnimatedVisibility(
-                visible = liabilitiesVisible,
-                enter = fadeIn() + slideInVertically(initialOffsetY = { it / 10 })
-            ) {
-                Row(
-                    modifier              = Modifier.fillMaxWidth().padding(top = 8.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment     = Alignment.CenterVertically
-                ) {
-                    N3toLabel(text = "Pasivos")
-                    IconButton(
-                        onClick  = onAddLoan,
-                        modifier = Modifier
-                            .size(28.dp)
-                            .clip(RoundedCornerShape(8.dp))
-                            .background(PrimaryAlpha)
+            if (data.properties.isEmpty()) {
+                item {
+                    AnimatedVisibility(
+                        visible = assetsVisible,
+                        enter   = fadeIn() + slideInVertically(initialOffsetY = { it / 10 })
                     ) {
-                        Icon(
-                            Icons.Outlined.Add,
-                            contentDescription = "Añadir préstamo",
-                            tint               = PrimaryDark,
-                            modifier           = Modifier.size(15.dp)
-                        )
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clip(RoundedCornerShape(12.dp))
+                                .background(NavySurface)
+                                .padding(24.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text("Sin inmuebles registrados", color = TextTertiary, fontSize = 13.sp)
+                        }
                     }
                 }
             }
-        }
 
-        if (data.loans.isEmpty() && data.totalDebtsOwing <= 0.0) {
+            items(data.properties, key = { it.id }) { property ->
+                AnimatedVisibility(
+                    visible = assetsVisible,
+                    enter   = fadeIn() + slideInVertically(initialOffsetY = { it / 10 })
+                ) {
+                    val linkedLoan = data.loans.find { it.id == property.linkedLoanId }
+                    PropertyCard(
+                        property   = property,
+                        linkedLoan = linkedLoan,
+                        onClick    = { onPropertyClick(property.id) }
+                    )
+                }
+            }
+
+            // ── Sección: Pasivos ──────────────────────────────────────────────
             item {
                 AnimatedVisibility(
                     visible = liabilitiesVisible,
-                    enter = fadeIn() + slideInVertically(initialOffsetY = { it / 10 })
+                    enter   = fadeIn() + slideInVertically(initialOffsetY = { it / 10 })
                 ) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clip(RoundedCornerShape(12.dp))
-                            .background(SurfaceWhite)
-                            .padding(24.dp),
-                        contentAlignment = Alignment.Center
+                    Row(
+                        modifier              = Modifier.fillMaxWidth().padding(top = 8.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment     = Alignment.CenterVertically
                     ) {
-                        Text("Sin pasivos registrados", color = TextTertiary, fontSize = 13.sp)
+                        N3toLabel(text = "Pasivos")
+                        IconButton(
+                            onClick  = onAddLoan,
+                            modifier = Modifier
+                                .size(28.dp)
+                                .clip(RoundedCornerShape(8.dp))
+                                .background(NavySelected)
+                        ) {
+                            Icon(
+                                imageVector        = Icons.Outlined.Add,
+                                contentDescription = "Añadir préstamo",
+                                tint               = CyanAccent,
+                                modifier           = Modifier.size(15.dp)
+                            )
+                        }
                     }
                 }
             }
-        }
 
-        if (data.totalDebtsOwing > 0.0) {
-            item {
-                AnimatedVisibility(
-                    visible = liabilitiesVisible,
-                    enter = fadeIn() + slideInVertically(initialOffsetY = { it / 10 })
-                ) {
-                    EverydayDebtsRow(amount = data.totalDebtsOwing, balancesHidden = balancesHidden)
+            if (data.loans.isEmpty() && data.totalDebtsOwing <= 0.0) {
+                item {
+                    AnimatedVisibility(
+                        visible = liabilitiesVisible,
+                        enter   = fadeIn() + slideInVertically(initialOffsetY = { it / 10 })
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clip(RoundedCornerShape(12.dp))
+                                .background(NavySurface)
+                                .padding(24.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text("Sin pasivos registrados", color = TextTertiary, fontSize = 13.sp)
+                        }
+                    }
                 }
             }
-        }
 
-        items(data.loans, key = { it.id }) { loan ->
-            AnimatedVisibility(
-                visible = liabilitiesVisible,
-                enter = fadeIn() + slideInVertically(initialOffsetY = { it / 10 })
-            ) {
-                LoanCard(loan = loan, onClick = { onLoanClick(loan.id) })
+            if (data.totalDebtsOwing > 0.0) {
+                item {
+                    AnimatedVisibility(
+                        visible = liabilitiesVisible,
+                        enter   = fadeIn() + slideInVertically(initialOffsetY = { it / 10 })
+                    ) {
+                        EverydayDebtsRow(amount = data.totalDebtsOwing, balancesHidden = balancesHidden)
+                    }
+                }
             }
-        }
 
-        item { Spacer(Modifier.height(80.dp)) }
+            items(data.loans, key = { it.id }) { loan ->
+                AnimatedVisibility(
+                    visible = liabilitiesVisible,
+                    enter   = fadeIn() + slideInVertically(initialOffsetY = { it / 10 })
+                ) {
+                    LoanCard(loan = loan, onClick = { onLoanClick(loan.id) })
+                }
+            }
+
+            item { Spacer(Modifier.height(80.dp)) }
         }
     }
 }
@@ -398,9 +421,9 @@ private fun NetWorthHeroCard(data: NetWorthData, balancesHidden: Boolean) {
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 NetWorthMetric(
-                    label          = "Activos",
-                    value          = "+${maskAmount(formatCurrency(data.totalAssets), balancesHidden)}",
-                    color          = PnLPositiveSoft
+                    label = "Activos",
+                    value = "+${maskAmount(formatCurrency(data.totalAssets), balancesHidden)}",
+                    color = PnLPositiveSoft
                 )
                 Box(
                     Modifier
@@ -410,9 +433,9 @@ private fun NetWorthHeroCard(data: NetWorthData, balancesHidden: Boolean) {
                         .align(Alignment.CenterVertically)
                 )
                 NetWorthMetric(
-                    label          = "Pasivos",
-                    value          = "−${maskAmount(formatCurrency(data.totalLiabilities), balancesHidden)}",
-                    color          = PnLNegativeSoft
+                    label = "Pasivos",
+                    value = "−${maskAmount(formatCurrency(data.totalLiabilities), balancesHidden)}",
+                    color = PnLNegativeSoft
                 )
             }
         }
@@ -434,34 +457,43 @@ private fun AssetsSummaryCard(data: NetWorthData, balancesHidden: Boolean) {
     Card(
         modifier  = Modifier.fillMaxWidth(),
         shape     = RoundedCornerShape(12.dp),
-        colors    = CardDefaults.cardColors(containerColor = SurfaceWhite),
+        colors    = CardDefaults.cardColors(containerColor = NavySurface),
         elevation = CardDefaults.cardElevation(0.dp)
     ) {
         Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
             AssetRow("Balance cuentas", data.totalAccountBalance, balancesHidden)
             if (data.totalPortfolioValue > 0) {
                 Spacer(Modifier.height(10.dp))
-                HorizontalDivider(color = BorderGray, thickness = 0.5.dp)
+                HorizontalDivider(color = NavyBorder, thickness = 0.5.dp)
                 Spacer(Modifier.height(10.dp))
                 AssetRow("Portfolio inversiones", data.totalPortfolioValue, balancesHidden)
             }
             if (data.totalFixedIncomeValue > 0) {
                 Spacer(Modifier.height(10.dp))
-                HorizontalDivider(color = BorderGray, thickness = 0.5.dp)
+                HorizontalDivider(color = NavyBorder, thickness = 0.5.dp)
                 Spacer(Modifier.height(10.dp))
                 AssetRow("Renta fija", data.totalFixedIncomeValue, balancesHidden)
             }
-            HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp), color = BorderGray2, thickness = 0.5.dp)
+            HorizontalDivider(
+                modifier  = Modifier.padding(vertical = 12.dp),
+                color     = NavyBorder,
+                thickness = 0.5.dp
+            )
             Row(
                 modifier              = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text("Total activos", fontWeight = FontWeight.SemiBold, fontSize = 13.sp, color = PrimaryDark)
+                Text(
+                    "Total activos",
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize   = 13.sp,
+                    color      = CyanAccent
+                )
                 Text(
                     maskAmount(formatCurrency(data.totalAssets), balancesHidden),
                     fontWeight = FontWeight.Bold,
                     fontSize   = 13.sp,
-                    color      = PrimaryDark
+                    color      = CyanAccent
                 )
             }
         }
@@ -490,7 +522,7 @@ private fun EverydayDebtsRow(amount: Double, balancesHidden: Boolean) {
     Card(
         modifier  = Modifier.fillMaxWidth(),
         shape     = RoundedCornerShape(12.dp),
-        colors    = CardDefaults.cardColors(containerColor = SurfaceWhite),
+        colors    = CardDefaults.cardColors(containerColor = NavySurface),
         elevation = CardDefaults.cardElevation(0.dp)
     ) {
         Row(
@@ -509,13 +541,13 @@ private fun EverydayDebtsRow(amount: Double, balancesHidden: Boolean) {
     }
 }
 
-// ─── Loan card (con progress bar del paquete común) ─────────────────────────
+// ─── Loan card ────────────────────────────────────────────────────────────────
 @Composable
 private fun LoanCard(loan: Loan, onClick: () -> Unit) {
     Card(
         modifier  = Modifier.fillMaxWidth().clickable(onClick = onClick),
         shape     = RoundedCornerShape(12.dp),
-        colors    = CardDefaults.cardColors(containerColor = SurfaceWhite),
+        colors    = CardDefaults.cardColors(containerColor = NavySurface),
         elevation = CardDefaults.cardElevation(0.dp)
     ) {
         Column(modifier = Modifier.fillMaxWidth().padding(14.dp)) {
@@ -525,7 +557,12 @@ private fun LoanCard(loan: Loan, onClick: () -> Unit) {
                 verticalAlignment     = Alignment.CenterVertically
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(loan.type.toMaterialIcon(), contentDescription = null, modifier = Modifier.size(22.dp), tint = PrimaryDark)
+                    Icon(
+                        loan.type.toMaterialIcon(),
+                        contentDescription = null,
+                        modifier           = Modifier.size(22.dp),
+                        tint               = CyanAccent
+                    )
                     Spacer(Modifier.width(10.dp))
                     Column {
                         Text(loan.name, fontWeight = FontWeight.SemiBold, fontSize = 13.sp, color = TextPrimary)
@@ -545,10 +582,9 @@ private fun LoanCard(loan: Loan, onClick: () -> Unit) {
 
             Spacer(Modifier.height(12.dp))
 
-            // Usar ProgressBar del paquete común
             ProgressBar(
                 progress = loan.progressPercent,
-                color    = PrimaryDark,
+                color    = CyanAccent,
                 height   = 4.dp
             )
 
@@ -573,14 +609,14 @@ fun NetWorthContentPreview() {
     N3toTheme {
         NetWorthContent(
             data = NetWorthData(
-                totalAccountBalance = 25000.0,
-                totalPortfolioValue = 75000.0,
+                totalAccountBalance   = 25000.0,
+                totalPortfolioValue   = 75000.0,
                 totalFixedIncomeValue = 15000.0,
-                totalRealEstateValue = 250000.0,
+                totalRealEstateValue  = 250000.0,
                 totalLoansOutstanding = 30000.0,
-                totalDebtsOwing = 2000.0,
-                loans = emptyList(),
-                properties = emptyList()
+                totalDebtsOwing       = 2000.0,
+                loans                 = emptyList(),
+                properties            = emptyList()
             ),
             netWorthHistory = listOf(
                 NetWorthHistoryPoint("2026-01", 75000.0, 110000.0, 35000.0),
@@ -588,23 +624,23 @@ fun NetWorthContentPreview() {
                 NetWorthHistoryPoint("2026-03", 83000.0, 118000.0, 35000.0)
             ),
             assetDistribution = listOf(
-                DonutSlice("Cuentas", "🏦", 25000.0, 21.74, DonutAccounts),
-                DonutSlice("Inversiones", "📈", 75000.0, 65.22, DonutInvestments),
-                DonutSlice("Renta fija", "🏛️", 15000.0, 13.04, WarnOrange),
-                DonutSlice("Inmuebles", "🏠", 250000.0, 68.49, DonutRealEstate)
+                DonutSlice("Cuentas",     "🏦", 25000.0,  21.74, DonutAccounts),
+                DonutSlice("Inversiones", "📈", 75000.0,  65.22, DonutInvestments),
+                DonutSlice("Renta fija",  "🏛️", 15000.0,  13.04, WarnOrange),
+                DonutSlice("Inmuebles",   "🏠", 250000.0, 68.49, DonutRealEstate)
             ),
             balancesHidden = false,
-            onLoanClick = {},
+            onLoanClick    = {},
             onPropertyClick = {},
-            onAddLoan = {},
-            onAddProperty = {}
+            onAddLoan      = {},
+            onAddProperty  = {}
         )
     }
 }
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 private fun formatCurrency(amount: Double): String {
-    val absVal  = abs(amount)
-    val prefix  = if (amount < 0) "-" else ""
+    val absVal = abs(amount)
+    val prefix = if (amount < 0) "-" else ""
     return "$prefix${formatAmount(absVal)} €"
 }

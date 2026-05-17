@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -30,29 +29,25 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import es.aviferdev.n3to.ui.theme.BorderGray2
+import es.aviferdev.n3to.ui.theme.CategoryOrange
 import es.aviferdev.n3to.ui.theme.ExpenseRed
 import es.aviferdev.n3to.ui.theme.IncomeGreen
-import es.aviferdev.n3to.ui.theme.PrimaryDark
+import es.aviferdev.n3to.ui.theme.N3toTheme
+import es.aviferdev.n3to.ui.theme.NavyBorder
+import es.aviferdev.n3to.ui.theme.NavySurface
+import es.aviferdev.n3to.ui.theme.SecondaryTeal
 import es.aviferdev.n3to.ui.theme.TextPrimary
 import es.aviferdev.n3to.ui.theme.TextTertiary
-import es.aviferdev.n3to.ui.theme.N3toTheme
-import es.aviferdev.n3to.ui.theme.CategoryOrange
-import es.aviferdev.n3to.ui.theme.SecondaryTeal
 import es.aviferdev.n3to.ui.theme.WarnAmber
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 /**
  * Slide 4 — Movimientos con sentido.
- *
- * Muestra una lista de 5 transacciones de ejemplo con iconos emoji,
- * categorías y montos, con entrada escalonada.
  */
 @Composable
 fun SlideMovimientos(modifier: Modifier = Modifier) {
 
-    // Transaction data
     data class TxRow(
         val emoji: String,
         val label: String,
@@ -63,14 +58,13 @@ fun SlideMovimientos(modifier: Modifier = Modifier) {
     )
 
     val transactions = listOf(
-        TxRow("🏠", "Alquiler", "Hogar", "−850,00 €", ExpenseRed, CategoryOrange.copy(alpha = 0.13f)),
-        TxRow("💼", "Nómina", "Trabajo · 15% IRPF", "+2.800,00 €", IncomeGreen, IncomeGreen.copy(alpha = 0.13f)),
-        TxRow("🚗", "Gasolina", "Transporte", "−65,40 €", ExpenseRed, SecondaryTeal.copy(alpha = 0.13f)),
-        TxRow("🛒", "Mercadona", "Alimentación", "−112,30 €", ExpenseRed, IncomeGreen.copy(alpha = 0.13f)),
-        TxRow("🎬", "Netflix", "Ocio", "−15,99 €", ExpenseRed, WarnAmber.copy(alpha = 0.13f))
+        TxRow("🏠", "Alquiler",   "Hogar",              "−850,00 €",  ExpenseRed,  CategoryOrange.copy(alpha = 0.15f)),
+        TxRow("💼", "Nómina",    "Trabajo · 15% IRPF", "+2.800,00 €", IncomeGreen, IncomeGreen.copy(alpha = 0.15f)),
+        TxRow("🚗", "Gasolina",  "Transporte",          "−65,40 €",   ExpenseRed,  SecondaryTeal.copy(alpha = 0.15f)),
+        TxRow("🛒", "Mercadona", "Alimentación",        "−112,30 €",  ExpenseRed,  IncomeGreen.copy(alpha = 0.15f)),
+        TxRow("🎬", "Netflix",   "Ocio",                "−15,99 €",   ExpenseRed,  WarnAmber.copy(alpha = 0.15f))
     )
 
-    // ── Staggered entrance animations ────────────────────
     val rowVisible = remember {
         transactions.indices.map { mutableStateOf(false) }.toMutableList()
     }
@@ -99,37 +93,25 @@ fun SlideMovimientos(modifier: Modifier = Modifier) {
                     .fillMaxWidth()
                     .graphicsLayer { alpha = rowAlpha }
                     .padding(bottom = 8.dp)
-                    .background(
-                        color = PrimaryDark.copy(alpha = 0.04f),
-                        shape = RoundedCornerShape(13.dp)
-                    )
-                    .border(1.dp, BorderGray2, RoundedCornerShape(13.dp))
+                    .background(color = NavySurface, shape = RoundedCornerShape(13.dp))
+                    .border(1.dp, NavyBorder, RoundedCornerShape(13.dp))
                     .padding(horizontal = 14.dp, vertical = 11.dp)
             ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    // Emoji badge
                     Box(
                         modifier = Modifier
                             .size(38.dp)
-                            .background(
-                                color = tx.badgeBg,
-                                shape = RoundedCornerShape(11.dp)
-                            ),
+                            .background(color = tx.badgeBg, shape = RoundedCornerShape(11.dp)),
                         contentAlignment = Alignment.Center
                     ) {
-                        Text(
-                            text = tx.emoji,
-                            fontSize = 18.sp,
-                            color = Color.Unspecified
-                        )
+                        Text(text = tx.emoji, fontSize = 18.sp, color = Color.Unspecified)
                     }
 
                     Spacer(Modifier.size(12.dp))
 
-                    // Label + sublabel
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
                             text = tx.label,
@@ -145,7 +127,6 @@ fun SlideMovimientos(modifier: Modifier = Modifier) {
                         )
                     }
 
-                    // Amount
                     Text(
                         text = tx.amount,
                         fontSize = 13.sp,

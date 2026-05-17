@@ -30,17 +30,16 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import es.aviferdev.n3to.ui.theme.CyanGlow
 import es.aviferdev.n3to.ui.theme.N3toTheme
-import es.aviferdev.n3to.ui.theme.PrimaryDark
+import es.aviferdev.n3to.ui.theme.NavyDeep
 import es.aviferdev.n3to.ui.theme.TextPrimary
 import es.aviferdev.n3to.ui.theme.TextSecondary
-import es.aviferdev.n3to.ui.theme.NavyDeep
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.app_icon
 import org.jetbrains.compose.resources.painterResource
@@ -49,14 +48,10 @@ import kotlin.math.min
 
 /**
  * Slide 1 — Bienvenido a N3to.
- *
- * Muestra el icono de la app con halo radial degradado, animación de flotación,
- * título principal y descripción. Todo centrado (hideText = true en SLIDES).
  */
 @Composable
 fun SlideWelcome(modifier: Modifier = Modifier) {
 
-    // ── Entrance animation state ─────────────────────────
     var visible by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) { visible = true }
 
@@ -66,22 +61,13 @@ fun SlideWelcome(modifier: Modifier = Modifier) {
     )
     val titleAlpha by animateFloatAsState(
         targetValue = if (visible) 1f else 0f,
-        animationSpec = tween(
-            durationMillis = 550,
-            delayMillis = 100,
-            easing = EaseInOutCubic
-        )
+        animationSpec = tween(durationMillis = 550, delayMillis = 100, easing = EaseInOutCubic)
     )
     val bodyAlpha by animateFloatAsState(
         targetValue = if (visible) 1f else 0f,
-        animationSpec = tween(
-            durationMillis = 550,
-            delayMillis = 200,
-            easing = EaseInOutCubic
-        )
+        animationSpec = tween(durationMillis = 550, delayMillis = 200, easing = EaseInOutCubic)
     )
 
-    // ── Floating animation (infinite) ────────────────────
     val infiniteTransition = rememberInfiniteTransition()
     val floatOffset by infiniteTransition.animateFloat(
         initialValue = 0f,
@@ -99,12 +85,11 @@ fun SlideWelcome(modifier: Modifier = Modifier) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        // ── Halo + Icon ──────────────────────────────────
         Box(
             modifier = Modifier.size(380.dp),
             contentAlignment = Alignment.Center
         ) {
-            // Radial halo using drawBehind
+            // Halo cian radial (coherente con el orb decorativo de la Home/Splash)
             Box(
                 modifier = Modifier
                     .size(380.dp)
@@ -115,8 +100,8 @@ fun SlideWelcome(modifier: Modifier = Modifier) {
                         drawCircle(
                             brush = Brush.radialGradient(
                                 colors = listOf(
-                                    PrimaryDark.copy(alpha = 0.45f),
-                                    PrimaryDark.copy(alpha = 0f)
+                                    CyanGlow.copy(alpha = 0.25f),
+                                    CyanGlow.copy(alpha = 0f)
                                 ),
                                 center = center,
                                 radius = gradientRadius
@@ -127,7 +112,6 @@ fun SlideWelcome(modifier: Modifier = Modifier) {
                     }
             )
 
-            // App icon (navy rounded rect + foreground PNG)
             Box(
                 modifier = Modifier
                     .size(128.dp)
@@ -137,7 +121,6 @@ fun SlideWelcome(modifier: Modifier = Modifier) {
                     },
                 contentAlignment = Alignment.Center
             ) {
-                // Navy rounded rect background (rx ≈ 22% del lado, como el SVG original)
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
@@ -150,7 +133,6 @@ fun SlideWelcome(modifier: Modifier = Modifier) {
                             )
                         }
                 )
-                // Foreground layer (N3to + sparkline)
                 Image(
                     painter = painterResource(Res.drawable.app_icon),
                     contentDescription = "N3to",
@@ -161,7 +143,6 @@ fun SlideWelcome(modifier: Modifier = Modifier) {
 
         Spacer(Modifier.height(24.dp))
 
-        // ── Title ────────────────────────────────────────
         Text(
             text = "Bienvenido a\nN3to",
             fontSize = 30.sp,
@@ -175,7 +156,6 @@ fun SlideWelcome(modifier: Modifier = Modifier) {
 
         Spacer(Modifier.height(12.dp))
 
-        // ── Body ─────────────────────────────────────────
         Text(
             text = "Tu vida financiera, organizada. Movimientos, inversiones y patrimonio en un solo lugar.",
             fontSize = 15.sp,

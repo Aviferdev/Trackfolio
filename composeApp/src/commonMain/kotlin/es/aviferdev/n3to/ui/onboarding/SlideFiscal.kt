@@ -25,6 +25,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -32,30 +34,23 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import es.aviferdev.n3to.ui.theme.BorderGray
-import es.aviferdev.n3to.ui.theme.BorderGray2
 import es.aviferdev.n3to.ui.theme.IncomeGreen
-import es.aviferdev.n3to.ui.theme.PrimaryDark
-import es.aviferdev.n3to.ui.theme.PrimaryVariant
+import es.aviferdev.n3to.ui.theme.N3toTheme
+import es.aviferdev.n3to.ui.theme.NavyBorder
+import es.aviferdev.n3to.ui.theme.NavySurface
+import es.aviferdev.n3to.ui.theme.NavySurfaceLight
 import es.aviferdev.n3to.ui.theme.TextPrimary
 import es.aviferdev.n3to.ui.theme.TextSecondary
 import es.aviferdev.n3to.ui.theme.TextTertiary
-import es.aviferdev.n3to.ui.theme.N3toTheme
-import es.aviferdev.n3to.ui.theme.PrimaryLight
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 /**
  * Slide 5 — Informe fiscal listo.
- *
- * Muestra una tarjeta degradada con la base imponible y un grid
- * de rendimientos/retenciones, seguido de una lista de operaciones
- * marcadas con sus implicaciones fiscales.
  */
 @Composable
 fun SlideFiscal(modifier: Modifier = Modifier) {
 
-    // ── Entrance animations ──────────────────────────────
     var visible by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) { visible = true }
 
@@ -65,20 +60,16 @@ fun SlideFiscal(modifier: Modifier = Modifier) {
     )
 
     var opsVisible by remember { mutableStateOf(false) }
-    LaunchedEffect(Unit) {
-        delay(250)
-        opsVisible = true
-    }
+    LaunchedEffect(Unit) { delay(250); opsVisible = true }
     val opsAlpha by animateFloatAsState(
         targetValue = if (opsVisible) 1f else 0f,
         animationSpec = tween(durationMillis = 550, easing = EaseInOutCubic)
     )
 
-    // Operations data
     data class OpRow(val emoji: String, val label: String, val value: String)
     val operations = listOf(
         OpRow("📄", "Factura freelance", "−67,50 € IRPF"),
-        OpRow("💼", "Nómina marzo", "−450,00 € IRPF"),
+        OpRow("💼", "Nómina marzo",       "−450,00 € IRPF"),
         OpRow("📈", "Venta AAPL (3 ud.)", "+134,70 € plusv.")
     )
 
@@ -88,23 +79,24 @@ fun SlideFiscal(modifier: Modifier = Modifier) {
             .padding(horizontal = 32.dp),
         verticalArrangement = Arrangement.Center
     ) {
-        // ── Base imponible card (gradient) ───────────────
+        // ── Base imponible card (gradiente diagonal navy) ─
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .graphicsLayer { alpha = cardAlpha }
-                .background(
-                    brush = Brush.linearGradient(
-                        colors = listOf(PrimaryDark, PrimaryLight),
-                        start = Offset.Zero,
-                        end = Offset(600f, 600f)
-                    ),
-                    shape = RoundedCornerShape(16.dp)
-                )
+                .clip(RoundedCornerShape(16.dp))
+                .drawBehind {
+                    drawRect(
+                        brush = Brush.linearGradient(
+                            colors = listOf(NavySurface, NavySurfaceLight),
+                            start = Offset(0f, 0f),
+                            end = Offset(size.width, size.height)
+                        )
+                    )
+                }
                 .padding(horizontal = 20.dp, vertical = 18.dp)
         ) {
             Column {
-                // Label
                 Text(
                     text = "BASE IMPONIBLE 2025",
                     fontSize = 10.sp,
@@ -115,7 +107,6 @@ fun SlideFiscal(modifier: Modifier = Modifier) {
 
                 Spacer(Modifier.height(8.dp))
 
-                // Amount
                 Text(
                     text = "29.955 €",
                     fontSize = 32.sp,
@@ -126,21 +117,12 @@ fun SlideFiscal(modifier: Modifier = Modifier) {
 
                 Spacer(Modifier.height(14.dp))
 
-                // Two-column grid: Rendimientos / Retenciones
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    GridCell(
-                        label = "RENDIMIENTOS",
-                        value = "+33.600 €",
-                        modifier = Modifier.weight(1f)
-                    )
-                    GridCell(
-                        label = "RETENCIONES",
-                        value = "−4.032 €",
-                        modifier = Modifier.weight(1f)
-                    )
+                    GridCell(label = "RENDIMIENTOS", value = "+33.600 €", modifier = Modifier.weight(1f))
+                    GridCell(label = "RETENCIONES",  value = "−4.032 €",  modifier = Modifier.weight(1f))
                 }
             }
         }
@@ -152,11 +134,8 @@ fun SlideFiscal(modifier: Modifier = Modifier) {
             modifier = Modifier
                 .fillMaxWidth()
                 .graphicsLayer { alpha = opsAlpha }
-                .background(
-                    color = PrimaryDark.copy(alpha = 0.04f),
-                    shape = RoundedCornerShape(13.dp)
-                )
-                .border(1.dp, BorderGray2, RoundedCornerShape(13.dp))
+                .background(color = NavySurface, shape = RoundedCornerShape(13.dp))
+                .border(1.dp, NavyBorder, RoundedCornerShape(13.dp))
                 .padding(horizontal = 14.dp, vertical = 12.dp)
         ) {
             Column {
@@ -172,39 +151,24 @@ fun SlideFiscal(modifier: Modifier = Modifier) {
 
                 operations.forEachIndexed { index, op ->
                     if (index > 0) {
+                        Spacer(Modifier.height(8.dp))
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(1.dp)
-                                .padding(vertical = 9.dp)
-                                .background(BorderGray)
+                                .background(NavyBorder)
                         )
+                        Spacer(Modifier.height(8.dp))
                     }
 
                     Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 4.dp),
+                        modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text(
-                            text = op.emoji,
-                            fontSize = 14.sp,
-                            color = Color.Unspecified
-                        )
+                        Text(text = op.emoji, fontSize = 14.sp, color = Color.Unspecified)
                         Spacer(Modifier.width(10.dp))
-                        Text(
-                            text = op.label,
-                            fontSize = 11.sp,
-                            color = TextSecondary,
-                            modifier = Modifier.weight(1f)
-                        )
-                        Text(
-                            text = op.value,
-                            fontSize = 11.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = TextPrimary
-                        )
+                        Text(text = op.label, fontSize = 11.sp, color = TextSecondary, modifier = Modifier.weight(1f))
+                        Text(text = op.value, fontSize = 11.sp, fontWeight = FontWeight.Bold, color = TextPrimary)
                     }
                 }
             }
@@ -212,39 +176,17 @@ fun SlideFiscal(modifier: Modifier = Modifier) {
     }
 }
 
-/**
- * Small cell used inside the gradient card grid.
- * Shows an uppercase label and a value underneath.
- */
 @Composable
-private fun GridCell(
-    label: String,
-    value: String,
-    modifier: Modifier = Modifier
-) {
+private fun GridCell(label: String, value: String, modifier: Modifier = Modifier) {
     Box(
         modifier = modifier
-            .background(
-                color = Color.White.copy(alpha = 0.14f),
-                shape = RoundedCornerShape(9.dp)
-            )
+            .background(color = Color.White.copy(alpha = 0.10f), shape = RoundedCornerShape(9.dp))
             .padding(horizontal = 10.dp, vertical = 8.dp)
     ) {
         Column {
-            Text(
-                text = label,
-                fontSize = 9.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.White.copy(alpha = 0.65f),
-                letterSpacing = 0.5.sp
-            )
+            Text(text = label, fontSize = 9.sp, fontWeight = FontWeight.Bold, color = Color.White.copy(alpha = 0.65f), letterSpacing = 0.5.sp)
             Spacer(Modifier.height(3.dp))
-            Text(
-                text = value,
-                fontSize = 13.sp,
-                fontWeight = FontWeight.ExtraBold,
-                color = Color.White
-            )
+            Text(text = value, fontSize = 13.sp, fontWeight = FontWeight.ExtraBold, color = Color.White)
         }
     }
 }

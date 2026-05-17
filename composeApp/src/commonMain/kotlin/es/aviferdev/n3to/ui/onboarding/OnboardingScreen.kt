@@ -29,17 +29,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import es.aviferdev.n3to.domain.usecase.onboarding.MarkOnboardingCompletedUseCase
-import es.aviferdev.n3to.ui.theme.BackgroundGray
-import es.aviferdev.n3to.ui.theme.BorderGray2
+import es.aviferdev.n3to.ui.theme.CyanAccent
 import es.aviferdev.n3to.ui.theme.N3toTheme
-import es.aviferdev.n3to.ui.theme.PrimaryDark
+import es.aviferdev.n3to.ui.theme.NavyBorder
+import es.aviferdev.n3to.ui.theme.NavyDeep
 import es.aviferdev.n3to.ui.theme.TextPrimary
 import es.aviferdev.n3to.ui.theme.TextSecondary
 import kotlinx.coroutines.launch
@@ -114,7 +113,6 @@ fun OnboardingScreen(onComplete: () -> Unit) {
     var currentSlide by remember { mutableStateOf(0) }
     val coroutineScope = rememberCoroutineScope()
 
-    // Sync pager swipe → currentSlide
     LaunchedEffect(pagerState.currentPage) {
         currentSlide = pagerState.currentPage
     }
@@ -124,7 +122,7 @@ fun OnboardingScreen(onComplete: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(BackgroundGray)
+            .background(NavyDeep)
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
 
@@ -173,7 +171,6 @@ fun OnboardingScreen(onComplete: () -> Unit) {
             ) {
                 Spacer(Modifier.height(16.dp))
 
-                // Page dots
                 OnboardingDots(
                     totalDots = SLIDES.size,
                     selectedIndex = currentSlide
@@ -181,7 +178,6 @@ fun OnboardingScreen(onComplete: () -> Unit) {
 
                 Spacer(Modifier.height(18.dp))
 
-                // CTA buttons
                 if (isLast) {
                     Button(
                         onClick = { viewModel.complete() },
@@ -190,14 +186,14 @@ fun OnboardingScreen(onComplete: () -> Unit) {
                             .height(52.dp),
                         shape = RoundedCornerShape(14.dp),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = PrimaryDark
+                            containerColor = CyanAccent
                         )
                     ) {
                         Text(
                             text = "Comenzar",
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Bold,
-                            color = Color.White
+                            color = NavyDeep
                         )
                     }
                 } else {
@@ -233,7 +229,7 @@ fun OnboardingScreen(onComplete: () -> Unit) {
                             },
                             shape = RoundedCornerShape(13.dp),
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = PrimaryDark
+                                containerColor = CyanAccent
                             ),
                             modifier = Modifier.height(44.dp),
                             contentPadding = PaddingValues(horizontal = 28.dp)
@@ -242,7 +238,7 @@ fun OnboardingScreen(onComplete: () -> Unit) {
                                 text = "Continuar",
                                 fontSize = 13.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = Color.White
+                                color = NavyDeep
                             )
                         }
                     }
@@ -263,7 +259,6 @@ private fun SlidePage(slide: SlideInfo) {
             .fillMaxSize()
             .padding(horizontal = 32.dp)
     ) {
-        // Visual area
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -271,16 +266,15 @@ private fun SlidePage(slide: SlideInfo) {
             contentAlignment = Alignment.Center
         ) {
             when (slide.id) {
-                "welcome"   -> SlideWelcome()
-                "patrim"    -> SlidePatrimonio()
-                "portfolio" -> SlidePortfolio()
-                "movim"     -> SlideMovimientos()
-                "fiscal"    -> SlideFiscal()
+                "welcome"    -> SlideWelcome()
+                "patrim"     -> SlidePatrimonio()
+                "portfolio"  -> SlidePortfolio()
+                "movim"      -> SlideMovimientos()
+                "fiscal"     -> SlideFiscal()
                 "realestate" -> OnboardingRealEstatePage(isVisible = true)
             }
         }
 
-        // Text area (hidden for welcome slide — text is centered in visual)
         if (!slide.hideText) {
             Column(
                 modifier = Modifier
@@ -329,7 +323,7 @@ private fun OnboardingDots(
                     .width(if (isSelected) 22.dp else 6.dp)
                     .height(6.dp)
                     .clip(RoundedCornerShape(3.dp))
-                    .background(if (isSelected) PrimaryDark else BorderGray2)
+                    .background(if (isSelected) CyanAccent else NavyBorder)
             )
         }
     }
