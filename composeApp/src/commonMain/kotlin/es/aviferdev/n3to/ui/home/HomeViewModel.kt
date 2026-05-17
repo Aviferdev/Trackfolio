@@ -180,6 +180,7 @@ class HomeViewModel(
     }
 
     fun dismissReminder() {
+        savePriceReminderShown()
         _priceReminderState.value = _priceReminderState.value.copy(
             showBanner = false,
             showUpdateSheet = false
