@@ -25,6 +25,10 @@ import es.aviferdev.n3to.ui.theme.N3toTheme
 import es.aviferdev.n3to.ui.theme.formatAmount
 import es.aviferdev.n3to.ui.theme.formatPercent
 import es.aviferdev.n3to.ui.theme.maskAmount
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.portfolio_category_current_format
+import n3to.composeapp.generated.resources.portfolio_category_invested_format
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import kotlin.math.abs
 
@@ -71,12 +75,12 @@ fun CategoryGroupHeader(
         Spacer(Modifier.height(5.dp))
         Row(Modifier.fillMaxWidth(), Arrangement.SpaceBetween) {
             Text(
-                "Invertido: ${maskAmount(formatAmount(group.totalInvested), balancesHidden)} €",
+                stringResource(Res.string.portfolio_category_invested_format, maskAmount(formatAmount(group.totalInvested), balancesHidden)),
                 fontSize = 11.sp,
                 color = TextTertiary
             )
             Text(
-                "Actual: ${maskAmount(formatAmount(group.totalCurrentValue), balancesHidden)} €",
+                stringResource(Res.string.portfolio_category_current_format, maskAmount(formatAmount(group.totalCurrentValue), balancesHidden)),
                 fontSize = 11.sp,
                 color = TextTertiary
             )

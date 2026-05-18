@@ -219,4 +219,414 @@
     <string name="portfolio_distribution_view_composition">Composición</string>
     <string name="portfolio_distribution_view_region">Región</string>
     <string name="portfolio_distribution_view_sector">Sector</string>
+
+    <!-- PORTFOLIO – Summary -->
+    <string name="portfolio_summary_total_value">Valor total</string>
+    <string name="portfolio_summary_invested">Invertido</string>
+    <string name="portfolio_summary_total_pnl">Beneficio total</string>
+    <string name="portfolio_summary_realized">Realizado</string>
+    <string name="portfolio_summary_unrealized">Latente</string>
+    <string name="portfolio_summary_positions_one">%1$d posición abierta</string>
+    <string name="portfolio_summary_positions_many">%1$d posiciones abiertas</string>
+
+    <!-- =====================================================================
+         PRIVACY – Pantalla de privacidad y datos
+         ===================================================================== -->
+    <string name="privacy_restore_success">Compras restauradas correctamente</string>
+    <string name="privacy_restore_error">Error: %1$s</string>
+    <string name="privacy_back_cd">Volver</string>
+    <string name="privacy_revoke_title">¿Revocar todo el consentimiento?</string>
+    <string name="privacy_revoke_message">Se desactivarán el análisis de uso y los informes de errores. Esta acción se aplica inmediatamente.</string>
+    <string name="privacy_revoke_confirm">Revocar todo</string>
+
+    <!-- Privacy – Consentimiento -->
+    <string name="privacy_section_consent">Consentimiento</string>
+    <string name="privacy_analytics_title">Ayúdanos a mejorar</string>
+    <string name="privacy_analytics_desc">Análisis de uso anónimo para mejorar la app.</string>
+    <string name="privacy_crash_title">Avísame si algo falla</string>
+    <string name="privacy_crash_desc">Informes de errores anónimos para corregir fallos.</string>
+    <string name="privacy_consent_date_format">Consentimiento registrado el %1$s</string>
+
+    <!-- Privacy – Premium -->
+    <string name="privacy_premium_active_label">Premium activo</string>
+    <string name="privacy_premium_lifetime_value">Acceso vitalicio</string>
+    <string name="privacy_premium_subscription_value">Suscripción activa</string>
+    <string name="privacy_premium_valid_until">Válido hasta</string>
+    <string name="privacy_premium_manage">Gestionar suscripción</string>
+    <string name="privacy_premium_plan">Plan actual</string>
+    <string name="privacy_premium_free">Gratuito</string>
+    <string name="privacy_premium_no_ads">Sin anuncios</string>
+    <string name="privacy_premium_no_ads_value">Al hacerte Premium</string>
+    <string name="privacy_premium_restore">Restaurar compra</string>
+
+    <!-- Privacy – Datos recopilados -->
+    <string name="privacy_section_data_collected">Datos recopilados</string>
+    <string name="privacy_data_screens">Pantallas visitadas</string>
+    <string name="privacy_data_crash_reports">Informes de errores</string>
+    <string name="privacy_data_financial">Datos financieros</string>
+    <string name="privacy_data_personal">Información personal</string>
+    <string name="privacy_data_revenuecat">Gestión de suscripción (RevenueCat)</string>
+
+    <!-- Privacy – Acciones -->
+    <string name="privacy_revoke_all_button">Revocar todo el consentimiento</string>
+    <string name="privacy_revoke_all_hint">Al revocar, todos los datos de seguimiento se desactivan inmediatamente.</string>
+    <string name="privacy_policy_link">Política de Privacidad</string>
+
+    <!-- =====================================================================
+         PORTFOLIO – Settings (Ajustes de cartera)
+         ===================================================================== -->
+    <string name="portfolio_settings_title">Ajustes de Portfolio</string>
+    <string name="portfolio_settings_category_section">CATEGORÍAS DE ACTIVO</string>
+    <string name="portfolio_settings_category_count_one">%1$d activo</string>
+    <string name="portfolio_settings_category_count_many">%1$d activos</string>
+    <string name="portfolio_settings_portfolio_section">CARTERAS</string>
+    <string name="portfolio_settings_no_portfolios">No hay carteras. Crea una desde la pantalla de Portfolio.</string>
+    <string name="portfolio_settings_edit_cd">Editar</string>
+    <string name="portfolio_settings_delete_cd">Eliminar</string>
+    <string name="portfolio_settings_reminder_section">RECORDATORIO DE PRECIOS</string>
+    <string name="portfolio_settings_reminder_title">Frecuencia de recordatorio</string>
+    <string name="portfolio_settings_reminder_desc">Te recordaré actualizar los precios de tus activos cada cierto tiempo.</string>
+    <string name="portfolio_settings_platform_section">PLATAFORMAS</string>
+    <string name="portfolio_settings_platform_empty">Sin plataformas. Añade brokers, exchanges o bancos para asociarlos a tus movimientos.</string>
+    <string name="portfolio_settings_sector_section">SECTORES</string>
+    <string name="portfolio_settings_sector_empty">Clasifica tus activos por sectores (Tecnología, Salud, Energía…) para analizar tu exposición por industria.</string>
+    <string name="portfolio_settings_region_section">REGIONES</string>
+    <string name="portfolio_settings_region_empty">Define la distribución geográfica de tus activos por región (EE.UU., Europa, Asia…) para analizar tu exposición internacional.</string>
+    <string name="portfolio_settings_manage">Gestionar</string>
+    <string name="portfolio_settings_delete_portfolio_title">Eliminar cartera</string>
+    <string name="portfolio_settings_delete_portfolio_message">¿Eliminar «%1$s»? Los activos pasarán a «Sin cartera».</string>
+
+    <!-- PORTFOLIO – Asset detail -->
+    <string name="portfolio_asset_detail_title">Activo</string>
+    <string name="portfolio_asset_detail_platform_section">PLATAFORMAS</string>
+    <string name="portfolio_asset_detail_platform_desc">Selecciona en qué plataformas (brokers, bancos, exchanges) tienes este activo.</string>
+    <string name="portfolio_asset_detail_platform_empty">No hay plataformas creadas. Crea la primera para vincularla a este activo.</string>
+    <string name="portfolio_asset_detail_platform_link_hint">Para vincular plataformas, ve a Ajustes › Portfolio › Plataformas.</string>
+    <string name="portfolio_asset_detail_linked_platforms">PLATAFORMAS VINCULADAS</string>
+    <string name="portfolio_asset_detail_unlink_cd">Desvincular</string>
+
+    <!-- PORTFOLIO – Asset history -->
+    <string name="portfolio_asset_history_add">Añadir</string>
+    <string name="portfolio_asset_history_filter_all">Todas</string>
+    <string name="portfolio_asset_history_filter_buy">Compra</string>
+    <string name="portfolio_asset_history_filter_sell">Venta</string>
+    <string name="portfolio_asset_history_no_data">Sin datos históricos</string>
+
+    <!-- PORTFOLIO – Compound effect card -->
+    <string name="portfolio_compound_effect_title">Efecto compuesto</string>
+    <string name="portfolio_compound_effect_projection">Proyección</string>
+    <string name="portfolio_compound_effect_estimated">Has ganado</string>
+
+    <!-- PORTFOLIO – Add/Edit asset sheet -->
+    <string name="portfolio_add_asset_title_create">Crear activo</string>
+    <string name="portfolio_add_asset_title_edit">Editar activo</string>
+    <string name="portfolio_add_asset_name_label">Nombre del activo</string>
+    <string name="portfolio_add_asset_ticker_label">Ticker</string>
+    <string name="portfolio_add_asset_category_label">Categoría</string>
+    <string name="portfolio_add_asset_price_label">Precio unidad</string>
+    <string name="portfolio_add_asset_price_placeholder">Precio de mercado</string>
+    <string name="portfolio_add_asset_notes_label">Notas</string>
+    <string name="portfolio_add_asset_platform_label">Plataforma</string>
+    <string name="portfolio_add_asset_save">Guardar cambios</string>
+    <string name="portfolio_add_asset_name_required">El nombre es obligatorio</string>
+    <string name="portfolio_add_asset_no_price">Aún no hay un precio registrado para este activo</string>
+    <string name="portfolio_add_asset_select_category">Selecciona una categoría</string>
+    <string name="portfolio_add_asset_select_platform">Selecciona dónde tienes las unidades</string>
+    <string name="portfolio_add_asset_no_platforms">Sin plataformas vinculadas</string>
+
+    <!-- PORTFOLIO – Add transaction sheet -->
+    <string name="portfolio_add_tx_title">Registrar movimiento</string>
+    <string name="portfolio_add_tx_title_edit">Editar movimiento</string>
+    <string name="portfolio_add_tx_date">Fecha</string>
+    <string name="portfolio_add_tx_qty">Cantidad</string>
+    <string name="portfolio_add_tx_price">Precio unidad</string>
+    <string name="portfolio_add_tx_gross">Importe bruto</string>
+    <string name="portfolio_add_tx_gross_placeholder">Introduce el importe bruto</string>
+    <string name="portfolio_add_tx_net">Neto</string>
+    <string name="portfolio_add_tx_fee">Bruto</string>
+    <string name="portfolio_add_tx_fee_placeholder">Comisión</string>
+    <string name="portfolio_add_tx_platform">Plataforma</string>
+    <string name="portfolio_add_tx_notes">Notas</string>
+    <string name="portfolio_add_tx_select_asset">Selecciona un activo</string>
+    <string name="portfolio_add_tx_no_units">Sin unidades</string>
+    <string name="portfolio_add_tx_name_required">El nombre es obligatorio</string>
+
+    <!-- PORTFOLIO – Dividend sheet -->
+    <string name="portfolio_dividend_title">Registrar dividendo</string>
+    <string name="portfolio_dividend_amount">Importe bruto</string>
+    <string name="portfolio_dividend_withholding">Retención</string>
+    <string name="portfolio_dividend_date">Fecha</string>
+    <string name="portfolio_dividend_notes">Notas</string>
+
+    <!-- PORTFOLIO – Transfer sheet -->
+    <string name="portfolio_transfer_title">Traspaso de fondo</string>
+    <string name="portfolio_transfer_from">Fondo origen</string>
+    <string name="portfolio_transfer_to">Fondo destino</string>
+    <string name="portfolio_transfer_qty">Participaciones a traspasar</string>
+    <string name="portfolio_transfer_date">Fecha del traspaso</string>
+    <string name="portfolio_transfer_confirm">Confirmar traspaso</string>
+
+    <!-- PORTFOLIO – Update price sheet -->
+    <string name="portfolio_update_price_title">Actualizar precio</string>
+    <string name="portfolio_update_price_save">Guardar precio</string>
+
+    <!-- PORTFOLIO – Management sheets -->
+    <string name="portfolio_new_sector_title">Nuevo sector</string>
+    <string name="portfolio_new_region_title">Nueva región</string>
+    <string name="portfolio_new_platform_title">Nueva plataforma</string>
+    <string name="portfolio_edit_platform_title">Editar plataforma</string>
+    <string name="portfolio_link_platform_title">Vincular plataforma</string>
+    <string name="portfolio_platform_name">Nombre</string>
+    <string name="portfolio_platform_icon">Icono</string>
+    <string name="portfolio_platform_notes">Notas</string>
+
+    <!-- PORTFOLIO – Portfolio management -->
+    <string name="portfolio_new_portfolio_title">Nueva cartera</string>
+    <string name="portfolio_edit_portfolio_title">Editar cartera</string>
+    <string name="portfolio_name_required">El nombre es obligatorio</string>
+    <string name="portfolio_without">Sin cartera</string>
+
+    <!-- PORTFOLIO – Subcomponentes -->
+    <string name="portfolio_category_group_assets">%1$d activos</string>
+    <string name="portfolio_category_invested_format">Invertido: %1$s €</string>
+    <string name="portfolio_category_current_format">Actual: %1$s €</string>
+    <string name="portfolio_category_group_expand">Expandir</string>
+    <string name="portfolio_category_group_collapse">Colapsar</string>
+    <string name="portfolio_closed_positions">Posiciones cerradas</string>
+    <string name="portfolio_closed_positions_count">%1$d cerradas</string>
+    <string name="portfolio_fixed_income_section">Renta fija</string>
+    <string name="portfolio_fixed_income_count">%1$d posiciones</string>
+
+    <!-- =====================================================================
+         TRANSACTION – Pantallas de movimientos
+         ===================================================================== -->
+    <string name="transaction_title">Movimientos</string>
+    <string name="transaction_search_hint">Buscar movimientos…</string>
+    <string name="transaction_no_results">No hay movimientos que coincidan con tu búsqueda</string>
+    <string name="transaction_no_movements">No hay movimientos registrados</string>
+    <string name="transaction_detail_title">Detalle movimiento</string>
+    <string name="transaction_detail_not_found">Transacción no encontrada</string>
+    <string name="transaction_type_income">Ingreso</string>
+    <string name="transaction_type_expense">Gasto</string>
+    <string name="transaction_type_adjustment">Ajuste</string>
+    <string name="transaction_type_transfer">Traspaso</string>
+    <string name="transaction_filter_all">Todos</string>
+    <string name="transaction_filter_income">Ingresos</string>
+    <string name="transaction_filter_expense">Gastos</string>
+
+    <!-- =====================================================================
+         ACCOUNT – Pantallas de cuentas
+         ===================================================================== -->
+    <string name="account_list_title">Mis cuentas</string>
+    <string name="account_add_title">Añadir cuenta</string>
+    <string name="account_edit_title">Editar cuenta</string>
+    <string name="account_name_label">Nombre o apodo</string>
+    <string name="account_name_placeholder">Ej. Cuenta corriente BBVA</string>
+    <string name="account_initial_balance">Saldo inicial pendiente</string>
+    <string name="account_no_accounts">Sin cuentas todavía</string>
+    <string name="account_balance_label">Saldo actual</string>
+    <string name="account_computed_balance">Saldo actual calculado</string>
+    <string name="account_delete_confirm_title">Eliminar cuenta</string>
+    <string name="account_configure_cd">Configurar</string>
+    <string name="account_edit_cd">Editar</string>
+    <string name="account_delete_cd">Eliminar</string>
+
+    <!-- =====================================================================
+         FIXED INCOME – Renta fija
+         ===================================================================== -->
+    <string name="fixedincome_title">Renta Fija</string>
+    <string name="fixedincome_detail_title">Posición de renta fija</string>
+    <string name="fixedincome_not_found">Posición no encontrada</string>
+    <string name="fixedincome_create_title">Nueva posición de renta fija</string>
+    <string name="fixedincome_edit_title">Editar posición de renta fija</string>
+    <string name="fixedincome_name_label">Nombre</string>
+    <string name="fixedincome_ticker_label">Ticker</string>
+    <string name="fixedincome_type_label">Tipo de producto</string>
+    <string name="fixedincome_principal_label">Nominal</string>
+    <string name="fixedincome_interest_label">TIN</string>
+    <string name="fixedincome_frequency_label">Frecuencia de cobro de intereses</string>
+    <string name="fixedincome_start_date">Fecha de inicio</string>
+    <string name="fixedincome_maturity_date">Fecha de vencimiento</string>
+    <string name="fixedincome_auto_renew">Auto-renovar al vencimiento</string>
+    <string name="fixedincome_save">Guardar cambios</string>
+    <string name="fixedincome_cancel_title">Cancelar anticipadamente</string>
+    <string name="fixedincome_close_confirm">Confirmar liquidación</string>
+    <string name="fixedincome_register_coupon">Registrar cupón / interés</string>
+    <string name="fixedincome_sell_secondary">Vender en mercado secundario</string>
+    <string name="fixedincome_value_label">Valor actual</string>
+    <string name="fixedincome_invested_label">Capital invertido</string>
+    <string name="fixedincome_yield_gross">Yield bruto s/ compra</string>
+    <string name="fixedincome_yield_current">Yield bruto s/ valor actual</string>
+    <string name="fixedincome_net_maturity">Neto estimado al vencimiento</string>
+    <string name="fixedincome_coupon_calendar">Calendario de cobros</string>
+    <string name="fixedincome_coupons_received">Cupones ya cobrados</string>
+    <string name="fixedincome_maturity_simulation">Simulación de vencimiento</string>
+
+    <!-- =====================================================================
+         LOAN – Préstamos
+         ===================================================================== -->
+    <string name="loan_detail_title">Detalle préstamo</string>
+    <string name="loan_not_found">Préstamo no encontrado</string>
+    <string name="loan_add_title">Añadir préstamo</string>
+    <string name="loan_edit_title">Editar préstamo</string>
+    <string name="loan_name_label">Nombre del préstamo</string>
+    <string name="loan_type_label">Tipo</string>
+    <string name="loan_entity_label">Entidad</string>
+    <string name="loan_principal_label">Capital inicial</string>
+    <string name="loan_interest_label">TIN</string>
+    <string name="loan_term_label">Plazo (meses)</string>
+    <string name="loan_monthly_payment">Cuota/mes</string>
+    <string name="loan_pending_capital">Capital pendiente</string>
+    <string name="loan_amortization_title">Cuadro de amortización</string>
+    <string name="loan_amortization_type">Amortización</string>
+    <string name="loan_history_title">Historial de tipo de interés</string>
+    <string name="loan_archive_title">Archivar préstamo</string>
+    <string name="loan_change_rate">Actualizar tipo de interés</string>
+    <string name="loan_progress">Progreso</string>
+
+    <!-- =====================================================================
+         DEBT – Deudas
+         ===================================================================== -->
+    <string name="debt_title">Deudas</string>
+    <string name="debt_add_title">Nueva deuda</string>
+    <string name="debt_edit_title">Editar deuda</string>
+    <string name="debt_no_debts">Sin deudas</string>
+    <string name="debt_type_label">Tipo de deuda</string>
+    <string name="debt_person_label">Persona</string>
+    <string name="debt_amount_label">Importe</string>
+    <string name="debt_description_label">Concepto</string>
+    <string name="debt_i_owe">Debo yo</string>
+    <string name="debt_they_owe">Me deben</string>
+    <string name="debt_mark_paid">Marcar como pagado</string>
+    <string name="debt_paid">Pagado</string>
+    <string name="debt_pending">Pendiente</string>
+
+    <!-- =====================================================================
+         REAL ESTATE – Inmuebles
+         ===================================================================== -->
+    <string name="realestate_detail_title">Detalle propiedad</string>
+    <string name="realestate_add_title">Añadir propiedad</string>
+    <string name="realestate_edit_title">Editar propiedad</string>
+    <string name="realestate_no_properties">Sin inmuebles registrados</string>
+    <string name="realestate_name_label">Nombre</string>
+    <string name="realestate_address_label">Dirección</string>
+    <string name="realestate_type_label">Tipo de vivienda</string>
+    <string name="realestate_estimated_value">Valor estimado</string>
+    <string name="realestate_mortgage_label">Hipoteca</string>
+    <string name="realestate_rental_status">Estado de alquiler</string>
+    <string name="realestate_rental_income">Alquiler</string>
+    <string name="realestate_expenses_label">Gastos</string>
+    <string name="realestate_sell_title">Vender propiedad</string>
+    <string name="realestate_sell_price">Precio de venta</string>
+    <string name="realestate_sell_expenses">Gastos de venta</string>
+    <string name="realestate_sell_confirm">Confirmar venta</string>
+    <string name="realestate_archived_title">Archivar propiedad</string>
+    <string name="realestate_sold">Propiedad vendida</string>
+    <string name="realestate_net_equity">Patrimonio neto</string>
+
+    <!-- =====================================================================
+         NET WORTH – Patrimonio neto
+         ===================================================================== -->
+    <string name="networth_title">Patrimonio</string>
+    <string name="networth_total_label">Patrimonio neto</string>
+    <string name="networth_assets_label">Total activos</string>
+    <string name="networth_liabilities_label">Pasivos</string>
+    <string name="networth_evolution_title">Evolución del patrimonio</string>
+    <string name="networth_no_data">Sin datos para este año</string>
+    <string name="networth_monthly_title">Patrimonio neto mensual</string>
+    <string name="networth_cash_label">Efectivo</string>
+    <string name="networth_investments_label">Inversiones</string>
+    <string name="networth_realestate_label">Inmuebles</string>
+
+    <!-- =====================================================================
+         FISCAL – Informe fiscal
+         ===================================================================== -->
+    <string name="fiscal_title">Informe Fiscal</string>
+    <string name="fiscal_generate_title">Generar y compartir PDF</string>
+    <string name="fiscal_ready">Informe fiscal listo</string>
+    <string name="fiscal_taxable_base">BASE IMPONIBLE %1$s</string>
+    <string name="fiscal_income_title">Ingresos</string>
+    <string name="fiscal_expenses_title">Gastos</string>
+    <string name="fiscal_capital_gains">Ganancias capital</string>
+    <string name="fiscal_dividends_title">Dividendos</string>
+    <string name="fiscal_withholdings_title">RETENCIONES</string>
+    <string name="fiscal_total_income">Ingresos totales</string>
+    <string name="fiscal_total_expenses">Gastos totales</string>
+    <string name="fiscal_net_result">Resultado neto</string>
+    <string name="fiscal_no_data">Añade movimientos para ver el resumen</string>
+
+    <!-- =====================================================================
+         ANNUAL – Resumen anual
+         ===================================================================== -->
+    <string name="annual_title">Resumen anual</string>
+    <string name="annual_tab_summary">Resumen</string>
+    <string name="annual_tab_expenses">Gastos</string>
+    <string name="annual_tab_income">Ingresos</string>
+    <string name="annual_tab_investments">Inversiones</string>
+    <string name="annual_goal_compliance">Cumplimiento de objetivos</string>
+    <string name="annual_goal_met">Cumplido</string>
+    <string name="annual_goal_not_met">No cumplido</string>
+    <string name="annual_no_goal">Sin objetivo</string>
+    <string name="annual_monthly_evolution">Evolución mensual %1$s</string>
+
+    <!-- =====================================================================
+         ONBOARDING – Introducción
+         ===================================================================== -->
+    <string name="onboarding_welcome_title">Bienvenido a N3to</string>
+    <string name="onboarding_welcome_subtitle">Tus finanzas son tuyas</string>
+    <string name="onboarding_skip">Saltar</string>
+    <string name="onboarding_continue">Continuar</string>
+    <string name="onboarding_start">Comenzar</string>
+    <string name="onboarding_slide_portfolio_title">Portfolio inversiones</string>
+    <string name="onboarding_slide_movements_title">Movimientos con sentido</string>
+    <string name="onboarding_slide_networth_title">Tu patrimonio, claro</string>
+    <string name="onboarding_slide_fiscal_title">Informe fiscal</string>
+    <string name="onboarding_slide_realestate_title">Activo inmobiliario</string>
+
+    <!-- =====================================================================
+         RECONCILIATION – Reconciliación
+         ===================================================================== -->
+    <string name="reconciliation_banner_text">Hace tiempo que no reconcilias el saldo</string>
+    <string name="reconciliation_title">Reconciliar saldo</string>
+    <string name="reconciliation_balanced">El saldo ya está cuadrado</string>
+    <string name="reconciliation_adjust">Ajustar saldo</string>
+
+    <!-- =====================================================================
+         SECURITY – Bloqueo
+         ===================================================================== -->
+    <string name="security_unlock_title">Desbloquear N3to</string>
+    <string name="security_unlock_hint">Usa tu huella, Face ID o PIN</string>
+    <string name="security_biometric_not_available">Biometría no disponible en este dispositivo</string>
+
+    <!-- =====================================================================
+         PREMIUM – Pantalla Premium
+         ===================================================================== -->
+    <string name="premium_title">Trackfolio Premium</string>
+    <string name="premium_already_premium">Ya eres Premium</string>
+    <string name="premium_unlock_features">Desbloquea todas las funcionalidades</string>
+    <string name="premium_no_ads">Sin anuncios</string>
+    <string name="premium_unlimited_accounts">Cuentas ilimitadas</string>
+    <string name="premium_themes">Temas exclusivos</string>
+    <string name="premium_ad_free">Disfruta de la app sin interrupciones</string>
+    <string name="premium_manage_accounts">Gestiona todas tus cuentas sin restricciones</string>
+    <string name="premium_customize">Personaliza la app con temas claro y oscuro</string>
+    <string name="premium_subscribe">Hazte Premium</string>
+    <string name="premium_restore">Restaurar compra</string>
+    <string name="premium_restore_success">Compras restauradas correctamente</string>
+    <string name="premium_restore_cancelled">Restauración cancelada</string>
+
+    <!-- =====================================================================
+         CONSENT – Consentimiento
+         ===================================================================== -->
+    <string name="consent_title">Antes de empezar</string>
+    <string name="consent_accept">Aceptar y continuar</string>
+    <string name="consent_decline">Rechazar y continuar</string>
+    <string name="consent_privacy_policy">Ver Política de Privacidad</string>
+
+    <!-- =====================================================================
+         VERSION – Actualización
+         ===================================================================== -->
+    <string name="version_update_available">Versión %1$s disponible</string>
+    <string name="version_block_title">Actualización requerida</string>
+    <string name="version_update_now">Actualizar ahora</string>
 </resources>

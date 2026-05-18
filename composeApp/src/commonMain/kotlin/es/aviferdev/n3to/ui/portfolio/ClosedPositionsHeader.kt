@@ -20,6 +20,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.ui.theme.TextTertiary
 import es.aviferdev.n3to.ui.theme.N3toTheme
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.portfolio_category_group_collapse
+import n3to.composeapp.generated.resources.portfolio_category_group_expand
+import n3to.composeapp.generated.resources.portfolio_closed_positions
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -42,7 +47,7 @@ fun ClosedPositionsHeader(
             Text("✓", fontSize = 14.sp, color = TextTertiary)
             Spacer(Modifier.width(8.dp))
             Text(
-                "Posiciones cerradas",
+                stringResource(Res.string.portfolio_closed_positions),
                 fontSize = 12.sp,
                 fontWeight = FontWeight.SemiBold,
                 color = TextTertiary
@@ -52,7 +57,7 @@ fun ClosedPositionsHeader(
         }
         Icon(
             if (expanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
-            contentDescription = if (expanded) "Colapsar" else "Expandir",
+            contentDescription = if (expanded) stringResource(Res.string.portfolio_category_group_collapse) else stringResource(Res.string.portfolio_category_group_expand),
             tint = TextTertiary,
             modifier = Modifier.size(18.dp)
         )

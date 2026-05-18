@@ -32,6 +32,10 @@ import es.aviferdev.n3to.ui.theme.CyanAccent
 import es.aviferdev.n3to.ui.theme.NavyBorder
 import es.aviferdev.n3to.ui.theme.NavySelected
 import es.aviferdev.n3to.ui.theme.NavySurface
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.portfolio_asset_history_filter_all
+import n3to.composeapp.generated.resources.portfolio_new_portfolio_title
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun PortfolioSelectorBar(
@@ -50,7 +54,7 @@ fun PortfolioSelectorBar(
         verticalAlignment = Alignment.CenterVertically
     ) {
         NavyTab(
-            label = "Todas",
+            label = stringResource(Res.string.portfolio_asset_history_filter_all),
             selected = selectedPortfolioId == null,
             onClick = { onSelectPortfolio(null) }
         )
@@ -70,7 +74,7 @@ fun PortfolioSelectorBar(
         ) {
             Icon(
                 imageVector = Icons.Outlined.Add,
-                contentDescription = "Nueva cartera",
+                contentDescription = stringResource(Res.string.portfolio_new_portfolio_title),
                 tint = CyanAccent,
                 modifier = Modifier.width(18.dp)
             )

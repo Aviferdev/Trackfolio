@@ -34,6 +34,15 @@ import es.aviferdev.n3to.ui.theme.PnLPositive
 import es.aviferdev.n3to.ui.theme.formatAmount
 import es.aviferdev.n3to.ui.theme.formatPercent
 import es.aviferdev.n3to.ui.theme.maskAmount
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.portfolio_summary_invested
+import n3to.composeapp.generated.resources.portfolio_summary_positions_many
+import n3to.composeapp.generated.resources.portfolio_summary_positions_one
+import n3to.composeapp.generated.resources.portfolio_summary_realized
+import n3to.composeapp.generated.resources.portfolio_summary_total_pnl
+import n3to.composeapp.generated.resources.portfolio_summary_total_value
+import n3to.composeapp.generated.resources.portfolio_summary_unrealized
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import kotlin.math.abs
 
@@ -76,7 +85,7 @@ fun PortfolioSummaryCard(
             }
             .padding(horizontal = 20.dp, vertical = 20.dp)
     ) {
-        Text("Valor total", fontSize = 12.sp, color = Color.White.copy(alpha = 0.45f))
+        Text(stringResource(Res.string.portfolio_summary_total_value), fontSize = 12.sp, color = Color.White.copy(alpha = 0.45f))
         Spacer(Modifier.height(6.dp))
         Row(verticalAlignment = Alignment.Bottom) {
             Text(
@@ -105,7 +114,7 @@ fun PortfolioSummaryCard(
             verticalAlignment = Alignment.Top
         ) {
             PortfolioMetric(
-                label = "Invertido",
+                label = stringResource(Res.string.portfolio_summary_invested),
                 primary = "${maskAmount(formatAmount(totalInvested), balancesHidden)} €",
                 color = Color.White,
                 modifier = Modifier.weight(1f)
@@ -119,7 +128,7 @@ fun PortfolioSummaryCard(
                     }
             )
             PortfolioMetric(
-                label = "Beneficio total",
+                label = stringResource(Res.string.portfolio_summary_total_pnl),
                 primary = if (totalPnL == 0.0) "—"
                 else "${if (totalPnL >= 0) "+" else "−"} ${
                     maskAmount(formatAmount(abs(totalPnL)), balancesHidden)
@@ -137,13 +146,14 @@ fun PortfolioSummaryCard(
         if (totalRealizedPnL != 0.0 && totalUnrealizedPnL != 0.0) {
             Spacer(Modifier.height(12.dp))
             Row(Modifier.fillMaxWidth(), Arrangement.SpaceBetween) {
-                PnLChip("Realizado", totalRealizedPnL, balancesHidden)
-                PnLChip("Latente", totalUnrealizedPnL, balancesHidden)
+                PnLChip(stringResource(Res.string.portfolio_summary_realized), totalRealizedPnL, balancesHidden)
+                PnLChip(stringResource(Res.string.portfolio_summary_unrealized), totalUnrealizedPnL, balancesHidden)
             }
         }
         Spacer(Modifier.height(12.dp))
         Text(
-            "$positionsCount ${if (positionsCount == 1) "posición abierta" else "posiciones abiertas"}",
+            if (positionsCount == 1) stringResource(Res.string.portfolio_summary_positions_one, positionsCount)
+            else stringResource(Res.string.portfolio_summary_positions_many, positionsCount),
             fontSize = 10.sp,
             color = CyanSubtle.copy(alpha = 0.6f)
         )

@@ -16,6 +16,9 @@ import es.aviferdev.n3to.ui.common.toMaterialIcon
 import es.aviferdev.n3to.ui.theme.TextPrimary
 import es.aviferdev.n3to.ui.theme.TextTertiary
 import es.aviferdev.n3to.ui.theme.N3toTheme
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.portfolio_fixed_income_section
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -30,7 +33,7 @@ fun FixedIncomeSectionHeader(
         Icon("🏦".toMaterialIcon(), contentDescription = null, tint = TextPrimary, modifier = Modifier.size(18.dp))
         Spacer(Modifier.width(6.dp))
         Text(
-            text = "Renta fija",
+            text = stringResource(Res.string.portfolio_fixed_income_section),
             fontSize = 12.sp,
             fontWeight = FontWeight.Bold,
             color = TextPrimary

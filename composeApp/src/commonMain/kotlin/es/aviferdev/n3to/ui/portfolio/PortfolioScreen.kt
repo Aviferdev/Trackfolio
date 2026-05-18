@@ -99,6 +99,18 @@ import es.aviferdev.n3to.domain.model.Portfolio
 import es.aviferdev.n3to.domain.model.PortfolioValuePoint
 import es.aviferdev.n3to.domain.portfolio.AssetPosition
 import es.aviferdev.n3to.ui.theme.N3toTheme
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.common_accept
+import n3to.composeapp.generated.resources.common_error
+import n3to.composeapp.generated.resources.portfolio_empty_subtitle
+import n3to.composeapp.generated.resources.portfolio_empty_title
+import n3to.composeapp.generated.resources.portfolio_evolution_title
+import n3to.composeapp.generated.resources.portfolio_monthly_value
+import n3to.composeapp.generated.resources.portfolio_new_bond
+import n3to.composeapp.generated.resources.portfolio_new_purchase
+import n3to.composeapp.generated.resources.portfolio_settings_cd
+import n3to.composeapp.generated.resources.portfolio_title
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -240,9 +252,9 @@ fun PortfolioScreen(
         AlertDialog(
             onDismissRequest = clearFn,
             containerColor = SurfaceWhite,
-            title = { Text("Error", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = TextPrimary) },
+            title = { Text(stringResource(Res.string.common_error), fontSize = 16.sp, fontWeight = FontWeight.Bold, color = TextPrimary) },
             text = { Text(msg, fontSize = 13.sp, color = TextSecondary) },
-            confirmButton = { TextButton(onClick = clearFn) { Text("Aceptar", color = PrimaryDark) } },
+            confirmButton = { TextButton(onClick = clearFn) { Text(stringResource(Res.string.common_accept), color = PrimaryDark) } },
             shape = RoundedCornerShape(16.dp)
         )
         break
@@ -292,7 +304,7 @@ fun PortfolioContent(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Portfolio",
+                    text = stringResource(Res.string.portfolio_title),
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
                     color = TextPrimary,
@@ -302,7 +314,7 @@ fun PortfolioContent(
                     onClick = onNavigateToSettings,
                     icon = Icons.Outlined.Settings,
                     iconTint = TextSecondary,
-                    label = "Ajustes de portfolio"
+                    label = stringResource(Res.string.portfolio_settings_cd)
                 )
             }
 
@@ -343,8 +355,8 @@ fun PortfolioContent(
             if (valueHistory.isNotEmpty()) {
                 item {
                     LineChartWithTimeRange(
-                        title = "Evolución del valor",
-                        subtitle = "Valor mensual del portfolio",
+                        title = stringResource(Res.string.portfolio_evolution_title),
+                        subtitle = stringResource(Res.string.portfolio_monthly_value),
                         points = valueHistory.map { it.date to it.value },
                         lineColor = CyanAccent,
                         balancesHidden = balancesHidden,
@@ -405,8 +417,8 @@ fun PortfolioContent(
                 state.groups.isEmpty() && state.closedPositions.isEmpty() -> item {
                     EmptyStateView(
                         icon = "📈",
-                        title = "Sin posiciones",
-                        subtitle = "Pulsa + para registrar\ntu primera inversión"
+                        title = stringResource(Res.string.portfolio_empty_title),
+                        subtitle = stringResource(Res.string.portfolio_empty_subtitle)
                     )
                 }
 
@@ -516,12 +528,12 @@ fun PortfolioContent(
                 containerColor = SurfaceWhite
             ) {
                 DropdownMenuItem(
-                    text = { Text("Nueva compra", color = TextPrimary, fontSize = 14.sp) },
+                    text = { Text(stringResource(Res.string.portfolio_new_purchase), color = TextPrimary, fontSize = 14.sp) },
                     leadingIcon = { Text("↗", fontSize = 15.sp) },
                     onClick = { fabMenuOpen = false; onOpenAddTransactionSheet() }
                 )
                 DropdownMenuItem(
-                    text = { Text("Nuevo bono/depósito", color = TextPrimary, fontSize = 14.sp) },
+                    text = { Text(stringResource(Res.string.portfolio_new_bond), color = TextPrimary, fontSize = 14.sp) },
                     leadingIcon = { Icon("🏦".toMaterialIcon(), contentDescription = null, modifier = Modifier.size(18.dp)) },
                     onClick = { fabMenuOpen = false; onOpenCreateFixedIncomeSheet() }
                 )
