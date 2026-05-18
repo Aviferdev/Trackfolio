@@ -1,5 +1,6 @@
 package es.aviferdev.n3to.ui.portfolio
 
+import es.aviferdev.n3to.platform.nowMillis
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import es.aviferdev.n3to.domain.model.Asset
@@ -15,7 +16,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kotlinx.datetime.Clock
 
 data class AssetDetailUiState(
     val asset: Asset?                    = null,
@@ -85,7 +85,7 @@ class AssetDetailViewModel(
         if (trimmed.isBlank()) return
         val validatedNotes = notes?.take(200)?.ifBlank { null }
         viewModelScope.launch {
-            val now = Clock.System.now().toEpochMilliseconds()
+            val now = nowMillis()
             val allPlats = uiState.value.allPlatforms
             val nextOrder = (allPlats.maxOfOrNull { it.sortOrder } ?: -1) + 1
             val platform = Platform(

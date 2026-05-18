@@ -1,5 +1,6 @@
 package es.aviferdev.n3to.domain.usecase.portfolio
 
+import es.aviferdev.n3to.platform.nowMillis
 import es.aviferdev.n3to.domain.model.Asset
 import es.aviferdev.n3to.domain.model.AssetPriceHistory
 import es.aviferdev.n3to.domain.model.AssetTransaction
@@ -14,7 +15,7 @@ import es.aviferdev.n3to.domain.repository.FixedIncomeRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.datetime.Clock
+
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
@@ -76,7 +77,7 @@ class GetPortfolioValueHistoryUseCase(
         val tz = TimeZone.currentSystemDefault()
         val firstDate = Instant.fromEpochMilliseconds(allDates.min())
         val firstLocal = firstDate.toLocalDateTime(tz)
-        val now = Clock.System.now().toEpochMilliseconds()
+        val now = nowMillis()
         val nowLocal = Instant.fromEpochMilliseconds(now).toLocalDateTime(tz)
 
         // Generar lista de meses (epoch millis del último día de cada mes)

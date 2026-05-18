@@ -1,5 +1,6 @@
 package es.aviferdev.n3to.ui.fixedincome
 
+import es.aviferdev.n3to.platform.nowMillis
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -48,7 +49,7 @@ fun CreateFixedIncomeBottomSheet(
     var selectedType by remember { mutableStateOf(FixedIncomeType.DEPOSIT) }
     var selectedFrequency by remember { mutableStateOf(InterestFrequency.AT_MATURITY) }
     var durationMonthsTotal by remember { mutableStateOf(6) } // Duración total en meses
-    var startDateMillis by remember { mutableStateOf(Clock.System.now().toEpochMilliseconds()) }
+    var startDateMillis by remember { mutableStateOf(nowMillis()) }
     var principalStr by remember { mutableStateOf("") }
     var nominalPerUnitStr by remember { mutableStateOf("") }
     var interestRateStr by remember { mutableStateOf("") }
@@ -525,7 +526,7 @@ fun CreateFixedIncomeBottomSheet(
                         nominalPerUnitStr.toDoubleOrNull() ?: principal
                     }
                     val rate = parseInterestRate(interestRateStr) ?: 0.0
-                    val now = Clock.System.now().toEpochMilliseconds()
+                    val now = nowMillis()
                     val positionId = "fi_${now}"
                     val eventId = "fie_${now}"
 
@@ -660,7 +661,7 @@ fun CreateFixedIncomeBottomSheet(
 }
 
 private fun createMockPlatforms(): List<Platform> {
-    val now = Clock.System.now().toEpochMilliseconds()
+    val now = nowMillis()
     return listOf(
         Platform(id = "1", name = "Banco Sabadell", icon = "🏦", sortOrder = 0, archived = false, createdAt = now),
         Platform(id = "2", name = "ING", icon = "🏦", sortOrder = 1, archived = false, createdAt = now)
@@ -668,7 +669,7 @@ private fun createMockPlatforms(): List<Platform> {
 }
 
 private fun createMockIssuers(): List<Issuer> {
-    val now = Clock.System.now().toEpochMilliseconds()
+    val now = nowMillis()
     return listOf(
         Issuer(id = "1", accountId = "acc1", name = "Banco de España", icon = "🏛️", type = IssuerType.BOND_ISSUER, createdAt = now),
         Issuer(id = "2", accountId = "acc1", name = "Santander", icon = "🏦", type = IssuerType.BANK, createdAt = now)

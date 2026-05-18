@@ -1,11 +1,11 @@
 package es.aviferdev.n3to.domain.usecase.assettransaction
 
+import es.aviferdev.n3to.platform.nowMillis
 import es.aviferdev.n3to.domain.model.AssetTransaction
 import es.aviferdev.n3to.domain.model.AssetTransactionType
 import es.aviferdev.n3to.domain.portfolio.PortfolioCalculator
 import es.aviferdev.n3to.domain.repository.AssetTransactionRepository
 import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.datetime.Clock
 
 /**
  * Resultado de calcular el coste base arrastrado desde el fondo origen.
@@ -84,7 +84,7 @@ class ExecuteFundTransferUseCase(
         destinationPricePerUnit: Double,
         date: Long
     ): Result<Pair<AssetTransaction, AssetTransaction>> = runCatching {
-        val now = Clock.System.now().toEpochMilliseconds()
+        val now = nowMillis()
         val transferGroupId = "tf_${now}_${(0..9999).random()}"
 
         // 1. Calcular coste base arrastrado

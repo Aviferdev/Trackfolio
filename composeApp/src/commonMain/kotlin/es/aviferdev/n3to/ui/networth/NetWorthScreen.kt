@@ -28,21 +28,20 @@ import es.aviferdev.n3to.domain.model.NetWorthData
 import es.aviferdev.n3to.domain.model.NetWorthHistoryPoint
 import es.aviferdev.n3to.ui.annual.DonutChartCard
 import es.aviferdev.n3to.ui.common.*
-import es.aviferdev.n3to.ui.common.chart.TimeRange
-import es.aviferdev.n3to.ui.common.component.TimeRangeChipRow
+import es.aviferdev.n3to.ui.common.LineChartWithTimeRange
 import es.aviferdev.n3to.ui.loan.AddEditLoanBottomSheet
 import es.aviferdev.n3to.ui.realestate.AddEditPropertyBottomSheet
 import es.aviferdev.n3to.ui.realestate.PropertyCard
 import es.aviferdev.n3to.ui.splash.SplashLoader
 import es.aviferdev.n3to.ui.theme.*
 import kotlinx.coroutines.delay
-import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.math.abs
+import kotlin.time.ExperimentalTime
 
 @Composable
 fun NetWorthScreen(
@@ -111,6 +110,7 @@ fun NetWorthScreen(
     }
 }
 
+@OptIn(ExperimentalTime::class)
 @Composable
 fun NetWorthContent(
     data: NetWorthData,
@@ -127,9 +127,6 @@ fun NetWorthContent(
     liabilitiesVisible: Boolean = true,
     modifier: Modifier = Modifier
 ) {
-    var selectedTimeRange by remember { mutableStateOf(TimeRange.ALL_TIME) }
-    val nowMillis = remember { Clock.System.now().toEpochMilliseconds() }
-
     val historyPoints = remember(netWorthHistory) {
         netWorthHistory.map { point ->
             val parts   = point.yearMonth.split("-")
@@ -144,15 +141,6 @@ fun NetWorthContent(
                 .toInstant(TimeZone.currentSystemDefault())
                 .toEpochMilliseconds()
             epoch to point.netWorth
-        }
-    }
-
-    val filteredHistory = remember(historyPoints, selectedTimeRange) {
-        if (selectedTimeRange == TimeRange.ALL_TIME) {
-            historyPoints
-        } else {
-            val cutoff = nowMillis - selectedTimeRange.windowDays * 86_400_000L
-            historyPoints.filter { it.first >= cutoff }
         }
     }
 
@@ -202,28 +190,13 @@ fun NetWorthContent(
                         visible = chartVisible,
                         enter   = fadeIn() + slideInVertically(initialOffsetY = { it / 10 })
                     ) {
-                        Column {
-                            TimeRangeChipRow(
-                                selected = selectedTimeRange,
-                                onSelect = { selectedTimeRange = it }
-                            )
-                            Spacer(Modifier.height(8.dp))
-                            LineChartCard(
-                                title          = "Evolución del patrimonio",
-                                subtitle       = "Patrimonio neto mensual",
-                                points         = filteredHistory,
-                                lineColor      = CyanAccent,
-                                balancesHidden = balancesHidden,
-                                rotateXLabels  = true,
-                                timeRangeLabel = if (selectedTimeRange != TimeRange.ALL_TIME) {
-                                    when (selectedTimeRange) {
-                                        TimeRange.LAST_MONTH -> "Último mes"
-                                        TimeRange.LAST_YEAR  -> "Último año"
-                                        else                 -> null
-                                    }
-                                } else null
-                            )
-                        }
+                        LineChartWithTimeRange(
+                            title          = "Evolución del patrimonio",
+                            subtitle       = "Patrimonio neto mensual",
+                            points         = historyPoints,
+                            lineColor      = CyanAccent,
+                            balancesHidden = balancesHidden
+                        )
                     }
                 }
             }

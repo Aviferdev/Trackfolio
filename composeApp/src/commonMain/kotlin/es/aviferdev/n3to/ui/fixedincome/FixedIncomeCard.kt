@@ -1,5 +1,6 @@
 package es.aviferdev.n3to.ui.fixedincome
 
+import es.aviferdev.n3to.platform.nowMillis
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -35,7 +36,7 @@ import es.aviferdev.n3to.ui.theme.WarnBgLight
 import es.aviferdev.n3to.ui.theme.WarnOrange
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import kotlin.math.abs
-import kotlinx.datetime.Clock
+
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 
@@ -325,7 +326,7 @@ fun Badge(count: Int, color: Color) {
 // Nota: formatAmount, maskAmount, formatPercent, formatDate se importan desde ui.theme
 
 private fun createMockSummary(): FixedIncomeSummary {
-    val now = Clock.System.now().toEpochMilliseconds()
+    val now = nowMillis()
     val dayInMillis = 24 * 60 * 60 * 1000L
     val position = FixedIncomePosition(
         id = "1",

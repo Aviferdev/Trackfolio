@@ -1,5 +1,6 @@
 package es.aviferdev.n3to.ui.portfolio
 
+import es.aviferdev.n3to.platform.nowMillis
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import es.aviferdev.n3to.domain.model.Account
@@ -34,7 +35,6 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kotlinx.datetime.Clock
 
 import es.aviferdev.n3to.domain.model.Transaction
 
@@ -270,7 +270,7 @@ class AssetHistoryViewModel(
     ) {
         val current = _editing.value
         viewModelScope.launch {
-            val now = Clock.System.now().toEpochMilliseconds()
+            val now = nowMillis()
             val result = if (current == null) {
                 val tx = AssetTransaction(
                     id           = "tx_${now}_${(0..9999).random()}",
@@ -360,7 +360,7 @@ class AssetHistoryViewModel(
 
     fun refreshCurrentPrice(newPrice: Double) {
         viewModelScope.launch {
-            val now = Clock.System.now().toEpochMilliseconds()
+            val now = nowMillis()
             updateAssetCurrentPrice(assetId, newPrice, now, uiState.value.asset?.assetCategoryId)
                 .onSuccess { closeUpdatePriceSheet() }
                 .onFailure { _error.value = it.message }
@@ -381,7 +381,7 @@ class AssetHistoryViewModel(
     ) {
         viewModelScope.launch {
             val asset = uiState.value.asset ?: return@launch
-            val dividendId = _editingDividendId.value ?: "div_${asset.id}_${Clock.System.now().toEpochMilliseconds()}_${(0..9999).random()}"
+            val dividendId = _editingDividendId.value ?: "div_${asset.id}_${nowMillis()}_${(0..9999).random()}"
 
             val result = syncToLedger.syncDividend(
                 dividendId  = dividendId,

@@ -1,5 +1,6 @@
 package es.aviferdev.n3to.ui.fixedincome
 
+import es.aviferdev.n3to.platform.nowMillis
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -551,7 +552,7 @@ fun EditFixedIncomeBottomSheet(
 @Composable
 private fun EditFixedIncomeBottomSheetPreview() {
     N3toTheme {
-        val now = Clock.System.now().toEpochMilliseconds()
+        val now = nowMillis()
         val samplePosition = FixedIncomePosition(
             id = "pos-1",
             accountId = "acc-1",

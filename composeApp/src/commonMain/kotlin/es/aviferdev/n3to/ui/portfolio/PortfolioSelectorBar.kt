@@ -7,28 +7,31 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
-import androidx.compose.material.icons.outlined.Folder
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.Portfolio
+import es.aviferdev.n3to.ui.common.component.NavyTab
 import es.aviferdev.n3to.ui.theme.CyanAccent
 import es.aviferdev.n3to.ui.theme.NavyBorder
-import es.aviferdev.n3to.ui.theme.TextSecondary
+import es.aviferdev.n3to.ui.theme.NavySelected
+import es.aviferdev.n3to.ui.theme.NavySurface
 
 @Composable
 fun PortfolioSelectorBar(
@@ -42,18 +45,18 @@ fun PortfolioSelectorBar(
         modifier = modifier
             .fillMaxWidth()
             .horizontalScroll(rememberScrollState())
-            .padding(horizontal = 16.dp, vertical = 4.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
+            .padding(horizontal = 16.dp, vertical = 2.dp),
+        horizontalArrangement = Arrangement.spacedBy(2.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        PortfolioChip(
+        NavyTab(
             label = "Todas",
-            isSelected = selectedPortfolioId == null,
+            selected = selectedPortfolioId == null,
             onClick = { onSelectPortfolio(null) }
         )
         portfolios.forEach { portfolio ->
-            PortfolioChip(
-                label = portfolio.name,
+            PortfolioTab(
+                portfolio = portfolio,
                 isSelected = portfolio.id == selectedPortfolioId,
                 onClick = { onSelectPortfolio(portfolio.id) }
             )
@@ -76,28 +79,32 @@ fun PortfolioSelectorBar(
 }
 
 @Composable
-private fun PortfolioChip(
-    label: String,
+private fun PortfolioTab(
+    portfolio: Portfolio,
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
-    val bg = if (isSelected) CyanAccent.copy(alpha = 0.15f) else androidx.compose.ui.graphics.Color.Transparent
-    val border = if (isSelected) CyanAccent else NavyBorder
-    val textColor = if (isSelected) CyanAccent else TextSecondary
-
-    Box(
-        modifier = Modifier
-            .clip(RoundedCornerShape(20.dp))
-            .background(bg)
-            .border(1.dp, border, RoundedCornerShape(20.dp))
-            .clickable { onClick() }
-            .padding(horizontal = 14.dp, vertical = 6.dp)
-    ) {
-        Text(
-            text = label,
-            fontSize = 12.sp,
-            fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
-            color = textColor
-        )
-    }
+    NavyTab(
+        label = portfolio.name,
+        selected = isSelected,
+        onClick = onClick,
+        leadingContent = {
+            Box(
+                modifier = Modifier
+                    .size(22.dp)
+                    .background(
+                        if (isSelected) NavySelected else NavySurface,
+                        CircleShape
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = portfolio.name.firstOrNull()?.uppercaseChar()?.toString() ?: "?",
+                    fontSize = 9.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = if (isSelected) CyanAccent else Color.White.copy(alpha = 0.35f)
+                )
+            }
+        }
+    )
 }

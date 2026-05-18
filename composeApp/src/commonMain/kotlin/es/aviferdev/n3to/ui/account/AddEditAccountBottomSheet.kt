@@ -1,5 +1,6 @@
 package es.aviferdev.n3to.ui.account
 
+import es.aviferdev.n3to.platform.nowMillis
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -11,7 +12,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.Account
 import es.aviferdev.n3to.ui.theme.*
-import kotlinx.datetime.Clock
+
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 /**
@@ -121,7 +122,7 @@ private fun AddEditAccountBottomSheetEditPreview() {
                 name = "Cuenta Principal",
                 initialBalance = 5000.0,
                 computedBalance = 5200.0,
-                createdAt = Clock.System.now().toEpochMilliseconds()
+                createdAt = nowMillis()
             ),
             onSave = {},
             onDismiss = {}

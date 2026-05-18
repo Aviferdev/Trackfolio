@@ -1,5 +1,6 @@
 package es.aviferdev.n3to.ui.home
 
+import es.aviferdev.n3to.platform.nowMillis
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -26,7 +27,7 @@ import es.aviferdev.n3to.ui.common.toMaterialIcon
 import es.aviferdev.n3to.ui.theme.TextSecondary
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import es.aviferdev.n3to.ui.theme.WarnAmber
-import kotlinx.datetime.Clock
+
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -113,7 +114,7 @@ fun MaturityReminderBanner(
 }
 
 private fun createMockPositions(): List<FixedIncomePosition> {
-    val now = Clock.System.now().toEpochMilliseconds()
+    val now = nowMillis()
     val dayInMillis = 24 * 60 * 60 * 1000L
     return listOf(
         FixedIncomePosition(

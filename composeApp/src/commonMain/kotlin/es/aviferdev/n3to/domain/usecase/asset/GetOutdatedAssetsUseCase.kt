@@ -1,10 +1,10 @@
 package es.aviferdev.n3to.domain.usecase.asset
 
+import es.aviferdev.n3to.platform.nowMillis
 import es.aviferdev.n3to.domain.model.Asset
 import es.aviferdev.n3to.domain.repository.AssetRepository
 import es.aviferdev.n3to.core.security.AppSettings
 import kotlinx.coroutines.flow.Flow
-import kotlinx.datetime.Clock
 
 /**
  * Devuelve los activos con posiciones abiertas cuyo precio no se ha
@@ -16,7 +16,7 @@ class GetOutdatedAssetsUseCase(
 ) {
     operator fun invoke(accountId: String): Flow<List<Asset>> {
         val intervalDays = appSettings.getInt(KEY_REMINDER_INTERVAL, DEFAULT_INTERVAL)
-        val thresholdMillis = Clock.System.now().toEpochMilliseconds() -
+        val thresholdMillis = nowMillis() -
             (intervalDays.toLong() * 24 * 60 * 60 * 1000)
         return repository.getOutdatedAssets(accountId, thresholdMillis)
     }

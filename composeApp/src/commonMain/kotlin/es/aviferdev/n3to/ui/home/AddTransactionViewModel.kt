@@ -1,5 +1,6 @@
 package es.aviferdev.n3to.ui.home
 
+import es.aviferdev.n3to.platform.nowMillis
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -60,7 +61,7 @@ class AddTransactionViewModel(
         private set
     var notes by mutableStateOf("")
         private set
-    var dateMillis by mutableStateOf(Clock.System.now().toEpochMilliseconds())
+    var dateMillis by mutableStateOf(nowMillis())
         private set
 
     // ── Gastos: categorías ────────────────────────────────────────────────────
@@ -372,7 +373,7 @@ class AddTransactionViewModel(
         amount             = ""
         type               = TransactionType.EXPENSE
         notes              = ""
-        dateMillis         = Clock.System.now().toEpochMilliseconds()
+        dateMillis         = nowMillis()
         clearIncomeFields()
         loadCategories()
     }
@@ -387,7 +388,7 @@ class AddTransactionViewModel(
                 _uiState.value = AddTransactionUiState.Error("No hay cuenta seleccionada")
                 return@launch
             }
-            val now = Clock.System.now().toEpochMilliseconds()
+            val now = nowMillis()
 
             if (type == TransactionType.EXPENSE) {
                 saveExpense(accountId, now)

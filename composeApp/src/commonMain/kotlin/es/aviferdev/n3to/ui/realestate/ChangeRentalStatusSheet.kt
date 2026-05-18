@@ -1,5 +1,6 @@
 package es.aviferdev.n3to.ui.realestate
 
+import es.aviferdev.n3to.platform.nowMillis
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
@@ -22,7 +23,7 @@ import es.aviferdev.n3to.domain.model.RentalStatus
 import es.aviferdev.n3to.ui.common.component.SelectableChip
 import es.aviferdev.n3to.ui.theme.*
 import es.aviferdev.n3to.ui.theme.DragHandleColor
-import kotlinx.datetime.Clock
+
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
@@ -35,7 +36,7 @@ fun ChangeRentalStatusSheet(
     onConfirm: (newStatus: RentalStatus, effectiveDate: Long, monthlyRent: Double?) -> Unit
 ) {
     var selectedStatus by remember { mutableStateOf(currentStatus) }
-    var effectiveDateMillis by remember { mutableStateOf(Clock.System.now().toEpochMilliseconds()) }
+    var effectiveDateMillis by remember { mutableStateOf(nowMillis()) }
     var monthlyRentText by remember { mutableStateOf("") }
     var showDatePicker by remember { mutableStateOf(false) }
 

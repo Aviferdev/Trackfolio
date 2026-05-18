@@ -1,5 +1,6 @@
 package es.aviferdev.n3to.ui.debt
 
+import es.aviferdev.n3to.platform.nowMillis
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import es.aviferdev.n3to.domain.model.Debt
@@ -18,7 +19,6 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kotlinx.datetime.Clock
 
 data class DebtUiState(
     val debtsTheyOwe: List<Debt> = emptyList(),
@@ -92,7 +92,7 @@ class DebtViewModel(
     fun saveDebt(personName: String, amount: Double, direction: DebtDirection, notes: String?) {
         val accountId = session.selectedAccountId.value ?: return
         viewModelScope.launch {
-            val now = Clock.System.now().toEpochMilliseconds()
+            val now = nowMillis()
             val debt = Debt(
                 id = generateId(),
                 accountId = accountId,

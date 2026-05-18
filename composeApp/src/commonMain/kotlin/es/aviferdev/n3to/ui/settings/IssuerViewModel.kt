@@ -1,5 +1,6 @@
 package es.aviferdev.n3to.ui.settings
 
+import es.aviferdev.n3to.platform.nowMillis
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import es.aviferdev.n3to.domain.model.Issuer
@@ -18,7 +19,6 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.datetime.Clock
 
 data class IssuerListUiState(
     val issuersByType: Map<IssuerType, List<Issuer>> = emptyMap(),
@@ -96,7 +96,7 @@ class IssuerViewModel(
                 name      = trimmed,
                 type      = type,
                 icon      = icon,
-                createdAt = Clock.System.now().toEpochMilliseconds()
+                createdAt = nowMillis()
             )
             saveIssuer(issuer).onFailure { e ->
                 _uiState.update { it.copy(error = e.message) }

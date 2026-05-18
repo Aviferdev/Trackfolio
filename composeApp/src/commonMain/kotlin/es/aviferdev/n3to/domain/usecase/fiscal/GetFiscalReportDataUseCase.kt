@@ -1,5 +1,6 @@
 package es.aviferdev.n3to.domain.usecase.fiscal
 
+import es.aviferdev.n3to.platform.nowMillis
 import es.aviferdev.n3to.domain.model.AssetPosition
 import es.aviferdev.n3to.domain.model.AssetTransaction
 import es.aviferdev.n3to.domain.model.AssetTransactionType
@@ -17,7 +18,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
-import kotlinx.datetime.Clock
 
 class GetFiscalReportDataUseCase(
     private val accountRepository: AccountRepository,
@@ -81,7 +81,7 @@ class GetFiscalReportDataUseCase(
                 FiscalReportData(
                     accountName        = base.accountName,
                     year               = year,
-                    generatedAt        = Clock.System.now().toEpochMilliseconds(),
+                    generatedAt        = nowMillis(),
                     annualSummary      = adjustedSummary,
                     monthlyBreakdown   = base.monthlyBreakdown,
                     activeDebts        = base.debts,

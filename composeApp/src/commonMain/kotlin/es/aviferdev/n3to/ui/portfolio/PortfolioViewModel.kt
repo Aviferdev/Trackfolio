@@ -1,5 +1,6 @@
 package es.aviferdev.n3to.ui.portfolio
 
+import es.aviferdev.n3to.platform.nowMillis
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -67,7 +68,6 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kotlinx.datetime.Clock
 
 // ─── Estado de cada activo enriquecido con su posición FIFO ──────────────────
 data class AssetRow(
@@ -765,7 +765,7 @@ class PortfolioViewModel(
         txByAsset: Map<String, List<AssetTransaction>>,
         dividendsByAsset: Map<String, List<Transaction>>
     ): CompoundEffect? {
-        val nowMillis = Clock.System.now().toEpochMilliseconds()
+        val nowMillis = nowMillis()
         val positionInputs = openRows.mapNotNull { row ->
             val txs = txByAsset[row.asset.id].orEmpty()
             if (txs.isEmpty()) return@mapNotNull null
@@ -968,7 +968,7 @@ class PortfolioViewModel(
 
     fun refreshCurrentPrice(asset: Asset, newPrice: Double) {
         viewModelScope.launch {
-            val now = Clock.System.now().toEpochMilliseconds()
+            val now = nowMillis()
             updateAssetCurrentPrice(asset.id, newPrice, now, asset.assetCategoryId)
                 .onSuccess {
                     getPortfolioValueHistory.triggerRefresh()
@@ -1005,7 +1005,7 @@ class PortfolioViewModel(
                 return@launch
             }
 
-            val now = Clock.System.now().toEpochMilliseconds()
+            val now = nowMillis()
             val tx = AssetTransaction(
                 id           = "tx_${now}_${(0..9999).random()}",
                 assetId      = assetId,
@@ -1071,7 +1071,7 @@ class PortfolioViewModel(
                 _sheetState.value = _sheetState.value.copy(error = "Activo no encontrado")
                 return@launch
             }
-            val dividendId = "div_${Clock.System.now().toEpochMilliseconds()}_${(0..9999).random()}"
+            val dividendId = "div_${nowMillis()}_${(0..9999).random()}"
             val result = syncToLedger.syncDividend(
                 dividendId  = dividendId,
                 accountId   = asset.accountId,
@@ -1137,7 +1137,7 @@ class PortfolioViewModel(
                 _sheetState.value = _sheetState.value.copy(error = "No hay cuenta seleccionada")
                 return@launch
             }
-            val now = Clock.System.now().toEpochMilliseconds()
+            val now = nowMillis()
             val prefix = when (type) {
                 IssuerType.BANK -> "bk"
                 else -> "bi"

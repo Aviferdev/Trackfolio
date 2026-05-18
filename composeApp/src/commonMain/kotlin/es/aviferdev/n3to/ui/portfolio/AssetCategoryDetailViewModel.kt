@@ -1,5 +1,6 @@
 package es.aviferdev.n3to.ui.portfolio
 
+import es.aviferdev.n3to.platform.nowMillis
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import es.aviferdev.n3to.domain.model.Asset
@@ -33,7 +34,6 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kotlinx.datetime.Clock
 
 data class AssetCategoryDetailUiState(
     val category: AssetCategory?       = null,
@@ -250,7 +250,7 @@ class AssetCategoryDetailViewModel(
             return
         }
         viewModelScope.launch {
-            val now = Clock.System.now().toEpochMilliseconds()
+            val now = nowMillis()
             val asset = Asset(
                 id              = "asset_${now}_${(0..9999).random()}",
                 accountId       = accountId,
@@ -327,7 +327,7 @@ class AssetCategoryDetailViewModel(
             val updatedAt = when {
                 currentPrice == null                  -> null
                 currentPrice == original.currentPrice -> original.currentPriceUpdatedAt
-                else -> Clock.System.now().toEpochMilliseconds()
+                else -> nowMillis()
             }
             updateAsset(
                 original.copy(
@@ -346,7 +346,7 @@ class AssetCategoryDetailViewModel(
                         es.aviferdev.n3to.domain.model.AssetComposition(
                             assetId = original.id,
                             fixedIncomePercent = fixedIncomePercent,
-                            createdAt = Clock.System.now().toEpochMilliseconds()
+                            createdAt = nowMillis()
                         )
                     )
                 } else {
@@ -415,7 +415,7 @@ class AssetCategoryDetailViewModel(
         }
         val validatedNotes = notes?.take(200)?.ifBlank { null }
         viewModelScope.launch {
-            val now = Clock.System.now().toEpochMilliseconds()
+            val now = nowMillis()
             val nextOrder = (uiState.value.allPlatforms.maxOfOrNull { it.sortOrder } ?: -1) + 1
             val platform = Platform(
                 id        = "platform_$now",

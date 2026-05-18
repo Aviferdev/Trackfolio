@@ -1,5 +1,6 @@
 package es.aviferdev.n3to.ui.portfolio.assethistory
 
+import es.aviferdev.n3to.platform.nowMillis
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -22,12 +23,11 @@ import es.aviferdev.n3to.ui.theme.ExpenseRed
 import es.aviferdev.n3to.ui.theme.SurfaceWhite
 import es.aviferdev.n3to.ui.theme.TextPrimary
 import es.aviferdev.n3to.ui.theme.TextTertiary
-import kotlinx.datetime.Clock
 
 // ─── Maturity date card ───────────────────────────────────────────────────────
 @Composable
 fun MaturityDateCard(maturityDate: Long, modifier: Modifier = Modifier) {
-    val isExpired = maturityDate < Clock.System.now().toEpochMilliseconds()
+    val isExpired = maturityDate < nowMillis()
     Card(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(13.dp),

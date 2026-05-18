@@ -1,5 +1,6 @@
 package es.aviferdev.n3to.domain.usecase.fixedincome
 
+import es.aviferdev.n3to.platform.nowMillis
 import es.aviferdev.n3to.domain.model.FixedIncomeCloseType
 import es.aviferdev.n3to.domain.model.FixedIncomeEvent
 import es.aviferdev.n3to.domain.model.FixedIncomeEventType
@@ -9,7 +10,6 @@ import es.aviferdev.n3to.domain.model.Transaction
 import es.aviferdev.n3to.domain.model.TransactionType
 import es.aviferdev.n3to.domain.repository.FixedIncomeEventRepository
 import es.aviferdev.n3to.domain.repository.FixedIncomeRepository
-import kotlinx.datetime.Clock
 
 class CloseFixedIncomeUseCase(
     private val positionRepository: FixedIncomeRepository,
@@ -52,7 +52,7 @@ class RecordSettlementTransactionUseCase(
         linkedEventId: String?
     ): Result<Unit> = runCatching {
         val tx = Transaction(
-            id                  = "tx_${Clock.System.now().toEpochMilliseconds()}",
+            id                  = "tx_${nowMillis()}",
             accountId           = accountId,
             amount              = amount,
             type                = TransactionType.INCOME,
@@ -63,7 +63,7 @@ class RecordSettlementTransactionUseCase(
             commissionAmount    = null,
             notes               = notes,
             linkedAssetTransactionId = linkedEventId,
-            createdAt           = Clock.System.now().toEpochMilliseconds()
+            createdAt           = nowMillis()
         )
         transactionRepository.saveTransaction(tx)
     }

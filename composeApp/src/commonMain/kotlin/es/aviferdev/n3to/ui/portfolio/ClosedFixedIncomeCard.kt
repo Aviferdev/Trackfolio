@@ -1,5 +1,6 @@
 package es.aviferdev.n3to.ui.portfolio
 
+import es.aviferdev.n3to.platform.nowMillis
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -37,7 +38,7 @@ import es.aviferdev.n3to.ui.theme.WarnAmber
 import es.aviferdev.n3to.ui.theme.formatAmount
 import es.aviferdev.n3to.ui.theme.maskAmount
 import kotlin.math.abs
-import kotlinx.datetime.Clock
+
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -109,7 +110,7 @@ fun ClosedFixedIncomeCard(
 @Preview
 @Composable
 private fun ClosedFixedIncomeCardPreview() {
-    val now = Clock.System.now().toEpochMilliseconds()
+    val now = nowMillis()
     val day = 24L * 60L * 60L * 1000L
     N3toTheme {
         ClosedFixedIncomeCard(

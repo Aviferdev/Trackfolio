@@ -1,5 +1,6 @@
 package es.aviferdev.n3to.domain.usecase.networth
 
+import es.aviferdev.n3to.platform.nowMillis
 import es.aviferdev.n3to.domain.model.Account
 import es.aviferdev.n3to.domain.model.DebtDirection
 import es.aviferdev.n3to.domain.model.Loan
@@ -16,7 +17,7 @@ import es.aviferdev.n3to.domain.usecase.portfolio.GetPortfolioValueHistoryUseCas
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
-import kotlinx.datetime.Clock
+
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
@@ -74,7 +75,7 @@ class GetNetWorthHistoryUseCase(
         if (accounts.isEmpty()) return emptyList()
 
         val tz = TimeZone.currentSystemDefault()
-        val now = Clock.System.now().toEpochMilliseconds()
+        val now = nowMillis()
         val nowLocal = Instant.fromEpochMilliseconds(now).toLocalDateTime(tz)
 
         // Determinar rango de meses

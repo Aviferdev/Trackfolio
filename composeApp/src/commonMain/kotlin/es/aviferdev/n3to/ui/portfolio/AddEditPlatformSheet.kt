@@ -1,5 +1,6 @@
 package es.aviferdev.n3to.ui.portfolio
 
+import es.aviferdev.n3to.platform.nowMillis
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -24,7 +25,7 @@ import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.Platform
 import es.aviferdev.n3to.ui.common.toMaterialIcon
 import es.aviferdev.n3to.ui.theme.*
-import kotlinx.datetime.Clock
+
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 /**
@@ -220,7 +221,7 @@ private fun AddEditPlatformSheetEditPreview() {
                 icon = "📊", // toMaterialIcon() → BarChart
                 sortOrder = 0,
                 archived = false,
-                createdAt = Clock.System.now().toEpochMilliseconds(),
+                createdAt = nowMillis(),
                 notes = "Cuenta principal para acciones USA"
             ),
             onSave = { _, _, _ -> },

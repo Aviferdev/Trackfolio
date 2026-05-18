@@ -1,5 +1,6 @@
 package es.aviferdev.n3to.ui.portfolio
 
+import es.aviferdev.n3to.platform.nowMillis
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -26,7 +27,7 @@ import es.aviferdev.n3to.domain.portfolio.PortfolioCalculator
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import es.aviferdev.n3to.ui.theme.*
 import org.jetbrains.compose.ui.tooling.preview.Preview
-import kotlinx.datetime.Clock
+
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
@@ -69,13 +70,13 @@ fun TransferFundBottomSheet(
     var sourcePlatformId by remember { mutableStateOf(platforms.firstOrNull()?.id) }
     var destinationPlatformId by remember { mutableStateOf(platforms.firstOrNull()?.id) }
     var destinationVL by remember { mutableStateOf("") }
-    var dateMillis by remember { mutableStateOf(Clock.System.now().toEpochMilliseconds()) }
+    var dateMillis by remember { mutableStateOf(nowMillis()) }
     var showDatePicker by remember { mutableStateOf(false) }
 
     // ── Validación ───────────────────────────────────────────────────────────
     val parsedQty = quantity.replace(',', '.').toDoubleOrNull()
     val parsedVL  = destinationVL.replace(',', '.').toDoubleOrNull()
-    val now       = Clock.System.now().toEpochMilliseconds()
+    val now       = nowMillis()
 
     val availableForTransfer: Double = if (sourcePlatformId != null) {
         PortfolioCalculator.availableQuantityAt(
@@ -370,7 +371,7 @@ fun TransferFundBottomSheet(
             confirmButton = {
                 TextButton(onClick = {
                     val selected = pickerState.selectedDateMillis
-                    if (selected != null && selected <= Clock.System.now().toEpochMilliseconds()) {
+                    if (selected != null && selected <= nowMillis()) {
                         dateMillis = selected
                     }
                     showDatePicker = false
@@ -466,7 +467,7 @@ private fun TransferPlatformChip(
 @Composable
 private fun TransferFundBottomSheetPreview() {
     N3toTheme {
-        val now = Clock.System.now().toEpochMilliseconds()
+        val now = nowMillis()
         val sourceAsset = Asset(
             id = "asset-1",
             accountId = "acc-1",

@@ -6,8 +6,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -66,11 +64,10 @@ import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.ui.account.AccountViewModel
 import es.aviferdev.n3to.ui.common.DeltaIndicator
 import es.aviferdev.n3to.ui.common.toMaterialIcon
-import es.aviferdev.n3to.ui.common.LineChartCard
-import es.aviferdev.n3to.ui.common.chart.TimeRange
+import es.aviferdev.n3to.ui.common.LineChartWithTimeRange
 import es.aviferdev.n3to.ui.common.component.EmptyStateView
 import es.aviferdev.n3to.ui.common.component.IconActionButton
-import es.aviferdev.n3to.ui.common.component.TimeRangeChipRow
+import es.aviferdev.n3to.ui.common.component.NavyTab
 import es.aviferdev.n3to.ui.fixedincome.EditFixedIncomeBottomSheet
 import es.aviferdev.n3to.ui.common.button.IconButtonApp
 import es.aviferdev.n3to.ui.fixedincome.CreateFixedIncomeBottomSheet
@@ -84,9 +81,7 @@ import es.aviferdev.n3to.ui.theme.LocalBalanceHidden
 import es.aviferdev.n3to.ui.theme.NavyBorder
 import es.aviferdev.n3to.ui.theme.NavyDeep
 import es.aviferdev.n3to.ui.theme.NavySurface
-import es.aviferdev.n3to.ui.theme.PrimaryAlpha
 import es.aviferdev.n3to.ui.theme.PrimaryDark
-import es.aviferdev.n3to.ui.theme.SurfaceElevated
 import es.aviferdev.n3to.ui.theme.SurfaceWhite
 import es.aviferdev.n3to.ui.theme.TextPrimary
 import es.aviferdev.n3to.ui.theme.TextSecondary
@@ -103,7 +98,6 @@ import es.aviferdev.n3to.domain.model.FixedIncomePosition
 import es.aviferdev.n3to.domain.model.Portfolio
 import es.aviferdev.n3to.domain.model.PortfolioValuePoint
 import es.aviferdev.n3to.domain.portfolio.AssetPosition
-import kotlinx.datetime.Clock
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -277,17 +271,6 @@ fun PortfolioContent(
 ) {
     var closedExpanded by remember { mutableStateOf(false) }
     var fabMenuOpen by remember { mutableStateOf(false) }
-    var selectedTimeRange by remember { mutableStateOf(TimeRange.ALL_TIME) }
-
-    val nowMillis = remember { Clock.System.now().toEpochMilliseconds() }
-    val filteredHistory = remember(valueHistory, selectedTimeRange) {
-        if (selectedTimeRange == TimeRange.ALL_TIME) {
-            valueHistory
-        } else {
-            val cutoff = nowMillis - selectedTimeRange.windowDays * 86_400_000L
-            valueHistory.filter { it.date >= cutoff }
-        }
-    }
 
     Box(
         modifier = modifier
@@ -359,19 +342,12 @@ fun PortfolioContent(
 
             if (valueHistory.isNotEmpty()) {
                 item {
-                    LineChartCard(
+                    LineChartWithTimeRange(
                         title = "Evolución del valor",
                         subtitle = "Valor mensual del portfolio",
-                        points = filteredHistory.map { it.date to it.value },
+                        points = valueHistory.map { it.date to it.value },
                         lineColor = CyanAccent,
                         balancesHidden = balancesHidden,
-                        rotateXLabels = true,
-                        timeRangeSelector = {
-                            TimeRangeChipRow(
-                                selected = selectedTimeRange,
-                                onSelect = { selectedTimeRange = it }
-                            )
-                        },
                         modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
                     )
                 }
@@ -403,25 +379,14 @@ fun PortfolioContent(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .horizontalScroll(rememberScrollState()),
-                                horizontalArrangement = Arrangement.spacedBy(6.dp)
+                                horizontalArrangement = Arrangement.Start
                             ) {
                                 DistributionView.entries.forEach { view ->
-                                    val selected = state.selectedDistributionView == view
-                                    Box(
-                                        modifier = Modifier
-                                            .clip(RoundedCornerShape(18.dp))
-                                            .background(if (selected) PrimaryAlpha else Color.Transparent)
-                                            .border(1.dp, if (selected) PrimaryDark else NavyBorder, RoundedCornerShape(18.dp))
-                                            .clickable { onSelectDistributionView(view) }
-                                            .padding(horizontal = 11.dp, vertical = 5.dp)
-                                    ) {
-                                        Text(
-                                            view.displayName,
-                                            fontSize = 11.sp,
-                                            fontWeight = FontWeight.SemiBold,
-                                            color = if (selected) PrimaryDark else TextTertiary
-                                        )
-                                    }
+                                    NavyTab(
+                                        label = view.displayName,
+                                        selected = state.selectedDistributionView == view,
+                                        onClick = { onSelectDistributionView(view) }
+                                    )
                                 }
                             }
                         },

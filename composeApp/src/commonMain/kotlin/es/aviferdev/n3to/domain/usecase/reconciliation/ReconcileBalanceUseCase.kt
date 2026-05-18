@@ -1,5 +1,6 @@
 package es.aviferdev.n3to.domain.usecase.reconciliation
 
+import es.aviferdev.n3to.platform.nowMillis
 import com.benasher44.uuid.uuid4
 import es.aviferdev.n3to.data.database.DatabaseInitializer
 import es.aviferdev.n3to.domain.model.Transaction
@@ -7,7 +8,6 @@ import es.aviferdev.n3to.domain.model.TransactionType
 import es.aviferdev.n3to.domain.repository.TransactionRepository
 import es.aviferdev.n3to.core.security.AppSettings
 import es.aviferdev.n3to.ui.theme.formatAmount
-import kotlinx.datetime.Clock
 
 /**
  * Reconcilia el saldo de una cuenta.
@@ -31,7 +31,7 @@ class ReconcileBalanceUseCase(
             return Result.failure(BalanceAlreadyMatchesException())
         }
 
-        val now = Clock.System.now().toEpochMilliseconds()
+        val now = nowMillis()
 
         val formattedExpected = formatAmount(computedBalance)
         val formattedReal     = formatAmount(realBalance)

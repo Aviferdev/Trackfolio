@@ -1,5 +1,6 @@
 package es.aviferdev.n3to.ui.portfolio
 
+import es.aviferdev.n3to.platform.nowMillis
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -20,7 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.Platform
 import es.aviferdev.n3to.ui.theme.*
-import kotlinx.datetime.Clock
+
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 /**
@@ -176,7 +177,7 @@ private fun PlatformLinkRow(
 }
 
 private fun createMockPlatforms(): List<Platform> {
-    val now = Clock.System.now().toEpochMilliseconds()
+    val now = nowMillis()
     return listOf(
         Platform(id = "1", name = "Interactive Brokers", icon = "📊", sortOrder = 0, archived = false, createdAt = now),
         Platform(id = "2", name = "Degiro", icon = "📈", sortOrder = 1, archived = false, createdAt = now),

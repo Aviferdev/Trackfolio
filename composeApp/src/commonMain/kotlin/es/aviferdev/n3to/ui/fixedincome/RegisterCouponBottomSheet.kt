@@ -1,5 +1,6 @@
 package es.aviferdev.n3to.ui.fixedincome
 
+import es.aviferdev.n3to.platform.nowMillis
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -15,7 +16,7 @@ import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.FixedIncomeEvent
 import es.aviferdev.n3to.domain.model.FixedIncomeEventType
 import es.aviferdev.n3to.ui.theme.*
-import kotlinx.datetime.Clock
+
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 private fun formatEuro(value: Double): String {
@@ -34,7 +35,7 @@ fun RegisterCouponBottomSheet(
     var grossAmountStr by remember { mutableStateOf("") }
     var irpfPercentStr by remember { mutableStateOf("19") }
     var commissionStr by remember { mutableStateOf("") }
-    var dateMillis by remember { mutableStateOf(Clock.System.now().toEpochMilliseconds()) }
+    var dateMillis by remember { mutableStateOf(nowMillis()) }
     var notes by remember { mutableStateOf("") }
 
     val isValid = grossAmountStr.toDoubleOrNull() != null
@@ -145,7 +146,7 @@ fun RegisterCouponBottomSheet(
 
             Button(
                 onClick = {
-                    val now = Clock.System.now().toEpochMilliseconds()
+                    val now = nowMillis()
                     val eventId = "fie_${now}"
                     val event = FixedIncomeEvent(
                         id               = eventId,

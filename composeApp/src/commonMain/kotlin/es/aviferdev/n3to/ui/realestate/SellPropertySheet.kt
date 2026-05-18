@@ -1,5 +1,6 @@
 package es.aviferdev.n3to.ui.realestate
 
+import es.aviferdev.n3to.platform.nowMillis
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -24,7 +25,7 @@ import es.aviferdev.n3to.domain.model.Category
 import es.aviferdev.n3to.domain.model.PropertyExpense
 import es.aviferdev.n3to.ui.theme.*
 import es.aviferdev.n3to.ui.theme.DragHandleColor
-import kotlinx.datetime.Clock
+
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
@@ -43,7 +44,7 @@ fun SellPropertySheet(
     onConfirm: (saleDate: Long, saleValue: Double, expenses: List<PropertyExpense>) -> Unit
 ) {
     var saleValueText by remember { mutableStateOf("") }
-    var saleDateMillis by remember { mutableStateOf(Clock.System.now().toEpochMilliseconds()) }
+    var saleDateMillis by remember { mutableStateOf(nowMillis()) }
     var showDatePicker by remember { mutableStateOf(false) }
     var expenses by remember { mutableStateOf(listOf<PropertyExpense>()) }
     var isLoading by remember { mutableStateOf(false) }

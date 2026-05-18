@@ -1,5 +1,6 @@
 package es.aviferdev.n3to.ui.settings
 
+import es.aviferdev.n3to.platform.nowMillis
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -18,7 +19,7 @@ import es.aviferdev.n3to.domain.model.Issuer
 import es.aviferdev.n3to.domain.model.IssuerType
 import es.aviferdev.n3to.ui.theme.*
 import es.aviferdev.n3to.ui.theme.DragHandleColor
-import kotlinx.datetime.Clock
+
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -149,7 +150,7 @@ private fun AddEditIssuerSheetEditPreview() {
                 name = "BBVA",
                 icon = "🏦",
                 type = IssuerType.BANK,
-                createdAt = Clock.System.now().toEpochMilliseconds()
+                createdAt = nowMillis()
             ),
             type = IssuerType.BANK,
             onSave = { _, _ -> },

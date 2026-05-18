@@ -1,5 +1,6 @@
 package es.aviferdev.n3to.ui.fixedincome
 
+import es.aviferdev.n3to.platform.nowMillis
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -16,7 +17,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.*
 import es.aviferdev.n3to.ui.theme.*
-import kotlinx.datetime.Clock
+
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 private fun formatEuro(value: Double): String {
@@ -34,7 +35,7 @@ fun CloseFixedIncomeBottomSheet(
     onDismiss: () -> Unit
 ) {
     var selectedCloseType by remember { mutableStateOf(preselectedCloseType ?: FixedIncomeCloseType.MATURITY) }
-    var closeDateMillis by remember { mutableStateOf(Clock.System.now().toEpochMilliseconds()) }
+    var closeDateMillis by remember { mutableStateOf(nowMillis()) }
     var grossAmountStr by remember { mutableStateOf(position.principal.toString()) }
     var irpfPercentStr by remember { mutableStateOf("19") }
     var commissionStr by remember { mutableStateOf("") }
@@ -200,7 +201,7 @@ fun CloseFixedIncomeBottomSheet(
 
             Button(
                 onClick = {
-                    val now = Clock.System.now().toEpochMilliseconds()
+                    val now = nowMillis()
                     val eventId = "fie_${now}"
                     val eventType = when (selectedCloseType) {
                         FixedIncomeCloseType.MATURITY -> FixedIncomeEventType.MATURITY_SETTLEMENT
@@ -235,7 +236,7 @@ fun CloseFixedIncomeBottomSheet(
 }
 
 private fun createMockPosition(): FixedIncomePosition {
-    val now = Clock.System.now().toEpochMilliseconds()
+    val now = nowMillis()
     val dayInMillis = 24 * 60 * 60 * 1000L
     return FixedIncomePosition(
         id = "1",

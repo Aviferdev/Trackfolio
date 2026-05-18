@@ -27,11 +27,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.Asset
 import es.aviferdev.n3to.domain.portfolio.AssetPosition
-import es.aviferdev.n3to.ui.common.button.IconButtonApp
+import es.aviferdev.n3to.ui.common.component.IconActionButton
+import es.aviferdev.n3to.ui.theme.CyanAccent
 import es.aviferdev.n3to.ui.theme.ExpenseRed
 import es.aviferdev.n3to.ui.theme.IncomeGreen
-import es.aviferdev.n3to.ui.theme.PrimaryAlpha
-import es.aviferdev.n3to.ui.theme.PrimaryDark
+import es.aviferdev.n3to.ui.theme.NavyBorder
+import es.aviferdev.n3to.ui.theme.NavySelected
 import es.aviferdev.n3to.ui.theme.NavySurface
 import es.aviferdev.n3to.ui.theme.TextPrimary
 import es.aviferdev.n3to.ui.theme.TextSecondary
@@ -75,15 +76,15 @@ fun AssetCard(
                 modifier = Modifier
                     .size(42.dp)
                     .clip(RoundedCornerShape(11.dp))
-                    .background(PrimaryAlpha)
-                    .border(1.dp, PrimaryDark.copy(alpha = 0.25f), RoundedCornerShape(11.dp)),
+                    .background(NavySelected)
+                    .border(1.dp, NavyBorder, RoundedCornerShape(11.dp)),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
                     asset.ticker.take(4),
                     fontSize = if (asset.ticker.length > 4) 8.sp else 10.sp,
                     fontWeight = FontWeight.Bold,
-                    color = PrimaryDark,
+                    color = CyanAccent,
                     textAlign = TextAlign.Center,
                     letterSpacing = (-0.3).sp
                 )
@@ -122,10 +123,11 @@ fun AssetCard(
                 }
             }
             Spacer(modifier = Modifier.width(4.dp))
-            IconButtonApp(
-                clickButton = onUpdatePrice,
+            IconActionButton(
+                onClick = onUpdatePrice,
                 icon = Icons.Outlined.Refresh,
-                contentDescription = "Actualizar precio"
+                label = "Actualizar precio",
+                iconTint = CyanAccent
             )
         }
     }

@@ -1,7 +1,7 @@
 package es.aviferdev.n3to.domain.usecase.asset
 
+import es.aviferdev.n3to.platform.nowMillis
 import es.aviferdev.n3to.core.security.AppSettings
-import kotlinx.datetime.Clock
 
 /**
  * Determina si se debe mostrar el banner de recordatorio de precios.
@@ -21,7 +21,7 @@ class ShouldShowPriceReminderUseCase(
         if (intervalDays <= 0) return false
 
         val lastShown = appSettings.getLong(KEY_LAST_REMINDER_SHOWN, 0L)
-        val now = Clock.System.now().toEpochMilliseconds()
+        val now = nowMillis()
         val intervalMillis = intervalDays.toLong() * 24 * 60 * 60 * 1000
 
         return (now - lastShown) >= intervalMillis

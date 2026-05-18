@@ -1,5 +1,6 @@
 package es.aviferdev.n3to.ui.account
 
+import es.aviferdev.n3to.platform.nowMillis
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -40,7 +41,7 @@ import es.aviferdev.n3to.ui.theme.N3toTheme
 import es.aviferdev.n3to.ui.theme.formatAmount
 import es.aviferdev.n3to.ui.theme.maskAmount
 import es.aviferdev.n3to.ui.theme.SelectionLight
-import kotlinx.datetime.Clock
+
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -163,7 +164,7 @@ fun AccountListContent(
 @Preview
 @Composable
 fun AccountListContentPreview() {
-    val now = Clock.System.now().toEpochMilliseconds()
+    val now = nowMillis()
     val fakeAccounts = listOf(
         Account(id = "1", name = "Cuenta Principal",
             initialBalance = 5000.0, computedBalance = 5200.0, createdAt = now),

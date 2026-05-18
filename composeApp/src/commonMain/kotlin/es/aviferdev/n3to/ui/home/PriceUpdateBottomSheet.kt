@@ -1,5 +1,6 @@
 package es.aviferdev.n3to.ui.home
 
+import es.aviferdev.n3to.platform.nowMillis
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -53,7 +54,7 @@ import es.aviferdev.n3to.ui.theme.TextSecondary
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import es.aviferdev.n3to.ui.theme.formatAmount
 import es.aviferdev.n3to.ui.theme.formatDate
-import kotlinx.datetime.Clock
+
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -283,7 +284,7 @@ private fun AssetPriceUpdateRow(
 }
 
 private fun createMockAssets(): List<Asset> {
-    val now = Clock.System.now().toEpochMilliseconds()
+    val now = nowMillis()
     val dayInMillis = 24 * 60 * 60 * 1000L
     return listOf(
         Asset(

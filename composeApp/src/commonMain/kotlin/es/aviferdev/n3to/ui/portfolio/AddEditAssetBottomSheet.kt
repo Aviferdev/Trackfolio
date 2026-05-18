@@ -1,5 +1,6 @@
 package es.aviferdev.n3to.ui.portfolio
 
+import es.aviferdev.n3to.platform.nowMillis
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -64,7 +65,7 @@ import es.aviferdev.n3to.ui.theme.TextPrimary
 import es.aviferdev.n3to.ui.theme.TextSecondary
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
-import kotlinx.datetime.Clock
+
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
@@ -126,7 +127,7 @@ fun AddEditAssetBottomSheet(
     var maturityDateMillis by remember {
         mutableStateOf(
             asset?.maturityDate
-                ?: (Clock.System.now().toEpochMilliseconds() + 365L * 24 * 60 * 60 * 1000)
+                ?: (nowMillis() + 365L * 24 * 60 * 60 * 1000)
         )
     }
     var showMaturityDatePicker by remember { mutableStateOf(false) }
@@ -619,7 +620,7 @@ Spacer(Modifier.height(12.dp))
             confirmButton = {
                 TextButton(onClick = {
                     val selected = pickerState.selectedDateMillis
-                    if (selected != null && selected > Clock.System.now().toEpochMilliseconds()) {
+                    if (selected != null && selected > nowMillis()) {
                         maturityDateMillis = selected
                     }
                     showMaturityDatePicker = false
@@ -642,7 +643,6 @@ Spacer(Modifier.height(12.dp))
         }
     }
 }
-
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -759,7 +759,7 @@ private fun SectorToggleChip(
 @Composable
 private fun AddEditAssetBottomSheetPreview() {
     N3toTheme {
-        val now = Clock.System.now().toEpochMilliseconds()
+        val now = nowMillis()
         val sampleCategories = listOf(
             AssetCategory("fixed_cat_funds", "Fondos de Inversión", "📊", 0, false, now),
             AssetCategory("fixed_cat_stocks", "Acciones", "📈", 1, false, now),

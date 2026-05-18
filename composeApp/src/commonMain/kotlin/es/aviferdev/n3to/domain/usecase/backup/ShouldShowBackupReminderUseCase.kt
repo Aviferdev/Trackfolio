@@ -1,7 +1,7 @@
 package es.aviferdev.n3to.domain.usecase.backup
 
+import es.aviferdev.n3to.platform.nowMillis
 import es.aviferdev.n3to.core.security.AppSettings
-import kotlinx.datetime.Clock
 
 /**
  * Determina si se debe mostrar el banner de recordatorio de backup.
@@ -25,7 +25,7 @@ class ShouldShowBackupReminderUseCase(
         // Nunca ha hecho backup ni descartado el banner → mostrar
         if (referenceDate == 0L) return true
 
-        val now = Clock.System.now().toEpochMilliseconds()
+        val now = nowMillis()
         val intervalMillis = intervalDays.toLong() * 24 * 60 * 60 * 1000
 
         return (now - referenceDate) >= intervalMillis

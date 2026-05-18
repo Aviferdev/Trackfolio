@@ -1,8 +1,8 @@
 package es.aviferdev.n3to.domain.usecase.portfolio
 
+import es.aviferdev.n3to.platform.nowMillis
 import es.aviferdev.n3to.domain.model.Portfolio
 import es.aviferdev.n3to.domain.repository.PortfolioRepository
-import kotlinx.datetime.Clock
 
 class SavePortfolioUseCase(private val repository: PortfolioRepository) {
     suspend operator fun invoke(
@@ -20,7 +20,7 @@ class SavePortfolioUseCase(private val repository: PortfolioRepository) {
             description = description,
             color       = color,
             sortOrder   = 0,
-            createdAt   = Clock.System.now().toEpochMilliseconds()
+            createdAt   = nowMillis()
         )
         return repository.save(portfolio)
     }

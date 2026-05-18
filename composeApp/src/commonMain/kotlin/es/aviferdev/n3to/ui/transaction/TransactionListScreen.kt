@@ -1,5 +1,6 @@
 package es.aviferdev.n3to.ui.transaction
 
+import es.aviferdev.n3to.platform.nowMillis
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.fadeIn
@@ -290,7 +291,7 @@ fun TransactionListContent(
 @Preview
 @Composable
 fun TransactionListContentPreview() {
-    val now = kotlinx.datetime.Clock.System.now().toEpochMilliseconds()
+    val now = nowMillis()
     val fakeTransactions = listOf(
         Transaction(
             id = "tx_1", accountId = "acc_1", amount = 1500.0,

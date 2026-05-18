@@ -1,5 +1,6 @@
 package es.aviferdev.n3to.ui.settings
 
+import es.aviferdev.n3to.platform.nowMillis
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import es.aviferdev.n3to.data.database.CategoryEntity
@@ -9,7 +10,6 @@ import es.aviferdev.n3to.ui.account.AccountSession
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import kotlinx.datetime.Clock
 
 data class CategoryListUiState(
     val expenseCategories: List<CategoryEntity> = emptyList(),
@@ -71,7 +71,7 @@ class CategoryViewModel(
         }
 
         viewModelScope.launch {
-            val id = "cat_expense_${Clock.System.now().toEpochMilliseconds()}"
+            val id = "cat_expense_${nowMillis()}"
             dataSource.insert(
                 CategoryEntity(
                     id        = id,

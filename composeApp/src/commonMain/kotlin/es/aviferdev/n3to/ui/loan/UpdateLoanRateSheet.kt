@@ -1,5 +1,6 @@
 package es.aviferdev.n3to.ui.loan
 
+import es.aviferdev.n3to.platform.nowMillis
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -15,7 +16,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.ui.theme.*
 import es.aviferdev.n3to.ui.theme.DragHandleColor
-import kotlinx.datetime.Clock
+
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -92,7 +93,7 @@ fun UpdateLoanRateSheet(
             Button(
                 onClick = {
                     if (isValid) {
-                        onConfirm(newRate!!, Clock.System.now().toEpochMilliseconds())
+                        onConfirm(newRate!!, nowMillis())
                     }
                 },
                 modifier = Modifier.fillMaxWidth().height(50.dp),

@@ -1,6 +1,7 @@
 package es.aviferdev.n3to.domain.model
 
-import kotlinx.datetime.Clock
+import es.aviferdev.n3to.platform.nowMillis
+
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.minus
@@ -61,17 +62,17 @@ data class FixedIncomePosition(
     val elapsedDays: Int
         get() {
             val tz = kotlinx.datetime.TimeZone.currentSystemDefault()
-            val now = Clock.System.now().toEpochMilliseconds()
+            val now = nowMillis()
             val endDate = closedAt ?: now
             val start = Instant.fromEpochMilliseconds(startDate)
-            val end = Instant.fromEpochMilliseconds(endDate.coerceAtMost(Clock.System.now().toEpochMilliseconds()))
+            val end = Instant.fromEpochMilliseconds(endDate.coerceAtMost(nowMillis()))
             return start.daysUntil(end, tz)
         }
 
     val remainingDays: Int
         get() {
             val tz = kotlinx.datetime.TimeZone.currentSystemDefault()
-            val now = Clock.System.now().toEpochMilliseconds()
+            val now = nowMillis()
             return if (closedAt != null || now >= maturityDate) 0
             else {
                 val start = Instant.fromEpochMilliseconds(now)
@@ -83,7 +84,7 @@ data class FixedIncomePosition(
     val progressPercent: Float
         get() = if (totalTermDays > 0) (elapsedDays.toFloat() / totalTermDays.toFloat()).coerceIn(0f, 1f) else 0f
 
-    val isMatured: Boolean get() = Clock.System.now().toEpochMilliseconds() >= maturityDate
+    val isMatured: Boolean get() = nowMillis() >= maturityDate
 
     val isNearMaturity: Boolean get() = remainingDays in 1..30
 
@@ -97,7 +98,7 @@ data class FixedIncomePosition(
 
     val currentValue: Double get() = principal + accruedInterestToDate
 
-    fun daysUntilNextCoupon(asOfDateMillis: Long = Clock.System.now().toEpochMilliseconds()): Int? {
+    fun daysUntilNextCoupon(asOfDateMillis: Long = nowMillis()): Int? {
         if (interestFrequency == InterestFrequency.AT_MATURITY) return null
 
         val intervalDays = when (interestFrequency) {

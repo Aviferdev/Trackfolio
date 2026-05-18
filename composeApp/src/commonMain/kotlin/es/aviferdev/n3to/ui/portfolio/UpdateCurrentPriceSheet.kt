@@ -1,5 +1,6 @@
 package es.aviferdev.n3to.ui.portfolio
 
+import es.aviferdev.n3to.platform.nowMillis
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -18,7 +19,7 @@ import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.Asset
 import es.aviferdev.n3to.ui.theme.*
 import es.aviferdev.n3to.ui.theme.formatAmountEuro
-import kotlinx.datetime.Clock
+
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 /**
@@ -166,9 +167,9 @@ private fun UpdateCurrentPriceSheetWithPricePreview() {
                 ticker = "AAPL",
                 name = "Apple Inc.",
                 notes = null,
-                createdAt = Clock.System.now().toEpochMilliseconds(),
+                createdAt = nowMillis(),
                 currentPrice = 178.50,
-                currentPriceUpdatedAt = Clock.System.now().toEpochMilliseconds(),
+                currentPriceUpdatedAt = nowMillis(),
                 archived = false
             ),
             onConfirm = {},
@@ -188,7 +189,7 @@ private fun UpdateCurrentPriceSheetWithoutPricePreview() {
                 ticker = "GOOGL",
                 name = "Alphabet Inc.",
                 notes = null,
-                createdAt = Clock.System.now().toEpochMilliseconds(),
+                createdAt = nowMillis(),
                 currentPrice = null,
                 currentPriceUpdatedAt = null,
                 archived = false

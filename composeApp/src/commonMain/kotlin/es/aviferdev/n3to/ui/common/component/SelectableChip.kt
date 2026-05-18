@@ -18,6 +18,7 @@ import es.aviferdev.n3to.ui.theme.BorderGray2
 import es.aviferdev.n3to.ui.theme.PrimaryAlpha
 import es.aviferdev.n3to.ui.theme.PrimaryDark
 import es.aviferdev.n3to.ui.theme.TextPrimary
+import es.aviferdev.n3to.ui.theme.TextSecondary
 import es.aviferdev.n3to.ui.theme.TextTertiary
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -28,6 +29,10 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
  *
  * @param label Texto del chip.
  * @param selected Si está seleccionado.
+ * @param accentColor Color del texto y borde activo.
+ * @param selectedBgColor Color de fondo cuando está seleccionado.
+ * @param borderColorUnselected Color del borde cuando no está seleccionado.
+ * @param textColorUnselected Color del texto cuando no está seleccionado.
  * @param onClick Callback al hacer click.
  * @param modifier Modifier para personalizar.
  */
@@ -36,21 +41,25 @@ fun SelectableChip(
     label: String,
     selected: Boolean,
     onClick: () -> Unit,
+    accentColor: Color = PrimaryDark,
+    selectedBgColor: Color = PrimaryAlpha,
+    borderColorUnselected: Color = BorderGray2,
+    textColorUnselected: Color = TextTertiary,
     modifier: Modifier = Modifier
 ) {
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(18.dp))
-            .background(if (selected) PrimaryAlpha else Color.Transparent)
-            .border(1.dp, if (selected) PrimaryDark else BorderGray2, RoundedCornerShape(18.dp))
+            .background(if (selected) selectedBgColor else Color.Transparent)
+            .border(1.dp, if (selected) accentColor else borderColorUnselected, RoundedCornerShape(18.dp))
             .clickable(onClick = onClick)
             .padding(horizontal = 11.dp, vertical = 5.dp)
     ) {
         Text(
             text = label,
             fontSize = 11.sp,
-            fontWeight = FontWeight.SemiBold,
-            color = if (selected) PrimaryDark else TextTertiary
+            fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal,
+            color = if (selected) accentColor else textColorUnselected
         )
     }
 }

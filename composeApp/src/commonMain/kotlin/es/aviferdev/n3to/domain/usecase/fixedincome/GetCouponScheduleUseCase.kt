@@ -1,15 +1,15 @@
 package es.aviferdev.n3to.domain.usecase.fixedincome
 
+import es.aviferdev.n3to.platform.nowMillis
 import es.aviferdev.n3to.domain.model.FixedIncomePosition
 import es.aviferdev.n3to.domain.model.InterestFrequency
 import es.aviferdev.n3to.domain.portfolio.FixedIncomeCalculator
 import es.aviferdev.n3to.domain.portfolio.ScheduledCoupon
-import kotlinx.datetime.Clock
 
 class GetCouponScheduleUseCase {
     operator fun invoke(
         position: FixedIncomePosition,
-        asOfDate: Long = Clock.System.now().toEpochMilliseconds()
+        asOfDate: Long = nowMillis()
     ): List<ScheduledCoupon> {
         if (position.interestFrequency == InterestFrequency.AT_MATURITY) {
             return listOf(

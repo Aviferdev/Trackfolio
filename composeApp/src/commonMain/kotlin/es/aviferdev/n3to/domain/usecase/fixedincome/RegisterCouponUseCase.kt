@@ -1,11 +1,11 @@
 package es.aviferdev.n3to.domain.usecase.fixedincome
 
+import es.aviferdev.n3to.platform.nowMillis
 import es.aviferdev.n3to.domain.model.FixedIncomeEvent
 import es.aviferdev.n3to.domain.model.IncomeType
 import es.aviferdev.n3to.domain.model.Transaction
 import es.aviferdev.n3to.domain.model.TransactionType
 import es.aviferdev.n3to.domain.repository.FixedIncomeEventRepository
-import kotlinx.datetime.Clock
 
 class RegisterCouponUseCase(
     private val eventRepository: FixedIncomeEventRepository,
@@ -38,7 +38,7 @@ class RecordIncomeTransactionUseCase(
         linkedEventId: String?
     ): Result<Unit> = runCatching {
         val tx = Transaction(
-            id                  = "tx_${Clock.System.now().toEpochMilliseconds()}",
+            id                  = "tx_${nowMillis()}",
             accountId           = accountId,
             amount              = amount,
             type                = TransactionType.INCOME,
@@ -49,7 +49,7 @@ class RecordIncomeTransactionUseCase(
             commissionAmount    = null,
             notes               = notes,
             linkedAssetTransactionId = linkedEventId,
-            createdAt           = Clock.System.now().toEpochMilliseconds()
+            createdAt           = nowMillis()
         )
         transactionRepository.saveTransaction(tx)
     }

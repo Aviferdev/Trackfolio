@@ -1,12 +1,12 @@
 package es.aviferdev.n3to.domain.usecase.loan
 
+import es.aviferdev.n3to.platform.nowMillis
 import com.benasher44.uuid.uuid4
 import es.aviferdev.n3to.domain.loan.FrenchAmortizationCalculator
 import es.aviferdev.n3to.domain.model.LoanRateChange
 import es.aviferdev.n3to.domain.repository.LoanRepository
 import es.aviferdev.n3to.domain.repository.LoanRateChangeRepository
 import kotlinx.coroutines.flow.first
-import kotlinx.datetime.Clock
 
 class UpdateLoanRateUseCase(
     private val loanRepository: LoanRepository,
@@ -20,7 +20,7 @@ class UpdateLoanRateUseCase(
         val loan = loanRepository.getById(loanId).first()
             ?: throw IllegalArgumentException("Préstamo no encontrado: $loanId")
 
-        val now = Clock.System.now().toEpochMilliseconds()
+        val now = nowMillis()
 
         // Registrar el cambio de tipo
         val rateChange = LoanRateChange(

@@ -1,5 +1,6 @@
 package es.aviferdev.n3to.domain.portfolio
 
+import es.aviferdev.n3to.platform.nowMillis
 import es.aviferdev.n3to.domain.model.*
 import kotlinx.datetime.*
 import kotlinx.datetime.TimeZone
@@ -11,7 +12,7 @@ object FixedIncomeCalculator {
     fun calculatePosition(
         position: FixedIncomePosition,
         events: List<FixedIncomeEvent>,
-        nowMillis: Long = Clock.System.now().toEpochMilliseconds()
+        nowMillis: Long = nowMillis()
     ): FixedIncomeRow {
         val collectedInterest = events
             .filter { it.type == FixedIncomeEventType.COUPON || it.type == FixedIncomeEventType.MATURITY_SETTLEMENT }
@@ -38,7 +39,7 @@ object FixedIncomeCalculator {
     fun calculateSummary(
         positions: List<FixedIncomePosition>,
         eventsByPosition: Map<String, List<FixedIncomeEvent>>,
-        nowMillis: Long = Clock.System.now().toEpochMilliseconds()
+        nowMillis: Long = nowMillis()
     ): FixedIncomeSummary {
         val rows = positions.map { pos ->
             val events = eventsByPosition[pos.id] ?: emptyList()

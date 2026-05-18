@@ -1,5 +1,6 @@
 package es.aviferdev.n3to.ui.loan
 
+import es.aviferdev.n3to.platform.nowMillis
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -44,7 +45,7 @@ import es.aviferdev.n3to.ui.account.AccountSession
 import es.aviferdev.n3to.ui.theme.*
 import es.aviferdev.n3to.ui.theme.DragHandleColor
 import kotlinx.coroutines.launch
-import kotlinx.datetime.Clock
+
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
@@ -70,7 +71,7 @@ fun AddEditLoanBottomSheet(
     var totalInstallmentsText by remember { mutableStateOf(loan?.totalInstallments?.toString() ?: "") }
     var lenderName by remember { mutableStateOf(loan?.lenderName ?: "") }
     var notes by remember { mutableStateOf(loan?.notes ?: "") }
-    var startDateMillis by remember { mutableStateOf(loan?.startDate ?: Clock.System.now().toEpochMilliseconds()) }
+    var startDateMillis by remember { mutableStateOf(loan?.startDate ?: nowMillis()) }
     var showStartDatePicker by remember { mutableStateOf(false) }
     var isLoading by remember { mutableStateOf(false) }
 
@@ -284,7 +285,7 @@ fun AddEditLoanBottomSheet(
                     if (!isValid || isLoading) return@Button
                     isLoading = true
                     val accountId = session.selectedAccountId.value ?: return@Button
-                    val now = Clock.System.now().toEpochMilliseconds()
+                    val now = nowMillis()
                     val endDate = startDateMillis + totalInstallments.toLong() * 30L * 24 * 60 * 60 * 1000
 
                     // Calcular la cuota mensual

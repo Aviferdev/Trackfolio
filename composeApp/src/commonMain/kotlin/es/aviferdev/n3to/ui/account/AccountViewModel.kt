@@ -1,5 +1,6 @@
 package es.aviferdev.n3to.ui.account
 
+import es.aviferdev.n3to.platform.nowMillis
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import es.aviferdev.n3to.core.premium.PremiumManager
@@ -15,7 +16,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import kotlinx.datetime.Clock
 
 data class AccountUiState(
     val accounts: List<Account>     = emptyList(),
@@ -130,7 +130,7 @@ class AccountViewModel(
                 name            = name,
                 initialBalance  = 0.0,
                 computedBalance = 0.0,
-                createdAt       = Clock.System.now().toEpochMilliseconds()
+                createdAt       = nowMillis()
             )
             saveAccount(newAccount)
                 .onSuccess {

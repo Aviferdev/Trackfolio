@@ -1,7 +1,7 @@
 package es.aviferdev.n3to.domain.usecase.asset
 
+import es.aviferdev.n3to.platform.nowMillis
 import es.aviferdev.n3to.core.security.AppSettings
-import kotlinx.datetime.Clock
 
 /**
  * Registra que el recordatorio de precios ha sido completado
@@ -12,7 +12,7 @@ class SavePriceReminderShownUseCase(
     private val appSettings: AppSettings
 ) {
     operator fun invoke() {
-        val now = Clock.System.now().toEpochMilliseconds()
+        val now = nowMillis()
         appSettings.putLong(ShouldShowPriceReminderUseCase.KEY_LAST_REMINDER_SHOWN, now)
     }
 }

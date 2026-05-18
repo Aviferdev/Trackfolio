@@ -26,14 +26,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavDestination.Companion.hierarchy
 import es.aviferdev.n3to.ui.navigation.BottomNavItem
-import es.aviferdev.n3to.ui.theme.BorderGray2
-import es.aviferdev.n3to.ui.theme.PrimaryDark
-import es.aviferdev.n3to.ui.theme.SurfaceWhite
-import es.aviferdev.n3to.ui.theme.TextPrimary
+import es.aviferdev.n3to.ui.theme.CyanAccent
+import es.aviferdev.n3to.ui.theme.NavyBorder
+import es.aviferdev.n3to.ui.theme.NavySelected
+import es.aviferdev.n3to.ui.theme.NavySurface
 import es.aviferdev.n3to.ui.theme.TextSecondary
 
 @Composable
@@ -56,10 +57,10 @@ fun FloatingBottomNavBar(
             .padding(top = 8.dp)
             .padding(bottom = 12.dp)
             .navigationBarsPadding()
-            .border(1.dp, BorderGray2, RoundedCornerShape(28.dp)),
+            .border(0.5.dp, NavyBorder, RoundedCornerShape(28.dp)),
         shape = RoundedCornerShape(28.dp),
-        shadowElevation = 8.dp,
-        color = SurfaceWhite
+        shadowElevation = 0.dp,
+        color = NavySurface
     ) {
         Row(
             modifier = Modifier
@@ -73,38 +74,43 @@ fun FloatingBottomNavBar(
                 val selected = index == selectedIndex
 
                 val scale by animateFloatAsState(
-                    targetValue = if (selected) 1.1f else 1f,
+                    targetValue = if (selected) 1.05f else 1f,
                     animationSpec = tween(durationMillis = 200),
                     label = "scale"
                 )
                 val iconColor by animateColorAsState(
-                    targetValue = if (selected) TextPrimary else TextSecondary,
+                    targetValue = if (selected) CyanAccent else TextSecondary,
                     animationSpec = tween(durationMillis = 200),
                     label = "iconColor"
                 )
                 val textColor by animateColorAsState(
-                    targetValue = if (selected) TextPrimary else TextSecondary,
+                    targetValue = if (selected) CyanAccent else TextSecondary,
                     animationSpec = tween(durationMillis = 200),
                     label = "textColor"
                 )
 
                 Box(
                     modifier = Modifier
-                        .clip(RoundedCornerShape(28.dp))
-                        .background(if (selected) PrimaryDark else Color.Transparent)
+                        .clip(RoundedCornerShape(20.dp))
+                        .background(if (selected) NavySelected else Color.Transparent)
+                        .border(
+                            width = if (selected) 0.5.dp else 0.dp,
+                            color = if (selected) NavyBorder else Color.Transparent,
+                            shape = RoundedCornerShape(20.dp)
+                        )
                         .clickable { onItemClick(item) }
                         .padding(horizontal = 16.dp, vertical = 8.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
                     ) {
                         Icon(
                             imageVector = if (selected) item.selectedIcon else item.icon,
                             contentDescription = item.label,
                             modifier = Modifier
-                                .size(24.dp)
+                                .size(22.dp)
                                 .scale(scale),
                             tint = iconColor
                         )
@@ -112,7 +118,9 @@ fun FloatingBottomNavBar(
                             Text(
                                 text = item.label,
                                 color = textColor,
-                                fontSize = 14.sp,
+                                fontSize = 13.sp,
+                                fontWeight = FontWeight.Medium,
+                                letterSpacing = 0.sp,
                                 modifier = Modifier.scale(scale)
                             )
                         }

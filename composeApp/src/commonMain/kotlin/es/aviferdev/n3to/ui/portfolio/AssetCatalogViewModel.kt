@@ -1,5 +1,6 @@
 package es.aviferdev.n3to.ui.portfolio
 
+import es.aviferdev.n3to.platform.nowMillis
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import es.aviferdev.n3to.domain.model.Asset
@@ -26,7 +27,6 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kotlinx.datetime.Clock
 
 data class AssetCatalogUiState(
     val assets: List<Asset>             = emptyList(),
@@ -199,7 +199,7 @@ class AssetCatalogViewModel(
             return
         }
         viewModelScope.launch {
-            val now = Clock.System.now().toEpochMilliseconds()
+            val now = nowMillis()
             val asset = Asset(
                 id              = "asset_${now}_${(0..9999).random()}",
                 accountId       = accountId,
@@ -279,7 +279,7 @@ class AssetCatalogViewModel(
             val updatedAt = when {
                 currentPrice == null                  -> null
                 currentPrice == original.currentPrice -> original.currentPriceUpdatedAt
-                else -> Clock.System.now().toEpochMilliseconds()
+                else -> nowMillis()
             }
             updateAsset(
                 original.copy(
@@ -298,7 +298,7 @@ class AssetCatalogViewModel(
                         es.aviferdev.n3to.domain.model.AssetComposition(
                             assetId = original.id,
                             fixedIncomePercent = fixedIncomePercent,
-                            createdAt = Clock.System.now().toEpochMilliseconds()
+                            createdAt = nowMillis()
                         )
                     )
                 } else {

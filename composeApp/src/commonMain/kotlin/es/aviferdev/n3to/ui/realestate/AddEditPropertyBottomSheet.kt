@@ -1,5 +1,6 @@
 package es.aviferdev.n3to.ui.realestate
 
+import es.aviferdev.n3to.platform.nowMillis
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -41,7 +42,7 @@ import es.aviferdev.n3to.ui.theme.*
 import es.aviferdev.n3to.ui.theme.DragHandleColor
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
-import kotlinx.datetime.Clock
+
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
@@ -67,7 +68,7 @@ fun AddEditPropertyBottomSheet(
     var selectedPropertyType by remember { mutableStateOf(existingProperty?.propertyType ?: PropertyType.PRIMARY_HOME) }
     var purchaseValueText by remember { mutableStateOf(existingProperty?.purchaseValue?.toString() ?: "") }
     var estimatedValueText by remember { mutableStateOf(existingProperty?.currentEstimatedValue?.toString() ?: "") }
-    var acquisitionDateMillis by remember { mutableStateOf(existingProperty?.acquisitionDate ?: Clock.System.now().toEpochMilliseconds()) }
+    var acquisitionDateMillis by remember { mutableStateOf(existingProperty?.acquisitionDate ?: nowMillis()) }
     var ownershipText by remember { mutableStateOf(existingProperty?.ownershipPercentage?.toString() ?: "100") }
     var selectedRentalStatus by remember { mutableStateOf(existingProperty?.rentalStatus ?: RentalStatus.OWN_USE) }
     var monthlyRentText by remember { mutableStateOf(existingProperty?.monthlyRent?.toString() ?: "") }

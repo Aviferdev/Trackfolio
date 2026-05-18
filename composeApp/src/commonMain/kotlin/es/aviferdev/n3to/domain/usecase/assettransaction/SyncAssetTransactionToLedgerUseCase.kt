@@ -1,5 +1,6 @@
 package es.aviferdev.n3to.domain.usecase.assettransaction
 
+import es.aviferdev.n3to.platform.nowMillis
 import es.aviferdev.n3to.domain.model.AssetTransaction
 import es.aviferdev.n3to.domain.model.AssetTransactionType
 import es.aviferdev.n3to.domain.model.IncomeType
@@ -9,7 +10,6 @@ import es.aviferdev.n3to.domain.model.Transaction
 import es.aviferdev.n3to.domain.model.TransactionType
 import es.aviferdev.n3to.domain.repository.TransactionRepository
 import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.datetime.Clock
 
 /**
  * Sincroniza movimientos de portfolio con el libro de liquidez.
@@ -64,7 +64,7 @@ class SyncAssetTransactionToLedgerUseCase(
             )
         } else {
             // Crear nueva
-            val now = Clock.System.now().toEpochMilliseconds()
+            val now = nowMillis()
             val transaction = Transaction(
                 id                       = "ledger_${assetTx.id}",
                 accountId                = accountId,
@@ -134,7 +134,7 @@ class SyncAssetTransactionToLedgerUseCase(
                 )
             )
         } else {
-            val now = Clock.System.now().toEpochMilliseconds()
+            val now = nowMillis()
             val transaction = Transaction(
                 id                       = "ledger_$dividendId",
                 accountId                = accountId,
@@ -197,7 +197,7 @@ class SyncAssetTransactionToLedgerUseCase(
                 )
             )
         } else {
-            val now = Clock.System.now().toEpochMilliseconds()
+            val now = nowMillis()
             val transaction = Transaction(
                 id                       = "ledger_$bondDepositId",
                 accountId                = accountId,

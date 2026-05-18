@@ -1,5 +1,6 @@
 package es.aviferdev.n3to.ui.theme
 
+import es.aviferdev.n3to.platform.nowMillis
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
@@ -20,7 +21,7 @@ val MONTH_SHORT = listOf(
 val MONTH_LABELS = listOf("E", "F", "M", "A", "M", "J", "J", "A", "S", "O", "N", "D")
 
 fun formatDate(epochMillis: Long): String {
-    val todayMillis = kotlinx.datetime.Clock.System.now().toEpochMilliseconds()
+    val todayMillis = nowMillis()
     val todayDays = todayMillis / 86_400_000L
     val targetDays = epochMillis / 86_400_000L
 
@@ -127,7 +128,7 @@ fun formatAmountEuro(amount: Double): String =
  * la frescura del precio actual de un activo.
  */
 fun formatRelativeTime(epochMillis: Long): String {
-    val now      = kotlinx.datetime.Clock.System.now().toEpochMilliseconds()
+    val now      = nowMillis()
     val diffMs   = (now - epochMillis).coerceAtLeast(0L)
     val seconds  = diffMs / 1_000L
     val minutes  = seconds / 60L

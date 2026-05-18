@@ -78,13 +78,12 @@ import es.aviferdev.n3to.ui.common.N3toLabel
 import es.aviferdev.n3to.ui.common.navigation.TopBarApp
 import es.aviferdev.n3to.ui.settings.backup.BackupPasswordSheet
 import es.aviferdev.n3to.ui.settings.backup.BackupViewModel
-import es.aviferdev.n3to.ui.theme.BackgroundGray
-import es.aviferdev.n3to.ui.theme.BorderGray
+import es.aviferdev.n3to.ui.theme.CyanAccent
 import es.aviferdev.n3to.ui.theme.ExpenseRed
 import es.aviferdev.n3to.ui.theme.N3toTheme
-import es.aviferdev.n3to.ui.theme.PrimaryDark
-import es.aviferdev.n3to.ui.theme.SurfaceElevated
-import es.aviferdev.n3to.ui.theme.SurfaceWhite
+import es.aviferdev.n3to.ui.theme.NavyBorder
+import es.aviferdev.n3to.ui.theme.NavyDeep
+import es.aviferdev.n3to.ui.theme.NavySurface
 import es.aviferdev.n3to.ui.theme.TextPrimary
 import es.aviferdev.n3to.ui.theme.TextSecondary
 import es.aviferdev.n3to.ui.theme.TextTertiary
@@ -177,11 +176,11 @@ fun SettingsScreen(
         AddEditAccountBottomSheet(account = accountState.editingAccount, onSave = { name -> accountViewModel.editAccount(accountState.editingAccount!!, name) }, onDismiss = { accountViewModel.closeEditSheet() })
     }
     if (accountState.showDeleteConfirm && accountState.accountToDelete != null) {
-        AlertDialog(onDismissRequest = { accountViewModel.cancelDelete() }, containerColor = SurfaceWhite,
+        AlertDialog(onDismissRequest = { accountViewModel.cancelDelete() }, containerColor = NavySurface,
             title = { Text("Eliminar cuenta", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = TextPrimary) },
             text  = { Text("¿Eliminar \"${accountState.accountToDelete!!.name}\"? Esto también eliminará todos sus movimientos.", fontSize = 13.sp, color = TextSecondary) },
             confirmButton = { TextButton(onClick = { accountViewModel.confirmDelete() }) { Text("Eliminar", color = ExpenseRed, fontWeight = FontWeight.SemiBold) } },
-            dismissButton = { TextButton(onClick = { accountViewModel.cancelDelete() }) { Text("Cancelar", color = PrimaryDark) } },
+            dismissButton = { TextButton(onClick = { accountViewModel.cancelDelete() }) { Text("Cancelar", color = CyanAccent) } },
             shape = RoundedCornerShape(16.dp)
         )
     }
@@ -190,10 +189,10 @@ fun SettingsScreen(
     biometricError?.let { msg ->
         AlertDialog(
             onDismissRequest = { biometricError = null },
-            containerColor   = SurfaceWhite,
+            containerColor   = NavySurface,
             title            = { Text("Biometría", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = TextPrimary) },
             text             = { Text(msg, fontSize = 13.sp, color = TextSecondary) },
-            confirmButton    = { TextButton(onClick = { biometricError = null }) { Text("Aceptar", color = PrimaryDark, fontWeight = FontWeight.SemiBold) } },
+            confirmButton    = { TextButton(onClick = { biometricError = null }) { Text("Aceptar", color = CyanAccent, fontWeight = FontWeight.SemiBold) } },
             shape            = RoundedCornerShape(16.dp)
         )
     }
@@ -202,7 +201,7 @@ fun SettingsScreen(
     if (accountState.showPremiumLimitWarning) {
         AlertDialog(
             onDismissRequest = { accountViewModel.dismissPremiumLimitWarning() },
-            containerColor = SurfaceWhite,
+            containerColor = NavySurface,
             title = {
                 Text(
                     "Límite de cuentas gratuitas",
@@ -224,7 +223,7 @@ fun SettingsScreen(
                     accountViewModel.dismissPremiumLimitWarning()
                     onNavigateToPremium()
                 }) {
-                    Text("Hazte Premium", color = PrimaryDark, fontWeight = FontWeight.SemiBold)
+                    Text("Hazte Premium", color = CyanAccent, fontWeight = FontWeight.SemiBold)
                 }
             },
             dismissButton = {
@@ -285,7 +284,7 @@ fun SettingsContent(
     var contentVisible by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) { delay(60); contentVisible = true }
 
-    Column(modifier = modifier.fillMaxSize().background(BackgroundGray)) {
+    Column(modifier = modifier.fillMaxSize().background(NavyDeep)) {
         TopBarApp(title = "Ajustes", navigateBack = navigateBack)
 
         AnimatedVisibility(visible = contentVisible, enter = fadeIn() + slideInVertically(initialOffsetY = { it / 10 })) {
@@ -408,7 +407,7 @@ fun SettingsSectionHeader(label: String, actionLabel: String? = null, onAction: 
     Row(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
         N3toLabel(text = label)
         if (actionLabel != null && onAction != null) {
-            Text(actionLabel, fontSize = 11.sp, fontWeight = FontWeight.SemiBold, color = PrimaryDark, modifier = Modifier.clickable { onAction() })
+            Text(actionLabel, fontSize = 11.sp, fontWeight = FontWeight.SemiBold, color = CyanAccent, modifier = Modifier.clickable { onAction() })
         }
     }
 }
@@ -416,7 +415,12 @@ fun SettingsSectionHeader(label: String, actionLabel: String? = null, onAction: 
 // ─── Settings group card ─────────────────────────────────────────────────────
 @Composable
 fun SettingsGroupCard(content: @Composable ColumnScope.() -> Unit) {
-    Card(modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(12.dp), colors = CardDefaults.cardColors(containerColor = SurfaceWhite), elevation = CardDefaults.cardElevation(0.dp)) {
+    Card(
+        modifier = Modifier.fillMaxWidth().border(0.5.dp, NavyBorder, RoundedCornerShape(11.dp)),
+        shape = RoundedCornerShape(11.dp),
+        colors = CardDefaults.cardColors(containerColor = NavySurface),
+        elevation = CardDefaults.cardElevation(0.dp)
+    ) {
         Column(content = content)
     }
 }
@@ -424,14 +428,14 @@ fun SettingsGroupCard(content: @Composable ColumnScope.() -> Unit) {
 // ─── Row divider ─────────────────────────────────────────────────────────────
 @Composable
 fun SettingsRowDivider() {
-    HorizontalDivider(modifier = Modifier.padding(start = 52.dp), color = BorderGray, thickness = 0.5.dp)
+    HorizontalDivider(modifier = Modifier.padding(start = 52.dp), color = NavyBorder, thickness = 0.5.dp)
 }
 
 // ─── Navigable row ────────────────────────────────────────────────────────────
 @Composable
 fun SettingsNavigableRow(icon: ImageVector, label: String, onClick: () -> Unit) {
     Row(modifier = Modifier.fillMaxWidth().clickable(onClick = onClick).padding(horizontal = 16.dp, vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) {
-        Icon(icon, contentDescription = null, tint = TextPrimary, modifier = Modifier.size(20.dp))
+        Icon(icon, contentDescription = null, tint = CyanAccent, modifier = Modifier.size(20.dp))
         Spacer(Modifier.width(14.dp))
         Text(label, fontSize = 13.sp, fontWeight = FontWeight.Medium, color = TextPrimary, modifier = Modifier.weight(1f))
         Icon(Icons.Default.KeyboardArrowRight, contentDescription = null, tint = TextTertiary, modifier = Modifier.size(18.dp))
@@ -452,13 +456,13 @@ private fun SettingsInfoRow(label: String, value: String) {
 @Composable
 private fun SettingsBiometricRow(enabled: Boolean, onToggle: (Boolean) -> Unit) {
     Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) {
-        Icon(Icons.Outlined.Fingerprint, contentDescription = null, tint = TextPrimary, modifier = Modifier.size(20.dp))
+        Icon(Icons.Outlined.Fingerprint, contentDescription = null, tint = CyanAccent, modifier = Modifier.size(20.dp))
         Spacer(Modifier.width(14.dp))
         Column(modifier = Modifier.weight(1f)) {
             Text("Bloqueo biométrico", fontSize = 13.sp, fontWeight = FontWeight.Medium, color = TextPrimary)
             Text(if (enabled) "Activado" else "Desactivado", fontSize = 11.sp, color = TextTertiary)
         }
-        Switch(checked = enabled, onCheckedChange = onToggle, colors = SwitchDefaults.colors(checkedThumbColor = Color.White, checkedTrackColor = PrimaryDark, uncheckedThumbColor = Color.White, uncheckedTrackColor = SurfaceElevated))
+        Switch(checked = enabled, onCheckedChange = onToggle, colors = SwitchDefaults.colors(checkedThumbColor = Color.White, checkedTrackColor = CyanAccent, uncheckedThumbColor = Color.White, uncheckedTrackColor = NavySurface))
     }
 }
 
@@ -466,13 +470,13 @@ private fun SettingsBiometricRow(enabled: Boolean, onToggle: (Boolean) -> Unit) 
 @Composable
 private fun SettingsThemeRow(isDark: Boolean, onToggle: (Boolean) -> Unit) {
     Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) {
-        Icon(Icons.Outlined.Lightbulb, contentDescription = null, tint = TextPrimary, modifier = Modifier.size(20.dp))
+        Icon(Icons.Outlined.Lightbulb, contentDescription = null, tint = CyanAccent, modifier = Modifier.size(20.dp))
         Spacer(Modifier.width(14.dp))
         Column(modifier = Modifier.weight(1f)) {
             Text("Tema oscuro", fontSize = 13.sp, fontWeight = FontWeight.Medium, color = TextPrimary)
             Text(if (isDark) "Activado" else "Desactivado", fontSize = 11.sp, color = TextTertiary)
         }
-        Switch(checked = isDark, onCheckedChange = onToggle, colors = SwitchDefaults.colors(checkedThumbColor = Color.White, checkedTrackColor = PrimaryDark, uncheckedThumbColor = Color.White, uncheckedTrackColor = SurfaceElevated))
+        Switch(checked = isDark, onCheckedChange = onToggle, colors = SwitchDefaults.colors(checkedThumbColor = Color.White, checkedTrackColor = CyanAccent, uncheckedThumbColor = Color.White, uncheckedTrackColor = NavySurface))
     }
 }
 
@@ -492,7 +496,7 @@ fun SettingsReconciliationIntervalRow(
 
     Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Icon(Icons.Outlined.Sync, contentDescription = null, tint = TextPrimary, modifier = Modifier.size(20.dp))
+            Icon(Icons.Outlined.Sync, contentDescription = null, tint = CyanAccent, modifier = Modifier.size(20.dp))
             Spacer(Modifier.width(14.dp))
             Column(modifier = Modifier.weight(1f)) {
                 Text("Recordatorio de reconciliación", fontSize = 13.sp, fontWeight = FontWeight.Medium, color = TextPrimary)
@@ -510,10 +514,10 @@ fun SettingsReconciliationIntervalRow(
                     modifier = Modifier
                         .weight(1f)
                         .clip(RoundedCornerShape(8.dp))
-                        .background(if (selected) PrimaryDark.copy(alpha = 0.15f) else Color.Transparent)
+                        .background(if (selected) CyanAccent.copy(alpha = 0.12f) else Color.Transparent)
                         .border(
                             if (selected) 1.5.dp else 0.5.dp,
-                            if (selected) PrimaryDark else BorderGray,
+                            if (selected) CyanAccent else NavyBorder,
                             RoundedCornerShape(8.dp)
                         )
                         .clickable { onIntervalChange(days) }
@@ -524,7 +528,7 @@ fun SettingsReconciliationIntervalRow(
                         text,
                         fontSize   = 10.sp,
                         fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal,
-                        color      = if (selected) PrimaryDark else TextSecondary
+                        color      = if (selected) CyanAccent else TextSecondary
                     )
                 }
             }
@@ -548,7 +552,7 @@ private fun SettingsBackupReminderIntervalRow(
 
     Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Icon(Icons.Outlined.SaveAlt, contentDescription = null, tint = TextPrimary, modifier = Modifier.size(20.dp))
+            Icon(Icons.Outlined.SaveAlt, contentDescription = null, tint = CyanAccent, modifier = Modifier.size(20.dp))
             Spacer(Modifier.width(14.dp))
             Column(modifier = Modifier.weight(1f)) {
                 Text("Recordatorio de copia de seguridad", fontSize = 13.sp, fontWeight = FontWeight.Medium, color = TextPrimary)
@@ -566,10 +570,10 @@ private fun SettingsBackupReminderIntervalRow(
                     modifier = Modifier
                         .weight(1f)
                         .clip(RoundedCornerShape(8.dp))
-                        .background(if (selected) PrimaryDark.copy(alpha = 0.15f) else Color.Transparent)
+                        .background(if (selected) CyanAccent.copy(alpha = 0.12f) else Color.Transparent)
                         .border(
                             if (selected) 1.5.dp else 0.5.dp,
-                            if (selected) PrimaryDark else BorderGray,
+                            if (selected) CyanAccent else NavyBorder,
                             RoundedCornerShape(8.dp)
                         )
                         .clickable { onIntervalChange(days) }
@@ -580,7 +584,7 @@ private fun SettingsBackupReminderIntervalRow(
                         text,
                         fontSize   = 10.sp,
                         fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal,
-                        color      = if (selected) PrimaryDark else TextSecondary
+                        color      = if (selected) CyanAccent else TextSecondary
                     )
                 }
             }
@@ -591,11 +595,16 @@ private fun SettingsBackupReminderIntervalRow(
 // ─── Empty accounts card ─────────────────────────────────────────────────────
 @Composable
 private fun EmptyAccountsCard(onAdd: () -> Unit) {
-    Card(modifier = Modifier.fillMaxWidth().clickable(onClick = onAdd), shape = RoundedCornerShape(12.dp), colors = CardDefaults.cardColors(containerColor = SurfaceWhite), elevation = CardDefaults.cardElevation(0.dp)) {
+    Card(
+        modifier = Modifier.fillMaxWidth().clickable(onClick = onAdd).border(0.5.dp, NavyBorder, RoundedCornerShape(11.dp)),
+        shape = RoundedCornerShape(11.dp),
+        colors = CardDefaults.cardColors(containerColor = NavySurface),
+        elevation = CardDefaults.cardElevation(0.dp)
+    ) {
         Row(modifier = Modifier.fillMaxWidth().padding(16.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
-            Icon(Icons.Default.Add, contentDescription = null, tint = PrimaryDark, modifier = Modifier.size(20.dp))
+            Icon(Icons.Default.Add, contentDescription = null, tint = CyanAccent, modifier = Modifier.size(20.dp))
             Spacer(Modifier.width(8.dp))
-            Text("Añadir cuenta", fontSize = 13.sp, fontWeight = FontWeight.Medium, color = PrimaryDark)
+            Text("Añadir cuenta", fontSize = 13.sp, fontWeight = FontWeight.Medium, color = CyanAccent)
         }
     }
 }
@@ -603,13 +612,20 @@ private fun EmptyAccountsCard(onAdd: () -> Unit) {
 // ─── Settings account card ──────────────────────────────────────────────────
 @Composable
 private fun SettingsAccountCard(account: Account, isSelected: Boolean, onSelect: () -> Unit, onEdit: () -> Unit, onDelete: () -> Unit, onConfigure: () -> Unit = {}) {
-    Card(modifier = Modifier.fillMaxWidth().then(if (isSelected) Modifier.border(1.dp, PrimaryDark, RoundedCornerShape(12.dp)) else Modifier), shape = RoundedCornerShape(12.dp), colors = CardDefaults.cardColors(containerColor = SurfaceWhite), elevation = CardDefaults.cardElevation(0.dp)) {
+    val borderColor = if (isSelected) CyanAccent else NavyBorder
+    val borderWidth = if (isSelected) 1.dp else 0.5.dp
+    Card(
+        modifier = Modifier.fillMaxWidth().border(borderWidth, borderColor, RoundedCornerShape(11.dp)),
+        shape = RoundedCornerShape(11.dp),
+        colors = CardDefaults.cardColors(containerColor = NavySurface),
+        elevation = CardDefaults.cardElevation(0.dp)
+    ) {
         Row(modifier = Modifier.fillMaxWidth().clickable(onClick = onSelect).padding(start = 16.dp, top = 8.dp, bottom = 8.dp, end = 4.dp), verticalAlignment = Alignment.CenterVertically) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(account.name, fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary)
                 Text("€ · ${formatAmount(account.computedBalance)}", fontSize = 11.sp, color = TextTertiary)
             }
-            IconButton(onClick = onConfigure, modifier = Modifier.size(32.dp)) { Icon(Icons.Outlined.AccountBalance, contentDescription = "Configurar", tint = PrimaryDark, modifier = Modifier.size(18.dp)) }
+            IconButton(onClick = onConfigure, modifier = Modifier.size(32.dp)) { Icon(Icons.Outlined.AccountBalance, contentDescription = "Configurar", tint = CyanAccent, modifier = Modifier.size(18.dp)) }
             IconButton(onClick = onEdit, modifier = Modifier.size(32.dp)) { Icon(Icons.Default.Edit, contentDescription = "Editar", tint = TextSecondary, modifier = Modifier.size(16.dp)) }
             IconButton(onClick = onDelete, modifier = Modifier.size(32.dp)) { Icon(Icons.Default.Delete, contentDescription = "Eliminar", tint = ExpenseRed, modifier = Modifier.size(16.dp)) }
         }

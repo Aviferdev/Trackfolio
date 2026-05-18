@@ -1,5 +1,6 @@
 package es.aviferdev.n3to.domain.usecase.realestate
 
+import es.aviferdev.n3to.platform.nowMillis
 import com.benasher44.uuid.uuid4
 import es.aviferdev.n3to.domain.model.PropertyExpense
 import es.aviferdev.n3to.domain.model.RealEstateProperty
@@ -9,7 +10,6 @@ import es.aviferdev.n3to.domain.model.TransactionType
 import es.aviferdev.n3to.domain.repository.RealEstatePropertyRepository
 import es.aviferdev.n3to.domain.repository.TransactionRepository
 import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.datetime.Clock
 
 /**
  * Guarda/actualiza una propiedad y sincroniza automáticamente:
@@ -46,7 +46,7 @@ class SavePropertyUseCase(
         val saveResult = repository.saveProperty(property)
         if (saveResult.isFailure) return saveResult
 
-        val now = Clock.System.now().toEpochMilliseconds()
+        val now = nowMillis()
 
         // 2. Sincronizar transacción de compra (crear o actualizar)
         val buyTxId = "prop_buy_${property.id}"

@@ -1,7 +1,7 @@
 package es.aviferdev.n3to.domain.usecase.reconciliation
 
+import es.aviferdev.n3to.platform.nowMillis
 import es.aviferdev.n3to.core.security.AppSettings
-import kotlinx.datetime.Clock
 
 /**
  * Determina si se debe mostrar el banner de recordatorio de reconciliación
@@ -20,7 +20,7 @@ class ShouldShowReconciliationReminderUseCase(
         val lastReconciliation = appSettings.getLong(
             ReconcileBalanceUseCase.keyLastDate(accountId), 0L
         )
-        val now = Clock.System.now().toEpochMilliseconds()
+        val now = nowMillis()
         val intervalMillis = intervalDays.toLong() * 24 * 60 * 60 * 1000
 
         return (now - lastReconciliation) >= intervalMillis

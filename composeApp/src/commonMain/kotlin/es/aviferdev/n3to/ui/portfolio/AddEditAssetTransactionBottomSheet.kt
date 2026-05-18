@@ -1,5 +1,6 @@
 package es.aviferdev.n3to.ui.portfolio
 
+import es.aviferdev.n3to.platform.nowMillis
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -27,7 +28,7 @@ import es.aviferdev.n3to.domain.model.AssetTransactionType
 import es.aviferdev.n3to.domain.model.Platform
 import es.aviferdev.n3to.domain.portfolio.PortfolioCalculator
 import es.aviferdev.n3to.ui.theme.*
-import kotlinx.datetime.Clock
+
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
@@ -89,7 +90,7 @@ fun AddEditAssetTransactionBottomSheet(
         mutableStateOf(transaction?.pricePerUnit?.toString() ?: "")
     }
     var dateMillis by remember(transaction) {
-        mutableStateOf(transaction?.date ?: Clock.System.now().toEpochMilliseconds())
+        mutableStateOf(transaction?.date ?: nowMillis())
     }
     var platformId by remember(transaction) {
         mutableStateOf(transaction?.platformId)
@@ -198,7 +199,7 @@ fun AddEditAssetTransactionBottomSheet(
     // ── Validación ───────────────────────────────────────────────────────────
     val parsedQty   = quantity.replace(',', '.').toDoubleOrNull()
     val parsedPrice = pricePerUnit.replace(',', '.').toDoubleOrNull()
-    val now         = Clock.System.now().toEpochMilliseconds()
+    val now         = nowMillis()
 
     val isSell = type == AssetTransactionType.SELL
 
@@ -586,7 +587,7 @@ fun AddEditAssetTransactionBottomSheet(
             confirmButton = {
                 TextButton(onClick = {
                     val selected = pickerState.selectedDateMillis
-                    if (selected != null && selected <= Clock.System.now().toEpochMilliseconds()) {
+                    if (selected != null && selected <= nowMillis()) {
                         dateMillis = selected
                     }
                     showDatePicker = false

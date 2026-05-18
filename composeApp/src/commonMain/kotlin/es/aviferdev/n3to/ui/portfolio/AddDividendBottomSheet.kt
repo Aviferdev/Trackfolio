@@ -1,5 +1,6 @@
 package es.aviferdev.n3to.ui.portfolio
 
+import es.aviferdev.n3to.platform.nowMillis
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -22,7 +23,7 @@ import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.Asset
 import es.aviferdev.n3to.ui.theme.*
 import es.aviferdev.n3to.ui.theme.DragHandleColor
-import kotlinx.datetime.Clock
+
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 /**
@@ -226,7 +227,7 @@ fun AddDividendBottomSheet(
                         return@Button
                     }
                     val pct = irpfPercentText.replace(',', '.').toDoubleOrNull() ?: 0.0
-                    val now = Clock.System.now().toEpochMilliseconds()
+                    val now = nowMillis()
                     onSave(selectedAssetId, ga, pct, now)
                 },
                 modifier = Modifier.fillMaxWidth().height(52.dp),
@@ -256,7 +257,7 @@ private fun SummaryItem(label: String, value: Double, color: Color) {
 }
 
 private fun createMockAssets(): List<Asset> {
-    val now = Clock.System.now().toEpochMilliseconds()
+    val now = nowMillis()
     return listOf(
         Asset(
             id = "1",

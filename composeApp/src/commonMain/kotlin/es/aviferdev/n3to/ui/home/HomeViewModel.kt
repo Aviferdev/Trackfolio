@@ -1,5 +1,6 @@
 package es.aviferdev.n3to.ui.home
 
+import es.aviferdev.n3to.platform.nowMillis
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import es.aviferdev.n3to.core.VersionManager
@@ -32,7 +33,6 @@ import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kotlinx.datetime.Clock
 
 sealed class HomeUiState {
     data object Loading : HomeUiState()
@@ -201,7 +201,7 @@ class HomeViewModel(
 
     fun updateAssetPrice(assetId: String, newPrice: Double) {
         viewModelScope.launch {
-            val now = Clock.System.now().toEpochMilliseconds()
+            val now = nowMillis()
             // Obtener el activo para pasar su categoryId
             val asset = _priceReminderState.value.outdatedAssets.find { it.id == assetId }
             val result = updateAssetCurrentPrice(assetId, newPrice, now, asset?.assetCategoryId)

@@ -1,5 +1,6 @@
 package es.aviferdev.n3to.domain.usecase.realestate
 
+import es.aviferdev.n3to.platform.nowMillis
 import com.benasher44.uuid.uuid4
 import es.aviferdev.n3to.domain.model.PropertyExpense
 import es.aviferdev.n3to.domain.model.Transaction
@@ -7,7 +8,6 @@ import es.aviferdev.n3to.domain.model.TransactionType
 import es.aviferdev.n3to.domain.repository.RealEstatePropertyRepository
 import es.aviferdev.n3to.domain.repository.TransactionRepository
 import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.datetime.Clock
 
 /**
  * Ejecuta la venta de una propiedad de forma atómica:
@@ -35,7 +35,7 @@ class SellPropertyUseCase(
         val sellResult = propertyRepository.sellProperty(propertyId, saleDate, saleValue)
         if (sellResult.isFailure) return sellResult
 
-        val now = Clock.System.now().toEpochMilliseconds()
+        val now = nowMillis()
 
         // 2. Transacción de ingreso por venta (crear o actualizar)
         val saleTxId = "prop_sell_$propertyId"

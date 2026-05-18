@@ -62,7 +62,6 @@ fun LineChartCard(
     balancesHidden: Boolean,
     modifier: Modifier = Modifier,
     rotateXLabels: Boolean = false,
-    timeRangeLabel: String? = null,
     timeRangeSelector: (@Composable () -> Unit)? = null
 ) {
     val textMeasurer = rememberTextMeasurer()
@@ -87,14 +86,6 @@ fun LineChartCard(
                 fontSize = 11.sp,
                 color = TextSecondary
             )
-            if (timeRangeLabel != null) {
-                Spacer(Modifier.height(2.dp))
-                Text(
-                    text = timeRangeLabel,
-                    fontSize = 10.sp,
-                    color = TextSecondary.copy(alpha = 0.7f)
-                )
-            }
             if (timeRangeSelector != null) {
                 Spacer(Modifier.height(10.dp))
                 timeRangeSelector()
@@ -221,8 +212,8 @@ private fun LineChartCanvas(
                     drawText(
                         textLayoutResult = textResult,
                         topLeft = Offset(
-                            -textResult.size.width / 2f,
-                            -textResult.size.height.toFloat()
+                            pivotX - textResult.size.width / 2f,
+                            pivotY - textResult.size.height.toFloat()
                         )
                     )
                 }

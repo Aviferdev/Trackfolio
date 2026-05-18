@@ -1,5 +1,6 @@
 package es.aviferdev.n3to.ui.home
 
+import es.aviferdev.n3to.platform.nowMillis
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -138,7 +139,7 @@ fun HomeScreen(
                 daysSinceLastBackup = 0
             } else {
                 neverBackup = false
-                val now = kotlinx.datetime.Clock.System.now().toEpochMilliseconds()
+                val now = nowMillis()
                 val diffDays = ((now - lastBackupMillis) / (24 * 60 * 60 * 1000)).toInt()
                 daysSinceLastBackup = maxOf(diffDays, 1)
             }

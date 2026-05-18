@@ -1,5 +1,6 @@
 package es.aviferdev.n3to.data.datasource.platform
 
+import es.aviferdev.n3to.platform.nowMillis
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
 import es.aviferdev.n3to.data.database.N3toDatabase
@@ -10,7 +11,6 @@ import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
-import kotlinx.datetime.Clock
 
 class PlatformCategoryLocalDataSourceImpl(
     private val database: N3toDatabase
@@ -32,7 +32,7 @@ class PlatformCategoryLocalDataSourceImpl(
 
     override suspend fun link(platformId: String, assetCategoryId: String): Result<Unit> = runCatching {
         withContext(Dispatchers.IO) {
-            queries.link(platformId, assetCategoryId, Clock.System.now().toEpochMilliseconds())
+            queries.link(platformId, assetCategoryId, nowMillis())
         }
     }
 
