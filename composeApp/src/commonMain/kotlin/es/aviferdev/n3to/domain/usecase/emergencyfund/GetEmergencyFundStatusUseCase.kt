@@ -7,14 +7,12 @@ import es.aviferdev.n3to.domain.model.TransactionType
 import es.aviferdev.n3to.domain.repository.AccountRepository
 import es.aviferdev.n3to.domain.repository.EmergencyFundRepository
 import es.aviferdev.n3to.domain.repository.TransactionRepository
+import es.aviferdev.n3to.platform.nowLocalDateTime
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
-import kotlinx.datetime.Clock
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
 
 private const val MONTHS_TO_AVERAGE = 12
 
@@ -81,7 +79,7 @@ class GetEmergencyFundStatusUseCase(
     }
 
     private suspend fun autoTarget(fund: EmergencyFund): TargetResult {
-        val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
+        val now = nowLocalDateTime()
         val currentYear = now.year
         val currentMonth = now.monthNumber
 

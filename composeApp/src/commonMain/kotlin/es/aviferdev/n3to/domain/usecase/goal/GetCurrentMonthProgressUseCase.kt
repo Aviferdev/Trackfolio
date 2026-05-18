@@ -4,12 +4,10 @@ import es.aviferdev.n3to.domain.model.MonthlyGoalProgress
 import es.aviferdev.n3to.domain.repository.AssetTransactionRepository
 import es.aviferdev.n3to.domain.repository.GoalRepository
 import es.aviferdev.n3to.domain.repository.TransactionRepository
+import es.aviferdev.n3to.platform.nowLocalDateTime
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
-import kotlinx.datetime.Clock
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
 
 /**
  * Obtiene el progreso de los objetivos del mes actual para la cuenta dada.
@@ -22,7 +20,7 @@ class GetCurrentMonthProgressUseCase(
 ) {
     @OptIn(ExperimentalCoroutinesApi::class)
     operator fun invoke(accountId: String): Flow<MonthlyGoalProgress> {
-        val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
+        val now = nowLocalDateTime()
         val year = now.year.toString()
         val month = now.monthNumber.toString().padStart(2, '0')
         val yearMonth = "$year-$month"

@@ -34,10 +34,8 @@ import es.aviferdev.n3to.domain.model.MonthlyTotals
 import es.aviferdev.n3to.domain.model.TaxProfileSnapshot
 import es.aviferdev.n3to.ui.common.toMaterialIcon
 import es.aviferdev.n3to.ui.common.navigation.TopBarApp
+import es.aviferdev.n3to.platform.nowYear
 import es.aviferdev.n3to.ui.theme.*
-import kotlinx.datetime.Clock
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.math.abs
@@ -265,7 +263,7 @@ fun FiscalReportContentPreview() {
 // ─── Year stepper ─────────────────────────────────────────────────────────────
 @Composable
 private fun YearStepper(year: String, onPrevious: () -> Unit, onNext: () -> Unit) {
-    val nowYear = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).year
+    val nowYear = nowYear()
     val isMax   = year.toIntOrNull() == nowYear
     Row(verticalAlignment = Alignment.CenterVertically) {
         IconButton(
