@@ -443,7 +443,7 @@ class AddTransactionViewModel(
             if (incType.hasWithholdingTax && gross != null) {
                 val ssVal = if (incType.hasSocialContribution) socialSecurityAmount.replace(',', '.').toDoubleOrNull() ?: 0.0 else 0.0
                 val pct = resolveIrpfPercent(gross, ssVal)
-                if (pct != null) add(TaxLine(name = "Retención", role = TaxRole.INCOME_TAX, percent = pct, amount = gross * pct / 100.0))
+                add(TaxLine(name = "Retención", role = TaxRole.INCOME_TAX, percent = pct, amount = gross * pct / 100.0))
             }
             if (incType.hasSocialContribution) {
                 val ssVal = socialSecurityAmount.replace(',', '.').toDoubleOrNull()

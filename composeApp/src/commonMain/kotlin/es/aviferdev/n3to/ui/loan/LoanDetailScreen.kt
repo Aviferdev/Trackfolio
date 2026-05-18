@@ -27,7 +27,7 @@ import es.aviferdev.n3to.ui.theme.*
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 import kotlin.math.abs
@@ -132,7 +132,7 @@ fun LoanDetailContent(
                 Text("Préstamo no encontrado", color = TextTertiary, fontSize = 13.sp)
             }
         } else {
-            val loan = uiState.loan!!
+            val loan = uiState.loan
 
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),

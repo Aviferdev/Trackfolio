@@ -106,7 +106,6 @@ data class FixedIncomePosition(
             InterestFrequency.QUARTERLY -> 91
             InterestFrequency.SEMIANNUAL -> 182
             InterestFrequency.ANNUAL -> 365
-            else -> return null
         }
 
         var nextDate = startDate

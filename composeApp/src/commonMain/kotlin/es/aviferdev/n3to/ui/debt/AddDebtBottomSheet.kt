@@ -21,7 +21,7 @@ import es.aviferdev.n3to.domain.model.Debt
 import es.aviferdev.n3to.domain.model.DebtDirection
 import es.aviferdev.n3to.ui.theme.*
 import es.aviferdev.n3to.ui.theme.DragHandleColor
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.Preview
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -77,7 +77,7 @@ fun AddDebtBottomSheet(
                 val amountValue = amount.replace(',', '.').toDoubleOrNull()
                 if (amountValue != null) {
                     isLoading = true
-                    if (isEditing && editingDebt != null) {
+                    if (isEditing) {
                         viewModel.editDebt(
                             original   = editingDebt,
                             personName = personName.trim(),

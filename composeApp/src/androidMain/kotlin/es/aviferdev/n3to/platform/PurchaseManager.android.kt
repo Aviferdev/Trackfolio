@@ -119,7 +119,7 @@ actual class PurchaseManager {
                 val result = if (userCancelled) {
                     PurchaseResult.Cancelled
                 } else {
-                    PurchaseResult.Error(error.message ?: "Error al procesar la compra")
+                    PurchaseResult.Error(error.message)
                 }
                 continuation.resume(result)
             },
@@ -136,7 +136,7 @@ actual class PurchaseManager {
             Purchases.sharedInstance.restorePurchases(
                 onError = { error ->
                     continuation.resume(
-                        PurchaseResult.Error(error.message ?: "Error al restaurar compras")
+                        PurchaseResult.Error(error.message)
                     )
                 },
                 onSuccess = { customerInfo ->
@@ -191,7 +191,7 @@ actual class PurchaseManager {
             isPremium = ent?.isActive == true,
             entitlementExpiryDate = ent?.expirationDateMillis,
             managementUrl = managementUrlString,
-            isLifetime = ent?.isActive == true && ent?.expirationDateMillis == null,
+            isLifetime = ent?.isActive == true && ent.expirationDateMillis == null,
             appUserId = Purchases.sharedInstance.appUserID
         )
     }

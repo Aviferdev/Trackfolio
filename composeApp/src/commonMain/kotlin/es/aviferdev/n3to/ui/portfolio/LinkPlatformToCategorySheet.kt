@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.Platform
 import es.aviferdev.n3to.ui.theme.*
 
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.Preview
 
 /**
  * Sheet para vincular plataformas a una categoría de activos.

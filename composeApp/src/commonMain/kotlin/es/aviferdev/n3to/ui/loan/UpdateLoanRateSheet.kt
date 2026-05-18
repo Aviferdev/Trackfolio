@@ -17,7 +17,7 @@ import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.ui.theme.*
 import es.aviferdev.n3to.ui.theme.DragHandleColor
 
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.Preview
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -93,7 +93,7 @@ fun UpdateLoanRateSheet(
             Button(
                 onClick = {
                     if (isValid) {
-                        onConfirm(newRate!!, nowMillis())
+                        onConfirm(newRate, nowMillis())
                     }
                 },
                 modifier = Modifier.fillMaxWidth().height(50.dp),

@@ -44,7 +44,6 @@ class SyncAssetTransactionToLedgerUseCase(
         val label  = when (assetTx.type) {
             AssetTransactionType.BUY  -> "Compra: ${fmtQty(assetTx.quantity)} uds. de $assetName"
             AssetTransactionType.SELL -> "Venta: ${fmtQty(assetTx.quantity)} uds. de $assetName"
-            else -> return Result.success(Unit) // Nunca llega aquí, pero el compilador lo requiere
         }
 
         // Buscar si ya existe una Transaction vinculada

@@ -91,7 +91,7 @@ class AssetTransactionLocalDataSourceImpl(
                 rows.map { row ->
                     MonthlyInvestment(
                         year  = year,
-                        month = row.month ?: "01",
+                        month = row.month,
                         amount = row.totalInvested ?: 0.0
                     )
                 }
@@ -108,7 +108,7 @@ class AssetTransactionLocalDataSourceImpl(
                 rows.map { row ->
                     MonthlyNetInvestment(
                         year = year,
-                        month = row.month ?: "01",
+                        month = row.month,
                         netAmount = row.netInvested ?: 0.0
                     )
                 }

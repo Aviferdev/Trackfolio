@@ -103,7 +103,7 @@ class TransactionLocalDataSourceImpl(
                 rows.map { row ->
                     MonthlyTotals(
                         year         = year,
-                        month        = row.month ?: "01",
+                        month        = row.month,
                         totalIncome  = row.totalIncome,
                         totalExpense = row.totalExpense
                     )
@@ -217,7 +217,7 @@ class TransactionLocalDataSourceImpl(
                 rows.map { row ->
                     CategoryBreakdown(
                         categoryId   = row.categoryId,
-                        categoryName = row.categoryName ?: "Sin categoría",
+                        categoryName = row.categoryName,
                         amount       = row.totalAmount ?: 0.0
                     )
                 }

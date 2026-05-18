@@ -6,6 +6,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -21,9 +22,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import es.aviferdev.n3to.ui.theme.PrimaryDark
-import es.aviferdev.n3to.ui.theme.N3toTheme
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import es.aviferdev.n3to.ui.theme.*
+import androidx.compose.ui.tooling.preview.Preview
 
 /**
  * Banner que recuerda al usuario hacer una copia de seguridad.
@@ -53,14 +53,15 @@ fun BackupReminderBanner(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(12.dp))
-                .background(PrimaryDark.copy(alpha = 0.10f))
+                .border(0.5.dp, NavyBorder, RoundedCornerShape(12.dp))
+                .background(NavySurface)
                 .padding(horizontal = 14.dp, vertical = 11.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
                 imageVector        = Icons.Outlined.SaveAlt,
                 contentDescription = null,
-                tint               = PrimaryDark,
+                tint               = CyanAccent,
                 modifier           = Modifier.size(18.dp)
             )
             Spacer(Modifier.width(10.dp))
@@ -68,21 +69,21 @@ fun BackupReminderBanner(
                 text = if (neverBackup) "Aún no has hecho una copia de seguridad"
                        else "Llevas $daysSinceLastBackup días sin hacer una copia de seguridad",
                 fontSize   = 12.sp,
-                color      = PrimaryDark,
+                color      = TextSecondary,
                 fontWeight = FontWeight.Medium,
                 modifier   = Modifier.weight(1f)
             )
             Box(
                 modifier = Modifier
                     .clip(RoundedCornerShape(8.dp))
-                    .background(PrimaryDark.copy(alpha = 0.15f))
+                    .background(CyanAccent)
                     .clickable { onBackupClick() }
                     .padding(horizontal = 12.dp, vertical = 4.dp)
             ) {
                 Text(
                     text       = "Hacer backup",
                     fontSize   = 11.sp,
-                    color      = PrimaryDark,
+                    color      = NavyDeep,
                     fontWeight = FontWeight.Bold
                 )
             }
@@ -94,7 +95,7 @@ fun BackupReminderBanner(
                     .size(24.dp),
                 contentAlignment = Alignment.Center
             ) {
-                Text("×", fontSize = 16.sp, color = PrimaryDark.copy(alpha = 0.6f))
+                Text("×", fontSize = 16.sp, color = TextTertiary)
             }
         }
     }

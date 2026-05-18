@@ -10,7 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Assignment
+import androidx.compose.material.icons.automirrored.outlined.Assignment
 import androidx.compose.material.icons.outlined.BarChart
 import androidx.compose.material.icons.outlined.Handshake
 import androidx.compose.material3.Badge
@@ -33,7 +33,7 @@ import es.aviferdev.n3to.ui.theme.ExpenseRed
 import es.aviferdev.n3to.ui.theme.NavyBorder
 import es.aviferdev.n3to.ui.theme.NavySurface
 import es.aviferdev.n3to.ui.theme.N3toTheme
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
 fun QuickAccessSection(
@@ -62,7 +62,7 @@ fun QuickAccessSection(
                 modifier = Modifier.weight(1f)
             )
             QuickCard(
-                icon = Icons.Outlined.Assignment,
+                icon = Icons.AutoMirrored.Outlined.Assignment,
                 label = "Fiscal",
                 onClick = onNavigateToFiscalReport,
                 modifier = Modifier.weight(1f)

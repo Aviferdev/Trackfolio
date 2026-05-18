@@ -21,7 +21,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.outlined.Refresh
-import androidx.compose.material.icons.outlined.ShowChart
+import androidx.compose.material.icons.automirrored.outlined.ShowChart
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -57,7 +57,7 @@ import es.aviferdev.n3to.ui.theme.TextPrimary
 import es.aviferdev.n3to.ui.theme.TextSecondary
 import es.aviferdev.n3to.ui.theme.TextTertiary
 import es.aviferdev.n3to.ui.theme.N3toTheme
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
 fun AssetHistoryContent(
@@ -126,16 +126,16 @@ fun AssetHistoryContent(
                     // Summary card (price + position)
                     item {
                         AssetSummaryCard(
-                            ticker = state.asset!!.ticker,
-                            currentPrice = state.asset!!.currentPrice,
+                            ticker = state.asset.ticker,
+                            currentPrice = state.asset.currentPrice,
                                                         position = state.position,
                             modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
                         )
                     }
 
                     // Maturity (fixed income)
-                    state.asset!!.maturityDate?.let { md ->
-                        if (AssetCategoryType.isFixedIncome(state.asset!!.assetCategoryId)) {
+                    state.asset.maturityDate?.let { md ->
+                        if (AssetCategoryType.isFixedIncome(state.asset.assetCategoryId)) {
                             item {
                                 MaturityDateCard(
                                     maturityDate = md,
@@ -250,7 +250,7 @@ fun AssetHistoryContent(
                                     fontSize = 14.sp
                                 )
                             },
-                            leadingIcon = { Icon(Icons.Outlined.ShowChart, contentDescription = null, modifier = Modifier.size(18.dp)) },
+                            leadingIcon = { Icon(Icons.AutoMirrored.Outlined.ShowChart, contentDescription = null, modifier = Modifier.size(18.dp)) },
                             onClick = { onFabDismiss(); onAddDividendClick() }
                         )
                     }

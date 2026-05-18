@@ -20,7 +20,7 @@ import es.aviferdev.n3to.domain.model.Asset
 import es.aviferdev.n3to.ui.theme.*
 import es.aviferdev.n3to.ui.theme.formatAmountEuro
 
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.Preview
 
 /**
  * Sheet ligero para refrescar únicamente el precio actual de un activo
@@ -82,7 +82,7 @@ fun UpdateCurrentPriceSheet(
 
             Spacer(Modifier.height(8.dp))
             val currentLabel = if (asset.currentPrice != null) {
-                "Precio anterior: ${formatAmountEuro(asset.currentPrice!!)}"
+                "Precio anterior: ${formatAmountEuro(asset.currentPrice)}"
             } else {
                 "Aún no hay un precio registrado para este activo"
             }

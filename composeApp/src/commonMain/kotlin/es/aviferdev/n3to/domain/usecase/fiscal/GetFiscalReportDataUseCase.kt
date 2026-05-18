@@ -27,6 +27,7 @@ class GetFiscalReportDataUseCase(
     private val assetTransactionRepository: AssetTransactionRepository,
     private val assetCategoryRepository: AssetCategoryRepository
 ) {
+    @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
     operator fun invoke(accountId: String, year: String): Flow<FiscalReportData> {
 
         val baseFlow = combine(

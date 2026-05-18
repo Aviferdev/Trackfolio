@@ -26,7 +26,7 @@ import es.aviferdev.n3to.ui.theme.TextDisabled
 import es.aviferdev.n3to.ui.theme.TextSecondary
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import es.aviferdev.n3to.ui.theme.WarnAmber
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
 fun PriceReminderBanner(

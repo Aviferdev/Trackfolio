@@ -23,7 +23,7 @@ import es.aviferdev.n3to.domain.model.TransactionType
 import es.aviferdev.n3to.ui.common.SectionHeader
 import es.aviferdev.n3to.ui.common.navigation.TopBarApp
 import es.aviferdev.n3to.ui.theme.*
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
 // ─── WRAPPER ────────────────────────────────────────────────────────────────────
@@ -63,7 +63,7 @@ fun ExpenseSettingsScreen(
     categoryState.pendingDelete?.let { pending ->
         AlertDialog(
             onDismissRequest = { categoryViewModel.cancelDelete() },
-            containerColor = SurfaceWhite,
+            containerColor = NavySurface,
             icon = { Text("\uD83D\uDDC2\uFE0F", fontSize = 28.sp) },
             title = {
                 Text(
@@ -87,7 +87,7 @@ fun ExpenseSettingsScreen(
             },
             dismissButton = {
                 TextButton(onClick = { categoryViewModel.cancelDelete() }) {
-                    Text("Cancelar", color = PrimaryDark, fontWeight = FontWeight.Medium)
+                    Text("Cancelar", color = CyanAccent, fontWeight = FontWeight.Medium)
                 }
             },
             shape = RoundedCornerShape(16.dp)
@@ -97,14 +97,14 @@ fun ExpenseSettingsScreen(
     categoryState.error?.let { msg ->
         AlertDialog(
             onDismissRequest = { categoryViewModel.clearError() },
-            containerColor = SurfaceWhite,
+            containerColor = NavySurface,
             title = {
                 Text("Error", fontSize = 17.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary)
             },
             text = { Text(msg, fontSize = 14.sp, color = TextSecondary) },
             confirmButton = {
                 TextButton(onClick = { categoryViewModel.clearError() }) {
-                    Text("Aceptar", color = PrimaryDark, fontWeight = FontWeight.Medium)
+                    Text("Aceptar", color = CyanAccent, fontWeight = FontWeight.Medium)
                 }
             },
             shape = RoundedCornerShape(16.dp)
@@ -123,9 +123,14 @@ fun ExpenseSettingsContent(
     modifier: Modifier = Modifier
 ) {
     Column(
-        modifier = modifier.fillMaxSize().background(BackgroundGray)
+        modifier = modifier.fillMaxSize().background(NavyDeep)
     ) {
-        TopBarApp(title = "Gastos", navigateBack = onBack)
+        TopBarApp(
+            title = "Gastos",
+            navigateBack = onBack,
+            containerColor = NavySurface,
+            dividerColor = NavyBorder
+        )
 
         LazyColumn(
             contentPadding = PaddingValues(horizontal = 20.dp, vertical = 20.dp),
@@ -181,7 +186,7 @@ fun ExpenseSettingsContent(
                             }
                             if (index < expenseCategories.lastIndex) {
                                 HorizontalDivider(
-                                    color = BorderGray,
+                                    color = NavyBorder,
                                     thickness = 0.5.dp,
                                     modifier = Modifier.padding(start = 36.dp)
                                 )

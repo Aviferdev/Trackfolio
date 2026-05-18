@@ -24,7 +24,7 @@ import es.aviferdev.n3to.domain.model.Asset
 import es.aviferdev.n3to.ui.theme.*
 import es.aviferdev.n3to.ui.theme.DragHandleColor
 
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.Preview
 
 /**
  * Sheet para registrar un dividendo sobre un activo.

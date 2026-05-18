@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.TransactionType
 import es.aviferdev.n3to.ui.theme.*
 import es.aviferdev.n3to.ui.theme.DragHandleColor
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.Preview
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

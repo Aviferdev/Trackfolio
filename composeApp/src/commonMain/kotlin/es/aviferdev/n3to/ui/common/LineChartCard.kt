@@ -5,7 +5,7 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.ShowChart
+import androidx.compose.material.icons.automirrored.outlined.ShowChart
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -284,7 +284,7 @@ private fun EmptyLineChartState() {
         contentAlignment = Alignment.Center
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Icon(Icons.Outlined.ShowChart, contentDescription = null, modifier = Modifier.size(32.dp), tint = PrimaryDark)
+            Icon(Icons.AutoMirrored.Outlined.ShowChart, contentDescription = null, modifier = Modifier.size(32.dp), tint = PrimaryDark)
             Spacer(Modifier.height(8.dp))
             Text(
                 text = "Sin datos suficientes",

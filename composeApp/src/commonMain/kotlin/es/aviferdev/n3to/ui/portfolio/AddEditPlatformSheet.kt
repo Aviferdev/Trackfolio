@@ -26,7 +26,7 @@ import es.aviferdev.n3to.domain.model.Platform
 import es.aviferdev.n3to.ui.common.toMaterialIcon
 import es.aviferdev.n3to.ui.theme.*
 
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.Preview
 
 /**
  * Sheet para crear o editar una plataforma (broker, exchange, banco).

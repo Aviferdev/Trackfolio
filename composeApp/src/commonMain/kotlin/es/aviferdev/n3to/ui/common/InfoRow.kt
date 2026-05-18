@@ -22,7 +22,7 @@ import es.aviferdev.n3to.ui.theme.IncomeGreen
 import es.aviferdev.n3to.ui.theme.TextPrimary
 import es.aviferdev.n3to.ui.theme.TextSecondary
 import es.aviferdev.n3to.ui.theme.N3toTheme
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.Preview
 
 /**
  * Standard row layout inside cards: left slot → fluid mid → right slot.

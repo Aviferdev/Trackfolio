@@ -17,7 +17,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ArrowDownward
 import androidx.compose.material.icons.outlined.ArrowUpward
 import androidx.compose.material.icons.outlined.Balance
-import androidx.compose.material.icons.outlined.ShowChart
+import androidx.compose.material.icons.automirrored.outlined.ShowChart
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -41,7 +41,7 @@ import es.aviferdev.n3to.ui.theme.N3toTheme
 import es.aviferdev.n3to.ui.theme.formatAmount
 import es.aviferdev.n3to.ui.theme.formatDate
 import es.aviferdev.n3to.ui.theme.maskAmount
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.Preview
 import kotlin.math.abs
 
 /**
@@ -77,7 +77,7 @@ fun TransactionRow(
     }
     val avatarIcon = when {
         isAdjustment -> Icons.Outlined.Balance
-        isLinked -> Icons.Outlined.ShowChart
+        isLinked -> Icons.AutoMirrored.Outlined.ShowChart
         isIncome && !compact -> Icons.Outlined.ArrowDownward
         isIncome && compact && transaction.incomeType != null -> transaction.incomeType.toMaterialIcon()
         else -> null
@@ -109,7 +109,7 @@ fun TransactionRow(
 
     // Subtítulo
     val subtitle = when {
-        isIncome && transaction.issuerName != null -> transaction.issuerName!!
+        isIncome && transaction.issuerName != null -> transaction.issuerName
         !compact && !transaction.notes.isNullOrBlank() -> transaction.notes
         else -> null
     }

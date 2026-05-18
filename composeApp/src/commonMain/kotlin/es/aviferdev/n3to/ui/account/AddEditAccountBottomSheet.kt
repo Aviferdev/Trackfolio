@@ -13,7 +13,7 @@ import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.Account
 import es.aviferdev.n3to.ui.theme.*
 
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.Preview
 
 /**
  * Bottom sheet para crear o editar una cuenta.

@@ -1,6 +1,7 @@
 package es.aviferdev.n3to.ui.fiscal
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -10,7 +11,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
-import androidx.compose.material.icons.outlined.Assignment
+import androidx.compose.material.icons.automirrored.outlined.Assignment
 import androidx.compose.material.icons.outlined.Warning
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -25,18 +26,15 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import es.aviferdev.n3to.domain.model.AssetPosition
-import es.aviferdev.n3to.domain.model.Debt
 import es.aviferdev.n3to.domain.model.DebtDirection
 import es.aviferdev.n3to.domain.model.FiscalIncomeTaxBreakdown
 import es.aviferdev.n3to.domain.model.FiscalReportData
 import es.aviferdev.n3to.domain.model.MonthlyTotals
 import es.aviferdev.n3to.domain.model.TaxProfileSnapshot
 import es.aviferdev.n3to.ui.common.toMaterialIcon
-import es.aviferdev.n3to.ui.common.navigation.TopBarApp
 import es.aviferdev.n3to.platform.nowYear
 import es.aviferdev.n3to.ui.theme.*
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.math.abs
 
@@ -90,12 +88,13 @@ fun FiscalReportContent(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(BackgroundGray)
+            .background(NavyDeep)
     ) {
-        TopBarApp(
+        // ── Top bar navy ──────────────────────────────────────────────────────
+        NavyTopBar(
             title = "Informe Fiscal",
             subtitle = state.selectedYear,
-            navigateBack = onBack,
+            onBack = onBack,
             actions = {
                 YearStepper(
                     year = state.selectedYear,
@@ -105,13 +104,15 @@ fun FiscalReportContent(
             }
         )
 
+        // ── Banner de aviso incompleto ────────────────────────────────────────
         if (state.hasNetOnlyIncomes && !state.isLoading) {
-            Surface(
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
-                shape = RoundedCornerShape(10.dp),
-                color = WarnAmber.copy(alpha = 0.12f)
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
+                    .clip(RoundedCornerShape(10.dp))
+                    .background(WarnAmber.copy(alpha = 0.10f))
+                    .border(0.5.dp, WarnAmber.copy(alpha = 0.30f), RoundedCornerShape(10.dp))
             ) {
                 Row(
                     modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp),
@@ -120,7 +121,7 @@ fun FiscalReportContent(
                     Icon(
                         Icons.Outlined.Warning,
                         contentDescription = null,
-                        tint    = WarnAmber,
+                        tint = WarnAmber,
                         modifier = Modifier.size(16.dp)
                     )
                     Spacer(Modifier.width(8.dp))
@@ -137,7 +138,7 @@ fun FiscalReportContent(
 
         if (state.isLoading) {
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator(color = PrimaryDark)
+                CircularProgressIndicator(color = CyanAccent)
             }
         } else {
             Column(modifier = Modifier.weight(1f)) {
@@ -164,12 +165,17 @@ fun FiscalReportContent(
                             contentAlignment = Alignment.Center
                         ) {
                             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                Icon(Icons.Outlined.Assignment, contentDescription = null, modifier = Modifier.size(44.dp), tint = PrimaryDark)
+                                Icon(
+                                    Icons.AutoMirrored.Outlined.Assignment,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(44.dp),
+                                    tint = CyanAccent.copy(alpha = 0.5f)
+                                )
                                 Spacer(Modifier.height(12.dp))
                                 Text(
                                     "No hay datos para ${state.selectedYear}",
-                                    fontSize  = 15.sp,
-                                    color     = TextTertiary,
+                                    fontSize = 15.sp,
+                                    color = TextTertiary,
                                     textAlign = TextAlign.Center
                                 )
                             }
@@ -178,7 +184,12 @@ fun FiscalReportContent(
                     Spacer(Modifier.height(8.dp))
                 }
 
-                Surface(color = SurfaceWhite, shadowElevation = 0.dp) {
+                // ── Barra inferior ────────────────────────────────────────────
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(NavySurface)
+                ) {
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -186,19 +197,38 @@ fun FiscalReportContent(
                             .padding(16.dp),
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        HorizontalDivider(color = BorderGray, thickness = .5.dp, modifier = Modifier.padding(bottom = 8.dp))
+                        HorizontalDivider(
+                            color = NavyBorder,
+                            thickness = .5.dp,
+                            modifier = Modifier.padding(bottom = 8.dp)
+                        )
                         state.errorMessage?.let { err ->
-                            Text(err, fontSize = 11.sp, color = ExpenseRed, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
+                            Text(
+                                err,
+                                fontSize = 11.sp,
+                                color = ExpenseRed,
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier.fillMaxWidth()
+                            )
                         }
                         Button(
-                            onClick  = onGeneratePdf,
-                            enabled  = state.reportData != null && !state.isGenerating,
+                            onClick = onGeneratePdf,
+                            enabled = state.reportData != null && !state.isGenerating,
                             modifier = Modifier.fillMaxWidth().height(50.dp),
-                            shape    = RoundedCornerShape(12.dp),
-                            colors   = ButtonDefaults.buttonColors(containerColor = PrimaryDark)
+                            shape = RoundedCornerShape(12.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = CyanAccent,
+                                contentColor = NavyDeep,
+                                disabledContainerColor = NavySurfaceLight,
+                                disabledContentColor = TextTertiary
+                            )
                         ) {
                             if (state.isGenerating) {
-                                CircularProgressIndicator(color = Color.White, modifier = Modifier.size(18.dp), strokeWidth = 2.dp)
+                                CircularProgressIndicator(
+                                    color = NavyDeep,
+                                    modifier = Modifier.size(18.dp),
+                                    strokeWidth = 2.dp
+                                )
                                 Spacer(Modifier.width(8.dp))
                             } else {
                                 Text("📄", fontSize = 16.sp)
@@ -206,7 +236,7 @@ fun FiscalReportContent(
                             }
                             Text(
                                 if (state.isGenerating) "Generando PDF…" else "Generar y compartir PDF",
-                                fontSize   = 14.sp,
+                                fontSize = 14.sp,
                                 fontWeight = FontWeight.SemiBold
                             )
                         }
@@ -260,25 +290,104 @@ fun FiscalReportContentPreview() {
     }
 }
 
+// ─── Navy top bar ──────────────────────────────────────────────────────────────
+@Composable
+private fun NavyTopBar(
+    title: String,
+    subtitle: String?,
+    onBack: () -> Unit,
+    actions: @Composable RowScope.() -> Unit = {}
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(NavySurface)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .windowInsetsPadding(WindowInsets.statusBars)
+                .padding(horizontal = 8.dp, vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            IconButton(
+                onClick = onBack,
+                modifier = Modifier
+                    .size(40.dp)
+                    .clip(RoundedCornerShape(10.dp))
+                    .background(NavySurfaceLight)
+            ) {
+                Icon(
+                    Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = "Ir atrás",
+                    tint = TextPrimary,
+                    modifier = Modifier.size(20.dp)
+                )
+            }
+            Spacer(Modifier.width(8.dp))
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = title,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = TextPrimary,
+                    letterSpacing = (-0.3).sp
+                )
+                if (subtitle != null) {
+                    Text(
+                        text = subtitle,
+                        fontSize = 12.sp,
+                        color = TextTertiary
+                    )
+                }
+            }
+            actions()
+        }
+        HorizontalDivider(color = NavyBorder, thickness = 0.5.dp)
+    }
+}
+
 // ─── Year stepper ─────────────────────────────────────────────────────────────
 @Composable
 private fun YearStepper(year: String, onPrevious: () -> Unit, onNext: () -> Unit) {
     val nowYear = nowYear()
-    val isMax   = year.toIntOrNull() == nowYear
+    val isMax = year.toIntOrNull() == nowYear
     Row(verticalAlignment = Alignment.CenterVertically) {
         IconButton(
-            onClick  = onPrevious,
-            modifier = Modifier.size(32.dp).clip(RoundedCornerShape(9.dp)).background(SurfaceElevated)
+            onClick = onPrevious,
+            modifier = Modifier
+                .size(32.dp)
+                .clip(RoundedCornerShape(9.dp))
+                .background(NavySurfaceLight)
+                .border(0.5.dp, NavyBorder, RoundedCornerShape(9.dp))
         ) {
-            Text("‹", fontSize = 20.sp, color = TextPrimary, fontWeight = FontWeight.Light)
+            Text("‹", fontSize = 20.sp, color = CyanAccent, fontWeight = FontWeight.Light)
         }
-        Text(year, fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary, modifier = Modifier.padding(horizontal = 8.dp))
+        Text(
+            year,
+            fontSize = 13.sp,
+            fontWeight = FontWeight.SemiBold,
+            color = TextPrimary,
+            modifier = Modifier.padding(horizontal = 8.dp)
+        )
         IconButton(
-            onClick  = onNext,
-            enabled  = !isMax,
-            modifier = Modifier.size(32.dp).clip(RoundedCornerShape(9.dp)).background(if (!isMax) SurfaceElevated else Color.Transparent)
+            onClick = onNext,
+            enabled = !isMax,
+            modifier = Modifier
+                .size(32.dp)
+                .clip(RoundedCornerShape(9.dp))
+                .background(if (!isMax) NavySurfaceLight else Color.Transparent)
+                .then(
+                    if (!isMax) Modifier.border(0.5.dp, NavyBorder, RoundedCornerShape(9.dp))
+                    else Modifier
+                )
         ) {
-            Text("›", fontSize = 20.sp, color = if (!isMax) TextPrimary else TextTertiary, fontWeight = FontWeight.Light)
+            Text(
+                "›",
+                fontSize = 20.sp,
+                color = if (!isMax) CyanAccent else TextTertiary,
+                fontWeight = FontWeight.Light
+            )
         }
     }
 }
@@ -288,19 +397,19 @@ private fun YearStepper(year: String, onPrevious: () -> Unit, onNext: () -> Unit
 private fun AnnualSummaryCard(report: FiscalReportData) {
     val s = report.annualSummary
     ReportCard("Ejercicio ${report.year} · Resumen") {
-        if (s == null) { Text("Sin movimientos registrados.", fontSize = 13.sp, color = TextTertiary); return@ReportCard }
+        if (s == null) {
+            Text("Sin movimientos registrados.", fontSize = 13.sp, color = TextTertiary)
+            return@ReportCard
+        }
 
-        // 2x2 grid (matching JSX design)
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                // Ingresos totales
                 FiscalMetricCell(
                     "Ingresos totales",
                     s.totalIncome,
                     IncomeGreen,
                     Modifier.weight(1f)
                 )
-                // Retenciones fiscales
                 FiscalMetricCell(
                     "Retenciones fiscales",
                     report.incomeTaxBreakdown.sumOf { it.irpfTotal },
@@ -309,7 +418,6 @@ private fun AnnualSummaryCard(report: FiscalReportData) {
                 )
             }
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                // Ganancias capital (from portfolio)
                 val capitalGains = report.assetPositions.sumOf { it.realizedPnl }
                 FiscalMetricCell(
                     "Ganancias capital",
@@ -317,12 +425,11 @@ private fun AnnualSummaryCard(report: FiscalReportData) {
                     if (capitalGains >= 0.0) IncomeGreen else ExpenseRed,
                     Modifier.weight(1f)
                 )
-                // Base imponible
                 val baseImponible = s.totalIncome + capitalGains
                 FiscalMetricCell(
                     "Base imponible est.",
                     baseImponible,
-                    PrimaryDark,
+                    CyanAccent,
                     Modifier.weight(1f)
                 )
             }
@@ -332,13 +439,14 @@ private fun AnnualSummaryCard(report: FiscalReportData) {
 
 @Composable
 private fun FiscalMetricCell(label: String, amount: Double, color: Color, modifier: Modifier = Modifier) {
-    Card(
-        modifier  = modifier,
-        shape     = RoundedCornerShape(9.dp),
-        colors    = CardDefaults.cardColors(containerColor = SurfaceElevated),
-        elevation = CardDefaults.cardElevation(0.dp)
+    Box(
+        modifier = modifier
+            .clip(RoundedCornerShape(9.dp))
+            .background(NavySurfaceLight)
+            .border(0.5.dp, NavyBorder, RoundedCornerShape(9.dp))
+            .padding(10.dp)
     ) {
-        Column(modifier = Modifier.padding(10.dp)) {
+        Column {
             Text(label, fontSize = 10.sp, color = TextTertiary)
             Spacer(Modifier.height(3.dp))
             Text(
@@ -362,36 +470,40 @@ private fun IncomeTaxBreakdownCard(report: FiscalReportData) {
 
     ReportCard("🏛️ Desglose fiscal ${report.year}") {
         Row(Modifier.fillMaxWidth(), Arrangement.spacedBy(8.dp)) {
-            MetricCell("Bruto total",       totalGross, TextPrimary, Modifier.weight(1f))
-            MetricCell("Retención fiscal",  totalIrpf,  ExpenseRed,  Modifier.weight(1f))
-            MetricCell("Neto total",        totalNet,   IncomeGreen, Modifier.weight(1f))
+            MetricCell("Bruto total",      totalGross, TextPrimary, Modifier.weight(1f))
+            MetricCell("Retención fiscal", totalIrpf,  ExpenseRed,  Modifier.weight(1f))
+            MetricCell("Neto total",       totalNet,   IncomeGreen, Modifier.weight(1f))
         }
         if (totalSS > 0 || totalComm > 0) {
             Spacer(Modifier.height(8.dp))
             Row(Modifier.fillMaxWidth(), Arrangement.spacedBy(8.dp)) {
-                if (totalSS   > 0) MetricCell("Cotizaciones",  totalSS,   WarnAmber, Modifier.weight(1f))
-                if (totalComm > 0) MetricCell("Comisiones",    totalComm, WarnAmber, Modifier.weight(1f))
+                if (totalSS   > 0) MetricCell("Cotizaciones", totalSS,   WarnAmber, Modifier.weight(1f))
+                if (totalComm > 0) MetricCell("Comisiones",   totalComm, WarnAmber, Modifier.weight(1f))
                 if (totalSS > 0 && totalComm == 0.0) Spacer(Modifier.weight(1f))
                 if (totalSS == 0.0 && totalComm > 0) Spacer(Modifier.weight(1f))
             }
         }
         Spacer(Modifier.height(12.dp))
-        HorizontalDivider(color = BorderGray, thickness = .5.dp)
+        HorizontalDivider(color = NavyBorder, thickness = .5.dp)
         Spacer(Modifier.height(8.dp))
         Row(Modifier.fillMaxWidth()) {
             Text("Tipo de ingreso", fontSize = 10.sp, color = TextTertiary, modifier = Modifier.weight(3f))
-            Text("Bruto",  fontSize = 10.sp, color = TextTertiary, modifier = Modifier.weight(2f), textAlign = TextAlign.End)
+            Text("Bruto",     fontSize = 10.sp, color = TextTertiary, modifier = Modifier.weight(2f), textAlign = TextAlign.End)
             Text("Retención", fontSize = 10.sp, color = TextTertiary, modifier = Modifier.weight(2f), textAlign = TextAlign.End)
-            Text("Neto",   fontSize = 10.sp, color = TextTertiary, modifier = Modifier.weight(2f), textAlign = TextAlign.End)
-            Text("%",      fontSize = 10.sp, color = TextTertiary, modifier = Modifier.weight(1f), textAlign = TextAlign.End)
+            Text("Neto",      fontSize = 10.sp, color = TextTertiary, modifier = Modifier.weight(2f), textAlign = TextAlign.End)
+            Text("%",         fontSize = 10.sp, color = TextTertiary, modifier = Modifier.weight(1f), textAlign = TextAlign.End)
         }
         Spacer(Modifier.height(5.dp))
         bk.forEachIndexed { i, item ->
-            if (i > 0) HorizontalDivider(color = BorderGray, thickness = .3.dp)
+            if (i > 0) HorizontalDivider(color = NavyBorder, thickness = .3.dp)
             TaxBreakdownRow(item)
         }
         Spacer(Modifier.height(8.dp))
-        Text("Solo incluye ingresos con información fiscal introducida.", fontSize = 10.sp, color = TextTertiary)
+        Text(
+            "Solo incluye ingresos con información fiscal introducida.",
+            fontSize = 10.sp,
+            color = TextTertiary
+        )
     }
 }
 
@@ -399,16 +511,21 @@ private fun IncomeTaxBreakdownCard(report: FiscalReportData) {
 private fun TaxBreakdownRow(item: FiscalIncomeTaxBreakdown) {
     Row(Modifier.fillMaxWidth().padding(vertical = 6.dp), verticalAlignment = Alignment.CenterVertically) {
         Row(Modifier.weight(3f), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-            Icon(item.incomeType.toMaterialIcon(), contentDescription = null, modifier = Modifier.size(18.dp), tint = TextPrimary)
+            Icon(
+                item.incomeType.toMaterialIcon(),
+                contentDescription = null,
+                modifier = Modifier.size(18.dp),
+                tint = CyanAccent.copy(alpha = 0.8f)
+            )
             Column {
                 Text(item.incomeType.label, fontSize = 11.sp, color = TextPrimary, fontWeight = FontWeight.Medium, lineHeight = 13.sp)
                 Text("${item.count} ingreso${if (item.count != 1) "s" else ""}", fontSize = 9.sp, color = TextTertiary)
             }
         }
-        Text(formatAmt(item.grossTotal), fontSize = 11.sp, color = TextPrimary,  modifier = Modifier.weight(2f), textAlign = TextAlign.End)
-        Text(formatAmt(item.irpfTotal),  fontSize = 11.sp, color = ExpenseRed,   fontWeight = FontWeight.Medium, modifier = Modifier.weight(2f), textAlign = TextAlign.End)
-        Text(formatAmt(item.netTotal),   fontSize = 11.sp, color = IncomeGreen,  fontWeight = FontWeight.Medium, modifier = Modifier.weight(2f), textAlign = TextAlign.End)
-        Text(formatPct(item.avgIrpfPercent),       fontSize = 11.sp, color = TextSecondary,modifier = Modifier.weight(1f), textAlign = TextAlign.End)
+        Text(formatAmt(item.grossTotal),      fontSize = 11.sp, color = TextPrimary,    modifier = Modifier.weight(2f), textAlign = TextAlign.End)
+        Text(formatAmt(item.irpfTotal),        fontSize = 11.sp, color = ExpenseRed,     fontWeight = FontWeight.Medium, modifier = Modifier.weight(2f), textAlign = TextAlign.End)
+        Text(formatAmt(item.netTotal),         fontSize = 11.sp, color = IncomeGreen,    fontWeight = FontWeight.Medium, modifier = Modifier.weight(2f), textAlign = TextAlign.End)
+        Text(formatPct(item.avgIrpfPercent),   fontSize = 11.sp, color = TextSecondary,  modifier = Modifier.weight(1f), textAlign = TextAlign.End)
     }
 }
 
@@ -417,7 +534,10 @@ private fun MonthlyBreakdownCard(report: FiscalReportData) {
     val byMonth = report.monthlyBreakdown.associateBy { it.month.trimStart('0').ifEmpty { "0" }.toInt() }
     val hasData = (1..12).any { byMonth[it] != null }
     ReportCard("📅 Desglose mensual") {
-        if (!hasData) { Text("Sin movimientos en ${report.year}.", fontSize = 13.sp, color = TextTertiary); return@ReportCard }
+        if (!hasData) {
+            Text("Sin movimientos en ${report.year}.", fontSize = 13.sp, color = TextTertiary)
+            return@ReportCard
+        }
         Row(Modifier.fillMaxWidth()) {
             Text("Mes",      fontSize = 10.sp, color = TextTertiary, modifier = Modifier.weight(2f))
             Text("Ingresos", fontSize = 10.sp, color = TextTertiary, modifier = Modifier.weight(2f), textAlign = TextAlign.End)
@@ -425,10 +545,10 @@ private fun MonthlyBreakdownCard(report: FiscalReportData) {
             Text("Balance",  fontSize = 10.sp, color = TextTertiary, modifier = Modifier.weight(2f), textAlign = TextAlign.End)
         }
         Spacer(Modifier.height(4.dp))
-        HorizontalDivider(color = BorderGray, thickness = .5.dp)
+        HorizontalDivider(color = NavyBorder, thickness = .5.dp)
         for (m in 1..12) {
             val row = byMonth[m] ?: continue
-            HorizontalDivider(color = BorderGray, thickness = .3.dp)
+            HorizontalDivider(color = NavyBorder, thickness = .3.dp)
             MonthlyRow(m, row)
         }
     }
@@ -438,16 +558,21 @@ private fun MonthlyBreakdownCard(report: FiscalReportData) {
 private fun MonthlyRow(month: Int, data: MonthlyTotals) {
     val balance = data.balance
     Row(Modifier.fillMaxWidth().padding(vertical = 6.dp), verticalAlignment = Alignment.CenterVertically) {
-        Text(MONTH_NAMES.getOrElse(month - 1) { month.toString() }, fontSize = 12.sp, color = TextPrimary, modifier = Modifier.weight(2f))
+        Text(
+            MONTH_NAMES.getOrElse(month - 1) { month.toString() },
+            fontSize = 12.sp,
+            color = TextPrimary,
+            modifier = Modifier.weight(2f)
+        )
         Text(formatAmt(data.totalIncome),  fontSize = 11.sp, color = IncomeGreen, modifier = Modifier.weight(2f), textAlign = TextAlign.End)
         Text(formatAmt(data.totalExpense), fontSize = 11.sp, color = ExpenseRed,  modifier = Modifier.weight(2f), textAlign = TextAlign.End)
         Text(
             "${if (balance >= 0) "+" else ""}${formatAmt(balance)}",
-            fontSize   = 11.sp,
-            color      = if (balance >= 0) IncomeGreen else ExpenseRed,
+            fontSize = 11.sp,
+            color = if (balance >= 0) IncomeGreen else ExpenseRed,
             fontWeight = FontWeight.SemiBold,
-            modifier   = Modifier.weight(2f),
-            textAlign  = TextAlign.End
+            modifier = Modifier.weight(2f),
+            textAlign = TextAlign.End
         )
     }
 }
@@ -456,9 +581,9 @@ private fun MonthlyRow(month: Int, data: MonthlyTotals) {
 private fun DebtsCard(report: FiscalReportData) {
     ReportCard("💳 Deudas activas") {
         report.activeDebts.forEachIndexed { i, debt ->
-            if (i > 0) HorizontalDivider(color = BorderGray, thickness = .3.dp)
-            val isIOwe   = debt.direction == DebtDirection.I_OWE
-            val color    = if (isIOwe) ExpenseRed else IncomeGreen
+            if (i > 0) HorizontalDivider(color = NavyBorder, thickness = .3.dp)
+            val isIOwe = debt.direction == DebtDirection.I_OWE
+            val color  = if (isIOwe) ExpenseRed else IncomeGreen
             Row(Modifier.fillMaxWidth().padding(vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
                 Column(modifier = Modifier.weight(1f)) {
                     Text(debt.personName, fontSize = 13.sp, color = TextPrimary, fontWeight = FontWeight.SemiBold)
@@ -473,7 +598,7 @@ private fun DebtsCard(report: FiscalReportData) {
 
 @Composable
 private fun PortfolioCard(report: FiscalReportData) {
-    val positions    = report.assetPositions.filter { it.netQuantity > 0 || it.totalBought > 0 || it.totalSold > 0 }
+    val positions     = report.assetPositions.filter { it.netQuantity > 0 || it.totalBought > 0 || it.totalSold > 0 }
     val totalInvested = positions.sumOf { it.totalCost }
     val totalValue    = positions.mapNotNull { it.currentValue }.sum()
     val totalRealized = positions.sumOf { it.realizedPnl }
@@ -484,7 +609,7 @@ private fun PortfolioCard(report: FiscalReportData) {
             MetricCell("Valor actual", totalValue,    if (totalValue >= totalInvested) IncomeGreen else ExpenseRed, Modifier.weight(1f))
             MetricCell("P&L Real.",    totalRealized, if (totalRealized >= 0) IncomeGreen else ExpenseRed, Modifier.weight(1f))
         }
-        HorizontalDivider(color = BorderGray, thickness = .5.dp)
+        HorizontalDivider(color = NavyBorder, thickness = .5.dp)
         Spacer(Modifier.height(8.dp))
         Row(Modifier.fillMaxWidth()) {
             Text("Activo",    fontSize = 10.sp, color = TextTertiary, modifier = Modifier.weight(2f))
@@ -494,25 +619,37 @@ private fun PortfolioCard(report: FiscalReportData) {
         }
         Spacer(Modifier.height(4.dp))
         positions.forEachIndexed { i, pos ->
-            if (i > 0) HorizontalDivider(color = BorderGray, thickness = .3.dp)
+            if (i > 0) HorizontalDivider(color = NavyBorder, thickness = .3.dp)
             val totalPnl = (pos.unrealizedPnl ?: 0.0) + pos.realizedPnl
             Row(Modifier.fillMaxWidth().padding(vertical = 5.dp), verticalAlignment = Alignment.CenterVertically) {
                 Column(Modifier.weight(2f)) {
                     Text(pos.ticker, fontSize = 12.sp, color = TextPrimary, fontWeight = FontWeight.SemiBold)
                     Text(pos.categoryName ?: "Sin categoría", fontSize = 9.sp, color = TextTertiary)
                 }
-                Text(formatQty(pos.netQuantity),          fontSize = 11.sp, color = TextPrimary, modifier = Modifier.weight(1.5f), textAlign = TextAlign.End)
+                Text(formatQty(pos.netQuantity),  fontSize = 11.sp, color = TextPrimary,   modifier = Modifier.weight(1.5f), textAlign = TextAlign.End)
                 Text(formatAmt(pos.avgCostBasis), fontSize = 11.sp, color = TextSecondary, modifier = Modifier.weight(1.5f), textAlign = TextAlign.End)
-                Text(formatAmt(totalPnl), fontSize = 11.sp, color = if (totalPnl >= 0) IncomeGreen else ExpenseRed, fontWeight = FontWeight.SemiBold, modifier = Modifier.weight(1.5f), textAlign = TextAlign.End)
+                Text(
+                    formatAmt(totalPnl),
+                    fontSize = 11.sp,
+                    color = if (totalPnl >= 0) IncomeGreen else ExpenseRed,
+                    fontWeight = FontWeight.SemiBold,
+                    modifier = Modifier.weight(1.5f),
+                    textAlign = TextAlign.End
+                )
             }
         }
 
         val yearActive = positions.filter { it.totalBought > 0 || it.totalSold > 0 }
         if (yearActive.isNotEmpty()) {
             Spacer(Modifier.height(10.dp))
-            HorizontalDivider(color = BorderGray, thickness = .5.dp)
+            HorizontalDivider(color = NavyBorder, thickness = .5.dp)
             Spacer(Modifier.height(8.dp))
-            Text("Actividad en ${report.year}", fontSize = 12.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary)
+            Text(
+                "Actividad en ${report.year}",
+                fontSize = 12.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = TextPrimary
+            )
             Spacer(Modifier.height(5.dp))
             Row(Modifier.fillMaxWidth()) {
                 Text("Activo",    fontSize = 10.sp, color = TextTertiary, modifier = Modifier.weight(2f))
@@ -521,12 +658,19 @@ private fun PortfolioCard(report: FiscalReportData) {
                 Text("P&L Real.", fontSize = 10.sp, color = TextTertiary, modifier = Modifier.weight(1.5f), textAlign = TextAlign.End)
             }
             yearActive.forEachIndexed { i, pos ->
-                if (i > 0) HorizontalDivider(color = BorderGray, thickness = .3.dp)
+                if (i > 0) HorizontalDivider(color = NavyBorder, thickness = .3.dp)
                 Row(Modifier.fillMaxWidth().padding(vertical = 5.dp), verticalAlignment = Alignment.CenterVertically) {
-                    Text(pos.ticker, fontSize = 12.sp, color = TextPrimary, fontWeight = FontWeight.SemiBold, modifier = Modifier.weight(2f))
+                    Text(pos.ticker,             fontSize = 12.sp, color = TextPrimary,  fontWeight = FontWeight.SemiBold, modifier = Modifier.weight(2f))
                     Text(formatAmt(pos.totalBought), fontSize = 11.sp, color = IncomeGreen, modifier = Modifier.weight(1.5f), textAlign = TextAlign.End)
                     Text(formatAmt(pos.totalSold),   fontSize = 11.sp, color = ExpenseRed,  modifier = Modifier.weight(1.5f), textAlign = TextAlign.End)
-                    Text(formatAmt(pos.realizedPnl), fontSize = 11.sp, color = if (pos.realizedPnl >= 0) IncomeGreen else ExpenseRed, fontWeight = FontWeight.SemiBold, modifier = Modifier.weight(1.5f), textAlign = TextAlign.End)
+                    Text(
+                        formatAmt(pos.realizedPnl),
+                        fontSize = 11.sp,
+                        color = if (pos.realizedPnl >= 0) IncomeGreen else ExpenseRed,
+                        fontWeight = FontWeight.SemiBold,
+                        modifier = Modifier.weight(1.5f),
+                        textAlign = TextAlign.End
+                    )
                 }
             }
         }
@@ -543,28 +687,30 @@ private fun TaxProfileBadge(snapshot: TaxProfileSnapshot) {
         "ES" -> "España"; "GB" -> "Reino Unido"; "US" -> "EE.UU."; "DE" -> "Alemania"
         else -> "Personalizado"
     }
-    Surface(
-        shape = RoundedCornerShape(8.dp),
-        color = PrimaryDark.copy(alpha = 0.08f),
-        modifier = Modifier.fillMaxWidth()
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(11.dp))
+            .background(NavySurface)
+            .border(0.5.dp, CyanAccent.copy(alpha = 0.25f), RoundedCornerShape(11.dp))
+            .padding(horizontal = 12.dp, vertical = 10.dp)
     ) {
         Row(
-            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+            horizontalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            Text(flag, fontSize = 18.sp)
+            Text(flag, fontSize = 20.sp)
             Column {
                 Text(
                     "Perfil fiscal activo: $label",
                     fontSize = 12.sp,
                     fontWeight = FontWeight.SemiBold,
-                    color = PrimaryDark
+                    color = CyanAccent
                 )
                 Text(
                     "${snapshot.profile.currency}  ·  vigente desde ${snapshot.effectiveFrom}",
                     fontSize = 10.sp,
-                    color = PrimaryDark.copy(alpha = 0.65f)
+                    color = TextTertiary
                 )
             }
         }
@@ -574,14 +720,21 @@ private fun TaxProfileBadge(snapshot: TaxProfileSnapshot) {
 // ─── Primitives ───────────────────────────────────────────────────────────────
 @Composable
 private fun ReportCard(title: String, content: @Composable ColumnScope.() -> Unit) {
-    Card(
-        modifier  = Modifier.fillMaxWidth(),
-        shape     = RoundedCornerShape(13.dp),
-        colors    = CardDefaults.cardColors(containerColor = SurfaceWhite),
-        elevation = CardDefaults.cardElevation(0.dp)
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(13.dp))
+            .background(NavySurface)
+            .border(0.5.dp, NavyBorder, RoundedCornerShape(13.dp))
     ) {
         Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
-            Text(title, fontSize = 13.sp, fontWeight = FontWeight.Bold, color = TextPrimary)
+            Text(
+                title,
+                fontSize = 13.sp,
+                fontWeight = FontWeight.Bold,
+                color = TextPrimary,
+                letterSpacing = (-0.2).sp
+            )
             Spacer(Modifier.height(12.dp))
             content()
         }
@@ -591,7 +744,13 @@ private fun ReportCard(title: String, content: @Composable ColumnScope.() -> Uni
 @Composable
 private fun MetricCell(label: String, value: Double, color: Color, modifier: Modifier = Modifier) {
     Column(modifier = modifier) {
-        Text(label.uppercase(), fontSize = 9.sp, color = TextTertiary, fontWeight = FontWeight.Bold, letterSpacing = .4.sp)
+        Text(
+            label.uppercase(),
+            fontSize = 9.sp,
+            color = TextTertiary,
+            fontWeight = FontWeight.Bold,
+            letterSpacing = .4.sp
+        )
         Spacer(Modifier.height(3.dp))
         Text(formatAmt(value), fontSize = 12.sp, fontWeight = FontWeight.Bold, color = color, maxLines = 1)
     }
@@ -608,8 +767,17 @@ private fun PdfPasswordSheet(onConfirm: (String) -> Unit, onDismiss: () -> Unit)
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
-        sheetState       = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-        containerColor   = SurfaceWhite
+        sheetState     = rememberModalBottomSheetState(skipPartiallyExpanded = true),
+        containerColor = NavySurface,
+        dragHandle = {
+            Box(
+                modifier = Modifier
+                    .padding(top = 12.dp, bottom = 8.dp)
+                    .size(width = 36.dp, height = 4.dp)
+                    .clip(RoundedCornerShape(2.dp))
+                    .background(NavyBorder)
+            )
+        }
     ) {
         Column(
             modifier = Modifier
@@ -620,39 +788,63 @@ private fun PdfPasswordSheet(onConfirm: (String) -> Unit, onDismiss: () -> Unit)
         ) {
             Text("🔒 Proteger informe", fontSize = 17.sp, fontWeight = FontWeight.Bold, color = TextPrimary)
             Spacer(Modifier.height(6.dp))
-            Text("Introduce una contraseña para proteger el PDF. Déjala vacía si no quieres protegerlo.", fontSize = 12.sp, color = TextTertiary)
+            Text(
+                "Introduce una contraseña para proteger el PDF. Déjala vacía si no quieres protegerlo.",
+                fontSize = 12.sp,
+                color = TextTertiary
+            )
             Spacer(Modifier.height(20.dp))
 
             OutlinedTextField(
-                value                = password,
-                onValueChange        = { password = it; error = null },
-                label                = { Text("Contraseña") },
-                placeholder          = { Text("Opcional") },
-                singleLine           = true,
+                value = password,
+                onValueChange = { password = it; error = null },
+                label = { Text("Contraseña") },
+                placeholder = { Text("Opcional") },
+                singleLine = true,
                 visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                keyboardOptions      = KeyboardOptions(keyboardType = KeyboardType.Password),
-                trailingIcon         = {
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                trailingIcon = {
                     IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                        Icon(if (passwordVisible) Icons.Default.VisibilityOff else Icons.Default.Visibility, null, tint = TextSecondary)
+                        Icon(
+                            if (passwordVisible) Icons.Default.VisibilityOff else Icons.Default.Visibility,
+                            null,
+                            tint = TextTertiary
+                        )
                     }
                 },
                 modifier = Modifier.fillMaxWidth(),
-                shape    = RoundedCornerShape(10.dp),
-                colors   = OutlinedTextFieldDefaults.colors(focusedBorderColor = PrimaryDark, unfocusedBorderColor = BorderGray)
+                shape = RoundedCornerShape(10.dp),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor   = CyanAccent,
+                    unfocusedBorderColor = NavyBorder,
+                    focusedLabelColor    = CyanAccent,
+                    unfocusedLabelColor  = TextTertiary,
+                    focusedTextColor     = TextPrimary,
+                    unfocusedTextColor   = TextPrimary,
+                    cursorColor          = CyanAccent
+                )
             )
             if (password.isNotEmpty()) {
                 Spacer(Modifier.height(10.dp))
                 OutlinedTextField(
-                    value                = confirmPassword,
-                    onValueChange        = { confirmPassword = it; error = null },
-                    label                = { Text("Confirmar contraseña") },
-                    singleLine           = true,
+                    value = confirmPassword,
+                    onValueChange = { confirmPassword = it; error = null },
+                    label = { Text("Confirmar contraseña") },
+                    singleLine = true,
                     visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                    keyboardOptions      = KeyboardOptions(keyboardType = KeyboardType.Password),
-                    isError              = error != null,
-                    modifier             = Modifier.fillMaxWidth(),
-                    shape                = RoundedCornerShape(10.dp),
-                    colors               = OutlinedTextFieldDefaults.colors(focusedBorderColor = PrimaryDark, unfocusedBorderColor = BorderGray)
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                    isError = error != null,
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(10.dp),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor   = CyanAccent,
+                        unfocusedBorderColor = NavyBorder,
+                        focusedLabelColor    = CyanAccent,
+                        unfocusedLabelColor  = TextTertiary,
+                        focusedTextColor     = TextPrimary,
+                        unfocusedTextColor   = TextPrimary,
+                        cursorColor          = CyanAccent
+                    )
                 )
             }
             error?.let { Text(it, fontSize = 11.sp, color = ExpenseRed, modifier = Modifier.padding(top = 4.dp)) }
@@ -665,10 +857,17 @@ private fun PdfPasswordSheet(onConfirm: (String) -> Unit, onDismiss: () -> Unit)
                     onConfirm(password)
                 },
                 modifier = Modifier.fillMaxWidth().height(50.dp),
-                shape    = RoundedCornerShape(10.dp),
-                colors   = ButtonDefaults.buttonColors(containerColor = PrimaryDark)
+                shape = RoundedCornerShape(10.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = CyanAccent,
+                    contentColor   = NavyDeep
+                )
             ) {
-                Text(if (password.isEmpty()) "Generar sin contraseña" else "Generar con contraseña", fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
+                Text(
+                    if (password.isEmpty()) "Generar sin contraseña" else "Generar con contraseña",
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.SemiBold
+                )
             }
             Spacer(Modifier.height(8.dp))
             TextButton(onClick = onDismiss, modifier = Modifier.fillMaxWidth()) {
@@ -686,7 +885,7 @@ private fun formatAmt(value: Double): String {
     val cents  = ((absVal - euros) * 100 + .5).toLong().coerceIn(0, 99)
     val eurosStr = euros.toString().reversed()
         .chunked(3).joinToString(".").reversed()
-    return "$sign$eurosStr,${cents.toString().padStart(2,'0')} €"
+    return "$sign$eurosStr,${cents.toString().padStart(2, '0')} €"
 }
 
 private fun formatPct(value: Double): String {

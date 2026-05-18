@@ -1,9 +1,11 @@
 package es.aviferdev.n3to.ui.home
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
+import androidx.compose.ui.draw.clip
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -12,7 +14,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.ui.theme.*
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.Preview
 
 /**
  * Diálogo que permite al usuario seleccionar cuándo volver a recordarle
@@ -46,8 +48,8 @@ fun BackupReminderIntervalDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        containerColor = SurfaceWhite,
-        shape = RoundedCornerShape(16.dp),
+        containerColor = NavySurface,
+        shape = RoundedCornerShape(20.dp),
         title = {
             Text(
                 text = "Recordatorio de backup",
@@ -74,6 +76,10 @@ fun BackupReminderIntervalDialog(
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
+                            .clip(RoundedCornerShape(11.dp))
+                            .background(
+                                if (isSelected) NavySurfaceLight else NavySurface
+                            )
                             .clickable { selectedOption = days }
                             .padding(vertical = 10.dp, horizontal = 8.dp),
                         verticalAlignment = Alignment.CenterVertically
@@ -82,8 +88,8 @@ fun BackupReminderIntervalDialog(
                             selected = isSelected,
                             onClick = { selectedOption = days },
                             colors = RadioButtonDefaults.colors(
-                                selectedColor = PrimaryDark,
-                                unselectedColor = TextTertiary
+                                selectedColor   = CyanAccent,
+                                unselectedColor = NavyBorder
                             )
                         )
                         Spacer(Modifier.width(8.dp))
@@ -113,7 +119,7 @@ fun BackupReminderIntervalDialog(
             ) {
                 Text(
                     "Aceptar",
-                    color = PrimaryDark,
+                    color = CyanAccent,
                     fontWeight = FontWeight.SemiBold
                 )
             }

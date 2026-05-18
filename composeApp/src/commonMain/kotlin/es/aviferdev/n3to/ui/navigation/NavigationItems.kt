@@ -3,10 +3,10 @@ package es.aviferdev.n3to.ui.navigation
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBalanceWallet
 import androidx.compose.material.icons.filled.PieChart
-import androidx.compose.material.icons.filled.ShowChart
+import androidx.compose.material.icons.automirrored.filled.ShowChart
 import androidx.compose.material.icons.outlined.AccountBalanceWallet
 import androidx.compose.material.icons.outlined.PieChart
-import androidx.compose.material.icons.outlined.ShowChart
+import androidx.compose.material.icons.automirrored.outlined.ShowChart
 
 fun bottomNavItems() = listOf(
     BottomNavItem(
@@ -18,8 +18,8 @@ fun bottomNavItems() = listOf(
     BottomNavItem(
         screen = Screen.Portfolio,
         label = "Cartera",
-        icon = Icons.Outlined.ShowChart,
-        selectedIcon = Icons.Filled.ShowChart
+        icon = Icons.AutoMirrored.Outlined.ShowChart,
+        selectedIcon = Icons.AutoMirrored.Filled.ShowChart
     ),
     BottomNavItem(
         screen = Screen.NetWorth,

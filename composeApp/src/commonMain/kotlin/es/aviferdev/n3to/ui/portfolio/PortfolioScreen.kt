@@ -99,7 +99,7 @@ import es.aviferdev.n3to.domain.model.Portfolio
 import es.aviferdev.n3to.domain.model.PortfolioValuePoint
 import es.aviferdev.n3to.domain.portfolio.AssetPosition
 import es.aviferdev.n3to.ui.theme.N3toTheme
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.Preview
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

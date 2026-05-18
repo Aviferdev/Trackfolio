@@ -93,14 +93,14 @@ object PortfolioCalculator {
             if (netQuantity > 0.0) totalInvestedRemaining / netQuantity else 0.0
 
         val hasPrice = currentPrice != null
-        val currentValue = if (hasPrice) netQuantity * currentPrice!! else 0.0
+        val currentValue = if (hasPrice) netQuantity * currentPrice else 0.0
         val unrealizedPnL =
             if (hasPrice && netQuantity > 0.0)
-                (currentPrice!! - averageCostOfRemaining) * netQuantity
+                (currentPrice - averageCostOfRemaining) * netQuantity
             else 0.0
         val unrealizedPnLPercent =
             if (hasPrice && averageCostOfRemaining > 0.0)
-                ((currentPrice!! - averageCostOfRemaining) / averageCostOfRemaining) * 100.0
+                ((currentPrice - averageCostOfRemaining) / averageCostOfRemaining) * 100.0
             else 0.0
 
         val totalPnL = realizedPnL + unrealizedPnL + dividendIncome

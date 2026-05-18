@@ -18,7 +18,7 @@ import es.aviferdev.n3to.domain.model.RealEstateProperty
 import es.aviferdev.n3to.ui.common.DeltaIndicator
 import es.aviferdev.n3to.ui.theme.*
 import es.aviferdev.n3to.ui.theme.DragHandleColor
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.Preview
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

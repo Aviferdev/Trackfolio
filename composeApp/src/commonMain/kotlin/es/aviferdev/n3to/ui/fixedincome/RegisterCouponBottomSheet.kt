@@ -17,7 +17,7 @@ import es.aviferdev.n3to.domain.model.FixedIncomeEvent
 import es.aviferdev.n3to.domain.model.FixedIncomeEventType
 import es.aviferdev.n3to.ui.theme.*
 
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.Preview
 
 private fun formatEuro(value: Double): String {
     val intPart = value.toLong()
@@ -40,9 +40,19 @@ fun RegisterCouponBottomSheet(
 
     val isValid = grossAmountStr.toDoubleOrNull() != null
 
+    val navyFieldColors = OutlinedTextFieldDefaults.colors(
+        focusedBorderColor = CyanAccent,
+        unfocusedBorderColor = NavyBorder,
+        focusedLabelColor = CyanAccent,
+        unfocusedLabelColor = TextSecondary,
+        cursorColor = CyanAccent,
+        focusedTextColor = TextPrimary,
+        unfocusedTextColor = TextPrimary
+    )
+
     ModalBottomSheet(
         onDismissRequest = onDismiss,
-        containerColor = SurfaceWhite,
+        containerColor = NavySurface,
         sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     ) {
         Column(
@@ -63,7 +73,7 @@ fun RegisterCouponBottomSheet(
             Text(
                 text = positionName,
                 fontSize = 14.sp,
-                color = TextSecondary
+                color = CyanAccent.copy(alpha = 0.7f)
             )
 
             Spacer(Modifier.height(20.dp))
@@ -75,7 +85,7 @@ fun RegisterCouponBottomSheet(
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = PrimaryDark)
+                colors = navyFieldColors
             )
 
             Spacer(Modifier.height(12.dp))
@@ -91,7 +101,7 @@ fun RegisterCouponBottomSheet(
                     modifier = Modifier.weight(1f),
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                    colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = PrimaryDark)
+                    colors = navyFieldColors
                 )
                 OutlinedTextField(
                     value = commissionStr,
@@ -100,7 +110,7 @@ fun RegisterCouponBottomSheet(
                     modifier = Modifier.weight(1f),
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                    colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = PrimaryDark)
+                    colors = navyFieldColors
                 )
             }
 
@@ -112,7 +122,7 @@ fun RegisterCouponBottomSheet(
                 label = { Text("Notas (opcional)") },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
-                colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = PrimaryDark)
+                colors = navyFieldColors
             )
 
             val gross = grossAmountStr.toDoubleOrNull() ?: 0.0
@@ -124,21 +134,23 @@ fun RegisterCouponBottomSheet(
 
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(containerColor = SurfaceElevated)
+                shape = RoundedCornerShape(12.dp),
+                colors = CardDefaults.cardColors(containerColor = NavySurfaceLight),
+                elevation = CardDefaults.cardElevation(0.dp)
             ) {
-                Column(modifier = Modifier.padding(12.dp)) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text("Importe neto estimado", fontSize = 13.sp, color = TextSecondary)
-                        Text(
-                            text = formatEuro(netAmount),
-                            fontSize = 15.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            color = PrimaryDark
-                        )
-                    }
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 14.dp, vertical = 12.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text("Importe neto estimado", fontSize = 13.sp, color = TextSecondary)
+                    Text(
+                        text = formatEuro(netAmount),
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = CyanAccent
+                    )
                 }
             }
 
@@ -164,10 +176,13 @@ fun RegisterCouponBottomSheet(
                 },
                 modifier = Modifier.fillMaxWidth(),
                 enabled = isValid,
-                colors = ButtonDefaults.buttonColors(containerColor = PrimaryDark),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = CyanAccent,
+                    contentColor = NavyDeep
+                ),
                 shape = RoundedCornerShape(12.dp)
             ) {
-                Text("Registrar cobro", fontSize = 15.sp, modifier = Modifier.padding(vertical = 4.dp))
+                Text("Registrar cobro", fontSize = 15.sp, fontWeight = FontWeight.SemiBold, modifier = Modifier.padding(vertical = 4.dp))
             }
 
             Spacer(Modifier.height(16.dp))

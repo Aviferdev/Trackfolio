@@ -1,5 +1,6 @@
 package es.aviferdev.n3to.ui.fixedincome
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -21,7 +23,6 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
@@ -31,6 +32,7 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -44,6 +46,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -56,8 +62,7 @@ import es.aviferdev.n3to.ui.theme.formatPercent
 import kotlin.math.pow
 import es.aviferdev.n3to.ui.theme.*
 import es.aviferdev.n3to.ui.theme.LocalBalanceHidden
-import es.aviferdev.n3to.ui.theme.DividerLight
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -95,9 +100,22 @@ fun FixedIncomeDetailScreen(
     if (state.showDeleteEventDialog && state.selectedEventForDelete != null) {
         AlertDialog(
             onDismissRequest = { viewModel.hideDeleteEventDialog() },
-            containerColor = SurfaceWhite,
-            title = { Text("Eliminar evento", fontSize = 17.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary) },
-            text = { Text("¿Eliminar el evento ${state.selectedEventForDelete!!.type.label}?", fontSize = 14.sp, color = TextSecondary) },
+            containerColor = NavySurface,
+            title = {
+                Text(
+                    "Eliminar evento",
+                    fontSize = 17.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = Color.White
+                )
+            },
+            text = {
+                Text(
+                    "¿Eliminar el evento ${state.selectedEventForDelete!!.type.label}?",
+                    fontSize = 14.sp,
+                    color = Color.White.copy(alpha = 0.65f)
+                )
+            },
             confirmButton = {
                 TextButton(onClick = { viewModel.deleteEvent(state.selectedEventForDelete!!) }) {
                     Text("Eliminar", color = NegativeRed)
@@ -105,7 +123,7 @@ fun FixedIncomeDetailScreen(
             },
             dismissButton = {
                 TextButton(onClick = { viewModel.hideDeleteEventDialog() }) {
-                    Text("Cancelar", color = PrimaryDark)
+                    Text("Cancelar", color = CyanAccent)
                 }
             },
             shape = RoundedCornerShape(16.dp)
@@ -149,7 +167,7 @@ fun FixedIncomeDetailContent(
     onShowCloseSheet: (es.aviferdev.n3to.domain.model.FixedIncomeCloseType) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Box(modifier.fillMaxSize().background(BackgroundGray)) {
+    Box(modifier.fillMaxSize().background(NavyDeep)) {
         Column(Modifier.fillMaxSize()) {
             TopBarApp(
                 title = state.row?.position?.name ?: "Posición de renta fija",
@@ -161,167 +179,164 @@ fun FixedIncomeDetailContent(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
-                    CircularProgressIndicator(color = PrimaryDark)
+                    CircularProgressIndicator(color = CyanAccent)
                 }
             } else if (state.row == null) {
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text("Posición no encontrada", color = TextSecondary)
+                    Text("Posición no encontrada", color = Color.White.copy(alpha = 0.5f))
                 }
             } else {
-                val row = state.row!!
+                val row = state.row
                 val position = row.position
 
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(16.dp)
                 ) {
-                item {
-                    FixedIncomeDetailHeader(
-                        position = position,
-                        row = row,
-                        balancesHidden = balancesHidden,
-                        simulation = state.maturitySimulation
-                    )
-                }
-
-                if (position.interestFrequency != es.aviferdev.n3to.domain.model.InterestFrequency.AT_MATURITY && state.couponSchedule.isNotEmpty()) {
                     item {
-                        Spacer(Modifier.height(16.dp))
-                        CouponTimelineSection(
-                            schedule = state.couponSchedule,
-                                balancesHidden = balancesHidden
+                        FixedIncomeDetailHeader(
+                            position = position,
+                            row = row,
+                            balancesHidden = balancesHidden,
+                            simulation = state.maturitySimulation
                         )
                     }
-                }
 
-                if (state.maturitySimulation != null) {
-                    item {
-                        Spacer(Modifier.height(16.dp))
-                        MaturitySimulatorCard(
-                            simulation = state.maturitySimulation!!,
+                    if (position.interestFrequency != es.aviferdev.n3to.domain.model.InterestFrequency.AT_MATURITY && state.couponSchedule.isNotEmpty()) {
+                        item {
+                            Spacer(Modifier.height(12.dp))
+                            CouponTimelineSection(
+                                schedule = state.couponSchedule,
                                 balancesHidden = balancesHidden
+                            )
+                        }
+                    }
+
+                    if (state.maturitySimulation != null) {
+                        item {
+                            Spacer(Modifier.height(12.dp))
+                            MaturitySimulatorCard(
+                                simulation = state.maturitySimulation,
+                                balancesHidden = balancesHidden
+                            )
+                        }
+                    }
+
+                    item {
+                        Spacer(Modifier.height(12.dp))
+                        EventsHistorySection(
+                            events = state.events,
+                            balancesHidden = balancesHidden,
+                            onDeleteEvent = onDeleteEvent
                         )
                     }
-                }
 
-                item {
-                    Spacer(Modifier.height(16.dp))
-                    EventsHistorySection(
-                        events = state.events,
-                        balancesHidden = balancesHidden,
-                        onDeleteEvent = onDeleteEvent
-                    )
-                }
-
-                item {
-                    Spacer(Modifier.height(16.dp))
-                    DistributionSection(
-                        position = state.row?.position,
-                        onUpdateRegionSector = onUpdateRegionSector,
-                        modifier = Modifier.padding(horizontal = 16.dp)
-                    )
-                }
-
-                val position = state.row?.position
-                if (position?.isOpen == true) {
                     item {
-                        Spacer(Modifier.height(16.dp))
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 16.dp),
-                            verticalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            if (position.isMatured) {
-                                Button(
-                                    onClick = { onShowCloseSheet(es.aviferdev.n3to.domain.model.FixedIncomeCloseType.MATURITY) },
-                                    modifier = Modifier.fillMaxWidth(),
-                                    shape = RoundedCornerShape(12.dp),
-                                    colors = ButtonDefaults.buttonColors(
-                                        containerColor = ExpenseRed.copy(alpha = 0.15f),
-                                        contentColor = ExpenseRed
-                                    ),
-                                    border = androidx.compose.foundation.BorderStroke(
-                                        width = 1.dp,
-                                        color = ExpenseRed.copy(alpha = 0.4f)
-                                    )
-                                ) {
-                                    Text(
-                                        text = "Registrar liquidación",
-                                        fontSize = 13.sp,
-                                        fontWeight = FontWeight.Bold,
-                                        modifier = Modifier.padding(vertical = 2.dp)
-                                    )
-                                }
-                            } else {
-                                when {
-                                    position.type.allowsEarlyCancellation -> {
-                                        Button(
-                                            onClick = { onShowCloseSheet(es.aviferdev.n3to.domain.model.FixedIncomeCloseType.EARLY_CANCELLATION) },
-                                            modifier = Modifier.fillMaxWidth(),
-                                            shape = RoundedCornerShape(12.dp),
-                                            colors = ButtonDefaults.buttonColors(
-                                                containerColor = ExpenseRed.copy(alpha = 0.15f),
-                                                contentColor = ExpenseRed
-                                            ),
-                                            border = androidx.compose.foundation.BorderStroke(
-                                                width = 1.dp,
-                                                color = ExpenseRed.copy(alpha = 0.4f)
-                                            )
-                                        ) {
-                                            Text(
-                                                text = "Cancelar anticipadamente",
-                                                fontSize = 13.sp,
-                                                fontWeight = FontWeight.Bold,
-                                                modifier = Modifier.padding(vertical = 2.dp)
-                                            )
-                                        }
-                                        OutlinedButton(
-                                            onClick = { onShowCloseSheet(es.aviferdev.n3to.domain.model.FixedIncomeCloseType.MATURITY) },
-                                            modifier = Modifier.fillMaxWidth(),
-                                            shape = RoundedCornerShape(12.dp)
-                                        ) {
-                                            Text(
-                                                text = "Liquidar al vencimiento",
-                                                fontSize = 13.sp,
-                                                modifier = Modifier.padding(vertical = 2.dp)
-                                            )
-                                        }
+                        Spacer(Modifier.height(12.dp))
+                        DistributionSection(
+                            position = state.row.position,
+                            onUpdateRegionSector = onUpdateRegionSector
+                        )
+                    }
+
+                    val position = state.row.position
+                    if (position.isOpen) {
+                        item {
+                            Spacer(Modifier.height(16.dp))
+                            Column(
+                                modifier = Modifier.fillMaxWidth(),
+                                verticalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                if (position.isMatured) {
+                                    Button(
+                                        onClick = { onShowCloseSheet(es.aviferdev.n3to.domain.model.FixedIncomeCloseType.MATURITY) },
+                                        modifier = Modifier.fillMaxWidth(),
+                                        shape = RoundedCornerShape(12.dp),
+                                        colors = ButtonDefaults.buttonColors(
+                                            containerColor = ExpenseRed.copy(alpha = 0.15f),
+                                            contentColor = ExpenseRed
+                                        ),
+                                        border = BorderStroke(1.dp, ExpenseRed.copy(alpha = 0.4f))
+                                    ) {
+                                        Text(
+                                            text = "Registrar liquidación",
+                                            fontSize = 13.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            modifier = Modifier.padding(vertical = 2.dp)
+                                        )
                                     }
-                                    position.type.allowsSecondarySale -> {
-                                        Button(
-                                            onClick = { onShowCloseSheet(es.aviferdev.n3to.domain.model.FixedIncomeCloseType.SECONDARY_SALE) },
-                                            modifier = Modifier.fillMaxWidth(),
-                                            shape = RoundedCornerShape(12.dp),
-                                            colors = ButtonDefaults.buttonColors(
-                                                containerColor = ExpenseRed.copy(alpha = 0.15f),
-                                                contentColor = ExpenseRed
-                                            ),
-                                            border = androidx.compose.foundation.BorderStroke(
-                                                width = 1.dp,
-                                                color = ExpenseRed.copy(alpha = 0.4f)
-                                            )
-                                        ) {
-                                            Text(
-                                                text = "Vender en mercado secundario",
-                                                fontSize = 13.sp,
-                                                fontWeight = FontWeight.Bold,
-                                                modifier = Modifier.padding(vertical = 2.dp)
-                                            )
+                                } else {
+                                    when {
+                                        position.type.allowsEarlyCancellation -> {
+                                            Button(
+                                                onClick = { onShowCloseSheet(es.aviferdev.n3to.domain.model.FixedIncomeCloseType.EARLY_CANCELLATION) },
+                                                modifier = Modifier.fillMaxWidth(),
+                                                shape = RoundedCornerShape(12.dp),
+                                                colors = ButtonDefaults.buttonColors(
+                                                    containerColor = ExpenseRed.copy(alpha = 0.15f),
+                                                    contentColor = ExpenseRed
+                                                ),
+                                                border = BorderStroke(1.dp, ExpenseRed.copy(alpha = 0.4f))
+                                            ) {
+                                                Text(
+                                                    text = "Cancelar anticipadamente",
+                                                    fontSize = 13.sp,
+                                                    fontWeight = FontWeight.Bold,
+                                                    modifier = Modifier.padding(vertical = 2.dp)
+                                                )
+                                            }
+                                            OutlinedButton(
+                                                onClick = { onShowCloseSheet(es.aviferdev.n3to.domain.model.FixedIncomeCloseType.MATURITY) },
+                                                modifier = Modifier.fillMaxWidth(),
+                                                shape = RoundedCornerShape(12.dp),
+                                                border = BorderStroke(1.dp, NavyBorder),
+                                                colors = ButtonDefaults.outlinedButtonColors(
+                                                    contentColor = CyanAccent
+                                                )
+                                            ) {
+                                                Text(
+                                                    text = "Liquidar al vencimiento",
+                                                    fontSize = 13.sp,
+                                                    modifier = Modifier.padding(vertical = 2.dp)
+                                                )
+                                            }
                                         }
-                                        OutlinedButton(
-                                            onClick = { onShowCloseSheet(es.aviferdev.n3to.domain.model.FixedIncomeCloseType.MATURITY) },
-                                            modifier = Modifier.fillMaxWidth(),
-                                            shape = RoundedCornerShape(12.dp)
-                                        ) {
-                                            Text(
-                                                text = "Liquidar al vencimiento",
-                                                fontSize = 13.sp,
-                                                modifier = Modifier.padding(vertical = 2.dp)
-                                            )
+                                        position.type.allowsSecondarySale -> {
+                                            Button(
+                                                onClick = { onShowCloseSheet(es.aviferdev.n3to.domain.model.FixedIncomeCloseType.SECONDARY_SALE) },
+                                                modifier = Modifier.fillMaxWidth(),
+                                                shape = RoundedCornerShape(12.dp),
+                                                colors = ButtonDefaults.buttonColors(
+                                                    containerColor = ExpenseRed.copy(alpha = 0.15f),
+                                                    contentColor = ExpenseRed
+                                                ),
+                                                border = BorderStroke(1.dp, ExpenseRed.copy(alpha = 0.4f))
+                                            ) {
+                                                Text(
+                                                    text = "Vender en mercado secundario",
+                                                    fontSize = 13.sp,
+                                                    fontWeight = FontWeight.Bold,
+                                                    modifier = Modifier.padding(vertical = 2.dp)
+                                                )
+                                            }
+                                            OutlinedButton(
+                                                onClick = { onShowCloseSheet(es.aviferdev.n3to.domain.model.FixedIncomeCloseType.MATURITY) },
+                                                modifier = Modifier.fillMaxWidth(),
+                                                shape = RoundedCornerShape(12.dp),
+                                                border = BorderStroke(1.dp, NavyBorder),
+                                                colors = ButtonDefaults.outlinedButtonColors(
+                                                    contentColor = CyanAccent
+                                                )
+                                            ) {
+                                                Text(
+                                                    text = "Liquidar al vencimiento",
+                                                    fontSize = 13.sp,
+                                                    modifier = Modifier.padding(vertical = 2.dp)
+                                                )
+                                            }
                                         }
                                     }
                                 }
@@ -332,7 +347,6 @@ fun FixedIncomeDetailContent(
             }
         }
     }
-}
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -398,145 +412,8 @@ fun FixedIncomeDetailContentPreview() {
         )
     }
 }
-// ─── Distribution Section (Región y Sector) ───────────────────────────────────
-@Composable
-private fun DistributionSection(
-    position: es.aviferdev.n3to.domain.model.FixedIncomePosition?,
-    onUpdateRegionSector: (String?, String?) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    // Valores predefinidos para región y sector
-    val regions = listOf("Europa", "EE.UU.", "España", "Emerging Markets", "Global")
-    val sectors = listOf("Gobierno", "Corporativo", "Banca", "Energía", "Inmobiliario", "Otro")
 
-    var showRegionDialog by remember { mutableStateOf(false) }
-    var showSectorDialog by remember { mutableStateOf(false) }
-
-    Card(
-        modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = SurfaceWhite)
-    ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text(
-                text = "Distribución",
-                fontSize = 16.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = TextPrimary
-            )
-
-            Spacer(Modifier.height(12.dp))
-
-            // Región
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Column {
-                    Text("Región", fontSize = 11.sp, color = TextSecondary)
-                    Text(
-                        text = position?.region ?: "No asignada",
-                        fontSize = 13.sp,
-                        fontWeight = FontWeight.Medium,
-                        color = if (position?.region != null) TextPrimary else TextTertiary
-                    )
-                }
-                TextButton(onClick = { showRegionDialog = true }) {
-                    Text("Cambiar", fontSize = 12.sp, color = PrimaryDark)
-                }
-            }
-
-            HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
-
-            // Sector
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Column {
-                    Text("Sector", fontSize = 11.sp, color = TextSecondary)
-                    Text(
-                        text = position?.sector ?: "No asignado",
-                        fontSize = 13.sp,
-                        fontWeight = FontWeight.Medium,
-                        color = if (position?.sector != null) TextPrimary else TextTertiary
-                    )
-                }
-                TextButton(onClick = { showSectorDialog = true }) {
-                    Text("Cambiar", fontSize = 12.sp, color = PrimaryDark)
-                }
-            }
-        }
-    }
-
-    // Diálogo para seleccionar región
-    if (showRegionDialog) {
-        AlertDialog(
-            onDismissRequest = { showRegionDialog = false },
-            containerColor = SurfaceWhite,
-            title = { Text("Seleccionar Región", fontSize = 17.sp, fontWeight = FontWeight.SemiBold) },
-            text = {
-                Column {
-                    regions.forEach { region ->
-                        TextButton(
-                            onClick = {
-                                onUpdateRegionSector(region, position?.sector)
-                                showRegionDialog = false
-                            },
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            Text(
-                                text = region,
-                                color = if (position?.region == region) PrimaryDark else TextPrimary,
-                                fontWeight = if (position?.region == region) FontWeight.Bold else FontWeight.Normal
-                            )
-                        }
-                    }
-                }
-            },
-            confirmButton = {
-                TextButton(onClick = { showRegionDialog = false }) {
-                    Text("Cancelar", color = TextSecondary)
-                }
-            }
-        )
-    }
-
-    // Diálogo para seleccionar sector
-    if (showSectorDialog) {
-        AlertDialog(
-            onDismissRequest = { showSectorDialog = false },
-            containerColor = SurfaceWhite,
-            title = { Text("Seleccionar Sector", fontSize = 17.sp, fontWeight = FontWeight.SemiBold) },
-            text = {
-                Column {
-                    sectors.forEach { sector ->
-                        TextButton(
-                            onClick = {
-                                onUpdateRegionSector(position?.region, sector)
-                                showSectorDialog = false
-                            },
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            Text(
-                                text = sector,
-                                color = if (position?.sector == sector) PrimaryDark else TextPrimary,
-                                fontWeight = if (position?.sector == sector) FontWeight.Bold else FontWeight.Normal
-                            )
-                        }
-                    }
-                }
-            },
-            confirmButton = {
-                TextButton(onClick = { showSectorDialog = false }) {
-                    Text("Cancelar", color = TextSecondary)
-                }
-            }
-        )
-    }
-}
+// ─── Hero Header ──────────────────────────────────────────────────────────────
 
 @Composable
 private fun FixedIncomeDetailHeader(
@@ -545,126 +422,141 @@ private fun FixedIncomeDetailHeader(
     balancesHidden: Boolean,
     simulation: es.aviferdev.n3to.domain.portfolio.MaturitySimulation? = null
 ) {
-    // Hero card with WarnAmber background (matching JSX design)
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(14.dp),
-        colors = CardDefaults.cardColors(containerColor = WarnAmber.copy(alpha = 0.15f)),
-        border = CardDefaults.outlinedCardBorder().copy(brush = androidx.compose.ui.graphics.SolidColor(WarnAmber.copy(alpha = 0.2f)))
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .wrapContentHeight()
+            .clip(RoundedCornerShape(20.dp))
+            .drawBehind {
+                drawRect(
+                    brush = Brush.linearGradient(
+                        colors = listOf(NavySurface, NavySurfaceLight),
+                        start = Offset(0f, 0f),
+                        end = Offset(size.width, size.height)
+                    )
+                )
+                val orbRadius = 100.dp.toPx()
+                val cx = size.width - 30.dp.toPx()
+                val cy = 30.dp.toPx()
+                drawCircle(
+                    brush = Brush.radialGradient(
+                        colors = listOf(CyanGlow.copy(alpha = 0.14f), Color.Transparent),
+                        center = Offset(cx, cy),
+                        radius = orbRadius
+                    ),
+                    radius = orbRadius,
+                    center = Offset(cx, cy)
+                )
+            }
+            .padding(horizontal = 20.dp, vertical = 18.dp)
     ) {
-        Column(modifier = Modifier.padding(18.dp)) {
-            // Top row: label + amount + tag
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.Top
-            ) {
-                Column {
-                    Text(
-                        "Renta fija · ${if (position.isOpen) "ACTIVO" else "CERRADO"}",
-                        fontSize = 10.sp,
-                        fontWeight = FontWeight.Medium,
-                        color = WarnAmber
-                    )
-                    Spacer(Modifier.height(4.dp))
-                    Text(
-                        "${maskAmount(formatAmount(position.principal), balancesHidden)} €",
-                        fontSize = 22.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = TextPrimary,
-                        letterSpacing = (-0.8).sp
-                    )
-                    Text(
-                        "Nominal",
-                        fontSize = 11.sp,
-                        color = TextTertiary,
-                        modifier = Modifier.padding(top = 3.dp)
-                    )
-                }
-                // Tag
-                StatusTag(
-                    label = position.type.label.uppercase(),
-                    color = WarnAmber
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.Top
+        ) {
+            Column {
+                Text(
+                    text = "Renta fija · ${if (position.isOpen) "ACTIVO" else "CERRADO"}",
+                    fontSize = 11.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = CyanAccent.copy(alpha = 0.8f)
+                )
+                Spacer(Modifier.height(4.dp))
+                Text(
+                    text = "${maskAmount(formatAmount(position.principal), balancesHidden)} €",
+                    fontSize = 30.sp,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = Color.White,
+                    letterSpacing = (-1.2).sp
+                )
+                Text(
+                    text = "Principal nominal",
+                    fontSize = 11.sp,
+                    color = Color.White.copy(alpha = 0.45f),
+                    modifier = Modifier.padding(top = 3.dp)
                 )
             }
+            StatusTag(
+                label = position.type.label.uppercase(),
+                color = CyanAccent
+            )
+        }
 
-            Spacer(Modifier.height(14.dp))
+        Spacer(Modifier.height(16.dp))
 
-            // 2x2 grid with details
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                // Cupón anual
-                DetailCell(
-                    label = "Cupón anual",
-                    value = "${position.interestRate?.let { "${formatPercent(it)}%" } ?: "—"} · ${maskAmount(formatAmount(position.principal * (position.interestRate ?: 0.0) / 100.0), balancesHidden)} €",
-                    modifier = Modifier.weight(1f)
-                )
-                // Vencimiento
-                DetailCell(
-                    label = "Vencimiento",
-                    value = formatDate(position.maturityDate),
-                    modifier = Modifier.weight(1f)
-                )
-            }
-            Spacer(Modifier.height(8.dp))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                val tirNet = if (simulation != null && position.totalTermDays > 0) {
-                    val ratio = simulation.netAtMaturity / simulation.capitalInvested
-                    (ratio.pow(365.0 / position.totalTermDays) - 1.0) * 100.0
-                } else position.interestRate
-                DetailCell(
-                    label = "TIR neta est.",
-                    value = "${formatPercent(tirNet)}%",
-                    modifier = Modifier.weight(1f)
-                )
-                DetailCell(
-                    label = "Plataforma",
-                    value = position.platformId.ifEmpty { "—" },
-                    modifier = Modifier.weight(1f)
-                )
-            }
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            DetailCell(
+                label = "Cupón anual",
+                value = "${formatPercent(position.interestRate)}% · ${maskAmount(formatAmount(position.principal * position.interestRate / 100.0), balancesHidden)} €",
+                modifier = Modifier.weight(1f)
+            )
+            DetailCell(
+                label = "Vencimiento",
+                value = formatDate(position.maturityDate),
+                modifier = Modifier.weight(1f)
+            )
+        }
+        Spacer(Modifier.height(8.dp))
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            val tirNet = if (simulation != null && position.totalTermDays > 0) {
+                val ratio = simulation.netAtMaturity / simulation.capitalInvested
+                (ratio.pow(365.0 / position.totalTermDays) - 1.0) * 100.0
+            } else position.interestRate
+            DetailCell(
+                label = "TIR neta est.",
+                value = "${formatPercent(tirNet)}%",
+                modifier = Modifier.weight(1f)
+            )
+            DetailCell(
+                label = "Plataforma",
+                value = position.platformId.ifEmpty { "—" },
+                modifier = Modifier.weight(1f)
+            )
         }
     }
 }
 
 @Composable
 private fun DetailCell(label: String, value: String, modifier: Modifier = Modifier) {
-    Card(
-        modifier = modifier,
-        shape = RoundedCornerShape(8.dp),
-        colors = CardDefaults.cardColors(containerColor = WarnAmber.copy(alpha = 0.1f)),
-        elevation = CardDefaults.cardElevation(0.dp)
+    Column(
+        modifier = modifier
+            .clip(RoundedCornerShape(10.dp))
+            .background(NavySurfaceLight)
+            .padding(10.dp)
     ) {
-        Column(modifier = Modifier.padding(8.dp)) {
-            Text(label, fontSize = 10.sp, color = WarnAmber.copy(alpha = 0.7f))
-            Spacer(Modifier.height(2.dp))
-            Text(value, fontSize = 11.sp, fontWeight = FontWeight.Bold, color = TextPrimary)
-        }
+        Text(label, fontSize = 10.sp, color = CyanAccent.copy(alpha = 0.7f))
+        Spacer(Modifier.height(2.dp))
+        Text(value, fontSize = 12.sp, fontWeight = FontWeight.SemiBold, color = Color.White)
+    }
 }
-}
+
+// ─── Coupon Timeline ──────────────────────────────────────────────────────────
 
 @Composable
 private fun CouponTimelineSection(
     schedule: List<ScheduledCoupon>,
-
     balancesHidden: Boolean
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = SurfaceWhite)
+        colors = CardDefaults.cardColors(containerColor = NavySurface),
+        elevation = CardDefaults.cardElevation(0.dp),
+        border = BorderStroke(0.5.dp, NavyBorder)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
                 text = "Calendario de cobros",
-                fontSize = 16.sp,
+                fontSize = 15.sp,
                 fontWeight = FontWeight.SemiBold,
-                color = TextPrimary
+                color = Color.White
             )
 
             Spacer(Modifier.height(12.dp))
@@ -682,7 +574,7 @@ private fun CouponTimelineSection(
                             modifier = Modifier
                                 .size(8.dp)
                                 .background(
-                                    if (coupon.isPaid) PositiveGreen else PrimaryDark,
+                                    if (coupon.isPaid) PositiveGreen else CyanAccent,
                                     RoundedCornerShape(4.dp)
                                 )
                         )
@@ -691,26 +583,26 @@ private fun CouponTimelineSection(
                             Text(
                                 text = formatDate(coupon.date),
                                 fontSize = 13.sp,
-                                color = TextPrimary
+                                color = Color.White
                             )
                             Text(
-                                text = if (coupon.isPaid) "✅ Cobrado" else "🔵 Pendiente",
+                                text = if (coupon.isPaid) "Cobrado" else "Pendiente",
                                 fontSize = 11.sp,
-                                color = TextSecondary
+                                color = if (coupon.isPaid) PositiveGreen.copy(alpha = 0.8f) else CyanAccent.copy(alpha = 0.7f)
                             )
                         }
                     }
                     Text(
                         text = "${maskAmount(formatAmount(coupon.grossAmount), balancesHidden)} €",
                         fontSize = 13.sp,
-                        fontWeight = FontWeight.Medium,
-                        color = TextPrimary
+                        fontWeight = FontWeight.SemiBold,
+                        color = Color.White
                     )
                 }
 
                 if (index < schedule.lastIndex) {
                     HorizontalDivider(
-                        color = DividerLight,
+                        color = NavyBorder,
                         modifier = Modifier.padding(start = 20.dp)
                     )
                 }
@@ -719,82 +611,88 @@ private fun CouponTimelineSection(
     }
 }
 
+// ─── Maturity Simulator ───────────────────────────────────────────────────────
+
 @Composable
 private fun MaturitySimulatorCard(
     simulation: es.aviferdev.n3to.domain.portfolio.MaturitySimulation,
-
     balancesHidden: Boolean
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = SurfaceWhite)
+        colors = CardDefaults.cardColors(containerColor = NavySurface),
+        elevation = CardDefaults.cardElevation(0.dp),
+        border = BorderStroke(0.5.dp, NavyBorder)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
                 text = "Simulación de vencimiento",
-                fontSize = 16.sp,
+                fontSize = 15.sp,
                 fontWeight = FontWeight.SemiBold,
-                color = TextPrimary
+                color = Color.White
             )
 
             Spacer(Modifier.height(12.dp))
 
             SimulatorRow(
                 label = "Capital invertido",
-                value = maskAmount(formatAmount(simulation.capitalInvested), balancesHidden),
+                value = maskAmount(formatAmount(simulation.capitalInvested), balancesHidden)
             )
             SimulatorRow(
                 label = "Intereses brutos",
                 value = "+ ${maskAmount(formatAmount(simulation.grossInterest), balancesHidden)}",
-                valueColor = PositiveGreen
+                valueColor = PnLPositive
             )
             SimulatorRow(
                 label = "Cupones ya cobrados",
                 value = "- ${maskAmount(formatAmount(simulation.collectedCoupons), balancesHidden)}",
-                valueColor = TextSecondary
+                valueColor = Color.White.copy(alpha = 0.5f)
             )
             SimulatorRow(
                 label = "Retención estimada (19%)",
                 value = "- ${maskAmount(formatAmount(simulation.estimatedIrpf), balancesHidden)}",
-                valueColor = NegativeRed
+                valueColor = PnLNegative
             )
             if (simulation.estimatedCommission > 0) {
                 SimulatorRow(
                     label = "Comisiones estimadas",
                     value = "- ${maskAmount(formatAmount(simulation.estimatedCommission), balancesHidden)}",
-                        valueColor = NegativeRed
+                    valueColor = PnLNegative
                 )
             }
 
-            HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+            HorizontalDivider(
+                color = NavyBorder,
+                modifier = Modifier.padding(vertical = 8.dp)
+            )
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = "Neto estimado al vencimiento",
+                    text = "Neto al vencimiento",
                     fontSize = 14.sp,
                     fontWeight = FontWeight.SemiBold,
-                    color = TextPrimary
+                    color = Color.White
                 )
                 Text(
                     text = "${maskAmount(formatAmount(simulation.netAtMaturity), balancesHidden)} €",
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold,
-                    color = PrimaryDark
+                    color = CyanAccent
                 )
             }
 
-            Spacer(Modifier.height(8.dp))
+            Spacer(Modifier.height(6.dp))
 
             val sign = if (simulation.netProfit >= 0) "+" else ""
             Text(
-                text = "Beneficio neto total: $sign${maskAmount(formatAmount(simulation.netProfit), balancesHidden)} €",
+                text = "Beneficio neto: $sign${maskAmount(formatAmount(simulation.netProfit), balancesHidden)} €",
                 fontSize = 13.sp,
                 fontWeight = FontWeight.Medium,
-                color = if (simulation.netProfit >= 0) PositiveGreen else NegativeRed
+                color = if (simulation.netProfit >= 0) PnLPositive else PnLNegative
             )
         }
     }
@@ -804,8 +702,7 @@ private fun MaturitySimulatorCard(
 private fun SimulatorRow(
     label: String,
     value: String,
-
-    valueColor: Color = TextPrimary
+    valueColor: Color = Color.White.copy(alpha = 0.85f)
 ) {
     Row(
         modifier = Modifier
@@ -813,7 +710,7 @@ private fun SimulatorRow(
             .padding(vertical = 4.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Text(text = label, fontSize = 13.sp, color = TextSecondary)
+        Text(text = label, fontSize = 13.sp, color = Color.White.copy(alpha = 0.55f))
         Text(
             text = "$value €",
             fontSize = 13.sp,
@@ -823,24 +720,27 @@ private fun SimulatorRow(
     }
 }
 
+// ─── Events History ───────────────────────────────────────────────────────────
+
 @Composable
 private fun EventsHistorySection(
     events: List<FixedIncomeEvent>,
-
     balancesHidden: Boolean,
     onDeleteEvent: (FixedIncomeEvent) -> Unit
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = SurfaceWhite)
+        colors = CardDefaults.cardColors(containerColor = NavySurface),
+        elevation = CardDefaults.cardElevation(0.dp),
+        border = BorderStroke(0.5.dp, NavyBorder)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
                 text = "Historial de eventos",
-                fontSize = 16.sp,
+                fontSize = 15.sp,
                 fontWeight = FontWeight.SemiBold,
-                color = TextPrimary
+                color = Color.White
             )
 
             Spacer(Modifier.height(12.dp))
@@ -849,7 +749,7 @@ private fun EventsHistorySection(
                 Text(
                     text = "Sin eventos registrados",
                     fontSize = 13.sp,
-                    color = TextSecondary
+                    color = Color.White.copy(alpha = 0.4f)
                 )
             } else {
                 events.forEach { event ->
@@ -860,7 +760,7 @@ private fun EventsHistorySection(
                     )
                     if (events.last() != event) {
                         HorizontalDivider(
-                            color = DividerLight,
+                            color = NavyBorder,
                             modifier = Modifier.padding(vertical = 8.dp)
                         )
                     }
@@ -873,7 +773,6 @@ private fun EventsHistorySection(
 @Composable
 private fun EventItem(
     event: FixedIncomeEvent,
-
     balancesHidden: Boolean,
     onDelete: () -> Unit
 ) {
@@ -888,12 +787,12 @@ private fun EventItem(
                     text = event.type.label,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Medium,
-                    color = TextPrimary
+                    color = Color.White
                 )
                 Text(
                     text = formatDate(event.date),
                     fontSize = 11.sp,
-                    color = TextSecondary
+                    color = Color.White.copy(alpha = 0.45f)
                 )
             }
             Column(horizontalAlignment = Alignment.End) {
@@ -901,13 +800,13 @@ private fun EventItem(
                     text = "${maskAmount(formatAmount(event.netAmount), balancesHidden)} €",
                     fontSize = 14.sp,
                     fontWeight = FontWeight.SemiBold,
-                    color = if (event.netAmount >= 0) PositiveGreen else NegativeRed
+                    color = if (event.netAmount >= 0) PnLPositive else PnLNegative
                 )
                 if (event.irpfPercent > 0 || event.commissionAmount > 0) {
                     Text(
                         text = "Bruto: ${maskAmount(formatAmount(event.grossAmount), balancesHidden)}",
                         fontSize = 10.sp,
-                        color = TextSecondary
+                        color = Color.White.copy(alpha = 0.4f)
                     )
                 }
             }
@@ -920,7 +819,7 @@ private fun EventItem(
                     Text(
                         text = "Retención ${formatPercent(event.irpfPercent)}%",
                         fontSize = 10.sp,
-                        color = NegativeRed
+                        color = PnLNegative
                     )
                     Spacer(Modifier.width(8.dp))
                 }
@@ -928,10 +827,165 @@ private fun EventItem(
                     Text(
                         text = "Comisión: ${maskAmount(formatAmount(event.commissionAmount), balancesHidden)}",
                         fontSize = 10.sp,
-                        color = TextSecondary
+                        color = Color.White.copy(alpha = 0.45f)
                     )
                 }
             }
         }
+    }
+}
+
+// ─── Distribution Section ─────────────────────────────────────────────────────
+
+@Composable
+private fun DistributionSection(
+    position: es.aviferdev.n3to.domain.model.FixedIncomePosition?,
+    onUpdateRegionSector: (String?, String?) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val regions = listOf("Europa", "EE.UU.", "España", "Emerging Markets", "Global")
+    val sectors = listOf("Gobierno", "Corporativo", "Banca", "Energía", "Inmobiliario", "Otro")
+
+    var showRegionDialog by remember { mutableStateOf(false) }
+    var showSectorDialog by remember { mutableStateOf(false) }
+
+    Card(
+        modifier = modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = NavySurface),
+        elevation = CardDefaults.cardElevation(0.dp),
+        border = BorderStroke(0.5.dp, NavyBorder)
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(
+                text = "Distribución",
+                fontSize = 15.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = Color.White
+            )
+
+            Spacer(Modifier.height(12.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column {
+                    Text("Región", fontSize = 11.sp, color = Color.White.copy(alpha = 0.45f))
+                    Text(
+                        text = position?.region ?: "No asignada",
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = if (position?.region != null) Color.White else Color.White.copy(alpha = 0.35f)
+                    )
+                }
+                TextButton(onClick = { showRegionDialog = true }) {
+                    Text("Cambiar", fontSize = 12.sp, color = CyanAccent)
+                }
+            }
+
+            HorizontalDivider(
+                color = NavyBorder,
+                modifier = Modifier.padding(vertical = 4.dp)
+            )
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column {
+                    Text("Sector", fontSize = 11.sp, color = Color.White.copy(alpha = 0.45f))
+                    Text(
+                        text = position?.sector ?: "No asignado",
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = if (position?.sector != null) Color.White else Color.White.copy(alpha = 0.35f)
+                    )
+                }
+                TextButton(onClick = { showSectorDialog = true }) {
+                    Text("Cambiar", fontSize = 12.sp, color = CyanAccent)
+                }
+            }
+        }
+    }
+
+    if (showRegionDialog) {
+        AlertDialog(
+            onDismissRequest = { showRegionDialog = false },
+            containerColor = NavySurface,
+            title = {
+                Text(
+                    "Seleccionar Región",
+                    fontSize = 17.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = Color.White
+                )
+            },
+            text = {
+                Column {
+                    regions.forEach { region ->
+                        TextButton(
+                            onClick = {
+                                onUpdateRegionSector(region, position?.sector)
+                                showRegionDialog = false
+                            },
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text(
+                                text = region,
+                                color = if (position?.region == region) CyanAccent else Color.White.copy(alpha = 0.75f),
+                                fontWeight = if (position?.region == region) FontWeight.Bold else FontWeight.Normal
+                            )
+                        }
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = { showRegionDialog = false }) {
+                    Text("Cancelar", color = Color.White.copy(alpha = 0.5f))
+                }
+            }
+        )
+    }
+
+    if (showSectorDialog) {
+        AlertDialog(
+            onDismissRequest = { showSectorDialog = false },
+            containerColor = NavySurface,
+            title = {
+                Text(
+                    "Seleccionar Sector",
+                    fontSize = 17.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = Color.White
+                )
+            },
+            text = {
+                Column {
+                    sectors.forEach { sector ->
+                        TextButton(
+                            onClick = {
+                                onUpdateRegionSector(position?.region, sector)
+                                showSectorDialog = false
+                            },
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text(
+                                text = sector,
+                                color = if (position?.sector == sector) CyanAccent else Color.White.copy(alpha = 0.75f),
+                                fontWeight = if (position?.sector == sector) FontWeight.Bold else FontWeight.Normal
+                            )
+                        }
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = { showSectorDialog = false }) {
+                    Text("Cancelar", color = Color.White.copy(alpha = 0.5f))
+                }
+            }
+        )
     }
 }

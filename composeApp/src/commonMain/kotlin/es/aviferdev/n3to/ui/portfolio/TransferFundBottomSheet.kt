@@ -26,7 +26,7 @@ import es.aviferdev.n3to.domain.model.Platform
 import es.aviferdev.n3to.domain.portfolio.PortfolioCalculator
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import es.aviferdev.n3to.ui.theme.*
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.Preview
 
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate

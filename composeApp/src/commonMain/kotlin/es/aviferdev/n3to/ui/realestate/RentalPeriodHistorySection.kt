@@ -15,7 +15,7 @@ import es.aviferdev.n3to.domain.model.RentalPeriod
 import es.aviferdev.n3to.ui.common.SectionHeader
 import es.aviferdev.n3to.ui.common.StatusTag
 import es.aviferdev.n3to.ui.theme.*
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
 fun RentalPeriodHistorySection(

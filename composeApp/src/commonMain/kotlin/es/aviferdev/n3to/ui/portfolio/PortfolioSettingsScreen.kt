@@ -35,7 +35,7 @@ import es.aviferdev.n3to.domain.model.AssetCategory
 import es.aviferdev.n3to.domain.model.AssetSector
 import es.aviferdev.n3to.domain.model.AssetRegion
 import es.aviferdev.n3to.ui.theme.N3toTheme
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
 fun PortfolioSettingsScreen(
@@ -381,7 +381,7 @@ fun PortfolioSettingsContent(
                                     )
                                     if (!platform.notes.isNullOrBlank()) {
                                         Text(
-                                            text     = platform.notes!!,
+                                            text     = platform.notes,
                                             fontSize = 11.sp,
                                             color    = TextSecondary,
                                             maxLines = 1

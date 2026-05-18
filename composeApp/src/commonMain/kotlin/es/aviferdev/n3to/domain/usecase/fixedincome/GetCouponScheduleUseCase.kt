@@ -26,7 +26,6 @@ class GetCouponScheduleUseCase {
             InterestFrequency.QUARTERLY -> position.estimatedGrossInterest / (position.totalTermDays / 91.0)
             InterestFrequency.SEMIANNUAL -> position.estimatedGrossInterest / (position.totalTermDays / 182.0)
             InterestFrequency.ANNUAL -> position.estimatedGrossInterest / (position.totalTermDays / 365.0)
-            else -> position.estimatedGrossInterest
         }
 
         return FixedIncomeCalculator.couponSchedule(

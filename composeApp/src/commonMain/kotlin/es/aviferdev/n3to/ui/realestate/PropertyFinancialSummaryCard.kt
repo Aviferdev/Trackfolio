@@ -14,7 +14,7 @@ import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.usecase.realestate.PropertyFinancialSummary
 import es.aviferdev.n3to.ui.common.SectionHeader
 import es.aviferdev.n3to.ui.theme.*
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
 fun PropertyFinancialSummaryCard(

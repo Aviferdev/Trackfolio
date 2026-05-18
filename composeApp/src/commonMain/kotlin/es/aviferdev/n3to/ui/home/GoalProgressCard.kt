@@ -13,7 +13,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.GpsFixed
-import androidx.compose.material.icons.outlined.ShowChart
+import androidx.compose.material.icons.automirrored.outlined.ShowChart
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -123,7 +123,7 @@ fun GoalProgressCard(
                 // Barra de inversión
                 if (progress.investmentTarget > 0.0) {
                     GoalProgressRow(
-                        icon = Icons.Outlined.ShowChart,
+                        icon = Icons.AutoMirrored.Outlined.ShowChart,
                         label = "Inversión",
                         target = progress.investmentTarget,
                         actual = progress.investmentActual,

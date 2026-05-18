@@ -50,7 +50,7 @@ import es.aviferdev.n3to.ui.theme.NavySurfaceLight
 import es.aviferdev.n3to.ui.theme.TextPrimary
 import es.aviferdev.n3to.ui.theme.TextSecondary
 import es.aviferdev.n3to.ui.theme.TextTertiary
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.Preview
 
 // ─── Constantes de colores del sistema navy ─────────────────
 private val CardBorder    = NavyBorder

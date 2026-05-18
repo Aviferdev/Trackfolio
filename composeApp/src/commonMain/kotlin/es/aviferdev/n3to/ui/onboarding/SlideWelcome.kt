@@ -43,7 +43,7 @@ import es.aviferdev.n3to.ui.theme.TextSecondary
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.app_icon
 import org.jetbrains.compose.resources.painterResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.Preview
 import kotlin.math.min
 
 /**
