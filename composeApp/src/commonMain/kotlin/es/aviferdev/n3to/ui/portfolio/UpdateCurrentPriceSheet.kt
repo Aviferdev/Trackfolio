@@ -20,6 +20,16 @@ import es.aviferdev.n3to.domain.model.Asset
 import es.aviferdev.n3to.ui.theme.*
 import es.aviferdev.n3to.ui.theme.formatAmountEuro
 
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.common_cancel
+import n3to.composeapp.generated.resources.portfolio_update_cancel
+import n3to.composeapp.generated.resources.portfolio_update_no_price
+import n3to.composeapp.generated.resources.portfolio_update_previous_price
+import n3to.composeapp.generated.resources.portfolio_update_save
+import n3to.composeapp.generated.resources.portfolio_update_save_hint
+import n3to.composeapp.generated.resources.portfolio_update_price_title
+import n3to.composeapp.generated.resources.portfolio_update_price_date
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 /**
@@ -66,7 +76,7 @@ fun UpdateCurrentPriceSheet(
             Spacer(Modifier.height(4.dp))
 
             Text(
-                text       = "Actualizar precio",
+                text       = stringResource(Res.string.portfolio_update_price_title),
                 fontSize   = 18.sp,
                 fontWeight = FontWeight.SemiBold,
                 color      = TextPrimary
@@ -82,9 +92,9 @@ fun UpdateCurrentPriceSheet(
 
             Spacer(Modifier.height(8.dp))
             val currentLabel = if (asset.currentPrice != null) {
-                "Precio anterior: ${formatAmountEuro(asset.currentPrice!!)}"
+                stringResource(Res.string.portfolio_update_previous_price, formatAmountEuro(asset.currentPrice!!))
             } else {
-                "Aún no hay un precio registrado para este activo"
+                stringResource(Res.string.portfolio_update_no_price)
             }
             Text(
                 text      = currentLabel,
@@ -125,7 +135,7 @@ fun UpdateCurrentPriceSheet(
 
             Spacer(Modifier.height(8.dp))
             Text(
-                text     = "Quedará registrado con la fecha y hora actual.",
+                text     = stringResource(Res.string.portfolio_update_save_hint),
                 fontSize = 11.sp,
                 color    = TextSecondary
             )
@@ -145,12 +155,12 @@ fun UpdateCurrentPriceSheet(
                     disabledContainerColor = PrimaryDark.copy(alpha = 0.38f)
                 )
             ) {
-                Text("Guardar precio", fontSize = 16.sp, fontWeight = FontWeight.Medium)
+                Text(stringResource(Res.string.portfolio_update_save), fontSize = 16.sp, fontWeight = FontWeight.Medium)
             }
 
             Spacer(Modifier.height(8.dp))
             TextButton(onClick = onDismiss, modifier = Modifier.fillMaxWidth()) {
-                Text("Cancelar", fontSize = 14.sp, color = TextSecondary)
+                Text(stringResource(Res.string.portfolio_update_cancel), fontSize = 14.sp, color = TextSecondary)
             }
         }
     }

@@ -17,6 +17,15 @@ import es.aviferdev.n3to.domain.model.FixedIncomeEvent
 import es.aviferdev.n3to.domain.model.FixedIncomeEventType
 import es.aviferdev.n3to.ui.theme.*
 
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.fixedincome_commission_eur_label
+import n3to.composeapp.generated.resources.fixedincome_coupon_amount_label
+import n3to.composeapp.generated.resources.fixedincome_coupon_register_title
+import n3to.composeapp.generated.resources.fixedincome_irpf_label
+import n3to.composeapp.generated.resources.fixedincome_net_amount_est
+import n3to.composeapp.generated.resources.fixedincome_register_coupon_btn_alt
+import n3to.composeapp.generated.resources.portfolio_add_tx_notes_label
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 private fun formatEuro(value: Double): String {
@@ -52,7 +61,7 @@ fun RegisterCouponBottomSheet(
                 .padding(horizontal = 20.dp, vertical = 16.dp)
         ) {
             Text(
-                text = "Registrar cupón / interés",
+                text = stringResource(Res.string.fixedincome_coupon_register_title),
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
                 color = TextPrimary
@@ -71,7 +80,7 @@ fun RegisterCouponBottomSheet(
             OutlinedTextField(
                 value = grossAmountStr,
                 onValueChange = { grossAmountStr = it.filter { c -> c.isDigit() || c == '.' } },
-                label = { Text("Importe bruto (€)") },
+                label = { Text(stringResource(Res.string.fixedincome_coupon_amount_label)) },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
@@ -87,7 +96,7 @@ fun RegisterCouponBottomSheet(
                 OutlinedTextField(
                     value = irpfPercentStr,
                     onValueChange = { irpfPercentStr = it.filter { c -> c.isDigit() || c == '.' } },
-                    label = { Text("Retención (%)") },
+                    label = { Text(stringResource(Res.string.fixedincome_irpf_label)) },
                     modifier = Modifier.weight(1f),
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
@@ -96,7 +105,7 @@ fun RegisterCouponBottomSheet(
                 OutlinedTextField(
                     value = commissionStr,
                     onValueChange = { commissionStr = it.filter { c -> c.isDigit() || c == '.' } },
-                    label = { Text("Comisión (€)") },
+                    label = { Text(stringResource(Res.string.fixedincome_commission_eur_label)) },
                     modifier = Modifier.weight(1f),
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
@@ -109,7 +118,7 @@ fun RegisterCouponBottomSheet(
             OutlinedTextField(
                 value = notes,
                 onValueChange = { notes = it },
-                label = { Text("Notas (opcional)") },
+                label = { Text(stringResource(Res.string.portfolio_add_tx_notes_label)) },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
                 colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = PrimaryDark)
@@ -131,7 +140,7 @@ fun RegisterCouponBottomSheet(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Text("Importe neto estimado", fontSize = 13.sp, color = TextSecondary)
+                        Text(stringResource(Res.string.fixedincome_net_amount_est), fontSize = 13.sp, color = TextSecondary)
                         Text(
                             text = formatEuro(netAmount),
                             fontSize = 15.sp,
@@ -167,7 +176,7 @@ fun RegisterCouponBottomSheet(
                 colors = ButtonDefaults.buttonColors(containerColor = PrimaryDark),
                 shape = RoundedCornerShape(12.dp)
             ) {
-                Text("Registrar cobro", fontSize = 15.sp, modifier = Modifier.padding(vertical = 4.dp))
+                Text(stringResource(Res.string.fixedincome_register_coupon_btn_alt), fontSize = 15.sp, modifier = Modifier.padding(vertical = 4.dp))
             }
 
             Spacer(Modifier.height(16.dp))

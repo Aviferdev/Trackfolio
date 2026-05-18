@@ -24,6 +24,22 @@ import es.aviferdev.n3to.domain.model.Asset
 import es.aviferdev.n3to.ui.theme.*
 import es.aviferdev.n3to.ui.theme.DragHandleColor
 
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.fixedincome_irpf_label
+import n3to.composeapp.generated.resources.portfolio_add_tx_select_asset
+import n3to.composeapp.generated.resources.portfolio_dividend_asset_label
+import n3to.composeapp.generated.resources.portfolio_dividend_gross_hint
+import n3to.composeapp.generated.resources.portfolio_dividend_gross_label
+import n3to.composeapp.generated.resources.portfolio_dividend_gross_short
+import n3to.composeapp.generated.resources.portfolio_dividend_net_short
+import n3to.composeapp.generated.resources.portfolio_dividend_register
+import n3to.composeapp.generated.resources.portfolio_dividend_select_asset_error
+import n3to.composeapp.generated.resources.portfolio_dividend_title
+import n3to.composeapp.generated.resources.portfolio_dividend_title_alt
+import n3to.composeapp.generated.resources.portfolio_dividend_valid_amount_error
+import n3to.composeapp.generated.resources.portfolio_dividend_withholding_label
+import n3to.composeapp.generated.resources.portfolio_dividend_withholding_short
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 /**
@@ -82,7 +98,7 @@ fun AddDividendBottomSheet(
             Spacer(Modifier.height(8.dp))
 
             Text(
-                text       = "\uD83D\uDCC8 Dividendo",
+                text       = stringResource(Res.string.portfolio_dividend_title_alt),
                 fontSize   = 16.sp,
                 fontWeight = FontWeight.Medium,
                 color      = TextPrimary
@@ -97,7 +113,7 @@ fun AddDividendBottomSheet(
             // \u2500\u2500 Selector de activo (solo desde PortfolioScreen) \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
             if (showAssetSelector) {
                 Column(modifier = Modifier.fillMaxWidth()) {
-                    Text("Activo", fontSize = 12.sp, color = TextSecondary)
+                    Text(stringResource(Res.string.portfolio_dividend_asset_label), fontSize = 12.sp, color = TextSecondary)
                     Spacer(Modifier.height(8.dp))
                     LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         items(allAssets) { asset ->
@@ -138,7 +154,7 @@ fun AddDividendBottomSheet(
                 )
             } else {
                 Text(
-                    text     = "Introduce el importe bruto",
+                    text     = stringResource(Res.string.portfolio_dividend_gross_hint),
                     fontSize = 14.sp,
                     color    = TextSecondary
                 )
@@ -150,7 +166,7 @@ fun AddDividendBottomSheet(
 
             // \u2500\u2500 Importe bruto \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
             Column(modifier = Modifier.fillMaxWidth()) {
-                Text("Importe bruto", fontSize = 12.sp, color = TextSecondary)
+                Text(stringResource(Res.string.portfolio_dividend_gross_label), fontSize = 12.sp, color = TextSecondary)
                 Spacer(Modifier.height(4.dp))
                 OutlinedTextField(
                     value           = grossAmountText,
@@ -170,7 +186,7 @@ fun AddDividendBottomSheet(
 
             // \u2500\u2500 Retenci\u00f3n IRPF \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
             Column(modifier = Modifier.fillMaxWidth()) {
-                Text("Retenci\u00f3n fiscal", fontSize = 12.sp, color = TextSecondary)
+                Text(stringResource(Res.string.portfolio_dividend_withholding_label), fontSize = 12.sp, color = TextSecondary)
                 Spacer(Modifier.height(4.dp))
                 OutlinedTextField(
                     value           = irpfPercentText,
@@ -199,9 +215,9 @@ fun AddDividendBottomSheet(
                         modifier              = Modifier.fillMaxWidth().padding(12.dp),
                         horizontalArrangement = Arrangement.SpaceEvenly
                     ) {
-                        SummaryItem("Bruto", grossAmount, TextPrimary)
-                        if (irpfAmount > 0) SummaryItem("Retención", irpfAmount, ExpenseRed)
-                        SummaryItem("Neto", netAmount ?: 0.0, IncomeGreen)
+                        SummaryItem(stringResource(Res.string.portfolio_dividend_gross_short), grossAmount, TextPrimary)
+                        if (irpfAmount > 0) SummaryItem(stringResource(Res.string.portfolio_dividend_withholding_short), irpfAmount, ExpenseRed)
+                        SummaryItem(stringResource(Res.string.portfolio_dividend_net_short), netAmount ?: 0.0, IncomeGreen)
                     }
                 }
             }
@@ -215,15 +231,17 @@ fun AddDividendBottomSheet(
             Spacer(Modifier.height(24.dp))
 
             // \u2500\u2500 Bot\u00f3n guardar \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+            val selectAssetError = stringResource(Res.string.portfolio_dividend_select_asset_error)
+            val validAmountError = stringResource(Res.string.portfolio_dividend_valid_amount_error)
             Button(
                 onClick = {
                     if (showAssetSelector && selectedAssetId == null) {
-                        error = "Selecciona un activo"
+                        error = selectAssetError
                         return@Button
                     }
                     val ga = grossAmountText.replace(',', '.').toDoubleOrNull()
                     if (ga == null || ga <= 0) {
-                        error = "Introduce un importe bruto v\u00e1lido"
+                        error = validAmountError
                         return@Button
                     }
                     val pct = irpfPercentText.replace(',', '.').toDoubleOrNull() ?: 0.0
@@ -237,7 +255,7 @@ fun AddDividendBottomSheet(
                     disabledContainerColor = PrimaryDark.copy(alpha = 0.38f)
                 )
             ) {
-                Text("Registrar dividendo", fontSize = 16.sp, fontWeight = FontWeight.Medium)
+                Text(stringResource(Res.string.portfolio_dividend_register), fontSize = 16.sp, fontWeight = FontWeight.Medium)
             }
         }
     }

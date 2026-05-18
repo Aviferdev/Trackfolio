@@ -49,23 +49,39 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.common_retry
+import n3to.composeapp.generated.resources.premium_ad_free_desc
+import n3to.composeapp.generated.resources.premium_annual_label
+import n3to.composeapp.generated.resources.premium_back_cd
+import n3to.composeapp.generated.resources.premium_best_value
+import n3to.composeapp.generated.resources.premium_lifetime_label
+import n3to.composeapp.generated.resources.premium_monthly_label
+import n3to.composeapp.generated.resources.premium_multiple_accounts_desc
+import n3to.composeapp.generated.resources.premium_restore
+import n3to.composeapp.generated.resources.premium_restore_cd
+import n3to.composeapp.generated.resources.premium_themes_desc
+import n3to.composeapp.generated.resources.premium_unlock_features
+import n3to.composeapp.generated.resources.premium_welcome
+import n3to.composeapp.generated.resources.premium_error_format
+import n3to.composeapp.generated.resources.premium_restore_success
+import n3to.composeapp.generated.resources.premium_restore_error_format
+import n3to.composeapp.generated.resources.premium_already_premium_subtitle
+import n3to.composeapp.generated.resources.premium_lifetime_value
+import n3to.composeapp.generated.resources.premium_subscribe
+import n3to.composeapp.generated.resources.premium_no_ads
+import n3to.composeapp.generated.resources.premium_unlimited_accounts
+import n3to.composeapp.generated.resources.premium_themes
+import n3to.composeapp.generated.resources.premium_already_premium
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
-// Mapeo de identificadores de RevenueCat a etiquetas mostrables
-private val PACKAGE_LABELS = mapOf(
-    "rc_monthly" to "Mensual",
-    "rc_annual" to "Anual",
-    "rc_lifetime" to "Vitalicio",
-    "\$rc_monthly" to "Mensual",
-    "\$rc_annual" to "Anual",
-    "\$rc_lifetime" to "Vitalicio",
-    "premium_monthly" to "Mensual",
-    "premium_yearly" to "Anual",
-    "premium_lifetime" to "Vitalicio"
-)
-
-private fun getPackageLabel(identifier: String): String =
-    PACKAGE_LABELS[identifier] ?: identifier
+private fun getPackageLabel(identifier: String): String = when {
+    identifier.contains("monthly") -> "Mensual"
+    identifier.contains("annual") || identifier.contains("yearly") -> "Anual"
+    identifier.contains("lifetime") -> "Vitalicio"
+    else -> identifier
+}
 
 private fun isBestValue(identifier: String): Boolean =
     identifier.contains("annual") || identifier.contains("yearly")
@@ -79,24 +95,28 @@ fun PremiumScreen(
     val uiState by viewModel.uiState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
 
+    val welcomeText = stringResource(Res.string.premium_welcome)
+    val restoreSuccessText = stringResource(Res.string.premium_restore_success)
+    val errorFormatText = stringResource(Res.string.premium_error_format, "")
+    val restoreErrorFormatText = stringResource(Res.string.premium_restore_error_format, "")
     LaunchedEffect(Unit) {
         viewModel.events.collect { event ->
             when (event) {
                 is PremiumEvent.PurchaseSuccess -> {
-                    snackbarHostState.showSnackbar("¡Bienvenido a Trackfolio Premium!")
+                    snackbarHostState.showSnackbar(welcomeText)
                     onBack()
                 }
 
                 is PremiumEvent.PurchaseError -> {
-                    snackbarHostState.showSnackbar("Error: ${event.message}")
+                    snackbarHostState.showSnackbar(errorFormatText.replace(": %1\$s", ": ${event.message}").replace(": ", ": ${event.message}"))
                 }
 
                 is PremiumEvent.RestoreSuccess -> {
-                    snackbarHostState.showSnackbar("Compras restauradas correctamente")
+                    snackbarHostState.showSnackbar(restoreSuccessText)
                 }
 
                 is PremiumEvent.RestoreError -> {
-                    snackbarHostState.showSnackbar("Error al restaurar: ${event.message}")
+                    snackbarHostState.showSnackbar(restoreErrorFormatText.replace(": %1\$s", ": ${event.message}").replace(": ", ": ${event.message}"))
                 }
             }
         }
@@ -105,10 +125,10 @@ fun PremiumScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Hazte Premium") },
+                title = { Text(stringResource(Res.string.premium_subscribe)) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(Res.string.premium_back_cd))
                     }
                 }
             )
@@ -136,7 +156,7 @@ fun PremiumScreen(
             Spacer(Modifier.height(16.dp))
 
             Text(
-                "Desbloquea todas las funcionalidades",
+                stringResource(Res.string.premium_unlock_features),
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center
@@ -147,18 +167,18 @@ fun PremiumScreen(
             // Ventajas
             PremiumFeature(
                 icon = Icons.Default.CheckCircle,
-                title = "Cuentas ilimitadas",
-                description = "Gestiona todas tus cuentas sin restricciones"
+                title = stringResource(Res.string.premium_unlimited_accounts),
+                description = stringResource(Res.string.premium_multiple_accounts_desc)
             )
             PremiumFeature(
                 icon = Icons.Default.CheckCircle,
-                title = "Sin anuncios",
-                description = "Disfruta de la app sin interrupciones"
+                title = stringResource(Res.string.premium_no_ads),
+                description = stringResource(Res.string.premium_ad_free_desc)
             )
             PremiumFeature(
                 icon = Icons.Default.CheckCircle,
-                title = "Temas exclusivos",
-                description = "Personaliza la app con temas claro y oscuro"
+                title = stringResource(Res.string.premium_themes),
+                description = stringResource(Res.string.premium_themes_desc)
             )
 
             Spacer(Modifier.height(32.dp))
@@ -179,12 +199,12 @@ fun PremiumScreen(
                         Icon(Icons.Default.Star, null, modifier = Modifier.size(40.dp))
                         Spacer(Modifier.height(8.dp))
                         Text(
-                            "Ya eres Premium",
+                            stringResource(Res.string.premium_already_premium_subtitle),
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold
                         )
                         if (uiState.isLifetime) {
-                            Text("Acceso vitalicio", style = MaterialTheme.typography.bodyMedium)
+                            Text(stringResource(Res.string.premium_lifetime_value), style = MaterialTheme.typography.bodyMedium)
                         }
                     }
                 }
@@ -208,7 +228,7 @@ fun PremiumScreen(
                         )
                         Spacer(Modifier.height(12.dp))
                         Button(onClick = { viewModel.retryLoadProducts() }) {
-                            Text("Reintentar")
+                            Text(stringResource(Res.string.common_retry))
                         }
                     }
                 }
@@ -250,7 +270,7 @@ fun PremiumScreen(
                 } else {
                     Icon(Icons.Default.Restore, null, modifier = Modifier.size(18.dp))
                     Spacer(Modifier.width(8.dp))
-                    Text("Restaurar compra")
+                    Text(stringResource(Res.string.premium_restore_cd))
                 }
             }
 
@@ -344,7 +364,7 @@ private fun PremiumProductCard(
                             )
                             Spacer(Modifier.width(4.dp))
                             Text(
-                                "Mejor valor",
+                                stringResource(Res.string.premium_best_value),
                                 style = MaterialTheme.typography.labelSmall,
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.primary

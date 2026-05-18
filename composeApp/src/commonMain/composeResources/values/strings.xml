@@ -1011,19 +1011,18 @@
     <string name="common_no_data">Sin datos</string>
 
     <!-- PREMIUM - missing -->
-    <string name="premium_unlock_features">Desbloquea todas las funcionalidades</string>
     <string name="premium_multiple_accounts_desc">Gestiona todas tus cuentas sin restricciones</string>
     <string name="premium_ad_free_desc">Disfruta de la app sin interrupciones</string>
     <string name="premium_themes_desc">Personaliza la app con temas claro y oscuro</string>
     <string name="premium_welcome">¡Bienvenido a Trackfolio Premium!</string>
     <string name="premium_error_format">Error: %1$s</string>
-    <string name="premium_restore_success">Compras restauradas correctamente</string>
     <string name="premium_restore_error_format">Error al restaurar: %1$s</string>
     <string name="premium_restore_cd">Restaurar compra</string>
     <string name="premium_best_value">Mejor valor</string>
     <string name="premium_monthly_label">Mensual</string>
     <string name="premium_annual_label">Anual</string>
     <string name="premium_lifetime_label">Vitalicio</string>
+    <string name="premium_lifetime_value">Acceso vitalicio</string>
     <string name="premium_back_cd">Volver</string>
 
     <!-- PORTFOLIO - Update price -->

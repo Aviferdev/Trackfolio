@@ -18,6 +18,19 @@ import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.*
 import es.aviferdev.n3to.ui.theme.*
 
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.fixedincome_close_confirm_btn
+import n3to.composeapp.generated.resources.fixedincome_close_early_type
+import n3to.composeapp.generated.resources.fixedincome_close_maturity_type
+import n3to.composeapp.generated.resources.fixedincome_close_secondary_type
+import n3to.composeapp.generated.resources.fixedincome_close_title
+import n3to.composeapp.generated.resources.fixedincome_close_type_label
+import n3to.composeapp.generated.resources.fixedincome_commission_eur_label
+import n3to.composeapp.generated.resources.fixedincome_gross_received_label
+import n3to.composeapp.generated.resources.fixedincome_irpf_label
+import n3to.composeapp.generated.resources.fixedincome_net_amount_label
+import n3to.composeapp.generated.resources.portfolio_add_tx_notes_label
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 private fun formatEuro(value: Double): String {
@@ -75,7 +88,7 @@ fun CloseFixedIncomeBottomSheet(
                 .padding(horizontal = 20.dp, vertical = 16.dp)
         ) {
             Text(
-                text = "Liquidar posición",
+                text = stringResource(Res.string.fixedincome_close_title),
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
                 color = TextPrimary
@@ -91,14 +104,14 @@ fun CloseFixedIncomeBottomSheet(
 
             Spacer(Modifier.height(20.dp))
 
-            Text("Tipo de cierre", fontSize = 13.sp, color = TextSecondary)
+            Text(stringResource(Res.string.fixedincome_close_type_label), fontSize = 13.sp, color = TextSecondary)
             Spacer(Modifier.height(8.dp))
 
             availableCloseTypes.forEach { closeType ->
                 val label = when (closeType) {
-                    FixedIncomeCloseType.MATURITY -> "Vencimiento"
-                    FixedIncomeCloseType.SECONDARY_SALE -> "Venta en secundario"
-                    FixedIncomeCloseType.EARLY_CANCELLATION -> "Cancelación anticipada"
+                    FixedIncomeCloseType.MATURITY -> stringResource(Res.string.fixedincome_close_maturity_type)
+                    FixedIncomeCloseType.SECONDARY_SALE -> stringResource(Res.string.fixedincome_close_secondary_type)
+                    FixedIncomeCloseType.EARLY_CANCELLATION -> stringResource(Res.string.fixedincome_close_early_type)
                 }
                 Row(
                     modifier = Modifier
@@ -126,7 +139,7 @@ fun CloseFixedIncomeBottomSheet(
             OutlinedTextField(
                 value = grossAmountStr,
                 onValueChange = { grossAmountStr = it.filter { c -> c.isDigit() || c == '.' } },
-                label = { Text("Importe bruto recibido (€)") },
+                label = { Text(stringResource(Res.string.fixedincome_gross_received_label)) },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
@@ -142,7 +155,7 @@ fun CloseFixedIncomeBottomSheet(
                 OutlinedTextField(
                     value = irpfPercentStr,
                     onValueChange = { irpfPercentStr = it.filter { c -> c.isDigit() || c == '.' } },
-                    label = { Text("Retención (%)") },
+                    label = { Text(stringResource(Res.string.fixedincome_irpf_label)) },
                     modifier = Modifier.weight(1f),
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
@@ -151,7 +164,7 @@ fun CloseFixedIncomeBottomSheet(
                 OutlinedTextField(
                     value = commissionStr,
                     onValueChange = { commissionStr = it.filter { c -> c.isDigit() || c == '.' } },
-                    label = { Text("Comisión (€)") },
+                    label = { Text(stringResource(Res.string.fixedincome_commission_eur_label)) },
                     modifier = Modifier.weight(1f),
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
@@ -164,7 +177,7 @@ fun CloseFixedIncomeBottomSheet(
             OutlinedTextField(
                 value = notes,
                 onValueChange = { notes = it },
-                label = { Text("Notas (opcional)") },
+                label = { Text(stringResource(Res.string.portfolio_add_tx_notes_label)) },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
                 colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = PrimaryDark)
@@ -186,7 +199,7 @@ fun CloseFixedIncomeBottomSheet(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Text("Importe neto", fontSize = 13.sp, color = TextSecondary)
+                        Text(stringResource(Res.string.fixedincome_net_amount_label), fontSize = 13.sp, color = TextSecondary)
                         Text(
                             text = formatEuro(netAmount),
                             fontSize = 15.sp,
@@ -227,7 +240,7 @@ fun CloseFixedIncomeBottomSheet(
                 colors = ButtonDefaults.buttonColors(containerColor = PrimaryDark),
                 shape = RoundedCornerShape(12.dp)
             ) {
-                Text("Confirmar liquidación", fontSize = 15.sp, modifier = Modifier.padding(vertical = 4.dp))
+                Text(stringResource(Res.string.fixedincome_close_confirm_btn), fontSize = 15.sp, modifier = Modifier.padding(vertical = 4.dp))
             }
 
             Spacer(Modifier.height(16.dp))
