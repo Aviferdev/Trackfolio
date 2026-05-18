@@ -26,10 +26,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.Portfolio
-import es.aviferdev.n3to.ui.theme.BorderGray
-import es.aviferdev.n3to.ui.theme.PrimaryAlpha
-import es.aviferdev.n3to.ui.theme.PrimaryDark
-import es.aviferdev.n3to.ui.theme.TextPrimary
+import es.aviferdev.n3to.ui.theme.CyanAccent
+import es.aviferdev.n3to.ui.theme.NavyBorder
 import es.aviferdev.n3to.ui.theme.TextSecondary
 
 @Composable
@@ -63,14 +61,14 @@ fun PortfolioSelectorBar(
         Box(
             modifier = Modifier
                 .clip(RoundedCornerShape(20.dp))
-                .border(1.dp, BorderGray, RoundedCornerShape(20.dp))
+                .border(1.dp, NavyBorder, RoundedCornerShape(20.dp))
                 .clickable { onAddPortfolio() }
                 .padding(horizontal = 12.dp, vertical = 6.dp)
         ) {
             Icon(
                 imageVector = Icons.Outlined.Add,
                 contentDescription = "Nueva cartera",
-                tint = PrimaryDark,
+                tint = CyanAccent,
                 modifier = Modifier.width(18.dp)
             )
         }
@@ -83,9 +81,9 @@ private fun PortfolioChip(
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
-    val bg = if (isSelected) PrimaryAlpha else androidx.compose.ui.graphics.Color.Transparent
-    val border = if (isSelected) PrimaryDark else BorderGray
-    val textColor = if (isSelected) PrimaryDark else TextSecondary
+    val bg = if (isSelected) CyanAccent.copy(alpha = 0.15f) else androidx.compose.ui.graphics.Color.Transparent
+    val border = if (isSelected) CyanAccent else NavyBorder
+    val textColor = if (isSelected) CyanAccent else TextSecondary
 
     Box(
         modifier = Modifier

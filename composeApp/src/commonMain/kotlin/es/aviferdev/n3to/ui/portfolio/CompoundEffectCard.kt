@@ -5,21 +5,15 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -30,15 +24,18 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.portfolio.CompoundEffect
+import es.aviferdev.n3to.ui.theme.CyanGlow
 import es.aviferdev.n3to.ui.theme.N3toTheme
-import es.aviferdev.n3to.ui.theme.PnLPositive
-import es.aviferdev.n3to.ui.theme.PrimaryDark
-import es.aviferdev.n3to.ui.theme.UncategorizedColor
+import es.aviferdev.n3to.ui.theme.NavySurface
+import es.aviferdev.n3to.ui.theme.NavySurfaceLight
 import es.aviferdev.n3to.ui.theme.WarnAmber
 import es.aviferdev.n3to.ui.theme.formatAmount
 import es.aviferdev.n3to.ui.theme.formatPercent
@@ -64,36 +61,50 @@ fun CompoundEffectCard(
 
     var expanded by remember { mutableStateOf(false) }
 
-    Card(
+    Column(
         modifier = modifier
             .fillMaxWidth()
-            .clickable { expanded = !expanded },
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = PrimaryDark),
-        elevation = CardDefaults.cardElevation(0.dp)
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 20.dp, vertical = 14.dp)
-        ) {
-            CompactHeader(
-                compoundEffect = compoundEffect,
-                balancesHidden = balancesHidden,
-                expanded = expanded
-            )
-
-            AnimatedVisibility(
-                visible = expanded,
-                enter = expandVertically() + fadeIn(),
-                exit = shrinkVertically() + fadeOut()
-            ) {
-                Column {
-                    ExpandedContent(
-                        compoundEffect = compoundEffect,
-                        balancesHidden = balancesHidden
+            .clip(RoundedCornerShape(16.dp))
+            .clickable { expanded = !expanded }
+            .drawBehind {
+                drawRect(
+                    brush = Brush.linearGradient(
+                        colors = listOf(NavySurface, NavySurfaceLight),
+                        start = Offset(0f, 0f),
+                        end = Offset(size.width, size.height)
                     )
-                }
+                )
+                val orbRadius = 90.dp.toPx()
+                val cx = size.width - 30.dp.toPx()
+                val cy = 30.dp.toPx()
+                drawCircle(
+                    brush = Brush.radialGradient(
+                        colors = listOf(CyanGlow.copy(alpha = 0.10f), Color.Transparent),
+                        center = Offset(cx, cy),
+                        radius = orbRadius
+                    ),
+                    radius = orbRadius,
+                    center = Offset(cx, cy)
+                )
+            }
+            .padding(horizontal = 20.dp, vertical = 14.dp)
+    ) {
+        CompactHeader(
+            compoundEffect = compoundEffect,
+            balancesHidden = balancesHidden,
+            expanded = expanded
+        )
+
+        AnimatedVisibility(
+            visible = expanded,
+            enter = expandVertically() + fadeIn(),
+            exit = shrinkVertically() + fadeOut()
+        ) {
+            Column {
+                ExpandedContent(
+                    compoundEffect = compoundEffect,
+                    balancesHidden = balancesHidden
+                )
             }
         }
     }

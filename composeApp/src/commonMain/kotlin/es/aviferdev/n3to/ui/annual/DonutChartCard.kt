@@ -36,9 +36,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.ui.common.DonutSlice
-import es.aviferdev.n3to.ui.theme.BorderGray
 import es.aviferdev.n3to.ui.theme.CategoryPalette
-import es.aviferdev.n3to.ui.theme.SurfaceWhite
+import es.aviferdev.n3to.ui.theme.NavySurface
 import es.aviferdev.n3to.ui.theme.TextPrimary
 import es.aviferdev.n3to.ui.theme.TextSecondary
 import es.aviferdev.n3to.ui.theme.N3toTheme
@@ -68,9 +67,8 @@ fun DonutChartCard(
     Card(
         modifier  = modifier.fillMaxWidth(),
         shape     = RoundedCornerShape(14.dp),
-        colors    = CardDefaults.cardColors(containerColor = SurfaceWhite),
-        elevation = CardDefaults.cardElevation(0.dp),
-        border    = CardDefaults.outlinedCardBorder()
+        colors    = CardDefaults.cardColors(containerColor = NavySurface),
+        elevation = CardDefaults.cardElevation(0.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
@@ -216,9 +214,8 @@ private fun EmptyDonutState(title: String, subtitle: String) {
     Card(
         modifier  = Modifier.fillMaxWidth(),
         shape     = RoundedCornerShape(14.dp),
-        colors    = CardDefaults.cardColors(containerColor = SurfaceWhite),
-        elevation = CardDefaults.cardElevation(0.dp),
-        border    = CardDefaults.outlinedCardBorder()
+        colors    = CardDefaults.cardColors(containerColor = NavySurface),
+        elevation = CardDefaults.cardElevation(0.dp)
     ) {
         Column(
             modifier = Modifier

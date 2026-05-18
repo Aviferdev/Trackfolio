@@ -16,6 +16,9 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -30,6 +33,7 @@ import es.aviferdev.n3to.ui.common.component.TimeRangeChipRow
 import es.aviferdev.n3to.ui.loan.AddEditLoanBottomSheet
 import es.aviferdev.n3to.ui.realestate.AddEditPropertyBottomSheet
 import es.aviferdev.n3to.ui.realestate.PropertyCard
+import es.aviferdev.n3to.ui.splash.SplashLoader
 import es.aviferdev.n3to.ui.theme.*
 import kotlinx.coroutines.delay
 import kotlinx.datetime.Clock
@@ -83,7 +87,7 @@ fun NetWorthScreen(
         is NetWorthUiState.Loading -> Box(
             Modifier.fillMaxSize().background(NavyDeep),
             contentAlignment = Alignment.Center
-        ) { CircularProgressIndicator(color = CyanAccent) }
+        ) { SplashLoader() }
 
         is NetWorthUiState.Error -> Box(
             Modifier.fillMaxSize().background(NavyDeep),
@@ -392,18 +396,34 @@ fun NetWorthContent(
 // ─── Hero card ────────────────────────────────────────────────────────────────
 @Composable
 private fun NetWorthHeroCard(data: NetWorthData, balancesHidden: Boolean) {
-    Card(
-        modifier  = Modifier.fillMaxWidth(),
-        shape     = RoundedCornerShape(14.dp),
-        colors    = CardDefaults.cardColors(containerColor = PrimaryDark),
-        elevation = CardDefaults.cardElevation(0.dp)
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(14.dp))
+            .drawBehind {
+                drawRect(
+                    brush = Brush.linearGradient(
+                        colors = listOf(NavySurface, NavySurfaceLight),
+                        start  = Offset(0f, 0f),
+                        end    = Offset(size.width, size.height)
+                    )
+                )
+                val orbRadius = 90.dp.toPx()
+                val cx = size.width - 40.dp.toPx()
+                val cy = 40.dp.toPx()
+                drawCircle(
+                    brush = Brush.radialGradient(
+                        colors = listOf(CyanGlow.copy(alpha = 0.14f), Color.Transparent),
+                        center = Offset(cx, cy),
+                        radius = orbRadius
+                    ),
+                    radius = orbRadius,
+                    center = Offset(cx, cy)
+                )
+            }
+            .padding(horizontal = 20.dp, vertical = 18.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Column(
-            modifier            = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 20.dp, vertical = 18.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
             N3toLabel(text = "Patrimonio neto", color = Color.White.copy(alpha = 0.60f))
             Spacer(Modifier.height(6.dp))
             Text(
@@ -438,7 +458,6 @@ private fun NetWorthHeroCard(data: NetWorthData, balancesHidden: Boolean) {
                     color = PnLNegativeSoft
                 )
             }
-        }
     }
 }
 

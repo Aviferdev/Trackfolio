@@ -414,6 +414,8 @@ class PortfolioViewModel(
                 showDividendSheet           = sheets.showDividendSheet,
                 dividendAssetId             = sheets.dividendAssetId,
                 showCreateFixedIncomeSheet  = sheets.showCreateFixedIncomeSheet,
+                showRegisterCouponSheet     = sheets.showRegisterCouponSheet,
+                selectedPositionForCoupon   = sheets.selectedPositionForCoupon,
                 error                       = sheets.error
             )
         }

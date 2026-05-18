@@ -16,8 +16,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.HelpOutline
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -34,9 +32,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.ui.common.toMaterialIcon
-import es.aviferdev.n3to.ui.theme.BorderGray
+import androidx.compose.foundation.BorderStroke
 import es.aviferdev.n3to.ui.theme.CategoryPalette
-import es.aviferdev.n3to.ui.theme.SurfaceWhite
+import es.aviferdev.n3to.ui.theme.NavyBorder
+import es.aviferdev.n3to.ui.theme.NavySurface
 import es.aviferdev.n3to.ui.theme.TextPrimary
 import es.aviferdev.n3to.ui.theme.TextSecondary
 import es.aviferdev.n3to.ui.theme.N3toTheme
@@ -59,7 +58,8 @@ fun PortfolioDistributionCard(
     balancesHidden: Boolean,
     selectedView: DistributionView = DistributionView.CATEGORY,
     fixedIncomePercent: Double = 0.0,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewSelector: (@Composable () -> Unit)? = null
 ) {
     if (slices.isEmpty()) return
 
@@ -72,10 +72,10 @@ fun PortfolioDistributionCard(
 
     Card(
         modifier  = modifier.fillMaxWidth(),
-        shape     = RoundedCornerShape(14.dp),
-        colors    = CardDefaults.cardColors(containerColor = SurfaceWhite),
+        shape     = RoundedCornerShape(16.dp),
+        colors    = CardDefaults.cardColors(containerColor = NavySurface),
         elevation = CardDefaults.cardElevation(0.dp),
-        border    = CardDefaults.outlinedCardBorder()
+        border    = BorderStroke(0.5.dp, NavyBorder)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(
@@ -104,6 +104,10 @@ fun PortfolioDistributionCard(
                 fontSize = 11.sp,
                 color    = TextSecondary
             )
+            if (viewSelector != null) {
+                Spacer(Modifier.height(10.dp))
+                viewSelector()
+            }
 
             Spacer(Modifier.height(16.dp))
 

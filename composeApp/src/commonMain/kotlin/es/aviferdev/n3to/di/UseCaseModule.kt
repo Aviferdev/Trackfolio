@@ -449,6 +449,7 @@ val useCaseModule = module {
             getBondIssuers                      = get(),
             saveBondIssuer                      = get(),
             getPortfolioValueHistory            = get(),
+            registerCoupon                      = get(),
             getPortfoliosByAccount              = get(),
             savePortfolio                       = get(),
             deletePortfolio                     = get(),

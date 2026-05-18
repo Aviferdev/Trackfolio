@@ -35,7 +35,7 @@ fun PropertyCard(
     Card(
         modifier = modifier.fillMaxWidth().clickable(onClick = onClick),
         shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = SurfaceWhite),
+        colors = CardDefaults.cardColors(containerColor = NavySurface),
         elevation = CardDefaults.cardElevation(0.dp)
     ) {
         Column(modifier = Modifier.fillMaxWidth().padding(14.dp)) {
@@ -98,7 +98,7 @@ fun PropertyCard(
 @Composable
 private fun PropertyCardPreview() {
     N3toTheme {
-        Column(modifier = Modifier.padding(16.dp).background(BackgroundGray)) {
+        Column(modifier = Modifier.padding(16.dp).background(NavyDeep)) {
             PropertyCard(
                 property = RealEstateProperty(
                     id = "1", accountId = "acc1", name = "Mi casa", address = "Calle Mayor 1, Madrid",

@@ -69,19 +69,21 @@ import es.aviferdev.n3to.ui.common.toMaterialIcon
 import es.aviferdev.n3to.ui.common.LineChartCard
 import es.aviferdev.n3to.ui.common.chart.TimeRange
 import es.aviferdev.n3to.ui.common.component.EmptyStateView
+import es.aviferdev.n3to.ui.common.component.IconActionButton
 import es.aviferdev.n3to.ui.common.component.TimeRangeChipRow
 import es.aviferdev.n3to.ui.fixedincome.EditFixedIncomeBottomSheet
 import es.aviferdev.n3to.ui.common.button.IconButtonApp
-import es.aviferdev.n3to.ui.common.navigation.TopBarApp
 import es.aviferdev.n3to.ui.fixedincome.CreateFixedIncomeBottomSheet
 import es.aviferdev.n3to.ui.fixedincome.FixedIncomePositionCard
 import es.aviferdev.n3to.ui.fixedincome.RegisterCouponBottomSheet
-import es.aviferdev.n3to.ui.theme.BackgroundGray
 import es.aviferdev.n3to.ui.theme.BorderGray
-import es.aviferdev.n3to.ui.theme.BorderGray2
+import es.aviferdev.n3to.ui.theme.CyanAccent
 import es.aviferdev.n3to.ui.theme.ExpenseRed
 import es.aviferdev.n3to.ui.theme.IncomeGreen
 import es.aviferdev.n3to.ui.theme.LocalBalanceHidden
+import es.aviferdev.n3to.ui.theme.NavyBorder
+import es.aviferdev.n3to.ui.theme.NavyDeep
+import es.aviferdev.n3to.ui.theme.NavySurface
 import es.aviferdev.n3to.ui.theme.PrimaryAlpha
 import es.aviferdev.n3to.ui.theme.PrimaryDark
 import es.aviferdev.n3to.ui.theme.SurfaceElevated
@@ -290,17 +292,36 @@ fun PortfolioContent(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(BackgroundGray)
+            .background(NavyDeep)
     ) {
-        Column(Modifier.fillMaxSize()) {
-            TopBarApp(
-                title = "Portfolio",
-                actions = {
-                    IconButton(onClick = onNavigateToSettings) {
-                        Icon(Icons.Outlined.Settings, contentDescription = "Ajustes de portfolio", tint = TextSecondary)
-                    }
-                }
-            )
+        Column(
+            Modifier
+                .fillMaxSize()
+                .windowInsetsPadding(WindowInsets.statusBars)
+        ) {
+            // ── Cabecera estilo Home ────────────────────────────────────────────
+            Spacer(Modifier.height(12.dp))
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Portfolio",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = TextPrimary,
+                    letterSpacing = (-0.3).sp
+                )
+                IconActionButton(
+                    onClick = onNavigateToSettings,
+                    icon = Icons.Outlined.Settings,
+                    iconTint = TextSecondary,
+                    label = "Ajustes de portfolio"
+                )
+            }
 
             PortfolioSelectorBar(
                 portfolios = portfolios,
@@ -322,7 +343,7 @@ fun PortfolioContent(
                     totalRealizedPnL = state.totalRealizedPnL,
                     totalUnrealizedPnL = state.totalUnrealizedPnL,
                     positionsCount = state.openPositionsCount,
-                    
+
                     balancesHidden = balancesHidden,
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                 )
@@ -338,30 +359,19 @@ fun PortfolioContent(
 
             if (valueHistory.isNotEmpty()) {
                 item {
-                    Column {
-                        TimeRangeChipRow(
-                            selected = selectedTimeRange,
-                            onSelect = { selectedTimeRange = it },
-                            modifier = Modifier.padding(horizontal = 16.dp)
-                        )
-                        Spacer(Modifier.height(8.dp))
-                    }
-                }
-                item {
                     LineChartCard(
                         title = "Evolución del valor",
                         subtitle = "Valor mensual del portfolio",
                         points = filteredHistory.map { it.date to it.value },
-                        lineColor = PrimaryDark,
+                        lineColor = CyanAccent,
                         balancesHidden = balancesHidden,
                         rotateXLabels = true,
-                        timeRangeLabel = if (selectedTimeRange != TimeRange.ALL_TIME) {
-                            when (selectedTimeRange) {
-                                TimeRange.LAST_MONTH -> "Último mes"
-                                TimeRange.LAST_YEAR -> "Último año"
-                                else -> null
-                            }
-                        } else null,
+                        timeRangeSelector = {
+                            TimeRangeChipRow(
+                                selected = selectedTimeRange,
+                                onSelect = { selectedTimeRange = it }
+                            )
+                        },
                         modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
                     )
                 }
@@ -374,34 +384,6 @@ fun PortfolioContent(
 
             if (hasDistribution) {
                 item {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .horizontalScroll(rememberScrollState())
-                            .padding(horizontal = 16.dp),
-                        horizontalArrangement = Arrangement.spacedBy(6.dp)
-                    ) {
-                        DistributionView.entries.forEach { view ->
-                            val selected = state.selectedDistributionView == view
-                            Box(
-                                modifier = Modifier
-                                    .clip(RoundedCornerShape(18.dp))
-                                    .background(if (selected) PrimaryAlpha else Color.Transparent)
-                                    .border(1.dp, if (selected) PrimaryDark else BorderGray2, RoundedCornerShape(18.dp))
-                                    .clickable { onSelectDistributionView(view) }
-                                    .padding(horizontal = 11.dp, vertical = 5.dp)
-                            ) {
-                                Text(
-                                    view.displayName,
-                                    fontSize = 11.sp,
-                                    fontWeight = FontWeight.SemiBold,
-                                    color = if (selected) PrimaryDark else TextTertiary
-                                )
-                            }
-                        }
-                    }
-                    Spacer(Modifier.height(10.dp))
-
                     val currentDist = when (state.selectedDistributionView) {
                         DistributionView.CATEGORY -> state.distribution
                         DistributionView.COMPOSITION -> state.compositionDistribution
@@ -411,12 +393,38 @@ fun PortfolioContent(
                     PortfolioDistributionCard(
                         slices = currentDist,
                         totalCurrentValue = state.combinedCurrentValue,
-                        
                         balancesHidden = balancesHidden,
                         selectedView = state.selectedDistributionView,
                         fixedIncomePercent = state.fixedIncomeSummary?.let { fi ->
                             if (state.combinedCurrentValue > 0) (fi.totalCurrentValue / state.combinedCurrentValue) * 100 else 0.0
                         } ?: 0.0,
+                        viewSelector = {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .horizontalScroll(rememberScrollState()),
+                                horizontalArrangement = Arrangement.spacedBy(6.dp)
+                            ) {
+                                DistributionView.entries.forEach { view ->
+                                    val selected = state.selectedDistributionView == view
+                                    Box(
+                                        modifier = Modifier
+                                            .clip(RoundedCornerShape(18.dp))
+                                            .background(if (selected) PrimaryAlpha else Color.Transparent)
+                                            .border(1.dp, if (selected) PrimaryDark else NavyBorder, RoundedCornerShape(18.dp))
+                                            .clickable { onSelectDistributionView(view) }
+                                            .padding(horizontal = 11.dp, vertical = 5.dp)
+                                    ) {
+                                        Text(
+                                            view.displayName,
+                                            fontSize = 11.sp,
+                                            fontWeight = FontWeight.SemiBold,
+                                            color = if (selected) PrimaryDark else TextTertiary
+                                        )
+                                    }
+                                }
+                            }
+                        },
                         modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
                     )
                 }
@@ -531,11 +539,11 @@ fun PortfolioContent(
                 onClick = { fabMenuOpen = true },
                 modifier = Modifier.size(52.dp),
                 shape = RoundedCornerShape(16.dp),
-                containerColor = PrimaryDark,
-                contentColor = Color.White,
-                elevation = FloatingActionButtonDefaults.elevation(4.dp)
+                containerColor = NavySurface,
+                contentColor = CyanAccent,
+                elevation = FloatingActionButtonDefaults.elevation(6.dp)
             ) {
-                Text("+", fontSize = 26.sp, fontWeight = FontWeight.Light, color = Color.White)
+                Text("+", fontSize = 26.sp, fontWeight = FontWeight.Light, color = CyanAccent)
             }
             DropdownMenu(
                 expanded = fabMenuOpen,

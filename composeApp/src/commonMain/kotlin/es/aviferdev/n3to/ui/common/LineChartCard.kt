@@ -1,5 +1,6 @@
 package es.aviferdev.n3to.ui.common
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -61,16 +62,17 @@ fun LineChartCard(
     balancesHidden: Boolean,
     modifier: Modifier = Modifier,
     rotateXLabels: Boolean = false,
-    timeRangeLabel: String? = null
+    timeRangeLabel: String? = null,
+    timeRangeSelector: (@Composable () -> Unit)? = null
 ) {
     val textMeasurer = rememberTextMeasurer()
 
     Card(
         modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(14.dp),
-        colors = CardDefaults.cardColors(containerColor = SurfaceWhite),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = NavySurface),
         elevation = CardDefaults.cardElevation(0.dp),
-        border = CardDefaults.outlinedCardBorder()
+        border = BorderStroke(0.5.dp, NavyBorder)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
@@ -92,6 +94,10 @@ fun LineChartCard(
                     fontSize = 10.sp,
                     color = TextSecondary.copy(alpha = 0.7f)
                 )
+            }
+            if (timeRangeSelector != null) {
+                Spacer(Modifier.height(10.dp))
+                timeRangeSelector()
             }
 
             Spacer(Modifier.height(16.dp))
