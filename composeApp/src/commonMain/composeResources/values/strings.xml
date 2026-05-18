@@ -1165,4 +1165,30 @@
     <string name="error_transaction_detail">Error al cargar detalle de transacción</string>
     <string name="error_networth_load">Error al cargar patrimonio</string>
     <string name="error_add_transaction">No se pudo calcular el neto</string>
+
+    <!-- =====================================================================
+         FEEDBACK – Formulario de sugerencias
+         ===================================================================== -->
+    <string name="settings_feedback">Enviar sugerencia</string>
+    <string name="feedback_title">Enviar sugerencia</string>
+    <string name="feedback_subtitle">Tus ideas nos ayudan a mejorar N3to. Este envío es anónimo.</string>
+    <string name="feedback_category_label">Categoría de tu sugerencia</string>
+    <string name="feedback_category_new_feature">Nueva funcionalidad</string>
+    <string name="feedback_category_improvement">Mejora de existente</string>
+    <string name="feedback_category_bug">Reportar un error</string>
+    <string name="feedback_category_other">Otro</string>
+    <string name="feedback_title_field">Título</string>
+    <string name="feedback_title_placeholder">Resume tu idea en pocas palabras</string>
+    <string name="feedback_description_field">Descripción</string>
+    <string name="feedback_description_placeholder">Explica tu sugerencia con detalle…</string>
+    <string name="feedback_send_button">Enviar sugerencia</string>
+    <string name="feedback_sending">Enviando…</string>
+    <string name="feedback_success">¡Gracias! Tu sugerencia se ha enviado correctamente.</string>
+    <string name="feedback_error_empty">Por favor, completa el título y la descripción.</string>
+    <string name="feedback_error_network">Error de conexión. Comprueba tu conexión a Internet.</string>
+    <string name="feedback_disclaimer_title">Sobre la privacidad</string>
+    <string name="feedback_disclaimer_text">No incluyas datos personales (nombre, email, teléfono) en tu mensaje. La sugerencia se envía de forma anónima a través de Firebase.</string>
+
+    <!-- FEEDBACK – Datos recopilados (Privacy) -->
+    <string name="privacy_data_feedback">Sugerencias y feedback</string>
 </resources>

@@ -10,6 +10,7 @@ import es.aviferdev.n3to.data.database.DatabaseDriverFactory
 import es.aviferdev.n3to.domain.pdf.PdfReportGenerator
 import es.aviferdev.n3to.platform.AnalyticsTracker
 import es.aviferdev.n3to.platform.CrashlyticsTracker
+import es.aviferdev.n3to.platform.FeedbackSender
 import es.aviferdev.n3to.platform.PurchaseManager
 import es.aviferdev.n3to.platform.VersionRemoteConfig
 import org.koin.core.qualifier.named
@@ -35,6 +36,7 @@ val iosModule = module {
     single { CrashlyticsTracker() }
     single { PurchaseManager() }
     single { VersionRemoteConfig() }
+    single { FeedbackSender() }
     single(named("appVersion")) {
         NSBundle.mainBundle.infoDictionary?.get("CFBundleShortVersionString") as? String ?: "1.0.0"
     }

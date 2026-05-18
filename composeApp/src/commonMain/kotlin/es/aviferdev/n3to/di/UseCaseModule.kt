@@ -146,6 +146,7 @@ import es.aviferdev.n3to.ui.debt.DebtViewModel
 import es.aviferdev.n3to.ui.fiscal.FiscalReportViewModel
 import es.aviferdev.n3to.ui.fixedincome.FixedIncomeDetailViewModel
 import es.aviferdev.n3to.ui.home.AddTransactionViewModel
+import es.aviferdev.n3to.ui.settings.feedback.FeedbackViewModel
 import es.aviferdev.n3to.ui.home.CategoryPickerViewModel
 import es.aviferdev.n3to.ui.home.HomeViewModel
 import es.aviferdev.n3to.ui.settings.emergencyfund.EmergencyFundSettingsViewModel
@@ -619,6 +620,8 @@ val useCaseModule = module {
     }
 
     viewModel { (initialTypeName: String) -> CategoryPickerViewModel(initialTypeName, get(), get()) }
+
+    viewModel { FeedbackViewModel(get()) }
 
     // ── Goal Settings ────────────────────────────────────────────────────────────
     viewModel {

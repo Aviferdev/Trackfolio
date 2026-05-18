@@ -285,6 +285,13 @@ fun PrivacySettingsScreen(
                             active = true,
                             isInfo = true
                         )
+                        SettingsRowDivider()
+                        PrivacyDataRow(
+                            icon = Icons.Default.Info,
+                            label = "Sugerencias y feedback",
+                            active = true,
+                            isInfo = true
+                        )
                     }
 
                     Spacer(Modifier.height(24.dp))

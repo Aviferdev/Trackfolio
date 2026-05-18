@@ -45,6 +45,7 @@ kotlin {
             implementation(libs.firebase.analytics.ktx)
             implementation(libs.firebase.crashlytics.ktx)
             implementation(libs.firebase.config.ktx)
+            implementation(libs.firebase.firestore.ktx)
         }
         iosMain.dependencies {
             implementation(libs.sqldelight.native.driver)

@@ -14,6 +14,7 @@ import es.aviferdev.n3to.data.database.DatabaseDriverFactory
 import es.aviferdev.n3to.domain.pdf.PdfReportGenerator
 import es.aviferdev.n3to.platform.AnalyticsTracker
 import es.aviferdev.n3to.platform.CrashlyticsTracker
+import es.aviferdev.n3to.platform.FeedbackSender
 import es.aviferdev.n3to.platform.PurchaseManager
 import es.aviferdev.n3to.platform.VersionRemoteConfig
 import org.koin.android.ext.koin.androidContext
@@ -33,6 +34,7 @@ val androidModule = module {
     single { CrashlyticsTracker() }
     single { PurchaseManager() }
     single { VersionRemoteConfig() }
+    single { FeedbackSender(get(named("appVersion"))) }
     single(named("appVersion")) {
         val ctx   = androidContext()
         val pm    = ctx.packageManager

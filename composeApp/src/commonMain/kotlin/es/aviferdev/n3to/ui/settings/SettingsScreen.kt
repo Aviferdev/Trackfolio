@@ -27,7 +27,9 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+
 import androidx.compose.material.icons.filled.WorkspacePremium
+import androidx.compose.material.icons.outlined.Email
 import androidx.compose.material.icons.outlined.Fingerprint
 import androidx.compose.material.icons.outlined.GpsFixed
 import androidx.compose.material.icons.outlined.Info
@@ -94,6 +96,7 @@ import n3to.composeapp.generated.resources.common_cancel
 import n3to.composeapp.generated.resources.common_delete
 import n3to.composeapp.generated.resources.home_backup_action
 import n3to.composeapp.generated.resources.settings_about
+import n3to.composeapp.generated.resources.settings_feedback
 import n3to.composeapp.generated.resources.settings_add
 import n3to.composeapp.generated.resources.settings_add_account
 import n3to.composeapp.generated.resources.settings_biometric_activate
@@ -147,6 +150,7 @@ fun SettingsScreen(
     onNavigateToPrivacySettings: () -> Unit = {},
     onNavigateToPremium: () -> Unit = {},
     onNavigateToAccountConfig: (String) -> Unit = {},
+    onNavigateToFeedback: () -> Unit = {},
     onNavigateToAbout: () -> Unit = {},
     onResetOnboarding: () -> Unit = {},
     accountViewModel: AccountViewModel = koinViewModel(),
@@ -213,6 +217,7 @@ fun SettingsScreen(
         onNavigateToPrivacySettings = onNavigateToPrivacySettings,
         onNavigateToPremium = onNavigateToPremium,
         onNavigateToAccountConfig = onNavigateToAccountConfig,
+        onNavigateToFeedback = onNavigateToFeedback,
         onNavigateToAbout = onNavigateToAbout,
         onResetOnboarding = handleResetOnboarding,
         premiumStatus = premiumStatus,
@@ -321,6 +326,7 @@ fun SettingsContent(
     onNavigateToPrivacySettings: () -> Unit = {},
     onNavigateToPremium: () -> Unit = {},
     onNavigateToAccountConfig: (String) -> Unit = {},
+    onNavigateToFeedback: () -> Unit = {},
     onNavigateToAbout: () -> Unit = {},
     onResetOnboarding: () -> Unit = {},
     navigateBack: () -> Unit = {},
@@ -419,6 +425,8 @@ fun SettingsContent(
                     SettingsSectionHeader(label = stringResource(Res.string.settings_section_info))
                     SettingsGroupCard {
                         SettingsNavigableRow(icon = Icons.Outlined.Info, label = stringResource(Res.string.settings_about), onClick = onNavigateToAbout)
+                        SettingsRowDivider()
+                        SettingsNavigableRow(icon = Icons.Outlined.Email, label = stringResource(Res.string.settings_feedback), onClick = onNavigateToFeedback)
                         SettingsRowDivider()
                         SettingsNavigableRow(icon = Icons.Outlined.Refresh, label = stringResource(Res.string.settings_show_onboarding), onClick = onResetOnboarding)
                     }

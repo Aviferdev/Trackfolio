@@ -38,6 +38,7 @@ import es.aviferdev.n3to.ui.premium.PremiumScreen
 import es.aviferdev.n3to.ui.realestate.RealEstateDetailScreen
 import es.aviferdev.n3to.ui.settings.AboutScreen
 import es.aviferdev.n3to.ui.settings.ExpenseSettingsScreen
+import es.aviferdev.n3to.ui.settings.feedback.FeedbackScreen
 import es.aviferdev.n3to.ui.settings.IncomeSettingsScreen
 import es.aviferdev.n3to.ui.settings.IncomeTypeDetailScreen
 import es.aviferdev.n3to.ui.settings.PrivacySettingsScreen
@@ -348,6 +349,11 @@ fun N3toNavHost(
                                 launchSingleTop = true
                             }
                         },
+                        onNavigateToFeedback = {
+                            navController.navigate(Screen.Feedback.route) {
+                                launchSingleTop = true
+                            }
+                        },
                         onNavigateToAbout = {
                             navController.navigate(Screen.About.route) {
                                 launchSingleTop = true
@@ -394,6 +400,11 @@ fun N3toNavHost(
                 composable(Screen.TaxProfileSettings.route) {
                     TaxProfileSettingsScreen(
                         onBack = { navController.popBackStack() }
+                    )
+                }
+                composable(Screen.Feedback.route) {
+                    FeedbackScreen(
+                        navigateBack = { navController.popBackStack() }
                     )
                 }
                 composable(Screen.About.route) {

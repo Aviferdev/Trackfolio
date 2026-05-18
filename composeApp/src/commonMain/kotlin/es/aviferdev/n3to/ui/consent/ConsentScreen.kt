@@ -143,6 +143,22 @@ fun ConsentScreen(
                     )
                     Spacer(Modifier.height(10.dp))
                     Text(
+                        "✍️ Si envías feedback (voluntario):",
+                        fontWeight = FontWeight.Bold,
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                    Spacer(Modifier.height(4.dp))
+                    Text(
+                        "• Solo recibimos tu sugerencia si decides enviarla desde el formulario de la app",
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                    Text(
+                        "• Te recomendamos no incluir datos personales en tu mensaje",
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                    Spacer(Modifier.height(10.dp))
+                    Text(
                         "💳 Si adquieres Trackfolio Premium:",
                         fontWeight = FontWeight.Bold,
                         style = MaterialTheme.typography.labelMedium,
