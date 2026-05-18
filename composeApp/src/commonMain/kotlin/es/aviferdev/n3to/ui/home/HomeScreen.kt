@@ -1,5 +1,6 @@
 package es.aviferdev.n3to.ui.home
 
+import es.aviferdev.n3to.platform.nowHour
 import es.aviferdev.n3to.platform.nowMillis
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -74,8 +75,6 @@ import es.aviferdev.n3to.ui.theme.TextPrimary
 import es.aviferdev.n3to.ui.theme.TextSecondary
 import es.aviferdev.n3to.ui.theme.TextTertiary
 import es.aviferdev.n3to.ui.version.VersionUpdateBanner
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
@@ -622,9 +621,7 @@ private fun HomeContentPreview() {
 
 /** Saludo según la hora del día. */
 private fun getGreeting(): String {
-    val now = kotlinx.datetime.Clock.System.now()
-    val local = now.toLocalDateTime(TimeZone.currentSystemDefault())
-    val hour = local.hour
+    val hour = nowHour()
     return when {
         hour in 6..11  -> "Buenos días"
         hour in 12..19 -> "Buenas tardes"

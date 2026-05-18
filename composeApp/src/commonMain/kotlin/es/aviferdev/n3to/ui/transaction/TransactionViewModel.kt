@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.transaction
 
+import es.aviferdev.n3to.platform.nowLocalDateTime
+import es.aviferdev.n3to.platform.nowMillis
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import es.aviferdev.n3to.domain.model.MonthlyTotals
@@ -20,7 +22,6 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 
@@ -46,7 +47,7 @@ class TransactionViewModel(
     private val session: AccountSession
 ) : ViewModel() {
 
-    private val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
+    private val now = nowLocalDateTime()
 
     private val _selectedPeriod = MutableStateFlow(
         Pair(now.year.toString(), now.monthNumber.toString().padStart(2, '0'))
@@ -176,7 +177,7 @@ class TransactionViewModel(
         val (y, m) = _selectedPeriod.value
         val month = m.toInt();
         val year = y.toInt()
-        val nowDate = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
+        val nowDate = nowLocalDateTime()
         if (year == nowDate.year && month == nowDate.monthNumber) return
         _selectedPeriod.value = if (month == 12) Pair((year + 1).toString(), "01")
         else Pair(y, (month + 1).toString().padStart(2, '0'))
