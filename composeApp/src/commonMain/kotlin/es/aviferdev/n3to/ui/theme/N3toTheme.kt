@@ -11,8 +11,9 @@ val PrimaryDark = Color(0xFF5B57F5)
 val PrimaryVariant = Color(0xFF4440D4)
 val PrimaryAlpha = Color(0x335B57F5)
 val PrimaryLight = Color(0xFF8B89F8)
-val IncomeGreen = Color(0xFF2DC265)
-val PositiveGreen = IncomeGreen
+val BrandGreen   = Color(0xFF00C897)   // verde del icono — esmeralda de marca
+val IncomeGreen  = BrandGreen
+val PositiveGreen = BrandGreen
 val ExpenseRed = Color(0xFFEC4246)
 val NegativeRed = ExpenseRed
 val WarnAmber = Color(0xFFF59E0B)
@@ -85,7 +86,7 @@ val CategoryPalette: List<Color> = listOf(
     Color(0xFF8FA3B0)
 )
 
-val N3toSparkline = Color(0xFF00C897)
+val N3toSparkline = BrandGreen
 val UncategorizedColor: Color = Color(0xFF6E7480)
 
 // ─── Material color schemes ────────────────────────────────────────────────────

@@ -22,6 +22,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.HomeBalance
+import es.aviferdev.n3to.ui.theme.BrandGreen
 import es.aviferdev.n3to.ui.theme.CyanGlow
 import es.aviferdev.n3to.ui.theme.CyanSubtle
 import es.aviferdev.n3to.ui.theme.N3toTheme
@@ -57,7 +58,7 @@ fun HeroCard(
                         end = Offset(size.width, size.height)
                     )
                 )
-                // Orb decorativo cian (esquina superior derecha)
+                // Orb cian — esquina superior derecha
                 val orbRadius = 90.dp.toPx()
                 val cx = size.width - 40.dp.toPx()
                 val cy = 40.dp.toPx()
@@ -69,6 +70,19 @@ fun HeroCard(
                     ),
                     radius = orbRadius,
                     center = Offset(cx, cy)
+                )
+                // Orb verde de marca — esquina inferior izquierda
+                val orbGreen = 65.dp.toPx()
+                val gx = 28.dp.toPx()
+                val gy = size.height - 18.dp.toPx()
+                drawCircle(
+                    brush = Brush.radialGradient(
+                        colors = listOf(BrandGreen.copy(alpha = 0.10f), Color.Transparent),
+                        center = Offset(gx, gy),
+                        radius = orbGreen
+                    ),
+                    radius = orbGreen,
+                    center = Offset(gx, gy)
                 )
             }
             .padding(horizontal = 22.dp, vertical = 18.dp)
