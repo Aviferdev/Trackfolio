@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.annual
 
+import es.aviferdev.n3to.platform.nowLocalDateTime
+import es.aviferdev.n3to.platform.nowYear
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import es.aviferdev.n3to.domain.model.AnnualSummary
@@ -27,7 +29,6 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 
@@ -72,7 +73,7 @@ class AnnualViewModel(
     private val session: AccountSession
 ) : ViewModel() {
 
-    private val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
+    private val now = nowLocalDateTime()
     private val _year = MutableStateFlow(now.year.toString())
     val year: StateFlow<String> = _year
 
@@ -218,8 +219,7 @@ class AnnualViewModel(
     }
 
     fun nextYear() {
-        val nowYear = Clock.System.now()
-            .toLocalDateTime(TimeZone.currentSystemDefault()).year
+        val nowYear = nowYear()
         if (_year.value.toInt() >= nowYear) return
         _year.value = (_year.value.toInt() + 1).toString()
     }

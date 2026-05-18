@@ -1,5 +1,6 @@
 package es.aviferdev.n3to.ui.home
 
+import es.aviferdev.n3to.platform.nowLocalDate
 import es.aviferdev.n3to.platform.nowMillis
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -28,9 +29,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import kotlinx.datetime.Clock
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
 
 sealed class AddTransactionUiState {
     data object Idle    : AddTransactionUiState()
@@ -277,8 +275,7 @@ class AddTransactionViewModel(
         loadIssuersForType(incomeType)
         // Cargar perfil fiscal activo para labels y pre-relleno de porcentaje
         viewModelScope.launch {
-            val today = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
-            val snapshot = getActiveTaxProfile(today) ?: return@launch
+            val snapshot = getActiveTaxProfile(nowLocalDate()) ?: return@launch
             activeTaxProfile = snapshot
             if (incomeType.hasWithholdingTax) {
                 val irpfTemplate = snapshot.profile.templatesFor(incomeType)
@@ -358,8 +355,7 @@ class AddTransactionViewModel(
             selectedCategoryId       = ""
             transaction.incomeType?.let { loadIssuersForType(it) }
             viewModelScope.launch {
-                val today = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
-                activeTaxProfile = getActiveTaxProfile(today)
+                activeTaxProfile = getActiveTaxProfile(nowLocalDate())
             }
         } else {
             clearIncomeFields()
