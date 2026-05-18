@@ -28,6 +28,16 @@ import es.aviferdev.n3to.ui.theme.TextTertiary
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import es.aviferdev.n3to.domain.model.IncomeType
 import es.aviferdev.n3to.domain.model.TransactionType
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.home_no_movements_subtitle
+import n3to.composeapp.generated.resources.home_no_movements_title
+import n3to.composeapp.generated.resources.home_section_recent
+import n3to.composeapp.generated.resources.home_view_all
+import n3to.composeapp.generated.resources.transaction_label_balance_adjustment
+import n3to.composeapp.generated.resources.transaction_label_expense
+import n3to.composeapp.generated.resources.transaction_label_income
+import n3to.composeapp.generated.resources.transaction_label_investment
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -40,8 +50,8 @@ fun RecentTransactionsSection(
 ) {
     Column(modifier = modifier) {
         SectionHeader(
-            label = "Últimos movimientos",
-            actionLabel = "Ver todos",
+            label = stringResource(Res.string.home_section_recent),
+            actionLabel = stringResource(Res.string.home_view_all),
             onAction = onVerTodos,
             modifier = Modifier.padding(0.dp)
         )
@@ -61,14 +71,14 @@ fun RecentTransactionsSection(
                 ) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text(
-                            "Sin movimientos",
+                            stringResource(Res.string.home_no_movements_title),
                             fontSize = 14.sp,
                             fontWeight = FontWeight.SemiBold,
                             color = TextPrimary
                         )
                         Spacer(Modifier.height(4.dp))
                         Text(
-                            "Pulsa + para añadir tu primer movimiento",
+                            stringResource(Res.string.home_no_movements_subtitle),
                             fontSize = 12.sp,
                             color = TextTertiary,
                             textAlign = TextAlign.Center,
@@ -99,16 +109,17 @@ fun RecentTransactionsSection(
     }
 }
 
+@Composable
 private fun resolveTransactionLabel(
     transaction: Transaction,
     categoryNames: Map<String, String>
 ): String {
-    if (transaction.isLinkedToAsset) return transaction.notes ?: "Inversión"
-    if (transaction.isAdjustment) return "Ajuste de saldo"
+    if (transaction.isLinkedToAsset) return transaction.notes ?: stringResource(Res.string.transaction_label_investment)
+    if (transaction.isAdjustment) return stringResource(Res.string.transaction_label_balance_adjustment)
     return if (transaction.isIncome) {
-        transaction.incomeType?.label ?: "Ingreso"
+        transaction.incomeType?.label ?: stringResource(Res.string.transaction_label_income)
     } else {
-        transaction.categoryId?.let { categoryNames[it] } ?: "Gasto"
+        transaction.categoryId?.let { categoryNames[it] } ?: stringResource(Res.string.transaction_label_expense)
     }
 }
 

@@ -33,12 +33,19 @@ import es.aviferdev.n3to.ui.theme.SurfaceElevated
 import es.aviferdev.n3to.ui.theme.TextPrimary
 import es.aviferdev.n3to.ui.theme.TextTertiary
 import es.aviferdev.n3to.ui.theme.N3toTheme
+import es.aviferdev.n3to.ui.theme.formatDateFullLocalized
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.common_accept
+import n3to.composeapp.generated.resources.common_cancel
+import n3to.composeapp.generated.resources.common_select_date
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
+import kotlin.time.ExperimentalTime
 
 /**
  * Selector de fecha con picker dialog integrado.
@@ -48,7 +55,7 @@ import kotlinx.datetime.toLocalDateTime
  * @param onDateSelected Callback con la nueva fecha en epoch millis.
  * @param modifier Modifier para personalizar.
  */
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalTime::class)
 @Composable
 fun DatePickerRow(
     label: String,
@@ -59,15 +66,9 @@ fun DatePickerRow(
     var showPicker by remember { mutableStateOf(false) }
 
     val dateText = if (dateMillis > 0) {
-        val instant = Instant.fromEpochMilliseconds(dateMillis)
-        val ld = instant.toLocalDateTime(TimeZone.currentSystemDefault()).date
-        val months = listOf(
-            "enero", "febrero", "marzo", "abril", "mayo", "junio",
-            "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"
-        )
-        "${ld.dayOfMonth} de ${months[ld.monthNumber - 1]} de ${ld.year}"
+        formatDateFullLocalized(dateMillis)
     } else {
-        "Seleccionar fecha"
+        stringResource(Res.string.common_select_date)
     }
 
     Column(modifier = modifier) {
@@ -121,12 +122,12 @@ fun DatePickerRow(
                     }
                     showPicker = false
                 }) {
-                    Text("Aceptar", color = PrimaryDark)
+                    Text(stringResource(Res.string.common_accept), color = PrimaryDark)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showPicker = false }) {
-                    Text("Cancelar", color = TextTertiary)
+                    Text(stringResource(Res.string.common_cancel), color = TextTertiary)
                 }
             }
         ) {

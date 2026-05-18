@@ -26,6 +26,11 @@ import es.aviferdev.n3to.ui.theme.TextDisabled
 import es.aviferdev.n3to.ui.theme.TextSecondary
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import es.aviferdev.n3to.ui.theme.WarnAmber
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.common_update
+import n3to.composeapp.generated.resources.home_price_reminder_many
+import n3to.composeapp.generated.resources.home_price_reminder_one
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -58,7 +63,8 @@ fun PriceReminderBanner(
             )
             Spacer(Modifier.width(10.dp))
             Text(
-                text     = "$outdatedCount ${if (outdatedCount == 1) "activo sin" else "activos sin"} precio actualizado (>7 días)",
+                text     = if (outdatedCount == 1) stringResource(Res.string.home_price_reminder_one, outdatedCount)
+                          else stringResource(Res.string.home_price_reminder_many, outdatedCount),
                 fontSize = 12.sp,
                 color    = WarnAmber,
                 fontWeight = FontWeight.Medium,
@@ -72,7 +78,7 @@ fun PriceReminderBanner(
                     .padding(horizontal = 12.dp, vertical = 4.dp)
             ) {
                 Text(
-                    text       = "Actualizar",
+                    text       = stringResource(Res.string.common_update),
                     fontSize   = 11.sp,
                     color      = WarnAmber,
                     fontWeight = FontWeight.Bold

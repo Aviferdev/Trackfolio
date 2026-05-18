@@ -88,6 +88,53 @@ import es.aviferdev.n3to.ui.theme.TextPrimary
 import es.aviferdev.n3to.ui.theme.TextSecondary
 import es.aviferdev.n3to.ui.theme.TextTertiary
 import es.aviferdev.n3to.ui.theme.formatAmount
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.common_accept
+import n3to.composeapp.generated.resources.common_cancel
+import n3to.composeapp.generated.resources.common_delete
+import n3to.composeapp.generated.resources.home_backup_action
+import n3to.composeapp.generated.resources.settings_about
+import n3to.composeapp.generated.resources.settings_add
+import n3to.composeapp.generated.resources.settings_add_account
+import n3to.composeapp.generated.resources.settings_biometric_activate
+import n3to.composeapp.generated.resources.settings_biometric_disabled
+import n3to.composeapp.generated.resources.settings_biometric_enabled
+import n3to.composeapp.generated.resources.settings_biometric_lock
+import n3to.composeapp.generated.resources.settings_biometric_title
+import n3to.composeapp.generated.resources.settings_biometric_unavailable
+import n3to.composeapp.generated.resources.settings_configure_cd
+import n3to.composeapp.generated.resources.settings_delete_account_message
+import n3to.composeapp.generated.resources.settings_delete_account_title
+import n3to.composeapp.generated.resources.settings_edit_cd
+import n3to.composeapp.generated.resources.settings_not_now
+import n3to.composeapp.generated.resources.settings_premium_active
+import n3to.composeapp.generated.resources.settings_premium_cta
+import n3to.composeapp.generated.resources.settings_premium_lifetime
+import n3to.composeapp.generated.resources.settings_premium_limit_message
+import n3to.composeapp.generated.resources.settings_premium_limit_title
+import n3to.composeapp.generated.resources.settings_premium_title
+import n3to.composeapp.generated.resources.settings_privacy_data
+import n3to.composeapp.generated.resources.settings_section_accounts
+import n3to.composeapp.generated.resources.settings_section_appearance
+import n3to.composeapp.generated.resources.settings_section_data
+import n3to.composeapp.generated.resources.settings_section_info
+import n3to.composeapp.generated.resources.settings_section_privacy
+import n3to.composeapp.generated.resources.settings_section_reminders
+import n3to.composeapp.generated.resources.settings_section_security
+import n3to.composeapp.generated.resources.settings_show_onboarding
+import n3to.composeapp.generated.resources.settings_theme_disabled
+import n3to.composeapp.generated.resources.settings_theme_enabled
+import n3to.composeapp.generated.resources.settings_title
+import n3to.composeapp.generated.resources.settings_dark_theme
+import n3to.composeapp.generated.resources.settings_backup
+import n3to.composeapp.generated.resources.settings_backup_reminder_off
+import n3to.composeapp.generated.resources.settings_backup_reminder_title
+import n3to.composeapp.generated.resources.settings_interval_7d
+import n3to.composeapp.generated.resources.home_confirm_identity
+import n3to.composeapp.generated.resources.settings_interval_15d
+import n3to.composeapp.generated.resources.settings_interval_30d
+import n3to.composeapp.generated.resources.settings_reconciliation_reminder_title
+import org.jetbrains.compose.resources.stringResource
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.koinInject
@@ -117,6 +164,11 @@ fun SettingsScreen(
 
     var biometricEnabled by remember { mutableStateOf(lockManager.biometricEnabled) }
     var biometricError   by remember { mutableStateOf<String?>(null) }
+    val biometricTitleText = stringResource(Res.string.settings_biometric_title)
+    val acceptText = stringResource(Res.string.common_accept)
+    val biometricUnavailableText = stringResource(Res.string.settings_biometric_unavailable)
+    val biometricActivateText = stringResource(Res.string.settings_biometric_activate)
+    val confirmIdentityText = stringResource(Res.string.home_confirm_identity)
 
     val backupIntervalUseCase = koinInject<GetBackupReminderIntervalUseCase>()
     var backupInterval by remember { mutableStateOf(backupIntervalUseCase.get()) }
@@ -142,9 +194,9 @@ fun SettingsScreen(
         onToggleBiometric = { enabled ->
             if (enabled) {
                 if (!authenticator.isAvailable()) {
-                    biometricError = "No hay biometría disponible. Configura una huella o PIN en ajustes del dispositivo."
+                    biometricError = biometricUnavailableText
                 } else {
-                    authenticator.authenticate("Activar biometría", "Confirma tu identidad") { result ->
+                    authenticator.authenticate(biometricActivateText, confirmIdentityText) { result ->
                         when (result) {
                             is BiometricResult.Success -> { lockManager.enableBiometric(); biometricEnabled = true }
                             is BiometricResult.Error -> biometricError = result.message
@@ -177,10 +229,10 @@ fun SettingsScreen(
     }
     if (accountState.showDeleteConfirm && accountState.accountToDelete != null) {
         AlertDialog(onDismissRequest = { accountViewModel.cancelDelete() }, containerColor = NavySurface,
-            title = { Text("Eliminar cuenta", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = TextPrimary) },
-            text  = { Text("¿Eliminar \"${accountState.accountToDelete!!.name}\"? Esto también eliminará todos sus movimientos.", fontSize = 13.sp, color = TextSecondary) },
-            confirmButton = { TextButton(onClick = { accountViewModel.confirmDelete() }) { Text("Eliminar", color = ExpenseRed, fontWeight = FontWeight.SemiBold) } },
-            dismissButton = { TextButton(onClick = { accountViewModel.cancelDelete() }) { Text("Cancelar", color = CyanAccent) } },
+            title = { Text(stringResource(Res.string.settings_delete_account_title), fontSize = 16.sp, fontWeight = FontWeight.Bold, color = TextPrimary) },
+            text  = { Text(stringResource(Res.string.settings_delete_account_message, accountState.accountToDelete!!.name), fontSize = 13.sp, color = TextSecondary) },
+            confirmButton = { TextButton(onClick = { accountViewModel.confirmDelete() }) { Text(stringResource(Res.string.common_delete), color = ExpenseRed, fontWeight = FontWeight.SemiBold) } },
+            dismissButton = { TextButton(onClick = { accountViewModel.cancelDelete() }) { Text(stringResource(Res.string.common_cancel), color = CyanAccent) } },
             shape = RoundedCornerShape(16.dp)
         )
     }
@@ -190,9 +242,9 @@ fun SettingsScreen(
         AlertDialog(
             onDismissRequest = { biometricError = null },
             containerColor   = NavySurface,
-            title            = { Text("Biometría", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = TextPrimary) },
+            title            = { Text(biometricTitleText, fontSize = 16.sp, fontWeight = FontWeight.Bold, color = TextPrimary) },
             text             = { Text(msg, fontSize = 13.sp, color = TextSecondary) },
-            confirmButton    = { TextButton(onClick = { biometricError = null }) { Text("Aceptar", color = CyanAccent, fontWeight = FontWeight.SemiBold) } },
+            confirmButton    = { TextButton(onClick = { biometricError = null }) { Text(acceptText, color = CyanAccent, fontWeight = FontWeight.SemiBold) } },
             shape            = RoundedCornerShape(16.dp)
         )
     }
@@ -204,7 +256,7 @@ fun SettingsScreen(
             containerColor = NavySurface,
             title = {
                 Text(
-                    "Límite de cuentas gratuitas",
+                    stringResource(Res.string.settings_premium_limit_title),
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
                     color = TextPrimary
@@ -212,8 +264,7 @@ fun SettingsScreen(
             },
             text = {
                 Text(
-                    "Has alcanzado el límite de ${PremiumConstants.MAX_FREE_ACCOUNTS} cuentas del plan gratuito. " +
-                            "Hazte Premium para añadir cuentas ilimitadas.",
+                    stringResource(Res.string.settings_premium_limit_message, PremiumConstants.MAX_FREE_ACCOUNTS),
                     fontSize = 13.sp,
                     color = TextSecondary
                 )
@@ -223,12 +274,12 @@ fun SettingsScreen(
                     accountViewModel.dismissPremiumLimitWarning()
                     onNavigateToPremium()
                 }) {
-                    Text("Hazte Premium", color = CyanAccent, fontWeight = FontWeight.SemiBold)
+                    Text(stringResource(Res.string.settings_premium_cta), color = CyanAccent, fontWeight = FontWeight.SemiBold)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { accountViewModel.dismissPremiumLimitWarning() }) {
-                    Text("Ahora no", color = TextTertiary)
+                    Text(stringResource(Res.string.settings_not_now), color = TextTertiary)
                 }
             },
             shape = RoundedCornerShape(16.dp)
@@ -285,12 +336,12 @@ fun SettingsContent(
     LaunchedEffect(Unit) { delay(60); contentVisible = true }
 
     Column(modifier = modifier.fillMaxSize().background(NavyDeep)) {
-        TopBarApp(title = "Ajustes", navigateBack = navigateBack)
+        TopBarApp(title = stringResource(Res.string.settings_title), navigateBack = navigateBack)
 
         AnimatedVisibility(visible = contentVisible, enter = fadeIn() + slideInVertically(initialOffsetY = { it / 10 })) {
             LazyColumn(contentPadding = PaddingValues(horizontal = 16.dp, vertical = 14.dp), verticalArrangement = Arrangement.spacedBy(18.dp)) {
                 item {
-                    SettingsSectionHeader(label = "Cuentas", actionLabel = "Añadir", onAction = onAddAccount)
+                    SettingsSectionHeader(label = stringResource(Res.string.settings_section_accounts), actionLabel = stringResource(Res.string.settings_add), onAction = onAddAccount)
                 }
 
                 if (accounts.isEmpty()) {
@@ -309,14 +360,14 @@ fun SettingsContent(
                 }
 
                 item {
-                    SettingsSectionHeader(label = "Seguridad")
+                    SettingsSectionHeader(label = stringResource(Res.string.settings_section_security))
                     SettingsGroupCard {
                         SettingsBiometricRow(enabled = biometricEnabled, onToggle = onToggleBiometric)
                     }
                 }
 
                 item {
-                    SettingsSectionHeader(label = "Recordatorios")
+                    SettingsSectionHeader(label = stringResource(Res.string.settings_section_reminders))
                     SettingsGroupCard {
                         SettingsBackupReminderIntervalRow(
                             interval    = backupInterval,
@@ -326,50 +377,50 @@ fun SettingsContent(
                 }
 
                 item {
-                    SettingsSectionHeader(label = "Apariencia")
+                    SettingsSectionHeader(label = stringResource(Res.string.settings_section_appearance))
                     SettingsGroupCard {
                         SettingsThemeRow(isDark = isDarkTheme, onToggle = onToggleTheme)
                     }
                 }
 
                 item {
-                    SettingsSectionHeader(label = "Privacidad")
+                    SettingsSectionHeader(label = stringResource(Res.string.settings_section_privacy))
                     SettingsGroupCard {
                         if (premiumStatus.isPremium) {
                             SettingsInfoRow(
-                                label = "Trackfolio Premium",
-                                value = if (premiumStatus.isLifetime) "Vitalicio" else "Activo"
+                                label = stringResource(Res.string.settings_premium_title),
+                                value = if (premiumStatus.isLifetime) stringResource(Res.string.settings_premium_lifetime) else stringResource(Res.string.settings_premium_active)
                             )
                             SettingsRowDivider()
                         } else {
                             SettingsNavigableRow(
                                 icon = Icons.Default.WorkspacePremium,
-                                label = "Hazte Premium",
+                                label = stringResource(Res.string.settings_premium_cta),
                                 onClick = onNavigateToPremium
                             )
                             SettingsRowDivider()
                         }
                         SettingsNavigableRow(
                             icon = Icons.Outlined.Info,
-                            label = "Privacidad y datos",
+                            label = stringResource(Res.string.settings_privacy_data),
                             onClick = onNavigateToPrivacySettings
                         )
                     }
                 }
 
                 item {
-                    SettingsSectionHeader(label = "Datos")
+                    SettingsSectionHeader(label = stringResource(Res.string.settings_section_data))
                     SettingsGroupCard {
-                        SettingsNavigableRow(icon = Icons.Outlined.SaveAlt, label = "Copia de seguridad",   onClick = onBackupClick)
+                        SettingsNavigableRow(icon = Icons.Outlined.SaveAlt, label = stringResource(Res.string.settings_backup),   onClick = onBackupClick)
                     }
                 }
 
                 item {
-                    SettingsSectionHeader(label = "Información")
+                    SettingsSectionHeader(label = stringResource(Res.string.settings_section_info))
                     SettingsGroupCard {
-                        SettingsNavigableRow(icon = Icons.Outlined.Info, label = "Acerca de", onClick = onNavigateToAbout)
+                        SettingsNavigableRow(icon = Icons.Outlined.Info, label = stringResource(Res.string.settings_about), onClick = onNavigateToAbout)
                         SettingsRowDivider()
-                        SettingsNavigableRow(icon = Icons.Outlined.Refresh, label = "Ver introducción", onClick = onResetOnboarding)
+                        SettingsNavigableRow(icon = Icons.Outlined.Refresh, label = stringResource(Res.string.settings_show_onboarding), onClick = onResetOnboarding)
                     }
                 }
 
@@ -455,29 +506,29 @@ private fun SettingsInfoRow(label: String, value: String) {
 // ─── Biometric toggle row ───────────────────────────────────────────────────
 @Composable
 private fun SettingsBiometricRow(enabled: Boolean, onToggle: (Boolean) -> Unit) {
-    Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) {
-        Icon(Icons.Outlined.Fingerprint, contentDescription = null, tint = CyanAccent, modifier = Modifier.size(20.dp))
-        Spacer(Modifier.width(14.dp))
-        Column(modifier = Modifier.weight(1f)) {
-            Text("Bloqueo biométrico", fontSize = 13.sp, fontWeight = FontWeight.Medium, color = TextPrimary)
-            Text(if (enabled) "Activado" else "Desactivado", fontSize = 11.sp, color = TextTertiary)
+        Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) {
+            Icon(Icons.Outlined.Fingerprint, contentDescription = null, tint = CyanAccent, modifier = Modifier.size(20.dp))
+            Spacer(Modifier.width(14.dp))
+            Column(modifier = Modifier.weight(1f)) {
+                Text(stringResource(Res.string.settings_biometric_lock), fontSize = 13.sp, fontWeight = FontWeight.Medium, color = TextPrimary)
+                Text(if (enabled) stringResource(Res.string.settings_biometric_enabled) else stringResource(Res.string.settings_biometric_disabled), fontSize = 11.sp, color = TextTertiary)
+            }
+            Switch(checked = enabled, onCheckedChange = onToggle, colors = SwitchDefaults.colors(checkedThumbColor = Color.White, checkedTrackColor = CyanAccent, uncheckedThumbColor = Color.White, uncheckedTrackColor = NavySurface))
         }
-        Switch(checked = enabled, onCheckedChange = onToggle, colors = SwitchDefaults.colors(checkedThumbColor = Color.White, checkedTrackColor = CyanAccent, uncheckedThumbColor = Color.White, uncheckedTrackColor = NavySurface))
-    }
 }
 
 // ─── Theme toggle row ────────────────────────────────────────────────────────
 @Composable
 private fun SettingsThemeRow(isDark: Boolean, onToggle: (Boolean) -> Unit) {
-    Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) {
-        Icon(Icons.Outlined.Lightbulb, contentDescription = null, tint = CyanAccent, modifier = Modifier.size(20.dp))
-        Spacer(Modifier.width(14.dp))
-        Column(modifier = Modifier.weight(1f)) {
-            Text("Tema oscuro", fontSize = 13.sp, fontWeight = FontWeight.Medium, color = TextPrimary)
-            Text(if (isDark) "Activado" else "Desactivado", fontSize = 11.sp, color = TextTertiary)
+        Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) {
+            Icon(Icons.Outlined.Lightbulb, contentDescription = null, tint = CyanAccent, modifier = Modifier.size(20.dp))
+            Spacer(Modifier.width(14.dp))
+            Column(modifier = Modifier.weight(1f)) {
+                Text(stringResource(Res.string.settings_dark_theme), fontSize = 13.sp, fontWeight = FontWeight.Medium, color = TextPrimary)
+                Text(if (isDark) stringResource(Res.string.settings_theme_enabled) else stringResource(Res.string.settings_theme_disabled), fontSize = 11.sp, color = TextTertiary)
+            }
+            Switch(checked = isDark, onCheckedChange = onToggle, colors = SwitchDefaults.colors(checkedThumbColor = Color.White, checkedTrackColor = CyanAccent, uncheckedThumbColor = Color.White, uncheckedTrackColor = NavySurface))
         }
-        Switch(checked = isDark, onCheckedChange = onToggle, colors = SwitchDefaults.colors(checkedThumbColor = Color.White, checkedTrackColor = CyanAccent, uncheckedThumbColor = Color.White, uncheckedTrackColor = NavySurface))
-    }
 }
 
 // ─── Reconciliation interval row ──────────────────────────────────────────────
@@ -487,19 +538,19 @@ fun SettingsReconciliationIntervalRow(
     onIntervalChange: (Int) -> Unit,
 ) {
     val options = listOf(
-        0  to "Desactivado",
-        7  to "7 días",
-        15 to "15 días",
-        30 to "30 días"
+        0  to stringResource(Res.string.settings_backup_reminder_off),
+        7  to stringResource(Res.string.settings_interval_7d),
+        15 to stringResource(Res.string.settings_interval_15d),
+        30 to stringResource(Res.string.settings_interval_30d)
     )
-    val label = options.find { it.first == interval }?.second ?: "30 días"
+    val label = options.find { it.first == interval }?.second ?: stringResource(Res.string.settings_interval_30d)
 
     Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Icon(Icons.Outlined.Sync, contentDescription = null, tint = CyanAccent, modifier = Modifier.size(20.dp))
             Spacer(Modifier.width(14.dp))
             Column(modifier = Modifier.weight(1f)) {
-                Text("Recordatorio de reconciliación", fontSize = 13.sp, fontWeight = FontWeight.Medium, color = TextPrimary)
+                Text(stringResource(Res.string.settings_reconciliation_reminder_title), fontSize = 13.sp, fontWeight = FontWeight.Medium, color = TextPrimary)
                 Text(label, fontSize = 11.sp, color = TextTertiary)
             }
         }
@@ -543,19 +594,19 @@ private fun SettingsBackupReminderIntervalRow(
     onIntervalChange: (Int) -> Unit,
 ) {
     val options = listOf(
-        0  to "Desactivado",
-        7  to "7 días",
-        15 to "15 días",
-        30 to "30 días"
+        0  to stringResource(Res.string.settings_backup_reminder_off),
+        7  to stringResource(Res.string.settings_interval_7d),
+        15 to stringResource(Res.string.settings_interval_15d),
+        30 to stringResource(Res.string.settings_interval_30d)
     )
-    val label = options.find { it.first == interval }?.second ?: "30 días"
+    val label = options.find { it.first == interval }?.second ?: stringResource(Res.string.settings_interval_30d)
 
     Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Icon(Icons.Outlined.SaveAlt, contentDescription = null, tint = CyanAccent, modifier = Modifier.size(20.dp))
             Spacer(Modifier.width(14.dp))
             Column(modifier = Modifier.weight(1f)) {
-                Text("Recordatorio de copia de seguridad", fontSize = 13.sp, fontWeight = FontWeight.Medium, color = TextPrimary)
+                Text(stringResource(Res.string.settings_backup_reminder_title), fontSize = 13.sp, fontWeight = FontWeight.Medium, color = TextPrimary)
                 Text(label, fontSize = 11.sp, color = TextTertiary)
             }
         }
@@ -604,7 +655,7 @@ private fun EmptyAccountsCard(onAdd: () -> Unit) {
         Row(modifier = Modifier.fillMaxWidth().padding(16.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
             Icon(Icons.Default.Add, contentDescription = null, tint = CyanAccent, modifier = Modifier.size(20.dp))
             Spacer(Modifier.width(8.dp))
-            Text("Añadir cuenta", fontSize = 13.sp, fontWeight = FontWeight.Medium, color = CyanAccent)
+            Text(stringResource(Res.string.settings_add_account), fontSize = 13.sp, fontWeight = FontWeight.Medium, color = CyanAccent)
         }
     }
 }
@@ -625,9 +676,9 @@ private fun SettingsAccountCard(account: Account, isSelected: Boolean, onSelect:
                 Text(account.name, fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary)
                 Text("€ · ${formatAmount(account.computedBalance)}", fontSize = 11.sp, color = TextTertiary)
             }
-            IconButton(onClick = onConfigure, modifier = Modifier.size(32.dp)) { Icon(Icons.Outlined.AccountBalance, contentDescription = "Configurar", tint = CyanAccent, modifier = Modifier.size(18.dp)) }
-            IconButton(onClick = onEdit, modifier = Modifier.size(32.dp)) { Icon(Icons.Default.Edit, contentDescription = "Editar", tint = TextSecondary, modifier = Modifier.size(16.dp)) }
-            IconButton(onClick = onDelete, modifier = Modifier.size(32.dp)) { Icon(Icons.Default.Delete, contentDescription = "Eliminar", tint = ExpenseRed, modifier = Modifier.size(16.dp)) }
+            IconButton(onClick = onConfigure, modifier = Modifier.size(32.dp)) { Icon(Icons.Outlined.AccountBalance, contentDescription = stringResource(Res.string.settings_configure_cd), tint = CyanAccent, modifier = Modifier.size(18.dp)) }
+            IconButton(onClick = onEdit, modifier = Modifier.size(32.dp)) { Icon(Icons.Default.Edit, contentDescription = stringResource(Res.string.settings_edit_cd), tint = TextSecondary, modifier = Modifier.size(16.dp)) }
+            IconButton(onClick = onDelete, modifier = Modifier.size(32.dp)) { Icon(Icons.Default.Delete, contentDescription = stringResource(Res.string.common_delete), tint = ExpenseRed, modifier = Modifier.size(16.dp)) }
         }
     }
 }

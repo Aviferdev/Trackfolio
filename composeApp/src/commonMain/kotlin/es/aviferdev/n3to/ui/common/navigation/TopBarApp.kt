@@ -19,6 +19,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.ui.common.button.IconButtonApp
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.common_back_cd
+import org.jetbrains.compose.resources.stringResource
 import es.aviferdev.n3to.ui.common.separator.SpacerHorizontalApp
 import es.aviferdev.n3to.ui.theme.BorderGray
 import es.aviferdev.n3to.ui.theme.SurfaceWhite
@@ -45,7 +48,7 @@ fun TopBarApp(
                 IconButtonApp(
                     clickButton = navigateBack,
                     icon = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = "Ir atras"
+                    contentDescription = stringResource(Res.string.common_back_cd)
                 )
                 SpacerHorizontalApp(8.dp)
             } else {

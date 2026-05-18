@@ -14,14 +14,20 @@ import es.aviferdev.n3to.ui.theme.SurfaceWhite
 import es.aviferdev.n3to.ui.theme.TextPrimary
 import es.aviferdev.n3to.ui.theme.TextSecondary
 import es.aviferdev.n3to.ui.theme.N3toTheme
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.common_cancel
+import n3to.composeapp.generated.resources.common_delete
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 /**
  * Diálogo de confirmación de borrado genérico.
- * Sigue el patrón visual del proyecto: título, mensaje, botón "Eliminar" en rojo y "Cancelar".
+ * Sigue el patrón visual del proyecto: título, mensaje, botón confirmación en rojo y cancelar.
  *
  * @param title Título del diálogo (ej: "Eliminar movimiento").
  * @param message Mensaje descriptivo de la acción.
+ * @param confirmLabel Texto del botón de confirmación (por defecto "Eliminar").
+ * @param dismissLabel Texto del botón de cancelación (por defecto "Cancelar").
  * @param onConfirm Acción a ejecutar al confirmar el borrado.
  * @param onDismiss Acción a ejecutar al cancelar.
  */
@@ -30,7 +36,9 @@ fun DeleteConfirmDialog(
     title: String,
     message: String,
     onConfirm: () -> Unit,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
+    confirmLabel: String = stringResource(Res.string.common_delete),
+    dismissLabel: String = stringResource(Res.string.common_cancel)
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -52,12 +60,12 @@ fun DeleteConfirmDialog(
         },
         confirmButton = {
             TextButton(onClick = onConfirm) {
-                Text("Eliminar", color = ExpenseRed)
+                Text(confirmLabel, color = ExpenseRed)
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("Cancelar", color = PrimaryDark)
+                Text(dismissLabel, color = PrimaryDark)
             }
         },
         shape = RoundedCornerShape(16.dp)

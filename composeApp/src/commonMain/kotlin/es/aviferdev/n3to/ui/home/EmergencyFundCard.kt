@@ -37,6 +37,17 @@ import es.aviferdev.n3to.ui.theme.WarnAmber
 import es.aviferdev.n3to.ui.theme.CyanAccent
 import es.aviferdev.n3to.ui.theme.NavySurface
 import es.aviferdev.n3to.ui.theme.formatAmountEuro
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.home_ef_configure_subtitle
+import n3to.composeapp.generated.resources.home_ef_configure_title
+import n3to.composeapp.generated.resources.home_ef_covered
+import n3to.composeapp.generated.resources.home_ef_current_balance
+import n3to.composeapp.generated.resources.home_ef_missing_format
+import n3to.composeapp.generated.resources.home_ef_monthly_avg_format
+import n3to.composeapp.generated.resources.home_ef_months
+import n3to.composeapp.generated.resources.home_ef_target
+import n3to.composeapp.generated.resources.home_section_emergency_fund
+import org.jetbrains.compose.resources.stringResource
 
 /**
  * Tarjeta del fondo de emergencia para la Home.
@@ -73,14 +84,14 @@ fun EmergencyFundCard(
                 )
                 Spacer(Modifier.height(8.dp))
                 Text(
-                    text = "Configura tu fondo de emergencia",
+                    text = stringResource(Res.string.home_ef_configure_title),
                     fontSize = 13.sp,
                     fontWeight = FontWeight.Medium,
                     color = CyanAccent
                 )
                 Spacer(Modifier.height(4.dp))
                 Text(
-                    text = "Mantén tu saldo seguro — Toca para configurar",
+                    text = stringResource(Res.string.home_ef_configure_subtitle),
                     fontSize = 11.sp,
                     color = TextTertiary
                 )
@@ -111,14 +122,14 @@ fun EmergencyFundCard(
                     )
                     Spacer(Modifier.width(6.dp))
                     Text(
-                        text = "Fondo de emergencia",
+                        text = stringResource(Res.string.home_section_emergency_fund),
                         fontSize = 13.sp,
                         fontWeight = FontWeight.SemiBold,
                         color = TextPrimary
                     )
                 }
                 Text(
-                    text = if (status.isCovered) "Cubierto ✅" else "${status.targetMonths} meses",
+                    text = if (status.isCovered) stringResource(Res.string.home_ef_covered) else stringResource(Res.string.home_ef_months, status.targetMonths),
                     fontSize = 11.sp,
                     color = if (status.isCovered) IncomeGreen else TextTertiary
                 )
@@ -149,7 +160,7 @@ fun EmergencyFundCard(
             ) {
                 Column {
                     Text(
-                        text = "Saldo actual",
+                        text = stringResource(Res.string.home_ef_current_balance),
                         fontSize = 10.sp,
                         color = TextTertiary
                     )
@@ -162,7 +173,7 @@ fun EmergencyFundCard(
                 }
                 Column(horizontalAlignment = Alignment.End) {
                     Text(
-                        text = "Objetivo",
+                        text = stringResource(Res.string.home_ef_target),
                         fontSize = 10.sp,
                         color = TextTertiary
                     )
@@ -179,7 +190,7 @@ fun EmergencyFundCard(
             if (status.missingAmount > 0.0 && !status.isCovered) {
                 Spacer(Modifier.height(6.dp))
                 Text(
-                    text = "Te faltan ${formatAmountEuro(status.missingAmount)} para cubrir el fondo",
+                    text = stringResource(Res.string.home_ef_missing_format, formatAmountEuro(status.missingAmount)),
                     fontSize = 11.sp,
                     color = ExpenseRed,
                     fontWeight = FontWeight.Medium
@@ -190,7 +201,7 @@ fun EmergencyFundCard(
             if (status.calculationMethod == EmergencyFundMethod.AUTO && status.monthlyAverage != null) {
                 Spacer(Modifier.height(4.dp))
                 Text(
-                    text = "Gasto medio: ${formatAmountEuro(status.monthlyAverage)}/mes",
+                    text = stringResource(Res.string.home_ef_monthly_avg_format, formatAmountEuro(status.monthlyAverage)),
                     fontSize = 10.sp,
                     color = TextTertiary
                 )

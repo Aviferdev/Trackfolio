@@ -25,6 +25,9 @@ import es.aviferdev.n3to.ui.theme.NavySurface
 import es.aviferdev.n3to.ui.theme.TextPrimary
 import es.aviferdev.n3to.ui.theme.TextTertiary
 import es.aviferdev.n3to.ui.theme.N3toTheme
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.common_action_cd
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 /**
@@ -52,7 +55,7 @@ fun IconActionButton(
         if (icon != null) {
             Icon(
                 imageVector = icon,
-                contentDescription = label ?: "Acción",
+                contentDescription = label ?: stringResource(Res.string.common_action_cd),
                 tint = iconTint,
                 modifier = Modifier.size(18.dp)
             )

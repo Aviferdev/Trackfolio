@@ -76,6 +76,17 @@ import es.aviferdev.n3to.ui.theme.TextTertiary
 import es.aviferdev.n3to.ui.version.VersionUpdateBanner
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.greeting_afternoon
+import n3to.composeapp.generated.resources.greeting_evening
+import n3to.composeapp.generated.resources.greeting_morning
+import n3to.composeapp.generated.resources.home_confirm_identity
+import n3to.composeapp.generated.resources.home_hide_balances
+import n3to.composeapp.generated.resources.home_show_balances
+import n3to.composeapp.generated.resources.home_section_emergency_fund
+import n3to.composeapp.generated.resources.home_section_goals
+import n3to.composeapp.generated.resources.home_settings_cd
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
@@ -116,6 +127,8 @@ fun HomeScreen(
     val balanceVisibility = koinInject<BalanceVisibilityManager>()
     val authenticator: BiometricAuthenticator = koinInject()
     val balancesHidden = LocalBalanceHidden.current
+    val showBalancesText = stringResource(Res.string.home_show_balances)
+    val confirmIdentityText = stringResource(Res.string.home_confirm_identity)
 
     // ── Backup reminder state ────────────────────────────────────────────────
     val shouldShowBackupReminder = koinInject<ShouldShowBackupReminderUseCase>()
@@ -202,8 +215,8 @@ fun HomeScreen(
                         if (balancesHidden) {
                             balanceVisibility.requestShow {
                                 authenticator.authenticate(
-                                    "Mostrar saldos",
-                                    "Confirma tu identidad"
+                                    showBalancesText,
+                                    confirmIdentityText
                                 ) { result ->
                                     when (result) {
                                         is BiometricResult.Success -> balanceVisibility.onBiometricSuccess()
@@ -412,13 +425,13 @@ fun HomeContent(
                     onClick = onToggleBalances,
                     icon = if (balancesHidden) Icons.Outlined.VisibilityOff else Icons.Outlined.Visibility,
                     iconTint = TextSecondary,
-                    label = if (balancesHidden) "Mostrar saldos" else "Ocultar saldos"
+                    label = if (balancesHidden) stringResource(Res.string.home_show_balances) else stringResource(Res.string.home_hide_balances)
                 )
                 IconActionButton(
                     onClick = onNavigateToSettings,
                     icon = Icons.Outlined.Settings,
                     iconTint = TextSecondary,
-                    label = "Ajustes"
+                    label = stringResource(Res.string.home_settings_cd)
                 )
             }
         }
@@ -491,7 +504,7 @@ fun HomeContent(
         // ── Progreso de objetivos ─────────────────────────────────────────────
         Spacer(Modifier.height(24.dp))
         SectionHeader(
-            label = "Objetivos",
+            label = stringResource(Res.string.home_section_goals),
             modifier = Modifier.padding(horizontal = 16.dp)
         )
         Spacer(Modifier.height(10.dp))
@@ -510,7 +523,7 @@ fun HomeContent(
         // ── Fondo de emergencia ───────────────────────────────────────────────
         Spacer(Modifier.height(24.dp))
         SectionHeader(
-            label = "Fondo de emergencia",
+            label = stringResource(Res.string.home_section_emergency_fund),
             modifier = Modifier.padding(horizontal = 16.dp)
         )
         Spacer(Modifier.height(10.dp))

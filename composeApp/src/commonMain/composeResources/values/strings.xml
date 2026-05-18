@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- =====================================================================
+         COMUNES – Botones, acciones y etiquetas genéricas
+         ===================================================================== -->
+    <string name="common_cancel">Cancelar</string>
+    <string name="common_accept">Aceptar</string>
+    <string name="common_delete">Eliminar</string>
+    <string name="common_save">Guardar</string>
+    <string name="common_close">Cerrar</string>
+    <string name="common_error">Error</string>
+    <string name="common_loading">Cargando…</string>
+    <string name="common_update">Actualizar</string>
+    <string name="common_archive">Archivar</string>
+    <string name="common_search_placeholder">Buscar…</string>
+
+    <!-- Content descriptions de accesibilidad -->
+    <string name="common_search_cd">Buscar</string>
+    <string name="common_clear_search_cd">Limpiar búsqueda</string>
+    <string name="common_back_cd">Ir atrás</string>
+    <string name="common_action_cd">Acción</string>
+
+    <!-- Estados vacíos genéricos -->
+    <string name="common_empty_title">Sin datos</string>
+    <string name="common_empty_subtitle">No hay elementos para mostrar</string>
+
+    <!-- =====================================================================
+         NAVEGACIÓN – Bottom bar
+         ===================================================================== -->
+    <string name="nav_home">Inicio</string>
+    <string name="nav_portfolio">Cartera</string>
+    <string name="nav_networth">Patrimonio</string>
+
+    <!-- =====================================================================
+         FECHAS – Meses completos
+         ===================================================================== -->
+    <string name="date_month_full_01">enero</string>
+    <string name="date_month_full_02">febrero</string>
+    <string name="date_month_full_03">marzo</string>
+    <string name="date_month_full_04">abril</string>
+    <string name="date_month_full_05">mayo</string>
+    <string name="date_month_full_06">junio</string>
+    <string name="date_month_full_07">julio</string>
+    <string name="date_month_full_08">agosto</string>
+    <string name="date_month_full_09">septiembre</string>
+    <string name="date_month_full_10">octubre</string>
+    <string name="date_month_full_11">noviembre</string>
+    <string name="date_month_full_12">diciembre</string>
+
+    <!-- FECHAS – Meses abreviados (3 letras) -->
+    <string name="date_month_short_01">ene</string>
+    <string name="date_month_short_02">feb</string>
+    <string name="date_month_short_03">mar</string>
+    <string name="date_month_short_04">abr</string>
+    <string name="date_month_short_05">may</string>
+    <string name="date_month_short_06">jun</string>
+    <string name="date_month_short_07">jul</string>
+    <string name="date_month_short_08">ago</string>
+    <string name="date_month_short_09">sep</string>
+    <string name="date_month_short_10">oct</string>
+    <string name="date_month_short_11">nov</string>
+    <string name="date_month_short_12">dic</string>
+
+    <!-- FECHAS – Relativo -->
+    <string name="date_today">hoy</string>
+    <string name="date_yesterday">ayer</string>
+    <string name="date_just_now">ahora mismo</string>
+    <string name="date_one_minute_ago">hace 1 minuto</string>
+    <string name="date_minutes_ago">hace %1$d minutos</string>
+    <string name="date_one_hour_ago">hace 1 hora</string>
+    <string name="date_hours_ago">hace %1$d horas</string>
+    <string name="date_days_ago">hace %1$d días</string>
+    <string name="date_one_month_ago">hace 1 mes</string>
+    <string name="date_months_ago">hace %1$d meses</string>
+    <string name="date_one_year_ago">hace 1 año</string>
+    <string name="date_years_ago">hace %1$d años</string>
+
+    <!-- FECHAS – Formato fecha completa (día de mes de año) -->
+    <string name="date_format_dmy">%1$d de %2$s de %3$d</string>
+
+    <!-- FECHAS – Selector -->
+    <string name="common_select_date">Seleccionar fecha</string>
+
+    <!-- =====================================================================
+         SALUDOS – Según la hora del día
+         ===================================================================== -->
+    <string name="greeting_morning">Buenos días</string>
+    <string name="greeting_afternoon">Buenas tardes</string>
+    <string name="greeting_evening">Buenas noches</string>
+
+    <!-- =====================================================================
+         HOME – HeroCard, accesos rápidos, secciones
+         ===================================================================== -->
+    <string name="home_hero_balance_label">Saldo en cuenta</string>
+    <string name="home_hero_net_with_debts">Neto con deudas</string>
+    <string name="home_show_balances">Mostrar saldos</string>
+    <string name="home_hide_balances">Ocultar saldos</string>
+    <string name="home_confirm_identity">Confirma tu identidad</string>
+    <string name="home_section_goals">Objetivos</string>
+    <string name="home_section_emergency_fund">Fondo de emergencia</string>
+    <string name="home_section_recent">Últimos movimientos</string>
+    <string name="home_view_all">Ver todos</string>
+    <string name="home_no_movements_title">Sin movimientos</string>
+    <string name="home_no_movements_subtitle">Pulsa + para añadir tu primer movimiento</string>
+    <string name="home_quick_resumen">Resumen</string>
+    <string name="home_quick_debts">Deudas</string>
+    <string name="home_quick_fiscal">Fiscal</string>
+    <string name="home_settings_cd">Ajustes</string>
+
+    <!-- HOME – Fondo de emergencia -->
+    <string name="home_ef_configure_title">Configura tu fondo de emergencia</string>
+    <string name="home_ef_configure_subtitle">Mantén tu saldo seguro — Toca para configurar</string>
+    <string name="home_ef_covered">Cubierto ✅</string>
+    <string name="home_ef_months">%1$d meses</string>
+    <string name="home_ef_current_balance">Saldo actual</string>
+    <string name="home_ef_target">Objetivo</string>
+    <string name="home_ef_missing_format">Te faltan %1$s para cubrir el fondo</string>
+    <string name="home_ef_monthly_avg_format">Gasto medio: %1$s/mes</string>
+
+    <!-- HOME – Objetivos -->
+    <string name="home_goals_define_title">Define tus objetivos mensuales</string>
+    <string name="home_goals_define_subtitle">Ahorro e inversión — Toca para configurar</string>
+    <string name="home_goals_monthly">Objetivos del mes</string>
+    <string name="home_goals_savings">Ahorro</string>
+    <string name="home_goals_investment">Inversión</string>
+    <string name="home_goals_projection_above">📈 Proyección: %1$s — por encima del objetivo (+%2$s)</string>
+    <string name="home_goals_pace_needed">📊 Ritmo actual: %1$s€/día — Necesitas %2$s€/día para alcanzar el objetivo</string>
+    <string name="home_goals_no_movement">📊 Aún no hay movimiento este mes</string>
+
+    <!-- HOME – Banners -->
+    <string name="home_price_reminder_one">%1$d activo sin precio actualizado (&gt;7 días)</string>
+    <string name="home_price_reminder_many">%1$d activos sin precio actualizado (&gt;7 días)</string>
+    <string name="home_backup_never">Aún no has hecho una copia de seguridad</string>
+    <string name="home_backup_days_format">Llevas %1$d días sin hacer una copia de seguridad</string>
+    <string name="home_backup_action">Hacer backup</string>
+    <string name="home_maturity_title">Vencimientos próximos</string>
+    <string name="home_maturity_more_format">+%1$d más</string>
+
+    <!-- =====================================================================
+         TRANSACTION – Labels por defecto
+         ===================================================================== -->
+    <string name="transaction_label_investment">Inversión</string>
+    <string name="transaction_label_balance_adjustment">Ajuste de saldo</string>
+    <string name="transaction_label_income">Ingreso</string>
+    <string name="transaction_label_expense">Gasto</string>
+
+    <!-- =====================================================================
+         SETTINGS – Títulos de sección y opciones
+         ===================================================================== -->
+    <string name="settings_title">Ajustes</string>
+    <string name="settings_section_accounts">Cuentas</string>
+    <string name="settings_section_security">Seguridad</string>
+    <string name="settings_section_reminders">Recordatorios</string>
+    <string name="settings_section_appearance">Apariencia</string>
+    <string name="settings_section_privacy">Privacidad</string>
+    <string name="settings_section_data">Datos</string>
+    <string name="settings_section_info">Información</string>
+    <string name="settings_add_account">Añadir cuenta</string>
+    <string name="settings_add">Añadir</string>
+
+    <!-- Settings – Seguridad -->
+    <string name="settings_biometric_lock">Bloqueo biométrico</string>
+    <string name="settings_biometric_enabled">Activado</string>
+    <string name="settings_biometric_disabled">Desactivado</string>
+    <string name="settings_biometric_activate">Activar biometría</string>
+    <string name="settings_biometric_title">Biometría</string>
+    <string name="settings_biometric_unavailable">No hay biometría disponible. Configura una huella o PIN en ajustes del dispositivo.</string>
+
+    <!-- Settings – Apariencia -->
+    <string name="settings_dark_theme">Tema oscuro</string>
+    <string name="settings_theme_enabled">Activado</string>
+    <string name="settings_theme_disabled">Desactivado</string>
+
+    <!-- Settings – Premium -->
+    <string name="settings_premium_title">Trackfolio Premium</string>
+    <string name="settings_premium_lifetime">Vitalicio</string>
+    <string name="settings_premium_active">Activo</string>
+    <string name="settings_premium_cta">Hazte Premium</string>
+    <string name="settings_premium_limit_title">Límite de cuentas gratuitas</string>
+    <string name="settings_premium_limit_message">Has alcanzado el límite de %1$d cuentas del plan gratuito. Hazte Premium para añadir cuentas ilimitadas.</string>
+
+    <!-- Settings – Privacidad -->
+    <string name="settings_privacy_data">Privacidad y datos</string>
+
+    <!-- Settings – Datos -->
+    <string name="settings_backup">Copia de seguridad</string>
+    <string name="settings_backup_reminder_title">Recordatorio de copia de seguridad</string>
+    <string name="settings_backup_reminder_off">Desactivado</string>
+
+    <!-- Settings – Recordatorios -->
+    <string name="settings_interval_7d">7 días</string>
+    <string name="settings_interval_15d">15 días</string>
+    <string name="settings_interval_30d">30 días</string>
+    <string name="settings_reconciliation_reminder_title">Recordatorio de reconciliación</string>
+
+    <!-- Settings – Información -->
+    <string name="settings_about">Acerca de</string>
+    <string name="settings_show_onboarding">Ver introducción</string>
+
+    <!-- Settings – Diálogos -->
+    <string name="settings_delete_account_title">Eliminar cuenta</string>
+    <string name="settings_delete_account_message">¿Eliminar «%1$s»? Esto también eliminará todos sus movimientos.</string>
+    <string name="settings_not_now">Ahora no</string>
+    <string name="settings_configure_cd">Configurar</string>
+    <string name="settings_edit_cd">Editar</string>
+
+    <!-- =====================================================================
+         PORTFOLIO – Strings comunes de cartera
+         ===================================================================== -->
+    <string name="portfolio_title">Cartera</string>
+    <string name="portfolio_evolution_title">Evolución del valor</string>
+    <string name="portfolio_monthly_value">Valor mensual del portfolio</string>
+    <string name="portfolio_empty_title">Sin posiciones</string>
+    <string name="portfolio_empty_subtitle">Pulsa + para registrar\ntu primera inversión</string>
+    <string name="portfolio_new_purchase">Nueva compra</string>
+    <string name="portfolio_new_bond">Nuevo bono/depósito</string>
+    <string name="portfolio_settings_cd">Ajustes de portfolio</string>
+    <string name="portfolio_distribution_view_category">Categoría</string>
+    <string name="portfolio_distribution_view_composition">Composición</string>
+    <string name="portfolio_distribution_view_region">Región</string>
+    <string name="portfolio_distribution_view_sector">Sector</string>
+</resources>

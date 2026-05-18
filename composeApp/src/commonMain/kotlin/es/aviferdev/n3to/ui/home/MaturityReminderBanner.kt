@@ -28,6 +28,10 @@ import es.aviferdev.n3to.ui.theme.TextSecondary
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import es.aviferdev.n3to.ui.theme.WarnAmber
 
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.home_maturity_more_format
+import n3to.composeapp.generated.resources.home_maturity_title
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -59,7 +63,7 @@ fun MaturityReminderBanner(
                 Text("⚠️", fontSize = 16.sp)
                 Spacer(Modifier.width(8.dp))
                 Text(
-                    text       = "Vencimientos próximos",
+                    text       = stringResource(Res.string.home_maturity_title),
                     fontSize   = 12.sp,
                     fontWeight = FontWeight.Bold,
                     color      = WarnAmber,
@@ -103,7 +107,7 @@ fun MaturityReminderBanner(
             if (positions.size > 3) {
                 Spacer(Modifier.height(4.dp))
                 Text(
-                    text     = "+${positions.size - 3} más",
+                    text     = stringResource(Res.string.home_maturity_more_format, positions.size - 3),
                     fontSize = 11.sp,
                     color    = WarnAmber.copy(alpha = 0.55f),
                     modifier = Modifier.padding(start = 22.dp)

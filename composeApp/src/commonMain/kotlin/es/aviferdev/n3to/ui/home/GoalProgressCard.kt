@@ -36,6 +36,17 @@ import es.aviferdev.n3to.ui.theme.TextTertiary
 import es.aviferdev.n3to.ui.theme.WarnAmber
 import es.aviferdev.n3to.ui.theme.formatAmount
 import es.aviferdev.n3to.ui.theme.formatAmountEuro
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.home_goals_define_subtitle
+import n3to.composeapp.generated.resources.home_goals_define_title
+import n3to.composeapp.generated.resources.home_goals_investment
+import n3to.composeapp.generated.resources.home_goals_monthly
+import n3to.composeapp.generated.resources.home_goals_no_movement
+import n3to.composeapp.generated.resources.home_goals_pace_needed
+import n3to.composeapp.generated.resources.home_goals_projection_above
+import n3to.composeapp.generated.resources.home_goals_savings
+import es.aviferdev.n3to.ui.theme.localizedMonthNames
+import org.jetbrains.compose.resources.stringResource
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.todayIn
@@ -74,14 +85,14 @@ fun GoalProgressCard(
                 )
                 Spacer(Modifier.height(8.dp))
                 Text(
-                    text = "Define tus objetivos mensuales",
+                    text = stringResource(Res.string.home_goals_define_title),
                     fontSize = 13.sp,
                     fontWeight = FontWeight.Medium,
                     color = CyanAccent
                 )
                 Spacer(Modifier.height(4.dp))
                 Text(
-                    text = "Ahorro e inversión — Toca para configurar",
+                    text = stringResource(Res.string.home_goals_define_subtitle),
                     fontSize = 11.sp,
                     color = TextTertiary
                 )
@@ -95,13 +106,13 @@ fun GoalProgressCard(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "Objetivos del mes",
+                        text = stringResource(Res.string.home_goals_monthly),
                         fontSize = 13.sp,
                         fontWeight = FontWeight.SemiBold,
                         color = TextPrimary
                     )
                     Text(
-                        text = progress.monthLabel,
+                        text = progress.monthLabel(),
                         fontSize = 11.sp,
                         color = TextTertiary
                     )
@@ -113,7 +124,7 @@ fun GoalProgressCard(
                 if (progress.savingsTarget > 0.0) {
                     GoalProgressRow(
                         icon = Icons.Outlined.GpsFixed,
-                        label = "Ahorro",
+                        label = stringResource(Res.string.home_goals_savings),
                         target = progress.savingsTarget,
                         actual = progress.savingsActual,
                         achieved = progress.savingsAchieved,
@@ -126,7 +137,7 @@ fun GoalProgressCard(
                 if (progress.investmentTarget > 0.0) {
                     GoalProgressRow(
                         icon = Icons.Outlined.ShowChart,
-                        label = "Inversión",
+                        label = stringResource(Res.string.home_goals_investment),
                         target = progress.investmentTarget,
                         actual = progress.investmentActual,
                         achieved = progress.investmentAchieved,
@@ -234,16 +245,12 @@ private fun rememberProjection(target: Double, actual: Double): String? {
 
     return if (projected >= target) {
         val margin = projected - target
-        "📈 Proyección: ${formatAmountEuro(projected)} — por encima del objetivo (+${
-            formatAmountEuro(
-                margin
-            )
-        })"
+        stringResource(Res.string.home_goals_projection_above, formatAmountEuro(projected), formatAmountEuro(margin))
     } else if (dailyAverage > 0.0) {
         val neededDaily = (target - actual) / daysRemaining
-        "📊 Ritmo actual: ${formatAmount(dailyAverage)}€/día — Necesitas ${formatAmount(neededDaily)}€/día para alcanzar el objetivo"
+        stringResource(Res.string.home_goals_pace_needed, formatAmount(dailyAverage), formatAmount(neededDaily))
     } else {
-        "📊 Aún no hay movimiento este mes"
+        stringResource(Res.string.home_goals_no_movement)
     }
 }
 
@@ -255,9 +262,10 @@ private fun daysInMonth(year: Int, month: Int): Int = when (month) {
     else -> 30
 }
 
-/** Nombre del mes en español para mostrar en la tarjeta. */
-private val MonthlyGoalProgress.monthLabel: String
-    get() = listOf(
-        "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
-        "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
-    ).getOrElse(month.toIntOrNull()?.minus(1) ?: 0) { "" }
+/** Nombre del mes (capitalizado) para mostrar en la tarjeta. */
+@Composable
+private fun MonthlyGoalProgress.monthLabel(): String {
+    val months = localizedMonthNames()
+    return months.getOrElse(month.toIntOrNull()?.minus(1) ?: 0) { "" }
+        .replaceFirstChar { it.uppercase() }
+}

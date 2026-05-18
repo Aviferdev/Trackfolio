@@ -23,6 +23,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.ui.theme.PrimaryDark
 import es.aviferdev.n3to.ui.theme.N3toTheme
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.home_backup_action
+import n3to.composeapp.generated.resources.home_backup_days_format
+import n3to.composeapp.generated.resources.home_backup_never
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 /**
@@ -65,8 +70,8 @@ fun BackupReminderBanner(
             )
             Spacer(Modifier.width(10.dp))
             Text(
-                text = if (neverBackup) "Aún no has hecho una copia de seguridad"
-                       else "Llevas $daysSinceLastBackup días sin hacer una copia de seguridad",
+                text = if (neverBackup) stringResource(Res.string.home_backup_never)
+                       else stringResource(Res.string.home_backup_days_format, daysSinceLastBackup),
                 fontSize   = 12.sp,
                 color      = PrimaryDark,
                 fontWeight = FontWeight.Medium,
@@ -80,7 +85,7 @@ fun BackupReminderBanner(
                     .padding(horizontal = 12.dp, vertical = 4.dp)
             ) {
                 Text(
-                    text       = "Hacer backup",
+                    text       = stringResource(Res.string.home_backup_action),
                     fontSize   = 11.sp,
                     color      = PrimaryDark,
                     fontWeight = FontWeight.Bold

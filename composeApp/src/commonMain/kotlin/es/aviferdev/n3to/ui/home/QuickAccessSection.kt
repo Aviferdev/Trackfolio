@@ -33,6 +33,11 @@ import es.aviferdev.n3to.ui.theme.ExpenseRed
 import es.aviferdev.n3to.ui.theme.NavyBorder
 import es.aviferdev.n3to.ui.theme.NavySurface
 import es.aviferdev.n3to.ui.theme.N3toTheme
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.home_quick_debts
+import n3to.composeapp.generated.resources.home_quick_fiscal
+import n3to.composeapp.generated.resources.home_quick_resumen
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -50,20 +55,20 @@ fun QuickAccessSection(
         ) {
             QuickCard(
                 icon = Icons.Outlined.BarChart,
-                label = "Resumen",
+                label = stringResource(Res.string.home_quick_resumen),
                 onClick = onNavigateToCharts,
                 modifier = Modifier.weight(1f)
             )
             QuickCard(
                 icon = Icons.Outlined.Handshake,
-                label = "Deudas",
+                label = stringResource(Res.string.home_quick_debts),
                 onClick = onNavigateToDebts,
                 showBadge = hasDebts,
                 modifier = Modifier.weight(1f)
             )
             QuickCard(
                 icon = Icons.Outlined.Assignment,
-                label = "Fiscal",
+                label = stringResource(Res.string.home_quick_fiscal),
                 onClick = onNavigateToFiscalReport,
                 modifier = Modifier.weight(1f)
             )

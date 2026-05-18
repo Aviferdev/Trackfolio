@@ -32,6 +32,11 @@ import es.aviferdev.n3to.ui.theme.SurfaceWhite
 import es.aviferdev.n3to.ui.theme.TextPrimary
 import es.aviferdev.n3to.ui.theme.TextTertiary
 import es.aviferdev.n3to.ui.theme.N3toTheme
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.common_clear_search_cd
+import n3to.composeapp.generated.resources.common_search_cd
+import n3to.composeapp.generated.resources.common_search_placeholder
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 /**
@@ -46,7 +51,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 fun SearchBar(
     query: String,
     onChange: (String) -> Unit,
-    placeholder: String = "Buscar…",
+    placeholder: String = stringResource(Res.string.common_search_placeholder),
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -60,7 +65,7 @@ fun SearchBar(
     ) {
         Icon(
             imageVector = Icons.Outlined.Search,
-            contentDescription = "Buscar",
+            contentDescription = stringResource(Res.string.common_search_cd),
             tint = TextTertiary,
             modifier = Modifier.size(17.dp)
         )
@@ -94,7 +99,7 @@ fun SearchBar(
             ) {
                 Icon(
                     Icons.Default.Close,
-                    contentDescription = "Limpiar búsqueda",
+                    contentDescription = stringResource(Res.string.common_clear_search_cd),
                     tint = TextTertiary,
                     modifier = Modifier.size(16.dp)
                 )
