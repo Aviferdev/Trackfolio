@@ -49,7 +49,7 @@ class GetPortfolioValueHistoryUseCase(
         refreshTrigger.value++
     }
 
-    operator fun invoke(accountId: String): Flow<List<PortfolioValuePoint>> {
+    operator fun invoke(accountId: String, portfolioId: String? = null): Flow<List<PortfolioValuePoint>> {
         val assetsFlow = assetRepository.getAssetsByAccount(accountId)
         val txsFlow = assetTransactionRepository.getByAccount(accountId)
         val fiFlow = fixedIncomeRepository.getByAccount(accountId)
@@ -57,7 +57,10 @@ class GetPortfolioValueHistoryUseCase(
 
         return combine(assetsFlow, txsFlow, fiFlow, priceFlow, refreshTrigger) { assets, txs, fiPositions, prices, _ ->
             val priceHistories = prices.groupBy { it.assetId }
-            buildPortfolioValueHistory(assets, txs, fiPositions, priceHistories)
+            // Filtrar por cartera si se especifica
+            val filteredAssets = if (portfolioId != null) assets.filter { it.portfolioId == portfolioId } else assets
+            val filteredFi = if (portfolioId != null) fiPositions.filter { it.portfolioId == portfolioId } else fiPositions
+            buildPortfolioValueHistory(filteredAssets, txs, filteredFi, priceHistories)
         }
     }
 

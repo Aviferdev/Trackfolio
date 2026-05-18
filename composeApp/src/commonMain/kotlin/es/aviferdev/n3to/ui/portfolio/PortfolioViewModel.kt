@@ -246,12 +246,18 @@ class PortfolioViewModel(
         }
     }
 
-    /** Historial de valor mensual del portfolio (inversiones + renta fija). */
+    /** Historial de valor mensual del portfolio (inversiones + renta fija).
+     *  Filtra por cartera seleccionada cuando corresponde. */
     @OptIn(ExperimentalCoroutinesApi::class)
-    val portfolioValueHistory: StateFlow<List<PortfolioValuePoint>> = session.selectedAccountId
-        .flatMapLatest { accountId ->
+    val portfolioValueHistory: StateFlow<List<PortfolioValuePoint>> = combine(
+            session.selectedAccountId,
+            _selectedPortfolioId
+        ) { accountId, portfolioId ->
+            accountId to portfolioId
+        }
+        .flatMapLatest { (accountId, portfolioId) ->
             if (accountId == null) flowOf(emptyList())
-            else getPortfolioValueHistory(accountId)
+            else getPortfolioValueHistory(accountId, portfolioId)
         }
         .stateIn(
             scope        = viewModelScope,
@@ -320,8 +326,13 @@ class PortfolioViewModel(
         val bankIssuers: List<Issuer> = emptyList()
     )
 
-    val portfolioState: StateFlow<PortfolioUiState> = session.selectedAccountId
-        .flatMapLatest { accountId ->
+    val portfolioState: StateFlow<PortfolioUiState> = combine(
+            session.selectedAccountId,
+            _selectedPortfolioId
+        ) { accountId, portfolioId ->
+            accountId to portfolioId
+        }
+        .flatMapLatest { (accountId, portfolioId) ->
             if (accountId == null) {
                 flowOf(PortfolioUiState(isLoading = false))
             } else {
@@ -348,7 +359,14 @@ class PortfolioViewModel(
 
                 // Cargar portfolios en segundo plano
                 viewModelScope.launch {
-                    portfoliosFlow.collect { _portfolios.value = it }
+                    portfoliosFlow.collect { list ->
+                        _portfolios.value = list
+                        // Reset selection if the selected portfolio was deleted
+                        val currentId = _selectedPortfolioId.value
+                        if (currentId != null && list.none { it.id == currentId }) {
+                            _selectedPortfolioId.value = null
+                        }
+                    }
                 }
                 combine(baseDataFlow, fiFlow, nearMaturityFlow, bondIssuersFlow, bankIssuersFlow) { baseData, fiSummary, nearMaturity, bondIssuers, bankIssuers ->
                     BasicPortfolioDataWithFI(
@@ -366,6 +384,7 @@ class PortfolioViewModel(
                     val assetIds = basicData.assets.map { it.id }
                     if (assetIds.isEmpty()) {
                         flowOf(buildState(
+                            portfolioId = portfolioId,
                             assets = basicData.assets,
                             categories = basicData.categories,
                             account = basicData.account,
@@ -395,6 +414,7 @@ class PortfolioViewModel(
                         }
                         combine(baseCombine, observeDividends(assetIds)) { base, dividends ->
                             buildState(
+                                portfolioId = portfolioId,
                                 assets = basicData.assets,
                                 categories = basicData.categories,
                                 account = basicData.account,
@@ -447,6 +467,7 @@ class PortfolioViewModel(
         )
 
     private fun buildState(
+        portfolioId: String?,
         assets: List<Asset>,
         categories: List<AssetCategory>,
         account: Account?,
@@ -466,7 +487,7 @@ class PortfolioViewModel(
         val allSectorsList = allSectors.value
         val allRegionsList = allRegions.value
         // Filtrar por cartera seleccionada
-        val selectedPort = _selectedPortfolioId.value
+        val selectedPort = portfolioId
         val filteredAssets = if (selectedPort == null) assets
         else assets.filter { it.portfolioId == selectedPort }
         val assetsForBuild = filteredAssets.ifEmpty {
@@ -1005,7 +1026,8 @@ class PortfolioViewModel(
         date: Long,
         platformId: String,
         feeNote: String?,
-        notes: String?
+        notes: String?,
+        portfolioId: String? = null
     ) {
         viewModelScope.launch {
             // Validar que el activo no sea de Renta Fija
@@ -1032,6 +1054,10 @@ class PortfolioViewModel(
                 .onSuccess {
                     val asset = portfolioState.value.allAssets.find { it.id == assetId }
                     if (asset != null) {
+                        // Asignar cartera activa al asset si se especificó
+                        if (portfolioId != null && asset.portfolioId != portfolioId) {
+                            updateAsset(asset.copy(portfolioId = portfolioId))
+                        }
                         syncToLedger.sync(
                             assetTx   = tx,
                             accountId = asset.accountId,
@@ -1107,7 +1133,12 @@ class PortfolioViewModel(
 
     fun saveFixedIncomePosition(position: FixedIncomePosition, event: FixedIncomeEvent) {
         viewModelScope.launch {
-            createFixedIncomePosition?.invoke(position, event)
+            // Inyectar cartera activa si no está ya asignada
+            val portfolioId = _selectedPortfolioId.value
+            val finalPosition = if (portfolioId != null && position.portfolioId == null) {
+                position.copy(portfolioId = portfolioId)
+            } else position
+            createFixedIncomePosition?.invoke(finalPosition, event)
                 ?.onSuccess { closeCreateFixedIncomeSheet() }
                 ?.onFailure { _sheetState.value = _sheetState.value.copy(error = PortfolioSheetError.Unknown(it.message)) }
                 ?: run { _sheetState.value = _sheetState.value.copy(error = PortfolioSheetError.FiCreatePosition) }

@@ -135,7 +135,7 @@ fun AssetHistoryScreen(
             platformsByAsset = state.platformsByAsset,
             categories = state.categories,
             assetTransactions = state.transactionsAsc,
-                        onSave = { _, type, qty, price, date, platformId, feeNote, notes ->
+                        onSave = { _, type, qty, price, date, platformId, feeNote, notes, _ ->
                 viewModel.saveTransaction(type, qty, price, date, platformId, feeNote, notes)
             },
             onDismiss = { viewModel.closeAddSheet() }

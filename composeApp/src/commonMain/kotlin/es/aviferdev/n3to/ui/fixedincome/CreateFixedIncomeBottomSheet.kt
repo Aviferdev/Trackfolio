@@ -73,6 +73,7 @@ fun CreateFixedIncomeBottomSheet(
     bondIssuers: List<Issuer>,
     bankIssuers: List<Issuer>,
     accountId: String,
+    selectedPortfolioId: String? = null,
     onSave: (FixedIncomePosition, FixedIncomeEvent) -> Unit,
     onSaveIssuer: (String, String, IssuerType) -> Unit,
     onDismiss: () -> Unit
@@ -575,6 +576,7 @@ fun CreateFixedIncomeBottomSheet(
                     val position = FixedIncomePosition(
                         id = positionId,
                         accountId = accountId,
+                        portfolioId = selectedPortfolioId,
                         assetCategoryId = null,
                         name = buildAutoName(),
                         ticker = "",

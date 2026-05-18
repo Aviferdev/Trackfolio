@@ -95,6 +95,7 @@ fun AddEditAssetTransactionBottomSheet(
     categories: List<AssetCategory>,             // categorías para filtrar
     assetTransactions: List<AssetTransaction>,   // movimientos del activo seleccionado actual
     buyOnly: Boolean = false,                    // si true, no se muestra el toggle y siempre es BUY
+    selectedPortfolioId: String? = null,         // cartera activa para asignar al asset
     onSave: (
         assetId: String,
         type: AssetTransactionType,
@@ -103,7 +104,8 @@ fun AddEditAssetTransactionBottomSheet(
         date: Long,
         platformId: String,
         feeNote: String?,
-        notes: String?
+        notes: String?,
+        portfolioId: String?
     ) -> Unit,
     onDismiss: () -> Unit
 ) {
@@ -591,7 +593,8 @@ fun AddEditAssetTransactionBottomSheet(
                         dateMillis,
                         platformIdNonNull,
                         feeNote.ifBlank { null },
-                        notes.ifBlank { null }
+                        notes.ifBlank { null },
+                        selectedPortfolioId
                     )
                 },
                 enabled  = isValid,
