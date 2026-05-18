@@ -29,6 +29,7 @@ import es.aviferdev.n3to.domain.model.NetWorthHistoryPoint
 import es.aviferdev.n3to.ui.annual.DonutChartCard
 import es.aviferdev.n3to.ui.common.*
 import es.aviferdev.n3to.ui.common.LineChartWithTimeRange
+import es.aviferdev.n3to.ui.common.navigation.TopBarApp
 import es.aviferdev.n3to.ui.loan.AddEditLoanBottomSheet
 import es.aviferdev.n3to.ui.realestate.AddEditPropertyBottomSheet
 import es.aviferdev.n3to.ui.realestate.PropertyCard
@@ -197,21 +198,10 @@ fun NetWorthContent(
             .windowInsetsPadding(WindowInsets.statusBars)
     ) {
         // ── Cabecera ──────────────────────────────────────────────────────────
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 12.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment     = Alignment.CenterVertically
-        ) {
-            Text(
-                text          = stringResource(Res.string.networth_title),
-                fontSize      = 18.sp,
-                fontWeight    = FontWeight.Bold,
-                color         = TextPrimary,
-                letterSpacing = (-0.3).sp
-            )
-        }
+        TopBarApp(
+            title = stringResource(Res.string.networth_title),
+            navigateBack = null
+        )
 
         LazyColumn(
             modifier            = Modifier.fillMaxSize(),

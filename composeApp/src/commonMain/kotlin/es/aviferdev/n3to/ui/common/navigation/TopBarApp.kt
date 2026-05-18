@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
@@ -24,10 +25,8 @@ import n3to.composeapp.generated.resources.common_back_cd
 import org.jetbrains.compose.resources.stringResource
 import es.aviferdev.n3to.ui.common.separator.SpacerHorizontalApp
 import androidx.compose.ui.graphics.Color
-import es.aviferdev.n3to.ui.theme.BorderGray
 import es.aviferdev.n3to.ui.theme.NavyBorder
 import es.aviferdev.n3to.ui.theme.NavySurface
-import es.aviferdev.n3to.ui.theme.SurfaceWhite
 import es.aviferdev.n3to.ui.theme.TextPrimary
 import es.aviferdev.n3to.ui.theme.TextTertiary
 import androidx.compose.ui.tooling.preview.Preview
@@ -38,15 +37,16 @@ fun TopBarApp(
     title: String,
     navigateBack: (() -> Unit)? = null,
     subtitle: String? = null,
-    containerColor: Color = SurfaceWhite,
-    dividerColor: Color = BorderGray,
+    containerColor: Color = NavySurface,
+    dividerColor: Color = NavyBorder,
     actions: @Composable RowScope.() -> Unit = {}
 ) {
     Surface(color = containerColor) {
         Row(
             modifier = Modifier.fillMaxWidth()
                 .padding(horizontal = 8.dp)
-                .padding(top = 8.dp, bottom = 8.dp),
+                .padding(top = 8.dp, bottom = 8.dp)
+                .heightIn(min = 48.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             if (navigateBack != null) {

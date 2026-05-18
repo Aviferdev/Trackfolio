@@ -111,6 +111,7 @@ fun HomeScreen(
     onNavigateToEmergencyFundSettings: () -> Unit = {},
     onNavigateToFixedIncomeDetail: (String) -> Unit = {},
     onNavigateToCategoryPicker: ((TransactionType) -> Unit)? = null,
+    onNavigateToAccountConfig: (String) -> Unit = {},
     reopenFromPicker: Boolean = false,
     onConsumeReopen: () -> Unit = {},
     viewModel: HomeViewModel = koinViewModel(),
@@ -236,6 +237,7 @@ fun HomeScreen(
                         }
                     },
                     onAccountSelected = { id -> accountViewModel.selectAccount(id) },
+                    onNavigateToAccountConfig = onNavigateToAccountConfig,
                     onNavigateToTransactions = onNavigateToTransactions,
                     onNavigateToCharts = onNavigateToCharts,
                     onNavigateToDebts = onNavigateToDebts,
@@ -398,6 +400,7 @@ fun HomeContent(
     balancesHidden: Boolean,
     onToggleBalances: () -> Unit,
     onAccountSelected: (String) -> Unit,
+    onNavigateToAccountConfig: (String) -> Unit = {},
     onNavigateToTransactions: () -> Unit,
     onNavigateToCharts: () -> Unit,
     onNavigateToDebts: () -> Unit,
@@ -482,7 +485,8 @@ fun HomeContent(
             AccountSelectorBar(
                 accounts = accounts,
                 selectedAccountId = selectedAccountId,
-                onAccountSelected = onAccountSelected
+                onAccountSelected = onAccountSelected,
+                onNavigateToAccountConfig = onNavigateToAccountConfig
             )
         }
 

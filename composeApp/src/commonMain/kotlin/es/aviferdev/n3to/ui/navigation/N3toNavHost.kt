@@ -149,6 +149,11 @@ fun N3toNavHost(
                                 launchSingleTop = true
                             }
                         },
+                        onNavigateToAccountConfig = { accountId ->
+                            navController.navigate(Screen.AccountConfig.createRoute(accountId)) {
+                                launchSingleTop = true
+                            }
+                        },
                         onNavigateToExpenseSettings = {
                             navController.navigate(Screen.ExpenseSettings.route) { launchSingleTop = true }
                         }
@@ -209,6 +214,11 @@ fun N3toNavHost(
                         },
                          onNavigateToCategoryPicker = { type ->
                             navController.navigate(Screen.CategoryPicker.buildRoute(type.name)) {
+                                launchSingleTop = true
+                            }
+                        },
+                        onNavigateToAccountConfig = { accountId ->
+                            navController.navigate(Screen.AccountConfig.createRoute(accountId)) {
                                 launchSingleTop = true
                             }
                         },

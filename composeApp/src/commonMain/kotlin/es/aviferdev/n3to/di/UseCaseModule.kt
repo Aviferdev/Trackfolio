@@ -92,6 +92,7 @@ import es.aviferdev.n3to.domain.usecase.home.GetHomeBalanceUseCase
 import es.aviferdev.n3to.domain.usecase.issuer.ArchiveIssuerUseCase
 import es.aviferdev.n3to.domain.usecase.issuer.GetAllIssuersIncludingArchivedUseCase
 import es.aviferdev.n3to.domain.usecase.issuer.GetIssuersUseCase
+import es.aviferdev.n3to.domain.usecase.issuer.CreateIssuerUseCase
 import es.aviferdev.n3to.domain.usecase.issuer.RenameIssuerUseCase
 import es.aviferdev.n3to.domain.usecase.issuer.SaveIssuerUseCase
 import es.aviferdev.n3to.domain.usecase.loan.ArchiveLoanUseCase
@@ -139,8 +140,10 @@ import es.aviferdev.n3to.domain.usecase.transaction.GetMonthlyTotalsUseCase
 import es.aviferdev.n3to.domain.usecase.transaction.GetOldestTransactionDateUseCase
 import es.aviferdev.n3to.domain.usecase.transaction.GetTransactionByIdUseCase
 import es.aviferdev.n3to.domain.usecase.transaction.GetTransactionsByMonthUseCase
+import es.aviferdev.n3to.domain.usecase.transaction.GetDividendsByAssetIdsUseCase
 import es.aviferdev.n3to.domain.usecase.transaction.SaveTransactionUseCase
 import es.aviferdev.n3to.domain.usecase.transaction.UpdateTransactionUseCase
+import es.aviferdev.n3to.domain.usecase.assetpricehistory.SaveAssetPriceHistoryUseCase
 import es.aviferdev.n3to.domain.usecase.taxprofile.DeleteTaxProfileSnapshotUseCase
 import es.aviferdev.n3to.domain.usecase.taxprofile.GetActiveTaxProfileSnapshotUseCase
 import es.aviferdev.n3to.domain.usecase.taxprofile.GetAllTaxProfileSnapshotsUseCase
@@ -169,6 +172,7 @@ import es.aviferdev.n3to.ui.portfolio.AssetCategoryViewModel
 import es.aviferdev.n3to.ui.portfolio.AssetDetailViewModel
 import es.aviferdev.n3to.ui.portfolio.AssetHistoryViewModel
 import es.aviferdev.n3to.ui.portfolio.PlatformViewModel
+import es.aviferdev.n3to.ui.portfolio.PortfolioStateBuilder
 import es.aviferdev.n3to.ui.portfolio.PortfolioViewModel
 import es.aviferdev.n3to.ui.realestate.RealEstateDetailViewModel
 import es.aviferdev.n3to.ui.reconciliation.ReconciliationViewModel
@@ -206,6 +210,9 @@ val useCaseModule = module {
     factory { GetOldestTransactionDateUseCase(get()) }
     factory { GetExpensesByCategoryUseCase(get()) }
     factory { GetIncomeByTypeUseCase(get()) }
+    factory { GetDividendsByAssetIdsUseCase(get()) }
+    // ── Asset Price History ───────────────────────────────────────────────────
+    factory { SaveAssetPriceHistoryUseCase(get()) }
 
     // ── Asset Transaction (inversiones) ─────────────────────────────────────
     factory { GetMonthlyInvestmentsUseCase(get()) }
@@ -291,6 +298,7 @@ val useCaseModule = module {
     factory { GetIssuersUseCase(get()) }
     factory { GetAllIssuersIncludingArchivedUseCase(get()) }
     factory { SaveIssuerUseCase(get()) }
+    factory { CreateIssuerUseCase(get()) }
     factory { RenameIssuerUseCase(get()) }
     factory { ArchiveIssuerUseCase(get()) }
     // ── Backup ──────────────────────────────────────────────────────────────────
@@ -452,6 +460,7 @@ val useCaseModule = module {
             session                = get()
         )
     }
+    factory { PortfolioStateBuilder() }
     viewModel {
         PortfolioViewModel(
             getAssetsByAccount                  = get(),
@@ -465,21 +474,22 @@ val useCaseModule = module {
             getPlatforms                        = get(),
             saveAssetTransaction                = get(),
             syncToLedger                        = get(),
+            saveAssetPriceHistory               = get(),
             assetPlatformRepository             = get(),
-            assetMetadataRepository            = get(),
-            assetPriceHistoryRepository         = get(),
+            assetMetadataRepository             = get(),
             session                             = get(),
             getFixedIncomeSummary               = get(),
             getNearMaturityPositions            = get(),
             createFixedIncomePosition           = get(),
             getBondIssuers                      = get(),
-            saveBondIssuer                      = get(),
+            createIssuer                        = get(),
             getPortfolioValueHistory            = get(),
             registerCoupon                      = get(),
             getPortfoliosByAccount              = get(),
             savePortfolio                       = get(),
             deletePortfolio                     = get(),
-            transactionRepository              = get()
+            getDividendsByAssetIds              = get(),
+            stateBuilder                        = get()
         )
     }
     viewModel {

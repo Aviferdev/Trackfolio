@@ -8,7 +8,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material.icons.automirrored.outlined.Assignment
@@ -33,6 +32,7 @@ import es.aviferdev.n3to.domain.model.MonthlyTotals
 import es.aviferdev.n3to.domain.model.TaxProfileSnapshot
 import es.aviferdev.n3to.ui.common.toMaterialIcon
 import es.aviferdev.n3to.platform.nowYear
+import es.aviferdev.n3to.ui.common.navigation.TopBarApp
 import es.aviferdev.n3to.ui.theme.*
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
@@ -178,12 +178,13 @@ fun FiscalReportContent(
         modifier = modifier
             .fillMaxSize()
             .background(NavyDeep)
+            .windowInsetsPadding(WindowInsets.statusBars)
     ) {
-        // ── Top bar navy ──────────────────────────────────────────────────────
-        NavyTopBar(
+        // ── Top bar ───────────────────────────────────────────────────────────
+        TopBarApp(
             title = stringResource(Res.string.fiscal_title),
             subtitle = state.selectedYear,
-            onBack = onBack,
+            navigateBack = onBack,
             actions = {
                 YearStepper(
                     year = state.selectedYear,
@@ -375,63 +376,6 @@ fun FiscalReportContentPreview() {
             onNextYear = {},
             onGeneratePdf = {}
         )
-    }
-}
-
-// ─── Navy top bar ──────────────────────────────────────────────────────────────
-@Composable
-private fun NavyTopBar(
-    title: String,
-    subtitle: String?,
-    onBack: () -> Unit,
-    actions: @Composable RowScope.() -> Unit = {}
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(NavySurface)
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .windowInsetsPadding(WindowInsets.statusBars)
-                .padding(horizontal = 8.dp, vertical = 8.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            IconButton(
-                onClick = onBack,
-                modifier = Modifier
-                    .size(40.dp)
-                    .clip(RoundedCornerShape(10.dp))
-                    .background(NavySurfaceLight)
-            ) {
-                Icon(
-                    Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = "Ir atrás",
-                    tint = TextPrimary,
-                    modifier = Modifier.size(20.dp)
-                )
-            }
-            Spacer(Modifier.width(8.dp))
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = title,
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = TextPrimary,
-                    letterSpacing = (-0.3).sp
-                )
-                if (subtitle != null) {
-                    Text(
-                        text = subtitle,
-                        fontSize = 12.sp,
-                        color = TextTertiary
-                    )
-                }
-            }
-            actions()
-        }
-        HorizontalDivider(color = NavyBorder, thickness = 0.5.dp)
     }
 }
 

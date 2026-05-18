@@ -57,6 +57,7 @@ import es.aviferdev.n3to.ui.common.component.IconActionButton
 import es.aviferdev.n3to.ui.common.component.NavyTab
 import es.aviferdev.n3to.ui.fixedincome.EditFixedIncomeBottomSheet
 import es.aviferdev.n3to.ui.common.button.IconButtonApp
+import es.aviferdev.n3to.ui.common.navigation.TopBarApp
 import es.aviferdev.n3to.ui.fixedincome.CreateFixedIncomeBottomSheet
 import es.aviferdev.n3to.ui.fixedincome.FixedIncomePositionCard
 import es.aviferdev.n3to.ui.fixedincome.RegisterCouponBottomSheet
@@ -169,28 +170,18 @@ fun PortfolioScreen(
                 .windowInsetsPadding(WindowInsets.statusBars)
         ) {
             // Cabecera
-            Spacer(Modifier.height(12.dp))
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = stringResource(Res.string.portfolio_title),
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = TextPrimary,
-                    letterSpacing = (-0.3).sp
-                )
-                IconActionButton(
-                    onClick = onNavigateToSettings,
-                    icon = Icons.Outlined.Settings,
-                    iconTint = TextSecondary,
-                    label = stringResource(Res.string.portfolio_settings_cd)
-                )
-            }
+            TopBarApp(
+                title = stringResource(Res.string.portfolio_title),
+                navigateBack = null,
+                actions = {
+                    IconActionButton(
+                        onClick = onNavigateToSettings,
+                        icon = Icons.Outlined.Settings,
+                        iconTint = TextSecondary,
+                        label = stringResource(Res.string.portfolio_settings_cd)
+                    )
+                }
+            )
 
             // ScrollableTabRow
             if (tabTitles.isNotEmpty()) {

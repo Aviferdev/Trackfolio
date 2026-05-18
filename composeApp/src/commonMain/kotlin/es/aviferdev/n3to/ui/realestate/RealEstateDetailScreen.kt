@@ -1,11 +1,11 @@
 package es.aviferdev.n3to.ui.realestate
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.outlined.TrendingUp
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
@@ -24,6 +24,7 @@ import es.aviferdev.n3to.domain.model.TransactionType
 import es.aviferdev.n3to.domain.usecase.category.GetCategoriesByTypeUseCase
 import es.aviferdev.n3to.ui.common.StatusTag
 import es.aviferdev.n3to.ui.common.dialog.DeleteConfirmDialog
+import es.aviferdev.n3to.ui.common.navigation.TopBarApp
 import es.aviferdev.n3to.ui.theme.*
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.datetime.Instant
@@ -31,7 +32,6 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.common_accept
-import n3to.composeapp.generated.resources.common_back_cd
 import n3to.composeapp.generated.resources.common_cancel
 import n3to.composeapp.generated.resources.common_error
 import n3to.composeapp.generated.resources.realestate_archive_confirm_msg
@@ -73,7 +73,6 @@ import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RealEstateDetailScreen(
     propertyId: String,
@@ -145,61 +144,61 @@ fun RealEstateDetailScreen(
         )
     }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text(property?.name ?: stringResource(Res.string.realestate_detail_title), fontWeight = FontWeight.Bold, fontSize = 16.sp) },
-                navigationIcon = { IconButton(onClick = onNavigateBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.common_back_cd), tint = TextPrimary) } },
-                actions = {
-                    if (property != null) {
-                        var showMenu by remember { mutableStateOf(false) }
-                        IconButton(onClick = { showMenu = true }) { Icon(Icons.Outlined.MoreVert, stringResource(Res.string.realestate_options_menu_cd), tint = TextPrimary) }
-                        DropdownMenu(expanded = showMenu, onDismissRequest = { showMenu = false }, containerColor = SurfaceElevated) {
-                            DropdownMenuItem(
-                                text = { Text(stringResource(Res.string.realestate_edit_label), color = TextPrimary) },
-                                onClick = { showMenu = false; viewModel.showEditSheet() },
-                                leadingIcon = { Icon(Icons.Outlined.Edit, null, tint = TextSecondary) }
-                            )
-                            DropdownMenuItem(
-                                text = { Text(stringResource(Res.string.realestate_update_value), color = TextPrimary) },
-                                onClick = { showMenu = false; viewModel.showValueSheet() },
-                                leadingIcon = { Icon(Icons.AutoMirrored.Outlined.TrendingUp, null, tint = TextSecondary) }
-                            )
-                            DropdownMenuItem(
-                                text = { Text(stringResource(Res.string.realestate_change_rental_status), color = TextPrimary) },
-                                onClick = { showMenu = false; viewModel.showChangeRentalStatusSheet() },
-                                leadingIcon = { Icon(Icons.Outlined.SwapHoriz, null, tint = TextSecondary) }
-                            )
-                            // Solo mostrar "Vender" si NO está vendida
-                            if (!property.isSold) {
-                                HorizontalDivider(color = BorderGray)
-                                DropdownMenuItem(
-                                    text = { Text(stringResource(Res.string.realestate_sell_property), color = IncomeGreen) },
-                                    onClick = { showMenu = false; viewModel.showSellSheet() },
-                                    leadingIcon = { Icon(Icons.Outlined.AttachMoney, null, tint = IncomeGreen) }
-                                )
-                            }
+    Column(
+        modifier = Modifier.fillMaxSize().background(BackgroundGray)
+    ) {
+        TopBarApp(
+            title = property?.name ?: stringResource(Res.string.realestate_detail_title),
+            navigateBack = onNavigateBack,
+            actions = {
+                if (property != null) {
+                    var showMenu by remember { mutableStateOf(false) }
+                    IconButton(onClick = { showMenu = true }) {
+                        Icon(Icons.Outlined.MoreVert, stringResource(Res.string.realestate_options_menu_cd), tint = TextPrimary)
+                    }
+                    DropdownMenu(expanded = showMenu, onDismissRequest = { showMenu = false }, containerColor = SurfaceElevated) {
+                        DropdownMenuItem(
+                            text = { Text(stringResource(Res.string.realestate_edit_label), color = TextPrimary) },
+                            onClick = { showMenu = false; viewModel.showEditSheet() },
+                            leadingIcon = { Icon(Icons.Outlined.Edit, null, tint = TextSecondary) }
+                        )
+                        DropdownMenuItem(
+                            text = { Text(stringResource(Res.string.realestate_update_value), color = TextPrimary) },
+                            onClick = { showMenu = false; viewModel.showValueSheet() },
+                            leadingIcon = { Icon(Icons.AutoMirrored.Outlined.TrendingUp, null, tint = TextSecondary) }
+                        )
+                        DropdownMenuItem(
+                            text = { Text(stringResource(Res.string.realestate_change_rental_status), color = TextPrimary) },
+                            onClick = { showMenu = false; viewModel.showChangeRentalStatusSheet() },
+                            leadingIcon = { Icon(Icons.Outlined.SwapHoriz, null, tint = TextSecondary) }
+                        )
+                        // Solo mostrar "Vender" si NO está vendida
+                        if (!property.isSold) {
                             HorizontalDivider(color = BorderGray)
                             DropdownMenuItem(
-                                text = { Text(stringResource(Res.string.realestate_archive_label), color = ExpenseRed) },
-                                onClick = { showMenu = false; viewModel.showArchiveDialog() },
-                                leadingIcon = { Icon(Icons.Outlined.Archive, null, tint = ExpenseRed) }
+                                text = { Text(stringResource(Res.string.realestate_sell_property), color = IncomeGreen) },
+                                onClick = { showMenu = false; viewModel.showSellSheet() },
+                                leadingIcon = { Icon(Icons.Outlined.AttachMoney, null, tint = IncomeGreen) }
                             )
                         }
+                        HorizontalDivider(color = BorderGray)
+                        DropdownMenuItem(
+                            text = { Text(stringResource(Res.string.realestate_archive_label), color = ExpenseRed) },
+                            onClick = { showMenu = false; viewModel.showArchiveDialog() },
+                            leadingIcon = { Icon(Icons.Outlined.Archive, null, tint = ExpenseRed) }
+                        )
                     }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = SurfaceWhite, titleContentColor = TextPrimary)
-            )
-        },
-        containerColor = BackgroundGray
-    ) { padding ->
+                }
+            }
+        )
+
         if (state.isLoading || property == null) {
-            Box(Modifier.fillMaxSize().padding(padding), contentAlignment = Alignment.Center) {
+            Box(Modifier.fillMaxSize().weight(1f), contentAlignment = Alignment.Center) {
                 CircularProgressIndicator(color = PrimaryDark)
             }
         } else {
             Column(
-                modifier = Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState()).padding(16.dp),
+                modifier = Modifier.fillMaxSize().weight(1f).verticalScroll(rememberScrollState()).padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 // 1. Header

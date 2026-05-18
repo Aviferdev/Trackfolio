@@ -93,9 +93,7 @@ fun AssetDetailContent(
         TopBarApp(
             title = state.asset?.name ?: "Activo",
             subtitle = state.asset?.ticker,
-            navigateBack = onBack,
-            containerColor = NavySurface,
-            dividerColor = NavyBorder
+            navigateBack = onBack
         )
 
         LazyColumn(

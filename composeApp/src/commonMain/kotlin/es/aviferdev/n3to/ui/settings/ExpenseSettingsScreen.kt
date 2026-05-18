@@ -154,13 +154,11 @@ fun ExpenseSettingsContent(
     modifier: Modifier = Modifier
 ) {
     Column(
-        modifier = modifier.fillMaxSize().background(NavyDeep)
+        modifier = modifier.fillMaxSize().background(NavyDeep).windowInsetsPadding(WindowInsets.statusBars)
     ) {
         TopBarApp(
             title = "Gastos",
-            navigateBack = onBack,
-            containerColor = NavySurface,
-            dividerColor = NavyBorder
+            navigateBack = onBack
         )
 
         LazyColumn(
