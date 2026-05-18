@@ -38,6 +38,15 @@ import es.aviferdev.n3to.ui.theme.SurfaceWhite
 import es.aviferdev.n3to.ui.theme.TextPrimary
 import es.aviferdev.n3to.ui.theme.TextSecondary
 import es.aviferdev.n3to.ui.theme.N3toTheme
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.account_add_title
+import n3to.composeapp.generated.resources.account_delete_confirm_title
+import n3to.composeapp.generated.resources.account_list_title
+import n3to.composeapp.generated.resources.account_no_accounts
+import n3to.composeapp.generated.resources.common_cancel
+import n3to.composeapp.generated.resources.common_delete
+import n3to.composeapp.generated.resources.account_empty_subtitle
+import org.jetbrains.compose.resources.stringResource
 import es.aviferdev.n3to.ui.theme.formatAmount
 import es.aviferdev.n3to.ui.theme.maskAmount
 import es.aviferdev.n3to.ui.theme.SelectionLight
@@ -92,7 +101,7 @@ fun AccountListScreen(
     }
     if (uiState.showDeleteConfirm && uiState.accountToDelete != null) {
         DeleteConfirmDialog(
-            title = "Eliminar cuenta",
+            title = stringResource(Res.string.account_delete_confirm_title),
             message = "Se eliminará «${uiState.accountToDelete!!.name}» junto con todos sus movimientos y deudas. Esta acción no se puede deshacer.",
             onConfirm = { viewModel.confirmDelete() },
             onDismiss = { viewModel.cancelDelete() }
@@ -120,10 +129,10 @@ fun AccountListContent(
 ) {
     Column(modifier = modifier.fillMaxSize().background(BackgroundGray)) {
         TopBarApp(
-            title = "Mis cuentas",
+            title = stringResource(Res.string.account_list_title),
             actions = {
                 IconButton(onClick = onAddClick) {
-                    Icon(Icons.Default.Add, contentDescription = "Añadir cuenta", tint = TextPrimary)
+                    Icon(Icons.Default.Add, contentDescription = stringResource(Res.string.account_add_title), tint = TextPrimary)
                 }
             }
         )
@@ -131,9 +140,9 @@ fun AccountListContent(
         if (uiState.accounts.isEmpty()) {
             EmptyStateView(
                 icon = Icons.Outlined.AccountBalance,
-                title = "Sin cuentas todavía",
-                subtitle = "Crea tu primera cuenta desde\nAjustes para empezar",
-                actionLabel = "Añadir cuenta",
+                title = stringResource(Res.string.account_no_accounts),
+                subtitle = stringResource(Res.string.account_empty_subtitle),
+                actionLabel = stringResource(Res.string.account_add_title),
                 onAction = onAddClick
             )
         } else {

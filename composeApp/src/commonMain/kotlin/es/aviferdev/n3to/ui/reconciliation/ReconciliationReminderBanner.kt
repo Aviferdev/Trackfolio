@@ -23,6 +23,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.ui.theme.SecondaryTeal
 import es.aviferdev.n3to.ui.theme.N3toTheme
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.reconciliation_adjust
+import n3to.composeapp.generated.resources.reconciliation_banner_text
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -54,7 +58,7 @@ fun ReconciliationReminderBanner(
             )
             Spacer(Modifier.width(10.dp))
             Text(
-                text       = "Hace tiempo que no reconcilias el saldo",
+                text       = stringResource(Res.string.reconciliation_banner_text),
                 fontSize   = 12.sp,
                 color      = SecondaryTeal,
                 fontWeight = FontWeight.Medium,
@@ -68,7 +72,7 @@ fun ReconciliationReminderBanner(
                     .padding(horizontal = 12.dp, vertical = 4.dp)
             ) {
                 Text(
-                    text       = "Ajustar",
+                    text       = stringResource(Res.string.reconciliation_adjust),
                     fontSize   = 11.sp,
                     color      = SecondaryTeal,
                     fontWeight = FontWeight.Bold

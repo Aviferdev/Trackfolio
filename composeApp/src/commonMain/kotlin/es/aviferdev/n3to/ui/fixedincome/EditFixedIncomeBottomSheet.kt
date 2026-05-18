@@ -23,6 +23,35 @@ import es.aviferdev.n3to.ui.theme.*
 import es.aviferdev.n3to.ui.theme.DragHandleColor
 import kotlinx.datetime.*
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.common_accept
+import n3to.composeapp.generated.resources.common_cancel
+import n3to.composeapp.generated.resources.fixedincome_auto_renew_label
+import n3to.composeapp.generated.resources.fixedincome_capital_invested_label
+import n3to.composeapp.generated.resources.fixedincome_capital_label
+import n3to.composeapp.generated.resources.fixedincome_create_issuer
+import n3to.composeapp.generated.resources.fixedincome_duration_guide
+import n3to.composeapp.generated.resources.fixedincome_duration_title
+import n3to.composeapp.generated.resources.fixedincome_edit_title
+import n3to.composeapp.generated.resources.fixedincome_entity_financial_label
+import n3to.composeapp.generated.resources.fixedincome_fee_notes_label
+import n3to.composeapp.generated.resources.fixedincome_frequency_label
+import n3to.composeapp.generated.resources.fixedincome_interest_label
+import n3to.composeapp.generated.resources.fixedincome_issuer_entity_label
+import n3to.composeapp.generated.resources.fixedincome_issuer_name_label
+import n3to.composeapp.generated.resources.fixedincome_icon_label
+import n3to.composeapp.generated.resources.fixedincome_maturity_date_label
+import n3to.composeapp.generated.resources.fixedincome_months_label
+import n3to.composeapp.generated.resources.fixedincome_new_issuer
+import n3to.composeapp.generated.resources.fixedincome_no_issuers_hint
+import n3to.composeapp.generated.resources.fixedincome_nominal_hint
+import n3to.composeapp.generated.resources.fixedincome_nominal_value_label
+import n3to.composeapp.generated.resources.fixedincome_save_changes
+import n3to.composeapp.generated.resources.fixedincome_start_date_label
+import n3to.composeapp.generated.resources.fixedincome_type_label
+import n3to.composeapp.generated.resources.fixedincome_auto_calculated
+import n3to.composeapp.generated.resources.fixedincome_years_label
+import org.jetbrains.compose.resources.stringResource
 import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalTime::class)
@@ -121,8 +150,8 @@ fun EditFixedIncomeBottomSheet(
             (durationYears * 12 + durationMonths >= 0)
 
     val entityLabel = when (selectedType) {
-        FixedIncomeType.DEPOSIT -> "Entidad financiera"
-        FixedIncomeType.BOND, FixedIncomeType.BILL, FixedIncomeType.GOVERNMENT_OBLIGATION, FixedIncomeType.CORPORATE_BOND -> "Emisor (Estado/Empresa)"
+        FixedIncomeType.DEPOSIT -> stringResource(Res.string.fixedincome_entity_financial_label)
+        FixedIncomeType.BOND, FixedIncomeType.BILL, FixedIncomeType.GOVERNMENT_OBLIGATION, FixedIncomeType.CORPORATE_BOND -> stringResource(Res.string.fixedincome_issuer_entity_label)
     }
 
     val iconsByType = when (selectedType) {
@@ -142,7 +171,7 @@ fun EditFixedIncomeBottomSheet(
                 .padding(horizontal = 20.dp, vertical = 16.dp)
         ) {
             Text(
-                text = "Editar posición de renta fija",
+                text = stringResource(Res.string.fixedincome_edit_title),
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
                 color = TextPrimary
@@ -151,7 +180,7 @@ fun EditFixedIncomeBottomSheet(
             Spacer(Modifier.height(20.dp))
 
             // ── Tipo de producto ──────────────────────────────────────
-            Text("Tipo de producto", fontSize = 13.sp, color = TextSecondary)
+            Text(stringResource(Res.string.fixedincome_type_label), fontSize = 13.sp, color = TextSecondary)
             Spacer(Modifier.height(8.dp))
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -178,7 +207,7 @@ fun EditFixedIncomeBottomSheet(
             Spacer(Modifier.height(16.dp))
 
             // ── Frecuencia de intereses ───────────────────────────────
-            Text("Frecuencia de cobro de intereses", fontSize = 13.sp, color = TextSecondary)
+            Text(stringResource(Res.string.fixedincome_frequency_label), fontSize = 13.sp, color = TextSecondary)
             Spacer(Modifier.height(8.dp))
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -200,7 +229,7 @@ fun EditFixedIncomeBottomSheet(
             Spacer(Modifier.height(16.dp))
 
             // ── Duración ──────────────────────────────────────────────
-            Text("Duración", fontSize = 13.sp, color = TextSecondary)
+            Text(stringResource(Res.string.fixedincome_duration_title), fontSize = 13.sp, color = TextSecondary)
             Spacer(Modifier.height(8.dp))
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -212,7 +241,7 @@ fun EditFixedIncomeBottomSheet(
                     onValueChange = { v ->
                         durationYears = v.filter { it.isDigit() }.take(2).toIntOrNull() ?: 0
                     },
-                    label = { Text("Años") },
+                    label = { Text(stringResource(Res.string.fixedincome_years_label)) },
                     modifier = Modifier.weight(1f),
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
@@ -223,7 +252,7 @@ fun EditFixedIncomeBottomSheet(
                     onValueChange = { v ->
                         durationMonths = v.filter { it.isDigit() }.take(2).toIntOrNull() ?: 0
                     },
-                    label = { Text("Meses") },
+                    label = { Text(stringResource(Res.string.fixedincome_months_label)) },
                     modifier = Modifier.weight(1f),
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
@@ -233,7 +262,7 @@ fun EditFixedIncomeBottomSheet(
 
             // Guía de duración típica (no bloqueante)
             Text(
-                text = "Rango habitual para ${selectedType.label}: ${selectedType.typicalMinMonths} - ${selectedType.typicalMaxMonths} meses",
+                text = stringResource(Res.string.fixedincome_duration_guide, selectedType.label, selectedType.typicalMinMonths, selectedType.typicalMaxMonths),
                 fontSize = 11.sp,
                 color = TextTertiary,
                 modifier = Modifier.padding(start = 4.dp, top = 4.dp)
@@ -245,7 +274,7 @@ fun EditFixedIncomeBottomSheet(
             OutlinedTextField(
                 value = formatDate(startDateMillis),
                 onValueChange = { },
-                label = { Text("Fecha de inicio") },
+                label = { Text(stringResource(Res.string.fixedincome_start_date_label)) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .clickable { showDatePicker = true },
@@ -259,14 +288,14 @@ fun EditFixedIncomeBottomSheet(
             OutlinedTextField(
                 value = formatDate(maturityDateMillis),
                 onValueChange = { },
-                label = { Text("Fecha de vencimiento") },
+                label = { Text(stringResource(Res.string.fixedincome_maturity_date_label)) },
                 modifier = Modifier.fillMaxWidth(),
                 readOnly = true,
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = PrimaryDark,
                     unfocusedBorderColor = DragHandleColor
                 ),
-                supportingText = { Text("Calculada automáticamente", color = TextSecondary, fontSize = 11.sp) }
+                supportingText = { Text(stringResource(Res.string.fixedincome_auto_calculated), color = TextSecondary, fontSize = 11.sp) }
             )
 
             Spacer(Modifier.height(12.dp))
@@ -292,7 +321,7 @@ fun EditFixedIncomeBottomSheet(
                     onDismissRequest = { issuerDropdownExpanded = false }
                 ) {
                     DropdownMenuItem(
-                        text = { Text("➕ Nuevo emisor", color = PrimaryDark) },
+                        text = { Text("➕ ${stringResource(Res.string.fixedincome_new_issuer)}", color = PrimaryDark) },
                         onClick = {
                             issuerDropdownExpanded = false
                             newIssuerIcon = when (selectedType) {
@@ -305,7 +334,7 @@ fun EditFixedIncomeBottomSheet(
                     HorizontalDivider()
                     if (currentIssuers.isEmpty()) {
                         DropdownMenuItem(
-                            text = { Text("No hay emisores. Crea uno nuevo.", color = TextSecondary) },
+                            text = { Text(stringResource(Res.string.fixedincome_no_issuers_hint), color = TextSecondary) },
                             onClick = { },
                             enabled = false
                         )
@@ -339,7 +368,7 @@ fun EditFixedIncomeBottomSheet(
                     OutlinedTextField(
                         value = principalStr,
                         onValueChange = { principalStr = it.filter { c -> c.isDigit() || c == '.' } },
-                        label = { Text("Capital invertido (€)") },
+                        label = { Text(stringResource(Res.string.fixedincome_capital_invested_label)) },
                         modifier = Modifier.weight(1f),
                         singleLine = true,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
@@ -348,7 +377,7 @@ fun EditFixedIncomeBottomSheet(
                     OutlinedTextField(
                         value = nominalPerUnitStr,
                         onValueChange = { nominalPerUnitStr = it.filter { c -> c.isDigit() || c == '.' } },
-                        label = { Text("Valor nominal (€)") },
+                        label = { Text(stringResource(Res.string.fixedincome_nominal_value_label)) },
                         modifier = Modifier.weight(1f),
                         singleLine = true,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
@@ -356,7 +385,7 @@ fun EditFixedIncomeBottomSheet(
                     )
                 }
                 Text(
-                    text = "El nominal es el valor facial del bono (base para calcular intereses y amortización)",
+                    text = stringResource(Res.string.fixedincome_nominal_hint),
                     fontSize = 10.sp,
                     color = TextTertiary,
                     modifier = Modifier.padding(start = 4.dp, top = 4.dp)
@@ -365,7 +394,7 @@ fun EditFixedIncomeBottomSheet(
                 OutlinedTextField(
                     value = principalStr,
                     onValueChange = { principalStr = it.filter { c -> c.isDigit() || c == '.' } },
-                    label = { Text("Capital (€)") },
+                    label = { Text(stringResource(Res.string.fixedincome_capital_label)) },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
@@ -379,7 +408,7 @@ fun EditFixedIncomeBottomSheet(
             OutlinedTextField(
                 value = interestRateStr,
                 onValueChange = { interestRateStr = it.filter { c -> c.isDigit() || c == '.' || c == ',' } },
-                label = { Text("TAE (%)") },
+                label = { Text(stringResource(Res.string.fixedincome_interest_label)) },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
@@ -399,7 +428,7 @@ fun EditFixedIncomeBottomSheet(
                     colors = CheckboxDefaults.colors(checkedColor = PrimaryDark)
                 )
                 Text(
-                    text = "Auto-renovar al vencimiento",
+                    text = stringResource(Res.string.fixedincome_auto_renew_label),
                     fontSize = 14.sp,
                     color = TextPrimary
                 )
@@ -411,7 +440,7 @@ fun EditFixedIncomeBottomSheet(
             OutlinedTextField(
                 value = feeNote,
                 onValueChange = { feeNote = it },
-                label = { Text("Notas de comisiones (opcional)") },
+                label = { Text(stringResource(Res.string.fixedincome_fee_notes_label)) },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
                 colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = PrimaryDark)
@@ -463,7 +492,7 @@ fun EditFixedIncomeBottomSheet(
                 colors = ButtonDefaults.buttonColors(containerColor = PrimaryDark),
                 shape = RoundedCornerShape(12.dp)
             ) {
-                Text("Guardar cambios", fontSize = 15.sp, modifier = Modifier.padding(vertical = 4.dp))
+                Text(stringResource(Res.string.fixedincome_save_changes), fontSize = 15.sp, modifier = Modifier.padding(vertical = 4.dp))
             }
 
             Spacer(Modifier.height(16.dp))
@@ -474,18 +503,18 @@ fun EditFixedIncomeBottomSheet(
     if (showNewIssuerDialog) {
         AlertDialog(
             onDismissRequest = { showNewIssuerDialog = false },
-            title = { Text("Nuevo emisor") },
+            title = { Text(stringResource(Res.string.fixedincome_new_issuer)) },
             text = {
                 Column {
                     OutlinedTextField(
                         value = newIssuerName,
                         onValueChange = { newIssuerName = it },
-                        label = { Text("Nombre") },
+                        label = { Text(stringResource(Res.string.fixedincome_issuer_name_label)) },
                         modifier = Modifier.fillMaxWidth(),
                         singleLine = true
                     )
                     Spacer(Modifier.height(12.dp))
-                    Text("Icono", fontSize = 12.sp, color = TextSecondary)
+                    Text(stringResource(Res.string.fixedincome_icon_label), fontSize = 12.sp, color = TextSecondary)
                     Spacer(Modifier.height(8.dp))
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -511,12 +540,12 @@ fun EditFixedIncomeBottomSheet(
                     },
                     enabled = newIssuerName.isNotBlank()
                 ) {
-                    Text("Crear", color = PrimaryDark)
+                    Text(stringResource(Res.string.fixedincome_create_issuer), color = PrimaryDark)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showNewIssuerDialog = false }) {
-                    Text("Cancelar", color = TextSecondary)
+                    Text(stringResource(Res.string.common_cancel), color = TextSecondary)
                 }
             }
         )
@@ -534,12 +563,12 @@ fun EditFixedIncomeBottomSheet(
                     datePickerState.selectedDateMillis?.let { startDateMillis = it }
                     showDatePicker = false
                 }) {
-                    Text("Aceptar", color = PrimaryDark)
+                    Text(stringResource(Res.string.common_accept), color = PrimaryDark)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showDatePicker = false }) {
-                    Text("Cancelar", color = TextSecondary)
+                    Text(stringResource(Res.string.common_cancel), color = TextSecondary)
                 }
             }
         ) {

@@ -57,6 +57,51 @@ import kotlin.math.pow
 import es.aviferdev.n3to.ui.theme.*
 import es.aviferdev.n3to.ui.theme.LocalBalanceHidden
 import es.aviferdev.n3to.ui.theme.DividerLight
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.common_cancel
+import n3to.composeapp.generated.resources.common_delete
+import n3to.composeapp.generated.resources.fixedincome_annual_coupon
+import n3to.composeapp.generated.resources.fixedincome_cancel_title
+import n3to.composeapp.generated.resources.fixedincome_change_region
+import n3to.composeapp.generated.resources.fixedincome_change_sector
+import n3to.composeapp.generated.resources.fixedincome_coupon_calendar
+import n3to.composeapp.generated.resources.fixedincome_coupon_paid
+import n3to.composeapp.generated.resources.fixedincome_coupon_pending
+import n3to.composeapp.generated.resources.fixedincome_coupons_received
+import n3to.composeapp.generated.resources.fixedincome_delete_event
+import n3to.composeapp.generated.resources.fixedincome_delete_event_confirm
+import n3to.composeapp.generated.resources.fixedincome_detail_title
+import n3to.composeapp.generated.resources.fixedincome_distribution_title
+import n3to.composeapp.generated.resources.fixedincome_est_nir
+import n3to.composeapp.generated.resources.fixedincome_estimated_commissions
+import n3to.composeapp.generated.resources.fixedincome_estimated_irpf
+import n3to.composeapp.generated.resources.fixedincome_event_history
+import n3to.composeapp.generated.resources.fixedincome_gross_interest
+import n3to.composeapp.generated.resources.fixedincome_gross_label
+import n3to.composeapp.generated.resources.fixedincome_commission_label
+import n3to.composeapp.generated.resources.fixedincome_header_label
+import n3to.composeapp.generated.resources.fixedincome_invested_label
+import n3to.composeapp.generated.resources.fixedincome_liquidate_maturity
+import n3to.composeapp.generated.resources.fixedincome_maturity_label
+import n3to.composeapp.generated.resources.fixedincome_maturity_simulation
+import n3to.composeapp.generated.resources.fixedincome_net_maturity
+import n3to.composeapp.generated.resources.fixedincome_net_profit_label
+import n3to.composeapp.generated.resources.fixedincome_no_events
+import n3to.composeapp.generated.resources.fixedincome_no_region
+import n3to.composeapp.generated.resources.fixedincome_no_sector
+import n3to.composeapp.generated.resources.fixedincome_nominal_label
+import n3to.composeapp.generated.resources.fixedincome_not_found
+import n3to.composeapp.generated.resources.fixedincome_platform_label
+import n3to.composeapp.generated.resources.fixedincome_region_label
+import n3to.composeapp.generated.resources.fixedincome_register_settlement
+import n3to.composeapp.generated.resources.fixedincome_retention_label
+import n3to.composeapp.generated.resources.fixedincome_sector_label
+import n3to.composeapp.generated.resources.fixedincome_select_region
+import n3to.composeapp.generated.resources.fixedincome_select_sector
+import n3to.composeapp.generated.resources.fixedincome_sell_secondary
+import n3to.composeapp.generated.resources.fixedincome_status_active
+import n3to.composeapp.generated.resources.fixedincome_status_closed
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -96,16 +141,16 @@ fun FixedIncomeDetailScreen(
         AlertDialog(
             onDismissRequest = { viewModel.hideDeleteEventDialog() },
             containerColor = SurfaceWhite,
-            title = { Text("Eliminar evento", fontSize = 17.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary) },
-            text = { Text("¿Eliminar el evento ${state.selectedEventForDelete!!.type.label}?", fontSize = 14.sp, color = TextSecondary) },
+            title = { Text(stringResource(Res.string.fixedincome_delete_event), fontSize = 17.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary) },
+            text = { Text(stringResource(Res.string.fixedincome_delete_event_confirm, state.selectedEventForDelete!!.type.label), fontSize = 14.sp, color = TextSecondary) },
             confirmButton = {
                 TextButton(onClick = { viewModel.deleteEvent(state.selectedEventForDelete!!) }) {
-                    Text("Eliminar", color = NegativeRed)
+                    Text(stringResource(Res.string.common_delete), color = NegativeRed)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { viewModel.hideDeleteEventDialog() }) {
-                    Text("Cancelar", color = PrimaryDark)
+                    Text(stringResource(Res.string.common_cancel), color = PrimaryDark)
                 }
             },
             shape = RoundedCornerShape(16.dp)
@@ -152,7 +197,7 @@ fun FixedIncomeDetailContent(
     Box(modifier.fillMaxSize().background(BackgroundGray)) {
         Column(Modifier.fillMaxSize()) {
             TopBarApp(
-                title = state.row?.position?.name ?: "Posición de renta fija",
+                title = state.row?.position?.name ?: stringResource(Res.string.fixedincome_detail_title),
                 navigateBack = onBack
             )
 
@@ -168,7 +213,7 @@ fun FixedIncomeDetailContent(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text("Posición no encontrada", color = TextSecondary)
+                    Text(stringResource(Res.string.fixedincome_not_found), color = TextSecondary)
                 }
             } else {
                 val row = state.row!!
@@ -250,7 +295,7 @@ fun FixedIncomeDetailContent(
                                     )
                                 ) {
                                     Text(
-                                        text = "Registrar liquidación",
+                                        text = stringResource(Res.string.fixedincome_register_settlement),
                                         fontSize = 13.sp,
                                         fontWeight = FontWeight.Bold,
                                         modifier = Modifier.padding(vertical = 2.dp)
@@ -273,7 +318,7 @@ fun FixedIncomeDetailContent(
                                             )
                                         ) {
                                             Text(
-                                                text = "Cancelar anticipadamente",
+                                                text = stringResource(Res.string.fixedincome_cancel_title),
                                                 fontSize = 13.sp,
                                                 fontWeight = FontWeight.Bold,
                                                 modifier = Modifier.padding(vertical = 2.dp)
@@ -285,7 +330,7 @@ fun FixedIncomeDetailContent(
                                             shape = RoundedCornerShape(12.dp)
                                         ) {
                                             Text(
-                                                text = "Liquidar al vencimiento",
+                                                text = stringResource(Res.string.fixedincome_liquidate_maturity),
                                                 fontSize = 13.sp,
                                                 modifier = Modifier.padding(vertical = 2.dp)
                                             )
@@ -306,7 +351,7 @@ fun FixedIncomeDetailContent(
                                             )
                                         ) {
                                             Text(
-                                                text = "Vender en mercado secundario",
+                                                text = stringResource(Res.string.fixedincome_sell_secondary),
                                                 fontSize = 13.sp,
                                                 fontWeight = FontWeight.Bold,
                                                 modifier = Modifier.padding(vertical = 2.dp)
@@ -318,7 +363,7 @@ fun FixedIncomeDetailContent(
                                             shape = RoundedCornerShape(12.dp)
                                         ) {
                                             Text(
-                                                text = "Liquidar al vencimiento",
+                                                text = stringResource(Res.string.fixedincome_liquidate_maturity),
                                                 fontSize = 13.sp,
                                                 modifier = Modifier.padding(vertical = 2.dp)
                                             )
@@ -419,7 +464,7 @@ private fun DistributionSection(
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
-                text = "Distribución",
+                text = stringResource(Res.string.fixedincome_distribution_title),
                 fontSize = 16.sp,
                 fontWeight = FontWeight.SemiBold,
                 color = TextPrimary
@@ -434,16 +479,16 @@ private fun DistributionSection(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Column {
-                    Text("Región", fontSize = 11.sp, color = TextSecondary)
+                    Text(stringResource(Res.string.fixedincome_region_label), fontSize = 11.sp, color = TextSecondary)
                     Text(
-                        text = position?.region ?: "No asignada",
+                        text = position?.region ?: stringResource(Res.string.fixedincome_no_region),
                         fontSize = 13.sp,
                         fontWeight = FontWeight.Medium,
                         color = if (position?.region != null) TextPrimary else TextTertiary
                     )
                 }
                 TextButton(onClick = { showRegionDialog = true }) {
-                    Text("Cambiar", fontSize = 12.sp, color = PrimaryDark)
+                    Text(stringResource(Res.string.fixedincome_change_region), fontSize = 12.sp, color = PrimaryDark)
                 }
             }
 
@@ -456,16 +501,16 @@ private fun DistributionSection(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Column {
-                    Text("Sector", fontSize = 11.sp, color = TextSecondary)
+                    Text(stringResource(Res.string.fixedincome_sector_label), fontSize = 11.sp, color = TextSecondary)
                     Text(
-                        text = position?.sector ?: "No asignado",
+                        text = position?.sector ?: stringResource(Res.string.fixedincome_no_sector),
                         fontSize = 13.sp,
                         fontWeight = FontWeight.Medium,
                         color = if (position?.sector != null) TextPrimary else TextTertiary
                     )
                 }
                 TextButton(onClick = { showSectorDialog = true }) {
-                    Text("Cambiar", fontSize = 12.sp, color = PrimaryDark)
+                    Text(stringResource(Res.string.fixedincome_change_sector), fontSize = 12.sp, color = PrimaryDark)
                 }
             }
         }
@@ -476,7 +521,7 @@ private fun DistributionSection(
         AlertDialog(
             onDismissRequest = { showRegionDialog = false },
             containerColor = SurfaceWhite,
-            title = { Text("Seleccionar Región", fontSize = 17.sp, fontWeight = FontWeight.SemiBold) },
+            title = { Text(stringResource(Res.string.fixedincome_select_region), fontSize = 17.sp, fontWeight = FontWeight.SemiBold) },
             text = {
                 Column {
                     regions.forEach { region ->
@@ -498,7 +543,7 @@ private fun DistributionSection(
             },
             confirmButton = {
                 TextButton(onClick = { showRegionDialog = false }) {
-                    Text("Cancelar", color = TextSecondary)
+                    Text(stringResource(Res.string.common_cancel), color = TextSecondary)
                 }
             }
         )
@@ -509,7 +554,7 @@ private fun DistributionSection(
         AlertDialog(
             onDismissRequest = { showSectorDialog = false },
             containerColor = SurfaceWhite,
-            title = { Text("Seleccionar Sector", fontSize = 17.sp, fontWeight = FontWeight.SemiBold) },
+            title = { Text(stringResource(Res.string.fixedincome_select_sector), fontSize = 17.sp, fontWeight = FontWeight.SemiBold) },
             text = {
                 Column {
                     sectors.forEach { sector ->
@@ -531,7 +576,7 @@ private fun DistributionSection(
             },
             confirmButton = {
                 TextButton(onClick = { showSectorDialog = false }) {
-                    Text("Cancelar", color = TextSecondary)
+                    Text(stringResource(Res.string.common_cancel), color = TextSecondary)
                 }
             }
         )
@@ -560,8 +605,9 @@ private fun FixedIncomeDetailHeader(
                 verticalAlignment = Alignment.Top
             ) {
                 Column {
+                    val statusLabel = if (position.isOpen) stringResource(Res.string.fixedincome_status_active) else stringResource(Res.string.fixedincome_status_closed)
                     Text(
-                        "Renta fija · ${if (position.isOpen) "ACTIVO" else "CERRADO"}",
+                        stringResource(Res.string.fixedincome_header_label, statusLabel),
                         fontSize = 10.sp,
                         fontWeight = FontWeight.Medium,
                         color = WarnAmber
@@ -575,7 +621,7 @@ private fun FixedIncomeDetailHeader(
                         letterSpacing = (-0.8).sp
                     )
                     Text(
-                        "Nominal",
+                        stringResource(Res.string.fixedincome_nominal_label),
                         fontSize = 11.sp,
                         color = TextTertiary,
                         modifier = Modifier.padding(top = 3.dp)
@@ -597,13 +643,13 @@ private fun FixedIncomeDetailHeader(
             ) {
                 // Cupón anual
                 DetailCell(
-                    label = "Cupón anual",
+                    label = stringResource(Res.string.fixedincome_annual_coupon),
                     value = "${position.interestRate?.let { "${formatPercent(it)}%" } ?: "—"} · ${maskAmount(formatAmount(position.principal * (position.interestRate ?: 0.0) / 100.0), balancesHidden)} €",
                     modifier = Modifier.weight(1f)
                 )
                 // Vencimiento
                 DetailCell(
-                    label = "Vencimiento",
+                    label = stringResource(Res.string.fixedincome_maturity_label),
                     value = formatDate(position.maturityDate),
                     modifier = Modifier.weight(1f)
                 )
@@ -618,12 +664,12 @@ private fun FixedIncomeDetailHeader(
                     (ratio.pow(365.0 / position.totalTermDays) - 1.0) * 100.0
                 } else position.interestRate
                 DetailCell(
-                    label = "TIR neta est.",
+                    label = stringResource(Res.string.fixedincome_est_nir),
                     value = "${formatPercent(tirNet)}%",
                     modifier = Modifier.weight(1f)
                 )
                 DetailCell(
-                    label = "Plataforma",
+                    label = stringResource(Res.string.fixedincome_platform_label),
                     value = position.platformId.ifEmpty { "—" },
                     modifier = Modifier.weight(1f)
                 )
@@ -661,7 +707,7 @@ private fun CouponTimelineSection(
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
-                text = "Calendario de cobros",
+                text = stringResource(Res.string.fixedincome_coupon_calendar),
                 fontSize = 16.sp,
                 fontWeight = FontWeight.SemiBold,
                 color = TextPrimary
@@ -694,7 +740,7 @@ private fun CouponTimelineSection(
                                 color = TextPrimary
                             )
                             Text(
-                                text = if (coupon.isPaid) "✅ Cobrado" else "🔵 Pendiente",
+                                text = if (coupon.isPaid) "✅ ${stringResource(Res.string.fixedincome_coupon_paid)}" else "🔵 ${stringResource(Res.string.fixedincome_coupon_pending)}",
                                 fontSize = 11.sp,
                                 color = TextSecondary
                             )
@@ -732,7 +778,7 @@ private fun MaturitySimulatorCard(
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
-                text = "Simulación de vencimiento",
+                text = stringResource(Res.string.fixedincome_maturity_simulation),
                 fontSize = 16.sp,
                 fontWeight = FontWeight.SemiBold,
                 color = TextPrimary
@@ -741,27 +787,27 @@ private fun MaturitySimulatorCard(
             Spacer(Modifier.height(12.dp))
 
             SimulatorRow(
-                label = "Capital invertido",
+                label = stringResource(Res.string.fixedincome_invested_label),
                 value = maskAmount(formatAmount(simulation.capitalInvested), balancesHidden),
             )
             SimulatorRow(
-                label = "Intereses brutos",
+                label = stringResource(Res.string.fixedincome_gross_interest),
                 value = "+ ${maskAmount(formatAmount(simulation.grossInterest), balancesHidden)}",
                 valueColor = PositiveGreen
             )
             SimulatorRow(
-                label = "Cupones ya cobrados",
+                label = stringResource(Res.string.fixedincome_coupons_received),
                 value = "- ${maskAmount(formatAmount(simulation.collectedCoupons), balancesHidden)}",
                 valueColor = TextSecondary
             )
             SimulatorRow(
-                label = "Retención estimada (19%)",
+                label = stringResource(Res.string.fixedincome_estimated_irpf, "19"),
                 value = "- ${maskAmount(formatAmount(simulation.estimatedIrpf), balancesHidden)}",
                 valueColor = NegativeRed
             )
             if (simulation.estimatedCommission > 0) {
                 SimulatorRow(
-                    label = "Comisiones estimadas",
+                    label = stringResource(Res.string.fixedincome_estimated_commissions),
                     value = "- ${maskAmount(formatAmount(simulation.estimatedCommission), balancesHidden)}",
                         valueColor = NegativeRed
                 )
@@ -774,7 +820,7 @@ private fun MaturitySimulatorCard(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = "Neto estimado al vencimiento",
+                    text = stringResource(Res.string.fixedincome_net_maturity),
                     fontSize = 14.sp,
                     fontWeight = FontWeight.SemiBold,
                     color = TextPrimary
@@ -791,7 +837,7 @@ private fun MaturitySimulatorCard(
 
             val sign = if (simulation.netProfit >= 0) "+" else ""
             Text(
-                text = "Beneficio neto total: $sign${maskAmount(formatAmount(simulation.netProfit), balancesHidden)} €",
+                text = "${stringResource(Res.string.fixedincome_net_profit_label)}: $sign${maskAmount(formatAmount(simulation.netProfit), balancesHidden)} €",
                 fontSize = 13.sp,
                 fontWeight = FontWeight.Medium,
                 color = if (simulation.netProfit >= 0) PositiveGreen else NegativeRed
@@ -837,7 +883,7 @@ private fun EventsHistorySection(
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
-                text = "Historial de eventos",
+                text = stringResource(Res.string.fixedincome_event_history),
                 fontSize = 16.sp,
                 fontWeight = FontWeight.SemiBold,
                 color = TextPrimary
@@ -847,7 +893,7 @@ private fun EventsHistorySection(
 
             if (events.isEmpty()) {
                 Text(
-                    text = "Sin eventos registrados",
+                    text = stringResource(Res.string.fixedincome_no_events),
                     fontSize = 13.sp,
                     color = TextSecondary
                 )
@@ -903,9 +949,10 @@ private fun EventItem(
                     fontWeight = FontWeight.SemiBold,
                     color = if (event.netAmount >= 0) PositiveGreen else NegativeRed
                 )
+                val eventGrossText = stringResource(Res.string.fixedincome_gross_label)
                 if (event.irpfPercent > 0 || event.commissionAmount > 0) {
                     Text(
-                        text = "Bruto: ${maskAmount(formatAmount(event.grossAmount), balancesHidden)}",
+                        text = "$eventGrossText: ${maskAmount(formatAmount(event.grossAmount), balancesHidden)}",
                         fontSize = 10.sp,
                         color = TextSecondary
                     )
@@ -918,7 +965,7 @@ private fun EventItem(
             Row {
                 if (event.irpfPercent > 0) {
                     Text(
-                        text = "Retención ${formatPercent(event.irpfPercent)}%",
+                        text = "${stringResource(Res.string.fixedincome_retention_label)} ${formatPercent(event.irpfPercent)}%",
                         fontSize = 10.sp,
                         color = NegativeRed
                     )
@@ -926,7 +973,7 @@ private fun EventItem(
                 }
                 if (event.commissionAmount > 0) {
                     Text(
-                        text = "Comisión: ${maskAmount(formatAmount(event.commissionAmount), balancesHidden)}",
+                        text = "${stringResource(Res.string.fixedincome_commission_label)}: ${maskAmount(formatAmount(event.commissionAmount), balancesHidden)}",
                         fontSize = 10.sp,
                         color = TextSecondary
                     )

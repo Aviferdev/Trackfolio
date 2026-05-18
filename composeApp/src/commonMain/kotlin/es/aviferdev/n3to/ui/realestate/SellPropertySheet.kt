@@ -26,6 +26,23 @@ import es.aviferdev.n3to.domain.model.PropertyExpense
 import es.aviferdev.n3to.ui.theme.*
 import es.aviferdev.n3to.ui.theme.DragHandleColor
 
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.common_accept
+import n3to.composeapp.generated.resources.common_action_cd
+import n3to.composeapp.generated.resources.common_cancel
+import n3to.composeapp.generated.resources.realestate_add_sale_expense
+import n3to.composeapp.generated.resources.realestate_confirm_sale
+import n3to.composeapp.generated.resources.realestate_net_proceeds
+import n3to.composeapp.generated.resources.realestate_no_sale_expenses
+import n3to.composeapp.generated.resources.realestate_sale_date_title
+import n3to.composeapp.generated.resources.realestate_sale_expenses_short
+import n3to.composeapp.generated.resources.realestate_sale_expenses_title_alt
+import n3to.composeapp.generated.resources.realestate_sale_price_hint
+import n3to.composeapp.generated.resources.realestate_sale_price_short
+import n3to.composeapp.generated.resources.realestate_sale_summary
+import n3to.composeapp.generated.resources.realestate_sell_price
+import n3to.composeapp.generated.resources.realestate_sell_title
+import org.jetbrains.compose.resources.stringResource
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
@@ -63,10 +80,10 @@ fun SellPropertySheet(
                 TextButton(onClick = {
                     datePickerState.selectedDateMillis?.let { saleDateMillis = it }
                     showDatePicker = false
-                }) { Text("Aceptar", color = PrimaryDark) }
+                }) { Text(stringResource(Res.string.common_accept), color = PrimaryDark) }
             },
             dismissButton = {
-                TextButton(onClick = { showDatePicker = false }) { Text("Cancelar", color = TextTertiary) }
+                TextButton(onClick = { showDatePicker = false }) { Text(stringResource(Res.string.common_cancel), color = TextTertiary) }
             },
             colors = DatePickerDefaults.colors(containerColor = SurfaceWhite)
         ) {
@@ -103,7 +120,7 @@ fun SellPropertySheet(
                 .padding(bottom = 32.dp)
         ) {
             Text(
-                "Vender propiedad",
+                stringResource(Res.string.realestate_sell_title),
                 fontWeight = FontWeight.Bold,
                 fontSize = 18.sp,
                 color = TextPrimary
@@ -118,12 +135,12 @@ fun SellPropertySheet(
             Spacer(Modifier.height(20.dp))
 
             // ── Precio de venta ─────────────────────────────────────────────
-            Text("Precio de venta", fontSize = 13.sp, color = TextSecondary)
+            Text(stringResource(Res.string.realestate_sell_price), fontSize = 13.sp, color = TextSecondary)
             Spacer(Modifier.height(6.dp))
             OutlinedTextField(
                 value = saleValueText,
                 onValueChange = { saleValueText = it.filter { c -> c.isDigit() || c == ',' || c == '.' } },
-                placeholder = { Text("Ej: 275000", color = TextTertiary.copy(alpha = 0.6f), fontSize = 14.sp) },
+                placeholder = { Text(stringResource(Res.string.realestate_sale_price_hint), color = TextTertiary.copy(alpha = 0.6f), fontSize = 14.sp) },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
@@ -140,7 +157,7 @@ fun SellPropertySheet(
             Spacer(Modifier.height(16.dp))
 
             // ── Fecha de venta ──────────────────────────────────────────────
-            Text("Fecha de venta", fontSize = 13.sp, color = TextSecondary)
+            Text(stringResource(Res.string.realestate_sale_date_title), fontSize = 13.sp, color = TextSecondary)
             Spacer(Modifier.height(6.dp))
             OutlinedTextField(
                 value = formatSellDate(saleDateMillis),
@@ -150,7 +167,7 @@ fun SellPropertySheet(
                 shape = RoundedCornerShape(10.dp),
                 trailingIcon = {
                     IconButton(onClick = { showDatePicker = true }) {
-                        Icon(Icons.Outlined.CalendarMonth, "Seleccionar fecha", tint = TextTertiary)
+                        Icon(Icons.Outlined.CalendarMonth, stringResource(Res.string.common_action_cd), tint = TextTertiary)
                     }
                 },
                 colors = OutlinedTextFieldDefaults.colors(
@@ -170,7 +187,7 @@ fun SellPropertySheet(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("Gastos de venta", fontWeight = FontWeight.SemiBold, fontSize = 14.sp, color = TextPrimary)
+                Text(stringResource(Res.string.realestate_sale_expenses_title_alt), fontWeight = FontWeight.SemiBold, fontSize = 14.sp, color = TextPrimary)
                 TextButton(
                     onClick = {
                         val firstCategory = expenseCategories.firstOrNull()?.id ?: ""
@@ -179,7 +196,7 @@ fun SellPropertySheet(
                 ) {
                     Icon(Icons.Outlined.Add, null, modifier = Modifier.size(16.dp), tint = PrimaryDark)
                     Spacer(Modifier.width(4.dp))
-                    Text("Añadir gasto", fontSize = 12.sp, color = PrimaryDark)
+                    Text(stringResource(Res.string.realestate_add_sale_expense), fontSize = 12.sp, color = PrimaryDark)
                 }
             }
 
@@ -187,7 +204,7 @@ fun SellPropertySheet(
 
             if (expenses.isEmpty()) {
                 Text(
-                    "No has añadido gastos de venta (comisión, plusvalía, notaría...)",
+                    stringResource(Res.string.realestate_no_sale_expenses),
                     fontSize = 12.sp,
                     color = TextTertiary,
                     modifier = Modifier.padding(vertical = 8.dp)
@@ -221,21 +238,21 @@ fun SellPropertySheet(
                     elevation = CardDefaults.cardElevation(0.dp)
                 ) {
                     Column(modifier = Modifier.padding(14.dp)) {
-                        Text("Resumen", fontWeight = FontWeight.SemiBold, fontSize = 13.sp, color = TextPrimary)
+                        Text(stringResource(Res.string.realestate_sale_summary), fontWeight = FontWeight.SemiBold, fontSize = 13.sp, color = TextPrimary)
                         Spacer(Modifier.height(8.dp))
                         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                            Text("Precio venta", fontSize = 12.sp, color = TextSecondary)
+                            Text(stringResource(Res.string.realestate_sale_price_short), fontSize = 12.sp, color = TextSecondary)
                             Text(formatAmountEuro(saleValue), fontSize = 12.sp, color = IncomeGreen, fontWeight = FontWeight.Medium)
                         }
                         if (totalExpenses > 0) {
                             Row(Modifier.fillMaxWidth().padding(top = 4.dp), horizontalArrangement = Arrangement.SpaceBetween) {
-                                Text("Gastos venta", fontSize = 12.sp, color = TextSecondary)
+                                Text(stringResource(Res.string.realestate_sale_expenses_short), fontSize = 12.sp, color = TextSecondary)
                                 Text("-${formatAmountEuro(totalExpenses)}", fontSize = 12.sp, color = ExpenseRed, fontWeight = FontWeight.Medium)
                             }
                         }
                         HorizontalDivider(color = BorderGray2, modifier = Modifier.padding(vertical = 6.dp))
                         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                            Text("Efectivo neto", fontWeight = FontWeight.SemiBold, fontSize = 13.sp, color = TextPrimary)
+                            Text(stringResource(Res.string.realestate_net_proceeds), fontWeight = FontWeight.SemiBold, fontSize = 13.sp, color = TextPrimary)
                             Text(
                                 formatAmountEuro(netProceeds),
                                 fontWeight = FontWeight.Bold, fontSize = 13.sp,
@@ -270,7 +287,7 @@ fun SellPropertySheet(
                         strokeWidth = 2.dp
                     )
                 } else {
-                    Text("Confirmar venta", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                    Text(stringResource(Res.string.realestate_confirm_sale), fontWeight = FontWeight.Bold, fontSize = 16.sp)
                 }
             }
         }

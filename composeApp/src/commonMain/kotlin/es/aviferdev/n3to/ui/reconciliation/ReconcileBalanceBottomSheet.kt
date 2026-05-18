@@ -39,6 +39,13 @@ import es.aviferdev.n3to.ui.theme.SurfaceElevated
 import es.aviferdev.n3to.ui.theme.TextPrimary
 import es.aviferdev.n3to.ui.theme.TextSecondary
 import es.aviferdev.n3to.ui.theme.formatAmount
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.account_computed_balance
+import n3to.composeapp.generated.resources.reconciliation_adjust_label
+import n3to.composeapp.generated.resources.reconciliation_done
+import n3to.composeapp.generated.resources.reconciliation_real_balance
+import n3to.composeapp.generated.resources.reconciliation_title
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -91,7 +98,7 @@ fun ReconcileBalanceBottomSheetContent(
         Spacer(Modifier.height(12.dp))
 
         Text(
-            text       = "Reconciliar saldo",
+            text       = stringResource(Res.string.reconciliation_title),
             fontSize   = 20.sp,
             fontWeight = FontWeight.Bold,
             color      = TextPrimary
@@ -100,7 +107,7 @@ fun ReconcileBalanceBottomSheetContent(
         Spacer(Modifier.height(8.dp))
 
         Text(
-            text      = "Saldo actual calculado",
+            text      = stringResource(Res.string.account_computed_balance),
             fontSize  = 13.sp,
             color     = TextSecondary
         )
@@ -117,7 +124,7 @@ fun ReconcileBalanceBottomSheetContent(
         OutlinedTextField(
             value           = state.realBalanceInput,
             onValueChange   = onRealBalanceChange,
-            label           = { Text("Saldo real (€)") },
+            label           = { Text(stringResource(Res.string.reconciliation_real_balance)) },
             placeholder     = { Text("Ej: 1250.00") },
             singleLine      = true,
             keyboardOptions = KeyboardOptions(
@@ -188,7 +195,7 @@ fun ReconcileBalanceBottomSheetContent(
                 )
             } else {
                 Text(
-                    text       = if (state.isSuccess) "Hecho" else "Ajustar saldo",
+                    text       = if (state.isSuccess) stringResource(Res.string.reconciliation_done) else stringResource(Res.string.reconciliation_adjust_label),
                     fontWeight = FontWeight.SemiBold,
                     fontSize   = 15.sp
                 )

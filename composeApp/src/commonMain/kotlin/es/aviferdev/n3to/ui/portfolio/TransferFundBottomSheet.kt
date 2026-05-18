@@ -26,6 +26,24 @@ import es.aviferdev.n3to.domain.model.Platform
 import es.aviferdev.n3to.domain.portfolio.PortfolioCalculator
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import es.aviferdev.n3to.ui.theme.*
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.common_accept
+import n3to.composeapp.generated.resources.common_cancel
+import n3to.composeapp.generated.resources.portfolio_transfer_available
+import n3to.composeapp.generated.resources.portfolio_transfer_confirm_btn
+import n3to.composeapp.generated.resources.portfolio_transfer_date_label
+import n3to.composeapp.generated.resources.portfolio_transfer_desc
+import n3to.composeapp.generated.resources.portfolio_transfer_dest_label
+import n3to.composeapp.generated.resources.portfolio_transfer_dest_platform
+import n3to.composeapp.generated.resources.portfolio_transfer_no_destinations
+import n3to.composeapp.generated.resources.portfolio_transfer_no_platforms
+import n3to.composeapp.generated.resources.portfolio_transfer_only_available
+import n3to.composeapp.generated.resources.portfolio_transfer_qty_label
+import n3to.composeapp.generated.resources.portfolio_transfer_source_label
+import n3to.composeapp.generated.resources.portfolio_transfer_source_platform
+import n3to.composeapp.generated.resources.portfolio_transfer_title
+import n3to.composeapp.generated.resources.portfolio_transfer_vl_label
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 import kotlinx.datetime.Instant
@@ -129,21 +147,21 @@ fun TransferFundBottomSheet(
         ) {
             Spacer(Modifier.height(4.dp))
             Text(
-                text       = "Traspaso de fondo",
+                text       = stringResource(Res.string.portfolio_transfer_title),
                 fontSize   = 18.sp,
                 fontWeight = FontWeight.SemiBold,
                 color      = TextPrimary,
                 modifier   = Modifier.padding(bottom = 4.dp)
             )
             Text(
-                text     = "Traspaso fiscalmente neutro. El coste base se arrastra al fondo destino.",
+                text     = stringResource(Res.string.portfolio_transfer_desc),
                 fontSize = 12.sp,
                 color    = TextSecondary,
                 modifier = Modifier.padding(bottom = 16.dp)
             )
 
             // ── Fondo origen (solo lectura) ──────────────────────────────────
-            Text("Fondo origen", fontSize = 12.sp, color = TextSecondary, fontWeight = FontWeight.Medium)
+            Text(stringResource(Res.string.portfolio_transfer_source_label), fontSize = 12.sp, color = TextSecondary, fontWeight = FontWeight.Medium)
             Spacer(Modifier.height(6.dp))
             Row(
                 modifier = Modifier
@@ -177,7 +195,7 @@ fun TransferFundBottomSheet(
             Spacer(Modifier.height(16.dp))
 
             // ── Fondo destino (selector) ─────────────────────────────────────
-            Text("Fondo destino", fontSize = 12.sp, color = TextSecondary, fontWeight = FontWeight.Medium)
+            Text(stringResource(Res.string.portfolio_transfer_dest_label), fontSize = 12.sp, color = TextSecondary, fontWeight = FontWeight.Medium)
             Spacer(Modifier.height(8.dp))
             if (destinations.isEmpty()) {
                 Box(
@@ -189,7 +207,7 @@ fun TransferFundBottomSheet(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text     = "No hay otros fondos traspasables en esta cuenta. Crea primero el fondo destino desde Ajustes › Portfolio.",
+                        text     = stringResource(Res.string.portfolio_transfer_no_destinations),
                         fontSize = 12.sp,
                         color    = TextSecondary
                     )
@@ -217,7 +235,7 @@ fun TransferFundBottomSheet(
             OutlinedTextField(
                 value         = quantity,
                 onValueChange = { quantity = it.filter { c -> c.isDigit() || c == ',' || c == '.' } },
-                label         = { Text("Participaciones a traspasar") },
+                label         = { Text(stringResource(Res.string.portfolio_transfer_qty_label)) },
                 placeholder   = { Text("0") },
                 isError       = transferExceeds,
                 modifier      = Modifier.fillMaxWidth(),
@@ -232,9 +250,9 @@ fun TransferFundBottomSheet(
             Spacer(Modifier.height(6.dp))
             Text(
                 text     = if (transferExceeds)
-                    "Solo tienes ${formatQty(availableForTransfer)} participaciones disponibles a esa fecha"
+                    stringResource(Res.string.portfolio_transfer_only_available, formatQty(availableForTransfer))
                 else
-                    "Disponible: ${formatQty(availableForTransfer)} participaciones a esa fecha",
+                    stringResource(Res.string.portfolio_transfer_available, formatQty(availableForTransfer)),
                 fontSize = 11.sp,
                 color    = if (transferExceeds) ExpenseRed else TextSecondary
             )
@@ -244,7 +262,7 @@ fun TransferFundBottomSheet(
             OutlinedTextField(
                 value         = destinationVL,
                 onValueChange = { destinationVL = it.filter { c -> c.isDigit() || c == ',' || c == '.' } },
-                label         = { Text("VL fondo destino (precio por participación)") },
+                label         = { Text(stringResource(Res.string.portfolio_transfer_vl_label)) },
                 placeholder   = { Text("0,00") },
                 trailingIcon  = { Text("€", color = TextSecondary, modifier = Modifier.padding(end = 12.dp)) },
                 modifier      = Modifier.fillMaxWidth(),
@@ -259,7 +277,7 @@ fun TransferFundBottomSheet(
             Spacer(Modifier.height(12.dp))
 
             // ── Fecha ────────────────────────────────────────────────────────
-            Text("Fecha del traspaso", fontSize = 12.sp, color = TextSecondary, fontWeight = FontWeight.Medium)
+            Text(stringResource(Res.string.portfolio_transfer_date_label), fontSize = 12.sp, color = TextSecondary, fontWeight = FontWeight.Medium)
             Spacer(Modifier.height(6.dp))
             Box(
                 modifier = Modifier
@@ -278,11 +296,11 @@ fun TransferFundBottomSheet(
             Spacer(Modifier.height(12.dp))
 
             // ── Plataforma origen ────────────────────────────────────────────
-            Text("Plataforma origen", fontSize = 12.sp, color = TextSecondary, fontWeight = FontWeight.Medium)
+            Text(stringResource(Res.string.portfolio_transfer_source_platform), fontSize = 12.sp, color = TextSecondary, fontWeight = FontWeight.Medium)
             Spacer(Modifier.height(8.dp))
             if (platforms.isEmpty()) {
                 Text(
-                    text     = "Sin plataformas disponibles.",
+                    text     = stringResource(Res.string.portfolio_transfer_no_platforms),
                     fontSize = 12.sp,
                     color    = TextSecondary
                 )
@@ -306,7 +324,7 @@ fun TransferFundBottomSheet(
             Spacer(Modifier.height(12.dp))
 
             // ── Plataforma destino ───────────────────────────────────────────
-            Text("Plataforma destino", fontSize = 12.sp, color = TextSecondary, fontWeight = FontWeight.Medium)
+            Text(stringResource(Res.string.portfolio_transfer_dest_platform), fontSize = 12.sp, color = TextSecondary, fontWeight = FontWeight.Medium)
             Spacer(Modifier.height(8.dp))
             if (platforms.isEmpty()) {
                 Text(
@@ -353,7 +371,7 @@ fun TransferFundBottomSheet(
                 )
             ) {
                 Text(
-                    text       = "Confirmar traspaso",
+                    text       = stringResource(Res.string.portfolio_transfer_confirm_btn),
                     fontSize   = 16.sp,
                     fontWeight = FontWeight.Medium
                 )
@@ -375,11 +393,11 @@ fun TransferFundBottomSheet(
                         dateMillis = selected
                     }
                     showDatePicker = false
-                }) { Text("Aceptar", color = PrimaryDark) }
+                }) { Text(stringResource(Res.string.common_accept), color = PrimaryDark) }
             },
             dismissButton = {
                 TextButton(onClick = { showDatePicker = false }) {
-                    Text("Cancelar", color = TextSecondary)
+                    Text(stringResource(Res.string.common_cancel), color = TextSecondary)
                 }
             },
             colors = DatePickerDefaults.colors(containerColor = SurfaceWhite)

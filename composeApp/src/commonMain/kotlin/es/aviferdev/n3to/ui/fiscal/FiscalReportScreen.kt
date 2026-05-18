@@ -38,14 +38,100 @@ import es.aviferdev.n3to.ui.theme.*
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.common_accept
+import n3to.composeapp.generated.resources.common_cancel
+import n3to.composeapp.generated.resources.fiscal_active_profile
+import n3to.composeapp.generated.resources.fiscal_asset_header
+import n3to.composeapp.generated.resources.fiscal_avg_price_header
+import n3to.composeapp.generated.resources.fiscal_balance_header
+import n3to.composeapp.generated.resources.fiscal_buys_header
+import n3to.composeapp.generated.resources.fiscal_cancel
+import n3to.composeapp.generated.resources.fiscal_capital_gains_card
+import n3to.composeapp.generated.resources.fiscal_commissions_short
+import n3to.composeapp.generated.resources.fiscal_confirm_password_label
+import n3to.composeapp.generated.resources.fiscal_count_format
+import n3to.composeapp.generated.resources.fiscal_current_value_label
+import n3to.composeapp.generated.resources.fiscal_debts_title
+import n3to.composeapp.generated.resources.fiscal_expenses_header
+import n3to.composeapp.generated.resources.fiscal_generate_with_password
+import n3to.composeapp.generated.resources.fiscal_generate_without_password
+import n3to.composeapp.generated.resources.fiscal_generate_title
+import n3to.composeapp.generated.resources.fiscal_generating_pdf
+import n3to.composeapp.generated.resources.fiscal_gross_header
+import n3to.composeapp.generated.resources.fiscal_gross_total
+import n3to.composeapp.generated.resources.fiscal_i_owe
+import n3to.composeapp.generated.resources.fiscal_income_header
+import n3to.composeapp.generated.resources.fiscal_income_label
+import n3to.composeapp.generated.resources.fiscal_income_type_header
+import n3to.composeapp.generated.resources.fiscal_incomes_with_tax_info
+import n3to.composeapp.generated.resources.fiscal_invested_label
+import n3to.composeapp.generated.resources.fiscal_irpf_total
+import n3to.composeapp.generated.resources.fiscal_month_header
+import n3to.composeapp.generated.resources.fiscal_monthly_title
+import n3to.composeapp.generated.resources.fiscal_net_header
+import n3to.composeapp.generated.resources.fiscal_net_total
+import n3to.composeapp.generated.resources.fiscal_net_only_warning
+import n3to.composeapp.generated.resources.fiscal_no_category
+import n3to.composeapp.generated.resources.fiscal_no_data
+import n3to.composeapp.generated.resources.fiscal_no_data_year
+import n3to.composeapp.generated.resources.fiscal_no_movements
+import n3to.composeapp.generated.resources.fiscal_no_movements_year
+import n3to.composeapp.generated.resources.fiscal_password_label
+import n3to.composeapp.generated.resources.fiscal_password_min_length
+import n3to.composeapp.generated.resources.fiscal_password_mismatch
+import n3to.composeapp.generated.resources.fiscal_password_optional
+import n3to.composeapp.generated.resources.fiscal_pdf_password_desc
+import n3to.composeapp.generated.resources.fiscal_pdf_password_title
+import n3to.composeapp.generated.resources.fiscal_percent_header
+import n3to.composeapp.generated.resources.fiscal_pnl_total_header
+import n3to.composeapp.generated.resources.fiscal_portfolio_title
+import n3to.composeapp.generated.resources.fiscal_profile_since
+import n3to.composeapp.generated.resources.fiscal_realized_pnl_label
+import n3to.composeapp.generated.resources.fiscal_sales_header
+import n3to.composeapp.generated.resources.fiscal_social_security
+import n3to.composeapp.generated.resources.fiscal_tax_breakdown_title
+import n3to.composeapp.generated.resources.fiscal_taxable_base_est
+import n3to.composeapp.generated.resources.fiscal_they_owe
+import n3to.composeapp.generated.resources.fiscal_title
+import n3to.composeapp.generated.resources.fiscal_units_header
+import n3to.composeapp.generated.resources.fiscal_withholding_label
+import n3to.composeapp.generated.resources.fiscal_withholding_short
+import n3to.composeapp.generated.resources.fiscal_year_activity
+import n3to.composeapp.generated.resources.date_month_full_01
+import n3to.composeapp.generated.resources.date_month_full_02
+import n3to.composeapp.generated.resources.date_month_full_03
+import n3to.composeapp.generated.resources.date_month_full_04
+import n3to.composeapp.generated.resources.date_month_full_05
+import n3to.composeapp.generated.resources.date_month_full_06
+import n3to.composeapp.generated.resources.date_month_full_07
+import n3to.composeapp.generated.resources.date_month_full_08
+import n3to.composeapp.generated.resources.date_month_full_09
+import n3to.composeapp.generated.resources.date_month_full_10
+import n3to.composeapp.generated.resources.date_month_full_11
+import n3to.composeapp.generated.resources.date_month_full_12
+import n3to.composeapp.generated.resources.fiscal_year_title
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.math.abs
 
-private val MONTH_NAMES = listOf(
-    "Enero","Febrero","Marzo","Abril","Mayo","Junio",
-    "Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"
-)
+@Composable
+private fun monthName(month: Int): String = when (month) {
+    1 -> stringResource(Res.string.date_month_full_01)
+    2 -> stringResource(Res.string.date_month_full_02)
+    3 -> stringResource(Res.string.date_month_full_03)
+    4 -> stringResource(Res.string.date_month_full_04)
+    5 -> stringResource(Res.string.date_month_full_05)
+    6 -> stringResource(Res.string.date_month_full_06)
+    7 -> stringResource(Res.string.date_month_full_07)
+    8 -> stringResource(Res.string.date_month_full_08)
+    9 -> stringResource(Res.string.date_month_full_09)
+    10 -> stringResource(Res.string.date_month_full_10)
+    11 -> stringResource(Res.string.date_month_full_11)
+    12 -> stringResource(Res.string.date_month_full_12)
+    else -> month.toString()
+}
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // WRAPPER
@@ -95,7 +181,7 @@ fun FiscalReportContent(
             .background(BackgroundGray)
     ) {
         TopBarApp(
-            title = "Informe Fiscal",
+            title = stringResource(Res.string.fiscal_title),
             subtitle = state.selectedYear,
             navigateBack = onBack,
             actions = {
@@ -127,8 +213,7 @@ fun FiscalReportContent(
                     )
                     Spacer(Modifier.width(8.dp))
                     Text(
-                        "Hay ingresos registrados solo con el importe neto. " +
-                                "El desglose fiscal puede estar incompleto.",
+                        stringResource(Res.string.fiscal_net_only_warning),
                         fontSize = 11.sp,
                         color = WarnAmber,
                         lineHeight = 14.sp
@@ -169,7 +254,7 @@ fun FiscalReportContent(
                                 Icon(Icons.Outlined.Assignment, contentDescription = null, modifier = Modifier.size(44.dp), tint = PrimaryDark)
                                 Spacer(Modifier.height(12.dp))
                                 Text(
-                                    "No hay datos para ${state.selectedYear}",
+                                    stringResource(Res.string.fiscal_no_data_year, state.selectedYear),
                                     fontSize  = 15.sp,
                                     color     = TextTertiary,
                                     textAlign = TextAlign.Center
@@ -207,7 +292,7 @@ fun FiscalReportContent(
                                 Spacer(Modifier.width(8.dp))
                             }
                             Text(
-                                if (state.isGenerating) "Generando PDF…" else "Generar y compartir PDF",
+                                if (state.isGenerating) stringResource(Res.string.fiscal_generating_pdf) else stringResource(Res.string.fiscal_generate_title),
                                 fontSize   = 14.sp,
                                 fontWeight = FontWeight.SemiBold
                             )
@@ -289,22 +374,22 @@ private fun YearStepper(year: String, onPrevious: () -> Unit, onNext: () -> Unit
 @Composable
 private fun AnnualSummaryCard(report: FiscalReportData) {
     val s = report.annualSummary
-    ReportCard("Ejercicio ${report.year} · Resumen") {
-        if (s == null) { Text("Sin movimientos registrados.", fontSize = 13.sp, color = TextTertiary); return@ReportCard }
+    ReportCard(stringResource(Res.string.fiscal_year_title, report.year)) {
+        if (s == null) { Text(stringResource(Res.string.fiscal_no_movements), fontSize = 13.sp, color = TextTertiary); return@ReportCard }
 
         // 2x2 grid (matching JSX design)
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 // Ingresos totales
                 FiscalMetricCell(
-                    "Ingresos totales",
+                    stringResource(Res.string.fiscal_income_label),
                     s.totalIncome,
                     IncomeGreen,
                     Modifier.weight(1f)
                 )
                 // Retenciones fiscales
                 FiscalMetricCell(
-                    "Retenciones fiscales",
+                    stringResource(Res.string.fiscal_withholding_label),
                     report.incomeTaxBreakdown.sumOf { it.irpfTotal },
                     ExpenseRed,
                     Modifier.weight(1f)
@@ -314,7 +399,7 @@ private fun AnnualSummaryCard(report: FiscalReportData) {
                 // Ganancias capital (from portfolio)
                 val capitalGains = report.assetPositions.sumOf { it.realizedPnl }
                 FiscalMetricCell(
-                    "Ganancias capital",
+                    stringResource(Res.string.fiscal_capital_gains_card),
                     capitalGains,
                     if (capitalGains >= 0.0) IncomeGreen else ExpenseRed,
                     Modifier.weight(1f)
@@ -322,7 +407,7 @@ private fun AnnualSummaryCard(report: FiscalReportData) {
                 // Base imponible
                 val baseImponible = s.totalIncome + capitalGains
                 FiscalMetricCell(
-                    "Base imponible est.",
+                    stringResource(Res.string.fiscal_taxable_base_est),
                     baseImponible,
                     PrimaryDark,
                     Modifier.weight(1f)
@@ -362,17 +447,17 @@ private fun IncomeTaxBreakdownCard(report: FiscalReportData) {
     val totalSS    = bk.sumOf { it.socialSecurityTotal }
     val totalComm  = bk.sumOf { it.commissionTotal }
 
-    ReportCard("🏛️ Desglose fiscal ${report.year}") {
+    ReportCard(stringResource(Res.string.fiscal_tax_breakdown_title, report.year)) {
         Row(Modifier.fillMaxWidth(), Arrangement.spacedBy(8.dp)) {
-            MetricCell("Bruto total",       totalGross, TextPrimary, Modifier.weight(1f))
-            MetricCell("Retención fiscal",  totalIrpf,  ExpenseRed,  Modifier.weight(1f))
-            MetricCell("Neto total",        totalNet,   IncomeGreen, Modifier.weight(1f))
+            MetricCell(stringResource(Res.string.fiscal_gross_total),       totalGross, TextPrimary, Modifier.weight(1f))
+            MetricCell(stringResource(Res.string.fiscal_irpf_total),  totalIrpf,  ExpenseRed,  Modifier.weight(1f))
+            MetricCell(stringResource(Res.string.fiscal_net_total),        totalNet,   IncomeGreen, Modifier.weight(1f))
         }
         if (totalSS > 0 || totalComm > 0) {
             Spacer(Modifier.height(8.dp))
             Row(Modifier.fillMaxWidth(), Arrangement.spacedBy(8.dp)) {
-                if (totalSS   > 0) MetricCell("Cotizaciones",  totalSS,   WarnAmber, Modifier.weight(1f))
-                if (totalComm > 0) MetricCell("Comisiones",    totalComm, WarnAmber, Modifier.weight(1f))
+                if (totalSS   > 0) MetricCell(stringResource(Res.string.fiscal_social_security),  totalSS,   WarnAmber, Modifier.weight(1f))
+                if (totalComm > 0) MetricCell(stringResource(Res.string.fiscal_commissions_short),    totalComm, WarnAmber, Modifier.weight(1f))
                 if (totalSS > 0 && totalComm == 0.0) Spacer(Modifier.weight(1f))
                 if (totalSS == 0.0 && totalComm > 0) Spacer(Modifier.weight(1f))
             }
@@ -381,11 +466,11 @@ private fun IncomeTaxBreakdownCard(report: FiscalReportData) {
         HorizontalDivider(color = BorderGray, thickness = .5.dp)
         Spacer(Modifier.height(8.dp))
         Row(Modifier.fillMaxWidth()) {
-            Text("Tipo de ingreso", fontSize = 10.sp, color = TextTertiary, modifier = Modifier.weight(3f))
-            Text("Bruto",  fontSize = 10.sp, color = TextTertiary, modifier = Modifier.weight(2f), textAlign = TextAlign.End)
-            Text("Retención", fontSize = 10.sp, color = TextTertiary, modifier = Modifier.weight(2f), textAlign = TextAlign.End)
-            Text("Neto",   fontSize = 10.sp, color = TextTertiary, modifier = Modifier.weight(2f), textAlign = TextAlign.End)
-            Text("%",      fontSize = 10.sp, color = TextTertiary, modifier = Modifier.weight(1f), textAlign = TextAlign.End)
+            Text(stringResource(Res.string.fiscal_income_type_header), fontSize = 10.sp, color = TextTertiary, modifier = Modifier.weight(3f))
+            Text(stringResource(Res.string.fiscal_gross_header),  fontSize = 10.sp, color = TextTertiary, modifier = Modifier.weight(2f), textAlign = TextAlign.End)
+            Text(stringResource(Res.string.fiscal_withholding_short), fontSize = 10.sp, color = TextTertiary, modifier = Modifier.weight(2f), textAlign = TextAlign.End)
+            Text(stringResource(Res.string.fiscal_net_header),   fontSize = 10.sp, color = TextTertiary, modifier = Modifier.weight(2f), textAlign = TextAlign.End)
+            Text(stringResource(Res.string.fiscal_percent_header),      fontSize = 10.sp, color = TextTertiary, modifier = Modifier.weight(1f), textAlign = TextAlign.End)
         }
         Spacer(Modifier.height(5.dp))
         bk.forEachIndexed { i, item ->
@@ -393,7 +478,7 @@ private fun IncomeTaxBreakdownCard(report: FiscalReportData) {
             TaxBreakdownRow(item)
         }
         Spacer(Modifier.height(8.dp))
-        Text("Solo incluye ingresos con información fiscal introducida.", fontSize = 10.sp, color = TextTertiary)
+        Text(stringResource(Res.string.fiscal_incomes_with_tax_info), fontSize = 10.sp, color = TextTertiary)
     }
 }
 
@@ -404,7 +489,7 @@ private fun TaxBreakdownRow(item: FiscalIncomeTaxBreakdown) {
             Icon(item.incomeType.toMaterialIcon(), contentDescription = null, modifier = Modifier.size(18.dp), tint = TextPrimary)
             Column {
                 Text(item.incomeType.label, fontSize = 11.sp, color = TextPrimary, fontWeight = FontWeight.Medium, lineHeight = 13.sp)
-                Text("${item.count} ingreso${if (item.count != 1) "s" else ""}", fontSize = 9.sp, color = TextTertiary)
+                Text(stringResource(Res.string.fiscal_count_format, item.count, if (item.count != 1) "s" else ""), fontSize = 9.sp, color = TextTertiary)
             }
         }
         Text(formatAmt(item.grossTotal), fontSize = 11.sp, color = TextPrimary,  modifier = Modifier.weight(2f), textAlign = TextAlign.End)
@@ -418,13 +503,13 @@ private fun TaxBreakdownRow(item: FiscalIncomeTaxBreakdown) {
 private fun MonthlyBreakdownCard(report: FiscalReportData) {
     val byMonth = report.monthlyBreakdown.associateBy { it.month.trimStart('0').ifEmpty { "0" }.toInt() }
     val hasData = (1..12).any { byMonth[it] != null }
-    ReportCard("📅 Desglose mensual") {
-        if (!hasData) { Text("Sin movimientos en ${report.year}.", fontSize = 13.sp, color = TextTertiary); return@ReportCard }
+    ReportCard(stringResource(Res.string.fiscal_monthly_title)) {
+        if (!hasData) { Text(stringResource(Res.string.fiscal_no_movements_year, report.year), fontSize = 13.sp, color = TextTertiary); return@ReportCard }
         Row(Modifier.fillMaxWidth()) {
-            Text("Mes",      fontSize = 10.sp, color = TextTertiary, modifier = Modifier.weight(2f))
-            Text("Ingresos", fontSize = 10.sp, color = TextTertiary, modifier = Modifier.weight(2f), textAlign = TextAlign.End)
-            Text("Gastos",   fontSize = 10.sp, color = TextTertiary, modifier = Modifier.weight(2f), textAlign = TextAlign.End)
-            Text("Balance",  fontSize = 10.sp, color = TextTertiary, modifier = Modifier.weight(2f), textAlign = TextAlign.End)
+            Text(stringResource(Res.string.fiscal_month_header),      fontSize = 10.sp, color = TextTertiary, modifier = Modifier.weight(2f))
+            Text(stringResource(Res.string.fiscal_income_header), fontSize = 10.sp, color = TextTertiary, modifier = Modifier.weight(2f), textAlign = TextAlign.End)
+            Text(stringResource(Res.string.fiscal_expenses_header),   fontSize = 10.sp, color = TextTertiary, modifier = Modifier.weight(2f), textAlign = TextAlign.End)
+            Text(stringResource(Res.string.fiscal_balance_header),  fontSize = 10.sp, color = TextTertiary, modifier = Modifier.weight(2f), textAlign = TextAlign.End)
         }
         Spacer(Modifier.height(4.dp))
         HorizontalDivider(color = BorderGray, thickness = .5.dp)
@@ -440,7 +525,7 @@ private fun MonthlyBreakdownCard(report: FiscalReportData) {
 private fun MonthlyRow(month: Int, data: MonthlyTotals) {
     val balance = data.balance
     Row(Modifier.fillMaxWidth().padding(vertical = 6.dp), verticalAlignment = Alignment.CenterVertically) {
-        Text(MONTH_NAMES.getOrElse(month - 1) { month.toString() }, fontSize = 12.sp, color = TextPrimary, modifier = Modifier.weight(2f))
+        Text(monthName(month), fontSize = 12.sp, color = TextPrimary, modifier = Modifier.weight(2f))
         Text(formatAmt(data.totalIncome),  fontSize = 11.sp, color = IncomeGreen, modifier = Modifier.weight(2f), textAlign = TextAlign.End)
         Text(formatAmt(data.totalExpense), fontSize = 11.sp, color = ExpenseRed,  modifier = Modifier.weight(2f), textAlign = TextAlign.End)
         Text(
@@ -456,7 +541,7 @@ private fun MonthlyRow(month: Int, data: MonthlyTotals) {
 
 @Composable
 private fun DebtsCard(report: FiscalReportData) {
-    ReportCard("💳 Deudas activas") {
+    ReportCard(stringResource(Res.string.fiscal_debts_title)) {
         report.activeDebts.forEachIndexed { i, debt ->
             if (i > 0) HorizontalDivider(color = BorderGray, thickness = .3.dp)
             val isIOwe   = debt.direction == DebtDirection.I_OWE
@@ -464,7 +549,7 @@ private fun DebtsCard(report: FiscalReportData) {
             Row(Modifier.fillMaxWidth().padding(vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
                 Column(modifier = Modifier.weight(1f)) {
                     Text(debt.personName, fontSize = 13.sp, color = TextPrimary, fontWeight = FontWeight.SemiBold)
-                    Text(if (isIOwe) "Les debo" else "Me deben", fontSize = 11.sp, color = color)
+                    Text(if (isIOwe) stringResource(Res.string.fiscal_i_owe) else stringResource(Res.string.fiscal_they_owe), fontSize = 11.sp, color = color)
                     debt.notes?.let { Text(it, fontSize = 10.sp, color = TextTertiary) }
                 }
                 Text(formatAmt(debt.amount), fontSize = 13.sp, color = color, fontWeight = FontWeight.Bold)
@@ -480,19 +565,19 @@ private fun PortfolioCard(report: FiscalReportData) {
     val totalValue    = positions.mapNotNull { it.currentValue }.sum()
     val totalRealized = positions.sumOf { it.realizedPnl }
 
-    ReportCard("📈 Cartera de inversión") {
+    ReportCard(stringResource(Res.string.fiscal_portfolio_title)) {
         Row(Modifier.fillMaxWidth().padding(bottom = 10.dp), Arrangement.spacedBy(8.dp)) {
-            MetricCell("Invertido",    totalInvested, TextPrimary,  Modifier.weight(1f))
-            MetricCell("Valor actual", totalValue,    if (totalValue >= totalInvested) IncomeGreen else ExpenseRed, Modifier.weight(1f))
-            MetricCell("P&L Real.",    totalRealized, if (totalRealized >= 0) IncomeGreen else ExpenseRed, Modifier.weight(1f))
+            MetricCell(stringResource(Res.string.fiscal_invested_label),    totalInvested, TextPrimary,  Modifier.weight(1f))
+            MetricCell(stringResource(Res.string.fiscal_current_value_label), totalValue,    if (totalValue >= totalInvested) IncomeGreen else ExpenseRed, Modifier.weight(1f))
+            MetricCell(stringResource(Res.string.fiscal_realized_pnl_label),    totalRealized, if (totalRealized >= 0) IncomeGreen else ExpenseRed, Modifier.weight(1f))
         }
         HorizontalDivider(color = BorderGray, thickness = .5.dp)
         Spacer(Modifier.height(8.dp))
         Row(Modifier.fillMaxWidth()) {
-            Text("Activo",    fontSize = 10.sp, color = TextTertiary, modifier = Modifier.weight(2f))
-            Text("Unidades",  fontSize = 10.sp, color = TextTertiary, modifier = Modifier.weight(1.5f), textAlign = TextAlign.End)
-            Text("P.Medio",   fontSize = 10.sp, color = TextTertiary, modifier = Modifier.weight(1.5f), textAlign = TextAlign.End)
-            Text("P&L Total", fontSize = 10.sp, color = TextTertiary, modifier = Modifier.weight(1.5f), textAlign = TextAlign.End)
+            Text(stringResource(Res.string.fiscal_asset_header),    fontSize = 10.sp, color = TextTertiary, modifier = Modifier.weight(2f))
+            Text(stringResource(Res.string.fiscal_units_header),  fontSize = 10.sp, color = TextTertiary, modifier = Modifier.weight(1.5f), textAlign = TextAlign.End)
+            Text(stringResource(Res.string.fiscal_avg_price_header),   fontSize = 10.sp, color = TextTertiary, modifier = Modifier.weight(1.5f), textAlign = TextAlign.End)
+            Text(stringResource(Res.string.fiscal_pnl_total_header), fontSize = 10.sp, color = TextTertiary, modifier = Modifier.weight(1.5f), textAlign = TextAlign.End)
         }
         Spacer(Modifier.height(4.dp))
         positions.forEachIndexed { i, pos ->
@@ -501,7 +586,7 @@ private fun PortfolioCard(report: FiscalReportData) {
             Row(Modifier.fillMaxWidth().padding(vertical = 5.dp), verticalAlignment = Alignment.CenterVertically) {
                 Column(Modifier.weight(2f)) {
                     Text(pos.ticker, fontSize = 12.sp, color = TextPrimary, fontWeight = FontWeight.SemiBold)
-                    Text(pos.categoryName ?: "Sin categoría", fontSize = 9.sp, color = TextTertiary)
+                    Text(pos.categoryName ?: stringResource(Res.string.fiscal_no_category), fontSize = 9.sp, color = TextTertiary)
                 }
                 Text(formatQty(pos.netQuantity),          fontSize = 11.sp, color = TextPrimary, modifier = Modifier.weight(1.5f), textAlign = TextAlign.End)
                 Text(formatAmt(pos.avgCostBasis), fontSize = 11.sp, color = TextSecondary, modifier = Modifier.weight(1.5f), textAlign = TextAlign.End)
@@ -514,13 +599,13 @@ private fun PortfolioCard(report: FiscalReportData) {
             Spacer(Modifier.height(10.dp))
             HorizontalDivider(color = BorderGray, thickness = .5.dp)
             Spacer(Modifier.height(8.dp))
-            Text("Actividad en ${report.year}", fontSize = 12.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary)
+            Text(stringResource(Res.string.fiscal_year_activity, report.year), fontSize = 12.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary)
             Spacer(Modifier.height(5.dp))
             Row(Modifier.fillMaxWidth()) {
-                Text("Activo",    fontSize = 10.sp, color = TextTertiary, modifier = Modifier.weight(2f))
-                Text("Compras",   fontSize = 10.sp, color = TextTertiary, modifier = Modifier.weight(1.5f), textAlign = TextAlign.End)
-                Text("Ventas",    fontSize = 10.sp, color = TextTertiary, modifier = Modifier.weight(1.5f), textAlign = TextAlign.End)
-                Text("P&L Real.", fontSize = 10.sp, color = TextTertiary, modifier = Modifier.weight(1.5f), textAlign = TextAlign.End)
+                Text(stringResource(Res.string.fiscal_asset_header),    fontSize = 10.sp, color = TextTertiary, modifier = Modifier.weight(2f))
+                Text(stringResource(Res.string.fiscal_buys_header),   fontSize = 10.sp, color = TextTertiary, modifier = Modifier.weight(1.5f), textAlign = TextAlign.End)
+                Text(stringResource(Res.string.fiscal_sales_header),    fontSize = 10.sp, color = TextTertiary, modifier = Modifier.weight(1.5f), textAlign = TextAlign.End)
+                Text(stringResource(Res.string.fiscal_realized_pnl_label), fontSize = 10.sp, color = TextTertiary, modifier = Modifier.weight(1.5f), textAlign = TextAlign.End)
             }
             yearActive.forEachIndexed { i, pos ->
                 if (i > 0) HorizontalDivider(color = BorderGray, thickness = .3.dp)
@@ -558,13 +643,13 @@ private fun TaxProfileBadge(snapshot: TaxProfileSnapshot) {
             Text(flag, fontSize = 18.sp)
             Column {
                 Text(
-                    "Perfil fiscal activo: $label",
+                    stringResource(Res.string.fiscal_active_profile, label),
                     fontSize = 12.sp,
                     fontWeight = FontWeight.SemiBold,
                     color = PrimaryDark
                 )
                 Text(
-                    "${snapshot.profile.currency}  ·  vigente desde ${snapshot.effectiveFrom}",
+                    stringResource(Res.string.fiscal_profile_since, snapshot.profile.currency, snapshot.effectiveFrom),
                     fontSize = 10.sp,
                     color = PrimaryDark.copy(alpha = 0.65f)
                 )
@@ -620,16 +705,16 @@ private fun PdfPasswordSheet(onConfirm: (String) -> Unit, onDismiss: () -> Unit)
                 .padding(horizontal = 24.dp)
                 .padding(bottom = 32.dp)
         ) {
-            Text("🔒 Proteger informe", fontSize = 17.sp, fontWeight = FontWeight.Bold, color = TextPrimary)
+            Text(stringResource(Res.string.fiscal_pdf_password_title), fontSize = 17.sp, fontWeight = FontWeight.Bold, color = TextPrimary)
             Spacer(Modifier.height(6.dp))
-            Text("Introduce una contraseña para proteger el PDF. Déjala vacía si no quieres protegerlo.", fontSize = 12.sp, color = TextTertiary)
+            Text(stringResource(Res.string.fiscal_pdf_password_desc), fontSize = 12.sp, color = TextTertiary)
             Spacer(Modifier.height(20.dp))
 
             OutlinedTextField(
                 value                = password,
                 onValueChange        = { password = it; error = null },
-                label                = { Text("Contraseña") },
-                placeholder          = { Text("Opcional") },
+                label                = { Text(stringResource(Res.string.fiscal_password_label)) },
+                placeholder          = { Text(stringResource(Res.string.fiscal_password_optional)) },
                 singleLine           = true,
                 visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                 keyboardOptions      = KeyboardOptions(keyboardType = KeyboardType.Password),
@@ -647,7 +732,7 @@ private fun PdfPasswordSheet(onConfirm: (String) -> Unit, onDismiss: () -> Unit)
                 OutlinedTextField(
                     value                = confirmPassword,
                     onValueChange        = { confirmPassword = it; error = null },
-                    label                = { Text("Confirmar contraseña") },
+                    label                = { Text(stringResource(Res.string.fiscal_confirm_password_label)) },
                     singleLine           = true,
                     visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                     keyboardOptions      = KeyboardOptions(keyboardType = KeyboardType.Password),
@@ -660,21 +745,23 @@ private fun PdfPasswordSheet(onConfirm: (String) -> Unit, onDismiss: () -> Unit)
             error?.let { Text(it, fontSize = 11.sp, color = ExpenseRed, modifier = Modifier.padding(top = 4.dp)) }
             Spacer(Modifier.height(20.dp))
 
+            val passwordMismatchText = stringResource(Res.string.fiscal_password_mismatch)
+            val passwordMinLengthText = stringResource(Res.string.fiscal_password_min_length)
             Button(
                 onClick = {
-                    if (password.isNotEmpty() && password != confirmPassword) { error = "Las contraseñas no coinciden"; return@Button }
-                    if (password.isNotEmpty() && password.length < 4) { error = "Mínimo 4 caracteres"; return@Button }
+                    if (password.isNotEmpty() && password != confirmPassword) { error = passwordMismatchText; return@Button }
+                    if (password.isNotEmpty() && password.length < 4) { error = passwordMinLengthText; return@Button }
                     onConfirm(password)
                 },
                 modifier = Modifier.fillMaxWidth().height(50.dp),
                 shape    = RoundedCornerShape(10.dp),
                 colors   = ButtonDefaults.buttonColors(containerColor = PrimaryDark)
             ) {
-                Text(if (password.isEmpty()) "Generar sin contraseña" else "Generar con contraseña", fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
+                Text(if (password.isEmpty()) stringResource(Res.string.fiscal_generate_without_password) else stringResource(Res.string.fiscal_generate_with_password), fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
             }
             Spacer(Modifier.height(8.dp))
             TextButton(onClick = onDismiss, modifier = Modifier.fillMaxWidth()) {
-                Text("Cancelar", fontSize = 13.sp, color = TextTertiary)
+                Text(stringResource(Res.string.fiscal_cancel), fontSize = 13.sp, color = TextTertiary)
             }
         }
     }

@@ -12,7 +12,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.Account
 import es.aviferdev.n3to.ui.theme.*
-
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.account_add_title
+import n3to.composeapp.generated.resources.account_edit_title
+import n3to.composeapp.generated.resources.account_name_placeholder
+import n3to.composeapp.generated.resources.portfolio_add_asset_save
+import n3to.composeapp.generated.resources.portfolio_name_required
+import n3to.composeapp.generated.resources.portfolio_platform_name
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 /**
@@ -46,7 +53,7 @@ fun AddEditAccountBottomSheet(
                 .imePadding()
         ) {
             Text(
-                text       = if (isEditing) "Editar cuenta" else "Nueva cuenta",
+                text       = if (isEditing) stringResource(Res.string.account_edit_title) else stringResource(Res.string.account_add_title),
                 fontSize   = 18.sp,
                 fontWeight = FontWeight.SemiBold,
                 color      = TextPrimary,
@@ -57,10 +64,9 @@ fun AddEditAccountBottomSheet(
             OutlinedTextField(
                 value         = name,
                 onValueChange = { name = it; nameError = false },
-                label         = { Text("Nombre") },
-                placeholder   = { Text("Ej. Cuenta corriente BBVA") },
-                isError       = nameError,
-                supportingText = if (nameError) {{ Text("El nombre es obligatorio") }} else null,
+                label         = { Text(stringResource(Res.string.portfolio_platform_name)) },
+                placeholder   = { Text(stringResource(Res.string.account_name_placeholder)) },
+                supportingText = if (nameError) {{ Text(stringResource(Res.string.portfolio_name_required)) }} else null,
                 modifier      = Modifier.fillMaxWidth(),
                 singleLine    = true,
                 shape         = RoundedCornerShape(10.dp),
@@ -91,7 +97,7 @@ fun AddEditAccountBottomSheet(
                 colors   = ButtonDefaults.buttonColors(containerColor = PrimaryDark)
             ) {
                 Text(
-                    text       = if (isEditing) "Guardar cambios" else "Continuar",
+                    text       = if (isEditing) stringResource(Res.string.portfolio_add_asset_save) else "Continuar",
                     fontSize   = 16.sp,
                     fontWeight = FontWeight.Medium
                 )

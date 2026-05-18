@@ -28,6 +28,46 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.common_accept
+import n3to.composeapp.generated.resources.common_back_cd
+import n3to.composeapp.generated.resources.common_cancel
+import n3to.composeapp.generated.resources.common_error
+import n3to.composeapp.generated.resources.realestate_archive_confirm_msg
+import n3to.composeapp.generated.resources.realestate_archive_confirm_title
+import n3to.composeapp.generated.resources.realestate_archive_label
+import n3to.composeapp.generated.resources.realestate_capital_gain_label
+import n3to.composeapp.generated.resources.realestate_change_rental_status
+import n3to.composeapp.generated.resources.realestate_detail_title
+import n3to.composeapp.generated.resources.realestate_edit_label
+import n3to.composeapp.generated.resources.realestate_effective_value_label
+import n3to.composeapp.generated.resources.realestate_estimated_value_label
+import n3to.composeapp.generated.resources.realestate_expense_default
+import n3to.composeapp.generated.resources.realestate_lender_label
+import n3to.composeapp.generated.resources.realestate_loan_label
+import n3to.composeapp.generated.resources.realestate_monthly_payment_label
+import n3to.composeapp.generated.resources.realestate_mortgage_hint
+import n3to.composeapp.generated.resources.realestate_mortgage_label
+import n3to.composeapp.generated.resources.realestate_no_mortgage
+import n3to.composeapp.generated.resources.realestate_options_menu_cd
+import n3to.composeapp.generated.resources.realestate_own_use_badge
+import n3to.composeapp.generated.resources.realestate_ownership_percent_label
+import n3to.composeapp.generated.resources.realestate_pending_capital_label
+import n3to.composeapp.generated.resources.realestate_purchase_expenses
+import n3to.composeapp.generated.resources.realestate_purchase_value_label
+import n3to.composeapp.generated.resources.realestate_rented_badge
+import n3to.composeapp.generated.resources.realestate_sale_date_label
+import n3to.composeapp.generated.resources.realestate_sale_expenses
+import n3to.composeapp.generated.resources.realestate_sale_price_label
+import n3to.composeapp.generated.resources.realestate_sell_property
+import n3to.composeapp.generated.resources.realestate_sold_badge
+import n3to.composeapp.generated.resources.realestate_sold
+import n3to.composeapp.generated.resources.realestate_update_label
+import n3to.composeapp.generated.resources.realestate_update_value
+import n3to.composeapp.generated.resources.realestate_vacant_badge
+import n3to.composeapp.generated.resources.realestate_value_label
+import n3to.composeapp.generated.resources.realestate_view_label
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -86,8 +126,8 @@ fun RealEstateDetailScreen(
     }
     if (state.showArchiveDialog) {
         DeleteConfirmDialog(
-            title = "Archivar propiedad",
-            message = "¿Estás seguro de que quieres archivar esta propiedad?\nSe ocultará de la pantalla de patrimonio.",
+            title = stringResource(Res.string.realestate_archive_confirm_title),
+            message = stringResource(Res.string.realestate_archive_confirm_msg),
             onConfirm = { viewModel.archivePropertyAction() },
             onDismiss = { viewModel.hideArchiveDialog() }
         )
@@ -107,25 +147,25 @@ fun RealEstateDetailScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(property?.name ?: "Detalle propiedad", fontWeight = FontWeight.Bold, fontSize = 16.sp) },
-                navigationIcon = { IconButton(onClick = onNavigateBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, "Volver", tint = TextPrimary) } },
+                title = { Text(property?.name ?: stringResource(Res.string.realestate_detail_title), fontWeight = FontWeight.Bold, fontSize = 16.sp) },
+                navigationIcon = { IconButton(onClick = onNavigateBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(Res.string.common_back_cd), tint = TextPrimary) } },
                 actions = {
                     if (property != null) {
                         var showMenu by remember { mutableStateOf(false) }
-                        IconButton(onClick = { showMenu = true }) { Icon(Icons.Outlined.MoreVert, "Opciones", tint = TextPrimary) }
+                        IconButton(onClick = { showMenu = true }) { Icon(Icons.Outlined.MoreVert, stringResource(Res.string.realestate_options_menu_cd), tint = TextPrimary) }
                         DropdownMenu(expanded = showMenu, onDismissRequest = { showMenu = false }, containerColor = SurfaceElevated) {
                             DropdownMenuItem(
-                                text = { Text("Editar", color = TextPrimary) },
+                                text = { Text(stringResource(Res.string.realestate_edit_label), color = TextPrimary) },
                                 onClick = { showMenu = false; viewModel.showEditSheet() },
                                 leadingIcon = { Icon(Icons.Outlined.Edit, null, tint = TextSecondary) }
                             )
                             DropdownMenuItem(
-                                text = { Text("Actualizar valor", color = TextPrimary) },
+                                text = { Text(stringResource(Res.string.realestate_update_value), color = TextPrimary) },
                                 onClick = { showMenu = false; viewModel.showValueSheet() },
                                 leadingIcon = { Icon(Icons.Outlined.TrendingUp, null, tint = TextSecondary) }
                             )
                             DropdownMenuItem(
-                                text = { Text("Cambiar estado alquiler", color = TextPrimary) },
+                                text = { Text(stringResource(Res.string.realestate_change_rental_status), color = TextPrimary) },
                                 onClick = { showMenu = false; viewModel.showChangeRentalStatusSheet() },
                                 leadingIcon = { Icon(Icons.Outlined.SwapHoriz, null, tint = TextSecondary) }
                             )
@@ -133,14 +173,14 @@ fun RealEstateDetailScreen(
                             if (!property.isSold) {
                                 HorizontalDivider(color = BorderGray)
                                 DropdownMenuItem(
-                                    text = { Text("Vender propiedad", color = IncomeGreen) },
+                                    text = { Text(stringResource(Res.string.realestate_sell_property), color = IncomeGreen) },
                                     onClick = { showMenu = false; viewModel.showSellSheet() },
                                     leadingIcon = { Icon(Icons.Outlined.AttachMoney, null, tint = IncomeGreen) }
                                 )
                             }
                             HorizontalDivider(color = BorderGray)
                             DropdownMenuItem(
-                                text = { Text("Archivar", color = ExpenseRed) },
+                                text = { Text(stringResource(Res.string.realestate_archive_label), color = ExpenseRed) },
                                 onClick = { showMenu = false; viewModel.showArchiveDialog() },
                                 leadingIcon = { Icon(Icons.Outlined.Archive, null, tint = ExpenseRed) }
                             )
@@ -239,10 +279,10 @@ private fun HeaderSection(property: RealEstateProperty) {
                 }
                 StatusTag(
                     label = when {
-                        property.isSold -> "\u2705 Vendida"
-                        property.rentalStatus == RentalStatus.RENTED -> "\uD83D\uDCB0 Alquilada"
-                        property.rentalStatus == RentalStatus.VACANT -> "\uD83D\uDD12 Vacía"
-                        else -> "\uD83C\uDFE0 Uso propio"
+                        property.isSold -> "\u2705 ${stringResource(Res.string.realestate_sold_badge)}"
+                        property.rentalStatus == RentalStatus.RENTED -> "\uD83D\uDCB0 ${stringResource(Res.string.realestate_rented_badge)}"
+                        property.rentalStatus == RentalStatus.VACANT -> "\uD83D\uDD12 ${stringResource(Res.string.realestate_vacant_badge)}"
+                        else -> "\uD83C\uDFE0 ${stringResource(Res.string.realestate_own_use_badge)}"
                     },
                     color = when {
                         property.isSold -> IncomeGreen
@@ -266,29 +306,29 @@ private fun ValueSection(property: RealEstateProperty, onUpdateValue: () -> Unit
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                Text("Valor", fontWeight = FontWeight.SemiBold, fontSize = 14.sp, color = TextPrimary)
+                Text(stringResource(Res.string.realestate_value_label), fontWeight = FontWeight.SemiBold, fontSize = 14.sp, color = TextPrimary)
                 if (!property.isSold) {
-                    TextButton(onClick = onUpdateValue) { Text("Actualizar", color = PrimaryDark, fontSize = 12.sp) }
+                    TextButton(onClick = onUpdateValue) { Text(stringResource(Res.string.realestate_update_label), color = PrimaryDark, fontSize = 12.sp) }
                 }
             }
             Spacer(Modifier.height(4.dp))
-            DataRow("Valor estimado", formatAmountEuro(property.currentEstimatedValue))
-            DataRow("Valor de compra", formatAmountEuro(property.purchaseValue))
-            DataRow("% de propiedad", "${formatPercent(property.ownershipPercentage)}%")
+            DataRow(stringResource(Res.string.realestate_estimated_value_label), formatAmountEuro(property.currentEstimatedValue))
+            DataRow(stringResource(Res.string.realestate_purchase_value_label), formatAmountEuro(property.purchaseValue))
+            DataRow(stringResource(Res.string.realestate_ownership_percent_label), "${formatPercent(property.ownershipPercentage)}%")
 
             if (property.isSold && property.saleValue != null) {
                 HorizontalDivider(color = BorderGray2, modifier = Modifier.padding(vertical = 4.dp))
-                DataRow("Precio de venta", formatAmountEuro(property.saleValue))
+                DataRow(stringResource(Res.string.realestate_sale_price_label), formatAmountEuro(property.saleValue))
                 val gain = property.realizedGain ?: 0.0
                 val pct = property.realizedGainPercent ?: 0.0
                 DataRow(
-                    "Plusvalía realizada",
+                    stringResource(Res.string.realestate_capital_gain_label),
                     "${if (gain >= 0) "+" else ""}${formatAmountEuro(gain)} (${if (pct >= 0) "+" else ""}${formatPercent(pct)}%)"
                 )
             }
 
             HorizontalDivider(color = BorderGray2, modifier = Modifier.padding(vertical = 4.dp))
-            DataRow("Valor efectivo", formatAmountEuro(property.effectiveValue))
+            DataRow(stringResource(Res.string.realestate_effective_value_label), formatAmountEuro(property.effectiveValue))
         }
     }
 }
@@ -305,11 +345,11 @@ private fun SaleInfoSection(property: RealEstateProperty) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text("\u2705", fontSize = 20.sp)
                 Spacer(Modifier.width(8.dp))
-                Text("Propiedad vendida", fontWeight = FontWeight.Bold, fontSize = 15.sp, color = IncomeGreen)
+                Text(stringResource(Res.string.realestate_sold), fontWeight = FontWeight.Bold, fontSize = 15.sp, color = IncomeGreen)
             }
             Spacer(Modifier.height(8.dp))
             val saleDateStr = property.saleDate?.let { formatDetailDate(it) } ?: ""
-            DataRow("Fecha de venta", saleDateStr)
+            DataRow(stringResource(Res.string.realestate_sale_date_label), saleDateStr)
         }
     }
 }
@@ -323,7 +363,7 @@ private fun PurchaseExpensesCard(expenses: List<es.aviferdev.n3to.domain.model.T
         modifier = Modifier.fillMaxWidth()
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text("Gastos de compra", fontWeight = FontWeight.SemiBold, fontSize = 14.sp, color = TextPrimary)
+            Text(stringResource(Res.string.realestate_purchase_expenses), fontWeight = FontWeight.SemiBold, fontSize = 14.sp, color = TextPrimary)
             Spacer(Modifier.height(8.dp))
             expenses.forEach { tx ->
                 Row(
@@ -331,7 +371,7 @@ private fun PurchaseExpensesCard(expenses: List<es.aviferdev.n3to.domain.model.T
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
-                        tx.categoryId ?: "Gasto",
+                        tx.categoryId ?: stringResource(Res.string.realestate_expense_default),
                         fontSize = 12.sp, color = TextSecondary
                     )
                     Text(
@@ -356,7 +396,7 @@ private fun SaleExpensesCard(expenses: List<es.aviferdev.n3to.domain.model.Trans
         modifier = Modifier.fillMaxWidth()
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text("Gastos de venta", fontWeight = FontWeight.SemiBold, fontSize = 14.sp, color = TextPrimary)
+            Text(stringResource(Res.string.realestate_sale_expenses), fontWeight = FontWeight.SemiBold, fontSize = 14.sp, color = TextPrimary)
             Spacer(Modifier.height(8.dp))
             expenses.forEach { tx ->
                 Row(
@@ -364,7 +404,7 @@ private fun SaleExpensesCard(expenses: List<es.aviferdev.n3to.domain.model.Trans
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
-                        tx.categoryId ?: "Gasto",
+                        tx.categoryId ?: stringResource(Res.string.realestate_expense_default),
                         fontSize = 12.sp, color = TextSecondary
                     )
                     Text(
@@ -391,17 +431,17 @@ private fun MortgageSection(linkedLoan: es.aviferdev.n3to.domain.model.Loan?, on
         Column(modifier = Modifier.padding(16.dp)) {
             if (linkedLoan != null) {
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                    Text("Hipoteca", fontWeight = FontWeight.SemiBold, fontSize = 14.sp, color = TextPrimary)
-                    TextButton(onClick = { onNavigateToLoan(linkedLoan.id) }) { Text("Ver", color = PrimaryDark, fontSize = 12.sp) }
+                    Text(stringResource(Res.string.realestate_mortgage_label), fontWeight = FontWeight.SemiBold, fontSize = 14.sp, color = TextPrimary)
+                    TextButton(onClick = { onNavigateToLoan(linkedLoan.id) }) { Text(stringResource(Res.string.realestate_view_label), color = PrimaryDark, fontSize = 12.sp) }
                 }
                 Spacer(Modifier.height(4.dp))
-                DataRow("Préstamo", linkedLoan.name)
-                linkedLoan.lenderName?.let { DataRow("Entidad", it) }
-                DataRow("Capital pendiente", formatAmountEuro(linkedLoan.outstandingPrincipal))
-                DataRow("Cuota mensual", formatAmountEuro(linkedLoan.monthlyPayment))
+                DataRow(stringResource(Res.string.realestate_loan_label), linkedLoan.name)
+                linkedLoan.lenderName?.let { DataRow(stringResource(Res.string.realestate_lender_label), it) }
+                DataRow(stringResource(Res.string.realestate_pending_capital_label), formatAmountEuro(linkedLoan.outstandingPrincipal))
+                DataRow(stringResource(Res.string.realestate_monthly_payment_label), formatAmountEuro(linkedLoan.monthlyPayment))
             } else {
-                Text("Sin hipoteca vinculada", fontSize = 13.sp, color = TextTertiary)
-                Text("Vincula una hipoteca para un cálculo preciso del patrimonio.", fontSize = 11.sp, color = TextTertiary)
+                Text(stringResource(Res.string.realestate_no_mortgage), fontSize = 13.sp, color = TextTertiary)
+                Text(stringResource(Res.string.realestate_mortgage_hint), fontSize = 11.sp, color = TextTertiary)
             }
         }
     }

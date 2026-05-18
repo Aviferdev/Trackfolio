@@ -30,6 +30,29 @@ import es.aviferdev.n3to.ui.theme.*
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 import es.aviferdev.n3to.ui.theme.N3toTheme
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.common_accept
+import n3to.composeapp.generated.resources.common_cancel
+import n3to.composeapp.generated.resources.common_error
+import n3to.composeapp.generated.resources.portfolio_add_asset_cancel
+import n3to.composeapp.generated.resources.portfolio_add_asset_create
+import n3to.composeapp.generated.resources.portfolio_category_add_platform
+import n3to.composeapp.generated.resources.portfolio_settings_manage
+import n3to.composeapp.generated.resources.portfolio_category_archive_confirm
+import n3to.composeapp.generated.resources.portfolio_category_archive_cd
+import n3to.composeapp.generated.resources.portfolio_category_archive_message
+import n3to.composeapp.generated.resources.portfolio_category_archive_title
+import n3to.composeapp.generated.resources.portfolio_category_assets_section
+import n3to.composeapp.generated.resources.portfolio_category_edit_cd
+import n3to.composeapp.generated.resources.portfolio_category_empty
+import n3to.composeapp.generated.resources.portfolio_category_fixed_income_section
+import n3to.composeapp.generated.resources.portfolio_category_new_asset
+import n3to.composeapp.generated.resources.portfolio_category_no_platforms
+import n3to.composeapp.generated.resources.portfolio_category_platforms_section
+import n3to.composeapp.generated.resources.portfolio_category_archived_section
+import n3to.composeapp.generated.resources.portfolio_category_restore
+import n3to.composeapp.generated.resources.portfolio_category_title
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -109,7 +132,7 @@ fun AssetCategoryDetailScreen(
             icon = { Icon(Icons.Outlined.Archive, contentDescription = null, modifier = Modifier.size(28.dp), tint = PrimaryDark) },
             title = {
                 Text(
-                    "Archivar activo",
+                    stringResource(Res.string.portfolio_category_archive_title),
                     fontSize = 17.sp,
                     fontWeight = FontWeight.SemiBold,
                     color = TextPrimary
@@ -117,19 +140,19 @@ fun AssetCategoryDetailScreen(
             },
             text = {
                 Text(
-                    "«${pending.name} (${pending.ticker})» se archivará. Sus movimientos y P&L histórico se conservarán.",
+                    stringResource(Res.string.portfolio_category_archive_message, pending.name, pending.ticker),
                     fontSize = 14.sp,
                     color = TextSecondary
                 )
             },
             confirmButton = {
                 TextButton(onClick = { viewModel.confirmArchive() }) {
-                    Text("Archivar", color = ExpenseRed, fontWeight = FontWeight.Medium)
+                    Text(stringResource(Res.string.portfolio_category_archive_confirm), color = ExpenseRed, fontWeight = FontWeight.Medium)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { viewModel.cancelArchive() }) {
-                    Text("Cancelar", color = PrimaryDark, fontWeight = FontWeight.Medium)
+                    Text(stringResource(Res.string.common_cancel), color = PrimaryDark, fontWeight = FontWeight.Medium)
                 }
             },
             shape = RoundedCornerShape(16.dp)
@@ -140,11 +163,11 @@ fun AssetCategoryDetailScreen(
         AlertDialog(
             onDismissRequest = { viewModel.clearError() },
             containerColor = SurfaceWhite,
-            title = { Text("Error", fontSize = 17.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary) },
+            title = { Text(stringResource(Res.string.common_error), fontSize = 17.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary) },
             text = { Text(msg, fontSize = 14.sp, color = TextSecondary) },
             confirmButton = {
                 TextButton(onClick = { viewModel.clearError() }) {
-                    Text("Aceptar", color = PrimaryDark, fontWeight = FontWeight.Medium)
+                    Text(stringResource(Res.string.common_accept), color = PrimaryDark, fontWeight = FontWeight.Medium)
                 }
             },
             shape = RoundedCornerShape(16.dp)
@@ -170,7 +193,7 @@ fun AssetCategoryDetailContent(
         modifier = modifier.fillMaxSize().background(BackgroundGray)
     ) {
         TopBarApp(
-            title = state.category?.name ?: "Categoría",
+            title = state.category?.name ?: stringResource(Res.string.portfolio_category_title),
             navigateBack = onBack
         )
 
@@ -180,8 +203,8 @@ fun AssetCategoryDetailContent(
         ) {
             item {
                 SectionHeader(
-                    label = "ACTIVOS",
-                    actionLabel = "+ Nuevo",
+                    label = stringResource(Res.string.portfolio_category_assets_section),
+                    actionLabel = stringResource(Res.string.portfolio_category_new_asset),
                     onAction = onOpenAddSheet
                 )
             }
@@ -199,7 +222,7 @@ fun AssetCategoryDetailContent(
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
-                                "Sin activos en esta categoría",
+                                stringResource(Res.string.portfolio_category_empty),
                                 fontSize = 13.sp,
                                 color = TextSecondary
                             )
@@ -230,7 +253,7 @@ fun AssetCategoryDetailContent(
                 item { Spacer(Modifier.height(8.dp)) }
                 item {
                     SectionHeader(
-                        label = "RENTA FIJA",
+                        label = stringResource(Res.string.portfolio_category_fixed_income_section),
                         actionLabel = "(${state.activeFixedIncome.size})",
                         onAction = { }
                     )
@@ -267,8 +290,8 @@ fun AssetCategoryDetailContent(
                 item { Spacer(Modifier.height(8.dp)) }
                 item {
                     SectionHeader(
-                        label = "PLATAFORMAS",
-                        actionLabel = "Gestionar",
+                        label = stringResource(Res.string.portfolio_category_platforms_section),
+                        actionLabel = stringResource(Res.string.portfolio_settings_manage),
                         onAction = onOpenLinkPlatformSheet
                     )
                 }
@@ -287,14 +310,14 @@ fun AssetCategoryDetailContent(
                             ) {
                                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                                     Text(
-                                        "Sin plataformas vinculadas",
+                                        stringResource(Res.string.portfolio_category_no_platforms),
                                         fontSize = 13.sp,
                                         color = TextSecondary
                                     )
                                     Spacer(Modifier.height(4.dp))
                                     TextButton(onClick = onOpenLinkPlatformSheet) {
                                         Text(
-                                            "+ Añadir plataforma",
+                                            stringResource(Res.string.portfolio_category_add_platform),
                                             fontSize = 13.sp,
                                             color = PrimaryDark,
                                             fontWeight = FontWeight.Medium
@@ -338,7 +361,7 @@ fun AssetCategoryDetailContent(
                 item { Spacer(Modifier.height(8.dp)) }
                 item {
                     Text(
-                        "ARCHIVADOS",
+                        stringResource(Res.string.portfolio_category_archived_section),
                         fontSize = 11.sp,
                         fontWeight = FontWeight.SemiBold,
                         color = TextSecondary
@@ -446,10 +469,10 @@ private fun AssetRow(
             Text(asset.ticker, fontSize = 11.sp, color = TextSecondary)
         }
         IconButton(onClick = onEdit, modifier = Modifier.size(28.dp)) {
-            Icon(Icons.Default.Edit, "Editar", modifier = Modifier.size(14.dp), tint = TextSecondary)
+            Icon(Icons.Default.Edit, stringResource(Res.string.portfolio_category_edit_cd), modifier = Modifier.size(14.dp), tint = TextSecondary)
         }
         IconButton(onClick = onArchive, modifier = Modifier.size(28.dp)) {
-            Icon(Icons.Default.Delete, "Archivar", modifier = Modifier.size(14.dp), tint = TextSecondary)
+            Icon(Icons.Default.Delete, stringResource(Res.string.portfolio_category_archive_cd), modifier = Modifier.size(14.dp), tint = TextSecondary)
         }
         Text("›", fontSize = 18.sp, color = TextSecondary)
     }
@@ -486,7 +509,7 @@ private fun ArchivedAssetRow(
             Text(asset.ticker, fontSize = 11.sp, color = TextSecondary.copy(alpha = 0.7f))
         }
         TextButton(onClick = onRestore) {
-            Text("Restaurar", fontSize = 12.sp, color = PrimaryDark, fontWeight = FontWeight.Medium)
+            Text(stringResource(Res.string.portfolio_category_restore), fontSize = 12.sp, color = PrimaryDark, fontWeight = FontWeight.Medium)
         }
     }
 }

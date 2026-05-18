@@ -65,6 +65,17 @@ import es.aviferdev.n3to.ui.theme.N3toTheme
 import es.aviferdev.n3to.ui.theme.formatAmount
 import es.aviferdev.n3to.ui.theme.formatDate
 import es.aviferdev.n3to.ui.theme.maskAmount
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.common_cancel
+import n3to.composeapp.generated.resources.common_delete
+import n3to.composeapp.generated.resources.debt_add_title
+import n3to.composeapp.generated.resources.debt_i_owe
+import n3to.composeapp.generated.resources.debt_mark_paid
+import n3to.composeapp.generated.resources.debt_no_debts
+import n3to.composeapp.generated.resources.debt_paid
+import n3to.composeapp.generated.resources.debt_they_owe
+import n3to.composeapp.generated.resources.debt_title
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -106,7 +117,7 @@ fun DebtListScreen(viewModel: DebtViewModel = koinViewModel()) {
             onDismissRequest = { debtToDelete = null }, containerColor = SurfaceWhite,
             title = {
                 Text(
-                    "Eliminar deuda",
+                    stringResource(Res.string.common_delete) + " " + stringResource(Res.string.debt_title).lowercase(),
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
                     color = TextPrimary
@@ -140,7 +151,7 @@ fun DebtListScreen(viewModel: DebtViewModel = koinViewModel()) {
             onDismissRequest = { debtToMarkPaid = null }, containerColor = SurfaceWhite,
             title = {
                 Text(
-                    "Marcar como pagado",
+                    stringResource(Res.string.debt_mark_paid),
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
                     color = TextPrimary
@@ -202,7 +213,7 @@ fun DebtListContent(
             ) {
                 item {
                     TopBarApp(
-                        title = "Deudas",
+                        title = stringResource(Res.string.debt_title),
                         navigateBack = {
                             // TODO: manejar navegación desde el wrapper
                         }
@@ -221,7 +232,7 @@ fun DebtListContent(
                 if (uiState.debtsTheyOwe.isNotEmpty()) {
                     item {
                         DebtSectionHeader(
-                            title = "Me deben ↑",
+                            title = stringResource(Res.string.debt_they_owe) + " ↑",
                             total = uiState.totalTheyOwe,
                             color = IncomeGreen,
                             hidden = balancesHidden
@@ -229,7 +240,7 @@ fun DebtListContent(
                     }
                     items(uiState.debtsTheyOwe, key = { it.id }) { debt ->
                         SwipeRowApp(
-                            titleSwipe = "Eliminar",
+                            titleSwipe = stringResource(Res.string.common_delete),
                             colorSwipe = ExpenseRed,
                             onDelete = { onDeleteDebt(debt) },
                             content = {
@@ -247,7 +258,7 @@ fun DebtListContent(
                 if (uiState.debtsIOwe.isNotEmpty()) {
                     item {
                         DebtSectionHeader(
-                            title = "Debo yo ↓",
+                            title = stringResource(Res.string.debt_i_owe) + " ↓",
                             total = uiState.totalIOwe,
                             color = ExpenseRed,
                             hidden = balancesHidden
@@ -255,7 +266,7 @@ fun DebtListContent(
                     }
                     items(uiState.debtsIOwe, key = { it.id }) { debt ->
                         SwipeRowApp(
-                            titleSwipe = "Eliminar",
+                            titleSwipe = stringResource(Res.string.common_delete),
                             colorSwipe = ExpenseRed,
                             onDelete = { onDeleteDebt(debt) },
                             content = {
@@ -273,7 +284,7 @@ fun DebtListContent(
                     item {
                         EmptyStateView(
                             icon = Icons.Outlined.Handshake,
-                            title = "Sin deudas",
+                            title = stringResource(Res.string.debt_no_debts),
                             subtitle = "Pulsa \"Nueva deuda\" para registrar\nuna deuda pendiente"
                         )
                     }
@@ -283,8 +294,8 @@ fun DebtListContent(
                     SpacerVerticalApp(8.dp)
                     LargeButtonApp(
                         icon = Icons.Default.Add,
-                        contentDescription = "Añadir",
-                        title = "Nueva deuda",
+                        contentDescription = stringResource(Res.string.debt_add_title),
+                        title = stringResource(Res.string.debt_add_title),
                         onClick = onAddClick
                     )
                 }

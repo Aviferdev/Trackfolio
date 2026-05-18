@@ -64,6 +64,43 @@ import es.aviferdev.n3to.ui.theme.SurfaceElevated
 import es.aviferdev.n3to.ui.theme.TextPrimary
 import es.aviferdev.n3to.ui.theme.TextSecondary
 import es.aviferdev.n3to.ui.theme.N3toTheme
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.common_accept
+import n3to.composeapp.generated.resources.common_cancel
+import n3to.composeapp.generated.resources.portfolio_add_asset_cancel
+import n3to.composeapp.generated.resources.portfolio_add_asset_category_label
+import n3to.composeapp.generated.resources.portfolio_add_asset_composition_hint
+import n3to.composeapp.generated.resources.portfolio_add_asset_composition_label
+import n3to.composeapp.generated.resources.portfolio_add_asset_create
+import n3to.composeapp.generated.resources.portfolio_add_asset_desc
+import n3to.composeapp.generated.resources.portfolio_add_asset_fi_price_hint
+import n3to.composeapp.generated.resources.portfolio_add_asset_market_price_label
+import n3to.composeapp.generated.resources.portfolio_add_asset_maturity_date_label
+import n3to.composeapp.generated.resources.portfolio_add_asset_maturity_hint
+import n3to.composeapp.generated.resources.portfolio_add_asset_name_label
+import n3to.composeapp.generated.resources.portfolio_add_asset_name_placeholder
+import n3to.composeapp.generated.resources.portfolio_add_asset_no_platforms_hint
+import n3to.composeapp.generated.resources.portfolio_add_asset_no_portfolio
+import n3to.composeapp.generated.resources.portfolio_add_asset_notes_optional
+import n3to.composeapp.generated.resources.portfolio_add_asset_platforms_hint
+import n3to.composeapp.generated.resources.portfolio_add_asset_platforms_label
+import n3to.composeapp.generated.resources.portfolio_add_asset_portfolio_label
+import n3to.composeapp.generated.resources.portfolio_add_asset_price_desc
+import n3to.composeapp.generated.resources.portfolio_add_asset_price_optional
+import n3to.composeapp.generated.resources.portfolio_add_asset_price_placeholder_val
+import n3to.composeapp.generated.resources.portfolio_add_asset_regions_hint
+import n3to.composeapp.generated.resources.portfolio_add_asset_regions_label
+import n3to.composeapp.generated.resources.portfolio_add_asset_regions_total
+import n3to.composeapp.generated.resources.portfolio_add_asset_save_changes
+import n3to.composeapp.generated.resources.portfolio_add_asset_sectors_hint
+import n3to.composeapp.generated.resources.portfolio_add_asset_sectors_label
+import n3to.composeapp.generated.resources.portfolio_add_asset_select_category
+import n3to.composeapp.generated.resources.portfolio_add_asset_ticker_label
+import n3to.composeapp.generated.resources.portfolio_add_asset_ticker_placeholder
+import n3to.composeapp.generated.resources.portfolio_add_asset_ticker_required
+import n3to.composeapp.generated.resources.portfolio_add_asset_title_create
+import n3to.composeapp.generated.resources.portfolio_add_asset_title_edit
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 import kotlinx.datetime.Instant
@@ -166,14 +203,14 @@ fun AddEditAssetBottomSheet(
         ) {
             Spacer(Modifier.height(4.dp))
             Text(
-                text       = if (isEditing) "Editar activo" else "Nuevo activo",
+                text       = if (isEditing) stringResource(Res.string.portfolio_add_asset_title_edit) else stringResource(Res.string.portfolio_add_asset_title_create),
                 fontSize   = 18.sp,
                 fontWeight = FontWeight.SemiBold,
                 color      = TextPrimary,
                 modifier   = Modifier.padding(bottom = 4.dp)
             )
             Text(
-                text     = "Define la ficha del activo y las plataformas donde operas.",
+                text     = stringResource(Res.string.portfolio_add_asset_desc),
                 fontSize = 11.sp,
                 color    = TextSecondary,
                 modifier = Modifier.padding(bottom = 18.dp)
@@ -182,7 +219,7 @@ fun AddEditAssetBottomSheet(
             // ── Selector de categoría (solo si no viene prefijada) ──────────
             if (preselectedCategoryId == null) {
                 Text(
-                    text       = "Categoría",
+                    text       = stringResource(Res.string.portfolio_add_asset_category_label),
                     fontSize   = 12.sp,
                     color      = TextSecondary,
                     fontWeight = FontWeight.Medium
@@ -205,7 +242,7 @@ fun AddEditAssetBottomSheet(
                 }
                 if (selectedCategoryId == null) {
                     Spacer(Modifier.height(4.dp))
-                    Text("Selecciona una categoría", fontSize = 11.sp, color = ExpenseRed)
+                    Text(stringResource(Res.string.portfolio_add_asset_select_category), fontSize = 11.sp, color = ExpenseRed)
                 }
                 Spacer(Modifier.height(16.dp))
             }
@@ -213,7 +250,7 @@ fun AddEditAssetBottomSheet(
             // ── Selector de cartera ─────────────────────────────────────────
             if (portfolios.isNotEmpty()) {
                 Text(
-                    text       = "Cartera",
+                    text       = stringResource(Res.string.portfolio_add_asset_portfolio_label),
                     fontSize   = 12.sp,
                     color      = TextSecondary,
                     fontWeight = FontWeight.Medium
@@ -226,7 +263,7 @@ fun AddEditAssetBottomSheet(
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     PortfolioChipSimple(
-                        label      = "Sin cartera",
+                        label      = stringResource(Res.string.portfolio_add_asset_no_portfolio),
                         isSelected = currentPortfolioId == null,
                         onClick    = { currentPortfolioId = null }
                     )
@@ -245,12 +282,12 @@ fun AddEditAssetBottomSheet(
             OutlinedTextField(
                 value         = ticker,
                 onValueChange = { ticker = it.uppercase(); tickerError = false },
-                label         = { Text("Ticker / Símbolo") },
+                label         = { Text(stringResource(Res.string.portfolio_add_asset_ticker_label)) },
                 placeholder   = {
-                    Text("Ej. AAPL, BTC, IAG.MC")
+                    Text(stringResource(Res.string.portfolio_add_asset_ticker_placeholder))
                 },
                 isError       = tickerError,
-                supportingText = if (tickerError) {{ Text("Obligatorio") }} else null,
+                supportingText = if (tickerError) {{ Text(stringResource(Res.string.portfolio_add_asset_ticker_required)) }} else null,
                 modifier      = Modifier.fillMaxWidth(),
                 singleLine    = true,
                 shape         = RoundedCornerShape(10.dp),
@@ -266,12 +303,12 @@ fun AddEditAssetBottomSheet(
             OutlinedTextField(
                 value         = name,
                 onValueChange = { name = it; nameError = false },
-                label         = { Text("Nombre del activo") },
+                label         = { Text(stringResource(Res.string.portfolio_add_asset_name_label)) },
                 placeholder   = {
-                    Text("Ej. Apple Inc., Bitcoin")
+                    Text(stringResource(Res.string.portfolio_add_asset_name_placeholder))
                 },
                 isError       = nameError,
-                supportingText = if (nameError) {{ Text("Obligatorio") }} else null,
+                supportingText = if (nameError) {{ Text(stringResource(Res.string.portfolio_add_asset_ticker_required)) }} else null,
                 modifier      = Modifier.fillMaxWidth(),
                 singleLine    = true,
                 shape         = RoundedCornerShape(10.dp),
@@ -285,7 +322,7 @@ Spacer(Modifier.height(12.dp))
             // ── Composición RF / RV (solo para Acciones, ETFs, Fondos) ───────
             if (isAnalyzable) {
                 Text(
-                    text       = "Composición RF / RV",
+                    text       = stringResource(Res.string.portfolio_add_asset_composition_label),
                     fontSize   = 12.sp,
                     color      = TextSecondary,
                     fontWeight = FontWeight.Medium
@@ -328,7 +365,7 @@ Spacer(Modifier.height(12.dp))
                     }
                 }
                 Text(
-                    text     = "RF: Renta Fija (${100 - fixedIncomePercent}% RV: Renta Variable)",
+                    text     = stringResource(Res.string.portfolio_add_asset_composition_hint, 100 - fixedIncomePercent),
                     fontSize = 10.sp,
                     color    = TextSecondary,
                     modifier = Modifier.padding(top = 4.dp)
@@ -339,14 +376,14 @@ Spacer(Modifier.height(12.dp))
             // ── Precio actual (no disponible para Renta Fija) ───────────────
             if (isFixedIncome) {
                 Text(
-                    text     = "Precio de mercado",
+                    text     = stringResource(Res.string.portfolio_add_asset_market_price_label),
                     fontSize = 12.sp,
                     color    = TextSecondary,
                     fontWeight = FontWeight.Medium
                 )
                 Spacer(Modifier.height(8.dp))
                 Text(
-                    text     = "Los activos de renta fija no utilizan precio de mercado. Use el sistema de posiciones de renta fija para registrar estos activos.",
+                    text     = stringResource(Res.string.portfolio_add_asset_fi_price_hint),
                     fontSize = 11.sp,
                     color    = TextSecondary,
                     modifier = Modifier
@@ -360,12 +397,12 @@ Spacer(Modifier.height(12.dp))
                 OutlinedTextField(
                     value         = currentPrice,
                     onValueChange = { currentPrice = it.filter { c -> c.isDigit() || c == ',' || c == '.' } },
-                    label         = { Text("Precio actual (opcional)") },
-                    placeholder   = { Text("0,00") },
+                    label         = { Text(stringResource(Res.string.portfolio_add_asset_price_optional)) },
+                    placeholder   = { Text(stringResource(Res.string.portfolio_add_asset_price_placeholder_val)) },
                     trailingIcon  = { Text("€", color = TextSecondary, modifier = Modifier.padding(end = 12.dp)) },
                     supportingText = {
                         Text(
-                            text     = "Sirve para calcular el valor actual y la revalorización.",
+                            text     = stringResource(Res.string.portfolio_add_asset_price_desc),
                             fontSize = 11.sp,
                             color    = TextSecondary
                         )
@@ -385,7 +422,7 @@ Spacer(Modifier.height(12.dp))
             // ── Plataformas vinculadas (multi-select) ────────────────────────
             if (allPlatforms.isNotEmpty()) {
                 Text(
-                    text       = "Plataformas donde operas este activo",
+                    text       = stringResource(Res.string.portfolio_add_asset_platforms_label),
                     fontSize   = 12.sp,
                     color      = TextSecondary,
                     fontWeight = FontWeight.Medium
@@ -414,14 +451,14 @@ Spacer(Modifier.height(12.dp))
                 }
                 Spacer(Modifier.height(4.dp))
                 Text(
-                    "Selecciona todas las plataformas donde compras o vendes este activo.",
+                    stringResource(Res.string.portfolio_add_asset_platforms_hint),
                     fontSize = 10.sp,
                     color = TextSecondary
                 )
                 Spacer(Modifier.height(12.dp))
             } else {
                 Text(
-                    text     = "Crea plataformas primero desde la configuración del activo para vincularlas.",
+                    text     = stringResource(Res.string.portfolio_add_asset_no_platforms_hint),
                     fontSize = 11.sp,
                     color    = TextSecondary,
                     modifier = Modifier.padding(bottom = 12.dp)
@@ -432,7 +469,7 @@ Spacer(Modifier.height(12.dp))
             if (isAnalyzable && allSectors.isNotEmpty()) {
                 Spacer(Modifier.height(12.dp))
                 Text(
-                    text       = "Sectores",
+                    text       = stringResource(Res.string.portfolio_add_asset_sectors_label),
                     fontSize   = 12.sp,
                     color      = TextSecondary,
                     fontWeight = FontWeight.Medium
@@ -461,7 +498,7 @@ Spacer(Modifier.height(12.dp))
                 }
                 Spacer(Modifier.height(4.dp))
                 Text(
-                    "Clasifica el activo en uno o varios sectores.",
+                    stringResource(Res.string.portfolio_add_asset_sectors_hint),
                     fontSize = 10.sp,
                     color = TextSecondary
                 )
@@ -471,14 +508,14 @@ Spacer(Modifier.height(12.dp))
             if (isAnalyzable && allRegions.isNotEmpty()) {
                 Spacer(Modifier.height(12.dp))
                 Text(
-                    text       = "Distribución regional",
+                    text       = stringResource(Res.string.portfolio_add_asset_regions_label),
                     fontSize   = 12.sp,
                     color      = TextSecondary,
                     fontWeight = FontWeight.Medium
                 )
                 Spacer(Modifier.height(4.dp))
                 Text(
-                    "Asigna el porcentaje de inversión por región (opcional)",
+                    stringResource(Res.string.portfolio_add_asset_regions_hint),
                     fontSize = 10.sp,
                     color = TextSecondary
                 )
@@ -518,7 +555,7 @@ Spacer(Modifier.height(12.dp))
                 val totalPercent = regionPercents.values.sum()
                 val totalColor = if (totalPercent > 100) ExpenseRed else TextSecondary
                 Text(
-                    text = "Total: $totalPercent% (debe ser ≤ 100%)",
+                    text = stringResource(Res.string.portfolio_add_asset_regions_total, totalPercent),
                     fontSize = 10.sp,
                     color = totalColor,
                     modifier = Modifier.padding(top = 4.dp)
@@ -529,7 +566,7 @@ Spacer(Modifier.height(12.dp))
             if (isFixedIncome) {
                 Spacer(Modifier.height(12.dp))
                 Text(
-                    text       = "Fecha de vencimiento",
+                    text       = stringResource(Res.string.portfolio_add_asset_maturity_date_label),
                     fontSize   = 12.sp,
                     color      = TextSecondary,
                     fontWeight = FontWeight.Medium
@@ -548,7 +585,7 @@ Spacer(Modifier.height(12.dp))
                 )
                 Spacer(Modifier.height(4.dp))
                 Text(
-                    "Toca para seleccionar la fecha de vencimiento del activo.",
+                    stringResource(Res.string.portfolio_add_asset_maturity_hint),
                     fontSize = 10.sp,
                     color = TextSecondary
                 )
@@ -558,7 +595,7 @@ Spacer(Modifier.height(12.dp))
             OutlinedTextField(
                 value         = notes,
                 onValueChange = { notes = it },
-                label         = { Text("Nota (opcional)") },
+                label         = { Text(stringResource(Res.string.portfolio_add_asset_notes_optional)) },
                 modifier      = Modifier.fillMaxWidth(),
                 singleLine    = true,
                 shape         = RoundedCornerShape(10.dp),
@@ -602,7 +639,7 @@ Spacer(Modifier.height(12.dp))
                 )
             ) {
                 Text(
-                    text       = if (isEditing) "Guardar cambios" else "Crear activo",
+                    text       = if (isEditing) stringResource(Res.string.portfolio_add_asset_save_changes) else stringResource(Res.string.portfolio_add_asset_create),
                     fontSize   = 16.sp,
                     fontWeight = FontWeight.Medium
                 )
@@ -624,11 +661,11 @@ Spacer(Modifier.height(12.dp))
                         maturityDateMillis = selected
                     }
                     showMaturityDatePicker = false
-                }) { Text("Aceptar", color = PrimaryDark) }
+                }) { Text(stringResource(Res.string.common_accept), color = PrimaryDark) }
             },
             dismissButton = {
                 TextButton(onClick = { showMaturityDatePicker = false }) {
-                    Text("Cancelar", color = TextSecondary)
+                    Text(stringResource(Res.string.portfolio_add_asset_cancel), color = TextSecondary)
                 }
             },
             colors = DatePickerDefaults.colors(containerColor = SurfaceWhite)

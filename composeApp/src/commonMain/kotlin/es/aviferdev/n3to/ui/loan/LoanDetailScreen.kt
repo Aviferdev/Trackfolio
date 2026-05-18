@@ -27,6 +27,21 @@ import es.aviferdev.n3to.ui.theme.*
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.common_cancel
+import n3to.composeapp.generated.resources.fixedincome_interest_label
+import n3to.composeapp.generated.resources.loan_amortization_title
+import n3to.composeapp.generated.resources.loan_archive_title
+import n3to.composeapp.generated.resources.loan_change_rate
+import n3to.composeapp.generated.resources.loan_detail_title
+import n3to.composeapp.generated.resources.loan_history_title
+import n3to.composeapp.generated.resources.loan_monthly_payment
+import n3to.composeapp.generated.resources.loan_not_found
+import n3to.composeapp.generated.resources.loan_pending_capital
+import n3to.composeapp.generated.resources.loan_progress
+import n3to.composeapp.generated.resources.loan_term_label
+import n3to.composeapp.generated.resources.settings_edit_cd
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -73,12 +88,12 @@ fun LoanDetailScreen(
             },
             confirmButton = {
                 TextButton(onClick = { viewModel.archive(); showArchiveConfirm = false; onBack() }) {
-                    Text("Archivar", color = ExpenseRed, fontWeight = FontWeight.SemiBold)
+                    Text(stringResource(Res.string.loan_archive_title), color = ExpenseRed, fontWeight = FontWeight.SemiBold)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showArchiveConfirm = false }) {
-                    Text("Cancelar", color = PrimaryDark)
+                    Text(stringResource(Res.string.common_cancel), color = PrimaryDark)
                 }
             },
             shape = RoundedCornerShape(16.dp)
@@ -108,17 +123,13 @@ fun LoanDetailContent(
         modifier = modifier.fillMaxSize().background(BackgroundGray)
     ) {
         TopBarApp(
-            title = uiState.loan?.name ?: "Detalle préstamo",
+            title = uiState.loan?.name ?: stringResource(Res.string.loan_detail_title),
             navigateBack = onBack,
             actions = {
                 IconButton(onClick = onEditClick) {
-                    Icon(Icons.Outlined.Edit, "Editar", tint = TextSecondary)
-                }
-                IconButton(onClick = onRateChangeClick) {
-                    Icon(Icons.Outlined.Edit, "Cambiar tipo", tint = TextSecondary)
-                }
-                IconButton(onClick = onArchiveClick) {
-                    Icon(Icons.Outlined.Delete, "Archivar", tint = ExpenseRed)
+                    Icon(Icons.Outlined.Edit, stringResource(Res.string.settings_edit_cd), tint = TextSecondary)
+                    Icon(Icons.Outlined.Edit, stringResource(Res.string.loan_change_rate), tint = TextSecondary)
+                    Icon(Icons.Outlined.Delete, stringResource(Res.string.loan_archive_title), tint = ExpenseRed)
                 }
             }
         )
@@ -129,7 +140,7 @@ fun LoanDetailContent(
             }
         } else if (uiState.loan == null) {
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text("Préstamo no encontrado", color = TextTertiary, fontSize = 13.sp)
+                Text(stringResource(Res.string.loan_not_found), color = TextTertiary, fontSize = 13.sp)
             }
         } else {
             val loan = uiState.loan!!
@@ -222,7 +233,7 @@ private fun LoanHeroCard(loan: Loan) {
             Spacer(Modifier.height(10.dp))
 
             // Saldo pendiente
-            Text("Capital pendiente", fontSize = 11.sp, color = Color.White.copy(.5f))
+            Text(stringResource(Res.string.loan_pending_capital), fontSize = 11.sp, color = Color.White.copy(.5f))
             Text(
                 "−${formatAmount(loan.outstandingPrincipal)} €",
                 fontSize      = 30.sp,
@@ -236,9 +247,9 @@ private fun LoanHeroCard(loan: Loan) {
             Spacer(Modifier.height(14.dp))
 
             Row(Modifier.fillMaxWidth(), Arrangement.SpaceBetween) {
-                HeroMetric("Cuota/mes", "${formatAmount(loan.monthlyPayment)} €")
-                HeroMetric("TIN",       "${formatPercent(loan.currentInterestRate)}%")
-                HeroMetric("Plazo",     "${loan.totalInstallments} meses")
+                HeroMetric(stringResource(Res.string.loan_monthly_payment), "${formatAmount(loan.monthlyPayment)} €")
+                HeroMetric(stringResource(Res.string.fixedincome_interest_label), "${formatPercent(loan.currentInterestRate)}%")
+                HeroMetric(stringResource(Res.string.loan_term_label), "${loan.totalInstallments} meses")
             }
 
             Spacer(Modifier.height(14.dp))
@@ -247,7 +258,7 @@ private fun LoanHeroCard(loan: Loan) {
 
             // Progress bar
             Row(Modifier.fillMaxWidth(), Arrangement.SpaceBetween) {
-                Text("Progreso", fontSize = 10.sp, color = Color.White.copy(.45f))
+                Text(stringResource(Res.string.loan_progress), fontSize = 10.sp, color = Color.White.copy(.45f))
                 Text(
                     "${loan.paidInstallments}/${loan.totalInstallments} cuotas · ${(loan.progressPercent * 100).toInt()}%",
                     fontSize = 10.sp, color = Color.White.copy(.45f)

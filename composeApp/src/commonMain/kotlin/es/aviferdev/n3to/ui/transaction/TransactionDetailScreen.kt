@@ -29,6 +29,12 @@ import es.aviferdev.n3to.ui.theme.*
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.common_cancel
+import n3to.composeapp.generated.resources.common_delete
+import n3to.composeapp.generated.resources.common_error
+import n3to.composeapp.generated.resources.transaction_detail_title
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -57,7 +63,7 @@ fun TransactionDetailScreen(
 
     Column(modifier = Modifier.fillMaxSize().background(BackgroundGray)) {
         TopBarApp(
-            title = "Detalle",
+            title = stringResource(Res.string.transaction_detail_title),
             navigateBack = onBack
         )
 
@@ -121,7 +127,7 @@ fun TransactionDetailScreen(
             containerColor   = SurfaceWhite,
             title = {
                 Text(
-                    "Eliminar movimiento",
+                    stringResource(Res.string.transaction_detail_title) + " " + stringResource(Res.string.common_delete).lowercase(),
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
                     color = TextPrimary
@@ -139,12 +145,12 @@ fun TransactionDetailScreen(
                     showDeleteDialog = false
                     viewModel.deleteTransaction()
                 }) {
-                    Text("Eliminar", color = ExpenseRed, fontWeight = FontWeight.SemiBold)
+                    Text(stringResource(Res.string.common_delete), color = ExpenseRed, fontWeight = FontWeight.SemiBold)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showDeleteDialog = false }) {
-                    Text("Cancelar", color = PrimaryDark, fontWeight = FontWeight.Medium)
+                    Text(stringResource(Res.string.common_cancel), color = PrimaryDark, fontWeight = FontWeight.Medium)
                 }
             },
             shape = RoundedCornerShape(16.dp)

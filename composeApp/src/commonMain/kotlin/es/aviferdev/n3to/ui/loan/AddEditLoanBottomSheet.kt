@@ -51,6 +51,38 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
 import kotlinx.datetime.toLocalDateTime
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.common_accept
+import n3to.composeapp.generated.resources.common_cancel
+import n3to.composeapp.generated.resources.common_save_changes
+import n3to.composeapp.generated.resources.fixedincome_start_date_label
+import n3to.composeapp.generated.resources.loan_new_title
+import n3to.composeapp.generated.resources.loan_edit_title
+import n3to.composeapp.generated.resources.loan_entity_label
+import n3to.composeapp.generated.resources.loan_interest_label
+import n3to.composeapp.generated.resources.loan_interest_placeholder
+import n3to.composeapp.generated.resources.loan_lender_placeholder
+import n3to.composeapp.generated.resources.loan_monthly_payment
+import n3to.composeapp.generated.resources.loan_name_label
+import n3to.composeapp.generated.resources.loan_name_placeholder
+import n3to.composeapp.generated.resources.loan_principal_label
+import n3to.composeapp.generated.resources.loan_principal_placeholder
+import n3to.composeapp.generated.resources.loan_save
+import n3to.composeapp.generated.resources.loan_term_label
+import n3to.composeapp.generated.resources.loan_term_placeholder
+import n3to.composeapp.generated.resources.loan_type_label
+import n3to.composeapp.generated.resources.portfolio_add_tx_notes_label
+import n3to.composeapp.generated.resources.loan_entity_label
+import n3to.composeapp.generated.resources.loan_history_title
+import n3to.composeapp.generated.resources.loan_interest_label
+import n3to.composeapp.generated.resources.loan_monthly_payment
+import n3to.composeapp.generated.resources.loan_name_label
+import n3to.composeapp.generated.resources.loan_name_placeholder
+import n3to.composeapp.generated.resources.loan_principal_label
+import n3to.composeapp.generated.resources.loan_save
+import n3to.composeapp.generated.resources.loan_term_label
+import n3to.composeapp.generated.resources.loan_type_label
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -109,7 +141,7 @@ fun AddEditLoanBottomSheet(
                 .padding(top = 8.dp, bottom = 32.dp)
         ) {
             Text(
-                if (isEditing) "Editar préstamo" else "Nuevo préstamo",
+                if (isEditing) stringResource(Res.string.loan_edit_title) else stringResource(Res.string.loan_new_title),
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
                 color = PrimaryDark
@@ -118,7 +150,7 @@ fun AddEditLoanBottomSheet(
             Spacer(Modifier.height(20.dp))
 
             // ── Tipo de préstamo ─────────────────────────────────────────────
-            Text("Tipo", fontSize = 13.sp, color = TextSecondary)
+            Text(stringResource(Res.string.loan_type_label), fontSize = 13.sp, color = TextSecondary)
             Spacer(Modifier.height(8.dp))
             LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 items(LoanType.entries.toList()) { type ->
@@ -145,8 +177,8 @@ fun AddEditLoanBottomSheet(
             OutlinedTextField(
                 value = name,
                 onValueChange = { name = it },
-                label = { Text("Nombre del préstamo") },
-                placeholder = { Text("Ej: Hipoteca piso Valencia") },
+                label = { Text(stringResource(Res.string.loan_name_label)) },
+                placeholder = { Text(stringResource(Res.string.loan_name_placeholder)) },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
                 colors = OutlinedTextFieldDefaults.colors(
@@ -161,8 +193,8 @@ fun AddEditLoanBottomSheet(
             OutlinedTextField(
                 value = totalAmountText,
                 onValueChange = { totalAmountText = it.filter { c -> c.isDigit() || c == ',' || c == '.' } },
-                label = { Text("Capital total (€)") },
-                placeholder = { Text("150000") },
+                label = { Text(stringResource(Res.string.loan_principal_label)) },
+                placeholder = { Text(stringResource(Res.string.loan_principal_placeholder)) },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
@@ -179,8 +211,8 @@ fun AddEditLoanBottomSheet(
                 OutlinedTextField(
                     value = interestRateText,
                     onValueChange = { interestRateText = it.filter { c -> c.isDigit() || c == ',' || c == '.' } },
-                    label = { Text("Interés anual (%)") },
-                    placeholder = { Text("2,5") },
+                    label = { Text(stringResource(Res.string.loan_interest_label)) },
+                    placeholder = { Text(stringResource(Res.string.loan_interest_placeholder)) },
                     modifier = Modifier.weight(1f),
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
@@ -192,8 +224,8 @@ fun AddEditLoanBottomSheet(
                 OutlinedTextField(
                     value = totalInstallmentsText,
                     onValueChange = { totalInstallmentsText = it.filter { c -> c.isDigit() } },
-                    label = { Text("Plazo (meses)") },
-                    placeholder = { Text("360") },
+                    label = { Text(stringResource(Res.string.loan_term_label)) },
+                    placeholder = { Text(stringResource(Res.string.loan_term_placeholder)) },
                     modifier = Modifier.weight(1f),
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
@@ -216,7 +248,7 @@ fun AddEditLoanBottomSheet(
                         modifier = Modifier.fillMaxWidth().padding(12.dp),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Text("Cuota mensual estimada", fontSize = 13.sp, color = TextSecondary)
+                        Text(stringResource(Res.string.loan_monthly_payment), fontSize = 13.sp, color = TextSecondary)
                         Text(
                             "${formatAmount(previewPayment)} €/mes",
                             fontSize = 14.sp,
@@ -229,7 +261,7 @@ fun AddEditLoanBottomSheet(
 
             // ── Fecha de inicio ───────────────────────────────────────────────
             Spacer(Modifier.height(16.dp))
-            Text("Fecha de inicio", fontSize = 12.sp, color = TextSecondary, fontWeight = FontWeight.Medium)
+            Text(stringResource(Res.string.fixedincome_start_date_label), fontSize = 12.sp, color = TextSecondary, fontWeight = FontWeight.Medium)
             Spacer(Modifier.height(6.dp))
             Box(
                 modifier = Modifier
@@ -252,8 +284,8 @@ fun AddEditLoanBottomSheet(
             OutlinedTextField(
                 value = lenderName,
                 onValueChange = { lenderName = it },
-                label = { Text("Entidad (opcional)") },
-                placeholder = { Text("CaixaBank") },
+                label = { Text(stringResource(Res.string.loan_entity_label)) },
+                placeholder = { Text(stringResource(Res.string.loan_lender_placeholder)) },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
                 colors = OutlinedTextFieldDefaults.colors(
@@ -268,7 +300,7 @@ fun AddEditLoanBottomSheet(
             OutlinedTextField(
                 value = notes,
                 onValueChange = { notes = it },
-                label = { Text("Notas (opcional)") },
+                label = { Text(stringResource(Res.string.portfolio_add_tx_notes_label)) },
                 modifier = Modifier.fillMaxWidth(),
                 minLines = 2,
                 colors = OutlinedTextFieldDefaults.colors(
@@ -371,7 +403,7 @@ fun AddEditLoanBottomSheet(
                         strokeWidth = 2.dp
                     )
                 } else {
-                    Text(if (isEditing) "Guardar cambios" else "Guardar préstamo", fontSize = 16.sp)
+                    Text(if (isEditing) stringResource(Res.string.common_save_changes) else stringResource(Res.string.loan_save), fontSize = 16.sp)
                 }
             }
 

@@ -92,15 +92,26 @@ import es.aviferdev.n3to.ui.common.component.EmptyStateView
 import es.aviferdev.n3to.ui.common.dialog.DeleteConfirmDialog
 import es.aviferdev.n3to.ui.common.navigation.TopBarApp
 import es.aviferdev.n3to.ui.theme.formatDate
+import es.aviferdev.n3to.ui.theme.localizedMonthNames
 import es.aviferdev.n3to.ui.theme.maskAmount
 import kotlinx.coroutines.delay
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.common_delete
+import n3to.composeapp.generated.resources.common_search_cd
+import n3to.composeapp.generated.resources.realestate_detail_title
+import n3to.composeapp.generated.resources.transaction_filter_expense
+import n3to.composeapp.generated.resources.transaction_filter_income
+import n3to.composeapp.generated.resources.transaction_label_expense
+import n3to.composeapp.generated.resources.transaction_label_income
+import n3to.composeapp.generated.resources.transaction_label_investment
+import n3to.composeapp.generated.resources.transaction_no_movements
+import n3to.composeapp.generated.resources.transaction_no_results
+import n3to.composeapp.generated.resources.transaction_search_hint
+import n3to.composeapp.generated.resources.transaction_title
+import n3to.composeapp.generated.resources.transaction_type_adjustment
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
-
-private val MONTH_NAMES = listOf(
-    "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
-    "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
-)
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // WRAPPER
@@ -191,10 +202,12 @@ fun TransactionListContent(
             .fillMaxSize()
             .background(BackgroundGray)
     ) {
-        TopBarApp(title = "Movimientos", navigateBack = onBack)
+        val monthNames = localizedMonthNames().map { it.replaceFirstChar { c -> c.uppercase() } }
+
+        TopBarApp(title = stringResource(Res.string.transaction_title), navigateBack = onBack)
 
         TimeStepperHeader(
-            currentValue = MONTH_NAMES.getOrElse(uiState.month.toIntOrNull()?.minus(1) ?: 0) { uiState.month },
+            currentValue = monthNames.getOrElse(uiState.month.toIntOrNull()?.minus(1) ?: 0) { uiState.month },
             currentValueSecondary = uiState.year,
             canGoBack = uiState.canGoBack,
             onPrevious = onPreviousMonth,
@@ -225,13 +238,14 @@ fun TransactionListContent(
             ) { CircularProgressIndicator(color = PrimaryDark) }
 
             uiState.filteredTransactions.isEmpty() -> {
+                val lowercaseMonthNames = localizedMonthNames()
                 val monthName = uiState.month.toIntOrNull()?.let { mn ->
-                    listOf("enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre").getOrNull(mn - 1) ?: uiState.month
+                    lowercaseMonthNames.getOrNull(mn - 1) ?: uiState.month
                 } ?: uiState.month
                 EmptyStateView(
                     icon = Icons.Outlined.Search,
-                    title = if (searchQuery.isNotBlank()) "Sin resultados" else "Sin movimientos",
-                    subtitle = if (searchQuery.isNotBlank()) "No hay movimientos que coincidan con tu búsqueda"
+                    title = if (searchQuery.isNotBlank()) "Sin resultados" else stringResource(Res.string.transaction_no_movements),
+                    subtitle = if (searchQuery.isNotBlank()) stringResource(Res.string.transaction_no_results)
                     else "No hay movimientos en $monthName ${uiState.year}"
                 )
             }
@@ -361,7 +375,7 @@ private fun SearchBar(query: String, onChange: (String) -> Unit) {
     ) {
         Icon(
             imageVector = Icons.Outlined.Search,
-            contentDescription = "Buscar",
+            contentDescription = stringResource(Res.string.common_search_cd),
             tint = TextTertiary,
             modifier = Modifier.size(16.dp)
         )
@@ -375,7 +389,7 @@ private fun SearchBar(query: String, onChange: (String) -> Unit) {
             decorationBox = { inner ->
                 if (query.isEmpty()) {
                     Text(
-                        "Buscar por nota, categoría o emisor…",
+                        stringResource(Res.string.transaction_search_hint),
                         fontSize = 12.sp,
                         color = TextTertiary
                     )
@@ -412,12 +426,12 @@ private fun TotalsRow(totalIncome: Double, totalExpense: Double, balancesHidden:
             verticalAlignment = Alignment.CenterVertically
         ) {
             TotalCell(
-                label = "Ingresos", amount = totalIncome, color = IncomeGreen,
+                label = stringResource(Res.string.transaction_filter_income), amount = totalIncome, color = IncomeGreen,
                 prefix = "+", balancesHidden = balancesHidden, modifier = Modifier.weight(1f)
             )
             Box(Modifier.width(1.dp).height(40.dp).background(BorderGray))
             TotalCell(
-                label = "Gastos", amount = totalExpense, color = ExpenseRed,
+                label = stringResource(Res.string.transaction_filter_expense), amount = totalExpense, color = ExpenseRed,
                 prefix = "−", balancesHidden = balancesHidden, modifier = Modifier.weight(1f)
             )
             Box(Modifier.width(1.dp).height(40.dp).background(BorderGray))
@@ -476,11 +490,11 @@ private fun TransactionCard(
         else -> Icons.Outlined.ArrowUpward
     }
     val avatarContentDesc = when {
-        isAdjustment -> "Ajuste"
-        isLinkedAsset -> "Inversión"
-        isLinkedProperty -> "Inmueble"
-        isIncome -> "Ingreso"
-        else -> "Gasto"
+        isAdjustment -> stringResource(Res.string.transaction_type_adjustment)
+        isLinkedAsset -> stringResource(Res.string.transaction_label_investment)
+        isLinkedProperty -> stringResource(Res.string.realestate_detail_title)
+        isIncome -> stringResource(Res.string.transaction_label_income)
+        else -> stringResource(Res.string.transaction_label_expense)
     }
     val prefix = when {
         isAdjustment && transaction.amount >= 0 -> "+"

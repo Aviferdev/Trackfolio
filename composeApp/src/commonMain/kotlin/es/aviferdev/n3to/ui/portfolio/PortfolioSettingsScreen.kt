@@ -35,6 +35,33 @@ import es.aviferdev.n3to.domain.model.AssetCategory
 import es.aviferdev.n3to.domain.model.AssetSector
 import es.aviferdev.n3to.domain.model.AssetRegion
 import es.aviferdev.n3to.ui.theme.N3toTheme
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.common_accept
+import n3to.composeapp.generated.resources.common_cancel
+import n3to.composeapp.generated.resources.common_delete
+import n3to.composeapp.generated.resources.common_error
+import n3to.composeapp.generated.resources.portfolio_settings_add
+import n3to.composeapp.generated.resources.portfolio_settings_category_count_many
+import n3to.composeapp.generated.resources.portfolio_settings_category_count_one
+import n3to.composeapp.generated.resources.portfolio_settings_category_section
+import n3to.composeapp.generated.resources.portfolio_settings_delete_cd
+import n3to.composeapp.generated.resources.portfolio_settings_delete_portfolio_message
+import n3to.composeapp.generated.resources.portfolio_settings_delete_portfolio_title
+import n3to.composeapp.generated.resources.portfolio_settings_edit_cd
+import n3to.composeapp.generated.resources.portfolio_settings_no_portfolios
+import n3to.composeapp.generated.resources.portfolio_settings_platform_empty
+import n3to.composeapp.generated.resources.portfolio_settings_platform_section
+import n3to.composeapp.generated.resources.portfolio_settings_portfolio_section
+import n3to.composeapp.generated.resources.portfolio_settings_region_empty
+import n3to.composeapp.generated.resources.portfolio_settings_region_section
+import n3to.composeapp.generated.resources.portfolio_settings_manage
+import n3to.composeapp.generated.resources.portfolio_settings_reminder_desc
+import n3to.composeapp.generated.resources.portfolio_settings_reminder_section
+import n3to.composeapp.generated.resources.portfolio_settings_reminder_title
+import n3to.composeapp.generated.resources.portfolio_settings_sector_empty
+import n3to.composeapp.generated.resources.portfolio_settings_sector_section
+import n3to.composeapp.generated.resources.portfolio_settings_title
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -103,11 +130,11 @@ fun PortfolioSettingsScreen(
         AlertDialog(
             onDismissRequest = { platformViewModel.clearError() },
             containerColor   = SurfaceWhite,
-            title = { Text("Error", fontSize = 17.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary) },
+            title = { Text(stringResource(Res.string.common_error), fontSize = 17.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary) },
             text  = { Text(msg, fontSize = 14.sp, color = TextSecondary) },
             confirmButton = {
                 TextButton(onClick = { platformViewModel.clearError() }) {
-                    Text("Aceptar", color = PrimaryDark, fontWeight = FontWeight.Medium)
+                    Text(stringResource(Res.string.common_accept), color = PrimaryDark, fontWeight = FontWeight.Medium)
                 }
             },
             shape = RoundedCornerShape(16.dp)
@@ -142,18 +169,18 @@ fun PortfolioSettingsScreen(
         AlertDialog(
             onDismissRequest = { deletingPortfolio = null },
             containerColor = SurfaceWhite,
-            title = { Text("Eliminar cartera", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = TextPrimary) },
-            text = { Text("¿Eliminar \"${deletingPortfolio!!.name}\"? Los activos pasarán a \"Sin cartera\".", fontSize = 13.sp, color = TextSecondary) },
+            title = { Text(stringResource(Res.string.portfolio_settings_delete_portfolio_title), fontSize = 16.sp, fontWeight = FontWeight.Bold, color = TextPrimary) },
+            text = { Text(stringResource(Res.string.portfolio_settings_delete_portfolio_message, deletingPortfolio!!.name), fontSize = 13.sp, color = TextSecondary) },
             confirmButton = {
                     TextButton(onClick = {
                         portCoroutine.launch {
                             deletePortfolio(deletingPortfolio!!.id)
                         }
                         deletingPortfolio = null
-                    }) { Text("Eliminar", color = ExpenseRed, fontWeight = FontWeight.SemiBold) }
+                    }) { Text(stringResource(Res.string.common_delete), color = ExpenseRed, fontWeight = FontWeight.SemiBold) }
             },
             dismissButton = {
-                TextButton(onClick = { deletingPortfolio = null }) { Text("Cancelar", color = PrimaryDark) }
+                TextButton(onClick = { deletingPortfolio = null }) { Text(stringResource(Res.string.common_cancel), color = PrimaryDark) }
             },
             shape = RoundedCornerShape(16.dp)
         )
@@ -186,7 +213,7 @@ fun PortfolioSettingsContent(
     Column(
         modifier = modifier.fillMaxSize().background(BackgroundGray)
     ) {
-        TopBarApp(title = "Ajustes de Portfolio", navigateBack = onBack)
+        TopBarApp(title = stringResource(Res.string.portfolio_settings_title), navigateBack = onBack)
 
         LazyColumn(
             contentPadding = PaddingValues(horizontal = 20.dp, vertical = 20.dp),
@@ -194,7 +221,7 @@ fun PortfolioSettingsContent(
         ) {
             item {
                 Text(
-                    "CATEGORÍAS DE ACTIVO",
+                    stringResource(Res.string.portfolio_settings_category_section),
                     fontSize = 11.sp,
                     fontWeight = FontWeight.SemiBold,
                     color = TextSecondary
@@ -219,7 +246,8 @@ fun PortfolioSettingsContent(
                                     color = TextPrimary
                                 )
                                 Text(
-                                    text = "$count ${if (count == 1) "activo" else "activos"}",
+                                    text = if (count == 1) stringResource(Res.string.portfolio_settings_category_count_one, count)
+                                    else stringResource(Res.string.portfolio_settings_category_count_many, count),
                                     fontSize = 11.sp,
                                     color = TextSecondary
                                 )
@@ -241,7 +269,7 @@ fun PortfolioSettingsContent(
             item { Spacer(Modifier.height(8.dp)) }
             item {
                 Text(
-                    "CARTERAS",
+                    stringResource(Res.string.portfolio_settings_portfolio_section),
                     fontSize   = 11.sp,
                     fontWeight = FontWeight.SemiBold,
                     color      = TextSecondary
@@ -251,7 +279,7 @@ fun PortfolioSettingsContent(
                 SettingsGroupCard {
                     if (portfolios.isEmpty()) {
                         Text(
-                            "No hay carteras. Crea una desde la pantalla de Portfolio.",
+                            stringResource(Res.string.portfolio_settings_no_portfolios),
                             fontSize = 13.sp,
                             color = TextSecondary,
                             modifier = Modifier.padding(16.dp)
@@ -271,10 +299,10 @@ fun PortfolioSettingsContent(
                                 }
                                 Spacer(Modifier.width(8.dp))
                                 IconButton(onClick = { onEditPortfolio(portfolio) }, modifier = Modifier.size(32.dp)) {
-                                    Icon(Icons.Default.Edit, contentDescription = "Editar", tint = TextSecondary, modifier = Modifier.size(16.dp))
+                                    Icon(Icons.Default.Edit, contentDescription = stringResource(Res.string.portfolio_settings_edit_cd), tint = TextSecondary, modifier = Modifier.size(16.dp))
                                 }
                                 IconButton(onClick = { onDeletePortfolio(portfolio) }, modifier = Modifier.size(32.dp)) {
-                                    Icon(Icons.Default.Delete, contentDescription = "Eliminar", tint = ExpenseRed, modifier = Modifier.size(16.dp))
+                                    Icon(Icons.Default.Delete, contentDescription = stringResource(Res.string.portfolio_settings_delete_cd), tint = ExpenseRed, modifier = Modifier.size(16.dp))
                                 }
                             }
                             if (index < portfolios.lastIndex) {
@@ -288,7 +316,7 @@ fun PortfolioSettingsContent(
             item { Spacer(Modifier.height(8.dp)) }
             item {
                 Text(
-                    "RECORDATORIO DE PRECIOS",
+                    stringResource(Res.string.portfolio_settings_reminder_section),
                     fontSize   = 11.sp,
                     fontWeight = FontWeight.SemiBold,
                     color      = TextSecondary
@@ -302,14 +330,14 @@ fun PortfolioSettingsContent(
                             .padding(horizontal = 16.dp, vertical = 14.dp)
                     ) {
                         Text(
-                            "Frecuencia de recordatorio",
+                            stringResource(Res.string.portfolio_settings_reminder_title),
                             fontSize   = 14.sp,
                             fontWeight = FontWeight.Medium,
                             color      = TextPrimary
                         )
                         Spacer(Modifier.height(4.dp))
                         Text(
-                            "Te recordaré actualizar los precios de tus activos cada cierto tiempo.",
+                            stringResource(Res.string.portfolio_settings_reminder_desc),
                             fontSize = 12.sp,
                             color    = TextSecondary
                         )
@@ -348,8 +376,8 @@ fun PortfolioSettingsContent(
             item { Spacer(Modifier.height(8.dp)) }
             item {
                 SectionHeader(
-                    label       = "PLATAFORMAS",
-                    actionLabel = "Añadir",
+                    label       = stringResource(Res.string.portfolio_settings_platform_section),
+                    actionLabel = stringResource(Res.string.portfolio_settings_add),
                     onAction    = onOpenPlatformAdd
                 )
             }
@@ -357,7 +385,7 @@ fun PortfolioSettingsContent(
                 SettingsGroupCard {
                     if (platformState.platforms.isEmpty()) {
                         Text(
-                            "Sin plataformas. Añade brokers, exchanges o bancos para asociarlos a tus movimientos.",
+                            stringResource(Res.string.portfolio_settings_platform_empty),
                             fontSize    = 13.sp,
                             color       = TextSecondary,
                             modifier    = Modifier.padding(horizontal = 16.dp, vertical = 18.dp)
@@ -405,8 +433,8 @@ fun PortfolioSettingsContent(
             item { Spacer(Modifier.height(8.dp)) }
             item {
                 SectionHeader(
-                    label       = "SECTORES",
-                    actionLabel = "Gestionar",
+                    label       = stringResource(Res.string.portfolio_settings_sector_section),
+                    actionLabel = stringResource(Res.string.portfolio_settings_manage),
                     onAction    = onOpenSectorSheet
                 )
             }
@@ -415,7 +443,7 @@ fun PortfolioSettingsContent(
                     val sectors = assetCatalogState.allSectors
                     if (sectors.isEmpty()) {
                         Text(
-                            "Clasifica tus activos por sectores (Tecnologia, Salud, Energia...) para analizar tu exposicion por industria.",
+                            stringResource(Res.string.portfolio_settings_sector_empty),
                             fontSize    = 13.sp,
                             color       = TextSecondary,
                             modifier    = Modifier.padding(horizontal = 16.dp, vertical = 18.dp)
@@ -451,8 +479,8 @@ fun PortfolioSettingsContent(
             item { Spacer(Modifier.height(8.dp)) }
             item {
                 SectionHeader(
-                    label       = "REGIONES",
-                    actionLabel = "Gestionar",
+                    label       = stringResource(Res.string.portfolio_settings_region_section),
+                    actionLabel = stringResource(Res.string.portfolio_settings_manage),
                     onAction    = onOpenRegionSheet
                 )
             }
@@ -461,7 +489,7 @@ fun PortfolioSettingsContent(
                     val regions = assetCatalogState.allRegions
                     if (regions.isEmpty()) {
                         Text(
-                            "Define la distribucion geografica de tus activos por region (EE.UU., Europa, Asia...) para analizar tu exposicion internacional.",
+                            stringResource(Res.string.portfolio_settings_region_empty),
                             fontSize    = 13.sp,
                             color       = TextSecondary,
                             modifier    = Modifier.padding(horizontal = 16.dp, vertical = 18.dp)

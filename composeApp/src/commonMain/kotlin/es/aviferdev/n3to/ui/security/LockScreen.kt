@@ -47,6 +47,11 @@ import es.aviferdev.n3to.ui.theme.NavySurface
 import es.aviferdev.n3to.ui.theme.TextPrimary
 import es.aviferdev.n3to.ui.theme.TextSecondary
 import es.aviferdev.n3to.ui.theme.TextTertiary
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.security_biometric_not_available
+import n3to.composeapp.generated.resources.security_unlock_hint
+import n3to.composeapp.generated.resources.security_unlock_title
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 
 @Composable
@@ -54,19 +59,22 @@ fun LockScreen(onUnlocked: () -> Unit) {
     val authenticator: BiometricAuthenticator = koinInject()
     var errorMessage     by remember { mutableStateOf<String?>(null) }
     var isAuthenticating by remember { mutableStateOf(false) }
+    val unlockTitle = stringResource(Res.string.security_unlock_title)
+    val unlockHint = stringResource(Res.string.security_unlock_hint)
+    val bioNotAvailable = stringResource(Res.string.security_biometric_not_available)
 
     // Lanza autenticación automáticamente al aparecer la pantalla
     LaunchedEffect(Unit) {
         isAuthenticating = true
         authenticator.authenticate(
-            title    = "Desbloquear N3to",
-            subtitle = "Usa tu huella, Face ID o PIN"
+            title    = unlockTitle,
+            subtitle = unlockHint
         ) { result ->
             isAuthenticating = false
             when (result) {
                 is BiometricResult.Success       -> onUnlocked()
                 is BiometricResult.UserCancelled -> errorMessage = null
-                is BiometricResult.NotAvailable  -> errorMessage = "Biometría no disponible en este dispositivo"
+                is BiometricResult.NotAvailable  -> errorMessage = bioNotAvailable
                 is BiometricResult.Error         -> errorMessage = result.message
             }
         }
@@ -163,14 +171,14 @@ fun LockScreen(onUnlocked: () -> Unit) {
                     isAuthenticating = true
                     errorMessage = null
                     authenticator.authenticate(
-                        title    = "Desbloquear N3to",
-                        subtitle = "Usa tu huella, Face ID o PIN"
+                        title    = unlockTitle,
+                        subtitle = unlockHint
                     ) { result ->
                         isAuthenticating = false
                         when (result) {
                             is BiometricResult.Success       -> onUnlocked()
                             is BiometricResult.UserCancelled -> Unit
-                            is BiometricResult.NotAvailable  -> errorMessage = "Biometría no disponible"
+                            is BiometricResult.NotAvailable  -> errorMessage = bioNotAvailable
                             is BiometricResult.Error         -> errorMessage = result.message
                         }
                     }

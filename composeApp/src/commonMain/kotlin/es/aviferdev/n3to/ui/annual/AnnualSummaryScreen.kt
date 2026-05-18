@@ -61,6 +61,26 @@ import es.aviferdev.n3to.ui.theme.TextTertiary
 import es.aviferdev.n3to.ui.theme.formatAmount
 import es.aviferdev.n3to.ui.theme.formatPercent
 import es.aviferdev.n3to.ui.theme.maskAmount
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.annual_expense_legend
+import n3to.composeapp.generated.resources.annual_expense_categories_title
+import n3to.composeapp.generated.resources.annual_expenses_label
+import n3to.composeapp.generated.resources.annual_income_label
+import n3to.composeapp.generated.resources.annual_income_legend
+import n3to.composeapp.generated.resources.annual_income_types_title
+import n3to.composeapp.generated.resources.annual_monthly_evolution
+import n3to.composeapp.generated.resources.annual_new_badge
+import n3to.composeapp.generated.resources.annual_no_data_subtitle
+import n3to.composeapp.generated.resources.annual_no_data_text
+import n3to.composeapp.generated.resources.annual_no_data_title
+import n3to.composeapp.generated.resources.annual_no_movements
+import n3to.composeapp.generated.resources.annual_savings_label
+import n3to.composeapp.generated.resources.annual_tab_expenses
+import n3to.composeapp.generated.resources.annual_tab_income
+import n3to.composeapp.generated.resources.annual_tab_investments
+import n3to.composeapp.generated.resources.annual_tab_summary
+import n3to.composeapp.generated.resources.annual_title
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 enum class AnnualTab {
@@ -81,7 +101,7 @@ fun AnnualSummaryScreen(
             .fillMaxSize()
             .background(BackgroundGray)
     ) {
-        TopBarApp(title = "Resumen anual", navigateBack = navigateBack)
+        TopBarApp(title = stringResource(Res.string.annual_title), navigateBack = navigateBack)
 
         TimeStepperHeader(
             currentValue = uiState.year,
@@ -113,8 +133,8 @@ fun AnnualSummaryScreen(
                     } else {
                         EmptyStateView(
                             icon = Icons.Outlined.BarChart,
-                            title = "Sin datos para este año",
-                            subtitle = "Añade movimientos para ver el resumen"
+                            title = stringResource(Res.string.annual_no_data_title),
+                            subtitle = stringResource(Res.string.annual_no_data_subtitle)
                         )
                     }
                 }
@@ -208,7 +228,7 @@ private fun GastosTab(
             showExpense  = true
         )
         CategoryExpenseList(
-            title          = "Categorías de gasto",
+            title          = stringResource(Res.string.annual_expense_categories_title),
             comparisons    = comparisons,
             isExpense      = true,
             balancesHidden = balancesHidden
@@ -239,7 +259,7 @@ private fun IngresosTab(
             showExpense  = false
         )
         CategoryExpenseList(
-            title          = "Tipos de ingreso",
+            title          = stringResource(Res.string.annual_income_types_title),
             comparisons    = comparisons,
             isExpense      = false,
             balancesHidden = balancesHidden
@@ -289,11 +309,12 @@ private fun AnnualTabs(
     }
 }
 
+@Composable
 private fun AnnualTab.displayName(): String = when (this) {
-    AnnualTab.RESUMEN    -> "Resumen"
-    AnnualTab.GASTOS     -> "Gastos"
-    AnnualTab.INGRESOS   -> "Ingresos"
-    AnnualTab.INVERSIONES -> "Inversiones"
+    AnnualTab.RESUMEN    -> stringResource(Res.string.annual_tab_summary)
+    AnnualTab.GASTOS     -> stringResource(Res.string.annual_tab_expenses)
+    AnnualTab.INGRESOS   -> stringResource(Res.string.annual_tab_income)
+    AnnualTab.INVERSIONES -> stringResource(Res.string.annual_tab_investments)
 }
 
 // ─── Year totals card (3-column grid) ───────────────────────────────────────────
@@ -318,7 +339,7 @@ private fun YearTotalsCard(summary: AnnualSummary, balancesHidden: Boolean) {
                     .padding(vertical = 12.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text("Ingresos", fontSize = 10.sp, color = TextTertiary, fontWeight = FontWeight.Medium)
+                Text(stringResource(Res.string.annual_income_label), fontSize = 10.sp, color = TextTertiary, fontWeight = FontWeight.Medium)
                 Spacer(Modifier.height(4.dp))
                 Text(
                     "+${maskAmount(formatAmount(summary.totalIncome), balancesHidden)} €",
@@ -338,7 +359,7 @@ private fun YearTotalsCard(summary: AnnualSummary, balancesHidden: Boolean) {
                     .padding(vertical = 12.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text("Gastos", fontSize = 10.sp, color = TextTertiary, fontWeight = FontWeight.Medium)
+                Text(stringResource(Res.string.annual_expenses_label), fontSize = 10.sp, color = TextTertiary, fontWeight = FontWeight.Medium)
                 Spacer(Modifier.height(4.dp))
                 Text(
                     "−${maskAmount(formatAmount(summary.totalExpense), balancesHidden)} €",
@@ -358,7 +379,7 @@ private fun YearTotalsCard(summary: AnnualSummary, balancesHidden: Boolean) {
                     .padding(vertical = 12.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text("Ahorro", fontSize = 10.sp, color = TextTertiary, fontWeight = FontWeight.Medium)
+                Text(stringResource(Res.string.annual_savings_label), fontSize = 10.sp, color = TextTertiary, fontWeight = FontWeight.Medium)
                 Spacer(Modifier.height(4.dp))
                 Text(
                     "${maskAmount(formatAmount(savings), balancesHidden)} €",
@@ -394,14 +415,14 @@ private fun CategoryExpenseList(
                 Icon(Icons.Outlined.BarChart, contentDescription = null, modifier = Modifier.size(32.dp), tint = PrimaryDark)
                 Spacer(Modifier.height(8.dp))
                 Text(
-                    "Sin datos",
+                    stringResource(Res.string.annual_no_data_text),
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Medium,
                     color = TextPrimary
                 )
                 Spacer(Modifier.height(4.dp))
                 Text(
-                    "No hay movimientos registrados",
+                    stringResource(Res.string.annual_no_movements),
                     fontSize = 12.sp,
                     color = TextSecondary
                 )
@@ -492,7 +513,7 @@ private fun VariationBadge(
             color = BackgroundGray
         ) {
             Text(
-                " Nuevo ",
+                stringResource(Res.string.annual_new_badge),
                 fontSize = 9.sp,
                 fontWeight = FontWeight.Medium,
                 color = TextTertiary
@@ -527,7 +548,7 @@ private fun MonthlyBarChart(
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
-                text       = "Evolución mensual $year",
+                text       = stringResource(Res.string.annual_monthly_evolution, year),
                 fontSize   = 14.sp,
                 fontWeight = FontWeight.SemiBold,
                 color      = TextPrimary
@@ -537,10 +558,10 @@ private fun MonthlyBarChart(
             // Leyenda
             Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                 if (showIncome) {
-                    LegendItem(color = IncomeGreen, label = "Ingresos")
+                    LegendItem(color = IncomeGreen, label = stringResource(Res.string.annual_income_legend))
                 }
                 if (showExpense) {
-                    LegendItem(color = ExpenseRed, label = "Gastos")
+                    LegendItem(color = ExpenseRed, label = stringResource(Res.string.annual_expense_legend))
                 }
             }
 

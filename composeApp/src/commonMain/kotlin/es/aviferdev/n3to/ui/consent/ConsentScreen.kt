@@ -37,6 +37,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.core.browser.rememberUrlOpener
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.consent_accept
+import n3to.composeapp.generated.resources.consent_decline
+import n3to.composeapp.generated.resources.consent_privacy_policy
+import n3to.composeapp.generated.resources.onboarding_welcome_subtitle
+import n3to.composeapp.generated.resources.privacy_analytics_title
+import n3to.composeapp.generated.resources.privacy_crash_title
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 /**
@@ -74,7 +82,7 @@ fun ConsentScreen(
 
             // ── Cabecera ─────────────────────────────────────────────
             Text(
-                text = "Tus finanzas son tuyas",
+                text = stringResource(Res.string.onboarding_welcome_subtitle),
                 style = MaterialTheme.typography.headlineMedium,
                 textAlign = TextAlign.Center
             )
@@ -164,7 +172,7 @@ fun ConsentScreen(
             // ── Toggles ──────────────────────────────────────────────
             ConsentToggleItem(
                 icon = Icons.Default.Build,
-                title = "Ayúdanos a mejorar",
+                title = stringResource(Res.string.privacy_analytics_title),
                 description = "Saber qué funciones usas más nos ayuda a pulir la app. Datos anónimos.",
                 checked = uiState.analytics,
                 onCheckedChange = viewModel::onAnalyticsToggle
@@ -172,7 +180,7 @@ fun ConsentScreen(
             HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
             ConsentToggleItem(
                 icon = Icons.Default.BugReport,
-                title = "Avísame si algo falla",
+                title = stringResource(Res.string.privacy_crash_title),
                 description = "Si la app tiene un error, nos avisa para que podamos arreglarlo rápido.",
                 checked = uiState.crashReporting,
                 onCheckedChange = viewModel::onCrashReportingToggle
@@ -185,14 +193,14 @@ fun ConsentScreen(
                 modifier = Modifier.fillMaxWidth().height(48.dp),
                 enabled = !uiState.isLoading,
                 shape = RoundedCornerShape(12.dp)
-            ) { Text("Aceptar y continuar", fontSize = 15.sp) }
+            ) { Text(stringResource(Res.string.consent_accept), fontSize = 15.sp) }
             Spacer(Modifier.height(8.dp))
             OutlinedButton(
                 onClick = viewModel::rejectAll,
                 modifier = Modifier.fillMaxWidth().height(48.dp),
                 enabled = !uiState.isLoading,
                 shape = RoundedCornerShape(12.dp)
-            ) { Text("Rechazar y continuar", fontSize = 15.sp) }
+            ) { Text(stringResource(Res.string.consent_decline), fontSize = 15.sp) }
             Spacer(Modifier.height(12.dp))
             Text(
                 "Ambos botones abren la app. Elegir uno u otro solo cambia " +
@@ -207,7 +215,7 @@ fun ConsentScreen(
             TextButton(onClick = {
                 urlOpener.openUrl(es.aviferdev.n3to.ui.settings.PRIVACY_POLICY_URL)
             }) {
-                Text("Ver Política de Privacidad", style = MaterialTheme.typography.bodySmall)
+                Text(stringResource(Res.string.consent_privacy_policy), style = MaterialTheme.typography.bodySmall)
             }
             Spacer(Modifier.height(24.dp))
         }

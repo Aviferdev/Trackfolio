@@ -46,6 +46,32 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.common_accept
+import n3to.composeapp.generated.resources.common_cancel
+import n3to.composeapp.generated.resources.realestate_acquisition_date_label
+import n3to.composeapp.generated.resources.realestate_add_expense
+import n3to.composeapp.generated.resources.realestate_add_property
+import n3to.composeapp.generated.resources.realestate_name_label
+import n3to.composeapp.generated.resources.realestate_type_label
+import n3to.composeapp.generated.resources.realestate_address_label
+import n3to.composeapp.generated.resources.realestate_address_placeholder
+import n3to.composeapp.generated.resources.realestate_change_mortgage
+import n3to.composeapp.generated.resources.realestate_current_value_label
+import n3to.composeapp.generated.resources.realestate_edit_title
+import n3to.composeapp.generated.resources.realestate_link_mortgage
+import n3to.composeapp.generated.resources.realestate_monthly_rent_label
+import n3to.composeapp.generated.resources.realestate_name_placeholder
+import n3to.composeapp.generated.resources.realestate_no_expenses
+import n3to.composeapp.generated.resources.realestate_ownership_label
+import n3to.composeapp.generated.resources.realestate_purchase_expenses_title
+import n3to.composeapp.generated.resources.realestate_purchase_price_label
+import n3to.composeapp.generated.resources.realestate_rental_status_label
+import n3to.composeapp.generated.resources.realestate_save_changes
+import n3to.composeapp.generated.resources.common_action_cd
+import n3to.composeapp.generated.resources.realestate_total_expenses_format
+import n3to.composeapp.generated.resources.realestate_new_title
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -113,8 +139,8 @@ fun AddEditPropertyBottomSheet(
     if (showDatePicker) {
         DatePickerDialog(
             onDismissRequest = { showDatePicker = false },
-            confirmButton = { TextButton(onClick = { datePickerState.selectedDateMillis?.let { acquisitionDateMillis = it }; showDatePicker = false }) { Text("Aceptar", color = PrimaryDark) } },
-            dismissButton = { TextButton(onClick = { showDatePicker = false }) { Text("Cancelar", color = TextTertiary) } }
+            confirmButton = { TextButton(onClick = { datePickerState.selectedDateMillis?.let { acquisitionDateMillis = it }; showDatePicker = false }) { Text(stringResource(Res.string.common_accept), color = PrimaryDark) } },
+            dismissButton = { TextButton(onClick = { showDatePicker = false }) { Text(stringResource(Res.string.common_cancel), color = TextTertiary) } }
         ) { DatePicker(state = datePickerState, colors = DatePickerDefaults.colors(containerColor = SurfaceWhite)) }
     }
 
@@ -140,7 +166,7 @@ fun AddEditPropertyBottomSheet(
                 .padding(bottom = 32.dp)
         ) {
             Text(
-                if (isEditing) "Editar propiedad" else "Nueva propiedad",
+                if (isEditing) stringResource(Res.string.realestate_edit_title) else stringResource(Res.string.realestate_new_title),
                 fontWeight = FontWeight.Bold,
                 fontSize = 18.sp,
                 color = TextPrimary
@@ -149,11 +175,11 @@ fun AddEditPropertyBottomSheet(
             Spacer(Modifier.height(20.dp))
 
             // ── Nombre ───────────────────────────────────────────────────────
-            SectionLabel("Nombre")
+            SectionLabel(stringResource(Res.string.realestate_name_label))
             Spacer(Modifier.height(6.dp))
             OutlinedTextField(
                 value = name, onValueChange = { name = it },
-                placeholder = { Text("Ej: Mi casa", color = TextTertiary.copy(alpha = 0.6f)) },
+                placeholder = { Text(stringResource(Res.string.realestate_name_placeholder), color = TextTertiary.copy(alpha = 0.6f)) },
                 singleLine = true, modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(10.dp),
                 colors = fieldColors()
@@ -162,11 +188,11 @@ fun AddEditPropertyBottomSheet(
             Spacer(Modifier.height(12.dp))
 
             // ── Dirección ────────────────────────────────────────────────────
-            SectionLabel("Dirección")
+            SectionLabel(stringResource(Res.string.realestate_address_label))
             Spacer(Modifier.height(6.dp))
             OutlinedTextField(
                 value = address, onValueChange = { address = it },
-                placeholder = { Text("Ej: Calle Mayor 1, Madrid", color = TextTertiary.copy(alpha = 0.6f)) },
+                placeholder = { Text(stringResource(Res.string.realestate_address_placeholder), color = TextTertiary.copy(alpha = 0.6f)) },
                 singleLine = true, modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(10.dp),
                 colors = fieldColors()
@@ -175,7 +201,7 @@ fun AddEditPropertyBottomSheet(
             Spacer(Modifier.height(12.dp))
 
             // ── Tipo de vivienda ─────────────────────────────────────────────
-            SectionLabel("Tipo de vivienda")
+            SectionLabel(stringResource(Res.string.realestate_type_label))
             Spacer(Modifier.height(6.dp))
             LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 items(PropertyType.entries) { type ->
@@ -193,14 +219,14 @@ fun AddEditPropertyBottomSheet(
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 OutlinedTextField(
                     value = purchaseValueText, onValueChange = { purchaseValueText = it },
-                    label = { Text("Compra (€)") },
+                    label = { Text(stringResource(Res.string.realestate_purchase_price_label)) },
                     singleLine = true, modifier = Modifier.weight(1f),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                     shape = RoundedCornerShape(10.dp), colors = fieldColors()
                 )
                 OutlinedTextField(
                     value = estimatedValueText, onValueChange = { estimatedValueText = it },
-                    label = { Text("Valor actual (€)") },
+                    label = { Text(stringResource(Res.string.realestate_current_value_label)) },
                     singleLine = true, modifier = Modifier.weight(1f),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                     shape = RoundedCornerShape(10.dp), colors = fieldColors()
@@ -210,7 +236,7 @@ fun AddEditPropertyBottomSheet(
             Spacer(Modifier.height(12.dp))
 
             // ── Fecha de adquisición ─────────────────────────────────────────
-            SectionLabel("Fecha de adquisición")
+            SectionLabel(stringResource(Res.string.realestate_acquisition_date_label))
             Spacer(Modifier.height(6.dp))
             OutlinedTextField(
                 value = formatDate(acquisitionDateMillis),
@@ -221,7 +247,7 @@ fun AddEditPropertyBottomSheet(
                 colors = fieldColors(),
                 trailingIcon = {
                     IconButton(onClick = { showDatePicker = true }) {
-                        Icon(Icons.Outlined.CalendarMonth, "Seleccionar fecha", tint = TextTertiary)
+                        Icon(Icons.Outlined.CalendarMonth, stringResource(Res.string.common_action_cd), tint = TextTertiary)
                     }
                 }
             )
@@ -229,7 +255,7 @@ fun AddEditPropertyBottomSheet(
             Spacer(Modifier.height(12.dp))
 
             // ── % de propiedad ───────────────────────────────────────────────
-            SectionLabel("% de propiedad")
+            SectionLabel(stringResource(Res.string.realestate_ownership_label))
             Spacer(Modifier.height(6.dp))
             OutlinedTextField(
                 value = ownershipText, onValueChange = { ownershipText = it },
@@ -241,7 +267,7 @@ fun AddEditPropertyBottomSheet(
             Spacer(Modifier.height(12.dp))
 
             // ── Estado de alquiler ───────────────────────────────────────────
-            SectionLabel("Estado de alquiler")
+            SectionLabel(stringResource(Res.string.realestate_rental_status_label))
             Spacer(Modifier.height(6.dp))
             LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 items(RentalStatus.entries) { status ->
@@ -257,7 +283,7 @@ fun AddEditPropertyBottomSheet(
                 Spacer(Modifier.height(12.dp))
                 OutlinedTextField(
                     value = monthlyRentText, onValueChange = { monthlyRentText = it },
-                    label = { Text("Renta mensual (€)") },
+                    label = { Text(stringResource(Res.string.realestate_monthly_rent_label)) },
                     singleLine = true, modifier = Modifier.fillMaxWidth(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                     shape = RoundedCornerShape(10.dp), colors = fieldColors()
@@ -279,7 +305,7 @@ fun AddEditPropertyBottomSheet(
                 Icon(Icons.Outlined.Search, null, modifier = Modifier.size(18.dp))
                 Spacer(Modifier.width(8.dp))
                 Text(
-                    if (selectedLoanId != null) "Cambiar hipoteca" else "Vincular hipoteca",
+                    if (selectedLoanId != null) stringResource(Res.string.realestate_change_mortgage) else stringResource(Res.string.realestate_link_mortgage),
                     fontWeight = FontWeight.Medium
                 )
             }
@@ -297,7 +323,7 @@ fun AddEditPropertyBottomSheet(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        "Gastos de compra",
+                        stringResource(Res.string.realestate_purchase_expenses_title),
                         fontWeight = FontWeight.SemiBold,
                         fontSize = 14.sp,
                         color = TextPrimary
@@ -319,7 +345,7 @@ fun AddEditPropertyBottomSheet(
                     ) {
                         Icon(Icons.Outlined.Add, null, modifier = Modifier.size(16.dp), tint = PrimaryDark)
                         Spacer(Modifier.width(4.dp))
-                        Text("Añadir", fontSize = 12.sp, color = PrimaryDark)
+                        Text(stringResource(Res.string.realestate_add_expense), fontSize = 12.sp, color = PrimaryDark)
                     }
                 }
             }
@@ -328,7 +354,7 @@ fun AddEditPropertyBottomSheet(
                 Spacer(Modifier.height(8.dp))
                 if (purchaseExpenses.isEmpty()) {
                     Text(
-                        "No hay gastos de compra. Pulsa \"Añadir\" para incluir notaría, ITP, tasación, etc.",
+                        stringResource(Res.string.realestate_no_expenses),
                         fontSize = 12.sp,
                         color = TextTertiary,
                         modifier = Modifier.padding(vertical = 4.dp)
@@ -353,7 +379,7 @@ fun AddEditPropertyBottomSheet(
                     Spacer(Modifier.height(4.dp))
                     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
                         Text(
-                            "Total gastos: ${formatAmountEuro(totalPurchaseCosts)}",
+                            stringResource(Res.string.realestate_total_expenses_format, formatAmountEuro(totalPurchaseCosts)),
                             fontSize = 12.sp,
                             fontWeight = FontWeight.Medium,
                             color = TextPrimary
@@ -408,7 +434,7 @@ fun AddEditPropertyBottomSheet(
                     CircularProgressIndicator(Modifier.size(20.dp), color = Color.White, strokeWidth = 2.dp)
                 } else {
                     Text(
-                        if (isEditing) "Guardar cambios" else "Añadir propiedad",
+                        if (isEditing) stringResource(Res.string.realestate_save_changes) else stringResource(Res.string.realestate_add_property),
                         fontWeight = FontWeight.Bold,
                         fontSize = 16.sp
                     )

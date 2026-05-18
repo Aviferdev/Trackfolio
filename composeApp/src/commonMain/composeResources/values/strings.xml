@@ -293,6 +293,7 @@
     <string name="portfolio_settings_region_section">REGIONES</string>
     <string name="portfolio_settings_region_empty">Define la distribución geográfica de tus activos por región (EE.UU., Europa, Asia…) para analizar tu exposición internacional.</string>
     <string name="portfolio_settings_manage">Gestionar</string>
+    <string name="portfolio_settings_add">Añadir</string>
     <string name="portfolio_settings_delete_portfolio_title">Eliminar cartera</string>
     <string name="portfolio_settings_delete_portfolio_message">¿Eliminar «%1$s»? Los activos pasarán a «Sin cartera».</string>
 
@@ -344,7 +345,7 @@
     <string name="portfolio_add_tx_gross_placeholder">Introduce el importe bruto</string>
     <string name="portfolio_add_tx_net">Neto</string>
     <string name="portfolio_add_tx_fee">Bruto</string>
-    <string name="portfolio_add_tx_fee_placeholder">Comisión</string>
+    <string name="portfolio_add_tx_fee_placeholder">Ej. 0,5%, 1,20 €</string>
     <string name="portfolio_add_tx_platform">Plataforma</string>
     <string name="portfolio_add_tx_notes">Notas</string>
     <string name="portfolio_add_tx_select_asset">Selecciona un activo</string>
@@ -424,6 +425,7 @@
     <string name="account_name_placeholder">Ej. Cuenta corriente BBVA</string>
     <string name="account_initial_balance">Saldo inicial pendiente</string>
     <string name="account_no_accounts">Sin cuentas todavía</string>
+    <string name="account_empty_subtitle">Crea tu primera cuenta desde\nAjustes para empezar</string>
     <string name="account_balance_label">Saldo actual</string>
     <string name="account_computed_balance">Saldo actual calculado</string>
     <string name="account_delete_confirm_title">Eliminar cuenta</string>
@@ -443,7 +445,7 @@
     <string name="fixedincome_ticker_label">Ticker</string>
     <string name="fixedincome_type_label">Tipo de producto</string>
     <string name="fixedincome_principal_label">Nominal</string>
-    <string name="fixedincome_interest_label">TIN</string>
+    <string name="fixedincome_interest_label">TAE (%)</string>
     <string name="fixedincome_frequency_label">Frecuencia de cobro de intereses</string>
     <string name="fixedincome_start_date">Fecha de inicio</string>
     <string name="fixedincome_maturity_date">Fecha de vencimiento</string>
@@ -622,6 +624,258 @@
     <string name="consent_accept">Aceptar y continuar</string>
     <string name="consent_decline">Rechazar y continuar</string>
     <string name="consent_privacy_policy">Ver Política de Privacidad</string>
+    <string name="consent_data_description">Tus cuentas, transacciones y balances se guardan localmente en tu dispositivo. Solo compartimos datos si tú nos das permiso.</string>
+    <string name="consent_crash_description">Si la app tiene un error, nos avisa para que podamos arreglarlo rápido.</string>
+    <string name="security_locked_message">La app está bloqueada.\nAutentícate para continuar.</string>
+    <string name="security_unlock_button">Desbloquear</string>
+    <string name="version_block_message">Debes actualizar N3to para continuar utilizando la aplicación.</string>
+    <string name="version_block_version_info">Versión mínima: %1$s · Tu versión: %2$s</string>
+    <string name="reconciliation_real_balance">Saldo real (€)</string>
+    <string name="reconciliation_diff_format">Diferencia: %1$s%2$s €</string>
+    <string name="reconciliation_done">Hecho</string>
+    <string name="reconciliation_adjust_label">Ajustar saldo</string>
+    <string name="fixedincome_delete_event">Eliminar evento</string>
+    <string name="fixedincome_distribution_title">Distribución</string>
+    <string name="fixedincome_no_region">No asignada</string>
+    <string name="fixedincome_no_sector">No asignado</string>
+    <string name="fixedincome_select_region">Seleccionar Región</string>
+    <string name="fixedincome_select_sector">Seleccionar Sector</string>
+    <string name="fixedincome_status_active">ACTIVO</string>
+    <string name="fixedincome_status_closed">CERRADO</string>
+    <string name="fixedincome_change_region">Cambiar</string>
+    <string name="fixedincome_change_sector">Cambiar</string>
+    <string name="fixedincome_platform_label">Plataforma</string>
+    <string name="fixedincome_liquidate_maturity">Liquidar al vencimiento</string>
+    <string name="fixedincome_annual_coupon">Cupón anual</string>
+    <string name="fixedincome_maturity_label">Vencimiento</string>
+    <string name="fixedincome_est_nir">TIR neta est.</string>
+    <string name="fixedincome_register_settlement">Registrar liquidación</string>
+    <string name="fixedincome_event_history">Historial de eventos</string>
+    <string name="fixedincome_no_events">Sin eventos registrados</string>
+    <string name="fixedincome_gross_interest">Intereses brutos</string>
+    <string name="fixedincome_estimated_irpf">Retención estimada (%1$s%%)</string>
+    <string name="fixedincome_estimated_commissions">Comisiones estimadas</string>
+    <string name="fixedincome_net_profit_label">Beneficio neto total</string>
+    <string name="fixedincome_region_label">Región</string>
+    <string name="fixedincome_sector_label">Sector</string>
+    <string name="fixedincome_delete_event_confirm">¿Eliminar el evento %1$s?</string>
+    <string name="fixedincome_header_label">Renta fija · %1$s</string>
+    <string name="fixedincome_nominal_label">Nominal</string>
+    <string name="fixedincome_coupon_paid">Cobrado</string>
+    <string name="fixedincome_coupon_pending">Pendiente</string>
+    <string name="fixedincome_retention_label">Retención</string>
+    <string name="fixedincome_commission_label">Comisión</string>
+    <string name="fixedincome_gross_label">Bruto</string>
+    <string name="fixedincome_maturity_sim_irpf">Retención estimada (%1$s%%)</string>
+
+    <!-- NET WORTH -->
+    <string name="networth_add_property_cd">Añadir propiedad</string>
+    <string name="networth_add_loan_cd">Añadir préstamo</string>
+    <string name="networth_no_properties">Sin inmuebles registrados</string>
+    <string name="networth_no_liabilities">Sin pasivos registrados</string>
+    <string name="networth_assets_label_alt">Activos</string>
+    <string name="networth_liabilities_label_alt">Pasivos</string>
+    <string name="networth_accounts_label">Balance cuentas</string>
+    <string name="networth_portfolio_label">Portfolio inversiones</string>
+    <string name="networth_fixedincome_label">Renta fija</string>
+    <string name="networth_total_assets_label">Total activos</string>
+    <string name="networth_debts_label">Deudas cotidianas</string>
+    <string name="networth_installments_format">%1$d/%2$d cuotas</string>
+    <string name="networth_monthly_format">%1$s/mes</string>
+    <string name="networth_of_format">de %1$s</string>
+
+    <!-- FISCAL -->
+    <string name="fiscal_generating_pdf">Generando PDF…</string>
+    <string name="fiscal_net_only_warning">Hay ingresos registrados solo con el importe neto. El desglose fiscal puede estar incompleto.</string>
+    <string name="fiscal_no_data_year">No hay datos para %1$s</string>
+    <string name="fiscal_year_title">Ejercicio %1$s · Resumen</string>
+    <string name="fiscal_no_movements">Sin movimientos registrados.</string>
+    <string name="fiscal_income_label">Ingresos totales</string>
+    <string name="fiscal_withholding_label">Retenciones fiscales</string>
+    <string name="fiscal_capital_gains_card">Ganancias capital</string>
+    <string name="fiscal_taxable_base_est">Base imponible est.</string>
+    <string name="fiscal_tax_breakdown_title">Desglose fiscal %1$s</string>
+    <string name="fiscal_gross_total">Bruto total</string>
+    <string name="fiscal_irpf_total">Retención fiscal</string>
+    <string name="fiscal_net_total">Neto total</string>
+    <string name="fiscal_social_security">Cotizaciones</string>
+    <string name="fiscal_commissions_short">Comisiones</string>
+    <string name="fiscal_income_type_header">Tipo de ingreso</string>
+    <string name="fiscal_gross_header">Bruto</string>
+    <string name="fiscal_withholding_short">Retención</string>
+    <string name="fiscal_net_header">Neto</string>
+    <string name="fiscal_percent_header">%%</string>
+    <string name="fiscal_incomes_with_tax_info">Solo incluye ingresos con información fiscal introducida.</string>
+    <string name="fiscal_monthly_title">Desglose mensual</string>
+    <string name="fiscal_no_movements_year">Sin movimientos en %1$s.</string>
+    <string name="fiscal_month_header">Mes</string>
+    <string name="fiscal_income_header">Ingresos</string>
+    <string name="fiscal_expenses_header">Gastos</string>
+    <string name="fiscal_balance_header">Balance</string>
+    <string name="fiscal_debts_title">Deudas activas</string>
+    <string name="fiscal_i_owe">Les debo</string>
+    <string name="fiscal_they_owe">Me deben</string>
+    <string name="fiscal_portfolio_title">Cartera de inversión</string>
+    <string name="fiscal_invested_label">Invertido</string>
+    <string name="fiscal_current_value_label">Valor actual</string>
+    <string name="fiscal_realized_pnl_label">P&amp;L Real.</string>
+    <string name="fiscal_asset_header">Activo</string>
+    <string name="fiscal_units_header">Unidades</string>
+    <string name="fiscal_avg_price_header">P.Medio</string>
+    <string name="fiscal_pnl_total_header">P&amp;L Total</string>
+    <string name="fiscal_no_category">Sin categoría</string>
+    <string name="fiscal_year_activity">Actividad en %1$s</string>
+    <string name="fiscal_buys_header">Compras</string>
+    <string name="fiscal_sales_header">Ventas</string>
+    <string name="fiscal_active_profile">Perfil fiscal activo: %1$s</string>
+    <string name="fiscal_profile_since">%1$s · vigente desde %2$s</string>
+    <string name="fiscal_pdf_password_title">Proteger informe</string>
+    <string name="fiscal_pdf_password_desc">Introduce una contraseña para proteger el PDF. Déjala vacía si no quieres protegerlo.</string>
+    <string name="fiscal_password_label">Contraseña</string>
+    <string name="fiscal_password_optional">Opcional</string>
+    <string name="fiscal_confirm_password_label">Confirmar contraseña</string>
+    <string name="fiscal_password_mismatch">Las contraseñas no coinciden</string>
+    <string name="fiscal_password_min_length">Mínimo 4 caracteres</string>
+    <string name="fiscal_generate_without_password">Generar sin contraseña</string>
+    <string name="fiscal_generate_with_password">Generar con contraseña</string>
+    <string name="fiscal_cancel">Cancelar</string>
+    <string name="fiscal_count_format">%1$d ingreso%2$s</string>
+
+    <!-- REAL ESTATE -->
+    <string name="realestate_options_menu_cd">Opciones</string>
+    <string name="realestate_edit_label">Editar</string>
+    <string name="realestate_update_value">Actualizar valor</string>
+    <string name="realestate_change_rental_status">Cambiar estado alquiler</string>
+    <string name="realestate_sell_property">Vender propiedad</string>
+    <string name="realestate_archive_label">Archivar</string>
+    <string name="realestate_value_label">Valor</string>
+    <string name="realestate_update_label">Actualizar</string>
+    <string name="realestate_estimated_value_label">Valor estimado</string>
+    <string name="realestate_purchase_value_label">Valor de compra</string>
+    <string name="realestate_ownership_percent_label">%% de propiedad</string>
+    <string name="realestate_sale_price_label">Precio de venta</string>
+    <string name="realestate_capital_gain_label">Plusvalía realizada</string>
+    <string name="realestate_effective_value_label">Valor efectivo</string>
+    <string name="realestate_sold_badge">Vendida</string>
+    <string name="realestate_rented_badge">Alquilada</string>
+    <string name="realestate_vacant_badge">Vacía</string>
+    <string name="realestate_own_use_badge">Uso propio</string>
+    <string name="realestate_sale_date_label">Fecha de venta</string>
+    <string name="realestate_purchase_expenses">Gastos de compra</string>
+    <string name="realestate_sale_expenses">Gastos de venta</string>
+    <string name="realestate_expense_default">Gasto</string>
+    <string name="realestate_view_label">Ver</string>
+    <string name="realestate_loan_label">Préstamo</string>
+    <string name="realestate_lender_label">Entidad</string>
+    <string name="realestate_pending_capital_label">Capital pendiente</string>
+    <string name="realestate_monthly_payment_label">Cuota mensual</string>
+    <string name="realestate_no_mortgage">Sin hipoteca vinculada</string>
+    <string name="realestate_mortgage_hint">Vincula una hipoteca para un cálculo preciso del patrimonio.</string>
+    <string name="realestate_archive_confirm_title">Archivar propiedad</string>
+    <string name="realestate_archive_confirm_msg">¿Estás seguro de que quieres archivar esta propiedad?\nSe ocultará de la pantalla de patrimonio.</string>
+
+    <!-- ANNUAL -->
+    <string name="annual_no_data_title">Sin datos para este año</string>
+    <string name="annual_no_data_subtitle">Añade movimientos para ver el resumen</string>
+    <string name="annual_income_label">Ingresos</string>
+    <string name="annual_expenses_label">Gastos</string>
+    <string name="annual_savings_label">Ahorro</string>
+    <string name="annual_expense_categories_title">Categorías de gasto</string>
+    <string name="annual_income_types_title">Tipos de ingreso</string>
+    <string name="annual_no_data_text">Sin datos</string>
+    <string name="annual_no_movements">No hay movimientos registrados</string>
+    <string name="annual_new_badge">Nuevo</string>
+    <string name="annual_income_legend">Ingresos</string>
+    <string name="annual_expense_legend">Gastos</string>
+
+    <!-- PORTFOLIO - Add/Edit Asset (missing) -->
+    <string name="portfolio_add_asset_desc">Define la ficha del activo y las plataformas donde operas.</string>
+    <string name="portfolio_add_asset_portfolio_label">Cartera</string>
+    <string name="portfolio_add_asset_no_portfolio">Sin cartera</string>
+    <string name="portfolio_add_asset_ticker_placeholder">Ej. AAPL, BTC, IAG.MC</string>
+    <string name="portfolio_add_asset_ticker_required">Obligatorio</string>
+    <string name="portfolio_add_asset_name_placeholder">Ej. Apple Inc., Bitcoin</string>
+    <string name="portfolio_add_asset_composition_label">Composición RF / RV</string>
+    <string name="portfolio_add_asset_composition_hint">RF: Renta Fija (%1$d%% RV: Renta Variable)</string>
+    <string name="portfolio_add_asset_market_price_label">Precio de mercado</string>
+    <string name="portfolio_add_asset_fi_price_hint">Los activos de renta fija no utilizan precio de mercado. Use el sistema de posiciones de renta fija para registrar estos activos.</string>
+    <string name="portfolio_add_asset_price_optional">Precio actual (opcional)</string>
+    <string name="portfolio_add_asset_price_placeholder_val">0,00</string>
+    <string name="portfolio_add_asset_price_desc">Sirve para calcular el valor actual y la revalorización.</string>
+    <string name="portfolio_add_asset_platforms_label">Plataformas donde operas este activo</string>
+    <string name="portfolio_add_asset_platforms_hint">Selecciona todas las plataformas donde compras o vendes este activo.</string>
+    <string name="portfolio_add_asset_no_platforms_hint">Crea plataformas primero desde la configuración del activo para vincularlas.</string>
+    <string name="portfolio_add_asset_sectors_label">Sectores</string>
+    <string name="portfolio_add_asset_sectors_hint">Clasifica el activo en uno o varios sectores.</string>
+    <string name="portfolio_add_asset_regions_label">Distribución regional</string>
+    <string name="portfolio_add_asset_regions_hint">Asigna el porcentaje de inversión por región (opcional)</string>
+    <string name="portfolio_add_asset_regions_total">Total: %1$d%% (debe ser ≤ 100%%)</string>
+    <string name="portfolio_add_asset_maturity_date_label">Fecha de vencimiento</string>
+    <string name="portfolio_add_asset_maturity_hint">Toca para seleccionar la fecha de vencimiento del activo.</string>
+    <string name="portfolio_add_asset_notes_optional">Nota (opcional)</string>
+    <string name="portfolio_add_asset_save_changes">Guardar cambios</string>
+    <string name="portfolio_add_asset_create">Crear activo</string>
+    <string name="portfolio_add_asset_cancel">Cancelar</string>
+
+    <!-- PORTFOLIO - Category Detail -->
+    <string name="portfolio_category_title">Categoría</string>
+    <string name="portfolio_category_assets_section">ACTIVOS</string>
+    <string name="portfolio_category_new_asset">+ Nuevo</string>
+    <string name="portfolio_category_empty">Sin activos en esta categoría</string>
+    <string name="portfolio_category_fixed_income_section">RENTA FIJA</string>
+    <string name="portfolio_category_platforms_section">PLATAFORMAS</string>
+    <string name="portfolio_category_no_platforms">Sin plataformas vinculadas</string>
+    <string name="portfolio_category_add_platform">+ Añadir plataforma</string>
+    <string name="portfolio_category_archived_section">ARCHIVADOS</string>
+    <string name="portfolio_category_archive_title">Archivar activo</string>
+    <string name="portfolio_category_archive_message">«%1$s (%2$s)» se archivará. Sus movimientos y P&amp;L histórico se conservarán.</string>
+    <string name="portfolio_category_archive_confirm">Archivar</string>
+    <string name="portfolio_category_restore">Restaurar</string>
+    <string name="portfolio_category_edit_cd">Editar</string>
+    <string name="portfolio_category_archive_cd">Archivar</string>
+
+    <!-- PORTFOLIO - Add Transaction -->
+    <string name="portfolio_add_tx_title_new">Nuevo movimiento</string>
+    <string name="portfolio_add_tx_new">Registrar movimiento</string>
+    <string name="portfolio_add_tx_save_changes">Guardar cambios</string>
+    <string name="portfolio_add_tx_type_buy">Compra</string>
+    <string name="portfolio_add_tx_type_sell">Venta</string>
+    <string name="portfolio_add_tx_category_filter">Categoría</string>
+    <string name="portfolio_add_tx_category_all">Todos</string>
+    <string name="portfolio_add_tx_no_assets_category">No hay activos en esta categoría</string>
+    <string name="portfolio_add_tx_no_assets_hint">Aún no tienes activos. Créalos primero desde Ajustes › Portfolio › Activos.</string>
+    <string name="portfolio_add_tx_platform_label">Plataforma</string>
+    <string name="portfolio_add_tx_platform_select_hint">Selecciona dónde tienes las unidades</string>
+    <string name="portfolio_add_tx_no_platforms_hint">No hay plataformas creadas. Ve a Ajustes › Portfolio › Plataformas para crear una.</string>
+    <string name="portfolio_add_tx_platform_not_assigned">Este activo no tiene plataformas asignadas. Vincula una desde Ajustes.</string>
+    <string name="portfolio_add_tx_qty_label">Cantidad</string>
+    <string name="portfolio_add_tx_price_label">Precio unidad</string>
+    <string name="portfolio_add_tx_available">Disponible: %1$s unidades%2$s a esa fecha</string>
+    <string name="portfolio_add_tx_only_available">Solo tienes %1$s unidades disponibles%2$s a esa fecha</string>
+    <string name="portfolio_add_tx_date_label">Fecha</string>
+    <string name="portfolio_add_tx_fee_label">Comisión (opcional)</string>
+    <string name="portfolio_add_tx_fee_hint">Texto informativo. No se incluye en el cálculo del P&amp;L.</string>
+    <string name="portfolio_add_tx_notes_label">Nota (opcional)</string>
+    <string name="portfolio_add_tx_platform_label_inline"> en %1$s</string>
+    <string name="portfolio_add_tx_units_label">u.</string>
+    <string name="portfolio_add_tx_no_units_badge">Sin unidades</string>
+    <string name="portfolio_add_tx_accept">Aceptar</string>
+    <string name="portfolio_add_tx_cancel">Cancelar</string>
+
+    <!-- PORTFOLIO - Transfer Fund -->
+    <string name="portfolio_transfer_desc">Traspaso fiscalmente neutro. El coste base se arrastra al fondo destino.</string>
+    <string name="portfolio_transfer_source_label">Fondo origen</string>
+    <string name="portfolio_transfer_dest_label">Fondo destino</string>
+    <string name="portfolio_transfer_no_destinations">No hay otros fondos traspasables en esta cuenta. Crea primero el fondo destino desde Ajustes › Portfolio.</string>
+    <string name="portfolio_transfer_qty_label">Participaciones a traspasar</string>
+    <string name="portfolio_transfer_available">Disponible: %1$s participaciones a esa fecha</string>
+    <string name="portfolio_transfer_only_available">Solo tienes %1$s participaciones disponibles a esa fecha</string>
+    <string name="portfolio_transfer_vl_label">VL fondo destino (precio por participación)</string>
+    <string name="portfolio_transfer_date_label">Fecha del traspaso</string>
+    <string name="portfolio_transfer_source_platform">Plataforma origen</string>
+    <string name="portfolio_transfer_dest_platform">Plataforma destino</string>
+    <string name="portfolio_transfer_no_platforms">Sin plataformas disponibles.</string>
+    <string name="portfolio_transfer_confirm_btn">Confirmar traspaso</string>
 
     <!-- =====================================================================
          VERSION – Actualización
@@ -629,4 +883,181 @@
     <string name="version_update_available">Versión %1$s disponible</string>
     <string name="version_block_title">Actualización requerida</string>
     <string name="version_update_now">Actualizar ahora</string>
+
+    <!-- FIXED INCOME - Create/Edit -->
+    <string name="fixedincome_create_position">Crear posición</string>
+    <string name="fixedincome_save_changes">Guardar cambios</string>
+    <string name="fixedincome_duration_label">Duración (meses)</string>
+    <string name="fixedincome_duration_title">Duración</string>
+    <string name="fixedincome_years_label">Años</string>
+    <string name="fixedincome_months_label">Meses</string>
+    <string name="fixedincome_entity_financial_label">Entidad financiera</string>
+    <string name="fixedincome_issuer_state_label">Emisor (Estado)</string>
+    <string name="fixedincome_issuer_entity_label">Emisor (Estado/Empresa)</string>
+    <string name="fixedincome_new_issuer">Nuevo emisor</string>
+    <string name="fixedincome_no_issuers_hint">No hay emisores. Crea uno nuevo.</string>
+    <string name="fixedincome_issuer_name_label">Nombre</string>
+    <string name="fixedincome_icon_label">Icono</string>
+    <string name="fixedincome_create_issuer">Crear</string>
+    <string name="fixedincome_capital_label">Capital (€)</string>
+    <string name="fixedincome_capital_invested_label">Capital invertido (€)</string>
+    <string name="fixedincome_nominal_value_label">Valor nominal (€)</string>
+    <string name="fixedincome_nominal_hint">El nominal es el valor facial del bono (base para calcular intereses y amortización)</string>
+    <string name="fixedincome_fee_notes_label">Notas de comisiones (opcional)</string>
+    <string name="fixedincome_select_date_cd">Seleccionar fecha</string>
+    <string name="fixedincome_auto_calculated">Calculada automáticamente</string>
+    <string name="fixedincome_region_title">Región</string>
+    <string name="fixedincome_sector_title">Sector</string>
+    <string name="fixedincome_start_date_label">Fecha de inicio</string>
+    <string name="fixedincome_maturity_date_label">Fecha de vencimiento</string>
+    <string name="fixedincome_auto_renew_label">Auto-renovar al vencimiento</string>
+    <string name="fixedincome_duration_guide">Rango habitual para %1$s: %2$d - %3$d meses</string>
+
+    <!-- REAL ESTATE - AddEditProperty -->
+    <string name="realestate_name_placeholder">Ej: Mi casa</string>
+    <string name="realestate_address_placeholder">Ej: Calle Mayor 1, Madrid</string>
+    <string name="realestate_purchase_price_label">Compra (€)</string>
+    <string name="realestate_current_value_label">Valor actual (€)</string>
+    <string name="realestate_acquisition_date_label">Fecha de adquisición</string>
+    <string name="realestate_ownership_label">% de propiedad</string>
+    <string name="realestate_rental_status_label">Estado de alquiler</string>
+    <string name="realestate_monthly_rent_label">Renta mensual (€)</string>
+    <string name="realestate_change_mortgage">Cambiar hipoteca</string>
+    <string name="realestate_link_mortgage">Vincular hipoteca</string>
+    <string name="realestate_purchase_expenses_title">Gastos de compra</string>
+    <string name="realestate_add_expense">Añadir</string>
+    <string name="realestate_no_expenses">No hay gastos de compra. Pulsa "Añadir" para incluir notaría, ITP, tasación, etc.</string>
+    <string name="realestate_total_expenses_format">Total gastos: %1$s</string>
+    <string name="realestate_save_changes">Guardar cambios</string>
+    <string name="realestate_add_property">Añadir propiedad</string>
+    <string name="realestate_new_title">Nueva propiedad</string>
+
+    <!-- REAL ESTATE - SellProperty -->
+    <string name="realestate_sale_price_hint">Ej: 275000</string>
+    <string name="realestate_sale_date_title">Fecha de venta</string>
+    <string name="realestate_sale_expenses_title_alt">Gastos de venta</string>
+    <string name="realestate_add_sale_expense">Añadir gasto</string>
+    <string name="realestate_no_sale_expenses">No has añadido gastos de venta (comisión, plusvalía, notaría…)</string>
+    <string name="realestate_sale_summary">Resumen</string>
+    <string name="realestate_sale_price_short">Precio venta</string>
+    <string name="realestate_sale_expenses_short">Gastos venta</string>
+    <string name="realestate_net_proceeds">Efectivo neto</string>
+    <string name="realestate_confirm_sale">Confirmar venta</string>
+
+    <!-- LOAN -->
+    <string name="loan_new_title">Nuevo préstamo</string>
+    <string name="loan_save">Guardar</string>
+    <string name="loan_name_placeholder">Ej: Hipoteca Mi Casa</string>
+    <string name="loan_lender_placeholder">Ej: Banco Santander</string>
+    <string name="loan_principal_placeholder">Ej: 150000</string>
+    <string name="loan_interest_placeholder">Ej: 3.5</string>
+    <string name="loan_term_placeholder">Ej: 360</string>
+    <string name="loan_interest_only">Solo intereses</string>
+    <string name="loan_interest_only_hint">Solo intereses: el capital no se amortiza</string>
+
+    <!-- PREMIUM -->
+    <string name="premium_trackfolio_title">Trackfolio Premium</string>
+    <string name="premium_already_premium_subtitle">Ya eres Premium</string>
+    <string name="premium_features_title">Funcionalidades Premium</string>
+    <string name="premium_multiple_accounts">Múltiples cuentas</string>
+    <string name="premium_fiscal_report">Informe fiscal</string>
+    <string name="premium_backup">Copia de seguridad</string>
+    <string name="premium_priority_support">Soporte prioritario</string>
+    <string name="premium_coming_soon">Próximamente</string>
+    <string name="premium_already_purchased">Ya has adquirido Premium. ¡Gracias por tu apoyo!</string>
+    <string name="premium_purchase_error">Error al procesar la compra</string>
+    <string name="premium_restore_error">Error al restaurar la compra</string>
+    <string name="premium_restoring">Restaurando compra…</string>
+
+    <!-- PORTFOLIO - Dividends -->
+    <string name="portfolio_dividend_save">Guardar dividendo</string>
+
+    <!-- ONBOARDING -->
+    <string name="onboarding_welcome_title_alt">Bienvenido a N3to</string>
+    <string name="onboarding_welcome_desc">Tus finanzas, bajo tu control</string>
+    <string name="onboarding_patrimonio_title">Tu patrimonio, claro</string>
+    <string name="onboarding_patrimonio_desc">Visualiza tu patrimonio neto, activos y pasivos en tiempo real</string>
+    <string name="onboarding_portfolio_desc">Acciones, ETFs, fondos y renta fija en un solo lugar</string>
+    <string name="onboarding_movements_desc">Ingresos, gastos e inversiones organizados por categorías</string>
+    <string name="onboarding_fiscal_desc">Informe fiscal automatizado con desglose por tipo de ingreso</string>
+    <string name="onboarding_realestate_desc">Gestiona propiedades, alquileres e hipotecas</string>
+
+    <!-- FIXED INCOME - RegisterCoupon -->
+    <string name="fixedincome_coupon_amount_label">Importe bruto (€)</string>
+    <string name="fixedincome_irpf_percent_label">Retención IRPF (%)</string>
+    <string name="fixedincome_commission_field">Comisión (€)</string>
+    <string name="fixedincome_register_coupon_btn">Registrar</string>
+
+    <!-- FIXED INCOME - Close -->
+    <string name="fixedincome_close_maturity">Liquidar al vencimiento</string>
+    <string name="fixedincome_close_early">Cancelación anticipada</string>
+    <string name="fixedincome_close_secondary">Venta secundaria</string>
+    <string name="fixedincome_close_date">Fecha de cierre</string>
+    <string name="fixedincome_close_notes">Notas</string>
+    <string name="fixedincome_close_confirm_btn">Confirmar cierre</string>
+
+    <!-- PORTFOLIO - Update price -->
+    <string name="portfolio_update_price_current">Precio actual</string>
+    <string name="portfolio_update_price_date">Fecha</string>
+
+    <!-- COMMON add missing -->
+    <string name="common_add">Añadir</string>
+    <string name="common_create">Crear</string>
+    <string name="common_name">Nombre</string>
+    <string name="common_save_changes">Guardar cambios</string>
+    <string name="common_confirm">Confirmar</string>
+    <string name="common_retry">Reintentar</string>
+    <string name="common_restore">Restaurar</string>
+    <string name="common_no_data">Sin datos</string>
+
+    <!-- PREMIUM - missing -->
+    <string name="premium_unlock_features">Desbloquea todas las funcionalidades</string>
+    <string name="premium_multiple_accounts_desc">Gestiona todas tus cuentas sin restricciones</string>
+    <string name="premium_ad_free_desc">Disfruta de la app sin interrupciones</string>
+    <string name="premium_themes_desc">Personaliza la app con temas claro y oscuro</string>
+    <string name="premium_welcome">¡Bienvenido a Trackfolio Premium!</string>
+    <string name="premium_error_format">Error: %1$s</string>
+    <string name="premium_restore_success">Compras restauradas correctamente</string>
+    <string name="premium_restore_error_format">Error al restaurar: %1$s</string>
+    <string name="premium_restore_cd">Restaurar compra</string>
+    <string name="premium_best_value">Mejor valor</string>
+    <string name="premium_monthly_label">Mensual</string>
+    <string name="premium_annual_label">Anual</string>
+    <string name="premium_lifetime_label">Vitalicio</string>
+    <string name="premium_back_cd">Volver</string>
+
+    <!-- PORTFOLIO - Update price -->
+    <string name="portfolio_update_previous_price">Precio anterior: %1$s</string>
+    <string name="portfolio_update_no_price">Aún no hay un precio registrado para este activo</string>
+    <string name="portfolio_update_save_hint">Quedará registrado con la fecha y hora actual.</string>
+    <string name="portfolio_update_save">Guardar precio</string>
+    <string name="portfolio_update_cancel">Cancelar</string>
+
+    <!-- FIXED INCOME - Coupon registration -->
+    <string name="fixedincome_coupon_register_title">Registrar cupón / interés</string>
+    <string name="fixedincome_net_amount_est">Importe neto estimado</string>
+    <string name="fixedincome_register_coupon_btn_alt">Registrar cobro</string>
+    <string name="fixedincome_close_title">Liquidar posición</string>
+    <string name="fixedincome_close_type_label">Tipo de cierre</string>
+    <string name="fixedincome_close_maturity_type">Vencimiento</string>
+    <string name="fixedincome_close_secondary_type">Venta en secundario</string>
+    <string name="fixedincome_close_early_type">Cancelación anticipada</string>
+    <string name="fixedincome_gross_received_label">Importe bruto recibido (€)</string>
+    <string name="fixedincome_irpf_label">Retención (%)</string>
+    <string name="fixedincome_commission_eur_label">Comisión (€)</string>
+    <string name="fixedincome_net_amount_label">Importe neto</string>
+    <string name="fixedincome_confirm_close">Confirmar liquidación</string>
+
+    <!-- PORTFOLIO - Dividend -->
+    <string name="portfolio_dividend_title_alt">Dividendo</string>
+    <string name="portfolio_dividend_asset_label">Activo</string>
+    <string name="portfolio_dividend_gross_hint">Introduce el importe bruto</string>
+    <string name="portfolio_dividend_gross_label">Importe bruto</string>
+    <string name="portfolio_dividend_withholding_label">Retención fiscal</string>
+    <string name="portfolio_dividend_gross_short">Bruto</string>
+    <string name="portfolio_dividend_withholding_short">Retención</string>
+    <string name="portfolio_dividend_net_short">Neto</string>
+    <string name="portfolio_dividend_select_asset_error">Selecciona un activo</string>
+    <string name="portfolio_dividend_valid_amount_error">Introduce un importe bruto válido</string>
+    <string name="portfolio_dividend_register">Registrar dividendo</string>
 </resources>

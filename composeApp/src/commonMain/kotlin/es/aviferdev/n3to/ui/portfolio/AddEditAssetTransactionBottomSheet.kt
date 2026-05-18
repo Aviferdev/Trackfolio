@@ -33,6 +33,39 @@ import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.common_accept
+import n3to.composeapp.generated.resources.common_cancel
+import n3to.composeapp.generated.resources.portfolio_add_tx_accept
+import n3to.composeapp.generated.resources.portfolio_add_tx_available
+import n3to.composeapp.generated.resources.portfolio_add_tx_cancel
+import n3to.composeapp.generated.resources.portfolio_add_tx_category_all
+import n3to.composeapp.generated.resources.portfolio_add_tx_category_filter
+import n3to.composeapp.generated.resources.portfolio_add_tx_date_label
+import n3to.composeapp.generated.resources.portfolio_add_tx_fee_hint
+import n3to.composeapp.generated.resources.portfolio_add_tx_fee_label
+import n3to.composeapp.generated.resources.portfolio_add_tx_fee_placeholder
+import n3to.composeapp.generated.resources.portfolio_add_tx_new
+import n3to.composeapp.generated.resources.portfolio_add_tx_no_assets_category
+import n3to.composeapp.generated.resources.portfolio_add_tx_no_assets_hint
+import n3to.composeapp.generated.resources.portfolio_add_tx_no_platforms_hint
+import n3to.composeapp.generated.resources.portfolio_add_tx_no_units_badge
+import n3to.composeapp.generated.resources.portfolio_add_tx_notes_label
+import n3to.composeapp.generated.resources.portfolio_add_tx_only_available
+import n3to.composeapp.generated.resources.portfolio_add_tx_platform_label
+import n3to.composeapp.generated.resources.portfolio_add_tx_platform_label_inline
+import n3to.composeapp.generated.resources.portfolio_add_tx_platform_not_assigned
+import n3to.composeapp.generated.resources.portfolio_add_tx_platform_select_hint
+import n3to.composeapp.generated.resources.portfolio_add_tx_price_label
+import n3to.composeapp.generated.resources.portfolio_add_tx_qty_label
+import n3to.composeapp.generated.resources.portfolio_add_tx_save_changes
+import n3to.composeapp.generated.resources.portfolio_add_tx_select_asset
+import n3to.composeapp.generated.resources.portfolio_add_tx_title_edit
+import n3to.composeapp.generated.resources.portfolio_add_tx_title_new
+import n3to.composeapp.generated.resources.portfolio_add_tx_type_buy
+import n3to.composeapp.generated.resources.portfolio_add_tx_type_sell
+import n3to.composeapp.generated.resources.portfolio_add_tx_units_label
+import org.jetbrains.compose.resources.stringResource
 
 /**
  * Sheet para registrar (o editar) un movimiento de compra/venta sobre un
@@ -253,7 +286,7 @@ fun AddEditAssetTransactionBottomSheet(
         ) {
             Spacer(Modifier.height(4.dp))
             Text(
-                text       = if (isEditing) "Editar movimiento" else "Nuevo movimiento",
+                text       = if (isEditing) stringResource(Res.string.portfolio_add_tx_title_edit) else stringResource(Res.string.portfolio_add_tx_title_new),
                 fontSize   = 18.sp,
                 fontWeight = FontWeight.SemiBold,
                 color      = TextPrimary,
@@ -271,14 +304,14 @@ fun AddEditAssetTransactionBottomSheet(
                     horizontalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
                     TypeToggle(
-                        label    = "Compra",
+                        label    = stringResource(Res.string.portfolio_add_tx_type_buy),
                         isSel    = type == AssetTransactionType.BUY,
                         selColor = IncomeGreen,
                         modifier = Modifier.weight(1f),
                         onClick  = { type = AssetTransactionType.BUY }
                     )
                     TypeToggle(
-                        label    = "Venta",
+                        label    = stringResource(Res.string.portfolio_add_tx_type_sell),
                         isSel    = type == AssetTransactionType.SELL,
                         selColor = ExpenseRed,
                         modifier = Modifier.weight(1f),
@@ -295,7 +328,7 @@ fun AddEditAssetTransactionBottomSheet(
                     categories.filter { !AssetCategoryType.isFixedIncome(it.id) }
                 }
                 if (investmentCategories.isNotEmpty()) {
-                    Text("Categoría", fontSize = 12.sp, color = TextSecondary, fontWeight = FontWeight.Medium)
+                    Text(stringResource(Res.string.portfolio_add_tx_category_filter), fontSize = 12.sp, color = TextSecondary, fontWeight = FontWeight.Medium)
                     Spacer(Modifier.height(6.dp))
                     Row(
                         modifier              = Modifier
@@ -304,7 +337,7 @@ fun AddEditAssetTransactionBottomSheet(
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         CategoryFilterChip(
-                            label    = "Todos",
+                            label    = stringResource(Res.string.portfolio_add_tx_category_all),
                             isSelected = selectedCategoryId == null,
                             onClick  = { selectedCategoryId = null }
                         )
@@ -320,12 +353,12 @@ fun AddEditAssetTransactionBottomSheet(
                     Spacer(Modifier.height(12.dp))
                 }
 
-                Text("Activo", fontSize = 12.sp, color = TextSecondary, fontWeight = FontWeight.Medium)
+                Text(stringResource(Res.string.portfolio_add_tx_select_asset), fontSize = 12.sp, color = TextSecondary, fontWeight = FontWeight.Medium)
                 Spacer(Modifier.height(8.dp))
                 if (filteredAssets.isEmpty()) {
                     if (selectedCategoryId != null && allAssets.isNotEmpty()) {
                         Text(
-                            text     = "No hay activos en esta categoría",
+                            text     = stringResource(Res.string.portfolio_add_tx_no_assets_category),
                             fontSize = 12.sp,
                             color    = TextSecondary
                         )
@@ -384,10 +417,10 @@ fun AddEditAssetTransactionBottomSheet(
             }
 
             // ── Plataforma (obligatoria — antes de cantidad para ventas) ─────
-            Text("Plataforma", fontSize = 12.sp, color = TextSecondary, fontWeight = FontWeight.Medium)
+            Text(stringResource(Res.string.portfolio_add_tx_platform_label), fontSize = 12.sp, color = TextSecondary, fontWeight = FontWeight.Medium)
             if (isSell && platformId == null && platformsWithStock.isNotEmpty()) {
                 Text(
-                    text     = "Selecciona dónde tienes las unidades",
+                    text     = stringResource(Res.string.portfolio_add_tx_platform_select_hint),
                     fontSize = 11.sp,
                     color    = ExpenseRed.copy(alpha = 0.8f)
                 )
@@ -399,7 +432,7 @@ fun AddEditAssetTransactionBottomSheet(
                 // Hint cuando el activo no tiene plataformas vinculadas
                 if (!hasLinkedPlatforms && selectedAssetId != null) {
                     Text(
-                        text     = "Este activo no tiene plataformas asignadas. Vincula una desde Ajustes.",
+                        text     = stringResource(Res.string.portfolio_add_tx_platform_not_assigned),
                         fontSize = 11.sp,
                         color    = TextSecondary,
                         modifier = Modifier.padding(bottom = 8.dp)
@@ -421,7 +454,7 @@ fun AddEditAssetTransactionBottomSheet(
                             label      = p.name,
                             isSelected = platformId == p.id,
                             enabled    = enabled,
-                            badge      = if (isSell && hasStock) "${formatQty(available)} u." else null,
+                            badge      = if (isSell && hasStock) "${formatQty(available)} ${stringResource(Res.string.portfolio_add_tx_units_label)}" else null,
                             onClick    = { if (enabled) platformId = p.id }
                         )
                     }
@@ -437,7 +470,7 @@ fun AddEditAssetTransactionBottomSheet(
                 OutlinedTextField(
                     value         = quantity,
                     onValueChange = { quantity = it.filter { c -> c.isDigit() || c == ',' || c == '.' } },
-                    label         = { Text("Cantidad") },
+                    label         = { Text(stringResource(Res.string.portfolio_add_tx_qty_label)) },
                     placeholder   = { Text("0") },
                     isError       = sellExceeds,
                     modifier      = Modifier.weight(1f),
@@ -452,7 +485,7 @@ fun AddEditAssetTransactionBottomSheet(
                 OutlinedTextField(
                     value         = pricePerUnit,
                     onValueChange = { pricePerUnit = it.filter { c -> c.isDigit() || c == ',' || c == '.' } },
-                    label         = { Text("Precio unidad") },
+                    label         = { Text(stringResource(Res.string.portfolio_add_tx_price_label)) },
                     placeholder   = { Text("0,00") },
                     trailingIcon  = { Text("€", color = TextSecondary, modifier = Modifier.padding(end = 12.dp)) },
                     modifier      = Modifier.weight(1f),
@@ -471,14 +504,15 @@ fun AddEditAssetTransactionBottomSheet(
                     availableByPlatform[platformId] ?: 0.0
                 else
                     availableForSale
+                val platformName = platforms.firstOrNull { it.id == platformId }?.name ?: ""
                 val platformLabel = if (platformId != null)
-                    " en ${platforms.firstOrNull { it.id == platformId }?.name ?: "plataforma"}"
+                    stringResource(Res.string.portfolio_add_tx_platform_label_inline, platformName)
                 else ""
                 Text(
                     text     = if (sellExceeds)
-                        "Solo tienes ${formatQty(displayAvailable)} unidades disponibles$platformLabel a esa fecha"
+                        stringResource(Res.string.portfolio_add_tx_only_available, formatQty(displayAvailable), platformLabel)
                     else
-                        "Disponible: ${formatQty(displayAvailable)} unidades$platformLabel a esa fecha",
+                        stringResource(Res.string.portfolio_add_tx_available, formatQty(displayAvailable), platformLabel),
                     fontSize = 11.sp,
                     color    = if (sellExceeds) ExpenseRed else TextSecondary
                 )
@@ -486,7 +520,7 @@ fun AddEditAssetTransactionBottomSheet(
             Spacer(Modifier.height(12.dp))
 
             // ── Fecha ────────────────────────────────────────────────────────
-            Text("Fecha", fontSize = 12.sp, color = TextSecondary, fontWeight = FontWeight.Medium)
+            Text(stringResource(Res.string.portfolio_add_tx_date_label), fontSize = 12.sp, color = TextSecondary, fontWeight = FontWeight.Medium)
             Spacer(Modifier.height(6.dp))
             Box(
                 modifier = Modifier
@@ -508,11 +542,11 @@ fun AddEditAssetTransactionBottomSheet(
             OutlinedTextField(
                 value         = feeNote,
                 onValueChange = { feeNote = it },
-                label         = { Text("Comisión (opcional)") },
-                placeholder   = { Text("Ej. 0,5%, 1,20 €") },
+                label         = { Text(stringResource(Res.string.portfolio_add_tx_fee_label)) },
+                placeholder   = { Text(stringResource(Res.string.portfolio_add_tx_fee_placeholder)) },
                 supportingText = {
                     Text(
-                        text     = "Texto informativo. No se incluye en el cálculo del P&L.",
+                        text     = stringResource(Res.string.portfolio_add_tx_fee_hint),
                         fontSize = 11.sp,
                         color    = TextSecondary
                     )
@@ -531,7 +565,7 @@ fun AddEditAssetTransactionBottomSheet(
             OutlinedTextField(
                 value         = notes,
                 onValueChange = { notes = it },
-                label         = { Text("Nota (opcional)") },
+                label         = { Text(stringResource(Res.string.portfolio_add_tx_notes_label)) },
                 modifier      = Modifier.fillMaxWidth(),
                 singleLine    = true,
                 shape         = RoundedCornerShape(10.dp),
@@ -569,7 +603,7 @@ fun AddEditAssetTransactionBottomSheet(
                 )
             ) {
                 Text(
-                    text       = if (isEditing) "Guardar cambios" else "Registrar movimiento",
+                    text       = if (isEditing) stringResource(Res.string.portfolio_add_tx_save_changes) else stringResource(Res.string.portfolio_add_tx_new),
                     fontSize   = 16.sp,
                     fontWeight = FontWeight.Medium
                 )
@@ -591,11 +625,11 @@ fun AddEditAssetTransactionBottomSheet(
                         dateMillis = selected
                     }
                     showDatePicker = false
-                }) { Text("Aceptar", color = PrimaryDark) }
+                }) { Text(stringResource(Res.string.portfolio_add_tx_accept), color = PrimaryDark) }
             },
             dismissButton = {
                 TextButton(onClick = { showDatePicker = false }) {
-                    Text("Cancelar", color = TextSecondary)
+                    Text(stringResource(Res.string.portfolio_add_tx_cancel), color = TextSecondary)
                 }
             },
             colors = DatePickerDefaults.colors(containerColor = SurfaceWhite)
@@ -775,7 +809,7 @@ private fun PlatformChip(
             )
         } else if (!enabled) {
             Text(
-                text     = "Sin unidades",
+                text     = stringResource(Res.string.portfolio_add_tx_no_units_badge),
                 fontSize = 10.sp,
                 color    = TextSecondary.copy(alpha = 0.5f),
                 modifier = Modifier.padding(top = 2.dp)
@@ -795,7 +829,7 @@ private fun EmptyAssetsHint() {
         contentAlignment = Alignment.Center
     ) {
         Text(
-            text     = "Aún no tienes activos. Créalos primero desde Ajustes › Portfolio › Activos.",
+            text     = stringResource(Res.string.portfolio_add_tx_no_assets_hint),
             fontSize = 12.sp,
             color    = TextSecondary
         )
@@ -812,7 +846,7 @@ private fun EmptyPlatformsInlineHint() {
             .padding(14.dp)
     ) {
         Text(
-            text     = "No hay plataformas creadas. Ve a Ajustes › Portfolio › Plataformas para crear una.",
+            text     = stringResource(Res.string.portfolio_add_tx_no_platforms_hint),
             fontSize = 12.sp,
             color    = TextSecondary
         )

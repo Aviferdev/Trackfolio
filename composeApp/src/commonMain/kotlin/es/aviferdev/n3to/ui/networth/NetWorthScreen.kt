@@ -38,6 +38,32 @@ import kotlinx.coroutines.delay
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.networth_accounts_label
+import n3to.composeapp.generated.resources.networth_add_loan_cd
+import n3to.composeapp.generated.resources.networth_add_property_cd
+import n3to.composeapp.generated.resources.networth_assets_label
+import n3to.composeapp.generated.resources.networth_assets_label_alt
+import n3to.composeapp.generated.resources.networth_debts_label
+import n3to.composeapp.generated.resources.networth_evolution_title
+import n3to.composeapp.generated.resources.networth_fixedincome_label
+import n3to.composeapp.generated.resources.networth_installments_format
+import n3to.composeapp.generated.resources.networth_investments_label
+import n3to.composeapp.generated.resources.networth_liabilities_label
+import n3to.composeapp.generated.resources.networth_liabilities_label_alt
+import n3to.composeapp.generated.resources.networth_monthly_format
+import n3to.composeapp.generated.resources.networth_monthly_title
+import n3to.composeapp.generated.resources.networth_no_data
+import n3to.composeapp.generated.resources.networth_no_liabilities
+import n3to.composeapp.generated.resources.networth_no_properties
+import n3to.composeapp.generated.resources.networth_of_format
+import n3to.composeapp.generated.resources.networth_portfolio_label
+import n3to.composeapp.generated.resources.networth_realestate_label
+import n3to.composeapp.generated.resources.networth_title
+import n3to.composeapp.generated.resources.networth_total_label
+import n3to.composeapp.generated.resources.networth_total_assets_label
+import n3to.composeapp.generated.resources.realestate_detail_title
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.math.abs
@@ -159,7 +185,7 @@ fun NetWorthContent(
             verticalAlignment     = Alignment.CenterVertically
         ) {
             Text(
-                text          = "Patrimonio",
+                text          = stringResource(Res.string.networth_title),
                 fontSize      = 18.sp,
                 fontWeight    = FontWeight.Bold,
                 color         = TextPrimary,
@@ -191,8 +217,8 @@ fun NetWorthContent(
                         enter   = fadeIn() + slideInVertically(initialOffsetY = { it / 10 })
                     ) {
                         LineChartWithTimeRange(
-                            title          = "Evolución del patrimonio",
-                            subtitle       = "Patrimonio neto mensual",
+                            title          = stringResource(Res.string.networth_evolution_title),
+                            subtitle       = stringResource(Res.string.networth_monthly_title),
                             points         = historyPoints,
                             lineColor      = CyanAccent,
                             balancesHidden = balancesHidden
@@ -209,12 +235,12 @@ fun NetWorthContent(
                 ) {
                     Column {
                         N3toLabel(
-                            text     = "Activos",
+                            text     = stringResource(Res.string.networth_assets_label_alt),
                             modifier = Modifier.padding(bottom = 8.dp)
                         )
                         if (assetDistribution.isNotEmpty()) {
                             DonutChartCard(
-                                title          = "Distribución · Activos",
+                                title          = stringResource(Res.string.networth_assets_label_alt),
                                 subtitle       = "",
                                 slices         = assetDistribution,
                                 totalAmount    = data.totalAssets,
@@ -238,7 +264,7 @@ fun NetWorthContent(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment     = Alignment.CenterVertically
                     ) {
-                        N3toLabel(text = "Inmuebles")
+                        N3toLabel(text = stringResource(Res.string.networth_realestate_label))
                         IconButton(
                             onClick  = onAddProperty,
                             modifier = Modifier
@@ -248,7 +274,7 @@ fun NetWorthContent(
                         ) {
                             Icon(
                                 imageVector        = Icons.Outlined.Add,
-                                contentDescription = "Añadir propiedad",
+                                contentDescription = stringResource(Res.string.networth_add_property_cd),
                                 tint               = CyanAccent,
                                 modifier           = Modifier.size(15.dp)
                             )
@@ -271,7 +297,7 @@ fun NetWorthContent(
                                 .padding(24.dp),
                             contentAlignment = Alignment.Center
                         ) {
-                            Text("Sin inmuebles registrados", color = TextTertiary, fontSize = 13.sp)
+                            Text(stringResource(Res.string.networth_no_properties), color = TextTertiary, fontSize = 13.sp)
                         }
                     }
                 }
@@ -302,7 +328,7 @@ fun NetWorthContent(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment     = Alignment.CenterVertically
                     ) {
-                        N3toLabel(text = "Pasivos")
+                        N3toLabel(text = stringResource(Res.string.networth_liabilities_label_alt))
                         IconButton(
                             onClick  = onAddLoan,
                             modifier = Modifier
@@ -312,7 +338,7 @@ fun NetWorthContent(
                         ) {
                             Icon(
                                 imageVector        = Icons.Outlined.Add,
-                                contentDescription = "Añadir préstamo",
+                                contentDescription = stringResource(Res.string.networth_add_loan_cd),
                                 tint               = CyanAccent,
                                 modifier           = Modifier.size(15.dp)
                             )
@@ -335,7 +361,7 @@ fun NetWorthContent(
                                 .padding(24.dp),
                             contentAlignment = Alignment.Center
                         ) {
-                            Text("Sin pasivos registrados", color = TextTertiary, fontSize = 13.sp)
+                            Text(stringResource(Res.string.networth_no_liabilities), color = TextTertiary, fontSize = 13.sp)
                         }
                     }
                 }
@@ -397,7 +423,7 @@ private fun NetWorthHeroCard(data: NetWorthData, balancesHidden: Boolean) {
             .padding(horizontal = 20.dp, vertical = 18.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-            N3toLabel(text = "Patrimonio neto", color = Color.White.copy(alpha = 0.60f))
+            N3toLabel(text = stringResource(Res.string.networth_total_label), color = Color.White.copy(alpha = 0.60f))
             Spacer(Modifier.height(6.dp))
             Text(
                 maskAmount(formatCurrency(data.netWorth), balancesHidden),
@@ -414,7 +440,7 @@ private fun NetWorthHeroCard(data: NetWorthData, balancesHidden: Boolean) {
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 NetWorthMetric(
-                    label = "Activos",
+                    label = stringResource(Res.string.networth_assets_label_alt),
                     value = "+${maskAmount(formatCurrency(data.totalAssets), balancesHidden)}",
                     color = PnLPositiveSoft
                 )
@@ -426,7 +452,7 @@ private fun NetWorthHeroCard(data: NetWorthData, balancesHidden: Boolean) {
                         .align(Alignment.CenterVertically)
                 )
                 NetWorthMetric(
-                    label = "Pasivos",
+                    label = stringResource(Res.string.networth_liabilities_label_alt),
                     value = "−${maskAmount(formatCurrency(data.totalLiabilities), balancesHidden)}",
                     color = PnLNegativeSoft
                 )
@@ -453,18 +479,18 @@ private fun AssetsSummaryCard(data: NetWorthData, balancesHidden: Boolean) {
         elevation = CardDefaults.cardElevation(0.dp)
     ) {
         Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
-            AssetRow("Balance cuentas", data.totalAccountBalance, balancesHidden)
+            AssetRow(stringResource(Res.string.networth_accounts_label), data.totalAccountBalance, balancesHidden)
             if (data.totalPortfolioValue > 0) {
                 Spacer(Modifier.height(10.dp))
                 HorizontalDivider(color = NavyBorder, thickness = 0.5.dp)
                 Spacer(Modifier.height(10.dp))
-                AssetRow("Portfolio inversiones", data.totalPortfolioValue, balancesHidden)
+                AssetRow(stringResource(Res.string.networth_portfolio_label), data.totalPortfolioValue, balancesHidden)
             }
             if (data.totalFixedIncomeValue > 0) {
                 Spacer(Modifier.height(10.dp))
                 HorizontalDivider(color = NavyBorder, thickness = 0.5.dp)
                 Spacer(Modifier.height(10.dp))
-                AssetRow("Renta fija", data.totalFixedIncomeValue, balancesHidden)
+                AssetRow(stringResource(Res.string.networth_fixedincome_label), data.totalFixedIncomeValue, balancesHidden)
             }
             HorizontalDivider(
                 modifier  = Modifier.padding(vertical = 12.dp),
@@ -476,7 +502,7 @@ private fun AssetsSummaryCard(data: NetWorthData, balancesHidden: Boolean) {
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    "Total activos",
+                    stringResource(Res.string.networth_total_assets_label),
                     fontWeight = FontWeight.SemiBold,
                     fontSize   = 13.sp,
                     color      = CyanAccent
@@ -522,7 +548,7 @@ private fun EverydayDebtsRow(amount: Double, balancesHidden: Boolean) {
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment     = Alignment.CenterVertically
         ) {
-            Text("Deudas cotidianas", fontSize = 13.sp, color = TextSecondary)
+            Text(stringResource(Res.string.networth_debts_label), fontSize = 13.sp, color = TextSecondary)
             Text(
                 "−${maskAmount(formatCurrency(amount), balancesHidden)}",
                 fontSize   = 13.sp,
@@ -568,7 +594,7 @@ private fun LoanCard(loan: Loan, onClick: () -> Unit) {
                         fontSize   = 13.sp,
                         color      = ExpenseRed
                     )
-                    Text("de ${formatCurrency(loan.totalAmount)}", fontSize = 10.sp, color = TextTertiary)
+                    Text(stringResource(Res.string.networth_of_format, formatCurrency(loan.totalAmount)), fontSize = 10.sp, color = TextTertiary)
                 }
             }
 
@@ -586,8 +612,8 @@ private fun LoanCard(loan: Loan, onClick: () -> Unit) {
                 modifier              = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text("${loan.paidInstallments}/${loan.totalInstallments} cuotas", fontSize = 10.sp, color = TextTertiary)
-                Text("${formatCurrency(loan.monthlyPayment)}/mes", fontSize = 10.sp, color = TextTertiary)
+                Text(stringResource(Res.string.networth_installments_format, loan.paidInstallments, loan.totalInstallments), fontSize = 10.sp, color = TextTertiary)
+                Text(stringResource(Res.string.networth_monthly_format, formatCurrency(loan.monthlyPayment)), fontSize = 10.sp, color = TextTertiary)
                 Text("${loan.currentInterestRate}%", fontSize = 10.sp, color = TextTertiary)
             }
         }
