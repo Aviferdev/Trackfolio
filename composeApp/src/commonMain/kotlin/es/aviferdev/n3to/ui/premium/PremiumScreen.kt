@@ -30,13 +30,19 @@ import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.WorkspacePremium
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -100,6 +106,7 @@ private fun getPackageLabel(identifier: String): String = when {
 private fun isBestValue(identifier: String): Boolean =
     identifier.contains("annual") || identifier.contains("yearly")
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PremiumScreen(
     onBack: () -> Unit,
@@ -196,13 +203,11 @@ fun PremiumScreen(
                 title = stringResource(Res.string.premium_unlimited_accounts),
                 description = stringResource(Res.string.premium_multiple_accounts_desc)
             )
-            PremiumFeature(
-                icon = Icons.Default.CheckCircle,
+            PremiumFeatureRow(
                 title = stringResource(Res.string.premium_no_ads),
                 description = stringResource(Res.string.premium_ad_free_desc)
             )
-            PremiumFeature(
-                icon = Icons.Default.CheckCircle,
+            PremiumFeatureRow(
                 title = stringResource(Res.string.premium_themes),
                 description = stringResource(Res.string.premium_themes_desc)
             )
@@ -210,7 +215,8 @@ fun PremiumScreen(
             Spacer(Modifier.height(36.dp))
 
             // Tarjetas de precio
-            if (uiState.isPremium) {
+            when {
+                uiState.isPremium -> {
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(16.dp),
@@ -234,26 +240,12 @@ fun PremiumScreen(
                         }
                     }
                 }
+                }
                 uiState.productLoadError != null -> {
                     PremiumErrorCard(
                         message = uiState.productLoadError ?: "",
                         onRetry = { viewModel.retryLoadProducts() }
                     )
-                ) {
-                    Column(
-                        modifier = Modifier.padding(24.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text(
-                            uiState.productLoadError ?: "",
-                            style = MaterialTheme.typography.bodyMedium,
-                            textAlign = TextAlign.Center
-                        )
-                        Spacer(Modifier.height(12.dp))
-                        Button(onClick = { viewModel.retryLoadProducts() }) {
-                            Text(stringResource(Res.string.common_retry))
-                        }
-                    }
                 }
                 else -> {
                     uiState.products.forEach { product ->
@@ -298,6 +290,9 @@ fun PremiumScreen(
                     Text(stringResource(Res.string.premium_restore_cd))
                 }
             }
+        }
+    }
+}
 
 // ─────────────────────────────────────────────────────────────────────────────
 //  Hero glassmorphism card
