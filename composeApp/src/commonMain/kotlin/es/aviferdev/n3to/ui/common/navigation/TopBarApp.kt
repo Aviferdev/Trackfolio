@@ -23,11 +23,14 @@ import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.common_back_cd
 import org.jetbrains.compose.resources.stringResource
 import es.aviferdev.n3to.ui.common.separator.SpacerHorizontalApp
+import androidx.compose.ui.graphics.Color
 import es.aviferdev.n3to.ui.theme.BorderGray
+import es.aviferdev.n3to.ui.theme.NavyBorder
+import es.aviferdev.n3to.ui.theme.NavySurface
 import es.aviferdev.n3to.ui.theme.SurfaceWhite
 import es.aviferdev.n3to.ui.theme.TextPrimary
 import es.aviferdev.n3to.ui.theme.TextTertiary
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.Preview
 
 
 @Composable
@@ -35,9 +38,11 @@ fun TopBarApp(
     title: String,
     navigateBack: (() -> Unit)? = null,
     subtitle: String? = null,
+    containerColor: Color = SurfaceWhite,
+    dividerColor: Color = BorderGray,
     actions: @Composable RowScope.() -> Unit = {}
 ) {
-    Surface(color = SurfaceWhite) {
+    Surface(color = containerColor) {
         Row(
             modifier = Modifier.fillMaxWidth()
                 .padding(horizontal = 8.dp)
@@ -73,7 +78,7 @@ fun TopBarApp(
             }
             actions()
         }
-        HorizontalDivider(color = BorderGray, thickness = 0.5.dp)
+        HorizontalDivider(color = dividerColor, thickness = 0.5.dp)
     }
 }
 

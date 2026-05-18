@@ -2,6 +2,7 @@ package es.aviferdev.n3to.ui.settings
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -18,6 +19,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material.icons.outlined.Star
@@ -36,6 +38,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.text.AnnotatedString
@@ -47,15 +54,18 @@ import es.aviferdev.n3to.core.premium.PremiumManager
 import es.aviferdev.n3to.ui.common.InitialsAvatar
 import es.aviferdev.n3to.ui.common.N3toLabel
 import es.aviferdev.n3to.ui.common.navigation.TopBarApp
-import es.aviferdev.n3to.ui.theme.BackgroundGray
-import es.aviferdev.n3to.ui.theme.BorderGray
+import es.aviferdev.n3to.ui.theme.CyanAccent
+import es.aviferdev.n3to.ui.theme.CyanGlow
 import es.aviferdev.n3to.ui.theme.N3toTheme
-import es.aviferdev.n3to.ui.theme.PrimaryDark
-import es.aviferdev.n3to.ui.theme.SurfaceWhite
+import es.aviferdev.n3to.ui.theme.NavyBorder
+import es.aviferdev.n3to.ui.theme.NavyDeep
+import es.aviferdev.n3to.ui.theme.NavySelected
+import es.aviferdev.n3to.ui.theme.NavySurface
+import es.aviferdev.n3to.ui.theme.NavySurfaceLight
 import es.aviferdev.n3to.ui.theme.TextPrimary
 import es.aviferdev.n3to.ui.theme.TextTertiary
 import kotlinx.coroutines.delay
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.Preview
 import org.koin.compose.koinInject
 import org.koin.core.qualifier.named
 
@@ -94,23 +104,18 @@ fun AboutContent(
     var copiedEmail by remember { mutableStateOf(false) }
     val clipboardManager = LocalClipboardManager.current
 
-    // Resetear contador si pasan >1.5s sin tocar
     LaunchedEffect(tapCount) {
         if (tapCount > 0) {
             delay(1500)
             tapCount = 0
         }
     }
-
-    // Ocultar "Copiado" tras 1.5s
     LaunchedEffect(copiedToClipboard) {
         if (copiedToClipboard) {
             delay(1500)
             copiedToClipboard = false
         }
     }
-
-    // Ocultar "Copiado" del email tras 1.5s
     LaunchedEffect(copiedEmail) {
         if (copiedEmail) {
             delay(1500)
@@ -118,14 +123,14 @@ fun AboutContent(
         }
     }
 
-    Column(modifier = modifier.fillMaxSize().background(BackgroundGray)) {
+    Column(modifier = modifier.fillMaxSize().background(NavyDeep)) {
         TopBarApp(title = "Acerca de", navigateBack = onBack)
 
         LazyColumn(
             contentPadding = PaddingValues(horizontal = 16.dp, vertical = 14.dp),
             verticalArrangement = Arrangement.spacedBy(18.dp)
         ) {
-            // ── Cabecera de la app ────────────────────────────────────────────
+            // ── Cabecera hero ─────────────────────────────────────────────────
             item {
                 AboutHeaderSection()
             }
@@ -170,7 +175,7 @@ fun AboutContent(
                                     Text(
                                         text = if (copiedToClipboard) "¡Copiado!" else appUserId,
                                         fontSize = 11.sp,
-                                        color = if (copiedToClipboard) PrimaryDark else TextTertiary,
+                                        color = if (copiedToClipboard) CyanAccent else TextTertiary,
                                         textAlign = TextAlign.Start
                                     )
                                 }
@@ -219,32 +224,55 @@ fun AboutContent(
                 }
             }
 
-            // ── Espaciado inferior ────────────────────────────────────────────
             item { Spacer(Modifier.height(60.dp)) }
         }
     }
 }
 
-// ─── HEADER ─────────────────────────────────────────────────────────────────────
+// ─── HEADER — glassmorphism lite hero ────────────────────────────────────────────
 @Composable
 private fun AboutHeaderSection() {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 24.dp),
+            .clip(RoundedCornerShape(20.dp))
+            .drawBehind {
+                drawRect(
+                    brush = Brush.linearGradient(
+                        colors = listOf(NavySurface, NavySurfaceLight),
+                        start = Offset(0f, 0f),
+                        end = Offset(size.width, size.height)
+                    )
+                )
+                val orbRadius = 90.dp.toPx()
+                val cx = size.width - 40.dp.toPx()
+                val cy = 40.dp.toPx()
+                drawCircle(
+                    brush = Brush.radialGradient(
+                        colors = listOf(CyanGlow.copy(alpha = 0.14f), Color.Transparent),
+                        center = Offset(cx, cy),
+                        radius = orbRadius
+                    ),
+                    radius = orbRadius,
+                    center = Offset(cx, cy)
+                )
+            }
+            .padding(horizontal = 22.dp, vertical = 28.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         InitialsAvatar(
             text = "N3",
-            size = 56.dp,
-            textSize = 20
+            bgColor = NavySelected,
+            size = 64.dp,
+            textSize = 22
         )
         Spacer(Modifier.height(12.dp))
         Text(
             text = "N3to",
             fontSize = 24.sp,
-            fontWeight = FontWeight.Bold,
-            color = TextPrimary
+            fontWeight = FontWeight.ExtraBold,
+            color = TextPrimary,
+            letterSpacing = (-0.5).sp
         )
         Spacer(Modifier.height(4.dp))
         Text(
@@ -255,13 +283,13 @@ private fun AboutHeaderSection() {
     }
 }
 
-// ─── GROUP CARD ─────────────────────────────────────────────────────────────────
+// ─── GROUP CARD — flat + NavyBorder ─────────────────────────────────────────────
 @Composable
 private fun AboutGroupCard(content: @Composable ColumnScope.() -> Unit) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = SurfaceWhite),
+        modifier = Modifier.fillMaxWidth().border(0.5.dp, NavyBorder, RoundedCornerShape(11.dp)),
+        shape = RoundedCornerShape(11.dp),
+        colors = CardDefaults.cardColors(containerColor = NavySurface),
         elevation = CardDefaults.cardElevation(0.dp)
     ) {
         Column(content = content)
@@ -273,7 +301,7 @@ private fun AboutGroupCard(content: @Composable ColumnScope.() -> Unit) {
 private fun AboutRowDivider() {
     HorizontalDivider(
         modifier = Modifier.padding(start = 52.dp),
-        color = BorderGray,
+        color = NavyBorder,
         thickness = 0.5.dp
     )
 }
@@ -302,7 +330,7 @@ private fun AboutInfoRow(label: String, value: String) {
     }
 }
 
-// ─── CLICKABLE INFO ROW (contador de taps o copia al portapapeles) ─────────────
+// ─── CLICKABLE INFO ROW ────────────────────────────────────────────────────────
 @Composable
 private fun AboutClickableInfoRow(
     label: String,
@@ -326,12 +354,12 @@ private fun AboutClickableInfoRow(
         Text(
             text = value,
             fontSize = 13.sp,
-            color = if (value == "Copiado") PrimaryDark else TextTertiary
+            color = if (value == "Copiado") CyanAccent else TextTertiary
         )
     }
 }
 
-// ─── NAVIGABLE ROW (con icono y flecha) ──────────────────────────────────────────
+// ─── NAVIGABLE ROW (con icono CyanAccent y flecha) ──────────────────────────────
 @Composable
 private fun AboutNavigableRow(
     icon: ImageVector,
@@ -348,7 +376,7 @@ private fun AboutNavigableRow(
         Icon(
             imageVector = icon,
             contentDescription = null,
-            tint = TextPrimary,
+            tint = CyanAccent,
             modifier = Modifier.size(20.dp)
         )
         Spacer(Modifier.width(14.dp))
@@ -360,7 +388,7 @@ private fun AboutNavigableRow(
             modifier = Modifier.weight(1f)
         )
         Icon(
-            imageVector = Icons.Default.KeyboardArrowRight,
+            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
             contentDescription = null,
             tint = TextTertiary,
             modifier = Modifier.size(18.dp)

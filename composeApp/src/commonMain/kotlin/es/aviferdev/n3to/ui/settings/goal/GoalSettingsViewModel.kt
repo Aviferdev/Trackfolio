@@ -1,5 +1,6 @@
 package es.aviferdev.n3to.ui.settings.goal
 
+import es.aviferdev.n3to.platform.nowYear
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import es.aviferdev.n3to.domain.model.MonthlyGoal
@@ -10,9 +11,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import kotlinx.datetime.Clock
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
 
 data class MonthGoalUi(
     val month: String,
@@ -38,8 +36,7 @@ data class GoalSettingsUiState(
     val customizedCount: Int get() = months.count { it.isCustomized }
 }
 
-private fun currentYear(): String =
-    Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).year.toString()
+private fun currentYear(): String = nowYear().toString()
 
 private fun emptyMonths(): List<MonthGoalUi> =
     monthLabels.mapIndexed { index, label ->

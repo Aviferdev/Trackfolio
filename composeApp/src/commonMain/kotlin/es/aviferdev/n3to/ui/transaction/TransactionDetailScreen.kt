@@ -11,7 +11,7 @@ import androidx.compose.material.icons.outlined.ArrowUpward
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.House
-import androidx.compose.material.icons.outlined.ShowChart
+import androidx.compose.material.icons.automirrored.outlined.ShowChart
 import androidx.compose.material.icons.outlined.SwapHoriz
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -199,7 +199,7 @@ private fun TransactionDetailContent(
 
         val categoryIcon = when {
             transaction.isAdjustment   -> Icons.Outlined.SwapHoriz
-            transaction.isLinkedToAsset -> Icons.Outlined.ShowChart
+            transaction.isLinkedToAsset -> Icons.AutoMirrored.Outlined.ShowChart
             isLinkedToProperty         -> Icons.Outlined.House
             transaction.isIncome       -> Icons.Outlined.ArrowDownward
             else                       -> Icons.Outlined.ArrowUpward

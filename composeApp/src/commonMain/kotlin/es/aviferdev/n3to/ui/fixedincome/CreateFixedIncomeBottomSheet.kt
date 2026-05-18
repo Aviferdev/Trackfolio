@@ -63,7 +63,7 @@ import n3to.composeapp.generated.resources.fixedincome_select_date_cd
 import n3to.composeapp.generated.resources.fixedincome_start_date_label
 import n3to.composeapp.generated.resources.fixedincome_type_label
 import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.Preview
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
@@ -187,9 +187,19 @@ fun CreateFixedIncomeBottomSheet(
         else -> listOf("📜", "🏛️", "🏢", "🌍")
     }
 
+    val navyFieldColors = OutlinedTextFieldDefaults.colors(
+        focusedBorderColor = CyanAccent,
+        unfocusedBorderColor = NavyBorder,
+        focusedLabelColor = CyanAccent,
+        unfocusedLabelColor = TextSecondary,
+        cursorColor = CyanAccent,
+        focusedTextColor = TextPrimary,
+        unfocusedTextColor = TextPrimary
+    )
+
     ModalBottomSheet(
         onDismissRequest = onDismiss,
-        containerColor = SurfaceWhite,
+        containerColor = NavySurface,
         sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     ) {
         Column(
@@ -226,8 +236,8 @@ fun CreateFixedIncomeBottomSheet(
                             }
                         },
                         colors = FilterChipDefaults.filterChipColors(
-                            selectedContainerColor = PrimaryDark,
-                            selectedLabelColor = androidx.compose.ui.graphics.Color.White
+                            selectedContainerColor = CyanAccent,
+                            selectedLabelColor = NavyDeep
                         )
                     )
                 }
@@ -249,8 +259,8 @@ fun CreateFixedIncomeBottomSheet(
                         onClick = { selectedFrequency = freq },
                         label = { Text(freq.label) },
                         colors = FilterChipDefaults.filterChipColors(
-                            selectedContainerColor = PrimaryDark,
-                            selectedLabelColor = androidx.compose.ui.graphics.Color.White
+                            selectedContainerColor = CyanAccent,
+                            selectedLabelColor = NavyDeep
                         )
                     )
                 }
@@ -270,8 +280,9 @@ fun CreateFixedIncomeBottomSheet(
                 steps = 58,
                 modifier = Modifier.fillMaxWidth(),
                 colors = SliderDefaults.colors(
-                    thumbColor = PrimaryDark,
-                    activeTrackColor = PrimaryDark
+                    thumbColor = CyanAccent,
+                    activeTrackColor = CyanAccent,
+                    inactiveTrackColor = NavyBorder
                 )
             )
 
@@ -284,14 +295,14 @@ fun CreateFixedIncomeBottomSheet(
                 else -> "$monthsDisplay mes${if (monthsDisplay > 1) "es" else ""}"
             }
             Surface(
-                color = PrimaryDark.copy(alpha = 0.1f),
+                color = CyanAccent.copy(alpha = 0.12f),
                 shape = RoundedCornerShape(8.dp)
             ) {
                 Text(
                     text = durationLabel,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Medium,
-                    color = PrimaryDark,
+                    color = CyanAccent,
                     modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
                 )
             }
@@ -318,11 +329,11 @@ fun CreateFixedIncomeBottomSheet(
                         Icon(
                             imageVector = Icons.Default.CalendarMonth,
                             contentDescription = stringResource(Res.string.fixedincome_select_date_cd),
-                            tint = PrimaryDark
+                            tint = CyanAccent
                         )
                     }
                 },
-                colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = PrimaryDark)
+                colors = navyFieldColors
             )
 
             Spacer(Modifier.height(8.dp))
@@ -332,7 +343,7 @@ fun CreateFixedIncomeBottomSheet(
             Spacer(Modifier.height(4.dp))
             Surface(
                 modifier = Modifier.fillMaxWidth(),
-                color = SurfaceElevated,
+                color = NavySurfaceLight,
                 shape = RoundedCornerShape(8.dp)
             ) {
                 Row(
@@ -351,7 +362,7 @@ fun CreateFixedIncomeBottomSheet(
                     Text(
                         text = stringResource(Res.string.fixedincome_auto_calculated),
                         fontSize = 11.sp,
-                        color = TextTertiary
+                        color = CyanAccent.copy(alpha = 0.5f)
                     )
                 }
             }
@@ -369,17 +380,17 @@ fun CreateFixedIncomeBottomSheet(
                     label = { Text(entityLabel) },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .menuAnchor(),
+                        .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable),
                     readOnly = true,
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = issuerDropdownExpanded) },
-                    colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = PrimaryDark)
+                    colors = navyFieldColors
                 )
                 ExposedDropdownMenu(
                     expanded = issuerDropdownExpanded,
                     onDismissRequest = { issuerDropdownExpanded = false }
                 ) {
                     DropdownMenuItem(
-                        text = { Text("➕ ${stringResource(Res.string.fixedincome_new_issuer)}", color = PrimaryDark) },
+                        text = { Text("➕ ${stringResource(Res.string.fixedincome_new_issuer)}", color = CyanAccent) },
                         onClick = {
                             issuerDropdownExpanded = false
                             newIssuerIcon = when (selectedType) {
@@ -405,7 +416,7 @@ fun CreateFixedIncomeBottomSheet(
                                     issuerDropdownExpanded = false
                                 },
                                 trailingIcon = if (selectedIssuer?.id == issuer.id) {
-                                    { Icon(Icons.Default.Check, contentDescription = null, tint = PrimaryDark) }
+                                    { Icon(Icons.Default.Check, contentDescription = null, tint = CyanAccent) }
                                 } else null
                             )
                         }
@@ -429,8 +440,8 @@ fun CreateFixedIncomeBottomSheet(
                         onClick = { selectedRegion = if (selectedRegion == region) null else region },
                         label = { Text(region) },
                         colors = FilterChipDefaults.filterChipColors(
-                            selectedContainerColor = PrimaryDark,
-                            selectedLabelColor = androidx.compose.ui.graphics.Color.White
+                            selectedContainerColor = CyanAccent,
+                            selectedLabelColor = NavyDeep
                         )
                     )
                 }
@@ -452,8 +463,8 @@ fun CreateFixedIncomeBottomSheet(
                         onClick = { selectedSector = if (selectedSector == sector) null else sector },
                         label = { Text(sector) },
                         colors = FilterChipDefaults.filterChipColors(
-                            selectedContainerColor = PrimaryDark,
-                            selectedLabelColor = androidx.compose.ui.graphics.Color.White
+                            selectedContainerColor = CyanAccent,
+                            selectedLabelColor = NavyDeep
                         )
                     )
                 }
@@ -478,7 +489,7 @@ fun CreateFixedIncomeBottomSheet(
                         modifier = Modifier.weight(1f),
                         singleLine = true,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                        colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = PrimaryDark)
+                        colors = navyFieldColors
                     )
                     OutlinedTextField(
                         value = nominalPerUnitStr.ifBlank { principalStr },
@@ -487,7 +498,7 @@ fun CreateFixedIncomeBottomSheet(
                         modifier = Modifier.weight(1f),
                         singleLine = true,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                        colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = PrimaryDark)
+                        colors = navyFieldColors
                     )
                 }
                 Text(
@@ -504,7 +515,7 @@ fun CreateFixedIncomeBottomSheet(
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                    colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = PrimaryDark)
+                    colors = navyFieldColors
                 )
             }
 
@@ -518,7 +529,7 @@ fun CreateFixedIncomeBottomSheet(
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = PrimaryDark)
+                colors = navyFieldColors
             )
 
             Spacer(Modifier.height(12.dp))
@@ -530,7 +541,7 @@ fun CreateFixedIncomeBottomSheet(
                 label = { Text(stringResource(Res.string.fixedincome_fee_notes_label)) },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
-                colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = PrimaryDark)
+                colors = navyFieldColors
             )
 
             // ── Nombre generado ──────────────────────────────────────
@@ -605,10 +616,13 @@ fun CreateFixedIncomeBottomSheet(
                 },
                 modifier = Modifier.fillMaxWidth(),
                 enabled = isValid,
-                colors = ButtonDefaults.buttonColors(containerColor = PrimaryDark),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = CyanAccent,
+                    contentColor = NavyDeep
+                ),
                 shape = RoundedCornerShape(12.dp)
             ) {
-                Text(stringResource(Res.string.fixedincome_create_position), fontSize = 15.sp, modifier = Modifier.padding(vertical = 4.dp))
+                Text(stringResource(Res.string.fixedincome_create_position), fontSize = 15.sp, fontWeight = FontWeight.SemiBold, modifier = Modifier.padding(vertical = 4.dp))
             }
 
             Spacer(Modifier.height(16.dp))
@@ -619,6 +633,7 @@ fun CreateFixedIncomeBottomSheet(
     if (showNewIssuerDialog) {
         AlertDialog(
             onDismissRequest = { showNewIssuerDialog = false },
+            containerColor = NavySurface,
             title = { Text(stringResource(Res.string.fixedincome_new_issuer)) },
             text = {
                 Column {
@@ -627,7 +642,15 @@ fun CreateFixedIncomeBottomSheet(
                         onValueChange = { newIssuerName = it },
                         label = { Text(stringResource(Res.string.fixedincome_issuer_name_label)) },
                         modifier = Modifier.fillMaxWidth(),
-                        singleLine = true
+                        singleLine = true,
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = CyanAccent,
+                            unfocusedBorderColor = NavyBorder,
+                            focusedLabelColor = CyanAccent,
+                            cursorColor = CyanAccent,
+                            focusedTextColor = TextPrimary,
+                            unfocusedTextColor = TextPrimary
+                        )
                     )
                     Spacer(Modifier.height(12.dp))
                     Text(stringResource(Res.string.fixedincome_icon_label), fontSize = 12.sp, color = TextSecondary)
@@ -639,7 +662,11 @@ fun CreateFixedIncomeBottomSheet(
                             FilterChip(
                                 selected = newIssuerIcon == icon,
                                 onClick = { newIssuerIcon = icon },
-                                label = { Icon(icon.toMaterialIcon(), contentDescription = null, modifier = Modifier.size(20.dp)) }
+                                label = { Icon(icon.toMaterialIcon(), contentDescription = null, modifier = Modifier.size(20.dp)) },
+                                colors = FilterChipDefaults.filterChipColors(
+                                    selectedContainerColor = CyanAccent,
+                                    selectedLabelColor = NavyDeep
+                                )
                             )
                         }
                     }
@@ -656,7 +683,7 @@ fun CreateFixedIncomeBottomSheet(
                     },
                     enabled = newIssuerName.isNotBlank()
                 ) {
-                    Text(stringResource(Res.string.fixedincome_create_issuer), color = PrimaryDark)
+                    Text(stringResource(Res.string.fixedincome_create_issuer), color = CyanAccent)
                 }
             },
             dismissButton = {
@@ -677,7 +704,7 @@ fun CreateFixedIncomeBottomSheet(
                     pickerState.selectedDateMillis?.let { startDateMillis = it }
                     showDatePicker = false
                 }) {
-                    Text(stringResource(Res.string.common_accept), color = PrimaryDark)
+                    Text(stringResource(Res.string.common_accept), color = CyanAccent)
                 }
             },
             dismissButton = {

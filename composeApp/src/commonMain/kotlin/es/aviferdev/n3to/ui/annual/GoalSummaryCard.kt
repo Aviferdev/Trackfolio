@@ -15,7 +15,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.GpsFixed
-import androidx.compose.material.icons.outlined.ShowChart
+import androidx.compose.material.icons.automirrored.outlined.ShowChart
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -116,7 +116,7 @@ fun GoalSummaryCard(
             // Indicador de inversión
             if (investmentTotal > 0) {
                 GoalTypeSummaryRow(
-                    icon = Icons.Outlined.ShowChart,
+                    icon = Icons.AutoMirrored.Outlined.ShowChart,
                     label = "Inversión",
                     achieved = investmentAchieved,
                     total = if (allMonthsHaveInvestmentGoal) 12 else investmentTotal

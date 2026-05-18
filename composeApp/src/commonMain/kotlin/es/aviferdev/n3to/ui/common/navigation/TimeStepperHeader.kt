@@ -23,6 +23,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.graphics.Color
 import es.aviferdev.n3to.ui.common.button.IconButtonApp
 import es.aviferdev.n3to.ui.common.separator.SpacerHorizontalApp
 import es.aviferdev.n3to.ui.common.separator.SpacerVerticalApp
@@ -31,7 +32,7 @@ import es.aviferdev.n3to.ui.theme.SurfaceElevated
 import es.aviferdev.n3to.ui.theme.SurfaceWhite
 import es.aviferdev.n3to.ui.theme.TextPrimary
 import es.aviferdev.n3to.ui.theme.TextTertiary
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.Preview
 
 /**
  * Cabecera con navegación temporal (mes / año) que incluye un título
@@ -47,11 +48,13 @@ fun TimeStepperHeader(
     canGoBack: Boolean,
     onPrevious: () -> Unit,
     onNext: () -> Unit,
+    containerColor: Color = SurfaceWhite,
+    dividerColor: Color = BorderGray,
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(SurfaceWhite)
+            .background(containerColor)
             .padding(horizontal = 8.dp)
             .padding(top = 8.dp, bottom = 8.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -81,7 +84,7 @@ fun TimeStepperHeader(
         StepperArrowButton(enabled = true, onClick = onNext, label = "›")
         SpacerHorizontalApp(8.dp)
     }
-    HorizontalDivider(color = BorderGray, thickness = 0.5.dp)
+    HorizontalDivider(color = dividerColor, thickness = 0.5.dp)
 }
 
 @Composable

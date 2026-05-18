@@ -65,7 +65,7 @@ val androidModule = module {
                 }
                 ctx.startActivity(intent)
             }
-        } as () -> Unit
+        }
     }
     single(named("shareApp")) {
         {
@@ -82,6 +82,6 @@ val androidModule = module {
             val chooser = Intent.createChooser(shareIntent, "Compartir N3to")
             chooser.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             ctx.startActivity(chooser)
-        } as () -> Unit
+        }
     }
 }

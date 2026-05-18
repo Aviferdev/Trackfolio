@@ -1,6 +1,7 @@
 package es.aviferdev.n3to.ui.common
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.*
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.ui.graphics.vector.ImageVector
 import es.aviferdev.n3to.domain.model.FixedIncomeType
@@ -18,7 +19,7 @@ private val EMOJI_TO_ICON: Map<String, ImageVector> = mapOf(
     "🏦" to Icons.Outlined.AccountBalance,
     "💼" to Icons.Outlined.BusinessCenter,
     "💱" to Icons.Outlined.CurrencyExchange,
-    "📈" to Icons.Outlined.ShowChart,
+    "📈" to Icons.AutoMirrored.Outlined.ShowChart,
     "💳" to Icons.Outlined.CreditCard,
     "🏢" to Icons.Outlined.Business,
     "₿"  to Icons.Outlined.CurrencyBitcoin,
@@ -40,9 +41,9 @@ private val EMOJI_TO_ICON: Map<String, ImageVector> = mapOf(
     "📦" to Icons.Outlined.Inventory2,
 
     // ── Income / Fixed Income / Loans ──────────────────────────────────
-    "📜" to Icons.Outlined.ReceiptLong,
+    "📜" to Icons.AutoMirrored.Outlined.ReceiptLong,
     "🎁" to Icons.Outlined.CardGiftcard,
-    "📋" to Icons.Outlined.Assignment,
+    "📋" to Icons.AutoMirrored.Outlined.Assignment,
     "🏛️" to Icons.Outlined.AccountBalance,
     "🏠" to Icons.Outlined.House,
     "🚗" to Icons.Outlined.DirectionsCar,
@@ -59,7 +60,7 @@ private val EMOJI_TO_ICON: Map<String, ImageVector> = mapOf(
     "🎮" to Icons.Outlined.SportsEsports,
     "🍔" to Icons.Outlined.Fastfood,
     "💊" to Icons.Outlined.Medication,
-    "📚" to Icons.Outlined.MenuBook,
+    "📚" to Icons.AutoMirrored.Outlined.MenuBook,
     "🎬" to Icons.Outlined.Movie,
     "🔧" to Icons.Outlined.Build,
     "🌾" to Icons.Outlined.Agriculture,
@@ -69,11 +70,11 @@ private val EMOJI_TO_ICON: Map<String, ImageVector> = mapOf(
     "🍔" to Icons.Outlined.Fastfood,
 
     // ── UI-only emojis ──────────────────────────────────────────────────
-    "📉" to Icons.Outlined.TrendingDown,
+    "📉" to Icons.AutoMirrored.Outlined.TrendingDown,
     "💾" to Icons.Outlined.SaveAlt,
     "🔄" to Icons.Outlined.Sync,
     "⚖"  to Icons.Outlined.Balance,
-    "❔" to Icons.Outlined.HelpOutline,
+    "❔" to Icons.AutoMirrored.Outlined.HelpOutline,
     "🌍" to Icons.Outlined.Public,
 )
 
@@ -81,7 +82,7 @@ private val EMOJI_TO_ICON: Map<String, ImageVector> = mapOf(
  * Convierte un emoji String al [ImageVector] de Material correspondiente.
  * Si no hay mapeo, devuelve [Icons.Outlined.HelpOutline].
  */
-fun String.toMaterialIcon(): ImageVector = EMOJI_TO_ICON[this] ?: Icons.Outlined.HelpOutline
+fun String.toMaterialIcon(): ImageVector = EMOJI_TO_ICON[this] ?: Icons.AutoMirrored.Outlined.HelpOutline
 
 // ─────────────────────────────────────────────────────────────────────────────
 //  Extension functions for domain enums
@@ -91,18 +92,18 @@ fun String.toMaterialIcon(): ImageVector = EMOJI_TO_ICON[this] ?: Icons.Outlined
 fun IncomeType.toMaterialIcon(): ImageVector = when (this) {
     IncomeType.SALARY           -> Icons.Outlined.Work
     IncomeType.BANK_INTEREST    -> Icons.Outlined.AccountBalance
-    IncomeType.BOND_DEPOSIT     -> Icons.Outlined.ReceiptLong
-    IncomeType.DIVIDEND         -> Icons.Outlined.ShowChart
+    IncomeType.BOND_DEPOSIT     -> Icons.AutoMirrored.Outlined.ReceiptLong
+    IncomeType.DIVIDEND         -> Icons.AutoMirrored.Outlined.ShowChart
     IncomeType.BONUS_PRIZE      -> Icons.Outlined.CardGiftcard
     IncomeType.PRIZE_LOTTERY    -> Icons.Outlined.EmojiEvents
     IncomeType.RENTAL_INCOME    -> Icons.Outlined.House
     IncomeType.FREELANCE        -> Icons.Outlined.BusinessCenter
-    IncomeType.EXEMPT_INCOME    -> Icons.Outlined.Assignment
+    IncomeType.EXEMPT_INCOME    -> Icons.AutoMirrored.Outlined.Assignment
 }
 
 fun FixedIncomeType.toMaterialIcon(): ImageVector = when (this) {
-    FixedIncomeType.BILL                  -> Icons.Outlined.Assignment
-    FixedIncomeType.BOND                  -> Icons.Outlined.ReceiptLong
+    FixedIncomeType.BILL                  -> Icons.AutoMirrored.Outlined.Assignment
+    FixedIncomeType.BOND                  -> Icons.AutoMirrored.Outlined.ReceiptLong
     FixedIncomeType.GOVERNMENT_OBLIGATION -> Icons.Outlined.AccountBalance
     FixedIncomeType.CORPORATE_BOND        -> Icons.Outlined.Business
     FixedIncomeType.DEPOSIT               -> Icons.Outlined.Savings

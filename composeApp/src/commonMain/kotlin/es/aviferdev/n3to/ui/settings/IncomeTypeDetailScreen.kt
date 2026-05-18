@@ -22,7 +22,7 @@ import es.aviferdev.n3to.domain.model.IssuerType
 import es.aviferdev.n3to.ui.common.SectionHeader
 import es.aviferdev.n3to.ui.common.navigation.TopBarApp
 import es.aviferdev.n3to.ui.theme.*
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.Preview
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.common_accept
 import n3to.composeapp.generated.resources.common_error
@@ -78,7 +78,7 @@ fun IncomeTypeDetailScreen(
     issuerState.pendingDelete?.let { pending ->
         AlertDialog(
             onDismissRequest = { issuerViewModel.cancelDelete() },
-            containerColor = SurfaceWhite,
+            containerColor = NavySurface,
             icon = { Text(pending.icon, fontSize = 28.sp) },
             title = {
                 Text("Archivar emisor", fontSize = 17.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary)
@@ -96,7 +96,7 @@ fun IncomeTypeDetailScreen(
             },
             dismissButton = {
                 TextButton(onClick = { issuerViewModel.cancelDelete() }) {
-                    Text("Cancelar", color = PrimaryDark, fontWeight = FontWeight.Medium)
+                    Text("Cancelar", color = CyanAccent, fontWeight = FontWeight.Medium)
                 }
             },
             shape = RoundedCornerShape(16.dp)
@@ -110,12 +110,12 @@ fun IncomeTypeDetailScreen(
         }
         AlertDialog(
             onDismissRequest = { issuerViewModel.clearError() },
-            containerColor = SurfaceWhite,
+            containerColor = NavySurface,
             title = { Text(stringResource(Res.string.common_error), fontSize = 17.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary) },
             text = { Text(msg, fontSize = 14.sp, color = TextSecondary) },
             confirmButton = {
                 TextButton(onClick = { issuerViewModel.clearError() }) {
-                    Text(stringResource(Res.string.common_accept), color = PrimaryDark, fontWeight = FontWeight.Medium)
+                    Text(stringResource(Res.string.common_accept), color = CyanAccent, fontWeight = FontWeight.Medium)
                 }
             },
             shape = RoundedCornerShape(16.dp)
@@ -137,11 +137,13 @@ fun IncomeTypeDetailContent(
     modifier: Modifier = Modifier
 ) {
     Column(
-        modifier = modifier.fillMaxSize().background(BackgroundGray)
+        modifier = modifier.fillMaxSize().background(NavyDeep)
     ) {
         TopBarApp(
             title = title,
-            navigateBack = onBack
+            navigateBack = onBack,
+            containerColor = NavySurface,
+            dividerColor = NavyBorder
         )
 
         LazyColumn(
@@ -198,7 +200,7 @@ fun IncomeTypeDetailContent(
                             }
                             if (index < issuers.lastIndex) {
                                 HorizontalDivider(
-                                    color = BorderGray,
+                                    color = NavyBorder,
                                     thickness = 0.5.dp,
                                     modifier = Modifier.padding(start = 52.dp)
                                 )

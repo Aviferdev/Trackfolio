@@ -35,7 +35,7 @@ import androidx.compose.material.icons.outlined.EmojiEvents
 import androidx.compose.material.icons.outlined.House
 import androidx.compose.material.icons.outlined.RequestQuote
 import androidx.compose.material.icons.outlined.Search
-import androidx.compose.material.icons.outlined.ShowChart
+import androidx.compose.material.icons.automirrored.outlined.ShowChart
 import androidx.compose.material.icons.outlined.SwapHoriz
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
@@ -110,7 +110,7 @@ import n3to.composeapp.generated.resources.transaction_search_hint
 import n3to.composeapp.generated.resources.transaction_title
 import n3to.composeapp.generated.resources.transaction_type_adjustment
 import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -484,7 +484,7 @@ private fun TransactionCard(
     }
     val avatarIcon = when {
         isAdjustment -> Icons.Outlined.SwapHoriz
-        isLinkedAsset -> Icons.Outlined.ShowChart
+        isLinkedAsset -> Icons.AutoMirrored.Outlined.ShowChart
         isLinkedProperty -> Icons.Outlined.House
         isIncome -> Icons.Outlined.ArrowDownward
         else -> Icons.Outlined.ArrowUpward
@@ -506,7 +506,7 @@ private fun TransactionCard(
     val displayAmount =
         if (isAdjustment) kotlin.math.abs(transaction.amount) else transaction.amount
     val subtitle = when {
-        isIncome && transaction.issuerName != null -> transaction.issuerName!!
+        isIncome && transaction.issuerName != null -> transaction.issuerName
         !transaction.notes.isNullOrBlank() -> transaction.notes
         else -> null
     }
@@ -617,7 +617,7 @@ private fun incomeTypeIcon(incomeType: IncomeType): ImageVector = when (incomeTy
     IncomeType.SALARY        -> Icons.Outlined.Badge
     IncomeType.BANK_INTEREST -> Icons.Outlined.AccountBalance
     IncomeType.BOND_DEPOSIT  -> Icons.Outlined.RequestQuote
-    IncomeType.DIVIDEND      -> Icons.Outlined.ShowChart
+    IncomeType.DIVIDEND      -> Icons.AutoMirrored.Outlined.ShowChart
     IncomeType.BONUS_PRIZE   -> Icons.Outlined.CardGiftcard
     IncomeType.PRIZE_LOTTERY -> Icons.Outlined.EmojiEvents
     IncomeType.RENTAL_INCOME -> Icons.Outlined.House
@@ -653,13 +653,13 @@ private fun IncomeBadge(transaction: Transaction) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SwipeToDeleteContainer(onDelete: () -> Unit, content: @Composable () -> Unit) {
-    val state = rememberSwipeToDismissBoxState(
-        confirmValueChange = { v ->
-            if (v == SwipeToDismissBoxValue.EndToStart) {
-                onDelete(); false
-            } else false
+    val state = rememberSwipeToDismissBoxState()
+    LaunchedEffect(state.currentValue) {
+        if (state.currentValue == SwipeToDismissBoxValue.EndToStart) {
+            onDelete()
+            state.reset()
         }
-    )
+    }
     SwipeToDismissBox(
         state = state,
         enableDismissFromStartToEnd = false,

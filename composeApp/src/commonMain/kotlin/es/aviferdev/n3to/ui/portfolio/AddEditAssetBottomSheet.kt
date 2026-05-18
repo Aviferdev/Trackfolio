@@ -101,7 +101,7 @@ import n3to.composeapp.generated.resources.portfolio_add_asset_ticker_required
 import n3to.composeapp.generated.resources.portfolio_add_asset_title_create
 import n3to.composeapp.generated.resources.portfolio_add_asset_title_edit
 import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.Preview
 
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate

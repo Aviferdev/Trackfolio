@@ -31,7 +31,7 @@ import n3to.composeapp.generated.resources.common_update
 import n3to.composeapp.generated.resources.home_price_reminder_many
 import n3to.composeapp.generated.resources.home_price_reminder_one
 import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
 fun PriceReminderBanner(

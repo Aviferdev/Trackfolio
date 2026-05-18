@@ -7,6 +7,8 @@ import es.aviferdev.n3to.domain.model.TaxProfileSnapshot
 import es.aviferdev.n3to.domain.pdf.PdfReportGenerator
 import es.aviferdev.n3to.domain.usecase.fiscal.GetFiscalReportDataUseCase
 import es.aviferdev.n3to.domain.usecase.taxprofile.GetActiveTaxProfileSnapshotUseCase
+import es.aviferdev.n3to.platform.nowLocalDate
+import es.aviferdev.n3to.platform.nowYear
 import es.aviferdev.n3to.ui.account.AccountSession
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -14,10 +16,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
 
 data class FiscalReportUiState(
     val isLoading: Boolean            = true,
@@ -31,8 +30,7 @@ data class FiscalReportUiState(
     val hasNetOnlyIncomes: Boolean    = false
 )
 
-private fun currentYear(): String =
-    Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).year.toString()
+private fun currentYear(): String = nowYear().toString()
 
 class FiscalReportViewModel(
     private val getFiscalReportData: GetFiscalReportDataUseCase,
@@ -55,7 +53,7 @@ class FiscalReportViewModel(
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true)
 
-            val today     = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
+            val today     = nowLocalDate()
             val yearInt   = year.toIntOrNull()
             val queryDate = when {
                 yearInt == null          -> today

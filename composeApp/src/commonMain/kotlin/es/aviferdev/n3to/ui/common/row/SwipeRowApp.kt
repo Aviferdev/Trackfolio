@@ -12,6 +12,7 @@ import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -29,16 +30,13 @@ fun SwipeRowApp(
     onDelete: () -> Unit,
     content: @Composable () -> Unit
 ) {
-    val state = rememberSwipeToDismissBoxState(
-        confirmValueChange = { view ->
-            if (view == SwipeToDismissBoxValue.EndToStart) {
-                onDelete()
-                false
-            } else {
-                false
-            }
+    val state = rememberSwipeToDismissBoxState()
+    LaunchedEffect(state.currentValue) {
+        if (state.currentValue == SwipeToDismissBoxValue.EndToStart) {
+            onDelete()
+            state.reset()
         }
-    )
+    }
     SwipeToDismissBox(
         state = state,
         enableDismissFromStartToEnd = false,

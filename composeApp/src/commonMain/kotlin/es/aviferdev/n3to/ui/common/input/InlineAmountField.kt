@@ -18,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -28,7 +29,7 @@ import es.aviferdev.n3to.ui.theme.SurfaceElevated
 import es.aviferdev.n3to.ui.theme.TextPrimary
 import es.aviferdev.n3to.ui.theme.TextTertiary
 import es.aviferdev.n3to.ui.theme.N3toTheme
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.Preview
 
 /**
  * Campo de texto o numérico inline con label y placeholder sobre fondo elevado.
@@ -50,6 +51,8 @@ fun InlineAmountField(
     placeholder: String = "",
     suffix: String? = null,
     singleLine: Boolean = false,
+    containerColor: Color = SurfaceElevated,
+    cursorColor: Color = PrimaryDark,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
@@ -64,7 +67,7 @@ fun InlineAmountField(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(10.dp))
-                .background(SurfaceElevated)
+                .background(containerColor)
                 .padding(horizontal = 14.dp, vertical = 14.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
@@ -87,7 +90,7 @@ fun InlineAmountField(
                         fontWeight = FontWeight.Medium,
                         color = TextPrimary
                     ),
-                    cursorBrush = SolidColor(PrimaryDark),
+                    cursorBrush = SolidColor(cursorColor),
                     modifier = Modifier.fillMaxWidth()
                 )
             }

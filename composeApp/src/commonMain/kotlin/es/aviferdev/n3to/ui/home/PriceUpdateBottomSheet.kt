@@ -55,7 +55,7 @@ import es.aviferdev.n3to.ui.theme.N3toTheme
 import es.aviferdev.n3to.ui.theme.formatAmount
 import es.aviferdev.n3to.ui.theme.formatDate
 
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.Preview
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -219,7 +219,7 @@ private fun AssetPriceUpdateRow(
                         )
                         if (asset.currentPrice != null) {
                             Text(
-                                text     = " · ${formatAmount(asset.currentPrice!!)} €",
+                                text     = " · ${formatAmount(asset.currentPrice)} €",
                                 fontSize = 11.sp,
                                 color    = TextSecondary
                             )
@@ -227,7 +227,7 @@ private fun AssetPriceUpdateRow(
                     }
                     if (asset.currentPriceUpdatedAt != null) {
                         Text(
-                            text     = "Última: ${formatDate(asset.currentPriceUpdatedAt!!)}",
+                            text     = "Última: ${formatDate(asset.currentPriceUpdatedAt)}",
                             fontSize = 10.sp,
                             color    = TextSecondary.copy(alpha = 0.7f)
                         )

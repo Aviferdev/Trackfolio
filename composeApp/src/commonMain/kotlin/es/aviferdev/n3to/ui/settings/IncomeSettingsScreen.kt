@@ -19,7 +19,7 @@ import es.aviferdev.n3to.ui.common.SectionHeader
 import es.aviferdev.n3to.ui.common.toMaterialIcon
 import es.aviferdev.n3to.ui.common.navigation.TopBarApp
 import es.aviferdev.n3to.ui.theme.*
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.Preview
 
 /** Tipos de ingreso visibles en la Home (excluye los gestionados desde Portfolio). */
 private val HOME_INCOME_TYPES = IncomeType.entries.filter {
@@ -35,9 +35,14 @@ fun IncomeSettingsScreen(
     onNavigateToIncomeTypeDetail: (IncomeType) -> Unit
 ) {
     Column(
-        modifier = Modifier.fillMaxSize().background(BackgroundGray)
+        modifier = Modifier.fillMaxSize().background(NavyDeep)
     ) {
-        TopBarApp(title = "Ingresos", navigateBack = onBack)
+        TopBarApp(
+            title = "Ingresos",
+            navigateBack = onBack,
+            containerColor = NavySurface,
+            dividerColor = NavyBorder
+        )
 
         LazyColumn(
             contentPadding = PaddingValues(horizontal = 20.dp, vertical = 20.dp),
@@ -53,7 +58,7 @@ fun IncomeSettingsScreen(
                                 .padding(horizontal = 16.dp, vertical = 14.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Icon(incomeType.toMaterialIcon(), contentDescription = null, modifier = Modifier.size(22.dp), tint = PrimaryDark)
+                            Icon(incomeType.toMaterialIcon(), contentDescription = null, modifier = Modifier.size(22.dp), tint = CyanAccent)
                             Spacer(Modifier.width(12.dp))
                             Text(
                                 text = incomeType.label,
@@ -65,7 +70,7 @@ fun IncomeSettingsScreen(
                         }
                         if (index < HOME_INCOME_TYPES.lastIndex) {
                             HorizontalDivider(
-                                color = BorderGray,
+                                color = NavyBorder,
                                 thickness = 0.5.dp,
                                 modifier = Modifier.padding(start = 52.dp)
                             )

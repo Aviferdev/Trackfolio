@@ -29,7 +29,7 @@ import n3to.composeapp.generated.resources.portfolio_asset_detail_linked_platfor
 import n3to.composeapp.generated.resources.portfolio_asset_detail_platform_desc
 import n3to.composeapp.generated.resources.portfolio_asset_detail_platform_link_hint
 import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.Preview
 
 /**
  * Sheet para vincular plataformas a una categoría de activos.

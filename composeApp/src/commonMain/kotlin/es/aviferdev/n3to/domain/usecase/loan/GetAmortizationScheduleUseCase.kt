@@ -16,6 +16,7 @@ class GetAmortizationScheduleUseCase(
     private val loanRepository: LoanRepository,
     private val rateChangeRepository: LoanRateChangeRepository
 ) {
+    @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
     operator fun invoke(loanId: String): Flow<List<AmortizationEntry>> =
         loanRepository.getById(loanId).flatMapLatest { loan ->
             if (loan == null) flowOf(emptyList())

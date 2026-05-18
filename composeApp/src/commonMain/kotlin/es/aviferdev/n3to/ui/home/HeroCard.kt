@@ -33,7 +33,7 @@ import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.home_hero_balance_label
 import n3to.composeapp.generated.resources.home_hero_net_with_debts
 import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
 fun HeroCard(

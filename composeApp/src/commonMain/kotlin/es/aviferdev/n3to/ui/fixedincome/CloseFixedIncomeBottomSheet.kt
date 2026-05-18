@@ -31,7 +31,7 @@ import n3to.composeapp.generated.resources.fixedincome_irpf_label
 import n3to.composeapp.generated.resources.fixedincome_net_amount_label
 import n3to.composeapp.generated.resources.portfolio_add_tx_notes_label
 import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.Preview
 
 private fun formatEuro(value: Double): String {
     val intPart = value.toLong()
@@ -76,9 +76,19 @@ fun CloseFixedIncomeBottomSheet(
 
     val isValid = grossAmountStr.toDoubleOrNull() != null
 
+    val navyFieldColors = OutlinedTextFieldDefaults.colors(
+        focusedBorderColor = CyanAccent,
+        unfocusedBorderColor = NavyBorder,
+        focusedLabelColor = CyanAccent,
+        unfocusedLabelColor = TextSecondary,
+        cursorColor = CyanAccent,
+        focusedTextColor = TextPrimary,
+        unfocusedTextColor = TextPrimary
+    )
+
     ModalBottomSheet(
         onDismissRequest = onDismiss,
-        containerColor = SurfaceWhite,
+        containerColor = NavySurface,
         sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     ) {
         Column(
@@ -99,12 +109,12 @@ fun CloseFixedIncomeBottomSheet(
             Text(
                 text = position.name,
                 fontSize = 14.sp,
-                color = TextSecondary
+                color = CyanAccent.copy(alpha = 0.7f)
             )
 
             Spacer(Modifier.height(20.dp))
 
-            Text(stringResource(Res.string.fixedincome_close_type_label), fontSize = 13.sp, color = TextSecondary)
+            Text(stringResource(Res.string.fixedincome_close_type_label), fontSize = 12.sp, color = TextSecondary)
             Spacer(Modifier.height(8.dp))
 
             availableCloseTypes.forEach { closeType ->
@@ -117,18 +127,21 @@ fun CloseFixedIncomeBottomSheet(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clickable { selectedCloseType = closeType }
-                        .padding(vertical = 10.dp),
+                        .padding(vertical = 8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     RadioButton(
                         selected = selectedCloseType == closeType,
                         onClick = { selectedCloseType = closeType },
-                        colors = RadioButtonDefaults.colors(selectedColor = PrimaryDark)
+                        colors = RadioButtonDefaults.colors(
+                            selectedColor = CyanAccent,
+                            unselectedColor = NavyBorder
+                        )
                     )
                     Text(
                         text = label,
                         fontSize = 15.sp,
-                        color = TextPrimary,
+                        color = if (selectedCloseType == closeType) TextPrimary else TextSecondary,
                         modifier = Modifier.padding(start = 8.dp)
                     )
                 }
@@ -143,7 +156,7 @@ fun CloseFixedIncomeBottomSheet(
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = PrimaryDark)
+                colors = navyFieldColors
             )
 
             Spacer(Modifier.height(12.dp))
@@ -159,7 +172,7 @@ fun CloseFixedIncomeBottomSheet(
                     modifier = Modifier.weight(1f),
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                    colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = PrimaryDark)
+                    colors = navyFieldColors
                 )
                 OutlinedTextField(
                     value = commissionStr,
@@ -168,7 +181,7 @@ fun CloseFixedIncomeBottomSheet(
                     modifier = Modifier.weight(1f),
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                    colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = PrimaryDark)
+                    colors = navyFieldColors
                 )
             }
 
@@ -180,7 +193,7 @@ fun CloseFixedIncomeBottomSheet(
                 label = { Text(stringResource(Res.string.portfolio_add_tx_notes_label)) },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
-                colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = PrimaryDark)
+                colors = navyFieldColors
             )
 
             val gross = grossAmountStr.toDoubleOrNull() ?: 0.0
@@ -192,21 +205,23 @@ fun CloseFixedIncomeBottomSheet(
 
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(containerColor = SurfaceElevated)
+                shape = RoundedCornerShape(12.dp),
+                colors = CardDefaults.cardColors(containerColor = NavySurfaceLight),
+                elevation = CardDefaults.cardElevation(0.dp)
             ) {
-                Column(modifier = Modifier.padding(12.dp)) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(stringResource(Res.string.fixedincome_net_amount_label), fontSize = 13.sp, color = TextSecondary)
-                        Text(
-                            text = formatEuro(netAmount),
-                            fontSize = 15.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            color = PositiveGreen
-                        )
-                    }
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 14.dp, vertical = 12.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(stringResource(Res.string.fixedincome_net_amount_label), fontSize = 13.sp, color = TextSecondary)
+                    Text(
+                        text = formatEuro(netAmount),
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = PnLPositive
+                    )
                 }
             }
 
@@ -237,10 +252,13 @@ fun CloseFixedIncomeBottomSheet(
                 },
                 modifier = Modifier.fillMaxWidth(),
                 enabled = isValid,
-                colors = ButtonDefaults.buttonColors(containerColor = PrimaryDark),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = CyanAccent,
+                    contentColor = NavyDeep
+                ),
                 shape = RoundedCornerShape(12.dp)
             ) {
-                Text(stringResource(Res.string.fixedincome_close_confirm_btn), fontSize = 15.sp, modifier = Modifier.padding(vertical = 4.dp))
+                Text(stringResource(Res.string.fixedincome_close_confirm_btn), fontSize = 15.sp, fontWeight = FontWeight.SemiBold, modifier = Modifier.padding(vertical = 4.dp))
             }
 
             Spacer(Modifier.height(16.dp))

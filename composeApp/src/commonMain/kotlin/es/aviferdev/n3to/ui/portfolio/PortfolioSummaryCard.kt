@@ -43,7 +43,7 @@ import n3to.composeapp.generated.resources.portfolio_summary_total_pnl
 import n3to.composeapp.generated.resources.portfolio_summary_total_value
 import n3to.composeapp.generated.resources.portfolio_summary_unrealized
 import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.Preview
 import kotlin.math.abs
 
 @Composable

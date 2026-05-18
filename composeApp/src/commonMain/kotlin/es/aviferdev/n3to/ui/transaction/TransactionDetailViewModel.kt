@@ -45,6 +45,7 @@ class TransactionDetailViewModel(
         loadTransaction()
     }
 
+    @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
     private fun loadTransaction() {
         viewModelScope.launch {
             getTransactionById(transactionId)

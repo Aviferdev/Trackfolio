@@ -9,7 +9,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBalance
-import androidx.compose.material.icons.filled.Assignment
+import androidx.compose.material.icons.automirrored.filled.Assignment
 import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.BusinessCenter
 import androidx.compose.material.icons.filled.CardGiftcard
@@ -20,8 +20,8 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.House
 import androidx.compose.material.icons.filled.LocalGroceryStore
 import androidx.compose.material.icons.filled.Pets
-import androidx.compose.material.icons.filled.ReceiptLong
-import androidx.compose.material.icons.filled.ShowChart
+import androidx.compose.material.icons.automirrored.filled.ReceiptLong
+import androidx.compose.material.icons.automirrored.filled.ShowChart
 import androidx.compose.material.icons.filled.Work
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Search
@@ -74,13 +74,13 @@ private fun iconForCategory(name: String): ImageVector =
 private fun incomeTypeIcon(incomeType: IncomeType): ImageVector = when (incomeType) {
     IncomeType.SALARY        -> Icons.Filled.Work
     IncomeType.BANK_INTEREST -> Icons.Filled.AccountBalance
-    IncomeType.BOND_DEPOSIT  -> Icons.Filled.ReceiptLong
-    IncomeType.DIVIDEND      -> Icons.Filled.ShowChart
+    IncomeType.BOND_DEPOSIT  -> Icons.AutoMirrored.Filled.ReceiptLong
+    IncomeType.DIVIDEND      -> Icons.AutoMirrored.Filled.ShowChart
     IncomeType.BONUS_PRIZE   -> Icons.Filled.CardGiftcard
     IncomeType.PRIZE_LOTTERY -> Icons.Filled.EmojiEvents
     IncomeType.RENTAL_INCOME -> Icons.Filled.House
     IncomeType.FREELANCE     -> Icons.Filled.BusinessCenter
-    IncomeType.EXEMPT_INCOME -> Icons.Filled.Assignment
+    IncomeType.EXEMPT_INCOME -> Icons.AutoMirrored.Filled.Assignment
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════

@@ -2,6 +2,7 @@ package es.aviferdev.n3to.ui.fixedincome
 
 import es.aviferdev.n3to.platform.nowMillis
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -29,12 +30,7 @@ import es.aviferdev.n3to.ui.theme.formatAmount
 import es.aviferdev.n3to.ui.theme.formatDateShort
 import es.aviferdev.n3to.ui.theme.formatPercent
 import es.aviferdev.n3to.ui.theme.maskAmount
-import es.aviferdev.n3to.ui.theme.DividerLight
-import es.aviferdev.n3to.ui.theme.ErrorBgLight
-import es.aviferdev.n3to.ui.theme.ErrorDark
-import es.aviferdev.n3to.ui.theme.WarnBgLight
-import es.aviferdev.n3to.ui.theme.WarnOrange
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.Preview
 import kotlin.math.abs
 
 import kotlinx.datetime.TimeZone
@@ -48,13 +44,13 @@ fun FixedIncomeSection(
     balancesHidden: Boolean,
     modifier: Modifier = Modifier
 ) {
-
     Column(modifier = modifier.padding(horizontal = 20.dp, vertical = 8.dp)) {
         Card(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(16.dp),
-            colors = CardDefaults.cardColors(containerColor = SurfaceWhite),
-            elevation = CardDefaults.cardElevation(2.dp)
+            colors = CardDefaults.cardColors(containerColor = NavySurface),
+            elevation = CardDefaults.cardElevation(0.dp),
+            border = BorderStroke(0.5.dp, NavyBorder)
         ) {
             Column(modifier = Modifier.padding(16.dp)) {
                 Row(
@@ -63,50 +59,55 @@ fun FixedIncomeSection(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(Icons.Filled.AccountBalance, contentDescription = null, tint = PrimaryDark, modifier = Modifier.size(22.dp))
+                        Icon(
+                            Icons.Filled.AccountBalance,
+                            contentDescription = null,
+                            tint = CyanAccent,
+                            modifier = Modifier.size(20.dp)
+                        )
                         Spacer(Modifier.width(8.dp))
                         Text(
                             text = "Renta Fija",
-                            fontSize = 17.sp,
+                            fontSize = 16.sp,
                             fontWeight = FontWeight.SemiBold,
-                            color = TextPrimary
+                            color = Color.White
                         )
                     }
                     if (summary.nearMaturityCount > 0) {
                         Badge(
                             count = summary.nearMaturityCount,
-                            color = WarnOrange
+                            color = WarnAmber
                         )
                     }
                 }
 
-                Spacer(Modifier.height(12.dp))
+                Spacer(Modifier.height(14.dp))
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Column {
-                        Text("Capital", fontSize = 11.sp, color = TextSecondary)
+                        Text("Capital", fontSize = 11.sp, color = Color.White.copy(alpha = 0.45f))
                         Text(
                             text = "${maskAmount(formatAmount(summary.totalPrincipal), balancesHidden)} €",
                             fontSize = 14.sp,
-                            fontWeight = FontWeight.Medium,
-                            color = TextPrimary
+                            fontWeight = FontWeight.SemiBold,
+                            color = Color.White
                         )
                     }
                     Column(horizontalAlignment = Alignment.End) {
-                        Text("Valor actual", fontSize = 11.sp, color = TextSecondary)
+                        Text("Valor actual", fontSize = 11.sp, color = Color.White.copy(alpha = 0.45f))
                         Text(
                             text = "${maskAmount(formatAmount(summary.totalCurrentValue), balancesHidden)} €",
                             fontSize = 14.sp,
-                            fontWeight = FontWeight.Medium,
-                            color = TextPrimary
+                            fontWeight = FontWeight.SemiBold,
+                            color = Color.White
                         )
                     }
                 }
 
-                Spacer(Modifier.height(8.dp))
+                Spacer(Modifier.height(10.dp))
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -114,28 +115,26 @@ fun FixedIncomeSection(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Column {
-                        Text("Cobrado", fontSize = 11.sp, color = TextSecondary)
-                        val collectedColor = if (summary.totalCollectedInterest >= 0) PositiveGreen else TextSecondary
+                        Text("Cobrado", fontSize = 11.sp, color = Color.White.copy(alpha = 0.45f))
                         Text(
                             text = "+${maskAmount(formatAmount(summary.totalCollectedInterest), balancesHidden)} €",
                             fontSize = 14.sp,
-                            fontWeight = FontWeight.Medium,
-                            color = collectedColor
+                            fontWeight = FontWeight.SemiBold,
+                            color = if (summary.totalCollectedInterest >= 0) PnLPositive else Color.White.copy(alpha = 0.55f)
                         )
                     }
                     Column(horizontalAlignment = Alignment.End) {
-                        Text("Rendimiento", fontSize = 11.sp, color = TextSecondary)
-                        val pnlColor = when {
-                            summary.totalNetProfit > 0 -> PositiveGreen
-                            summary.totalNetProfit < 0 -> NegativeRed
-                            else -> TextPrimary
-                        }
+                        Text("Rendimiento", fontSize = 11.sp, color = Color.White.copy(alpha = 0.45f))
                         val sign = if (summary.totalNetProfit >= 0) "+" else ""
                         Text(
                             text = "$sign${maskAmount(formatAmount(summary.totalNetProfit), balancesHidden)} € (${formatPercent(summary.totalNetProfitPercent)}%)",
                             fontSize = 14.sp,
-                            fontWeight = FontWeight.Medium,
-                            color = pnlColor
+                            fontWeight = FontWeight.SemiBold,
+                            color = when {
+                                summary.totalNetProfit > 0 -> PnLPositive
+                                summary.totalNetProfit < 0 -> PnLNegative
+                                else -> Color.White
+                            }
                         )
                     }
                 }
@@ -168,14 +167,14 @@ fun FixedIncomePositionCard(
 ) {
     val position = row.position
 
-    // JSX design: badge icon + name + "Vence date · frequency · amount" + "ACTIVO" tag + collected interest + register button
     Card(
         modifier = modifier
             .fillMaxWidth()
             .clickable(onClick = onClick),
-        shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = SurfaceWhite),
-        elevation = CardDefaults.cardElevation(1.dp)
+        shape = RoundedCornerShape(11.dp),
+        colors = CardDefaults.cardColors(containerColor = NavySurface),
+        elevation = CardDefaults.cardElevation(0.dp),
+        border = BorderStroke(0.5.dp, NavyBorder)
     ) {
         Row(
             modifier = Modifier
@@ -183,30 +182,28 @@ fun FixedIncomePositionCard(
                 .padding(horizontal = 14.dp, vertical = 12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Badge icon (bond icon in warn color)
             Box(
                 modifier = Modifier
                     .size(40.dp)
-                    .background(WarnAmber.copy(alpha = 0.15f), RoundedCornerShape(10.dp)),
+                    .background(NavySurfaceLight, RoundedCornerShape(10.dp)),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     imageVector = Icons.Filled.AccountBalance,
                     contentDescription = null,
-                    tint = WarnAmber,
+                    tint = CyanAccent,
                     modifier = Modifier.size(20.dp)
                 )
             }
 
             Spacer(Modifier.width(12.dp))
 
-            // Name + "Vence date · frequency · amount"
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = position.name,
-                    fontSize = 12.sp,
+                    fontSize = 13.sp,
                     fontWeight = FontWeight.SemiBold,
-                    color = TextPrimary,
+                    color = Color.White,
                     maxLines = 1
                 )
                 val frequencyLabel = if (position.hasPeriodicCoupons) {
@@ -217,18 +214,16 @@ fun FixedIncomePositionCard(
                 Text(
                     text = "Vence ${formatDateShort(position.maturityDate)} · $frequencyLabel · ${maskAmount(formatAmount(position.principal), balancesHidden)} €",
                     fontSize = 10.sp,
-                    color = TextTertiary
+                    color = Color.White.copy(alpha = 0.4f)
                 )
             }
 
-            // "ACTIVO" tag + collected interest + register button
             Column(horizontalAlignment = Alignment.End) {
                 StatusTag(
                     label = if (position.isOpen) "ACTIVO" else "CERRADO",
-                    color = if (position.isOpen) PositiveGreen else TextTertiary
+                    color = if (position.isOpen) PnLPositive else Color.White.copy(alpha = 0.3f)
                 )
                 if (position.isOpen) {
-                    // Mostrar intereses cobrados si hay, o devengados si no hay cobrados aún
                     val interestToShow = if (row.collectedInterest > 0) row.collectedInterest else position.accruedInterestToDate
                     val interestLabel = if (row.collectedInterest > 0) "Cobrado" else "Devengado"
                     if (interestToShow > 0) {
@@ -237,10 +232,9 @@ fun FixedIncomePositionCard(
                             text = "$interestLabel: +${maskAmount(formatAmount(interestToShow), balancesHidden)} €",
                             fontSize = 11.sp,
                             fontWeight = FontWeight.SemiBold,
-                            color = PositiveGreen
+                            color = PnLPositive
                         )
                     }
-                    // Botón rápido para registrar cupón (solo si tiene cupones periódicos)
                     if (position.hasPeriodicCoupons && onRegisterCoupon != null) {
                         Spacer(Modifier.height(4.dp))
                         TextButton(
@@ -250,7 +244,7 @@ fun FixedIncomePositionCard(
                             Text(
                                 text = "Registrar",
                                 fontSize = 10.sp,
-                                color = PrimaryDark
+                                color = CyanAccent
                             )
                         }
                     }
@@ -271,7 +265,7 @@ fun FixedIncomeProgressBar(
             .fillMaxWidth()
             .height(8.dp)
             .clip(RoundedCornerShape(4.dp))
-            .background(DividerLight)
+            .background(NavyBorder)
     ) {
         Box(
             modifier = Modifier
@@ -287,11 +281,9 @@ fun NearMaturityBadge(
     remainingDays: Int,
     isMatured: Boolean
 ) {
-    val (bgColor, textColor, label) = if (isMatured) {
-        Triple(ErrorBgLight, ErrorDark, "Vencido")
-    } else {
-        Triple(WarnBgLight, WarnOrange, "$remainingDays días")
-    }
+    val bgColor = if (isMatured) ExpenseRed.copy(alpha = 0.15f) else WarnAmber.copy(alpha = 0.15f)
+    val textColor = if (isMatured) ExpenseRed else WarnAmber
+    val label = if (isMatured) "Vencido" else "$remainingDays días"
 
     Surface(
         color = bgColor,
@@ -310,20 +302,18 @@ fun NearMaturityBadge(
 @Composable
 fun Badge(count: Int, color: Color) {
     Surface(
-        color = color,
+        color = color.copy(alpha = 0.18f),
         shape = RoundedCornerShape(10.dp)
     ) {
         Text(
             text = count.toString(),
             fontSize = 11.sp,
-            color = Color.White,
+            color = color,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp)
         )
     }
 }
-
-// Nota: formatAmount, maskAmount, formatPercent, formatDate se importan desde ui.theme
 
 private fun createMockSummary(): FixedIncomeSummary {
     val now = nowMillis()

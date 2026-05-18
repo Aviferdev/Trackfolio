@@ -28,7 +28,7 @@ import es.aviferdev.n3to.ui.theme.N3toTheme
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.common_action_cd
 import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.Preview
 
 /**
  * Botón cuadrado con fondo elevado para la cabecera de las pantallas.

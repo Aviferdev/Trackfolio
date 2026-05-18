@@ -13,7 +13,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.GpsFixed
-import androidx.compose.material.icons.outlined.ShowChart
+import androidx.compose.material.icons.automirrored.outlined.ShowChart
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -35,6 +35,7 @@ import es.aviferdev.n3to.ui.theme.TextSecondary
 import es.aviferdev.n3to.ui.theme.TextTertiary
 import es.aviferdev.n3to.ui.theme.WarnAmber
 import es.aviferdev.n3to.ui.theme.formatAmount
+import es.aviferdev.n3to.platform.nowLocalDate
 import es.aviferdev.n3to.ui.theme.formatAmountEuro
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.home_goals_define_subtitle
@@ -136,7 +137,7 @@ fun GoalProgressCard(
                 // Barra de inversión
                 if (progress.investmentTarget > 0.0) {
                     GoalProgressRow(
-                        icon = Icons.Outlined.ShowChart,
+                        icon = Icons.AutoMirrored.Outlined.ShowChart,
                         label = stringResource(Res.string.home_goals_investment),
                         target = progress.investmentTarget,
                         actual = progress.investmentActual,
@@ -228,7 +229,7 @@ private fun GoalProgressRow(
  */
 @Composable
 private fun rememberProjection(target: Double, actual: Double): String? {
-    val today = Clock.System.todayIn(TimeZone.currentSystemDefault())
+    val today = nowLocalDate()
     val dayOfMonth = today.dayOfMonth
     val daysInMonth = daysInMonth(today.year, today.monthNumber)
 

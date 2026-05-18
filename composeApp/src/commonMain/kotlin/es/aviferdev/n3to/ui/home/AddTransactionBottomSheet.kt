@@ -32,7 +32,7 @@ import androidx.compose.material.icons.outlined.CalendarMonth
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.Description
 import androidx.compose.material.icons.outlined.Folder
-import androidx.compose.material.icons.outlined.Assignment
+import androidx.compose.material.icons.automirrored.outlined.Assignment
 import androidx.compose.material.icons.outlined.EditNote
 import androidx.compose.material.icons.outlined.Warning
 import androidx.compose.material3.Button
@@ -386,7 +386,7 @@ private fun AddTransactionSheetContent(
                         modifier = Modifier.weight(1f),
                         label = {
                             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                                Icon(Icons.Outlined.Assignment, contentDescription = null, modifier = Modifier.size(16.dp))
+                                Icon(Icons.AutoMirrored.Outlined.Assignment, contentDescription = null, modifier = Modifier.size(16.dp))
                                 Text("Fiscal")
                             }
                         }
@@ -523,7 +523,7 @@ private fun AddTransactionSheetContent(
         if (uiState is AddTransactionUiState.Error) {
             Spacer(Modifier.height(8.dp))
             Text(
-                text = (uiState as AddTransactionUiState.Error).message,
+                text = uiState.message,
                 color = ExpenseRed,
                 fontSize = 13.sp,
                 modifier = Modifier.padding(bottom = 8.dp)

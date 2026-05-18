@@ -64,7 +64,7 @@ import n3to.composeapp.generated.resources.networth_total_label
 import n3to.composeapp.generated.resources.networth_total_assets_label
 import n3to.composeapp.generated.resources.realestate_detail_title
 import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.math.abs
 import kotlin.time.ExperimentalTime

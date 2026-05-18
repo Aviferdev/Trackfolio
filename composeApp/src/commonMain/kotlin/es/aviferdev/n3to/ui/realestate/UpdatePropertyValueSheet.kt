@@ -24,7 +24,7 @@ import n3to.composeapp.generated.resources.realestate_new_value
 import n3to.composeapp.generated.resources.realestate_update_value_title
 import n3to.composeapp.generated.resources.realestate_value_label
 import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.Preview
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

@@ -9,7 +9,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AccountBalance
-import androidx.compose.material.icons.outlined.ShowChart
+import androidx.compose.material.icons.automirrored.outlined.ShowChart
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -24,7 +24,7 @@ import es.aviferdev.n3to.ui.theme.IncomeGreen
 import es.aviferdev.n3to.ui.theme.PrimaryDark
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import es.aviferdev.n3to.ui.theme.WarnAmber
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.Preview
 
 /**
  * Icon inside a colored rounded badge.
@@ -68,7 +68,7 @@ private fun IconBadgePreview() {
         ) {
             IconBadge(icon = Icons.Outlined.AccountBalance, color = IncomeGreen)
             IconBadge(icon = Icons.Outlined.AccountBalance, color = WarnAmber)
-            IconBadge(icon = Icons.Outlined.ShowChart, color = PrimaryDark, size = 48.dp)
+            IconBadge(icon = Icons.AutoMirrored.Outlined.ShowChart, color = PrimaryDark, size = 48.dp)
         }
     }
 }

@@ -15,6 +15,7 @@ class GetHomeBalanceUseCase(
     private val transactionRepository: TransactionRepository,
     private val debtRepository: DebtRepository
 ) {
+    @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
     operator fun invoke(selectedAccountId: String?): Flow<HomeBalance> =
         accountRepository.getAllAccounts().flatMapLatest { accounts ->
             if (accounts.isEmpty()) {

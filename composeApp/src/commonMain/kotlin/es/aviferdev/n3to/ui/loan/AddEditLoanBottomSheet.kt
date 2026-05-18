@@ -352,7 +352,7 @@ fun AddEditLoanBottomSheet(
                     val loan = if (isEditing) {
                         // Para edición, mantener los valores originales de cuotas pagadas y capital pendiente
                         // solo actualizar los datos editables
-                        loan!!.copy(
+                        loan.copy(
                             name                 = name.trim(),
                             type                 = selectedType,
                             currentInterestRate  = interestRate,

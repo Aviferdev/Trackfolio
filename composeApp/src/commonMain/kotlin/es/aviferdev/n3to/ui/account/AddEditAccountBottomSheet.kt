@@ -20,7 +20,7 @@ import n3to.composeapp.generated.resources.portfolio_add_asset_save
 import n3to.composeapp.generated.resources.portfolio_name_required
 import n3to.composeapp.generated.resources.portfolio_platform_name
 import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.Preview
 
 /**
  * Bottom sheet para crear o editar una cuenta.

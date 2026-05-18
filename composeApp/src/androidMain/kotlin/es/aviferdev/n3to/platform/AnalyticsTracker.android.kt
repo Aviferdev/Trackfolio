@@ -3,7 +3,6 @@ package es.aviferdev.n3to.platform
 import android.os.Bundle
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.ktx.analytics
-import com.google.firebase.analytics.ktx.logEvent
 import com.google.firebase.ktx.Firebase
 
 actual class AnalyticsTracker {
@@ -14,9 +13,10 @@ actual class AnalyticsTracker {
     }
 
     actual fun logEvent(name: String, params: Map<String, String>) {
-        analytics.logEvent(name) {
-            params.forEach { (key, value) -> param(key, value) }
+        val bundle = Bundle().apply {
+            params.forEach { (key, value) -> putString(key, value) }
         }
+        analytics.logEvent(name, bundle)
     }
 
     actual fun logScreenView(screenName: String, screenClass: String) {

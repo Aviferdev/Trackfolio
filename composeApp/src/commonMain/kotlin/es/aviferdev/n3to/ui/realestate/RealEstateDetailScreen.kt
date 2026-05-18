@@ -6,6 +6,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.outlined.TrendingUp
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -162,7 +163,7 @@ fun RealEstateDetailScreen(
                             DropdownMenuItem(
                                 text = { Text(stringResource(Res.string.realestate_update_value), color = TextPrimary) },
                                 onClick = { showMenu = false; viewModel.showValueSheet() },
-                                leadingIcon = { Icon(Icons.Outlined.TrendingUp, null, tint = TextSecondary) }
+                                leadingIcon = { Icon(Icons.AutoMirrored.Outlined.TrendingUp, null, tint = TextSecondary) }
                             )
                             DropdownMenuItem(
                                 text = { Text(stringResource(Res.string.realestate_change_rental_status), color = TextPrimary) },
