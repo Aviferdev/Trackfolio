@@ -24,6 +24,11 @@ import es.aviferdev.n3to.ui.common.SectionHeader
 import es.aviferdev.n3to.ui.common.navigation.TopBarApp
 import es.aviferdev.n3to.ui.theme.*
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.common_accept
+import n3to.composeapp.generated.resources.common_error
+import n3to.composeapp.generated.resources.error_category_already_exists
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 // ─── WRAPPER ────────────────────────────────────────────────────────────────────
@@ -94,17 +99,22 @@ fun ExpenseSettingsScreen(
         )
     }
 
-    categoryState.error?.let { msg ->
+    categoryState.error?.let {
+        val msg = when (it) {
+            is es.aviferdev.n3to.ui.settings.CategoryError.AlreadyExists -> stringResource(Res.string.error_category_already_exists)
+            is es.aviferdev.n3to.ui.settings.CategoryError.InvalidName -> stringResource(Res.string.error_category_already_exists)
+            is es.aviferdev.n3to.ui.settings.CategoryError.Unknown -> it.message ?: stringResource(Res.string.common_error)
+        }
         AlertDialog(
             onDismissRequest = { categoryViewModel.clearError() },
             containerColor = SurfaceWhite,
             title = {
-                Text("Error", fontSize = 17.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary)
+                Text(stringResource(Res.string.common_error), fontSize = 17.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary)
             },
             text = { Text(msg, fontSize = 14.sp, color = TextSecondary) },
             confirmButton = {
                 TextButton(onClick = { categoryViewModel.clearError() }) {
-                    Text("Aceptar", color = PrimaryDark, fontWeight = FontWeight.Medium)
+                    Text(stringResource(Res.string.common_accept), color = PrimaryDark, fontWeight = FontWeight.Medium)
                 }
             },
             shape = RoundedCornerShape(16.dp)

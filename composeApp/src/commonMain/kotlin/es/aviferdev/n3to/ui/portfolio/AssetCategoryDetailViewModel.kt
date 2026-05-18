@@ -35,6 +35,14 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
+sealed class CategoryDetailError {
+    data object AccountRequired : CategoryDetailError()
+    data object TickerAndNameRequired : CategoryDetailError()
+    data class CannotArchive(val ticker: String) : CategoryDetailError()
+    data class PlatformAlreadyExists(val name: String) : CategoryDetailError()
+    data class Unknown(val message: String?) : CategoryDetailError()
+}
+
 data class AssetCategoryDetailUiState(
     val category: AssetCategory?       = null,
     val activeAssets: List<Asset>       = emptyList(),
@@ -51,7 +59,7 @@ data class AssetCategoryDetailUiState(
     val editingFixedIncomePercent: Int = 0,
     val pendingArchive: Asset?         = null,
     val showLinkPlatformSheet: Boolean = false,
-    val error: String?                 = null,
+    val error: CategoryDetailError?    = null,
     val allSectors: List<es.aviferdev.n3to.domain.model.AssetSector> = emptyList(),
     val allRegions: List<es.aviferdev.n3to.domain.model.AssetRegion> = emptyList()
 )
@@ -80,7 +88,7 @@ class AssetCategoryDetailViewModel(
     private val _editing           = MutableStateFlow<Asset?>(null)
     private val _editingPlatformIds = MutableStateFlow<Set<String>>(emptySet())
     private val _pendingArchive    = MutableStateFlow<Asset?>(null)
-    private val _error             = MutableStateFlow<String?>(null)
+    private val _error             = MutableStateFlow<CategoryDetailError?>(null)
     private val _showLinkPlatformSheet = MutableStateFlow(false)
     private val _editingSectorIds   = MutableStateFlow<Set<String>>(emptySet())
     private val _editingRegionPercents = MutableStateFlow<Map<String, Int>>(emptyMap())
@@ -205,7 +213,7 @@ class AssetCategoryDetailViewModel(
             val txs = assetTransactionRepository.getByAsset(asset.id).first()
             val position = PortfolioCalculator.calculate(txs, asset.currentPrice)
             if (position.netQuantity > 0.0) {
-                _error.value = "No se puede archivar «${asset.ticker}» porque tiene posiciones abiertas. Cierra o traspasa las posiciones primero."
+                _error.value = CategoryDetailError.CannotArchive(asset.ticker)
             } else {
                 _pendingArchive.value = asset
             }
@@ -216,14 +224,14 @@ class AssetCategoryDetailViewModel(
     fun confirmArchive() {
         val asset = _pendingArchive.value ?: return
         viewModelScope.launch {
-            archiveAsset(asset.id).onFailure { _error.value = it.message }
+            archiveAsset(asset.id).onFailure { _error.value = CategoryDetailError.Unknown(it.message) }
             _pendingArchive.value = null
         }
     }
 
     fun restoreAsset(assetId: String) {
         viewModelScope.launch {
-            unarchiveAsset(assetId).onFailure { _error.value = it.message }
+            unarchiveAsset(assetId).onFailure { _error.value = CategoryDetailError.Unknown(it.message) }
         }
     }
 
@@ -240,13 +248,13 @@ class AssetCategoryDetailViewModel(
         portfolioId: String? = null
     ) {
         val accountId = session.selectedAccountId.value ?: run {
-            _error.value = "Selecciona primero una cuenta"
+            _error.value = CategoryDetailError.AccountRequired
             return
         }
         val tickerTrim = ticker.trim().uppercase()
         val nameTrim   = name.trim()
         if (tickerTrim.isBlank() || nameTrim.isBlank()) {
-            _error.value = "Ticker y nombre son obligatorios"
+            _error.value = CategoryDetailError.TickerAndNameRequired
             return
         }
         viewModelScope.launch {
@@ -298,7 +306,7 @@ class AssetCategoryDetailViewModel(
                         assetPlatformRepository.link(asset.id, platId)
                     }
                 }
-                .onFailure { _error.value = it.message }
+                .onFailure { _error.value = CategoryDetailError.Unknown(it.message) }
             _showAddSheet.value = false
         }
     }
@@ -320,7 +328,7 @@ class AssetCategoryDetailViewModel(
         val tickerTrim = ticker.trim().uppercase()
         val nameTrim   = name.trim()
         if (tickerTrim.isBlank() || nameTrim.isBlank()) {
-            _error.value = "Ticker y nombre son obligatorios"
+            _error.value = CategoryDetailError.TickerAndNameRequired
             return
         }
         viewModelScope.launch {
@@ -377,7 +385,7 @@ class AssetCategoryDetailViewModel(
                 platformIds.forEach { platId ->
                     assetPlatformRepository.link(original.id, platId)
                 }
-            }.onFailure { _error.value = it.message }
+            }.onFailure { _error.value = CategoryDetailError.Unknown(it.message) }
             _editing.value = null
             _editingPlatformIds.value = emptySet()
         }
@@ -393,7 +401,7 @@ class AssetCategoryDetailViewModel(
     fun linkPlatform(platformId: String) {
         viewModelScope.launch {
             platformCategoryRepository.link(platformId, categoryId)
-                .onFailure { _error.value = it.message }
+                .onFailure { _error.value = CategoryDetailError.Unknown(it.message) }
         }
     }
 
@@ -401,7 +409,7 @@ class AssetCategoryDetailViewModel(
     fun unlinkPlatform(platformId: String) {
         viewModelScope.launch {
             platformCategoryRepository.unlink(platformId, categoryId)
-                .onFailure { _error.value = it.message }
+                .onFailure { _error.value = CategoryDetailError.Unknown(it.message) }
         }
     }
 
@@ -410,7 +418,7 @@ class AssetCategoryDetailViewModel(
         val trimmed = name.trim()
         if (trimmed.isBlank()) return
         if (uiState.value.allPlatforms.any { it.name.equals(trimmed, ignoreCase = true) }) {
-            _error.value = "Ya existe una plataforma con ese nombre"
+            _error.value = CategoryDetailError.PlatformAlreadyExists("")
             return
         }
         val validatedNotes = notes?.take(200)?.ifBlank { null }
@@ -428,10 +436,10 @@ class AssetCategoryDetailViewModel(
             platformRepository.save(platform)
                 .onSuccess {
                     platformCategoryRepository.link(platform.id, categoryId)
-                        .onFailure { _error.value = it.message }
+                        .onFailure { _error.value = CategoryDetailError.Unknown(it.message) }
                     _showLinkPlatformSheet.value = false
                 }
-                .onFailure { _error.value = it.message }
+                .onFailure { _error.value = CategoryDetailError.Unknown(it.message) }
         }
     }
 
@@ -446,7 +454,7 @@ class AssetCategoryDetailViewModel(
         val regPerc: Map<String, Int>,
         val fixedIncPct: Int,
         val arch: Asset?,
-        val err: String?
+        val err: CategoryDetailError?
     )
 
     private data class SheetState(
@@ -457,6 +465,6 @@ class AssetCategoryDetailViewModel(
         val regPerc: Map<String, Int>,
         val fixedIncPct: Int,
         val arch: Asset?,
-        val err: String?
+        val err: CategoryDetailError?
     )
 }

@@ -22,6 +22,13 @@ import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.Platform
 import es.aviferdev.n3to.ui.theme.*
 
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.portfolio_add_asset_no_platforms_hint
+import n3to.composeapp.generated.resources.portfolio_add_asset_select_platform
+import n3to.composeapp.generated.resources.portfolio_asset_detail_linked_platforms
+import n3to.composeapp.generated.resources.portfolio_asset_detail_platform_desc
+import n3to.composeapp.generated.resources.portfolio_asset_detail_platform_link_hint
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 /**
@@ -78,7 +85,7 @@ fun LinkPlatformToCategorySheet(
             )
             Spacer(Modifier.height(4.dp))
             Text(
-                text = "Selecciona las plataformas donde operas activos de esta categoría.",
+                text = stringResource(Res.string.portfolio_asset_detail_platform_desc),
                 fontSize = 12.sp,
                 color = TextSecondary
             )
@@ -87,7 +94,7 @@ fun LinkPlatformToCategorySheet(
             // Plataformas ya vinculadas
             if (linkedPlatforms.isNotEmpty()) {
                 Text(
-                    "VINCULADAS",
+                    stringResource(Res.string.portfolio_asset_detail_linked_platforms),
                     fontSize = 11.sp,
                     fontWeight = FontWeight.SemiBold,
                     color = TextSecondary
@@ -106,14 +113,14 @@ fun LinkPlatformToCategorySheet(
             // Plataformas disponibles para vincular
             if (unlinkedPlatforms.isNotEmpty()) {
                 Text(
-                    "DISPONIBLES",
+                    stringResource(Res.string.portfolio_add_asset_select_platform),
                     fontSize = 11.sp,
                     fontWeight = FontWeight.SemiBold,
                     color = TextSecondary
                 )
                 Spacer(Modifier.height(4.dp))
                 Text(
-                    "Estas plataformas ya existen en otras categorías. Pulsa para vincularlas también aquí.",
+                    stringResource(Res.string.portfolio_asset_detail_platform_link_hint),
                     fontSize = 11.sp,
                     color = TextSecondary.copy(alpha = 0.7f)
                 )
@@ -128,7 +135,7 @@ fun LinkPlatformToCategorySheet(
                 Spacer(Modifier.height(16.dp))
 
                 Text(
-                    "Para crear plataformas, ve a Ajustes › Portfolio › Plataformas.",
+                    stringResource(Res.string.portfolio_add_asset_no_platforms_hint),
                     fontSize = 12.sp,
                     color = TextSecondary,
                     modifier = Modifier.padding(vertical = 8.dp)

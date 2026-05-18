@@ -50,6 +50,11 @@ import es.aviferdev.n3to.ui.theme.NavySurfaceLight
 import es.aviferdev.n3to.ui.theme.TextPrimary
 import es.aviferdev.n3to.ui.theme.TextSecondary
 import es.aviferdev.n3to.ui.theme.TextTertiary
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.networth_title
+import n3to.composeapp.generated.resources.onboarding_seccion_patrimonio
+import n3to.composeapp.generated.resources.realestate_detail_title
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 // ─── Constantes de colores del sistema navy ─────────────────
@@ -137,7 +142,7 @@ private fun SectionPill() {
                 .background(CyanAccent.copy(alpha = pulseAlpha))
         )
         Text(
-            text = "SECCIÓN · PATRIMONIO",
+            text = stringResource(Res.string.onboarding_seccion_patrimonio),
             fontSize = 10.sp,
             fontWeight = FontWeight.Bold,
             letterSpacing = 0.6.sp,

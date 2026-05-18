@@ -102,6 +102,16 @@ import es.aviferdev.n3to.ui.theme.N3toTheme
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.common_accept
 import n3to.composeapp.generated.resources.common_error
+import n3to.composeapp.generated.resources.error_asset_not_found
+import n3to.composeapp.generated.resources.error_coupon_register
+import n3to.composeapp.generated.resources.error_fi_create_position
+import n3to.composeapp.generated.resources.error_fi_no_buy_sell
+import n3to.composeapp.generated.resources.error_account_required
+import n3to.composeapp.generated.resources.error_asset_already_exists
+import n3to.composeapp.generated.resources.error_asset_ticker_required
+import n3to.composeapp.generated.resources.error_cannot_archive_with_open_positions_qty
+import n3to.composeapp.generated.resources.error_no_account_selected
+import n3to.composeapp.generated.resources.error_platform_already_exists
 import n3to.composeapp.generated.resources.portfolio_empty_subtitle
 import n3to.composeapp.generated.resources.portfolio_empty_title
 import n3to.composeapp.generated.resources.portfolio_evolution_title
@@ -243,21 +253,47 @@ fun PortfolioScreen(
             onDismiss = { platformViewModel.closeAddSheet() }
         )
     }
-    for (msg in listOfNotNull(state.error, catalogState.error, platformState.error)) {
-        val clearFn: () -> Unit = when (msg) {
-            state.error -> { { viewModel.clearError() } }
-            catalogState.error -> { { catalogViewModel.clearError() } }
+    val stateError = state.error
+    val catalogError = catalogState.error
+    val platformError = platformState.error
+    if (stateError != null || catalogError != null || platformError != null) {
+        val errorMsg: String = when {
+            stateError != null -> when (stateError) {
+                is es.aviferdev.n3to.ui.portfolio.PortfolioSheetError.FiNoBuySell -> stringResource(Res.string.error_fi_no_buy_sell)
+                is es.aviferdev.n3to.ui.portfolio.PortfolioSheetError.PriceHistorySave -> stateError.message
+                is es.aviferdev.n3to.ui.portfolio.PortfolioSheetError.AssetNotFound -> stringResource(Res.string.error_asset_not_found)
+                is es.aviferdev.n3to.ui.portfolio.PortfolioSheetError.FiCreatePosition -> stringResource(Res.string.error_fi_create_position)
+                is es.aviferdev.n3to.ui.portfolio.PortfolioSheetError.CouponRegister -> stringResource(Res.string.error_coupon_register)
+                is es.aviferdev.n3to.ui.portfolio.PortfolioSheetError.NoAccountSelected -> stringResource(Res.string.error_no_account_selected)
+                is es.aviferdev.n3to.ui.portfolio.PortfolioSheetError.Unknown -> stateError.message ?: stringResource(Res.string.common_error)
+                else -> stringResource(Res.string.common_error)
+            }
+            catalogError != null -> when (catalogError) {
+                is es.aviferdev.n3to.ui.portfolio.CatalogError.AccountRequired -> stringResource(Res.string.error_account_required)
+                is es.aviferdev.n3to.ui.portfolio.CatalogError.TickerAndNameRequired -> stringResource(Res.string.error_asset_ticker_required)
+                is es.aviferdev.n3to.ui.portfolio.CatalogError.AssetAlreadyExists -> stringResource(Res.string.error_asset_already_exists, catalogError.ticker)
+                is es.aviferdev.n3to.ui.portfolio.CatalogError.CannotArchiveWithOpenPositions -> stringResource(Res.string.error_cannot_archive_with_open_positions_qty, catalogError.ticker, catalogError.qty)
+                is es.aviferdev.n3to.ui.portfolio.CatalogError.Unknown -> catalogError.message ?: stringResource(Res.string.common_error)
+            }
+            platformError != null -> when (platformError) {
+                is es.aviferdev.n3to.ui.portfolio.PlatformError.AlreadyExists -> stringResource(Res.string.error_platform_already_exists)
+                is es.aviferdev.n3to.ui.portfolio.PlatformError.Unknown -> platformError.message ?: stringResource(Res.string.common_error)
+            }
+            else -> stringResource(Res.string.common_error)
+        }
+        val clearFn: () -> Unit = when {
+            stateError != null -> { { viewModel.clearError() } }
+            catalogError != null -> { { catalogViewModel.clearError() } }
             else -> { { platformViewModel.clearError() } }
         }
         AlertDialog(
             onDismissRequest = clearFn,
             containerColor = SurfaceWhite,
             title = { Text(stringResource(Res.string.common_error), fontSize = 16.sp, fontWeight = FontWeight.Bold, color = TextPrimary) },
-            text = { Text(msg, fontSize = 13.sp, color = TextSecondary) },
+            text = { Text(errorMsg, fontSize = 13.sp, color = TextSecondary) },
             confirmButton = { TextButton(onClick = clearFn) { Text(stringResource(Res.string.common_accept), color = PrimaryDark) } },
             shape = RoundedCornerShape(16.dp)
         )
-        break
     }
 }
 

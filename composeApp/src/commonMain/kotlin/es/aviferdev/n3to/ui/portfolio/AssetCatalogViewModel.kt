@@ -28,6 +28,14 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
+sealed class CatalogError {
+    data class CannotArchiveWithOpenPositions(val ticker: String, val qty: String) : CatalogError()
+    data object AccountRequired : CatalogError()
+    data object TickerAndNameRequired : CatalogError()
+    data class AssetAlreadyExists(val ticker: String) : CatalogError()
+    data class Unknown(val message: String?) : CatalogError()
+}
+
 data class AssetCatalogUiState(
     val assets: List<Asset>             = emptyList(),
     val categories: List<AssetCategory> = emptyList(),
@@ -39,7 +47,7 @@ data class AssetCatalogUiState(
     val editingRegionPercents: Map<String, Int> = emptyMap(),
     val editingFixedIncomePercent: Int = 0,
     val pendingArchive: Asset?          = null,
-    val error: String?                  = null,
+    val error: CatalogError?            = null,
     val allSectors: List<es.aviferdev.n3to.domain.model.AssetSector> = emptyList(),
     val allRegions: List<es.aviferdev.n3to.domain.model.AssetRegion> = emptyList()
 )
@@ -63,7 +71,7 @@ class AssetCatalogViewModel(
     private val _editing           = MutableStateFlow<Asset?>(null)
     private val _editingPlatformIds = MutableStateFlow<Set<String>>(emptySet())
     private val _pendingArchive     = MutableStateFlow<Asset?>(null)
-    private val _error              = MutableStateFlow<String?>(null)
+    private val _error              = MutableStateFlow<CatalogError?>(null)
     private val _editingSectorIds   = MutableStateFlow<Set<String>>(emptySet())
     private val _editingRegionPercents = MutableStateFlow<Map<String, Int>>(emptyMap())
     private val _editingFixedIncomePercent = MutableStateFlow(0)
@@ -162,7 +170,7 @@ class AssetCatalogViewModel(
             val txs = assetTransactionRepository.getByAsset(asset.id).first()
             val position = PortfolioCalculator.calculate(txs, asset.currentPrice)
             if (position.netQuantity > 0.0) {
-                _error.value = "No se puede archivar «${asset.ticker}» porque tiene posiciones abiertas (${formatQty(position.netQuantity)} uds.). Cierra o traspasa las posiciones primero."
+                _error.value = CatalogError.CannotArchiveWithOpenPositions(asset.ticker, formatQty(position.netQuantity))
             } else {
                 _pendingArchive.value = asset
             }
@@ -183,19 +191,19 @@ class AssetCatalogViewModel(
         portfolioId: String? = null
     ) {
         val accountId = session.selectedAccountId.value ?: run {
-            _error.value = "Selecciona primero una cuenta"
+            _error.value = CatalogError.AccountRequired
             return
         }
         val tickerTrim = ticker.trim().uppercase()
         val nameTrim   = name.trim()
         if (tickerTrim.isBlank() || nameTrim.isBlank()) {
-            _error.value = "Ticker y nombre son obligatorios"
+            _error.value = CatalogError.TickerAndNameRequired
             return
         }
         if (uiState.value.assets.any {
             it.ticker.equals(tickerTrim, ignoreCase = true) && it.accountId == accountId
         }) {
-            _error.value = "Ya existe un activo con el ticker $tickerTrim en esta cuenta"
+            _error.value = CatalogError.AssetAlreadyExists(tickerTrim)
             return
         }
         viewModelScope.launch {
@@ -250,7 +258,7 @@ class AssetCatalogViewModel(
                         assetPlatformRepository.link(asset.id, platId)
                     }
                 }
-                .onFailure { _error.value = it.message }
+                .onFailure { _error.value = CatalogError.Unknown(it.message) }
             _showAddSheet.value = false
             _addForCategoryId.value = null
         }
@@ -272,7 +280,7 @@ class AssetCatalogViewModel(
         val tickerTrim = ticker.trim().uppercase()
         val nameTrim   = name.trim()
         if (tickerTrim.isBlank() || nameTrim.isBlank()) {
-            _error.value = "Ticker y nombre son obligatorios"
+            _error.value = CatalogError.TickerAndNameRequired
             return
         }
         viewModelScope.launch {
@@ -332,7 +340,7 @@ class AssetCatalogViewModel(
                 platformIds.forEach { platId ->
                     assetPlatformRepository.link(original.id, platId)
                 }
-            }.onFailure { _error.value = it.message }
+            }.onFailure { _error.value = CatalogError.Unknown(it.message) }
             _editing.value = null
             _editingPlatformIds.value = emptySet()
         }
@@ -341,14 +349,14 @@ class AssetCatalogViewModel(
     fun confirmArchive() {
         val asset = _pendingArchive.value ?: return
         viewModelScope.launch {
-            archiveAsset(asset.id).onFailure { _error.value = it.message }
+            archiveAsset(asset.id).onFailure { _error.value = CatalogError.Unknown(it.message) }
             _pendingArchive.value = null
         }
     }
 
     fun restoreAsset(assetId: String) {
         viewModelScope.launch {
-            unarchiveAsset(assetId).onFailure { _error.value = it.message }
+            unarchiveAsset(assetId).onFailure { _error.value = CatalogError.Unknown(it.message) }
         }
     }
 

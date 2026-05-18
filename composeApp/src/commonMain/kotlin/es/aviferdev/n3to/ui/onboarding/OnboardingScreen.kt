@@ -42,6 +42,25 @@ import es.aviferdev.n3to.ui.theme.NavyDeep
 import es.aviferdev.n3to.ui.theme.TextPrimary
 import es.aviferdev.n3to.ui.theme.TextSecondary
 import kotlinx.coroutines.launch
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.onboarding_continue
+import n3to.composeapp.generated.resources.onboarding_skip
+import n3to.composeapp.generated.resources.onboarding_start
+import n3to.composeapp.generated.resources.onboarding_welcome_subtitle
+import n3to.composeapp.generated.resources.onboarding_welcome_title
+import n3to.composeapp.generated.resources.onboarding_slide_networth_title
+import n3to.composeapp.generated.resources.onboarding_slide_portfolio_title
+import n3to.composeapp.generated.resources.onboarding_slide_movements_title
+import n3to.composeapp.generated.resources.onboarding_slide_fiscal_title
+import n3to.composeapp.generated.resources.onboarding_slide_realestate_title
+import n3to.composeapp.generated.resources.onboarding_welcome_desc
+import n3to.composeapp.generated.resources.onboarding_patrimonio_desc
+import n3to.composeapp.generated.resources.onboarding_portfolio_desc
+import n3to.composeapp.generated.resources.onboarding_movements_desc
+import n3to.composeapp.generated.resources.onboarding_fiscal_desc
+import n3to.composeapp.generated.resources.onboarding_realestate_desc
+import n3to.composeapp.generated.resources.common_back_cd
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.koinInject
 
@@ -64,43 +83,16 @@ class OnboardingViewModel(
 
 private data class SlideInfo(
     val id: String,
-    val title: String,
-    val body: String,
     val hideText: Boolean = false
 )
 
 private val SLIDES = listOf(
-    SlideInfo(
-        id = "welcome",
-        title = "Bienvenido a N3to",
-        body = "Tu vida financiera, organizada. Movimientos, inversiones y patrimonio en un solo lugar.",
-        hideText = true
-    ),
-    SlideInfo(
-        id = "patrim",
-        title = "Tu patrimonio, claro",
-        body = "Visualiza tu efectivo y tu disponible neto con deudas. Activos y pasivos al mismo nivel."
-    ),
-    SlideInfo(
-        id = "portfolio",
-        title = "Inversiones con FIFO",
-        body = "Compras, ventas, dividendos y lotes FIFO calculados automáticamente para tus plusvalías."
-    ),
-    SlideInfo(
-        id = "movim",
-        title = "Movimientos con sentido",
-        body = "Categorías inteligentes y campos específicos por tipo: alquileres, gasolina, nóminas, facturas…"
-    ),
-    SlideInfo(
-        id = "realestate",
-        title = "¿Tienes vivienda?",
-        body = "Regístrala en Patrimonio para verla junto al resto de tus activos, con su valor estimado y la hipoteca pendiente."
-    ),
-    SlideInfo(
-        id = "fiscal",
-        title = "Informe fiscal listo",
-        body = "N3to prepara automáticamente tu base imponible, IRPF y ganancias patrimoniales."
-    )
+    SlideInfo(id = "welcome", hideText = true),
+    SlideInfo(id = "patrim"),
+    SlideInfo(id = "portfolio"),
+    SlideInfo(id = "movim"),
+    SlideInfo(id = "realestate"),
+    SlideInfo(id = "fiscal")
 )
 
 // ─── Screen (entry point) ──────────────────────────────────
@@ -142,7 +134,7 @@ fun OnboardingScreen(onComplete: () -> Unit) {
                         modifier = Modifier.align(Alignment.CenterEnd)
                     ) {
                         Text(
-                            text = "Saltar",
+                            text = stringResource(Res.string.onboarding_skip),
                             color = TextSecondary,
                             fontSize = 12.sp,
                             fontWeight = FontWeight.SemiBold
@@ -190,7 +182,7 @@ fun OnboardingScreen(onComplete: () -> Unit) {
                         )
                     ) {
                         Text(
-                            text = "Comenzar",
+                            text = stringResource(Res.string.onboarding_start),
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Bold,
                             color = NavyDeep
@@ -211,7 +203,7 @@ fun OnboardingScreen(onComplete: () -> Unit) {
                                 }
                             ) {
                                 Text(
-                                    text = "Atrás",
+                                    text = stringResource(Res.string.common_back_cd),
                                     color = TextSecondary,
                                     fontSize = 13.sp,
                                     fontWeight = FontWeight.SemiBold
@@ -235,7 +227,7 @@ fun OnboardingScreen(onComplete: () -> Unit) {
                             contentPadding = PaddingValues(horizontal = 28.dp)
                         ) {
                             Text(
-                                text = "Continuar",
+                                text = stringResource(Res.string.onboarding_continue),
                                 fontSize = 13.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = NavyDeep
@@ -276,6 +268,24 @@ private fun SlidePage(slide: SlideInfo) {
         }
 
         if (!slide.hideText) {
+            val slideTitle = when (slide.id) {
+                "welcome" -> stringResource(Res.string.onboarding_welcome_title)
+                "patrim" -> stringResource(Res.string.onboarding_slide_networth_title)
+                "portfolio" -> stringResource(Res.string.onboarding_slide_portfolio_title)
+                "movim" -> stringResource(Res.string.onboarding_slide_movements_title)
+                "fiscal" -> stringResource(Res.string.onboarding_slide_fiscal_title)
+                "realestate" -> stringResource(Res.string.onboarding_slide_realestate_title)
+                else -> ""
+            }
+            val slideBody = when (slide.id) {
+                "welcome" -> stringResource(Res.string.onboarding_welcome_subtitle)
+                "patrim" -> stringResource(Res.string.onboarding_patrimonio_desc)
+                "portfolio" -> stringResource(Res.string.onboarding_portfolio_desc)
+                "movim" -> stringResource(Res.string.onboarding_movements_desc)
+                "fiscal" -> stringResource(Res.string.onboarding_fiscal_desc)
+                "realestate" -> stringResource(Res.string.onboarding_realestate_desc)
+                else -> ""
+            }
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -284,7 +294,7 @@ private fun SlidePage(slide: SlideInfo) {
                 verticalArrangement = Arrangement.Top
             ) {
                 Text(
-                    text = slide.title,
+                    text = slideTitle,
                     fontSize = 26.sp,
                     fontWeight = FontWeight.ExtraBold,
                     color = TextPrimary,
@@ -293,7 +303,7 @@ private fun SlidePage(slide: SlideInfo) {
                 )
                 Spacer(Modifier.height(10.dp))
                 Text(
-                    text = slide.body,
+                    text = slideBody,
                     fontSize = 14.sp,
                     color = TextSecondary,
                     lineHeight = 21.sp

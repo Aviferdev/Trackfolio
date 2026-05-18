@@ -27,8 +27,13 @@ data class FixedIncomeDetailUiState(
     val showDeleteEventDialog: Boolean = false,
     val selectedEventForDelete: FixedIncomeEvent? = null,
     val isLoading: Boolean = false,
-    val error: String? = null
+    val error: FixedIncomeDetailError? = null
 )
+
+sealed class FixedIncomeDetailError {
+    data object PositionNotFound : FixedIncomeDetailError()
+    data class Unknown(val message: String?) : FixedIncomeDetailError()
+}
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class FixedIncomeDetailViewModel(
@@ -49,7 +54,7 @@ class FixedIncomeDetailViewModel(
     private val _showEditSheet = MutableStateFlow(false)
     private val _showDeleteEventDialog = MutableStateFlow(false)
     private val _selectedEventForDelete = MutableStateFlow<FixedIncomeEvent?>(null)
-    private val _error = MutableStateFlow<String?>(null)
+    private val _error = MutableStateFlow<FixedIncomeDetailError?>(null)
 
     val uiState: StateFlow<FixedIncomeDetailUiState> = combine(
         getPositionDetail.getPosition(positionId),
@@ -71,7 +76,7 @@ class FixedIncomeDetailViewModel(
         val showEdit = values[5] as Boolean
         val showDelete = values[6] as Boolean
         val eventForDelete = values[7] as FixedIncomeEvent?
-        val error = values[8] as String?
+        val error = values[8] as FixedIncomeDetailError?
 
         val schedule = row?.let {
             getCouponSchedule(it.position)
@@ -127,7 +132,7 @@ class FixedIncomeDetailViewModel(
         viewModelScope.launch {
             val position = uiState.value.row?.position
             if (position == null) {
-                _error.value = "Posición no encontrada"
+                _error.value = FixedIncomeDetailError.PositionNotFound
                 return@launch
             }
             registerCoupon(event, position.accountId)
@@ -135,7 +140,7 @@ class FixedIncomeDetailViewModel(
                     _showRegisterCouponSheet.value = false
                 }
                 .onFailure {
-                    _error.value = it.message
+                    _error.value = FixedIncomeDetailError.Unknown(it.message)
                 }
         }
     }
@@ -144,12 +149,12 @@ class FixedIncomeDetailViewModel(
         viewModelScope.launch {
             val position = uiState.value.row?.position
             if (position == null) {
-                _error.value = "Posición no encontrada"
+                _error.value = FixedIncomeDetailError.PositionNotFound
                 return@launch
             }
             closeFixedIncome(positionId, closeType, closeDate, settlementEvent, position.accountId)
                 .onSuccess { _showCloseSheet.value = false }
-                .onFailure { _error.value = it.message }
+                .onFailure { _error.value = FixedIncomeDetailError.Unknown(it.message) }
         }
     }
 
@@ -158,14 +163,14 @@ class FixedIncomeDetailViewModel(
             val linkedTxId = "fi_${event.id}"
             deleteFixedIncomeEvent(event.id, linkedTxId)
                 .onSuccess { hideDeleteEventDialog() }
-                .onFailure { _error.value = it.message }
+                .onFailure { _error.value = FixedIncomeDetailError.Unknown(it.message) }
         }
     }
 
     fun archivePosition() {
         viewModelScope.launch {
             archivePosition(positionId)
-                .onFailure { _error.value = it.message }
+                .onFailure { _error.value = FixedIncomeDetailError.Unknown(it.message) }
         }
     }
 
@@ -176,7 +181,7 @@ class FixedIncomeDetailViewModel(
         viewModelScope.launch {
             updatePosition(updatedPosition)
                 .onSuccess { hideEditSheet() }
-                .onFailure { _error.value = it.message }
+                .onFailure { _error.value = FixedIncomeDetailError.Unknown(it.message) }
         }
     }
 
@@ -185,7 +190,7 @@ class FixedIncomeDetailViewModel(
             val position = uiState.value.row?.position ?: return@launch
             val updatedPosition = position.copy(region = region, sector = sector)
             updatePosition(updatedPosition)
-                .onFailure { _error.value = it.message }
+                .onFailure { _error.value = FixedIncomeDetailError.Unknown(it.message) }
         }
     }
 

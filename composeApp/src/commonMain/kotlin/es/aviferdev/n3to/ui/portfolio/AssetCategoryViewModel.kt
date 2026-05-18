@@ -15,12 +15,17 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
+sealed class AssetCategoryError {
+    data object AlreadyExists : AssetCategoryError()
+    data class Unknown(val message: String?) : AssetCategoryError()
+}
+
 data class AssetCategoryListUiState(
     val categories: List<AssetCategory>     = emptyList(),
     val showAddSheet: Boolean               = false,
     val editing: AssetCategory?             = null,
     val pendingDelete: AssetCategory?       = null,
-    val error: String?                      = null
+    val error: AssetCategoryError?          = null
 )
 
 class AssetCategoryViewModel(
@@ -33,7 +38,7 @@ class AssetCategoryViewModel(
     private val _showAddSheet  = MutableStateFlow(false)
     private val _editing       = MutableStateFlow<AssetCategory?>(null)
     private val _pendingDelete = MutableStateFlow<AssetCategory?>(null)
-    private val _error         = MutableStateFlow<String?>(null)
+    private val _error         = MutableStateFlow<AssetCategoryError?>(null)
 
     val uiState: StateFlow<AssetCategoryListUiState> = combine(
         getCategories(),
@@ -62,7 +67,7 @@ class AssetCategoryViewModel(
         val trimmed = name.trim()
         if (trimmed.isBlank()) return
         if (uiState.value.categories.any { it.name.equals(trimmed, ignoreCase = true) }) {
-            _error.value = "Ya existe una categoría con ese nombre"
+            _error.value = AssetCategoryError.AlreadyExists
             return
         }
         viewModelScope.launch {
@@ -76,7 +81,7 @@ class AssetCategoryViewModel(
                     sortOrder = nextOrder,
                     createdAt = now
                 )
-            ).onFailure { _error.value = it.message }
+            ).onFailure { _error.value = AssetCategoryError.Unknown(it.message) }
             _showAddSheet.value = false
         }
     }
@@ -89,12 +94,12 @@ class AssetCategoryViewModel(
         val trimmed = newName.trim()
         if (trimmed.isBlank()) return
         if (uiState.value.categories.any { it.id != id && it.name.equals(trimmed, ignoreCase = true) }) {
-            _error.value = "Ya existe una categoría con ese nombre"
+            _error.value = AssetCategoryError.AlreadyExists
             return
         }
         viewModelScope.launch {
             renameCategory.invoke(id, trimmed, newIcon.ifBlank { "📦" })
-                .onFailure { _error.value = it.message }
+                .onFailure { _error.value = AssetCategoryError.Unknown(it.message) }
             _editing.value = null
         }
     }
@@ -106,7 +111,7 @@ class AssetCategoryViewModel(
     fun confirmDelete() {
         val cat = _pendingDelete.value ?: return
         viewModelScope.launch {
-            archiveCategory(cat.id).onFailure { _error.value = it.message }
+            archiveCategory(cat.id).onFailure { _error.value = AssetCategoryError.Unknown(it.message) }
             _pendingDelete.value = null
         }
     }

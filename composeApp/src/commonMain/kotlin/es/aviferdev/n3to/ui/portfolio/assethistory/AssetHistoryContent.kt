@@ -57,6 +57,9 @@ import es.aviferdev.n3to.ui.theme.TextPrimary
 import es.aviferdev.n3to.ui.theme.TextSecondary
 import es.aviferdev.n3to.ui.theme.TextTertiary
 import es.aviferdev.n3to.ui.theme.N3toTheme
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.error_asset_not_found
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -113,7 +116,7 @@ fun AssetHistoryContent(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        state.error ?: "Activo no encontrado",
+                        stringResource(Res.string.error_asset_not_found),
                         fontSize = 13.sp,
                         color = TextTertiary
                     )

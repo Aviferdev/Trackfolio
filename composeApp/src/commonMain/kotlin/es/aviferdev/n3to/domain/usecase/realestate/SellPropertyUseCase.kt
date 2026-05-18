@@ -4,6 +4,7 @@ import es.aviferdev.n3to.platform.nowMillis
 import com.benasher44.uuid.uuid4
 import es.aviferdev.n3to.domain.model.PropertyExpense
 import es.aviferdev.n3to.domain.model.Transaction
+import es.aviferdev.n3to.domain.model.ValidationError
 import es.aviferdev.n3to.domain.model.TransactionType
 import es.aviferdev.n3to.domain.repository.RealEstatePropertyRepository
 import es.aviferdev.n3to.domain.repository.TransactionRepository
@@ -27,9 +28,9 @@ class SellPropertyUseCase(
         accountId: String,
         propertyName: String
     ): Result<Unit> {
-        require(saleValue > 0) { "El precio de venta debe ser mayor que 0" }
-        require(saleDate > 0) { "La fecha de venta es obligatoria" }
-        saleExpenses.forEach { require(it.amount > 0) { "El importe del gasto debe ser mayor que 0" } }
+        if (saleValue <= 0) return Result.failure(ValidationError.SalePriceInvalid)
+        if (saleDate <= 0) return Result.failure(ValidationError.SaleDateRequired)
+        saleExpenses.forEach { if (it.amount <= 0) return Result.failure(ValidationError.ExpenseAmountInvalid) }
 
         // 1. Marcar propiedad como vendida
         val sellResult = propertyRepository.sellProperty(propertyId, saleDate, saleValue)

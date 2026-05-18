@@ -22,6 +22,13 @@ import es.aviferdev.n3to.domain.usecase.assetmetadata.SaveRegionUseCase
 import es.aviferdev.n3to.ui.theme.*
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.common_delete
+import n3to.composeapp.generated.resources.portfolio_region_name
+import n3to.composeapp.generated.resources.portfolio_region_new
+import n3to.composeapp.generated.resources.portfolio_settings_region_section
+import n3to.composeapp.generated.resources.portfolio_settings_region_empty
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -69,21 +76,21 @@ fun RegionManagementSheet(
                 .padding(bottom = 32.dp)
         ) {
             Text(
-                "Gestión de Regiones",
+                stringResource(Res.string.portfolio_settings_region_section),
                 fontSize = 18.sp,
                 fontWeight = FontWeight.SemiBold,
                 color = TextPrimary,
                 modifier = Modifier.padding(bottom = 4.dp)
             )
             Text(
-                "Crea y elimina regiones geográficas para distribuir tus activos.",
+                stringResource(Res.string.portfolio_settings_region_empty),
                 fontSize = 11.sp,
                 color = TextSecondary,
                 modifier = Modifier.padding(bottom = 18.dp)
             )
 
             Text(
-                "Nueva región",
+                stringResource(Res.string.portfolio_region_new),
                 fontSize = 12.sp,
                 color = TextSecondary,
                 fontWeight = FontWeight.Medium
@@ -97,7 +104,7 @@ fun RegionManagementSheet(
                 OutlinedTextField(
                     value = newName,
                     onValueChange = { newName = it },
-                    placeholder = { Text("Nombre (ej. Asia, Iberoamerica)", fontSize = 14.sp) },
+                    placeholder = { Text(stringResource(Res.string.portfolio_region_name), fontSize = 14.sp) },
                     modifier = Modifier.weight(1f),
                     singleLine = true,
                     shape = RoundedCornerShape(10.dp),
@@ -181,7 +188,7 @@ private fun RegionItem(
         ) {
             Icon(
                 Icons.Default.Delete,
-                "Eliminar",
+                stringResource(Res.string.common_delete),
                 tint = ExpenseRed.copy(alpha = 0.7f),
                 modifier = Modifier.size(20.dp)
             )

@@ -1,6 +1,7 @@
 package es.aviferdev.n3to.domain.usecase.reconciliation
 
 import es.aviferdev.n3to.core.security.AppSettings
+import es.aviferdev.n3to.domain.model.ValidationError
 
 /**
  * Lee y escribe el intervalo (en días) del recordatorio de reconciliación
@@ -19,13 +20,13 @@ class GetReconciliationReminderIntervalUseCase(
         else ShouldShowReconciliationReminderUseCase.DEFAULT_INTERVAL
     }
 
-    fun set(accountId: String, days: Int) {
-        require(days in ShouldShowReconciliationReminderUseCase.VALID_INTERVALS) {
-            "Intervalo no válido: $days. Usa 0, 7, 15 o 30."
-        }
+    fun set(accountId: String, days: Int): Result<Unit> {
+        if (days !in ShouldShowReconciliationReminderUseCase.VALID_INTERVALS)
+            return Result.failure(ValidationError.InvalidInterval(days))
         appSettings.putInt(
             ShouldShowReconciliationReminderUseCase.keyInterval(accountId),
             days
         )
+        return Result.success(Unit)
     }
 }

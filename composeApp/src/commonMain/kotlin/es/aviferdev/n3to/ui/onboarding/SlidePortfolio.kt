@@ -50,6 +50,11 @@ import es.aviferdev.n3to.ui.theme.NavySurface
 import es.aviferdev.n3to.ui.theme.TextPrimary
 import es.aviferdev.n3to.ui.theme.TextTertiary
 import kotlinx.coroutines.delay
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.portfolio_summary_total_pnl
+import n3to.composeapp.generated.resources.portfolio_summary_total_value
+import n3to.composeapp.generated.resources.onboarding_portfolio_desc
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 /**
@@ -125,7 +130,7 @@ fun SlidePortfolio(modifier: Modifier = Modifier) {
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "VALOR PORTFOLIO",
+                        text = stringResource(Res.string.portfolio_summary_total_value).uppercase(),
                         fontSize = 10.sp,
                         fontWeight = FontWeight.Bold,
                         color = TextTertiary,
@@ -241,9 +246,9 @@ fun SlidePortfolio(modifier: Modifier = Modifier) {
             Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                 Text(text = "🧮", fontSize = 14.sp, color = Color.Unspecified)
                 Spacer(Modifier.width(8.dp))
-                Text(text = "Lotes FIFO automáticos", fontSize = 11.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary)
+                Text(text = stringResource(Res.string.onboarding_portfolio_desc), fontSize = 11.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary)
                 Spacer(Modifier.weight(1f))
-                Text(text = "Plusvalías reales", fontSize = 10.sp, color = TextTertiary)
+                Text(text = stringResource(Res.string.portfolio_summary_total_pnl), fontSize = 10.sp, color = TextTertiary)
             }
         }
     }

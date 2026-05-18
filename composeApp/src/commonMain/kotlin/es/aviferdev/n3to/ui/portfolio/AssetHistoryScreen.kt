@@ -91,6 +91,11 @@ import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.common_accept
+import n3to.composeapp.generated.resources.common_error
+import n3to.composeapp.generated.resources.error_asset_not_found
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -180,13 +185,18 @@ fun AssetHistoryScreen(
             shape = RoundedCornerShape(16.dp)
         )
     }
-    state.error?.let { msg ->
+    state.error?.let { err ->
+        val msg = when (err) {
+            is es.aviferdev.n3to.ui.portfolio.AssetHistoryError.AssetNotFound -> stringResource(Res.string.error_asset_not_found)
+            is es.aviferdev.n3to.ui.portfolio.AssetHistoryError.PriceHistorySaveError -> err.message
+            is es.aviferdev.n3to.ui.portfolio.AssetHistoryError.Unknown -> err.message ?: stringResource(Res.string.common_error)
+        }
         AlertDialog(
             onDismissRequest = { viewModel.clearError() },
             containerColor = SurfaceWhite,
             title = {
                 Text(
-                    "Error",
+                    stringResource(Res.string.common_error),
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
                     color = TextPrimary
@@ -196,7 +206,7 @@ fun AssetHistoryScreen(
             confirmButton = {
                 TextButton(onClick = { viewModel.clearError() }) {
                     Text(
-                        "Aceptar",
+                        stringResource(Res.string.common_accept),
                         color = PrimaryDark
                     )
                 }

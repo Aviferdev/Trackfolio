@@ -26,6 +26,21 @@ import es.aviferdev.n3to.domain.model.Platform
 import es.aviferdev.n3to.ui.common.toMaterialIcon
 import es.aviferdev.n3to.ui.theme.*
 
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.common_cancel
+import n3to.composeapp.generated.resources.common_name
+import n3to.composeapp.generated.resources.common_save_changes
+import n3to.composeapp.generated.resources.portfolio_add_asset_name_required
+import n3to.composeapp.generated.resources.portfolio_add_tx_notes_label
+import n3to.composeapp.generated.resources.portfolio_platform_create_title
+import n3to.composeapp.generated.resources.portfolio_platform_edit_title
+import n3to.composeapp.generated.resources.portfolio_platform_icon_label
+import n3to.composeapp.generated.resources.portfolio_platform_notes_label
+import n3to.composeapp.generated.resources.portfolio_platform_save
+import n3to.composeapp.generated.resources.portfolio_add_asset_platforms_hint
+import n3to.composeapp.generated.resources.portfolio_platform_name_label
+import n3to.composeapp.generated.resources.portfolio_settings_add
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 /**
@@ -79,21 +94,21 @@ fun AddEditPlatformSheet(
         ) {
             Spacer(Modifier.height(4.dp))
             Text(
-                text       = if (isEditing) "Editar plataforma" else "Nueva plataforma",
+                text       = if (isEditing) stringResource(Res.string.portfolio_platform_edit_title) else stringResource(Res.string.portfolio_platform_create_title),
                 fontSize   = 18.sp,
                 fontWeight = FontWeight.SemiBold,
                 color      = TextPrimary
             )
             Spacer(Modifier.height(4.dp))
             Text(
-                text     = "Asocia los movimientos al broker, exchange o banco donde se ejecutaron.",
+                text     = stringResource(Res.string.portfolio_add_asset_platforms_hint),
                 fontSize = 11.sp,
                 color    = TextSecondary
             )
             Spacer(Modifier.height(20.dp))
 
             // ── Selector de icono ────────────────────────────────────────────
-            Text("Icono", fontSize = 12.sp, color = TextSecondary, fontWeight = FontWeight.Medium)
+            Text(stringResource(Res.string.portfolio_platform_icon_label), fontSize = 12.sp, color = TextSecondary, fontWeight = FontWeight.Medium)
             Spacer(Modifier.height(8.dp))
 
             Row(
@@ -132,10 +147,10 @@ fun AddEditPlatformSheet(
             OutlinedTextField(
                 value         = name,
                 onValueChange = { name = it; nameError = false },
-                label         = { Text("Nombre") },
-                placeholder   = { Text("Ej. Binance, Trading212, MyInvestor") },
+                label         = { Text(stringResource(Res.string.common_name)) },
+                placeholder   = { Text(stringResource(Res.string.portfolio_platform_name_label)) },
                 isError       = nameError,
-                supportingText = if (nameError) {{ Text("El nombre es obligatorio") }} else null,
+                supportingText = if (nameError) {{ Text(stringResource(Res.string.portfolio_add_asset_name_required)) }} else null,
                 modifier      = Modifier.fillMaxWidth(),
                 singleLine    = true,
                 shape         = RoundedCornerShape(10.dp),
@@ -155,8 +170,8 @@ fun AddEditPlatformSheet(
             OutlinedTextField(
                 value         = notes,
                 onValueChange = { if (it.length <= 200) notes = it },
-                label         = { Text("Notas (opcional)") },
-                placeholder   = { Text("Ej: Guardado en caja fuerte") },
+                label         = { Text(stringResource(Res.string.portfolio_add_tx_notes_label)) },
+                placeholder   = { Text(stringResource(Res.string.portfolio_platform_notes_label)) },
                 supportingText = { Text("${notes.length}/200") },
                 modifier      = Modifier.fillMaxWidth(),
                 singleLine    = true,
@@ -184,7 +199,7 @@ fun AddEditPlatformSheet(
                 colors   = ButtonDefaults.buttonColors(containerColor = PrimaryDark)
             ) {
                 Text(
-                    text       = if (isEditing) "Guardar cambios" else "Crear plataforma",
+                    text       = if (isEditing) stringResource(Res.string.common_save_changes) else stringResource(Res.string.portfolio_platform_save),
                     fontSize   = 16.sp,
                     fontWeight = FontWeight.Medium
                 )
@@ -192,7 +207,7 @@ fun AddEditPlatformSheet(
 
             Spacer(Modifier.height(8.dp))
             TextButton(onClick = onDismiss, modifier = Modifier.fillMaxWidth()) {
-                Text("Cancelar", fontSize = 14.sp, color = TextSecondary)
+                Text(stringResource(Res.string.common_cancel), fontSize = 14.sp, color = TextSecondary)
             }
         }
     }

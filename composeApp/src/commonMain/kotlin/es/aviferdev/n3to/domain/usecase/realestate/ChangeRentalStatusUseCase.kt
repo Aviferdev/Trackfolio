@@ -3,6 +3,7 @@ package es.aviferdev.n3to.domain.usecase.realestate
 import com.benasher44.uuid.uuid4
 import es.aviferdev.n3to.domain.model.RentalPeriod
 import es.aviferdev.n3to.domain.model.RentalStatus
+import es.aviferdev.n3to.domain.model.ValidationError
 import es.aviferdev.n3to.domain.repository.RentalPeriodRepository
 import es.aviferdev.n3to.domain.repository.RealEstatePropertyRepository
 import kotlinx.coroutines.flow.firstOrNull
@@ -31,9 +32,8 @@ class ChangeRentalStatusUseCase(
 
         // 2. Si nuevo estado es RENTED, crear nuevo período
         if (newStatus == RentalStatus.RENTED) {
-            require(monthlyRent != null && monthlyRent > 0) {
-                "La renta mensual es obligatoria para alquiler"
-            }
+            if (monthlyRent == null || monthlyRent <= 0)
+                return Result.failure(ValidationError.RentalIncomeRequired)
             rentalPeriodRepository.openRentalPeriod(
                 RentalPeriod(
                     id          = uuid4().toString(),

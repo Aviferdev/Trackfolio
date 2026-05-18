@@ -12,7 +12,8 @@ enum class IncomeType(
     /** Si este tipo tiene campo de comisiones. */
     val hasCommission: Boolean,
     /** Tipo de entidad emisora asociada. */
-    val issuerType: IssuerType
+    val issuerType: IssuerType,
+    val resourceKey: String
 ) {
     SALARY(
         label                = "Salario",
@@ -21,7 +22,8 @@ enum class IncomeType(
         hasWithholdingTax    = true,
         hasSocialContribution = true,
         hasCommission        = false,
-        issuerType           = IssuerType.EMPLOYER
+        issuerType           = IssuerType.EMPLOYER,
+        resourceKey          = "income_type_salary"
     ),
     FREELANCE(
         label                = "Autónomo / Freelance",
@@ -30,7 +32,8 @@ enum class IncomeType(
         hasWithholdingTax    = true,
         hasSocialContribution = true,
         hasCommission        = false,
-        issuerType           = IssuerType.EMPLOYER
+        issuerType           = IssuerType.EMPLOYER,
+        resourceKey          = "income_type_freelance"
     ),
     BANK_INTEREST(
         label                = "Intereses bancarios",
@@ -39,7 +42,8 @@ enum class IncomeType(
         hasWithholdingTax    = true,
         hasSocialContribution = false,
         hasCommission        = false,
-        issuerType           = IssuerType.BANK
+        issuerType           = IssuerType.BANK,
+        resourceKey          = "income_type_bank_interest"
     ),
     BOND_DEPOSIT(
         label                = "Bonos o depósitos",
@@ -48,7 +52,8 @@ enum class IncomeType(
         hasWithholdingTax    = true,
         hasSocialContribution = false,
         hasCommission        = true,
-        issuerType           = IssuerType.BOND_ISSUER
+        issuerType           = IssuerType.BOND_ISSUER,
+        resourceKey          = "income_type_bond_deposit"
     ),
     DIVIDEND(
         label                = "Dividendos",
@@ -57,7 +62,8 @@ enum class IncomeType(
         hasWithholdingTax    = true,
         hasSocialContribution = false,
         hasCommission        = false,
-        issuerType           = IssuerType.DIVIDEND_SOURCE
+        issuerType           = IssuerType.DIVIDEND_SOURCE,
+        resourceKey          = "income_type_dividend"
     ),
     BONUS_PRIZE(
         label                = "Bonus laboral",
@@ -66,7 +72,8 @@ enum class IncomeType(
         hasWithholdingTax    = true,
         hasSocialContribution = true,
         hasCommission        = false,
-        issuerType           = IssuerType.EMPLOYER
+        issuerType           = IssuerType.EMPLOYER,
+        resourceKey          = "income_type_bonus_prize"
     ),
     PRIZE_LOTTERY(
         label                = "Premio / Lotería",
@@ -75,7 +82,8 @@ enum class IncomeType(
         hasWithholdingTax    = true,
         hasSocialContribution = false,
         hasCommission        = false,
-        issuerType           = IssuerType.PROMOTION_PLATFORM
+        issuerType           = IssuerType.PROMOTION_PLATFORM,
+        resourceKey          = "income_type_prize_lottery"
     ),
     RENTAL_INCOME(
         label                = "Alquiler",
@@ -84,7 +92,8 @@ enum class IncomeType(
         hasWithholdingTax    = true,
         hasSocialContribution = false,
         hasCommission        = false,
-        issuerType           = IssuerType.EXEMPT_SOURCE
+        issuerType           = IssuerType.EXEMPT_SOURCE,
+        resourceKey          = "income_type_rental_income"
     ),
     EXEMPT_INCOME(
         label                = "Ingreso exento",
@@ -93,7 +102,8 @@ enum class IncomeType(
         hasWithholdingTax    = false,
         hasSocialContribution = false,
         hasCommission        = false,
-        issuerType           = IssuerType.EXEMPT_SOURCE
+        issuerType           = IssuerType.EXEMPT_SOURCE,
+        resourceKey          = "income_type_exempt_income"
     );
 
     companion object {

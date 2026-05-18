@@ -38,6 +38,12 @@ import kotlinx.coroutines.launch
 
 import es.aviferdev.n3to.domain.model.Transaction
 
+sealed class AssetHistoryError {
+    data object AssetNotFound : AssetHistoryError()
+    data class PriceHistorySaveError(val message: String) : AssetHistoryError()
+    data class Unknown(val message: String?) : AssetHistoryError()
+}
+
 data class AssetHistoryUiState(
     val asset: Asset?                       = null,
     val position: AssetPosition?            = null,
@@ -50,7 +56,7 @@ data class AssetHistoryUiState(
     val platformsByAsset: Map<String, List<Platform>> = emptyMap(),
     val categories: List<AssetCategory>    = emptyList(),
     val isLoading: Boolean                  = true,
-    val error: String?                      = null,
+    val error: AssetHistoryError?           = null,
     // Sheet de añadir/editar movimiento
     val showAddSheet: Boolean               = false,
     val editing: AssetTransaction?          = null,
@@ -94,7 +100,7 @@ class AssetHistoryViewModel(
     private val _editing              = MutableStateFlow<AssetTransaction?>(null)
     private val _showUpdatePriceSheet = MutableStateFlow(false)
     private val _pendingDelete        = MutableStateFlow<AssetTransaction?>(null)
-    private val _error                = MutableStateFlow<String?>(null)
+    private val _error                = MutableStateFlow<AssetHistoryError?>(null)
     private val _showDividendSheet    = MutableStateFlow(false)
     private val _editingDividendId   = MutableStateFlow<String?>(null)
     private val _showTransferSheet    = MutableStateFlow(false)
@@ -104,7 +110,7 @@ class AssetHistoryViewModel(
         val editing: AssetTransaction?,
         val showUpdatePrice: Boolean,
         val pendingDelete: AssetTransaction?,
-        val error: String?,
+        val error: AssetHistoryError?,
         val showDividend: Boolean,
         val editingDividendId: String?,
         val showTransfer: Boolean
@@ -199,7 +205,7 @@ class AssetHistoryViewModel(
     ) { core, sheets ->
         val asset = core.asset
         if (asset == null) {
-            AssetHistoryUiState(isLoading = false, error = "Activo no encontrado")
+            AssetHistoryUiState(isLoading = false, error = AssetHistoryError.AssetNotFound)
         } else {
             val dividendIncome = core.dividends.sumOf { it.amount }
             val position  = PortfolioCalculator.calculate(core.txs, asset.currentPrice, dividendIncome)
@@ -300,7 +306,7 @@ class AssetHistoryViewModel(
                                     recordedAt = date
                                 )
                             ).onFailure { err ->
-                                _error.value = "Error al registrar precio histórico: ${err.message}"
+                                _error.value = AssetHistoryError.PriceHistorySaveError(err.message ?: "")
                             }
                         }
                     }
@@ -325,7 +331,7 @@ class AssetHistoryViewModel(
             }
             result
                 .onSuccess { closeAddSheet() }
-                .onFailure { _error.value = it.message }
+                .onFailure { _error.value = AssetHistoryError.Unknown(it.message) }
         }
     }
 
@@ -340,15 +346,15 @@ class AssetHistoryViewModel(
                 // Un traspaso tiene dos patas: OUT + IN. Borrar ambas.
                 val groupId = tx.transferGroupId
                 if (groupId != null) {
-                    deleteAssetTransaction("txout_$groupId").onFailure { _error.value = it.message }
-                    deleteAssetTransaction("txin_$groupId").onFailure { _error.value = it.message }
+                    deleteAssetTransaction("txout_$groupId").onFailure { _error.value = AssetHistoryError.Unknown(it.message) }
+                    deleteAssetTransaction("txin_$groupId").onFailure { _error.value = AssetHistoryError.Unknown(it.message) }
                 } else {
                     // Fallback: borrar solo esta
-                    deleteAssetTransaction(tx.id).onFailure { _error.value = it.message }
+                    deleteAssetTransaction(tx.id).onFailure { _error.value = AssetHistoryError.Unknown(it.message) }
                 }
             } else {
                 syncToLedger.remove(tx.id)
-                deleteAssetTransaction(tx.id).onFailure { _error.value = it.message }
+                deleteAssetTransaction(tx.id).onFailure { _error.value = AssetHistoryError.Unknown(it.message) }
             }
             _pendingDelete.value = null
         }
@@ -363,7 +369,7 @@ class AssetHistoryViewModel(
             val now = nowMillis()
             updateAssetCurrentPrice(assetId, newPrice, now, uiState.value.asset?.assetCategoryId)
                 .onSuccess { closeUpdatePriceSheet() }
-                .onFailure { _error.value = it.message }
+                .onFailure { _error.value = AssetHistoryError.Unknown(it.message) }
         }
     }
 
@@ -393,7 +399,7 @@ class AssetHistoryViewModel(
             )
             result
                 .onSuccess { closeDividendSheet() }
-                .onFailure { _error.value = it.message }
+                .onFailure { _error.value = AssetHistoryError.Unknown(it.message) }
         }
     }
 
@@ -437,7 +443,7 @@ class AssetHistoryViewModel(
             )
             result
                 .onSuccess { closeTransferSheet() }
-                .onFailure { _error.value = it.message }
+                .onFailure { _error.value = AssetHistoryError.Unknown(it.message) }
         }
     }
 

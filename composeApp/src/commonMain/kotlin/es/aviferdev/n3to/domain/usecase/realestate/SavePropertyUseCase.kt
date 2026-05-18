@@ -5,6 +5,7 @@ import com.benasher44.uuid.uuid4
 import es.aviferdev.n3to.domain.model.PropertyExpense
 import es.aviferdev.n3to.domain.model.RealEstateProperty
 import es.aviferdev.n3to.domain.model.RentalStatus
+import es.aviferdev.n3to.domain.model.ValidationError
 import es.aviferdev.n3to.domain.model.Transaction
 import es.aviferdev.n3to.domain.model.TransactionType
 import es.aviferdev.n3to.domain.repository.RealEstatePropertyRepository
@@ -26,20 +27,23 @@ class SavePropertyUseCase(
         property: RealEstateProperty,
         purchaseExpenses: List<PropertyExpense> = emptyList()
     ): Result<Unit> {
-        require(property.ownershipPercentage in 0.0..100.0) {
-            "El porcentaje de propiedad debe estar entre 0 y 100"
-        }
-        require(property.name.isNotBlank()) { "El nombre no puede estar vacío" }
-        require(property.address.isNotBlank()) { "La dirección no puede estar vacía" }
-        require(property.purchaseValue > 0) { "El valor de compra debe ser mayor que 0" }
-        require(property.currentEstimatedValue > 0) { "El valor estimado debe ser mayor que 0" }
-        require(property.acquisitionDate > 0) { "La fecha de adquisición es obligatoria" }
-        purchaseExpenses.forEach { require(it.amount > 0) { "El importe del gasto debe ser mayor que 0" } }
+        if (property.ownershipPercentage !in 0.0..100.0)
+            return Result.failure(ValidationError.OwnershipPercentageInvalid)
+        if (property.name.isNotBlank().not())
+            return Result.failure(ValidationError.PropertyNameEmpty)
+        if (property.address.isNotBlank().not())
+            return Result.failure(ValidationError.PropertyAddressEmpty)
+        if (property.purchaseValue <= 0)
+            return Result.failure(ValidationError.PurchaseValueInvalid)
+        if (property.currentEstimatedValue <= 0)
+            return Result.failure(ValidationError.EstimatedValueInvalid)
+        if (property.acquisitionDate <= 0)
+            return Result.failure(ValidationError.AcquisitionDateRequired)
+        purchaseExpenses.forEach { if (it.amount <= 0) return Result.failure(ValidationError.ExpenseAmountInvalid) }
 
         if (property.rentalStatus == RentalStatus.RENTED) {
-            require(property.monthlyRent != null && property.monthlyRent > 0) {
-                "La renta mensual es obligatoria para propiedades alquiladas"
-            }
+            if (property.monthlyRent == null || property.monthlyRent <= 0)
+                return Result.failure(ValidationError.RentalIncomeRequired)
         }
 
         // 1. Guardar/actualizar propiedad

@@ -24,6 +24,17 @@ import es.aviferdev.n3to.ui.common.component.SelectableChip
 import es.aviferdev.n3to.ui.theme.*
 import es.aviferdev.n3to.ui.theme.DragHandleColor
 
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.common_accept
+import n3to.composeapp.generated.resources.common_action_cd
+import n3to.composeapp.generated.resources.common_cancel
+import n3to.composeapp.generated.resources.realestate_change_rental_status
+import n3to.composeapp.generated.resources.realestate_change_rental_title
+import n3to.composeapp.generated.resources.realestate_monthly_rent_label
+import n3to.composeapp.generated.resources.common_confirm
+import n3to.composeapp.generated.resources.realestate_change_rental_date
+import n3to.composeapp.generated.resources.realestate_rental_status_label
+import org.jetbrains.compose.resources.stringResource
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
@@ -53,9 +64,9 @@ fun ChangeRentalStatusSheet(
                 TextButton(onClick = {
                     datePickerState.selectedDateMillis?.let { effectiveDateMillis = it }
                     showDatePicker = false
-                }) { Text("Aceptar", color = PrimaryDark) }
+                }) { Text(stringResource(Res.string.common_accept), color = PrimaryDark) }
             },
-            dismissButton = { TextButton(onClick = { showDatePicker = false }) { Text("Cancelar", color = TextTertiary) } }
+            dismissButton = { TextButton(onClick = { showDatePicker = false }) { Text(stringResource(Res.string.common_cancel), color = TextTertiary) } }
         ) { DatePicker(state = datePickerState, colors = DatePickerDefaults.colors(containerColor = SurfaceWhite)) }
     }
 
@@ -66,12 +77,12 @@ fun ChangeRentalStatusSheet(
         dragHandle = { Box(Modifier.padding(top = 12.dp, bottom = 4.dp).width(40.dp).height(4.dp).clip(RoundedCornerShape(2.dp)).background(DragHandleColor)) }
     ) {
         Column(Modifier.fillMaxWidth().padding(horizontal = 20.dp).padding(bottom = 32.dp)) {
-            Text("Cambiar estado de alquiler", fontWeight = FontWeight.Bold, fontSize = 18.sp, color = TextPrimary)
+            Text(stringResource(Res.string.realestate_change_rental_title), fontWeight = FontWeight.Bold, fontSize = 18.sp, color = TextPrimary)
             Spacer(Modifier.height(4.dp))
-            Text("Selecciona el nuevo estado y la fecha efectiva del cambio.", fontSize = 13.sp, color = TextTertiary)
+            Text(stringResource(Res.string.realestate_change_rental_status), fontSize = 13.sp, color = TextTertiary)
             Spacer(Modifier.height(16.dp))
 
-            Text("Nuevo estado", fontSize = 13.sp, color = TextSecondary)
+            Text(stringResource(Res.string.realestate_rental_status_label), fontSize = 13.sp, color = TextSecondary)
             Spacer(Modifier.height(6.dp))
             LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 items(RentalStatus.entries) { status ->
@@ -84,20 +95,20 @@ fun ChangeRentalStatusSheet(
             }
             Spacer(Modifier.height(12.dp))
 
-            Text("Fecha efectiva", fontSize = 13.sp, color = TextSecondary)
+            Text(stringResource(Res.string.realestate_change_rental_date), fontSize = 13.sp, color = TextSecondary)
             Spacer(Modifier.height(4.dp))
             OutlinedTextField(
                 value = formatDate(effectiveDateMillis), onValueChange = {}, readOnly = true,
                 colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = PrimaryDark, unfocusedBorderColor = BorderGray, focusedTextColor = TextPrimary, unfocusedTextColor = TextPrimary),
                 modifier = Modifier.fillMaxWidth(),
-                trailingIcon = { IconButton(onClick = { showDatePicker = true }) { Icon(Icons.Outlined.CalendarMonth, "Seleccionar fecha", tint = TextTertiary) } }
+                trailingIcon = { IconButton(onClick = { showDatePicker = true }) { Icon(Icons.Outlined.CalendarMonth, stringResource(Res.string.common_action_cd), tint = TextTertiary) } }
             )
 
             if (selectedStatus == RentalStatus.RENTED) {
                 Spacer(Modifier.height(12.dp))
                 OutlinedTextField(
                     value = monthlyRentText, onValueChange = { monthlyRentText = it },
-                    label = { Text("Renta mensual (€)") }, singleLine = true,
+                    label = { Text(stringResource(Res.string.realestate_monthly_rent_label)) }, singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                     colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = PrimaryDark, unfocusedBorderColor = BorderGray, cursorColor = PrimaryDark, focusedLabelColor = PrimaryDark, unfocusedLabelColor = TextTertiary, focusedTextColor = TextPrimary, unfocusedTextColor = TextPrimary),
                     modifier = Modifier.fillMaxWidth()
@@ -110,7 +121,7 @@ fun ChangeRentalStatusSheet(
                 enabled = isValid,
                 modifier = Modifier.fillMaxWidth().height(48.dp), shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = PrimaryDark)
-            ) { Text("Confirmar cambio", fontWeight = FontWeight.Bold) }
+            ) { Text(stringResource(Res.string.common_confirm), fontWeight = FontWeight.Bold) }
         }
     }
 }

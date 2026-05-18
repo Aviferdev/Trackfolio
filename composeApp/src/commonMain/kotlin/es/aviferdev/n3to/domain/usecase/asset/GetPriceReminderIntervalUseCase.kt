@@ -1,6 +1,7 @@
 package es.aviferdev.n3to.domain.usecase.asset
 
 import es.aviferdev.n3to.core.security.AppSettings
+import es.aviferdev.n3to.domain.model.ValidationError
 
 /**
  * Lee y escribe el intervalo (en días) del recordatorio de precios.
@@ -17,9 +18,10 @@ class GetPriceReminderIntervalUseCase(
         return if (value in VALID_INTERVALS) value else GetOutdatedAssetsUseCase.DEFAULT_INTERVAL
     }
 
-    fun set(days: Int) {
-        require(days in VALID_INTERVALS) { "Intervalo no válido: $days. Usa 7, 14 o 30." }
+    fun set(days: Int): Result<Unit> {
+        if (days !in VALID_INTERVALS) return Result.failure(ValidationError.InvalidInterval(days))
         appSettings.putInt(GetOutdatedAssetsUseCase.KEY_REMINDER_INTERVAL, days)
+        return Result.success(Unit)
     }
 
     companion object {

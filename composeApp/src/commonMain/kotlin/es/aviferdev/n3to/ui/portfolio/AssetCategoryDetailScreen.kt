@@ -32,6 +32,10 @@ import org.koin.core.parameter.parametersOf
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.common_accept
+import n3to.composeapp.generated.resources.error_account_required
+import n3to.composeapp.generated.resources.error_asset_ticker_required
+import n3to.composeapp.generated.resources.error_cannot_archive_asset
+import n3to.composeapp.generated.resources.error_platform_already_exists
 import n3to.composeapp.generated.resources.common_cancel
 import n3to.composeapp.generated.resources.common_error
 import n3to.composeapp.generated.resources.portfolio_add_asset_cancel
@@ -159,7 +163,14 @@ fun AssetCategoryDetailScreen(
         )
     }
 
-    state.error?.let { msg ->
+    state.error?.let { err ->
+        val msg = when (err) {
+            is es.aviferdev.n3to.ui.portfolio.CategoryDetailError.AccountRequired -> stringResource(Res.string.error_account_required)
+            is es.aviferdev.n3to.ui.portfolio.CategoryDetailError.TickerAndNameRequired -> stringResource(Res.string.error_asset_ticker_required)
+            is es.aviferdev.n3to.ui.portfolio.CategoryDetailError.CannotArchive -> stringResource(Res.string.error_cannot_archive_asset, err.ticker)
+            is es.aviferdev.n3to.ui.portfolio.CategoryDetailError.PlatformAlreadyExists -> stringResource(Res.string.error_platform_already_exists)
+            is es.aviferdev.n3to.ui.portfolio.CategoryDetailError.Unknown -> err.message ?: stringResource(Res.string.common_error)
+        }
         AlertDialog(
             onDismissRequest = { viewModel.clearError() },
             containerColor = SurfaceWhite,

@@ -28,6 +28,13 @@ import es.aviferdev.n3to.domain.usecase.assetmetadata.SaveSectorUseCase
 import es.aviferdev.n3to.ui.theme.*
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.common_delete
+import n3to.composeapp.generated.resources.portfolio_sector_name
+import n3to.composeapp.generated.resources.portfolio_sector_new
+import n3to.composeapp.generated.resources.portfolio_settings_sector_section
+import n3to.composeapp.generated.resources.portfolio_settings_sector_empty
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 
 private val SECTOR_ICONS = listOf(
@@ -81,21 +88,21 @@ fun SectorManagementSheet(
                 .padding(bottom = 32.dp)
         ) {
             Text(
-                "Gestión de Sectores",
+                stringResource(Res.string.portfolio_settings_sector_section),
                 fontSize = 18.sp,
                 fontWeight = FontWeight.SemiBold,
                 color = TextPrimary,
                 modifier = Modifier.padding(bottom = 4.dp)
             )
             Text(
-                "Crea y elimina sectores para clasificar tus activos.",
+                stringResource(Res.string.portfolio_settings_sector_empty),
                 fontSize = 11.sp,
                 color = TextSecondary,
                 modifier = Modifier.padding(bottom = 18.dp)
             )
 
             Text(
-                "Nuevo sector",
+                stringResource(Res.string.portfolio_sector_new),
                 fontSize = 12.sp,
                 color = TextSecondary,
                 fontWeight = FontWeight.Medium
@@ -125,7 +132,7 @@ fun SectorManagementSheet(
                 OutlinedTextField(
                     value = newName,
                     onValueChange = { newName = it },
-                    placeholder = { Text("Nombre", fontSize = 14.sp) },
+                    placeholder = { Text(stringResource(Res.string.portfolio_sector_name), fontSize = 14.sp) },
                     modifier = Modifier.weight(1f),
                     singleLine = true,
                     shape = RoundedCornerShape(10.dp),
@@ -247,7 +254,7 @@ private fun SectorItem(
         ) {
             Icon(
                 Icons.Default.Delete,
-                "Eliminar",
+                stringResource(Res.string.common_delete),
                 tint = ExpenseRed.copy(alpha = 0.7f),
                 modifier = Modifier.size(20.dp)
             )

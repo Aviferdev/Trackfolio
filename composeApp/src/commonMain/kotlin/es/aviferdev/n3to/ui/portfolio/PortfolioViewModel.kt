@@ -118,6 +118,16 @@ enum class DistributionView {
         }
 }
 
+sealed class PortfolioSheetError {
+    data object FiNoBuySell : PortfolioSheetError()
+    data class PriceHistorySave(val message: String) : PortfolioSheetError()
+    data object AssetNotFound : PortfolioSheetError()
+    data object FiCreatePosition : PortfolioSheetError()
+    data object CouponRegister : PortfolioSheetError()
+    data object NoAccountSelected : PortfolioSheetError()
+    data class Unknown(val message: String?) : PortfolioSheetError()
+}
+
 data class PortfolioUiState(
     val groups: List<CategoryGroup>     = emptyList(),         // posiciones abiertas (agrupadas por categoría)
     val regionGroups: List<CategoryGroup> = emptyList(),       // posiciones abiertas agrupadas por región
@@ -153,7 +163,7 @@ data class PortfolioUiState(
     /** Entidades bancarias (BANK) para depósitos. */
     val bankIssuers: List<Issuer>       = emptyList(),
     val isLoading: Boolean              = true,
-    val error: String?                  = null,
+    val error: PortfolioSheetError?     = null,
 
     // Sheet rápido de actualización de precio (mantenido del flujo anterior)
     val showUpdatePriceSheet: Boolean   = false,
@@ -280,7 +290,7 @@ class PortfolioViewModel(
         val showRegisterCouponSheet: Boolean = false,
         val selectedPositionForCoupon: FixedIncomePosition? = null,
         val fixedIncomeSummary: FixedIncomeSummary? = null,
-        val error: String? = null
+        val error: PortfolioSheetError? = null
     )
 
     private data class BasicPortfolioData(
@@ -974,7 +984,7 @@ class PortfolioViewModel(
                     getPortfolioValueHistory.triggerRefresh()
                     closeUpdatePriceSheet()
                 }
-                .onFailure { _sheetState.value = _sheetState.value.copy(error = it.message) }
+                .onFailure { _sheetState.value = _sheetState.value.copy(error = PortfolioSheetError.Unknown(it.message)) }
         }
     }
 
@@ -1001,7 +1011,7 @@ class PortfolioViewModel(
             // Validar que el activo no sea de Renta Fija
             val asset = portfolioState.value.allAssets.find { it.id == assetId }
             if (asset != null && AssetCategoryType.isFixedIncome(asset.assetCategoryId)) {
-                _sheetState.value = _sheetState.value.copy(error = "Los activos de Renta Fija no admiten movimientos de compra/venta")
+                _sheetState.value = _sheetState.value.copy(error = PortfolioSheetError.FiNoBuySell)
                 return@launch
             }
 
@@ -1036,13 +1046,13 @@ class PortfolioViewModel(
                                     recordedAt = date
                                 )
                             ).onFailure { err ->
-                                _sheetState.value = _sheetState.value.copy(error = "Error al registrar precio histórico: ${err.message}")
+                                _sheetState.value = _sheetState.value.copy(error = PortfolioSheetError.PriceHistorySave(err.message ?: ""))
                             }
                         }
                     }
                     closeAddTransactionSheet()
                 }
-                .onFailure { _sheetState.value = _sheetState.value.copy(error = it.message) }
+                .onFailure { _sheetState.value = _sheetState.value.copy(error = PortfolioSheetError.Unknown(it.message)) }
         }
     }
 
@@ -1068,7 +1078,7 @@ class PortfolioViewModel(
         viewModelScope.launch {
             val asset = portfolioState.value.allAssets.find { it.id == assetId }
             if (asset == null) {
-                _sheetState.value = _sheetState.value.copy(error = "Activo no encontrado")
+                _sheetState.value = _sheetState.value.copy(error = PortfolioSheetError.AssetNotFound)
                 return@launch
             }
             val dividendId = "div_${nowMillis()}_${(0..9999).random()}"
@@ -1082,7 +1092,7 @@ class PortfolioViewModel(
             )
             result
                 .onSuccess { closeDividendSheet() }
-                .onFailure { _sheetState.value = _sheetState.value.copy(error = it.message) }
+                .onFailure { _sheetState.value = _sheetState.value.copy(error = PortfolioSheetError.Unknown(it.message)) }
         }
     }
 
@@ -1099,8 +1109,8 @@ class PortfolioViewModel(
         viewModelScope.launch {
             createFixedIncomePosition?.invoke(position, event)
                 ?.onSuccess { closeCreateFixedIncomeSheet() }
-                ?.onFailure { _sheetState.value = _sheetState.value.copy(error = it.message) }
-                ?: run { _sheetState.value = _sheetState.value.copy(error = "Error al crear posición de renta fija") }
+                ?.onFailure { _sheetState.value = _sheetState.value.copy(error = PortfolioSheetError.Unknown(it.message)) }
+                ?: run { _sheetState.value = _sheetState.value.copy(error = PortfolioSheetError.FiCreatePosition) }
         }
     }
 
@@ -1125,8 +1135,8 @@ class PortfolioViewModel(
         viewModelScope.launch {
             registerCoupon?.invoke(event, accountId)
                 ?.onSuccess { hideRegisterCouponSheet() }
-                ?.onFailure { _sheetState.value = _sheetState.value.copy(error = it.message) }
-                ?: run { _sheetState.value = _sheetState.value.copy(error = "Error al registrar cupón") }
+                ?.onFailure { _sheetState.value = _sheetState.value.copy(error = PortfolioSheetError.Unknown(it.message)) }
+                ?: run { _sheetState.value = _sheetState.value.copy(error = PortfolioSheetError.CouponRegister) }
         }
     }
 
@@ -1134,7 +1144,7 @@ class PortfolioViewModel(
         viewModelScope.launch {
             val accountId = session.selectedAccountId.value
             if (accountId == null) {
-                _sheetState.value = _sheetState.value.copy(error = "No hay cuenta seleccionada")
+                _sheetState.value = _sheetState.value.copy(error = PortfolioSheetError.NoAccountSelected)
                 return@launch
             }
             val now = nowMillis()
@@ -1152,7 +1162,7 @@ class PortfolioViewModel(
                 createdAt = now
             )
             saveBondIssuer.invoke(issuer)
-                .onFailure { _sheetState.value = _sheetState.value.copy(error = it.message) }
+                .onFailure { _sheetState.value = _sheetState.value.copy(error = PortfolioSheetError.Unknown(it.message)) }
         }
     }
 

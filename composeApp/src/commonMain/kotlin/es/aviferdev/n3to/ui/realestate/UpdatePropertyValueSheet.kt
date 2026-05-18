@@ -18,6 +18,12 @@ import es.aviferdev.n3to.domain.model.RealEstateProperty
 import es.aviferdev.n3to.ui.common.DeltaIndicator
 import es.aviferdev.n3to.ui.theme.*
 import es.aviferdev.n3to.ui.theme.DragHandleColor
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.realestate_current_value_label
+import n3to.composeapp.generated.resources.realestate_new_value
+import n3to.composeapp.generated.resources.realestate_update_value_title
+import n3to.composeapp.generated.resources.realestate_value_label
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -47,20 +53,20 @@ fun UpdatePropertyValueSheet(
         }
     ) {
         Column(Modifier.fillMaxWidth().padding(horizontal = 20.dp).padding(bottom = 32.dp)) {
-            Text("Actualizar valor estimado", fontWeight = FontWeight.Bold, fontSize = 18.sp, color = TextPrimary)
+            Text(stringResource(Res.string.realestate_update_value_title), fontWeight = FontWeight.Bold, fontSize = 18.sp, color = TextPrimary)
             Spacer(Modifier.height(4.dp))
             Text(property.name, fontSize = 13.sp, color = TextTertiary)
             Spacer(Modifier.height(16.dp))
 
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                Text("Valor actual", fontSize = 13.sp, color = TextSecondary)
+                Text(stringResource(Res.string.realestate_value_label), fontSize = 13.sp, color = TextSecondary)
                 Text(formatAmountEuro(property.currentEstimatedValue), fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary)
             }
             Spacer(Modifier.height(12.dp))
 
             OutlinedTextField(
                 value = newValueText, onValueChange = { newValueText = it },
-                label = { Text("Nuevo valor estimado (€)") },
+                label = { Text(stringResource(Res.string.realestate_new_value)) },
                 singleLine = true, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                 colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = PrimaryDark, unfocusedBorderColor = BorderGray, cursorColor = PrimaryDark, focusedLabelColor = PrimaryDark, unfocusedLabelColor = TextTertiary, focusedTextColor = TextPrimary, unfocusedTextColor = TextPrimary),
                 modifier = Modifier.fillMaxWidth()
@@ -69,7 +75,7 @@ fun UpdatePropertyValueSheet(
             if (newValue > 0 && newValue != property.currentEstimatedValue) {
                 Spacer(Modifier.height(8.dp))
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                    Text("Diferencia", fontSize = 13.sp, color = TextSecondary)
+                    Text(stringResource(Res.string.realestate_current_value_label), fontSize = 13.sp, color = TextSecondary)
                     DeltaIndicator(value = "${formatAmountEuro(valueDiff)} (${formatPercentSigned(diffPercent)})", isPositive = valueDiff >= 0)
                 }
             }
@@ -78,7 +84,7 @@ fun UpdatePropertyValueSheet(
             Button(onClick = { onUpdate(newValue) }, enabled = isValid,
                 modifier = Modifier.fillMaxWidth().height(48.dp), shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = PrimaryDark)
-            ) { Text("Actualizar valor", fontWeight = FontWeight.Bold) }
+            ) { Text(stringResource(Res.string.realestate_update_value_title), fontWeight = FontWeight.Bold) }
         }
     }
 }

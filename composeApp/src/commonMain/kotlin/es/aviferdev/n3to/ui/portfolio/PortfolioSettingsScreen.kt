@@ -40,6 +40,7 @@ import n3to.composeapp.generated.resources.common_accept
 import n3to.composeapp.generated.resources.common_cancel
 import n3to.composeapp.generated.resources.common_delete
 import n3to.composeapp.generated.resources.common_error
+import n3to.composeapp.generated.resources.error_platform_already_exists
 import n3to.composeapp.generated.resources.portfolio_settings_add
 import n3to.composeapp.generated.resources.portfolio_settings_category_count_many
 import n3to.composeapp.generated.resources.portfolio_settings_category_count_one
@@ -126,12 +127,16 @@ fun PortfolioSettingsScreen(
             onDismiss = { platformViewModel.closeEditSheet() }
         )
     }
-    platformState.error?.let { msg ->
+    platformState.error?.let {
+        val errorText = when (it) {
+            is es.aviferdev.n3to.ui.portfolio.PlatformError.AlreadyExists -> stringResource(Res.string.error_platform_already_exists)
+            is es.aviferdev.n3to.ui.portfolio.PlatformError.Unknown -> it.message ?: stringResource(Res.string.common_error)
+        }
         AlertDialog(
             onDismissRequest = { platformViewModel.clearError() },
             containerColor   = SurfaceWhite,
             title = { Text(stringResource(Res.string.common_error), fontSize = 17.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary) },
-            text  = { Text(msg, fontSize = 14.sp, color = TextSecondary) },
+            text  = { Text(errorText, fontSize = 14.sp, color = TextSecondary) },
             confirmButton = {
                 TextButton(onClick = { platformViewModel.clearError() }) {
                     Text(stringResource(Res.string.common_accept), color = PrimaryDark, fontWeight = FontWeight.Medium)

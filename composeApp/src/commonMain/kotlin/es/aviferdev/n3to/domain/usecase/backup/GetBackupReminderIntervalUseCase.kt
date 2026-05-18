@@ -1,6 +1,7 @@
 package es.aviferdev.n3to.domain.usecase.backup
 
 import es.aviferdev.n3to.core.security.AppSettings
+import es.aviferdev.n3to.domain.model.ValidationError
 
 /**
  * Lee y escribe el intervalo (en días) del recordatorio de backup.
@@ -20,13 +21,13 @@ class GetBackupReminderIntervalUseCase(
         else ShouldShowBackupReminderUseCase.DEFAULT_INTERVAL_DAYS
     }
 
-    fun set(days: Int) {
-        require(days in ShouldShowBackupReminderUseCase.VALID_INTERVALS) {
-            "Intervalo no válido: $days. Usa 0, 7, 15 o 30."
-        }
+    fun set(days: Int): Result<Unit> {
+        if (days !in ShouldShowBackupReminderUseCase.VALID_INTERVALS)
+            return Result.failure(ValidationError.InvalidInterval(days))
         appSettings.putInt(
             ShouldShowBackupReminderUseCase.KEY_BACKUP_REMINDER_INTERVAL,
             days
         )
+        return Result.success(Unit)
     }
 }

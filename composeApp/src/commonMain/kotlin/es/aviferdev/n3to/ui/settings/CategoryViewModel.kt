@@ -11,12 +11,18 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
+sealed class CategoryError {
+    data object AlreadyExists : CategoryError()
+    data object InvalidName : CategoryError()
+    data class Unknown(val message: String?) : CategoryError()
+}
+
 data class CategoryListUiState(
     val expenseCategories: List<CategoryEntity> = emptyList(),
     val showAddSheet: Boolean                   = false,
     val editing: CategoryEntity?                = null,
     val pendingDelete: CategoryEntity?          = null,
-    val error: String?                          = null
+    val error: CategoryError?                   = null
 )
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -28,7 +34,7 @@ class CategoryViewModel(
     private val _showAddSheet  = MutableStateFlow(false)
     private val _editing       = MutableStateFlow<CategoryEntity?>(null)
     private val _pendingDelete = MutableStateFlow<CategoryEntity?>(null)
-    private val _error         = MutableStateFlow<String?>(null)
+    private val _error         = MutableStateFlow<CategoryError?>(null)
 
     val uiState: StateFlow<CategoryListUiState> = combine(
         session.selectedAccountId.flatMapLatest { accountId ->
@@ -66,7 +72,7 @@ class CategoryViewModel(
         val accountId = session.selectedAccountId.value ?: return
 
         if (uiState.value.expenseCategories.any { it.name.equals(trimmed, ignoreCase = true) }) {
-            _error.value = "Ya existe una categoría con ese nombre"
+            _error.value = CategoryError.AlreadyExists
             return
         }
 
@@ -81,7 +87,7 @@ class CategoryViewModel(
                     isDefault = 0L,
                     archived  = 0L
                 )
-            ).onFailure { _error.value = it.message }
+            ).onFailure { _error.value = CategoryError.Unknown(it.message) }
             _showAddSheet.value = false
         }
     }
@@ -95,12 +101,12 @@ class CategoryViewModel(
         if (trimmed.isBlank()) return
 
         if (uiState.value.expenseCategories.any { it.id != id && it.name.equals(trimmed, ignoreCase = true) }) {
-            _error.value = "Ya existe una categoría con ese nombre"
+            _error.value = CategoryError.AlreadyExists
             return
         }
 
         viewModelScope.launch {
-            dataSource.updateName(id, trimmed).onFailure { _error.value = it.message }
+            dataSource.updateName(id, trimmed).onFailure { _error.value = CategoryError.Unknown(it.message) }
             _editing.value = null
         }
     }
@@ -112,7 +118,7 @@ class CategoryViewModel(
     fun confirmDelete() {
         val cat = _pendingDelete.value ?: return
         viewModelScope.launch {
-            dataSource.archive(cat.id).onFailure { _error.value = it.message }
+            dataSource.archive(cat.id).onFailure { _error.value = CategoryError.Unknown(it.message) }
             _pendingDelete.value = null
         }
     }

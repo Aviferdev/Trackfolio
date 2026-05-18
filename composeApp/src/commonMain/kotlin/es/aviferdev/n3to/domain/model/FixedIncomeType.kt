@@ -12,7 +12,8 @@ enum class FixedIncomeType(
     val allowedFrequencies: Set<InterestFrequency>,
     val category: FixedIncomeCategory,
     val allowsSecondarySale: Boolean,
-    val allowsEarlyCancellation: Boolean
+    val allowsEarlyCancellation: Boolean,
+    val resourceKey: String
 ) {
     // Letras del Tesoro: 3-18 meses, solo al vencimiento
     BILL(
@@ -23,7 +24,8 @@ enum class FixedIncomeType(
         allowedFrequencies = setOf(InterestFrequency.AT_MATURITY),
         category = FixedIncomeCategory.GOVERNMENT,
         allowsSecondarySale = true,
-        allowsEarlyCancellation = false
+        allowsEarlyCancellation = false,
+        resourceKey = "fixedincome_type_bill"
     ),
 
     // Bonos del Estado: 2-10 años, anual o semestral
@@ -35,7 +37,8 @@ enum class FixedIncomeType(
         allowedFrequencies = setOf(InterestFrequency.ANNUAL, InterestFrequency.SEMIANNUAL),
         category = FixedIncomeCategory.GOVERNMENT,
         allowsSecondarySale = true,
-        allowsEarlyCancellation = false
+        allowsEarlyCancellation = false,
+        resourceKey = "fixedincome_type_bond"
     ),
 
     // Obligaciones del Estado: 10-50 años, anual o semestral
@@ -47,7 +50,8 @@ enum class FixedIncomeType(
         allowedFrequencies = setOf(InterestFrequency.ANNUAL, InterestFrequency.SEMIANNUAL),
         category = FixedIncomeCategory.GOVERNMENT,
         allowsSecondarySale = true,
-        allowsEarlyCancellation = false
+        allowsEarlyCancellation = false,
+        resourceKey = "fixedincome_type_government_obligation"
     ),
 
     // Bonos corporativos: 1-15 años, trimestral, semestral o anual
@@ -59,7 +63,8 @@ enum class FixedIncomeType(
         allowedFrequencies = setOf(InterestFrequency.QUARTERLY, InterestFrequency.SEMIANNUAL, InterestFrequency.ANNUAL),
         category = FixedIncomeCategory.CORPORATE,
         allowsSecondarySale = true,
-        allowsEarlyCancellation = false
+        allowsEarlyCancellation = false,
+        resourceKey = "fixedincome_type_corporate_bond"
     ),
 
     // Depósito a plazo fijo: 3 meses-5 años, varias frecuencias
@@ -71,6 +76,7 @@ enum class FixedIncomeType(
         allowedFrequencies = setOf(InterestFrequency.MONTHLY, InterestFrequency.QUARTERLY, InterestFrequency.ANNUAL, InterestFrequency.AT_MATURITY),
         category = FixedIncomeCategory.DEPOSIT,
         allowsSecondarySale = false,
-        allowsEarlyCancellation = true
+        allowsEarlyCancellation = true,
+        resourceKey = "fixedincome_type_deposit"
     )
 }

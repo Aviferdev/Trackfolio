@@ -49,6 +49,10 @@ import es.aviferdev.n3to.ui.theme.NavySurface
 import es.aviferdev.n3to.ui.theme.NavySurfaceLight
 import es.aviferdev.n3to.ui.theme.TextPrimary
 import es.aviferdev.n3to.ui.theme.TextSecondary
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.onboarding_disponible_deudas
+import n3to.composeapp.generated.resources.onboarding_efectivo_total
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 /**
@@ -102,7 +106,7 @@ fun SlidePatrimonio(modifier: Modifier = Modifier) {
         ) {
             Column {
                 Text(
-                    text = "EFECTIVO TOTAL",
+                    text = stringResource(Res.string.onboarding_efectivo_total),
                     fontSize = 10.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.White.copy(alpha = 0.55f),
@@ -139,7 +143,7 @@ fun SlidePatrimonio(modifier: Modifier = Modifier) {
                 Spacer(Modifier.height(10.dp))
 
                 Text(
-                    text = "Disponible con deudas",
+                    text = stringResource(Res.string.onboarding_disponible_deudas),
                     fontSize = 11.sp,
                     color = Color.White.copy(alpha = 0.6f)
                 )

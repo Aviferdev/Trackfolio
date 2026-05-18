@@ -20,13 +20,18 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
+sealed class IssuerError {
+    data object AlreadyExists : IssuerError()
+    data class Unknown(val message: String?) : IssuerError()
+}
+
 data class IssuerListUiState(
     val issuersByType: Map<IssuerType, List<Issuer>> = emptyMap(),
     val showAddSheet: Boolean          = false,
     val addType: IssuerType            = IssuerType.EMPLOYER,
     val editing: Issuer?               = null,
     val pendingDelete: Issuer?         = null,
-    val error: String?                 = null
+    val error: IssuerError?            = null
 )
 
 class IssuerViewModel(
@@ -84,7 +89,7 @@ class IssuerViewModel(
 
         val existing = _uiState.value.issuersByType[type] ?: emptyList()
         if (existing.any { it.name.equals(trimmed, ignoreCase = true) }) {
-            _uiState.update { it.copy(error = "Ya existe un emisor con ese nombre") }
+            _uiState.update { it.copy(error = IssuerError.AlreadyExists) }
             return
         }
 
@@ -99,7 +104,7 @@ class IssuerViewModel(
                 createdAt = nowMillis()
             )
             saveIssuer(issuer).onFailure { e ->
-                _uiState.update { it.copy(error = e.message) }
+                _uiState.update { it.copy(error = IssuerError.Unknown(e.message)) }
             }
             _uiState.update { it.copy(showAddSheet = false) }
         }
@@ -120,13 +125,13 @@ class IssuerViewModel(
 
         val existing = _uiState.value.issuersByType[type] ?: emptyList()
         if (existing.any { it.id != id && it.name.equals(trimmed, ignoreCase = true) }) {
-            _uiState.update { it.copy(error = "Ya existe un emisor con ese nombre") }
+            _uiState.update { it.copy(error = IssuerError.AlreadyExists) }
             return
         }
 
         viewModelScope.launch {
             renameIssuer(id, trimmed, icon, type).onFailure { e ->
-                _uiState.update { it.copy(error = e.message) }
+                _uiState.update { it.copy(error = IssuerError.Unknown(e.message)) }
             }
             _uiState.update { it.copy(editing = null) }
         }
@@ -145,7 +150,7 @@ class IssuerViewModel(
         val issuer = _uiState.value.pendingDelete ?: return
         viewModelScope.launch {
             archiveIssuer(issuer.id, issuer.type).onFailure { e ->
-                _uiState.update { it.copy(error = e.message) }
+                _uiState.update { it.copy(error = IssuerError.Unknown(e.message)) }
             }
             _uiState.update { it.copy(pendingDelete = null) }
         }

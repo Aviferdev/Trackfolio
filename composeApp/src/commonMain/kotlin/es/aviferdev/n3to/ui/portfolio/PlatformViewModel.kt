@@ -15,12 +15,17 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
+sealed class PlatformError {
+    data object AlreadyExists : PlatformError()
+    data class Unknown(val message: String?) : PlatformError()
+}
+
 data class PlatformListUiState(
     val platforms: List<Platform>      = emptyList(),
     val showAddSheet: Boolean          = false,
     val editing: Platform?             = null,
     val pendingDelete: Platform?       = null,
-    val error: String?                 = null
+    val error: PlatformError?          = null
 )
 
 class PlatformViewModel(
@@ -33,7 +38,7 @@ class PlatformViewModel(
     private val _showAddSheet  = MutableStateFlow(false)
     private val _editing       = MutableStateFlow<Platform?>(null)
     private val _pendingDelete = MutableStateFlow<Platform?>(null)
-    private val _error         = MutableStateFlow<String?>(null)
+    private val _error         = MutableStateFlow<PlatformError?>(null)
 
     val uiState: StateFlow<PlatformListUiState> = combine(
         getPlatforms(),
@@ -64,7 +69,7 @@ class PlatformViewModel(
         val trimmed = name.trim()
         if (trimmed.isBlank()) return
         if (uiState.value.platforms.any { it.name.equals(trimmed, ignoreCase = true) }) {
-            _error.value = "Ya existe una plataforma con ese nombre"
+            _error.value = PlatformError.AlreadyExists
             return
         }
         val validatedNotes = notes?.take(200)?.ifBlank { null }
@@ -80,7 +85,7 @@ class PlatformViewModel(
                     createdAt = now,
                     notes     = validatedNotes
                 )
-            ).onFailure { _error.value = it.message }
+            ).onFailure { _error.value = PlatformError.Unknown(it.message) }
             _showAddSheet.value = false
         }
     }
@@ -89,13 +94,13 @@ class PlatformViewModel(
         val trimmed = newName.trim()
         if (trimmed.isBlank()) return
         if (uiState.value.platforms.any { it.id != id && it.name.equals(trimmed, ignoreCase = true) }) {
-            _error.value = "Ya existe una plataforma con ese nombre"
+            _error.value = PlatformError.AlreadyExists
             return
         }
         val validatedNotes = notes?.take(200)?.ifBlank { null }
         viewModelScope.launch {
             renamePlatform.invoke(id, trimmed, newIcon.ifBlank { "🏦" }, validatedNotes)
-                .onFailure { _error.value = it.message }
+                .onFailure { _error.value = PlatformError.Unknown(it.message) }
             _editing.value = null
         }
     }
@@ -106,7 +111,7 @@ class PlatformViewModel(
     fun confirmDelete() {
         val p = _pendingDelete.value ?: return
         viewModelScope.launch {
-            archivePlatform(p.id).onFailure { _error.value = it.message }
+            archivePlatform(p.id).onFailure { _error.value = PlatformError.Unknown(it.message) }
             _pendingDelete.value = null
         }
     }

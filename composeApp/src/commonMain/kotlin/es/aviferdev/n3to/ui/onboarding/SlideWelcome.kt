@@ -42,7 +42,10 @@ import es.aviferdev.n3to.ui.theme.TextPrimary
 import es.aviferdev.n3to.ui.theme.TextSecondary
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.app_icon
+import n3to.composeapp.generated.resources.onboarding_welcome_subtitle
+import n3to.composeapp.generated.resources.onboarding_welcome_title
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import kotlin.math.min
 
@@ -135,7 +138,7 @@ fun SlideWelcome(modifier: Modifier = Modifier) {
                 )
                 Image(
                     painter = painterResource(Res.drawable.app_icon),
-                    contentDescription = "N3to",
+                    contentDescription = stringResource(Res.string.onboarding_welcome_title),
                     modifier = Modifier.fillMaxSize()
                 )
             }
@@ -144,7 +147,7 @@ fun SlideWelcome(modifier: Modifier = Modifier) {
         Spacer(Modifier.height(24.dp))
 
         Text(
-            text = "Bienvenido a\nN3to",
+            text = stringResource(Res.string.onboarding_welcome_title),
             fontSize = 30.sp,
             fontWeight = FontWeight.ExtraBold,
             color = TextPrimary,
@@ -157,7 +160,7 @@ fun SlideWelcome(modifier: Modifier = Modifier) {
         Spacer(Modifier.height(12.dp))
 
         Text(
-            text = "Tu vida financiera, organizada. Movimientos, inversiones y patrimonio en un solo lugar.",
+            text = stringResource(Res.string.onboarding_welcome_subtitle),
             fontSize = 15.sp,
             color = TextSecondary,
             textAlign = TextAlign.Center,
