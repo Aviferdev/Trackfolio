@@ -33,6 +33,8 @@ import es.aviferdev.n3to.ui.loan.AddEditLoanBottomSheet
 import es.aviferdev.n3to.ui.realestate.AddEditPropertyBottomSheet
 import es.aviferdev.n3to.ui.realestate.PropertyCard
 import es.aviferdev.n3to.ui.splash.SplashLoader
+import es.aviferdev.n3to.ui.valuable.AddEditValuableBottomSheet
+import es.aviferdev.n3to.ui.valuable.ValuableCard
 import es.aviferdev.n3to.ui.theme.*
 import kotlinx.coroutines.delay
 import kotlinx.datetime.LocalDateTime
@@ -73,11 +75,13 @@ import kotlin.time.ExperimentalTime
 fun NetWorthScreen(
     onLoanClick: (String) -> Unit = {},
     onPropertyClick: (String) -> Unit = {},
+    onValuableClick: (String) -> Unit = {},
     viewModel: NetWorthViewModel = koinViewModel()
 ) {
     val uiState              by viewModel.uiState.collectAsState()
     val showAddLoanSheet     by viewModel.showAddLoanSheet.collectAsState()
     val showAddPropertySheet by viewModel.showAddPropertySheet.collectAsState()
+    val showAddValuableSheet by viewModel.showAddValuableSheet.collectAsState()
     val balancesHidden = LocalBalanceHidden.current
 
     var heroVisible by remember { mutableStateOf(false) }
@@ -108,6 +112,18 @@ fun NetWorthScreen(
         }
     }
 
+    if (showAddValuableSheet) {
+        val state = uiState
+        if (state is NetWorthUiState.Success) {
+            val accountId = state.data.loans.firstOrNull()?.accountId ?: ""
+            AddEditValuableBottomSheet(
+                accountId = accountId,
+                onDismiss = { viewModel.closeAddValuableSheet() },
+                onSave = { _, _, _ -> viewModel.closeAddValuableSheet() }
+            )
+        }
+    }
+
     when (val state = uiState) {
         is NetWorthUiState.Loading -> Box(
             Modifier.fillMaxSize().background(NavyDeep),
@@ -126,8 +142,10 @@ fun NetWorthScreen(
             balancesHidden     = balancesHidden,
             onLoanClick        = onLoanClick,
             onPropertyClick    = onPropertyClick,
+            onValuableClick    = onValuableClick,
             onAddLoan          = { viewModel.openAddLoanSheet() },
             onAddProperty      = { viewModel.openAddPropertySheet() },
+            onAddValuable      = { viewModel.openAddValuableSheet() },
             heroVisible        = heroVisible,
             chartVisible       = chartVisible,
             assetsVisible      = assetsVisible,
@@ -145,8 +163,10 @@ fun NetWorthContent(
     balancesHidden: Boolean,
     onLoanClick: (String) -> Unit,
     onPropertyClick: (String) -> Unit = {},
+    onValuableClick: (String) -> Unit = {},
     onAddLoan: () -> Unit,
     onAddProperty: () -> Unit = {},
+    onAddValuable: () -> Unit = {},
     heroVisible: Boolean = true,
     chartVisible: Boolean = true,
     assetsVisible: Boolean = true,
@@ -313,6 +333,68 @@ fun NetWorthContent(
                         property   = property,
                         linkedLoan = linkedLoan,
                         onClick    = { onPropertyClick(property.id) }
+                    )
+                }
+            }
+
+            // ── Sub-sección: Bienes (Valuable) ──────────────────────────────
+            item {
+                AnimatedVisibility(
+                    visible = assetsVisible,
+                    enter   = fadeIn() + slideInVertically(initialOffsetY = { it / 10 })
+                ) {
+                    Row(
+                        modifier              = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment     = Alignment.CenterVertically
+                    ) {
+                        N3toLabel(text = "Bienes")
+                        IconButton(
+                            onClick  = onAddValuable,
+                            modifier = Modifier
+                                .size(28.dp)
+                                .clip(RoundedCornerShape(8.dp))
+                                .background(NavySelected)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Outlined.Add,
+                                contentDescription = "Añadir bien",
+                                tint        = CyanAccent,
+                                modifier    = Modifier.size(15.dp)
+                            )
+                        }
+                    }
+                }
+            }
+
+            if (data.valuables.isEmpty()) {
+                item {
+                    AnimatedVisibility(
+                        visible = assetsVisible,
+                        enter   = fadeIn() + slideInVertically(initialOffsetY = { it / 10 })
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clip(RoundedCornerShape(12.dp))
+                                .background(NavySurface)
+                                .padding(24.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text("No hay bienes registrados", color = TextTertiary, fontSize = 13.sp)
+                        }
+                    }
+                }
+            }
+
+            items(data.valuables, key = { it.id }) { valuable ->
+                AnimatedVisibility(
+                    visible = assetsVisible,
+                    enter   = fadeIn() + slideInVertically(initialOffsetY = { it / 10 })
+                ) {
+                    ValuableCard(
+                        valuable = valuable,
+                        onClick  = { onValuableClick(valuable.id) }
                     )
                 }
             }
@@ -492,6 +574,12 @@ private fun AssetsSummaryCard(data: NetWorthData, balancesHidden: Boolean) {
                 Spacer(Modifier.height(10.dp))
                 AssetRow(stringResource(Res.string.networth_fixedincome_label), data.totalFixedIncomeValue, balancesHidden)
             }
+            if (data.totalValuablesValue > 0) {
+                Spacer(Modifier.height(10.dp))
+                HorizontalDivider(color = NavyBorder, thickness = 0.5.dp)
+                Spacer(Modifier.height(10.dp))
+                AssetRow("Bienes", data.totalValuablesValue, balancesHidden)
+            }
             HorizontalDivider(
                 modifier  = Modifier.padding(vertical = 12.dp),
                 color     = NavyBorder,
@@ -650,8 +738,10 @@ fun NetWorthContentPreview() {
             balancesHidden = false,
             onLoanClick    = {},
             onPropertyClick = {},
+            onValuableClick = {},
             onAddLoan      = {},
-            onAddProperty  = {}
+            onAddProperty  = {},
+            onAddValuable  = {}
         )
     }
 }

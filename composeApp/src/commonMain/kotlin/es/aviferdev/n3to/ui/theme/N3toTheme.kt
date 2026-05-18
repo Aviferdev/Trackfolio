@@ -54,6 +54,7 @@ val PnLNegativeSoft = Color(0xFFFFB4B4)   // badge bg — soft red
 val DonutAccounts    = Color(0xFF4CAF50)
 val DonutInvestments = Color(0xFF2196F3)
 val DonutRealEstate  = Color(0xFF8D6E63)
+val DonutValuables   = Color(0xFF9C27B0)   // púrpura — bienes muebles
 
 // ─── Utilidades compartidas ────────────────────────────────────────────────────
 val DragHandleColor = Color(0xFFBDBDBD)

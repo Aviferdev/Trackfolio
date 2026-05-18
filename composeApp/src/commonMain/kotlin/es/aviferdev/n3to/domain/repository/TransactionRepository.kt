@@ -29,4 +29,5 @@ interface TransactionRepository {
     fun getOldestDate(accountId: String): Flow<Long?>
     fun getDividendsByAsset(assetId: String): Flow<List<Transaction>>
     fun getByLinkedProperty(propertyId: String): Flow<List<Transaction>>
+    fun getByLinkedValuable(valuableId: String): Flow<List<Transaction>>
 }

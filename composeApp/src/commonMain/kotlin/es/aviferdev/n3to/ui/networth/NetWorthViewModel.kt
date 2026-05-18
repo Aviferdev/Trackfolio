@@ -4,6 +4,7 @@ import androidx.compose.ui.graphics.Color
 import es.aviferdev.n3to.ui.theme.DonutAccounts
 import es.aviferdev.n3to.ui.theme.DonutInvestments
 import es.aviferdev.n3to.ui.theme.DonutRealEstate
+import es.aviferdev.n3to.ui.theme.DonutValuables
 import es.aviferdev.n3to.ui.theme.WarnOrange
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -74,6 +75,9 @@ class NetWorthViewModel(
     private val _showAddPropertySheet = MutableStateFlow(false)
     val showAddPropertySheet: StateFlow<Boolean> = _showAddPropertySheet
 
+    private val _showAddValuableSheet = MutableStateFlow(false)
+    val showAddValuableSheet: StateFlow<Boolean> = _showAddValuableSheet
+
     init {
         viewModelScope.launch {
             uiState.collect { state ->
@@ -91,12 +95,16 @@ class NetWorthViewModel(
     fun openAddPropertySheet() { _showAddPropertySheet.value = true }
     fun closeAddPropertySheet() { _showAddPropertySheet.value = false }
 
+    fun openAddValuableSheet() { _showAddValuableSheet.value = true }
+    fun closeAddValuableSheet() { _showAddValuableSheet.value = false }
+
     companion object {
         private val AssetColors = listOf(
-            DonutAccounts, // Cuentas — verde
+            DonutAccounts,    // Cuentas — verde
             DonutInvestments, // Inversiones — azul
-            WarnOrange, // Renta fija — ámbar
-            DonutRealEstate  // Inmuebles — marrón
+            WarnOrange,       // Renta fija — ámbar
+            DonutRealEstate,  // Inmuebles — marrón
+            DonutValuables    // Bienes — púrpura
         )
 
         private fun buildAssetDistribution(data: NetWorthData): List<DonutSlice> {
@@ -115,6 +123,9 @@ class NetWorthViewModel(
             }
             if (data.totalRealEstateValue > 0.0) {
                 items.add(Triple("\uD83C\uDFE0", "Inmuebles", data.totalRealEstateValue))
+            }
+            if (data.totalValuablesValue > 0.0) {
+                items.add(Triple("\uD83D\uDC8E", "Bienes", data.totalValuablesValue))
             }
 
             return items.mapIndexed { idx, (icon, name, value) ->

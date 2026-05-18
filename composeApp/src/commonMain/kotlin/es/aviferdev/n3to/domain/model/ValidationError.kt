@@ -42,6 +42,14 @@ sealed class ValidationError(override val message: String) : Throwable(message) 
     // ─── Account ─────────────────────────────────────────────────────
     data object AccountNameEmpty : ValidationError("El nombre de la cuenta no puede estar vacío")
 
+    // ─── Valuable (Bienes) ───────────────────────────────────────────
+    data object ValuableNameEmpty : ValidationError("El nombre del bien no puede estar vacío")
+    data object ValuablePurchasePriceInvalid : ValidationError("El precio de compra debe ser mayor que 0")
+    data object ValuablePurchaseDateRequired : ValidationError("La fecha de compra es obligatoria")
+    data object ValuableSalePriceInvalid : ValidationError("El precio de venta debe ser mayor que 0")
+    data object ValuableSaleDateRequired : ValidationError("La fecha de venta es obligatoria")
+    data object ValuableExpenseAmountInvalid : ValidationError("El importe del gasto debe ser mayor que 0")
+
     // ─── Backup / Reminders ──────────────────────────────────────────
     data class InvalidInterval(val days: Int) : ValidationError("Intervalo no válido: $days")
     data class Custom(val overrideMessage: String) : ValidationError(overrideMessage)

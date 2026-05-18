@@ -53,6 +53,8 @@ import es.aviferdev.n3to.data.datasource.realestate.RealEstatePropertyLocalDataS
 import es.aviferdev.n3to.data.datasource.realestate.RealEstatePropertyLocalDataSourceImpl
 import es.aviferdev.n3to.data.datasource.realestate.RentalPeriodLocalDataSource
 import es.aviferdev.n3to.data.datasource.realestate.RentalPeriodLocalDataSourceImpl
+import es.aviferdev.n3to.data.datasource.valuable.ValuableLocalDataSource
+import es.aviferdev.n3to.data.datasource.valuable.ValuableLocalDataSourceImpl
 import es.aviferdev.n3to.data.repository.account.AccountRepositoryImpl
 import es.aviferdev.n3to.data.repository.asset.AssetCategoryRepositoryImpl
 import es.aviferdev.n3to.data.repository.asset.AssetMetadataRepositoryImpl
@@ -75,6 +77,7 @@ import es.aviferdev.n3to.data.repository.realestate.RealEstatePropertyRepository
 import es.aviferdev.n3to.data.repository.realestate.RentalPeriodRepositoryImpl
 import es.aviferdev.n3to.data.repository.portfolio.PortfolioRepositoryImpl
 import es.aviferdev.n3to.data.repository.taxprofile.TaxProfileSnapshotRepositoryImpl
+import es.aviferdev.n3to.data.repository.valuable.ValuableRepositoryImpl
 import es.aviferdev.n3to.domain.repository.AccountRepository
 import es.aviferdev.n3to.domain.repository.AssetCategoryRepository
 import es.aviferdev.n3to.domain.repository.AssetMetadataRepository
@@ -99,6 +102,7 @@ import es.aviferdev.n3to.domain.repository.RealEstatePropertyRepository
 import es.aviferdev.n3to.domain.repository.RentalPeriodRepository
 import es.aviferdev.n3to.domain.repository.PortfolioRepository
 import es.aviferdev.n3to.domain.repository.TaxProfileSnapshotRepository
+import es.aviferdev.n3to.domain.repository.ValuableRepository
 import org.koin.dsl.module
 
 val repositoryModule = module {
@@ -126,6 +130,9 @@ val repositoryModule = module {
     // ── Real Estate ────────────────────────────────────────────────────────────
     single<RealEstatePropertyLocalDataSource>   { RealEstatePropertyLocalDataSourceImpl(get()) }
     single<RentalPeriodLocalDataSource>          { RentalPeriodLocalDataSourceImpl(get()) }
+
+    // ── Valuable (Bienes) ─────────────────────────────────────────────────────
+    single<ValuableLocalDataSource>              { ValuableLocalDataSourceImpl(get()) }
 
     // ── Tax Profile ────────────────────────────────────────────────────────────
     single<TaxProfileSnapshotLocalDataSource>   { TaxProfileSnapshotLocalDataSourceImpl(get()) }
@@ -159,6 +166,9 @@ val repositoryModule = module {
     // ── Real Estate Repositories ────────────────────────────────────────────────
     single<RealEstatePropertyRepository>        { RealEstatePropertyRepositoryImpl(get()) }
     single<RentalPeriodRepository>              { RentalPeriodRepositoryImpl(get()) }
+
+    // ── Valuable Repositories ───────────────────────────────────────────────────
+    single<ValuableRepository>                  { ValuableRepositoryImpl(get()) }
 
     // ── Tax Profile Repositories ────────────────────────────────────────────────
     single<TaxProfileSnapshotRepository>        { TaxProfileSnapshotRepositoryImpl(get()) }

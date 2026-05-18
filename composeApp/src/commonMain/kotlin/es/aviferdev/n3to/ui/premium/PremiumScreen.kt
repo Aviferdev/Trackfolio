@@ -78,7 +78,6 @@ import n3to.composeapp.generated.resources.premium_restore_error_format
 import n3to.composeapp.generated.resources.premium_already_premium_subtitle
 import n3to.composeapp.generated.resources.premium_lifetime_value
 import n3to.composeapp.generated.resources.premium_subscribe
-import n3to.composeapp.generated.resources.premium_no_ads
 import n3to.composeapp.generated.resources.premium_unlimited_accounts
 import n3to.composeapp.generated.resources.premium_themes
 import n3to.composeapp.generated.resources.premium_already_premium
@@ -202,10 +201,6 @@ fun PremiumScreen(
             PremiumFeatureRow(
                 title = stringResource(Res.string.premium_unlimited_accounts),
                 description = stringResource(Res.string.premium_multiple_accounts_desc)
-            )
-            PremiumFeatureRow(
-                title = stringResource(Res.string.premium_no_ads),
-                description = stringResource(Res.string.premium_ad_free_desc)
             )
             PremiumFeatureRow(
                 title = stringResource(Res.string.premium_themes),

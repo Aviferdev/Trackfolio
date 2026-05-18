@@ -27,7 +27,8 @@ fun TransactionEntity.toDomain(taxLines: List<TaxLine> = emptyList()): Transacti
     exchangeRate               = exchangeRate,
     linkedAssetTransactionId   = linkedAssetTransactionId,
     linkedLoanId               = linkedLoanId,
-    linkedPropertyId           = linkedPropertyId
+    linkedPropertyId           = linkedPropertyId,
+    linkedValuableId           = linkedValuableId
 )
 
 fun Transaction.toEntity(): TransactionEntity = TransactionEntity(
@@ -50,5 +51,6 @@ fun Transaction.toEntity(): TransactionEntity = TransactionEntity(
     exchangeRate               = exchangeRate,
     linkedAssetTransactionId   = linkedAssetTransactionId,
     linkedLoanId               = linkedLoanId,
-    linkedPropertyId           = linkedPropertyId
+    linkedPropertyId           = linkedPropertyId,
+    linkedValuableId           = linkedValuableId
 )

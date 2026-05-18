@@ -225,6 +225,39 @@ class DatabaseInitializer(
                 id = "cat_exp_prop_municipal", accountId = accountId,
                 name = "Plusvalía municipal", type = TransactionType.EXPENSE.name, isDefault = 1L, archived = 0L
             ),
+            // ── Gastos de bienes (Valuable: maquinaria, coches, etc.) ──
+            CategoryEntity(
+                id = "cat_exp_val_transport", accountId = accountId,
+                name = "Transporte", type = TransactionType.EXPENSE.name, isDefault = 1L, archived = 0L
+            ),
+            CategoryEntity(
+                id = "cat_exp_val_repair", accountId = accountId,
+                name = "Reparación", type = TransactionType.EXPENSE.name, isDefault = 1L, archived = 0L
+            ),
+            CategoryEntity(
+                id = "cat_exp_val_restoration", accountId = accountId,
+                name = "Restauración", type = TransactionType.EXPENSE.name, isDefault = 1L, archived = 0L
+            ),
+            CategoryEntity(
+                id = "cat_exp_val_commission", accountId = accountId,
+                name = "Comisión", type = TransactionType.EXPENSE.name, isDefault = 1L, archived = 0L
+            ),
+            CategoryEntity(
+                id = "cat_exp_val_storage", accountId = accountId,
+                name = "Almacenaje", type = TransactionType.EXPENSE.name, isDefault = 1L, archived = 0L
+            ),
+            CategoryEntity(
+                id = "cat_exp_val_insurance", accountId = accountId,
+                name = "Seguro", type = TransactionType.EXPENSE.name, isDefault = 1L, archived = 0L
+            ),
+            CategoryEntity(
+                id = "cat_exp_val_marketing", accountId = accountId,
+                name = "Marketing / Publicidad", type = TransactionType.EXPENSE.name, isDefault = 1L, archived = 0L
+            ),
+            CategoryEntity(
+                id = "cat_exp_val_other", accountId = accountId,
+                name = "Otros gastos de bienes", type = TransactionType.EXPENSE.name, isDefault = 1L, archived = 0L
+            ),
         )
 
         /** Categoría especial para transacciones de ajuste / reconciliación. */
@@ -1161,7 +1194,8 @@ class DatabaseInitializer(
         issuerName = issuerName,
         linkedAssetTransactionId = linkedAssetTransactionId,
         linkedLoanId = linkedLoanId,
-        linkedPropertyId = linkedPropertyId
+        linkedPropertyId = linkedPropertyId,
+        linkedValuableId = linkedValuableId
     )
 
     private fun Debt.toEntity(): DebtEntity = DebtEntity(

@@ -44,6 +44,9 @@ data class Transaction(
     // ── Vínculo con propiedad inmobiliaria ────────────────────────────────────
     val linkedPropertyId: String? = null,
 
+    // ── Vínculo con bienes (Valuable) ─────────────────────────────────────────
+    val linkedValuableId: String? = null,
+
     // ── Reconciliación ────────────────────────────────────────────────────────
     /** Si true, esta transacción se excluye del informe fiscal. */
     val excludeFromFiscal: Boolean = false
@@ -66,6 +69,7 @@ data class Transaction(
 
     val isLinkedToAsset: Boolean get() = linkedAssetTransactionId != null
     val isLinkedToLoan: Boolean get() = linkedLoanId != null
+    val isLinkedToValuable: Boolean get() = linkedValuableId != null
 }
 
 enum class TransactionType { INCOME, EXPENSE, ADJUSTMENT }

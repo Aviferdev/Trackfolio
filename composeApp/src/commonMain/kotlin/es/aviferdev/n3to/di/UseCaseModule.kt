@@ -110,6 +110,14 @@ import es.aviferdev.n3to.domain.usecase.platform.SavePlatformUseCase
 import es.aviferdev.n3to.domain.usecase.portfolio.GetPortfolioValueHistoryUseCase
 import es.aviferdev.n3to.domain.usecase.realestate.ArchivePropertyUseCase
 import es.aviferdev.n3to.domain.usecase.realestate.ChangeRentalStatusUseCase
+import es.aviferdev.n3to.domain.usecase.valuable.DeleteValuableUseCase
+import es.aviferdev.n3to.domain.usecase.valuable.GetAllValuablesByAccountUseCase
+import es.aviferdev.n3to.domain.usecase.valuable.GetValuableDetailUseCase
+import es.aviferdev.n3to.domain.usecase.valuable.GetValuablesByAccountUseCase
+import es.aviferdev.n3to.domain.usecase.valuable.LinkLoanToValuableUseCase
+import es.aviferdev.n3to.domain.usecase.valuable.SaveValuableUseCase
+import es.aviferdev.n3to.domain.usecase.valuable.SellValuableUseCase
+import es.aviferdev.n3to.domain.usecase.valuable.UpdateValuableEstimatedValueUseCase
 import es.aviferdev.n3to.domain.usecase.realestate.DismissMortgageReminderUseCase
 import es.aviferdev.n3to.domain.usecase.realestate.GetPropertiesByAccountUseCase
 import es.aviferdev.n3to.domain.usecase.realestate.GetPropertyFinancialSummaryUseCase
@@ -169,6 +177,8 @@ import es.aviferdev.n3to.ui.settings.IssuerViewModel
 import es.aviferdev.n3to.ui.settings.backup.BackupViewModel
 import es.aviferdev.n3to.ui.transaction.TransactionDetailViewModel
 import es.aviferdev.n3to.ui.transaction.TransactionViewModel
+import es.aviferdev.n3to.ui.valuable.ValuableDetailViewModel
+import es.aviferdev.n3to.ui.valuable.ValuableListViewModel
 import org.koin.core.module.dsl.viewModel
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
@@ -333,8 +343,18 @@ val useCaseModule = module {
     factory { LinkLoanUseCase(get()) }
     factory { SellPropertyUseCase(get(), get()) }
 
+    // ── Valuable (Bienes) ────────────────────────────────────────────────────────
+    factory { SaveValuableUseCase(get(), get()) }
+    factory { SellValuableUseCase(get(), get()) }
+    factory { GetValuablesByAccountUseCase(get()) }
+    factory { GetAllValuablesByAccountUseCase(get()) }
+    factory { GetValuableDetailUseCase(get(), get(), get()) }
+    factory { UpdateValuableEstimatedValueUseCase(get()) }
+    factory { LinkLoanToValuableUseCase(get()) }
+    factory { DeleteValuableUseCase(get(), get()) }
+
     // ── Net Worth ────────────────────────────────────────────────────────────────
-    factory { GetNetWorthDataUseCase(get(), get(), get(), get(), get(), get(), get()) }
+    factory { GetNetWorthDataUseCase(get(), get(), get(), get(), get(), get(), get(), get()) }
     single { GetPortfolioValueHistoryUseCase(get(), get(), get(), get()) }
     factory { GetNetWorthHistoryUseCase(get(), get(), get(), get(), get(), get()) }
 
@@ -647,6 +667,29 @@ val useCaseModule = module {
             getAll = get(),
             save   = get(),
             delete = get()
+        )
+    }
+
+    // ── Valuable ViewModels ──────────────────────────────────────────────────────
+    viewModel { (valuableId: String) ->
+        ValuableDetailViewModel(
+            valuableId              = valuableId,
+            getDetail               = get(),
+            saveValuableUseCase     = get(),
+            sellValuableUseCase     = get(),
+            deleteValuableUseCase   = get(),
+            updateEstimatedValue    = get(),
+            linkLoanToValuable      = get(),
+            loanRepository          = get()
+        )
+    }
+
+    viewModel {
+        ValuableListViewModel(
+            getAllValuables = get(),
+            deleteValuable  = get(),
+            saveValuable    = get(),
+            session         = get()
         )
     }
 }

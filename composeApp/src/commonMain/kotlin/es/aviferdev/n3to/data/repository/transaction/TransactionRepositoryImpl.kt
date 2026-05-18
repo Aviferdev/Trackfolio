@@ -72,4 +72,7 @@ class TransactionRepositoryImpl(
 
     override fun getByLinkedProperty(propertyId: String): Flow<List<Transaction>> =
         dataSource.getByLinkedProperty(propertyId)
+
+    override fun getByLinkedValuable(valuableId: String): Flow<List<Transaction>> =
+        dataSource.getByLinkedValuable(valuableId)
 }

@@ -139,7 +139,8 @@ class TransactionLocalDataSourceImpl(
                     exchangeRate             = entity.exchangeRate,
                     linkedAssetTransactionId = entity.linkedAssetTransactionId,
                     linkedLoanId             = entity.linkedLoanId,
-                    linkedPropertyId         = entity.linkedPropertyId
+                    linkedPropertyId         = entity.linkedPropertyId,
+                    linkedValuableId         = entity.linkedValuableId
                 )
             }
         }
@@ -166,6 +167,7 @@ class TransactionLocalDataSourceImpl(
                     linkedAssetTransactionId = entity.linkedAssetTransactionId,
                     linkedLoanId             = entity.linkedLoanId,
                     linkedPropertyId         = entity.linkedPropertyId,
+                    linkedValuableId         = entity.linkedValuableId,
                     id                       = entity.id
                 )
             }
@@ -205,6 +207,12 @@ class TransactionLocalDataSourceImpl(
 
     override fun getByLinkedProperty(propertyId: String): Flow<List<Transaction>> =
         queries.selectByLinkedProperty(propertyId)
+            .asFlow()
+            .mapToList(Dispatchers.IO)
+            .map { it.toDomainWithTaxLines() }
+
+    override fun getByLinkedValuable(valuableId: String): Flow<List<Transaction>> =
+        queries.selectByLinkedValuable(valuableId)
             .asFlow()
             .mapToList(Dispatchers.IO)
             .map { it.toDomainWithTaxLines() }

@@ -1,0 +1,70 @@
+CREATE TABLE ValuableEntity (
+    id               TEXT    NOT NULL PRIMARY KEY,
+    accountId        TEXT    NOT NULL,
+    name             TEXT    NOT NULL,
+    description      TEXT    NOT NULL DEFAULT '',
+    purchasePrice    REAL    NOT NULL,
+    purchaseDate     INTEGER NOT NULL,
+    estimatedValue   REAL,
+    salePrice        REAL,
+    saleDate         INTEGER,
+    linkedLoanId     TEXT,
+    notes            TEXT,
+    createdAt        INTEGER NOT NULL,
+    FOREIGN KEY (accountId) REFERENCES AccountEntity(id),
+    FOREIGN KEY (linkedLoanId) REFERENCES LoanEntity(id)
+);
+
+CREATE INDEX idx_valuable_account ON ValuableEntity(accountId);
+CREATE INDEX idx_valuable_loan    ON ValuableEntity(linkedLoanId);
+
+-- ═══ LECTURA ═══
+
+selectByAccount:
+SELECT * FROM ValuableEntity
+WHERE accountId = :accountId
+ORDER BY saleDate IS NULL DESC, purchaseDate DESC;
+
+selectActiveByAccount:
+SELECT * FROM ValuableEntity
+WHERE accountId = :accountId
+  AND saleDate IS NULL
+ORDER BY purchaseDate DESC;
+
+selectById:
+SELECT * FROM ValuableEntity
+WHERE id = :id;
+
+-- ═══ ESCRITURA ═══
+
+insert:
+INSERT OR REPLACE INTO ValuableEntity(
+    id, accountId, name, description,
+    purchasePrice, purchaseDate, estimatedValue,
+    salePrice, saleDate, linkedLoanId,
+    notes, createdAt
+) VALUES (
+    :id, :accountId, :name, :description,
+    :purchasePrice, :purchaseDate, :estimatedValue,
+    :salePrice, :saleDate, :linkedLoanId,
+    :notes, :createdAt
+);
+
+sell:
+UPDATE ValuableEntity
+SET salePrice = :salePrice,
+    saleDate  = :saleDate
+WHERE id = :id;
+
+updateEstimatedValue:
+UPDATE ValuableEntity
+SET estimatedValue = :value
+WHERE id = :id;
+
+updateLinkedLoan:
+UPDATE ValuableEntity
+SET linkedLoanId = :loanId
+WHERE id = :id;
+
+deleteById:
+DELETE FROM ValuableEntity WHERE id = :id;

@@ -24,6 +24,8 @@ CREATE TABLE TransactionEntity (
     linkedLoanId               TEXT,
     -- ── Vínculo con propiedad inmobiliaria ─────────────────────────────────────
     linkedPropertyId           TEXT,
+    -- ── Vínculo con bienes (Valuable) ──────────────────────────────────────────
+    linkedValuableId          TEXT,
     FOREIGN KEY (accountId) REFERENCES AccountEntity(id) ON DELETE CASCADE,
     FOREIGN KEY (categoryId) REFERENCES CategoryEntity(id),
     FOREIGN KEY (linkedLoanId) REFERENCES LoanEntity(id) ON DELETE SET NULL
@@ -143,8 +145,8 @@ INSERT INTO TransactionEntity(
     excludeFromFiscal,
     incomeType, grossAmount, commissionAmount, issuerId, issuerName,
     originalCurrency, originalAmount, exchangeRate,
-    linkedAssetTransactionId, linkedLoanId, linkedPropertyId
-) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+    linkedAssetTransactionId, linkedLoanId, linkedPropertyId, linkedValuableId
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 
 update:
 UPDATE TransactionEntity
@@ -165,7 +167,8 @@ SET accountId                = :accountId,
     exchangeRate             = :exchangeRate,
     linkedAssetTransactionId = :linkedAssetTransactionId,
     linkedLoanId             = :linkedLoanId,
-    linkedPropertyId         = :linkedPropertyId
+    linkedPropertyId         = :linkedPropertyId,
+    linkedValuableId         = :linkedValuableId
 WHERE id = :id;
 
 delete:
@@ -181,6 +184,9 @@ SELECT * FROM TransactionEntity WHERE linkedAssetTransactionId = :assetTxId LIMI
 
 selectByLinkedProperty:
 SELECT * FROM TransactionEntity WHERE linkedPropertyId = :propertyId ORDER BY date DESC;
+
+selectByLinkedValuable:
+SELECT * FROM TransactionEntity WHERE linkedValuableId = :valuableId ORDER BY date DESC;
 
 getOldestDateByAccount:
 SELECT MIN(date) AS oldestDate FROM TransactionEntity WHERE accountId = :accountId;

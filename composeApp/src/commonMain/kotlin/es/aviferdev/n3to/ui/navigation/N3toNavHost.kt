@@ -36,6 +36,7 @@ import es.aviferdev.n3to.ui.portfolio.PortfolioScreen
 import es.aviferdev.n3to.ui.portfolio.PortfolioSettingsScreen
 import es.aviferdev.n3to.ui.premium.PremiumScreen
 import es.aviferdev.n3to.ui.realestate.RealEstateDetailScreen
+import es.aviferdev.n3to.ui.valuable.ValuableDetailScreen
 import es.aviferdev.n3to.ui.settings.AboutScreen
 import es.aviferdev.n3to.ui.settings.ExpenseSettingsScreen
 import es.aviferdev.n3to.ui.settings.feedback.FeedbackScreen
@@ -325,6 +326,11 @@ fun N3toNavHost(
                             navController.navigate(Screen.RealEstateDetail.buildRoute(propertyId)) {
                                 launchSingleTop = true
                             }
+                        },
+                        onValuableClick = { valuableId ->
+                            navController.navigate(Screen.ValuableDetail.buildRoute(valuableId)) {
+                                launchSingleTop = true
+                            }
                         }
                     )
                 }
@@ -571,6 +577,21 @@ fun N3toNavHost(
                                 launchSingleTop = true
                             }
                         }
+                    )
+                }
+                composable(
+                    route = Screen.ValuableDetail.route,
+                    arguments = listOf(
+                        navArgument(Screen.ValuableDetail.ARG_VALUABLE_ID) {
+                            type = NavType.StringType
+                        }
+                    )
+                ) { backStackEntry ->
+                    val valuableId = backStackEntry.arguments
+                        ?.getString(Screen.ValuableDetail.ARG_VALUABLE_ID).orEmpty()
+                    ValuableDetailScreen(
+                        valuableId = valuableId,
+                        onNavigateBack = { navController.popBackStack() }
                     )
                 }
                 composable(

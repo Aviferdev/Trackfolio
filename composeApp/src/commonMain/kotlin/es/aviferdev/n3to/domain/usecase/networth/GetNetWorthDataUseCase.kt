@@ -13,7 +13,8 @@ class GetNetWorthDataUseCase(
     private val fixedIncomeRepository: FixedIncomeRepository,
     private val loanRepository: LoanRepository,
     private val debtRepository: DebtRepository,
-    private val propertyRepository: RealEstatePropertyRepository
+    private val propertyRepository: RealEstatePropertyRepository,
+    private val valuableRepository: ValuableRepository
 ) {
     operator fun invoke(accountId: String): Flow<NetWorthData> {
         val accountFlow = accountRepository.getAccountById(accountId)
@@ -23,6 +24,7 @@ class GetNetWorthDataUseCase(
         val loansFlow = loanRepository.getActiveByAccount(accountId)
         val debtsFlow = debtRepository.getTotalByDirectionAndAccount(accountId, DebtDirection.I_OWE)
         val propertiesFlow = propertyRepository.getActiveByAccount(accountId)
+        val valuablesFlow = valuableRepository.getActiveByAccount(accountId)
 
         val assetsPart = combine(accountFlow, assetsFlow, txsFlow) { account, assets, txs ->
             Triple(account, assets, txs)
@@ -30,8 +32,8 @@ class GetNetWorthDataUseCase(
         val liabilitiesPart = combine(fiFlow, loansFlow, debtsFlow) { fi, loans, debts ->
             Triple(fi, loans, debts)
         }
-        return combine(assetsPart, liabilitiesPart, propertiesFlow) {
-            (account, assets, txs), (fiPositions, loans, debtsOwing), properties ->
+        return combine(assetsPart, liabilitiesPart, propertiesFlow, valuablesFlow) {
+            (account, assets, txs), (fiPositions, loans, debtsOwing), properties, valuables ->
 
             val accountBalance = account?.computedBalance ?: 0.0
             val portfolioValue = assets.filter { !it.archived }
@@ -46,6 +48,9 @@ class GetNetWorthDataUseCase(
             val totalRealEstateValue = properties
                 .filter { !it.archived }
                 .sumOf { it.effectiveValue }
+
+            // Valor de bienes (Valuable)
+            val totalValuablesValue = valuables.sumOf { it.currentValue }
 
             // Ajuste de préstamos vinculados a propiedades
             val propertyByLoanId = properties
@@ -66,10 +71,12 @@ class GetNetWorthDataUseCase(
                 totalPortfolioValue   = portfolioValue,
                 totalFixedIncomeValue = fixedIncomeValue,
                 totalRealEstateValue  = totalRealEstateValue,
+                totalValuablesValue   = totalValuablesValue,
                 totalLoansOutstanding = loansOutstanding,
                 totalDebtsOwing       = debtsOwing,
                 loans                 = loans,
-                properties            = properties
+                properties            = properties,
+                valuables             = valuables
             )
         }
     }
