@@ -15,6 +15,7 @@ actual class PurchaseManager {
     private var currentOffering: Offering? = null
 
     actual fun configure(apiKey: String) {
+        if (apiKey.isBlank()) return
         Purchases.configure(
             com.revenuecat.purchases.kmp.PurchasesConfiguration.Builder(apiKey)
                 .diagnosticsEnabled(false)

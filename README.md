@@ -82,6 +82,67 @@ cada bundle identifier e intégralo en el proyecto de Xcode.
 
 > **Nota:** `storeFile` es una ruta relativa a `composeApp/`.
 
+### RevenueCat (compras in-app)
+
+Se necesita un archivo `composeApp/revenuecat.properties` con las claves de API
+de RevenueCat. Este archivo **no está versionado** (está en `.gitignore`).
+
+1. **Copia la plantilla:**
+
+   ```bash
+   cp composeApp/revenuecat.properties.example composeApp/revenuecat.properties
+   ```
+
+2. **Obtén tus claves en [RevenueCat Dashboard](https://app.revenuecat.com):**
+   - Ve a **Project Settings → API Keys**.
+   - Las claves disponibles son:
+
+   | Propiedad en `.properties` | Prefijo | Propósito |
+   |----------------------------|---------|-----------|
+   | `REVENUECAT_ANDROID_SANDBOX` | `test_` | Pruebas Android (`dev` flavor) |
+   | `REVENUECAT_ANDROID_PROD` | `goog_` | Producción Google Play (`prod` flavor) |
+   | `REVENUECAT_IOS_SANDBOX` | `test_` | Pruebas iOS |
+   | `REVENUECAT_IOS_PROD` | `appl_` | Producción App Store |
+
+3. **Edita `composeApp/revenuecat.properties`** y pega cada clave en su
+   propiedad correspondiente.
+
+4. **Verifica que el archivo está ignorado por Git:**
+
+   ```bash
+   git check-ignore composeApp/revenuecat.properties
+   ```
+
+> ⚠️ **Seguridad:** Ninguna clave de RevenueCat debe estar hardcodeada en el
+> código o en `build.gradle.kts`. Todas se leen desde
+> `revenuecat.properties`, que está excluido del repositorio.
+
+#### CI/CD
+
+En pipelines automatizados, crea el archivo antes del build inyectando los
+secretos:
+
+```yaml
+# GitHub Actions
+- name: Configure RevenueCat secrets
+  run: |
+    cat > composeApp/revenuecat.properties << 'EOF'
+    REVENUECAT_ANDROID_SANDBOX=${{ secrets.REVENUECAT_ANDROID_SANDBOX }}
+    REVENUECAT_ANDROID_PROD=${{ secrets.REVENUECAT_ANDROID_PROD }}
+    REVENUECAT_IOS_SANDBOX=${{ secrets.REVENUECAT_IOS_SANDBOX }}
+    REVENUECAT_IOS_PROD=${{ secrets.REVENUECAT_IOS_PROD }}
+    EOF
+```
+
+#### iOS (entorno)
+
+Por defecto, la compilación iOS usa el entorno **sandbox**. Para compilar en
+**producción**, añade la propiedad de Gradle:
+
+```bash
+./gradlew :composeApp:linkReleaseFrameworkIosArm64 -Prevenuecat.ios.env=prod
+```
+
 ## Build
 
 ### Android

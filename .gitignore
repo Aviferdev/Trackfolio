@@ -31,6 +31,9 @@ signing.properties
 **/google-services.json
 **/GoogleService-Info.plist
 
+# RevenueCat secrets
+revenuecat.properties
+
 # Variables de entorno
 .env
 .env.*

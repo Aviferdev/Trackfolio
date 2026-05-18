@@ -95,6 +95,16 @@ android {
         versionName = "1.0.0"
     }
 
+    // ─── RevenueCat secrets (archivo NO versionado) ───────────
+    val revenuecatPropertiesFile = file("revenuecat.properties")
+    val revenuecatProperties = if (revenuecatPropertiesFile.exists()) {
+        Properties().apply { load(revenuecatPropertiesFile.inputStream()) }
+    } else {
+        null
+    }
+    fun revenuecatProp(key: String): String =
+        revenuecatProperties?.getProperty(key)?.takeIf { it.isNotBlank() } ?: ""
+
     // ─── Signing (lectura de keystore.properties) ──────────────
     val keystorePropertiesFile = file("keystore.properties")
     val keystoreProperties = if (keystorePropertiesFile.exists()) {
@@ -124,14 +134,16 @@ android {
             buildConfigField("String", "ENVIRONMENT", "\"dev\"")
             buildConfigField("boolean", "IS_DEBUG", "true")
             buildConfigField("String", "APP_DISPLAY_NAME", "\"N3to DEV\"")
-            buildConfigField("String", "REVENUECAT_API_KEY", "\"test_HWEegZVCRozCvGJFPwPxjkmEMkf\"")
+            buildConfigField("String", "REVENUECAT_API_KEY",
+                "\"${revenuecatProp("REVENUECAT_ANDROID_SANDBOX")}\"")
         }
         create("prod") {
             resValue("string", "app_name", "N3to")
             buildConfigField("String", "ENVIRONMENT", "\"prod\"")
             buildConfigField("boolean", "IS_DEBUG", "false")
             buildConfigField("String", "APP_DISPLAY_NAME", "\"N3to\"")
-            buildConfigField("String", "REVENUECAT_API_KEY", "\"test_HWEegZVCRozCvGJFPwPxjkmEMkf\"")
+            buildConfigField("String", "REVENUECAT_API_KEY",
+                "\"${revenuecatProp("REVENUECAT_ANDROID_PROD")}\"")
         }
     }
 
@@ -172,6 +184,72 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
+    }
+}
+
+// ─── Generar AppConfig.ios.kt desde revenuecat.properties ──
+val generateIosAppConfig by tasks.registering {
+    group = "ios"
+    description = "Genera AppConfig.ios.kt desde revenuecat.properties"
+
+    val sourceRoot = layout.buildDirectory.dir("generated/iosAppConfig")
+    val outputFile = sourceRoot.map { it.file("es/aviferdev/n3to/core/AppConfig.ios.kt") }
+
+    outputs.dir(sourceRoot)
+
+    doLast {
+        val env = project.findProperty("revenuecat.ios.env") as? String
+            ?: System.getenv("REVENUECAT_IOS_ENV")
+            ?: "sandbox"
+
+        val rcPropFile = file("revenuecat.properties")
+        val props = if (rcPropFile.exists()) {
+            Properties().apply { load(rcPropFile.inputStream()) }
+        } else {
+            Properties()
+        }
+
+        fun prop(key: String): String =
+            props.getProperty(key)?.takeIf { it.isNotBlank() } ?: ""
+
+        val keyProp = if (env == "prod") "REVENUECAT_IOS_PROD" else "REVENUECAT_IOS_SANDBOX"
+        val revenueCatApiKey = prop(keyProp)
+
+        val isDebug = env != "prod"
+        val environment = if (isDebug) "dev" else "prod"
+        val appDisplayName = if (isDebug) "N3to DEV" else "N3to"
+
+        outputFile.get().asFile.parentFile.mkdirs()
+
+        outputFile.get().asFile.writeText("""
+            package es.aviferdev.n3to.core
+
+            /**
+             * Implementación iOS de AppConfig.
+             * GENERADO AUTOMÁTICAMENTE por la tarea generateIosAppConfig.
+             * NO modificar manualmente.
+             *
+             * Entorno iOS: $env
+             */
+            actual object AppConfig {
+                actual val environment: String = "$environment"
+                actual val isDebug: Boolean = $isDebug
+                actual val appDisplayName: String = "$appDisplayName"
+                actual val revenueCatApiKey: String = "$revenueCatApiKey"
+            }
+        """.trimIndent())
+    }
+}
+
+// Enganchar la generación antes de compilar Kotlin para iOS
+tasks.matching { it.name.startsWith("compileKotlinIos") }.configureEach {
+    dependsOn(generateIosAppConfig)
+}
+
+// Añadir el directorio generado a los source sets de iOS
+kotlin.sourceSets {
+    val iosMain by getting {
+        kotlin.srcDir(layout.buildDirectory.dir("generated/iosAppConfig"))
     }
 }
 

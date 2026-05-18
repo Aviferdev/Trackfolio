@@ -28,7 +28,7 @@ actual class PurchaseManager {
     }
 
     actual fun configure(apiKey: String) {
-        if (apiKey.startsWith("test_")) return
+        if (apiKey.isBlank()) return
         Purchases.configure(
             com.revenuecat.purchases.kmp.PurchasesConfiguration.Builder(apiKey)
                 .diagnosticsEnabled(false)
