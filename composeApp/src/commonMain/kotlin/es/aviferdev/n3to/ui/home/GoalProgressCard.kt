@@ -35,10 +35,8 @@ import es.aviferdev.n3to.ui.theme.TextSecondary
 import es.aviferdev.n3to.ui.theme.TextTertiary
 import es.aviferdev.n3to.ui.theme.WarnAmber
 import es.aviferdev.n3to.ui.theme.formatAmount
+import es.aviferdev.n3to.platform.nowLocalDate
 import es.aviferdev.n3to.ui.theme.formatAmountEuro
-import kotlinx.datetime.Clock
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.todayIn
 
 /**
  * Tarjeta de progreso de objetivos del mes actual para la pantalla Home.
@@ -217,7 +215,7 @@ private fun GoalProgressRow(
  */
 @Composable
 private fun rememberProjection(target: Double, actual: Double): String? {
-    val today = Clock.System.todayIn(TimeZone.currentSystemDefault())
+    val today = nowLocalDate()
     val dayOfMonth = today.dayOfMonth
     val daysInMonth = daysInMonth(today.year, today.monthNumber)
 
