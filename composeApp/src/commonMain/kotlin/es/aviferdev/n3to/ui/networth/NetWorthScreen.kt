@@ -195,7 +195,6 @@ fun NetWorthContent(
         modifier
             .fillMaxSize()
             .background(NavyDeep)
-            .windowInsetsPadding(WindowInsets.statusBars)
     ) {
         // ── Cabecera ──────────────────────────────────────────────────────────
         TopBarApp(

@@ -8,12 +8,17 @@ import es.aviferdev.n3to.domain.usecase.account.SaveAccountUseCase
 import es.aviferdev.n3to.domain.usecase.account.SetInitialBalanceUseCase
 import es.aviferdev.n3to.domain.usecase.account.UpdateAccountUseCase
 import es.aviferdev.n3to.domain.usecase.asset.ArchiveAssetUseCase
+import es.aviferdev.n3to.domain.usecase.asset.CheckAssetArchivableUseCase
+import es.aviferdev.n3to.domain.usecase.asset.GetAllAssetsIncludingArchivedUseCase
+import es.aviferdev.n3to.domain.usecase.asset.GetAssetEditMetadataUseCase
 import es.aviferdev.n3to.domain.usecase.asset.GetAssetsByAccountUseCase
 import es.aviferdev.n3to.domain.usecase.asset.GetOutdatedAssetsUseCase
 import es.aviferdev.n3to.domain.usecase.asset.GetPriceReminderIntervalUseCase
 import es.aviferdev.n3to.domain.usecase.asset.SaveAssetUseCase
+import es.aviferdev.n3to.domain.usecase.asset.SaveAssetWithMetadataUseCase
 import es.aviferdev.n3to.domain.usecase.asset.SavePriceReminderShownUseCase
 import es.aviferdev.n3to.domain.usecase.asset.ShouldShowPriceReminderUseCase
+import es.aviferdev.n3to.domain.usecase.asset.UpdateAssetWithMetadataUseCase
 import es.aviferdev.n3to.domain.usecase.portfolio.DeletePortfolioUseCase
 import es.aviferdev.n3to.domain.usecase.portfolio.GetPortfoliosByAccountUseCase
 import es.aviferdev.n3to.domain.usecase.portfolio.SavePortfolioUseCase
@@ -75,6 +80,7 @@ import es.aviferdev.n3to.domain.usecase.debt.SaveDebtUseCase
 import es.aviferdev.n3to.domain.usecase.debt.UpdateDebtUseCase
 import es.aviferdev.n3to.domain.usecase.fiscal.GetFiscalReportDataUseCase
 import es.aviferdev.n3to.domain.usecase.fixedincome.ArchiveFixedIncomePositionUseCase
+import es.aviferdev.n3to.domain.usecase.fixedincome.GetFixedIncomeRowsByCategoryUseCase
 import es.aviferdev.n3to.domain.usecase.fixedincome.CloseFixedIncomeUseCase
 import es.aviferdev.n3to.domain.usecase.fixedincome.CreateFixedIncomePositionUseCase
 import es.aviferdev.n3to.domain.usecase.fixedincome.CreateLedgerTransactionUseCase
@@ -104,10 +110,14 @@ import es.aviferdev.n3to.domain.usecase.loan.UpdateLoanUseCase
 import es.aviferdev.n3to.domain.usecase.networth.GetNetWorthDataUseCase
 import es.aviferdev.n3to.domain.usecase.networth.GetNetWorthHistoryUseCase
 import es.aviferdev.n3to.domain.usecase.platform.ArchivePlatformUseCase
+import es.aviferdev.n3to.domain.usecase.platform.CreateAndLinkPlatformUseCase
 import es.aviferdev.n3to.domain.usecase.platform.GetAllPlatformsIncludingArchivedUseCase
+import es.aviferdev.n3to.domain.usecase.platform.GetPlatformsByCategoryUseCase
 import es.aviferdev.n3to.domain.usecase.platform.GetPlatformsUseCase
+import es.aviferdev.n3to.domain.usecase.platform.LinkPlatformToCategoryUseCase
 import es.aviferdev.n3to.domain.usecase.platform.RenamePlatformUseCase
 import es.aviferdev.n3to.domain.usecase.platform.SavePlatformUseCase
+import es.aviferdev.n3to.domain.usecase.platform.UnlinkPlatformFromCategoryUseCase
 import es.aviferdev.n3to.domain.usecase.portfolio.GetPortfolioValueHistoryUseCase
 import es.aviferdev.n3to.domain.usecase.realestate.ArchivePropertyUseCase
 import es.aviferdev.n3to.domain.usecase.realestate.ChangeRentalStatusUseCase
@@ -237,11 +247,16 @@ val useCaseModule = module {
     factory { DeleteDebtUseCase(get()) }
     // ── Asset (catálogo) ──────────────────────────────────────────────────────
     factory { GetAssetsByAccountUseCase(get()) }
+    factory { GetAllAssetsIncludingArchivedUseCase(get()) }
     factory { SaveAssetUseCase(get(), get()) }
+    factory { SaveAssetWithMetadataUseCase(get(), get(), get()) }
     factory { UpdateAssetUseCase(get()) }
+    factory { UpdateAssetWithMetadataUseCase(get(), get(), get()) }
     factory { UpdateAssetCurrentPriceUseCase(get(), get()) }
     factory { ArchiveAssetUseCase(get()) }
     factory { UnarchiveAssetUseCase(get()) }
+    factory { CheckAssetArchivableUseCase(get()) }
+    factory { GetAssetEditMetadataUseCase(get(), get()) }
     factory { GetOutdatedAssetsUseCase(get(), get()) }
     factory { ShouldShowPriceReminderUseCase(get()) }
     factory { SavePriceReminderShownUseCase(get()) }
@@ -285,9 +300,13 @@ val useCaseModule = module {
     // ── Platform ──────────────────────────────────────────────────────────────
     factory { GetPlatformsUseCase(get()) }
     factory { GetAllPlatformsIncludingArchivedUseCase(get()) }
+    factory { GetPlatformsByCategoryUseCase(get()) }
     factory { SavePlatformUseCase(get()) }
     factory { RenamePlatformUseCase(get()) }
     factory { ArchivePlatformUseCase(get()) }
+    factory { LinkPlatformToCategoryUseCase(get()) }
+    factory { UnlinkPlatformFromCategoryUseCase(get()) }
+    factory { CreateAndLinkPlatformUseCase(get(), get()) }
     // ── Category (solo gastos) ────────────────────────────────────────────────
     factory { GetCategoriesByTypeUseCase(get()) }
     factory { GetAllCategoriesIncludingArchivedUseCase(get()) }
@@ -325,6 +344,7 @@ val useCaseModule = module {
     factory { GetCouponScheduleUseCase() }
     factory { UpdateFixedIncomePositionUseCase(get()) }
     factory { ArchiveFixedIncomePositionUseCase(get()) }
+    factory { GetFixedIncomeRowsByCategoryUseCase(get(), get()) }
     factory { DeleteLinkedTransactionUseCase(get()) }
     factory { DeleteFixedIncomeEventUseCase(get(), get()) }
     // ── Fiscal ────────────────────────────────────────────────────────────────
@@ -546,20 +566,20 @@ val useCaseModule = module {
     viewModel { (categoryId: String) ->
         AssetCategoryDetailViewModel(
             categoryId                          = categoryId,
-            assetRepository                     = get(),
-            assetTransactionRepository          = get(),
-            assetPlatformRepository             = get(),
-            assetMetadataRepository            = get(),
+            getAllAssetsIncludingArchived        = get(),
             getAssetCategoriesIncludingArchived = get(),
             getPlatforms                        = get(),
-            platformCategoryRepository          = get(),
-            platformRepository                  = get(),
-            saveAsset                           = get(),
-            updateAsset                         = get(),
+            getPlatformsByCategory              = get(),
+            saveAssetWithMetadata               = get(),
+            updateAssetWithMetadata             = get(),
+            getAssetEditMetadata                = get(),
             archiveAsset                        = get(),
             unarchiveAsset                      = get(),
-            fixedIncomeRepository               = get(),
-            fixedIncomeEventRepository          = get(),
+            checkAssetArchivable                = get(),
+            getFixedIncomeRowsByCategory        = get(),
+            linkPlatformToCategory              = get(),
+            unlinkPlatformFromCategory          = get(),
+            createAndLinkPlatform               = get(),
             session                             = get()
         )
     }

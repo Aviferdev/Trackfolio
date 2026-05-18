@@ -167,7 +167,6 @@ fun PortfolioScreen(
         Column(
             Modifier
                 .fillMaxSize()
-                .windowInsetsPadding(WindowInsets.statusBars)
         ) {
             // Cabecera
             TopBarApp(

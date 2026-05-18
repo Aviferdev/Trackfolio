@@ -178,7 +178,6 @@ fun FiscalReportContent(
         modifier = modifier
             .fillMaxSize()
             .background(NavyDeep)
-            .windowInsetsPadding(WindowInsets.statusBars)
     ) {
         // ── Top bar ───────────────────────────────────────────────────────────
         TopBarApp(

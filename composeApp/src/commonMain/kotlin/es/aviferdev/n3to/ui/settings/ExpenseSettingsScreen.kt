@@ -154,7 +154,7 @@ fun ExpenseSettingsContent(
     modifier: Modifier = Modifier
 ) {
     Column(
-        modifier = modifier.fillMaxSize().background(NavyDeep).windowInsetsPadding(WindowInsets.statusBars)
+        modifier = modifier.fillMaxSize().background(NavyDeep)
     ) {
         TopBarApp(
             title = "Gastos",

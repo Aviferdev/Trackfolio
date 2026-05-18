@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -44,9 +45,10 @@ fun TopBarApp(
     Surface(color = containerColor) {
         Row(
             modifier = Modifier.fillMaxWidth()
+                .statusBarsPadding()
                 .padding(horizontal = 8.dp)
                 .padding(top = 8.dp, bottom = 8.dp)
-                .heightIn(min = 48.dp),
+                .heightIn(min = 40.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             if (navigateBack != null) {
