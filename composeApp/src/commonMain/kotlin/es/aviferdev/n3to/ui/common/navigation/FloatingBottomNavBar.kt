@@ -13,9 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
@@ -29,25 +27,21 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavDestination.Companion.hierarchy
 import es.aviferdev.n3to.ui.navigation.BottomNavItem
 import es.aviferdev.n3to.ui.theme.CyanAccent
-import es.aviferdev.n3to.ui.theme.ExpenseRed
 import es.aviferdev.n3to.ui.theme.NavyBorder
 import es.aviferdev.n3to.ui.theme.NavySelected
 import es.aviferdev.n3to.ui.theme.NavySurface
 import es.aviferdev.n3to.ui.theme.TextSecondary
-import es.aviferdev.n3to.ui.theme.TextTertiary
 
 @Composable
 fun FloatingBottomNavBar(
     items: List<BottomNavItem>,
     currentDestination: androidx.navigation.NavDestination?,
     onItemClick: (BottomNavItem) -> Unit,
-    homeBadgeCount: Int = 0,
     modifier: Modifier = Modifier
 ) {
     val selectedIndex = remember(items, currentDestination) {
@@ -78,7 +72,6 @@ fun FloatingBottomNavBar(
         ) {
             items.forEachIndexed { index, item ->
                 val selected = index == selectedIndex
-                val isHomeTab = item.screen.route == "home"
 
                 val scale by animateFloatAsState(
                     targetValue = if (selected) 1.05f else 1f,
@@ -113,35 +106,14 @@ fun FloatingBottomNavBar(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(6.dp)
                     ) {
-                        Box {
-                            Icon(
-                                imageVector = if (selected) item.selectedIcon else item.icon,
-                                contentDescription = item.label,
-                                modifier = Modifier
-                                    .size(22.dp)
-                                    .scale(scale),
-                                tint = iconColor
-                            )
-                            // Badde de alerta en la pestaña Home
-                            if (isHomeTab && homeBadgeCount > 0) {
-                                Box(
-                                    modifier = Modifier
-                                        .align(Alignment.TopEnd)
-                                        .size(18.dp)
-                                        .clip(CircleShape)
-                                        .background(ExpenseRed),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Text(
-                                        text = if (homeBadgeCount > 9) "9+" else homeBadgeCount.toString(),
-                                        fontSize = 9.sp,
-                                        fontWeight = FontWeight.Bold,
-                                        color = Color.White,
-                                        textAlign = TextAlign.Center
-                                    )
-                                }
-                            }
-                        }
+                        Icon(
+                            imageVector = if (selected) item.selectedIcon else item.icon,
+                            contentDescription = item.label,
+                            modifier = Modifier
+                                .size(22.dp)
+                                .scale(scale),
+                            tint = iconColor
+                        )
                         if (selected) {
                             Text(
                                 text = item.label,

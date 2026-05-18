@@ -384,7 +384,8 @@ val useCaseModule = module {
             versionManager = get(),
             getCurrentMonthProgress = get(),
             getEmergencyFundStatus   = get(),
-            getCategoryBudgetStatus  = get()
+            getCategoryBudgetStatus  = get(),
+            categoryBudgetRepository = get()
         )
     }
     viewModel {

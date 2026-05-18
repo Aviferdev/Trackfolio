@@ -7,9 +7,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -73,9 +70,6 @@ fun N3toNavHost(
     val isLoading by loadingManager.isLoading.collectAsState()
     val loadingMessage by loadingManager.loadingMessage.collectAsState()
 
-    // Estado del badge de presupuestos en la pestaña Home
-    var homeBadgeCount by androidx.compose.runtime.remember { mutableStateOf(0) }
-
     Box(Modifier.fillMaxSize()) {
         Scaffold(
             bottomBar = {
@@ -108,8 +102,7 @@ fun N3toNavHost(
                                         launchSingleTop = true
                                     }
                                 }
-                            },
-                            homeBadgeCount = homeBadgeCount
+                            }
                         )
                     }
                 }
@@ -156,8 +149,7 @@ fun N3toNavHost(
                         },
                         onNavigateToExpenseSettings = {
                             navController.navigate(Screen.ExpenseSettings.route) { launchSingleTop = true }
-                        },
-                        onBudgetAlertChanged = { homeBadgeCount = it }
+                        }
                     )
                     // Reabrir sheet al volver del CategoryPicker
                     val catPickerCatId = navController.currentBackStackEntry
@@ -220,8 +212,7 @@ fun N3toNavHost(
                         },
                         onNavigateToExpenseSettings = {
                             navController.navigate(Screen.ExpenseSettings.route) { launchSingleTop = true }
-                        },
-                        onBudgetAlertChanged = { homeBadgeCount = it }
+                        }
                     )
                 }
                 composable(

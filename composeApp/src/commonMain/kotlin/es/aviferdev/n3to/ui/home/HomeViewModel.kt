@@ -9,8 +9,10 @@ import es.aviferdev.n3to.domain.model.CategoryBudgetStatus
 import es.aviferdev.n3to.domain.model.EmergencyFundStatus
 import es.aviferdev.n3to.domain.model.FixedIncomePosition
 import es.aviferdev.n3to.domain.model.HomeBalance
+import es.aviferdev.n3to.domain.model.LimitType
 import es.aviferdev.n3to.domain.model.MonthlyGoalProgress
 import es.aviferdev.n3to.domain.model.TransactionType
+import es.aviferdev.n3to.domain.repository.CategoryBudgetRepository
 import es.aviferdev.n3to.domain.usecase.account.SetInitialBalanceUseCase
 import es.aviferdev.n3to.domain.usecase.asset.GetOutdatedAssetsUseCase
 import es.aviferdev.n3to.domain.usecase.asset.SavePriceReminderShownUseCase
@@ -83,7 +85,8 @@ class HomeViewModel(
     private val versionManager: VersionManager,
     private val getCurrentMonthProgress: GetCurrentMonthProgressUseCase? = null,
     private val getEmergencyFundStatus: GetEmergencyFundStatusUseCase,
-    private val getCategoryBudgetStatus: GetCategoryBudgetStatusUseCase
+    private val getCategoryBudgetStatus: GetCategoryBudgetStatusUseCase,
+    private val categoryBudgetRepository: CategoryBudgetRepository
 ) : ViewModel() {
 
     val uiState: StateFlow<HomeUiState> = session.selectedAccountId
@@ -124,9 +127,6 @@ class HomeViewModel(
     private val _budgetStatus = MutableStateFlow<List<CategoryBudgetStatus>>(emptyList())
     val budgetStatus: StateFlow<List<CategoryBudgetStatus>> = _budgetStatus.asStateFlow()
 
-    private val _hasBudgetAlert = MutableStateFlow(false)
-    val hasBudgetAlert: StateFlow<Boolean> = _hasBudgetAlert.asStateFlow()
-
     /** Estado de actualización de versión (delegado en [VersionManager]). */
     val versionStatus: StateFlow<VersionManager.Status> = versionManager.status
 
@@ -163,7 +163,6 @@ class HomeViewModel(
                 }
                 .collect { statuses ->
                     _budgetStatus.value = statuses
-                    _hasBudgetAlert.value = statuses.any { it.isNearLimit }
                 }
         }
     }
@@ -306,6 +305,16 @@ class HomeViewModel(
         viewModelScope.launch {
             setInitialBalance.invoke(accountId, amount)
             session.selectAccount(accountId)
+        }
+    }
+
+    fun saveBudgetLimit(categoryId: String, annualLimit: Double, limitType: LimitType) {
+        viewModelScope.launch {
+            if (annualLimit > 0.0) {
+                categoryBudgetRepository.saveBudget(categoryId, annualLimit, limitType)
+            } else {
+                categoryBudgetRepository.deleteBudget(categoryId)
+            }
         }
     }
 }

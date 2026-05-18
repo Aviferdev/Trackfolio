@@ -44,6 +44,7 @@ fun ExpenseSettingsScreen(
         expenseCategories = categoryState.expenseCategories,
         onAdd = { categoryViewModel.openAddSheet() },
         onEdit = { cat -> categoryViewModel.openEditSheet(cat) },
+        onEditLimit = { cat -> categoryViewModel.openLimitSheet(cat) },
         onDelete = { cat -> categoryViewModel.requestDelete(cat) },
         onBack = onBack
     )
@@ -67,6 +68,20 @@ fun ExpenseSettingsScreen(
                 categoryViewModel.renameAndUpdateLimit(editing.id, newName, limit, limitType)
             },
             onDismiss = { categoryViewModel.closeEditSheet() }
+        )
+    }
+
+    // ── Limit sheet inline (solo límite) ──────────────────────────────────────
+    if (categoryState.showLimitSheet && categoryState.limitSheetCategory != null) {
+        val cat = categoryState.limitSheetCategory!!
+        SetCategoryLimitSheet(
+            categoryName = cat.name,
+            currentLimit = categoryState.limitSheetCurrentLimit,
+            currentLimitType = categoryState.limitSheetCurrentLimitType,
+            onSave = { limit, limitType ->
+                categoryViewModel.setCategoryLimit(cat.id, limit, limitType)
+            },
+            onDismiss = { categoryViewModel.closeLimitSheet() }
         )
     }
 
@@ -133,6 +148,7 @@ fun ExpenseSettingsContent(
     expenseCategories: List<CategoryEntity>,
     onAdd: () -> Unit,
     onEdit: (CategoryEntity) -> Unit,
+    onEditLimit: (CategoryEntity) -> Unit,
     onDelete: (CategoryEntity) -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier
@@ -186,6 +202,18 @@ fun ExpenseSettingsContent(
                                     color = TextPrimary,
                                     modifier = Modifier.weight(1f)
                                 )
+                                // Botón de límite (€)
+                                IconButton(
+                                    onClick = { onEditLimit(cat) },
+                                    modifier = Modifier.size(28.dp)
+                                ) {
+                                    Text(
+                                        text = "€",
+                                        fontSize = 14.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = CyanAccent
+                                    )
+                                }
                                 IconButton(
                                     onClick = { onEdit(cat) },
                                     modifier = Modifier.size(28.dp)
@@ -228,10 +256,9 @@ fun ExpenseSettingsContentPreview() {
             ),
             onAdd = {},
             onEdit = {},
+            onEditLimit = {},
             onDelete = {},
             onBack = {}
         )
     }
 }
-
-

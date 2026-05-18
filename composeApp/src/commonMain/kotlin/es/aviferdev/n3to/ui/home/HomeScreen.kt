@@ -49,6 +49,7 @@ import es.aviferdev.n3to.domain.model.CategoryBudgetStatus
 import es.aviferdev.n3to.domain.model.EmergencyFundStatus
 import es.aviferdev.n3to.domain.model.HomeBalance
 import es.aviferdev.n3to.domain.model.IncomeType
+import es.aviferdev.n3to.domain.model.LimitType
 import es.aviferdev.n3to.domain.model.MonthlyGoalProgress
 import es.aviferdev.n3to.domain.model.Transaction
 import es.aviferdev.n3to.domain.model.TransactionType
@@ -64,6 +65,7 @@ import es.aviferdev.n3to.ui.common.component.IconActionButton
 import es.aviferdev.n3to.ui.reconciliation.ReconcileBalanceBottomSheet
 import es.aviferdev.n3to.ui.reconciliation.ReconciliationReminderBanner
 import es.aviferdev.n3to.ui.reconciliation.ReconciliationViewModel
+import es.aviferdev.n3to.ui.settings.SetCategoryLimitSheet
 import es.aviferdev.n3to.ui.settings.backup.BackupPasswordSheet
 import es.aviferdev.n3to.ui.settings.backup.BackupViewModel
 import es.aviferdev.n3to.ui.theme.CyanAccent
@@ -111,7 +113,6 @@ fun HomeScreen(
     onNavigateToCategoryPicker: ((TransactionType) -> Unit)? = null,
     reopenFromPicker: Boolean = false,
     onConsumeReopen: () -> Unit = {},
-    onBudgetAlertChanged: (Int) -> Unit = {},
     viewModel: HomeViewModel = koinViewModel(),
     accountViewModel: AccountViewModel = koinViewModel(),
     reconciliationViewModel: ReconciliationViewModel = koinViewModel(),
@@ -123,12 +124,7 @@ fun HomeScreen(
     val goalProgress by viewModel.goalProgressState.collectAsState()
     val emergencyFund by viewModel.emergencyFundStatus.collectAsState()
     val budgetStatus by viewModel.budgetStatus.collectAsState()
-    val hasBudgetAlert by viewModel.hasBudgetAlert.collectAsState()
 
-    // Notificar alertas al NavHost para el badge
-    LaunchedEffect(hasBudgetAlert) {
-        onBudgetAlertChanged(if (hasBudgetAlert) budgetStatus.count { it.isNearLimit } else 0)
-    }
     val accountState by accountViewModel.uiState.collectAsState()
     val selectedId by accountViewModel.selectedAccountId.collectAsState()
     val reconciliationState by reconciliationViewModel.uiState.collectAsState()
@@ -175,6 +171,13 @@ fun HomeScreen(
     var showInitialBalance by remember { mutableStateOf(false) }
     val addTransactionViewModel: AddTransactionViewModel = koinViewModel()
 
+    // ── Estado del limit sheet inline en Home ──────────────────────────────────
+    var showBudgetLimitSheet by remember { mutableStateOf(false) }
+    var budgetLimitCategoryId by remember { mutableStateOf("") }
+    var budgetLimitCategoryName by remember { mutableStateOf("") }
+    var budgetLimitCurrentLimit by remember { mutableStateOf(0.0) }
+    var budgetLimitCurrentType by remember { mutableStateOf(LimitType.FIXED) }
+
     // Reabrir sheet al volver del CategoryPicker
     LaunchedEffect(reopenFromPicker) {
         if (reopenFromPicker) {
@@ -193,14 +196,6 @@ fun HomeScreen(
                 CircularProgressIndicator(
                     modifier = Modifier.align(Alignment.Center),
                     color = CyanAccent
-                )
-            }
-
-            is HomeUiState.Error -> {
-                Text(
-                    text = state.message,
-                    modifier = Modifier.align(Alignment.Center),
-                    color = ExpenseRed
                 )
             }
 
@@ -268,7 +263,22 @@ fun HomeScreen(
                     goalProgressState = goalProgress,
                     emergencyFundStatus = emergencyFund,
                     budgetStatus = budgetStatus,
-                    onNavigateToExpenseSettings = onNavigateToExpenseSettings
+                    onNavigateToExpenseSettings = onNavigateToExpenseSettings,
+                    onEditBudget = { catId, catName, currentLimit, limitType ->
+                        budgetLimitCategoryId = catId
+                        budgetLimitCategoryName = catName
+                        budgetLimitCurrentLimit = currentLimit
+                        budgetLimitCurrentType = limitType
+                        showBudgetLimitSheet = true
+                    }
+                )
+            }
+
+            is HomeUiState.Error -> {
+                Text(
+                    text = state.message,
+                    modifier = Modifier.align(Alignment.Center),
+                    color = ExpenseRed
                 )
             }
         }
@@ -360,6 +370,20 @@ fun HomeScreen(
             }
         )
     }
+
+    // ── Limit sheet inline ─────────────────────────────────────────────────────
+    if (showBudgetLimitSheet) {
+        SetCategoryLimitSheet(
+            categoryName = budgetLimitCategoryName,
+            currentLimit = budgetLimitCurrentLimit,
+            currentLimitType = budgetLimitCurrentType,
+            onSave = { limit, limitType ->
+                viewModel.saveBudgetLimit(budgetLimitCategoryId, limit, limitType)
+                showBudgetLimitSheet = false
+            },
+            onDismiss = { showBudgetLimitSheet = false }
+        )
+    }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -401,7 +425,8 @@ fun HomeContent(
     goalProgressState: GoalProgressState = GoalProgressState(),
     emergencyFundStatus: EmergencyFundStatus = EmergencyFundStatus.NOT_CONFIGURED,
     budgetStatus: List<CategoryBudgetStatus> = emptyList(),
-    onNavigateToExpenseSettings: () -> Unit = {}
+    onNavigateToExpenseSettings: () -> Unit = {},
+    onEditBudget: (categoryId: String, categoryName: String, currentLimit: Double, currentLimitType: LimitType) -> Unit = { _, _, _, _ -> }
 ) {
     Column(
         modifier = Modifier
@@ -549,20 +574,20 @@ fun HomeContent(
         )
 
         // ── Presupuestos ──────────────────────────────────────────────────────
-        if (budgetStatus.isNotEmpty()) {
-            Spacer(Modifier.height(24.dp))
-            SectionHeader(
-                label = "PRESUPUESTOS",
-                actionLabel = "Editar",
-                onAction = onNavigateToExpenseSettings,
-                modifier = Modifier.padding(horizontal = 16.dp)
-            )
-            Spacer(Modifier.height(10.dp))
-            BudgetSection(
-                statuses = budgetStatus,
-                modifier = Modifier.padding(horizontal = 16.dp)
-            )
-        }
+        Spacer(Modifier.height(24.dp))
+        SectionHeader(
+            label = "PRESUPUESTOS",
+            actionLabel = if (budgetStatus.isNotEmpty()) "Editar" else null,
+            onAction = if (budgetStatus.isNotEmpty()) onNavigateToExpenseSettings else null,
+            modifier = Modifier.padding(horizontal = 16.dp)
+        )
+        Spacer(Modifier.height(10.dp))
+        BudgetSection(
+            statuses = budgetStatus,
+            onEditBudget = onEditBudget,
+            onConfigureBudgets = onNavigateToExpenseSettings,
+            modifier = Modifier.padding(horizontal = 16.dp)
+        )
 
         // ── Acceso rápido ─────────────────────────────────────────────────────
         Spacer(Modifier.height(24.dp))

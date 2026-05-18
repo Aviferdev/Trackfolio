@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.LimitType
 import es.aviferdev.n3to.domain.model.TransactionType
 import es.aviferdev.n3to.ui.common.component.SelectableChip
+import es.aviferdev.n3to.ui.common.input.AmountInputField
 import es.aviferdev.n3to.ui.theme.*
 import es.aviferdev.n3to.ui.theme.DragHandleColor
 import androidx.compose.ui.tooling.preview.Preview
@@ -134,11 +135,13 @@ fun EditCategorySheet(
     onDismiss: () -> Unit
 ) {
     var name by remember { mutableStateOf(currentName) }
-    var limitText by remember { mutableStateOf(
-        if (currentLimit > 0.0) currentLimit.toBigDecimal().stripTrailingZeros().toPlainString() else ""
-    ) }
+    var limitText by remember {
+        mutableStateOf(
+            if (currentLimit > 0.0) currentLimit.toBigDecimal().stripTrailingZeros().toPlainString()
+            else ""
+        )
+    }
     var limitType by remember { mutableStateOf(currentLimitType) }
-    var showLimitSection by remember { mutableStateOf(currentLimit > 0.0) }
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
@@ -200,7 +203,7 @@ fun EditCategorySheet(
 
             Spacer(Modifier.height(16.dp))
 
-            // ── Toggle: establecer límite ───────────────────────────────────────
+            // ── Límite anual (siempre visible) ──────────────────────────────────
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
@@ -212,96 +215,60 @@ fun EditCategorySheet(
                     fontWeight = FontWeight.Medium,
                     color = TextPrimary
                 )
-                Switch(
-                    checked = showLimitSection,
-                    onCheckedChange = { showLimitSection = it },
-                    colors = SwitchDefaults.colors(
-                        checkedThumbColor = Color.White,
-                        checkedTrackColor = CyanAccent,
-                        uncheckedThumbColor = Color.White,
-                        uncheckedTrackColor = SurfaceWhite
-                    )
+            }
+
+            Spacer(Modifier.height(12.dp))
+
+            // ── Selector de tipo (Fijo / Porcentaje) ───────────────────────────
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                SelectableChip(
+                    label = LimitType.FIXED.label,
+                    selected = limitType == LimitType.FIXED,
+                    onClick = { limitType = LimitType.FIXED },
+                    accentColor = PrimaryDark,
+                    selectedBgColor = chipSelectedBg,
+                    borderColorUnselected = chipBorderColor,
+                    textColorUnselected = chipTextColor,
+                    modifier = Modifier.weight(1f)
+                )
+                SelectableChip(
+                    label = LimitType.PERCENTAGE.label,
+                    selected = limitType == LimitType.PERCENTAGE,
+                    onClick = { limitType = LimitType.PERCENTAGE },
+                    accentColor = PrimaryDark,
+                    selectedBgColor = chipSelectedBg,
+                    borderColorUnselected = chipBorderColor,
+                    textColorUnselected = chipTextColor,
+                    modifier = Modifier.weight(1f)
                 )
             }
 
-            if (showLimitSection) {
-                Spacer(Modifier.height(12.dp))
+            Spacer(Modifier.height(16.dp))
 
-                // ── Selector de tipo (Fijo / Porcentaje) ───────────────────────
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    SelectableChip(
-                        label = LimitType.FIXED.label,
-                        selected = limitType == LimitType.FIXED,
-                        onClick = { limitType = LimitType.FIXED },
-                        accentColor = PrimaryDark,
-                        selectedBgColor = chipSelectedBg,
-                        borderColorUnselected = chipBorderColor,
-                        textColorUnselected = chipTextColor,
-                        modifier = Modifier.weight(1f)
-                    )
-                    SelectableChip(
-                        label = LimitType.PERCENTAGE.label,
-                        selected = limitType == LimitType.PERCENTAGE,
-                        onClick = { limitType = LimitType.PERCENTAGE },
-                        accentColor = PrimaryDark,
-                        selectedBgColor = chipSelectedBg,
-                        borderColorUnselected = chipBorderColor,
-                        textColorUnselected = chipTextColor,
-                        modifier = Modifier.weight(1f)
-                    )
-                }
+            // ── AmountInputField (componente de importe nativo) ─────────────────
+            AmountInputField(
+                label = if (limitType == LimitType.FIXED) "Importe del límite" else "Porcentaje de ingresos",
+                value = limitText,
+                onChange = { newValue ->
+                    val filtered = newValue.filter { it.isDigit() || it == ',' || it == '.' }
+                    limitText = filtered
+                },
+                placeholder = if (limitType == LimitType.FIXED) "0,00" else "0"
+            )
 
-                Spacer(Modifier.height(12.dp))
-
-                // ── Campo de importe / porcentaje ─────────────────────────────
-                OutlinedTextField(
-                    value = limitText,
-                    onValueChange = { newValue ->
-                        // Solo permitir dígitos, coma y punto
-                        val filtered = newValue.filter { it.isDigit() || it == ',' || it == '.' }
-                        limitText = filtered
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    placeholder = {
-                        Text(
-                            if (limitType == LimitType.FIXED) "0,00 €" else "0 %",
-                            color = TextTertiary
-                        )
-                    },
-                    label = {
-                        Text(
-                            if (limitType == LimitType.FIXED) "Importe del límite" else "Porcentaje de ingresos",
-                            color = TextSecondary
-                        )
-                    },
-                    singleLine = true,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = PrimaryDark,
-                        unfocusedBorderColor = BorderGray,
-                        focusedTextColor = TextPrimary,
-                        unfocusedTextColor = TextPrimary,
-                        cursorColor = PrimaryDark
-                    ),
-                    shape = RoundedCornerShape(10.dp)
-                )
-            }
-
-            Spacer(Modifier.height(20.dp))
+            Spacer(Modifier.height(24.dp))
 
             // ── Botón Guardar ──────────────────────────────────────────────────
             Button(
                 onClick = {
                     if (name.isNotBlank()) {
-                        val limit = if (showLimitSection) {
-                            limitText
-                                .replace(",", ".")
-                                .toDoubleOrNull()
-                                ?.coerceAtLeast(0.0) ?: 0.0
-                        } else 0.0
+                        val limit = limitText
+                            .replace(",", ".")
+                            .toDoubleOrNull()
+                            ?.coerceAtLeast(0.0) ?: 0.0
                         onSave(name.trim(), limit, limitType)
                     }
                 },
@@ -317,6 +284,15 @@ fun EditCategorySheet(
             }
 
             Spacer(Modifier.height(8.dp))
+
+            // ── Botón Quitar límite (solo si hay límite actual) ────────────────
+            if (currentLimit > 0.0) {
+                TextButton(onClick = {
+                    onSave(name.trim(), 0.0, LimitType.FIXED)
+                }) {
+                    Text("Quitar límite", color = ExpenseRed, fontSize = 14.sp)
+                }
+            }
 
             TextButton(onClick = onDismiss) {
                 Text("Cancelar", color = TextSecondary, fontSize = 14.sp)
