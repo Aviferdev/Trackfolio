@@ -45,6 +45,7 @@ import es.aviferdev.n3to.core.security.BalanceVisibilityManager
 import es.aviferdev.n3to.core.security.BiometricAuthenticator
 import es.aviferdev.n3to.core.security.BiometricResult
 import es.aviferdev.n3to.domain.model.Account
+import es.aviferdev.n3to.domain.model.CategoryBudgetStatus
 import es.aviferdev.n3to.domain.model.EmergencyFundStatus
 import es.aviferdev.n3to.domain.model.HomeBalance
 import es.aviferdev.n3to.domain.model.IncomeType
@@ -104,11 +105,13 @@ fun HomeScreen(
     onNavigateToDebts: () -> Unit = {},
     onNavigateToFiscalReport: () -> Unit = {},
     onNavigateToSettings: () -> Unit = {},
+    onNavigateToExpenseSettings: () -> Unit = {},
     onNavigateToEmergencyFundSettings: () -> Unit = {},
     onNavigateToFixedIncomeDetail: (String) -> Unit = {},
     onNavigateToCategoryPicker: ((TransactionType) -> Unit)? = null,
     reopenFromPicker: Boolean = false,
     onConsumeReopen: () -> Unit = {},
+    onBudgetAlertChanged: (Int) -> Unit = {},
     viewModel: HomeViewModel = koinViewModel(),
     accountViewModel: AccountViewModel = koinViewModel(),
     reconciliationViewModel: ReconciliationViewModel = koinViewModel(),
@@ -119,6 +122,13 @@ fun HomeScreen(
     val nearMaturity by viewModel.nearMaturityState.collectAsState()
     val goalProgress by viewModel.goalProgressState.collectAsState()
     val emergencyFund by viewModel.emergencyFundStatus.collectAsState()
+    val budgetStatus by viewModel.budgetStatus.collectAsState()
+    val hasBudgetAlert by viewModel.hasBudgetAlert.collectAsState()
+
+    // Notificar alertas al NavHost para el badge
+    LaunchedEffect(hasBudgetAlert) {
+        onBudgetAlertChanged(if (hasBudgetAlert) budgetStatus.count { it.isNearLimit } else 0)
+    }
     val accountState by accountViewModel.uiState.collectAsState()
     val selectedId by accountViewModel.selectedAccountId.collectAsState()
     val reconciliationState by reconciliationViewModel.uiState.collectAsState()
@@ -256,7 +266,9 @@ fun HomeScreen(
                     onVersionUpdateNow = openStore,
                     onDismissVersionBanner = { versionInfo?.let { viewModel.dismissVersionBanner(it.latestVersion) } },
                     goalProgressState = goalProgress,
-                    emergencyFundStatus = emergencyFund
+                    emergencyFundStatus = emergencyFund,
+                    budgetStatus = budgetStatus,
+                    onNavigateToExpenseSettings = onNavigateToExpenseSettings
                 )
             }
         }
@@ -387,7 +399,9 @@ fun HomeContent(
     onVersionUpdateNow: () -> Unit = {},
     onDismissVersionBanner: () -> Unit = {},
     goalProgressState: GoalProgressState = GoalProgressState(),
-    emergencyFundStatus: EmergencyFundStatus = EmergencyFundStatus.NOT_CONFIGURED
+    emergencyFundStatus: EmergencyFundStatus = EmergencyFundStatus.NOT_CONFIGURED,
+    budgetStatus: List<CategoryBudgetStatus> = emptyList(),
+    onNavigateToExpenseSettings: () -> Unit = {}
 ) {
     Column(
         modifier = Modifier
@@ -533,6 +547,22 @@ fun HomeContent(
             onNavigateToSettings = onNavigateToEmergencyFundSettings,
             modifier = Modifier.padding(horizontal = 16.dp)
         )
+
+        // ── Presupuestos ──────────────────────────────────────────────────────
+        if (budgetStatus.isNotEmpty()) {
+            Spacer(Modifier.height(24.dp))
+            SectionHeader(
+                label = "PRESUPUESTOS",
+                actionLabel = "Editar",
+                onAction = onNavigateToExpenseSettings,
+                modifier = Modifier.padding(horizontal = 16.dp)
+            )
+            Spacer(Modifier.height(10.dp))
+            BudgetSection(
+                statuses = budgetStatus,
+                modifier = Modifier.padding(horizontal = 16.dp)
+            )
+        }
 
         // ── Acceso rápido ─────────────────────────────────────────────────────
         Spacer(Modifier.height(24.dp))

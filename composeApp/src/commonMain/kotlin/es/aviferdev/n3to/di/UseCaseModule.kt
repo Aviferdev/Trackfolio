@@ -59,6 +59,7 @@ import es.aviferdev.n3to.domain.usecase.assettransaction.SaveAssetTransactionUse
 import es.aviferdev.n3to.domain.usecase.assettransaction.SyncAssetTransactionToLedgerUseCase
 import es.aviferdev.n3to.domain.usecase.assettransaction.UpdateAssetTransactionUseCase
 import es.aviferdev.n3to.domain.usecase.backup.GetBackupReminderIntervalUseCase
+import es.aviferdev.n3to.domain.usecase.budget.GetCategoryBudgetStatusUseCase
 import es.aviferdev.n3to.domain.usecase.backup.GetLastBackupDateUseCase
 import es.aviferdev.n3to.domain.usecase.backup.SaveBackupReminderDismissedUseCase
 import es.aviferdev.n3to.domain.usecase.backup.SaveBackupReminderIntervalUseCase
@@ -273,6 +274,8 @@ val useCaseModule = module {
     factory { GetCategoriesByTypeUseCase(get()) }
     factory { GetAllCategoriesIncludingArchivedUseCase(get()) }
     factory { SeedDefaultCategoriesUseCase(get()) }
+    // ── Budget / Presupuestos ──────────────────────────────────────────────────
+    factory { GetCategoryBudgetStatusUseCase(get(), get(), get()) }
     // ── Issuer ────────────────────────────────────────────────────────────────
     factory { GetIssuersUseCase(get()) }
     factory { GetAllIssuersIncludingArchivedUseCase(get()) }
@@ -380,7 +383,8 @@ val useCaseModule = module {
             getPortfolioValueHistory = get(),
             versionManager = get(),
             getCurrentMonthProgress = get(),
-            getEmergencyFundStatus   = get()
+            getEmergencyFundStatus   = get(),
+            getCategoryBudgetStatus  = get()
         )
     }
     viewModel {
@@ -537,7 +541,7 @@ val useCaseModule = module {
         )
     }
     viewModel { BackupViewModel(get(), get()) }
-    viewModel { CategoryViewModel(get(), get()) }
+    viewModel { CategoryViewModel(get(), get(), get()) }
     viewModel {
         IssuerViewModel(
             getIssuers    = get(),

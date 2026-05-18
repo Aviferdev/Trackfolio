@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import es.aviferdev.n3to.core.VersionManager
 import es.aviferdev.n3to.domain.model.Asset
+import es.aviferdev.n3to.domain.model.CategoryBudgetStatus
 import es.aviferdev.n3to.domain.model.EmergencyFundStatus
 import es.aviferdev.n3to.domain.model.FixedIncomePosition
 import es.aviferdev.n3to.domain.model.HomeBalance
@@ -15,6 +16,7 @@ import es.aviferdev.n3to.domain.usecase.asset.GetOutdatedAssetsUseCase
 import es.aviferdev.n3to.domain.usecase.asset.SavePriceReminderShownUseCase
 import es.aviferdev.n3to.domain.usecase.asset.ShouldShowPriceReminderUseCase
 import es.aviferdev.n3to.domain.usecase.asset.UpdateAssetCurrentPriceUseCase
+import es.aviferdev.n3to.domain.usecase.budget.GetCategoryBudgetStatusUseCase
 import es.aviferdev.n3to.domain.usecase.category.GetCategoriesByTypeUseCase
 import es.aviferdev.n3to.domain.usecase.emergencyfund.GetEmergencyFundStatusUseCase
 import es.aviferdev.n3to.domain.usecase.fixedincome.GetNearMaturityPositionsUseCase
@@ -33,6 +35,9 @@ import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.datetime.Clock
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 
 sealed class HomeUiState {
     data object Loading : HomeUiState()
@@ -77,7 +82,8 @@ class HomeViewModel(
     private val getPortfolioValueHistory: GetPortfolioValueHistoryUseCase,
     private val versionManager: VersionManager,
     private val getCurrentMonthProgress: GetCurrentMonthProgressUseCase? = null,
-    private val getEmergencyFundStatus: GetEmergencyFundStatusUseCase
+    private val getEmergencyFundStatus: GetEmergencyFundStatusUseCase,
+    private val getCategoryBudgetStatus: GetCategoryBudgetStatusUseCase
 ) : ViewModel() {
 
     val uiState: StateFlow<HomeUiState> = session.selectedAccountId
@@ -114,6 +120,13 @@ class HomeViewModel(
     private val _emergencyFundStatusState = MutableStateFlow(EmergencyFundStatus.NOT_CONFIGURED)
     val emergencyFundStatus: StateFlow<EmergencyFundStatus> = _emergencyFundStatusState.asStateFlow()
 
+    // ── Presupuestos ─────────────────────────────────────────────────────────────
+    private val _budgetStatus = MutableStateFlow<List<CategoryBudgetStatus>>(emptyList())
+    val budgetStatus: StateFlow<List<CategoryBudgetStatus>> = _budgetStatus.asStateFlow()
+
+    private val _hasBudgetAlert = MutableStateFlow(false)
+    val hasBudgetAlert: StateFlow<Boolean> = _hasBudgetAlert.asStateFlow()
+
     /** Estado de actualización de versión (delegado en [VersionManager]). */
     val versionStatus: StateFlow<VersionManager.Status> = versionManager.status
 
@@ -131,6 +144,28 @@ class HomeViewModel(
         loadNearMaturityPositions()
         loadGoalProgress()
         loadEmergencyFundStatus()
+        loadBudgetStatus()
+    }
+
+    private fun loadBudgetStatus() {
+        viewModelScope.launch {
+            session.selectedAccountId
+                .flatMapLatest { accountId ->
+                    if (accountId == null) {
+                        emptyFlow()
+                    } else {
+                        val currentYear = Clock.System.now()
+                            .toLocalDateTime(TimeZone.currentSystemDefault())
+                            .year
+                            .toString()
+                        getCategoryBudgetStatus(accountId, currentYear)
+                    }
+                }
+                .collect { statuses ->
+                    _budgetStatus.value = statuses
+                    _hasBudgetAlert.value = statuses.any { it.isNearLimit }
+                }
+        }
     }
 
     private fun checkPriceReminder() {

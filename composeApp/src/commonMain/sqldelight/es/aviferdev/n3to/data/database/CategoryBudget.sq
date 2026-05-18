@@ -1,0 +1,22 @@
+CREATE TABLE CategoryBudgetEntity (
+    categoryId  TEXT    NOT NULL PRIMARY KEY,
+    annualLimit REAL    NOT NULL DEFAULT 0,
+    limitType   TEXT    NOT NULL DEFAULT 'FIXED',
+    FOREIGN KEY (categoryId) REFERENCES CategoryEntity(id)
+);
+
+selectByCategoryId:
+SELECT * FROM CategoryBudgetEntity WHERE categoryId = :categoryId;
+
+selectByAccount:
+SELECT cb.*
+FROM CategoryBudgetEntity cb
+INNER JOIN CategoryEntity c ON cb.categoryId = c.id
+WHERE c.accountId = :accountId AND c.archived = 0 AND cb.annualLimit > 0;
+
+upsert:
+INSERT OR REPLACE INTO CategoryBudgetEntity(categoryId, annualLimit, limitType)
+VALUES (?, ?, ?);
+
+deleteByCategoryId:
+DELETE FROM CategoryBudgetEntity WHERE categoryId = :categoryId;

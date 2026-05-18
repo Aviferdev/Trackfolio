@@ -12,6 +12,9 @@ import es.aviferdev.n3to.data.datasource.asset.AssetTransactionLocalDataSource
 import es.aviferdev.n3to.data.datasource.asset.AssetTransactionLocalDataSourceImpl
 import es.aviferdev.n3to.data.datasource.transaction.TransactionCategoryLocalDataSource
 import es.aviferdev.n3to.data.datasource.transaction.TransactionCategoryLocalDataSourceImpl
+import es.aviferdev.n3to.data.datasource.budget.CategoryBudgetLocalDataSource
+import es.aviferdev.n3to.data.repository.budget.CategoryBudgetRepositoryImpl
+import es.aviferdev.n3to.domain.repository.CategoryBudgetRepository
 import es.aviferdev.n3to.data.datasource.debt.DebtLocalDataSource
 import es.aviferdev.n3to.data.datasource.debt.DebtLocalDataSourceImpl
 import es.aviferdev.n3to.data.datasource.asset.AssetPlatformLocalDataSource
@@ -134,6 +137,7 @@ val repositoryModule = module {
     single<AccountRepository>                   { AccountRepositoryImpl(get()) }
     single<TransactionRepository>               { TransactionRepositoryImpl(get()) }
     single<CategoryRepository>                  { CategoryRepositoryImpl(get()) }
+    single<CategoryBudgetRepository>            { CategoryBudgetRepositoryImpl(get()) }
     single<DebtRepository>                      { DebtRepositoryImpl(get()) }
     single<AssetRepository>                     { AssetRepositoryImpl(get()) }
     single<AssetCategoryRepository>             { AssetCategoryRepositoryImpl(get()) }

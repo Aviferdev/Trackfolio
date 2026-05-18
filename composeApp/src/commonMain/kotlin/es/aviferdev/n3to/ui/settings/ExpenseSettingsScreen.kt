@@ -19,6 +19,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.data.database.CategoryEntity
+import es.aviferdev.n3to.domain.model.LimitType
 import es.aviferdev.n3to.domain.model.TransactionType
 import es.aviferdev.n3to.ui.common.SectionHeader
 import es.aviferdev.n3to.ui.common.navigation.TopBarApp
@@ -59,8 +60,12 @@ fun ExpenseSettingsScreen(
     categoryState.editing?.let { editing ->
         EditCategorySheet(
             currentName = editing.name,
+            currentLimit = categoryState.editingLimit,
+            currentLimitType = categoryState.editingLimitType,
             type = TransactionType.EXPENSE,
-            onSave = { newName -> categoryViewModel.renameCategory(editing.id, newName) },
+            onSave = { newName, limit, limitType ->
+                categoryViewModel.renameAndUpdateLimit(editing.id, newName, limit, limitType)
+            },
             onDismiss = { categoryViewModel.closeEditSheet() }
         )
     }

@@ -16,11 +16,19 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import es.aviferdev.n3to.domain.model.LimitType
 import es.aviferdev.n3to.domain.model.TransactionType
+import es.aviferdev.n3to.ui.common.component.SelectableChip
 import es.aviferdev.n3to.ui.theme.*
 import es.aviferdev.n3to.ui.theme.DragHandleColor
 import androidx.compose.ui.tooling.preview.Preview
 
+// ─── CONSTANTES ──────────────────────────────────────────────────────────────────
+private val chipBorderColor = BorderGray2
+private val chipTextColor   = TextTertiary
+private val chipSelectedBg  = PrimaryAlpha
+
+// ─── AÑADIR CATEGORÍA ────────────────────────────────────────────────────────────
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddCategorySheet(
@@ -114,15 +122,23 @@ fun AddCategorySheet(
     }
 }
 
+// ─── EDITAR CATEGORÍA (con límite anual) ─────────────────────────────────────────
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditCategorySheet(
     currentName: String,
+    currentLimit: Double = 0.0,
+    currentLimitType: LimitType = LimitType.FIXED,
     type: TransactionType,
-    onSave: (String) -> Unit,
+    onSave: (name: String, annualLimit: Double, limitType: LimitType) -> Unit,
     onDismiss: () -> Unit
 ) {
     var name by remember { mutableStateOf(currentName) }
+    var limitText by remember { mutableStateOf(
+        if (currentLimit > 0.0) currentLimit.toBigDecimal().stripTrailingZeros().toPlainString() else ""
+    ) }
+    var limitType by remember { mutableStateOf(currentLimitType) }
+    var showLimitSection by remember { mutableStateOf(currentLimit > 0.0) }
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
@@ -146,6 +162,7 @@ fun EditCategorySheet(
                 .padding(bottom = 32.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            // ── Título ──────────────────────────────────────────────────────────
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -164,6 +181,7 @@ fun EditCategorySheet(
 
             Spacer(Modifier.height(16.dp))
 
+            // ── Nombre ──────────────────────────────────────────────────────────
             OutlinedTextField(
                 value = name,
                 onValueChange = { name = it },
@@ -180,12 +198,111 @@ fun EditCategorySheet(
                 shape = RoundedCornerShape(10.dp)
             )
 
+            Spacer(Modifier.height(16.dp))
+
+            // ── Toggle: establecer límite ───────────────────────────────────────
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    "Límite anual",
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = TextPrimary
+                )
+                Switch(
+                    checked = showLimitSection,
+                    onCheckedChange = { showLimitSection = it },
+                    colors = SwitchDefaults.colors(
+                        checkedThumbColor = Color.White,
+                        checkedTrackColor = CyanAccent,
+                        uncheckedThumbColor = Color.White,
+                        uncheckedTrackColor = SurfaceWhite
+                    )
+                )
+            }
+
+            if (showLimitSection) {
+                Spacer(Modifier.height(12.dp))
+
+                // ── Selector de tipo (Fijo / Porcentaje) ───────────────────────
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    SelectableChip(
+                        label = LimitType.FIXED.label,
+                        selected = limitType == LimitType.FIXED,
+                        onClick = { limitType = LimitType.FIXED },
+                        accentColor = PrimaryDark,
+                        selectedBgColor = chipSelectedBg,
+                        borderColorUnselected = chipBorderColor,
+                        textColorUnselected = chipTextColor,
+                        modifier = Modifier.weight(1f)
+                    )
+                    SelectableChip(
+                        label = LimitType.PERCENTAGE.label,
+                        selected = limitType == LimitType.PERCENTAGE,
+                        onClick = { limitType = LimitType.PERCENTAGE },
+                        accentColor = PrimaryDark,
+                        selectedBgColor = chipSelectedBg,
+                        borderColorUnselected = chipBorderColor,
+                        textColorUnselected = chipTextColor,
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+
+                Spacer(Modifier.height(12.dp))
+
+                // ── Campo de importe / porcentaje ─────────────────────────────
+                OutlinedTextField(
+                    value = limitText,
+                    onValueChange = { newValue ->
+                        // Solo permitir dígitos, coma y punto
+                        val filtered = newValue.filter { it.isDigit() || it == ',' || it == '.' }
+                        limitText = filtered
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    placeholder = {
+                        Text(
+                            if (limitType == LimitType.FIXED) "0,00 €" else "0 %",
+                            color = TextTertiary
+                        )
+                    },
+                    label = {
+                        Text(
+                            if (limitType == LimitType.FIXED) "Importe del límite" else "Porcentaje de ingresos",
+                            color = TextSecondary
+                        )
+                    },
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = PrimaryDark,
+                        unfocusedBorderColor = BorderGray,
+                        focusedTextColor = TextPrimary,
+                        unfocusedTextColor = TextPrimary,
+                        cursorColor = PrimaryDark
+                    ),
+                    shape = RoundedCornerShape(10.dp)
+                )
+            }
+
             Spacer(Modifier.height(20.dp))
 
+            // ── Botón Guardar ──────────────────────────────────────────────────
             Button(
                 onClick = {
                     if (name.isNotBlank()) {
-                        onSave(name.trim())
+                        val limit = if (showLimitSection) {
+                            limitText
+                                .replace(",", ".")
+                                .toDoubleOrNull()
+                                ?.coerceAtLeast(0.0) ?: 0.0
+                        } else 0.0
+                        onSave(name.trim(), limit, limitType)
                     }
                 },
                 enabled = name.isNotBlank(),
@@ -205,5 +322,29 @@ fun EditCategorySheet(
                 Text("Cancelar", color = TextSecondary, fontSize = 14.sp)
             }
         }
+    }
+}
+
+// ─── PREVIEWS ────────────────────────────────────────────────────────────────────
+@Preview
+@Composable
+private fun AddCategorySheetPreview() {
+    N3toTheme {
+        AddCategorySheet(type = TransactionType.EXPENSE, onSave = {}, onDismiss = {})
+    }
+}
+
+@Preview
+@Composable
+private fun EditCategorySheetPreview() {
+    N3toTheme {
+        EditCategorySheet(
+            currentName = "Alimentación",
+            currentLimit = 6000.0,
+            currentLimitType = LimitType.FIXED,
+            type = TransactionType.EXPENSE,
+            onSave = { _, _, _ -> },
+            onDismiss = {}
+        )
     }
 }
