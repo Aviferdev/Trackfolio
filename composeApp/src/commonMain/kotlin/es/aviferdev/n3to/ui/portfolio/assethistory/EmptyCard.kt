@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.portfolio.assethistory
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,15 +24,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.ui.theme.PrimaryDark
-import es.aviferdev.n3to.ui.theme.SurfaceWhite
-import es.aviferdev.n3to.ui.theme.TextPrimary
-import es.aviferdev.n3to.ui.theme.TextTertiary
 
 // ─── Empty card ───────────────────────────────────────────────────────────────
 @Composable
 fun EmptyCard(modifier: Modifier = Modifier) {
     Box(
-        modifier = modifier.fillMaxWidth().clip(RoundedCornerShape(13.dp)).background(SurfaceWhite)
+        modifier = modifier.fillMaxWidth().clip(RoundedCornerShape(13.dp)).background(MaterialTheme.appColors.surface)
             .padding(28.dp),
         contentAlignment = Alignment.Center
     ) {
@@ -40,14 +39,14 @@ fun EmptyCard(modifier: Modifier = Modifier) {
             Text(
                 "Sin movimientos",
                 fontSize = 13.sp,
-                color = TextPrimary,
+                color = MaterialTheme.appColors.textPrimary,
                 fontWeight = FontWeight.SemiBold
             )
             Spacer(Modifier.height(4.dp))
             Text(
                 "Pulsa + para registrar tu primera compra",
                 fontSize = 11.sp,
-                color = TextTertiary,
+                color = MaterialTheme.appColors.textTertiary,
                 textAlign = TextAlign.Center
             )
         }

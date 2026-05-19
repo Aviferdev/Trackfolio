@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.portfolio
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.platform.nowMillis
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -22,7 +24,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.Asset
 import es.aviferdev.n3to.ui.theme.*
-import es.aviferdev.n3to.ui.theme.DragHandleColor
 
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.fixedincome_irpf_label
@@ -40,7 +41,7 @@ import n3to.composeapp.generated.resources.portfolio_dividend_valid_amount_error
 import n3to.composeapp.generated.resources.portfolio_dividend_withholding_label
 import n3to.composeapp.generated.resources.portfolio_dividend_withholding_short
 import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.Preview
 
 /**
  * Sheet para registrar un dividendo sobre un activo.
@@ -76,14 +77,14 @@ fun AddDividendBottomSheet(
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState       = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-        containerColor   = SurfaceWhite,
+        containerColor   = MaterialTheme.appColors.surface,
         dragHandle = {
             Box(
                 modifier = Modifier
                     .padding(top = 12.dp, bottom = 4.dp)
                     .width(40.dp).height(4.dp)
                     .clip(RoundedCornerShape(2.dp))
-                    .background(DragHandleColor)
+                    .background(MaterialTheme.appColors.dragHandle)
             )
         }
     ) {
@@ -101,11 +102,11 @@ fun AddDividendBottomSheet(
                 text       = stringResource(Res.string.portfolio_dividend_title_alt),
                 fontSize   = 16.sp,
                 fontWeight = FontWeight.Medium,
-                color      = TextPrimary
+                color      = MaterialTheme.appColors.textPrimary
             )
             if (displayName.isNotBlank()) {
                 Spacer(Modifier.height(4.dp))
-                Text(text = displayName, fontSize = 13.sp, color = TextSecondary)
+                Text(text = displayName, fontSize = 13.sp, color = MaterialTheme.appColors.textSecondary)
             }
 
             Spacer(Modifier.height(16.dp))
@@ -113,7 +114,7 @@ fun AddDividendBottomSheet(
             // \u2500\u2500 Selector de activo (solo desde PortfolioScreen) \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
             if (showAssetSelector) {
                 Column(modifier = Modifier.fillMaxWidth()) {
-                    Text(stringResource(Res.string.portfolio_dividend_asset_label), fontSize = 12.sp, color = TextSecondary)
+                    Text(stringResource(Res.string.portfolio_dividend_asset_label), fontSize = 12.sp, color = MaterialTheme.appColors.textSecondary)
                     Spacer(Modifier.height(8.dp))
                     LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         items(allAssets) { asset ->
@@ -124,7 +125,7 @@ fun AddDividendBottomSheet(
                                     .background(if (isSel) PrimaryDark.copy(alpha = 0.1f) else Color.Transparent)
                                     .border(
                                         if (isSel) 1.5.dp else 0.5.dp,
-                                        if (isSel) PrimaryDark else BorderGray,
+                                        if (isSel) PrimaryDark else MaterialTheme.appColors.border,
                                         RoundedCornerShape(10.dp)
                                     )
                                     .clickable { selectedAssetId = asset.id }
@@ -135,7 +136,7 @@ fun AddDividendBottomSheet(
                                     text       = asset.ticker,
                                     fontSize   = 12.sp,
                                     fontWeight = if (isSel) FontWeight.SemiBold else FontWeight.Normal,
-                                    color      = if (isSel) PrimaryDark else TextSecondary
+                                    color      = if (isSel) PrimaryDark else MaterialTheme.appColors.textSecondary
                                 )
                             }
                         }
@@ -156,29 +157,29 @@ fun AddDividendBottomSheet(
                 Text(
                     text     = stringResource(Res.string.portfolio_dividend_gross_hint),
                     fontSize = 14.sp,
-                    color    = TextSecondary
+                    color    = MaterialTheme.appColors.textSecondary
                 )
             }
 
             Spacer(Modifier.height(16.dp))
-            HorizontalDivider(color = BorderGray, thickness = 0.5.dp)
+            HorizontalDivider(color = MaterialTheme.appColors.border, thickness = 0.5.dp)
             Spacer(Modifier.height(16.dp))
 
             // \u2500\u2500 Importe bruto \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
             Column(modifier = Modifier.fillMaxWidth()) {
-                Text(stringResource(Res.string.portfolio_dividend_gross_label), fontSize = 12.sp, color = TextSecondary)
+                Text(stringResource(Res.string.portfolio_dividend_gross_label), fontSize = 12.sp, color = MaterialTheme.appColors.textSecondary)
                 Spacer(Modifier.height(4.dp))
                 OutlinedTextField(
                     value           = grossAmountText,
                     onValueChange   = { grossAmountText = it.filter { c -> c.isDigit() || c == ',' || c == '.' }; error = null },
-                    placeholder     = { Text("0,00", color = TextSecondary.copy(alpha = 0.5f), fontSize = 14.sp) },
-                    suffix          = { Text("€", color = TextSecondary, fontSize = 14.sp) },
+                    placeholder     = { Text("0,00", color = MaterialTheme.appColors.textSecondary.copy(alpha = 0.5f), fontSize = 14.sp) },
+                    suffix          = { Text("€", color = MaterialTheme.appColors.textSecondary, fontSize = 14.sp) },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                     singleLine      = true,
                     modifier        = Modifier.fillMaxWidth(),
                     shape           = RoundedCornerShape(8.dp),
-                    colors          = OutlinedTextFieldDefaults.colors(focusedBorderColor = PrimaryDark, unfocusedBorderColor = BorderGray),
-                    textStyle       = TextStyle(fontSize = 14.sp, color = TextPrimary)
+                    colors          = OutlinedTextFieldDefaults.colors(focusedBorderColor = PrimaryDark, unfocusedBorderColor = MaterialTheme.appColors.border),
+                    textStyle       = TextStyle(fontSize = 14.sp, color = MaterialTheme.appColors.textPrimary)
                 )
             }
 
@@ -186,19 +187,19 @@ fun AddDividendBottomSheet(
 
             // \u2500\u2500 Retenci\u00f3n IRPF \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
             Column(modifier = Modifier.fillMaxWidth()) {
-                Text(stringResource(Res.string.portfolio_dividend_withholding_label), fontSize = 12.sp, color = TextSecondary)
+                Text(stringResource(Res.string.portfolio_dividend_withholding_label), fontSize = 12.sp, color = MaterialTheme.appColors.textSecondary)
                 Spacer(Modifier.height(4.dp))
                 OutlinedTextField(
                     value           = irpfPercentText,
                     onValueChange   = { irpfPercentText = it.filter { c -> c.isDigit() || c == ',' || c == '.' } },
-                    placeholder     = { Text("19", color = TextSecondary.copy(alpha = 0.5f), fontSize = 14.sp) },
-                    suffix          = { Text("%", color = TextSecondary, fontSize = 14.sp) },
+                    placeholder     = { Text("19", color = MaterialTheme.appColors.textSecondary.copy(alpha = 0.5f), fontSize = 14.sp) },
+                    suffix          = { Text("%", color = MaterialTheme.appColors.textSecondary, fontSize = 14.sp) },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                     singleLine      = true,
                     modifier        = Modifier.fillMaxWidth(),
                     shape           = RoundedCornerShape(8.dp),
-                    colors          = OutlinedTextFieldDefaults.colors(focusedBorderColor = PrimaryDark, unfocusedBorderColor = BorderGray),
-                    textStyle       = TextStyle(fontSize = 14.sp, color = TextPrimary)
+                    colors          = OutlinedTextFieldDefaults.colors(focusedBorderColor = PrimaryDark, unfocusedBorderColor = MaterialTheme.appColors.border),
+                    textStyle       = TextStyle(fontSize = 14.sp, color = MaterialTheme.appColors.textPrimary)
                 )
             }
 
@@ -215,7 +216,7 @@ fun AddDividendBottomSheet(
                         modifier              = Modifier.fillMaxWidth().padding(12.dp),
                         horizontalArrangement = Arrangement.SpaceEvenly
                     ) {
-                        SummaryItem(stringResource(Res.string.portfolio_dividend_gross_short), grossAmount, TextPrimary)
+                        SummaryItem(stringResource(Res.string.portfolio_dividend_gross_short), grossAmount, MaterialTheme.appColors.textPrimary)
                         if (irpfAmount > 0) SummaryItem(stringResource(Res.string.portfolio_dividend_withholding_short), irpfAmount, ExpenseRed)
                         SummaryItem(stringResource(Res.string.portfolio_dividend_net_short), netAmount ?: 0.0, IncomeGreen)
                     }
@@ -264,7 +265,7 @@ fun AddDividendBottomSheet(
 @Composable
 private fun SummaryItem(label: String, value: Double, color: Color) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(label, fontSize = 10.sp, color = TextSecondary)
+        Text(label, fontSize = 10.sp, color = MaterialTheme.appColors.textSecondary)
         Text(
             text       = "${formatAmount(value)} €",
             fontSize   = 12.sp,

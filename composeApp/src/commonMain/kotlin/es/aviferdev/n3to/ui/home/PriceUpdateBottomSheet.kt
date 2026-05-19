@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.home
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.platform.nowMillis
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -44,13 +46,10 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.Asset
-import es.aviferdev.n3to.ui.theme.BorderGray
+
 import es.aviferdev.n3to.ui.theme.IncomeGreen
 import es.aviferdev.n3to.ui.theme.PrimaryDark
-import es.aviferdev.n3to.ui.theme.SurfaceElevated
-import es.aviferdev.n3to.ui.theme.SurfaceWhite
-import es.aviferdev.n3to.ui.theme.TextPrimary
-import es.aviferdev.n3to.ui.theme.TextSecondary
+
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import es.aviferdev.n3to.ui.theme.formatAmount
 import es.aviferdev.n3to.ui.theme.formatDate
@@ -72,7 +71,7 @@ fun PriceUpdateBottomSheet(
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState       = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-        containerColor   = SurfaceWhite,
+        containerColor   = MaterialTheme.appColors.surface,
         dragHandle = {
             Box(
                 modifier = Modifier
@@ -80,7 +79,7 @@ fun PriceUpdateBottomSheet(
                     .width(40.dp)
                     .height(4.dp)
                     .clip(RoundedCornerShape(2.dp))
-                    .background(BorderGray)
+                    .background(MaterialTheme.appColors.border)
             )
         }
     ) {
@@ -96,13 +95,13 @@ fun PriceUpdateBottomSheet(
                 text       = "Actualizar precios",
                 fontSize   = 18.sp,
                 fontWeight = FontWeight.SemiBold,
-                color      = TextPrimary,
+                color      = MaterialTheme.appColors.textPrimary,
                 modifier   = Modifier.padding(bottom = 4.dp)
             )
             Text(
                 text     = "$completedCount de $totalCount actualizados",
                 fontSize = 13.sp,
-                color    = TextSecondary
+                color    = MaterialTheme.appColors.textSecondary
             )
 
             // Barra de progreso visual
@@ -112,7 +111,7 @@ fun PriceUpdateBottomSheet(
                     .fillMaxWidth()
                     .height(4.dp)
                     .clip(RoundedCornerShape(2.dp))
-                    .background(BorderGray)
+                    .background(MaterialTheme.appColors.border)
             ) {
                 val fraction = if (totalCount > 0) completedCount.toFloat() / totalCount else 0f
                 Box(
@@ -154,7 +153,7 @@ fun PriceUpdateBottomSheet(
                 onClick  = onDismiss,
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             ) {
-                Text("Cerrar", fontSize = 14.sp, color = TextSecondary)
+                Text("Cerrar", fontSize = 14.sp, color = MaterialTheme.appColors.textSecondary)
             }
         }
     }
@@ -172,7 +171,7 @@ private fun AssetPriceUpdateRow(
         modifier = Modifier.fillMaxWidth(),
         shape    = RoundedCornerShape(12.dp),
         colors   = CardDefaults.cardColors(
-            containerColor = if (isCompleted) SurfaceElevated else SurfaceWhite
+            containerColor = if (isCompleted) MaterialTheme.appColors.surfaceElevated else MaterialTheme.appColors.surface
         ),
         border = CardDefaults.outlinedCardBorder()
     ) {
@@ -208,20 +207,20 @@ private fun AssetPriceUpdateRow(
                         text       = asset.name,
                         fontSize   = 14.sp,
                         fontWeight = FontWeight.Medium,
-                        color      = TextPrimary,
+                        color      = MaterialTheme.appColors.textPrimary,
                         maxLines   = 1
                     )
                     Row {
                         Text(
                             text     = asset.ticker,
                             fontSize = 11.sp,
-                            color    = TextSecondary
+                            color    = MaterialTheme.appColors.textSecondary
                         )
                         if (asset.currentPrice != null) {
                             Text(
                                 text     = " · ${formatAmount(asset.currentPrice)} €",
                                 fontSize = 11.sp,
-                                color    = TextSecondary
+                                color    = MaterialTheme.appColors.textSecondary
                             )
                         }
                     }
@@ -229,13 +228,13 @@ private fun AssetPriceUpdateRow(
                         Text(
                             text     = "Última: ${formatDate(asset.currentPriceUpdatedAt)}",
                             fontSize = 10.sp,
-                            color    = TextSecondary.copy(alpha = 0.7f)
+                            color    = MaterialTheme.appColors.textSecondary.copy(alpha = 0.7f)
                         )
                     } else {
                         Text(
                             text     = "Sin precio registrado",
                             fontSize = 10.sp,
-                            color    = TextSecondary.copy(alpha = 0.7f)
+                            color    = MaterialTheme.appColors.textSecondary.copy(alpha = 0.7f)
                         )
                     }
                 }
@@ -252,14 +251,14 @@ private fun AssetPriceUpdateRow(
                         onValueChange = { new ->
                             onPriceInputChange(new.filter { c -> c.isDigit() || c == ',' || c == '.' })
                         },
-                        placeholder     = { Text("Nuevo precio", fontSize = 14.sp, color = TextSecondary.copy(alpha = 0.5f)) },
-                        textStyle       = TextStyle(fontSize = 14.sp, color = TextPrimary),
+                        placeholder     = { Text("Nuevo precio", fontSize = 14.sp, color = MaterialTheme.appColors.textSecondary.copy(alpha = 0.5f)) },
+                        textStyle       = TextStyle(fontSize = 14.sp, color = MaterialTheme.appColors.textPrimary),
                         modifier        = Modifier.weight(1f).height(48.dp),
                         shape           = RoundedCornerShape(8.dp),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                         colors          = OutlinedTextFieldDefaults.colors(
                             focusedBorderColor   = PrimaryDark,
-                            unfocusedBorderColor = BorderGray
+                            unfocusedBorderColor = MaterialTheme.appColors.border
                         ),
                         singleLine = true
                     )

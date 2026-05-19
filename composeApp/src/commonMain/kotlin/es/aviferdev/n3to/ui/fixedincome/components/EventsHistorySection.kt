@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.fixedincome.components
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -40,9 +42,9 @@ internal fun EventsHistorySection(
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = NavySurface),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.navySurface),
         elevation = CardDefaults.cardElevation(0.dp),
-        border = BorderStroke(0.5.dp, NavyBorder)
+        border = BorderStroke(0.5.dp, MaterialTheme.appColors.navyBorder)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
@@ -69,7 +71,7 @@ internal fun EventsHistorySection(
                     )
                     if (events.last() != event) {
                         HorizontalDivider(
-                            color = NavyBorder,
+                            color = MaterialTheme.appColors.navyBorder,
                             modifier = Modifier.padding(vertical = 8.dp)
                         )
                     }
@@ -109,7 +111,7 @@ private fun EventItem(
                     text = "${maskAmount(formatAmount(event.netAmount), balancesHidden)} €",
                     fontSize = 14.sp,
                     fontWeight = FontWeight.SemiBold,
-                    color = if (event.netAmount >= 0) PnLPositive else PnLNegative
+                    color = if (event.netAmount >= 0) MaterialTheme.appColors.pnlPositive else MaterialTheme.appColors.pnlNegative
                 )
                 val eventGrossText = stringResource(Res.string.fixedincome_gross_label)
                 if (event.irpfPercent > 0 || event.commissionAmount > 0) {
@@ -129,7 +131,7 @@ private fun EventItem(
                     Text(
                         text = "${stringResource(Res.string.fixedincome_retention_label)} ${formatPercent(event.irpfPercent)}%",
                         fontSize = 10.sp,
-                        color = PnLNegative
+                        color = MaterialTheme.appColors.pnlNegative
                     )
                     Spacer(Modifier.width(8.dp))
                 }

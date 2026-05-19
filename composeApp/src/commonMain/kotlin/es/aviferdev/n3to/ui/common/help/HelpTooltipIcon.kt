@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.common.help
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -19,10 +21,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.ui.theme.PrimaryDark
-import es.aviferdev.n3to.ui.theme.SurfaceWhite
-import es.aviferdev.n3to.ui.theme.TextPrimary
-import es.aviferdev.n3to.ui.theme.TextSecondary
-import es.aviferdev.n3to.ui.theme.TextTertiary
 
 @Composable
 fun HelpTooltipIcon(
@@ -39,7 +37,7 @@ fun HelpTooltipIcon(
         Icon(
             imageVector = Icons.AutoMirrored.Outlined.HelpOutline,
             contentDescription = "Ayuda",
-            tint = TextTertiary,
+            tint = MaterialTheme.appColors.textTertiary,
             modifier = Modifier.size(16.dp)
         )
     }
@@ -47,20 +45,20 @@ fun HelpTooltipIcon(
     if (showDialog) {
         AlertDialog(
             onDismissRequest = { showDialog = false },
-            containerColor = SurfaceWhite,
+            containerColor = MaterialTheme.appColors.surface,
             title = {
                 Text(
                     text = title,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
-                    color = TextPrimary
+                    color = MaterialTheme.appColors.textPrimary
                 )
             },
             text = {
                 Text(
                     text = body,
                     fontSize = 13.sp,
-                    color = TextSecondary,
+                    color = MaterialTheme.appColors.textSecondary,
                     lineHeight = 19.sp
                 )
             },

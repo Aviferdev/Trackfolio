@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.onboarding
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -35,12 +37,9 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import es.aviferdev.n3to.domain.usecase.onboarding.MarkOnboardingCompletedUseCase
-import es.aviferdev.n3to.ui.theme.CyanAccent
+
 import es.aviferdev.n3to.ui.theme.N3toTheme
-import es.aviferdev.n3to.ui.theme.NavyBorder
-import es.aviferdev.n3to.ui.theme.NavyDeep
-import es.aviferdev.n3to.ui.theme.TextPrimary
-import es.aviferdev.n3to.ui.theme.TextSecondary
+
 import kotlinx.coroutines.launch
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.onboarding_continue
@@ -114,7 +113,7 @@ fun OnboardingScreen(onComplete: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(NavyDeep)
+            .background(MaterialTheme.appColors.navyDeep)
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
 
@@ -135,7 +134,7 @@ fun OnboardingScreen(onComplete: () -> Unit) {
                     ) {
                         Text(
                             text = stringResource(Res.string.onboarding_skip),
-                            color = TextSecondary,
+                            color = MaterialTheme.appColors.textSecondary,
                             fontSize = 12.sp,
                             fontWeight = FontWeight.SemiBold
                         )
@@ -178,14 +177,14 @@ fun OnboardingScreen(onComplete: () -> Unit) {
                             .height(52.dp),
                         shape = RoundedCornerShape(14.dp),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = CyanAccent
+                            containerColor = MaterialTheme.appColors.cyanAccent
                         )
                     ) {
                         Text(
                             text = stringResource(Res.string.onboarding_start),
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Bold,
-                            color = NavyDeep
+                            color = MaterialTheme.appColors.navyDeep
                         )
                     }
                 } else {
@@ -204,7 +203,7 @@ fun OnboardingScreen(onComplete: () -> Unit) {
                             ) {
                                 Text(
                                     text = stringResource(Res.string.common_back_cd),
-                                    color = TextSecondary,
+                                    color = MaterialTheme.appColors.textSecondary,
                                     fontSize = 13.sp,
                                     fontWeight = FontWeight.SemiBold
                                 )
@@ -221,7 +220,7 @@ fun OnboardingScreen(onComplete: () -> Unit) {
                             },
                             shape = RoundedCornerShape(13.dp),
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = CyanAccent
+                                containerColor = MaterialTheme.appColors.cyanAccent
                             ),
                             modifier = Modifier.height(44.dp),
                             contentPadding = PaddingValues(horizontal = 28.dp)
@@ -230,7 +229,7 @@ fun OnboardingScreen(onComplete: () -> Unit) {
                                 text = stringResource(Res.string.onboarding_continue),
                                 fontSize = 13.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = NavyDeep
+                                color = MaterialTheme.appColors.navyDeep
                             )
                         }
                     }
@@ -297,7 +296,7 @@ private fun SlidePage(slide: SlideInfo) {
                     text = slideTitle,
                     fontSize = 26.sp,
                     fontWeight = FontWeight.ExtraBold,
-                    color = TextPrimary,
+                    color = MaterialTheme.appColors.textPrimary,
                     letterSpacing = (-1).sp,
                     lineHeight = 30.sp
                 )
@@ -305,7 +304,7 @@ private fun SlidePage(slide: SlideInfo) {
                 Text(
                     text = slideBody,
                     fontSize = 14.sp,
-                    color = TextSecondary,
+                    color = MaterialTheme.appColors.textSecondary,
                     lineHeight = 21.sp
                 )
             }
@@ -333,7 +332,7 @@ private fun OnboardingDots(
                     .width(if (isSelected) 22.dp else 6.dp)
                     .height(6.dp)
                     .clip(RoundedCornerShape(3.dp))
-                    .background(if (isSelected) CyanAccent else NavyBorder)
+                    .background(if (isSelected) MaterialTheme.appColors.cyanAccent else MaterialTheme.appColors.navyBorder)
             )
         }
     }

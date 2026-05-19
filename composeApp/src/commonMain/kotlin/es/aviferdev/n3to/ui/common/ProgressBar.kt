@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.common
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,7 +16,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import es.aviferdev.n3to.ui.theme.BorderGray2
+
 import es.aviferdev.n3to.ui.theme.IncomeGreen
 import es.aviferdev.n3to.ui.theme.PrimaryDark
 import es.aviferdev.n3to.ui.theme.N3toTheme
@@ -48,7 +50,7 @@ fun ProgressBar(
             .fillMaxWidth()
             .height(height)
             .clip(RoundedCornerShape(height))
-            .background(BorderGray2)
+            .background(MaterialTheme.appColors.border2)
     ) {
         Box(
             modifier = Modifier

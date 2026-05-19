@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.settings
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -18,7 +20,7 @@ import es.aviferdev.n3to.domain.model.LimitType
 import es.aviferdev.n3to.ui.common.component.SelectableChip
 import es.aviferdev.n3to.ui.common.input.AmountInputField
 import es.aviferdev.n3to.ui.theme.*
-import es.aviferdev.n3to.ui.theme.DragHandleColor
+
 import androidx.compose.ui.tooling.preview.Preview
 
 /**
@@ -45,7 +47,7 @@ fun SetCategoryLimitSheet(
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-        containerColor = SurfaceWhite,
+        containerColor = MaterialTheme.appColors.surface,
         shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
         dragHandle = {
             Box(
@@ -53,7 +55,7 @@ fun SetCategoryLimitSheet(
                     .padding(top = 12.dp, bottom = 4.dp)
                     .width(40.dp).height(4.dp)
                     .clip(RoundedCornerShape(2.dp))
-                    .background(DragHandleColor)
+                    .background(MaterialTheme.appColors.dragHandle)
             )
         }
     ) {
@@ -75,16 +77,16 @@ fun SetCategoryLimitSheet(
                         "Límite anual",
                         fontSize = 16.sp,
                         fontWeight = FontWeight.SemiBold,
-                        color = TextPrimary
+                        color = MaterialTheme.appColors.textPrimary
                     )
                     Text(
                         categoryName,
                         fontSize = 13.sp,
-                        color = TextSecondary
+                        color = MaterialTheme.appColors.textSecondary
                     )
                 }
                 IconButton(onClick = onDismiss) {
-                    Icon(Icons.Default.Close, "Cerrar", tint = TextSecondary)
+                    Icon(Icons.Default.Close, "Cerrar", tint = MaterialTheme.appColors.textSecondary)
                 }
             }
 
@@ -101,8 +103,8 @@ fun SetCategoryLimitSheet(
                     onClick = { limitType = LimitType.FIXED },
                     accentColor = PrimaryDark,
                     selectedBgColor = PrimaryAlpha,
-                    borderColorUnselected = BorderGray2,
-                    textColorUnselected = TextTertiary,
+                    borderColorUnselected = MaterialTheme.appColors.border2,
+                    textColorUnselected = MaterialTheme.appColors.textTertiary,
                     modifier = Modifier.weight(1f)
                 )
                 SelectableChip(
@@ -111,8 +113,8 @@ fun SetCategoryLimitSheet(
                     onClick = { limitType = LimitType.PERCENTAGE },
                     accentColor = PrimaryDark,
                     selectedBgColor = PrimaryAlpha,
-                    borderColorUnselected = BorderGray2,
-                    textColorUnselected = TextTertiary,
+                    borderColorUnselected = MaterialTheme.appColors.border2,
+                    textColorUnselected = MaterialTheme.appColors.textTertiary,
                     modifier = Modifier.weight(1f)
                 )
             }
@@ -162,7 +164,7 @@ fun SetCategoryLimitSheet(
             Spacer(Modifier.height(4.dp))
 
             TextButton(onClick = onDismiss) {
-                Text("Cancelar", color = TextSecondary, fontSize = 14.sp)
+                Text("Cancelar", color = MaterialTheme.appColors.textSecondary, fontSize = 14.sp)
             }
         }
     }

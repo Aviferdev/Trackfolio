@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.settings
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.slideInVertically
@@ -54,14 +56,10 @@ import es.aviferdev.n3to.ui.common.navigation.TopBarApp
 import es.aviferdev.n3to.ui.settings.backup.BackupPasswordSheet
 import es.aviferdev.n3to.ui.settings.backup.BackupViewModel
 import es.aviferdev.n3to.ui.settings.components.*
-import es.aviferdev.n3to.ui.theme.CyanAccent
+
 import es.aviferdev.n3to.ui.theme.ExpenseRed
 import es.aviferdev.n3to.ui.theme.N3toTheme
-import es.aviferdev.n3to.ui.theme.NavyDeep
-import es.aviferdev.n3to.ui.theme.NavySurface
-import es.aviferdev.n3to.ui.theme.TextPrimary
-import es.aviferdev.n3to.ui.theme.TextSecondary
-import es.aviferdev.n3to.ui.theme.TextTertiary
+
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.common_accept
 import n3to.composeapp.generated.resources.common_cancel
@@ -189,11 +187,11 @@ fun SettingsScreen(
         AddEditAccountBottomSheet(account = accountState.editingAccount, onSave = { name, _ -> accountViewModel.editAccount(accountState.editingAccount!!, name) }, onDismiss = { accountViewModel.closeEditSheet() })
     }
     if (accountState.showDeleteConfirm && accountState.accountToDelete != null) {
-        AlertDialog(onDismissRequest = { accountViewModel.cancelDelete() }, containerColor = NavySurface,
-            title = { Text(stringResource(Res.string.settings_delete_account_title), fontSize = 16.sp, fontWeight = FontWeight.Bold, color = TextPrimary) },
-            text  = { Text(stringResource(Res.string.settings_delete_account_message, accountState.accountToDelete!!.name), fontSize = 13.sp, color = TextSecondary) },
+        AlertDialog(onDismissRequest = { accountViewModel.cancelDelete() }, containerColor = MaterialTheme.appColors.navySurface,
+            title = { Text(stringResource(Res.string.settings_delete_account_title), fontSize = 16.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.appColors.textPrimary) },
+            text  = { Text(stringResource(Res.string.settings_delete_account_message, accountState.accountToDelete!!.name), fontSize = 13.sp, color = MaterialTheme.appColors.textSecondary) },
             confirmButton = { TextButton(onClick = { accountViewModel.confirmDelete() }) { Text(stringResource(Res.string.common_delete), color = ExpenseRed, fontWeight = FontWeight.SemiBold) } },
-            dismissButton = { TextButton(onClick = { accountViewModel.cancelDelete() }) { Text(stringResource(Res.string.common_cancel), color = CyanAccent) } },
+            dismissButton = { TextButton(onClick = { accountViewModel.cancelDelete() }) { Text(stringResource(Res.string.common_cancel), color = MaterialTheme.appColors.cyanAccent) } },
             shape = RoundedCornerShape(16.dp)
         )
     }
@@ -202,10 +200,10 @@ fun SettingsScreen(
     biometricError?.let { msg ->
         AlertDialog(
             onDismissRequest = { biometricError = null },
-            containerColor   = NavySurface,
-            title            = { Text(biometricTitleText, fontSize = 16.sp, fontWeight = FontWeight.Bold, color = TextPrimary) },
-            text             = { Text(msg, fontSize = 13.sp, color = TextSecondary) },
-            confirmButton    = { TextButton(onClick = { biometricError = null }) { Text(acceptText, color = CyanAccent, fontWeight = FontWeight.SemiBold) } },
+            containerColor   = MaterialTheme.appColors.navySurface,
+            title            = { Text(biometricTitleText, fontSize = 16.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.appColors.textPrimary) },
+            text             = { Text(msg, fontSize = 13.sp, color = MaterialTheme.appColors.textSecondary) },
+            confirmButton    = { TextButton(onClick = { biometricError = null }) { Text(acceptText, color = MaterialTheme.appColors.cyanAccent, fontWeight = FontWeight.SemiBold) } },
             shape            = RoundedCornerShape(16.dp)
         )
     }
@@ -214,20 +212,20 @@ fun SettingsScreen(
     if (accountState.showPremiumLimitWarning) {
         AlertDialog(
             onDismissRequest = { accountViewModel.dismissPremiumLimitWarning() },
-            containerColor = NavySurface,
+            containerColor = MaterialTheme.appColors.navySurface,
             title = {
                 Text(
                     stringResource(Res.string.settings_premium_limit_title),
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
-                    color = TextPrimary
+                    color = MaterialTheme.appColors.textPrimary
                 )
             },
             text = {
                 Text(
                     stringResource(Res.string.settings_premium_limit_message, PremiumConstants.MAX_FREE_ACCOUNTS),
                     fontSize = 13.sp,
-                    color = TextSecondary
+                    color = MaterialTheme.appColors.textSecondary
                 )
             },
             confirmButton = {
@@ -235,12 +233,12 @@ fun SettingsScreen(
                     accountViewModel.dismissPremiumLimitWarning()
                     onNavigateToPremium()
                 }) {
-                    Text(stringResource(Res.string.settings_premium_cta), color = CyanAccent, fontWeight = FontWeight.SemiBold)
+                    Text(stringResource(Res.string.settings_premium_cta), color = MaterialTheme.appColors.cyanAccent, fontWeight = FontWeight.SemiBold)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { accountViewModel.dismissPremiumLimitWarning() }) {
-                    Text(stringResource(Res.string.settings_not_now), color = TextTertiary)
+                    Text(stringResource(Res.string.settings_not_now), color = MaterialTheme.appColors.textTertiary)
                 }
             },
             shape = RoundedCornerShape(16.dp)
@@ -297,7 +295,7 @@ fun SettingsContent(
     var contentVisible by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) { delay(60); contentVisible = true }
 
-    Column(modifier = modifier.fillMaxSize().background(NavyDeep)) {
+    Column(modifier = modifier.fillMaxSize().background(MaterialTheme.appColors.navyDeep)) {
         TopBarApp(title = stringResource(Res.string.settings_title), navigateBack = navigateBack)
 
         AnimatedVisibility(visible = contentVisible, enter = fadeIn() + slideInVertically(initialOffsetY = { it / 10 })) {

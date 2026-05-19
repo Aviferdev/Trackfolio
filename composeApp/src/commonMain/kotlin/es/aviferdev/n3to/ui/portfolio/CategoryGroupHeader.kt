@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.portfolio
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -18,9 +20,7 @@ import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.ui.common.DeltaIndicator
 import es.aviferdev.n3to.ui.theme.ExpenseRed
 import es.aviferdev.n3to.ui.theme.IncomeGreen
-import es.aviferdev.n3to.ui.theme.TextPrimary
-import es.aviferdev.n3to.ui.theme.TextSecondary
-import es.aviferdev.n3to.ui.theme.TextTertiary
+
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import es.aviferdev.n3to.ui.theme.formatAmount
 import es.aviferdev.n3to.ui.theme.formatPercent
@@ -40,7 +40,7 @@ fun CategoryGroupHeader(
     val pnlColor = when {
         group.totalPnL > 0 -> IncomeGreen
         group.totalPnL < 0 -> ExpenseRed
-        else -> TextSecondary
+        else -> MaterialTheme.appColors.textSecondary
     }
     Column(
         modifier = Modifier
@@ -60,10 +60,10 @@ fun CategoryGroupHeader(
                     group.displayName,
                     fontSize = 13.sp,
                     fontWeight = FontWeight.SemiBold,
-                    color = TextPrimary
+                    color = MaterialTheme.appColors.textPrimary
                 )
                 Spacer(Modifier.width(6.dp))
-                Text("(${group.rowCount})", fontSize = 11.sp, color = TextTertiary)
+                Text("(${group.rowCount})", fontSize = 11.sp, color = MaterialTheme.appColors.textTertiary)
             }
             if (group.totalPnL != 0.0) {
                 DeltaIndicator(
@@ -77,12 +77,12 @@ fun CategoryGroupHeader(
             Text(
                 stringResource(Res.string.portfolio_category_invested_format, maskAmount(formatAmount(group.totalInvested), balancesHidden)),
                 fontSize = 11.sp,
-                color = TextTertiary
+                color = MaterialTheme.appColors.textTertiary
             )
             Text(
                 stringResource(Res.string.portfolio_category_current_format, maskAmount(formatAmount(group.totalCurrentValue), balancesHidden)),
                 fontSize = 11.sp,
-                color = TextTertiary
+                color = MaterialTheme.appColors.textTertiary
             )
         }
     }

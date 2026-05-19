@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.realestate
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -146,7 +148,7 @@ fun RealEstateDetailScreen(
     }
 
     Column(
-        modifier = Modifier.fillMaxSize().background(BackgroundGray)
+        modifier = Modifier.fillMaxSize().background(MaterialTheme.appColors.background)
     ) {
         TopBarApp(
             title = property?.name ?: stringResource(Res.string.realestate_detail_title),
@@ -155,34 +157,34 @@ fun RealEstateDetailScreen(
                 if (property != null) {
                     var showMenu by remember { mutableStateOf(false) }
                     IconButton(onClick = { showMenu = true }) {
-                        Icon(Icons.Outlined.MoreVert, stringResource(Res.string.realestate_options_menu_cd), tint = TextPrimary)
+                        Icon(Icons.Outlined.MoreVert, stringResource(Res.string.realestate_options_menu_cd), tint = MaterialTheme.appColors.textPrimary)
                     }
-                    DropdownMenu(expanded = showMenu, onDismissRequest = { showMenu = false }, containerColor = SurfaceElevated) {
+                    DropdownMenu(expanded = showMenu, onDismissRequest = { showMenu = false }, containerColor = MaterialTheme.appColors.surfaceElevated) {
                         DropdownMenuItem(
-                            text = { Text(stringResource(Res.string.realestate_edit_label), color = TextPrimary) },
+                            text = { Text(stringResource(Res.string.realestate_edit_label), color = MaterialTheme.appColors.textPrimary) },
                             onClick = { showMenu = false; viewModel.showEditSheet() },
-                            leadingIcon = { Icon(Icons.Outlined.Edit, null, tint = TextSecondary) }
+                            leadingIcon = { Icon(Icons.Outlined.Edit, null, tint = MaterialTheme.appColors.textSecondary) }
                         )
                         DropdownMenuItem(
-                            text = { Text(stringResource(Res.string.realestate_update_value), color = TextPrimary) },
+                            text = { Text(stringResource(Res.string.realestate_update_value), color = MaterialTheme.appColors.textPrimary) },
                             onClick = { showMenu = false; viewModel.showValueSheet() },
-                            leadingIcon = { Icon(Icons.AutoMirrored.Outlined.TrendingUp, null, tint = TextSecondary) }
+                            leadingIcon = { Icon(Icons.AutoMirrored.Outlined.TrendingUp, null, tint = MaterialTheme.appColors.textSecondary) }
                         )
                         DropdownMenuItem(
-                            text = { Text(stringResource(Res.string.realestate_change_rental_status), color = TextPrimary) },
+                            text = { Text(stringResource(Res.string.realestate_change_rental_status), color = MaterialTheme.appColors.textPrimary) },
                             onClick = { showMenu = false; viewModel.showChangeRentalStatusSheet() },
-                            leadingIcon = { Icon(Icons.Outlined.SwapHoriz, null, tint = TextSecondary) }
+                            leadingIcon = { Icon(Icons.Outlined.SwapHoriz, null, tint = MaterialTheme.appColors.textSecondary) }
                         )
                         // Solo mostrar "Vender" si NO está vendida
                         if (!property.isSold) {
-                            HorizontalDivider(color = BorderGray)
+                            HorizontalDivider(color = MaterialTheme.appColors.border)
                             DropdownMenuItem(
                                 text = { Text(stringResource(Res.string.realestate_sell_property), color = IncomeGreen) },
                                 onClick = { showMenu = false; viewModel.showSellSheet() },
                                 leadingIcon = { Icon(Icons.Outlined.AttachMoney, null, tint = IncomeGreen) }
                             )
                         }
-                        HorizontalDivider(color = BorderGray)
+                        HorizontalDivider(color = MaterialTheme.appColors.border)
                         DropdownMenuItem(
                             text = { Text(stringResource(Res.string.realestate_archive_label), color = ExpenseRed) },
                             onClick = { showMenu = false; viewModel.showArchiveDialog() },
@@ -284,7 +286,7 @@ private fun WhySeparateInfoBanner() {
         Text(
             stringResource(Res.string.realestate_why_separate),
             fontSize = 12.sp,
-            color = TextSecondary,
+            color = MaterialTheme.appColors.textSecondary,
             lineHeight = 17.sp
         )
     }
@@ -294,7 +296,7 @@ private fun WhySeparateInfoBanner() {
 private fun HeaderSection(property: RealEstateProperty) {
     Card(
         shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = SurfaceWhite),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.surface),
         elevation = CardDefaults.cardElevation(0.dp),
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -303,8 +305,8 @@ private fun HeaderSection(property: RealEstateProperty) {
                 Text(property.propertyType.emoji, fontSize = 24.sp)
                 Spacer(Modifier.width(8.dp))
                 Column(Modifier.weight(1f)) {
-                    Text(property.name, fontWeight = FontWeight.Bold, fontSize = 16.sp, color = TextPrimary)
-                    Text(property.address, fontSize = 12.sp, color = TextTertiary)
+                    Text(property.name, fontWeight = FontWeight.Bold, fontSize = 16.sp, color = MaterialTheme.appColors.textPrimary)
+                    Text(property.address, fontSize = 12.sp, color = MaterialTheme.appColors.textTertiary)
                 }
                 StatusTag(
                     label = when {
@@ -317,7 +319,7 @@ private fun HeaderSection(property: RealEstateProperty) {
                         property.isSold -> IncomeGreen
                         property.rentalStatus == RentalStatus.RENTED -> IncomeGreen
                         property.rentalStatus == RentalStatus.VACANT -> WarnAmber
-                        else -> TextTertiary
+                        else -> MaterialTheme.appColors.textTertiary
                     }
                 )
             }
@@ -329,13 +331,13 @@ private fun HeaderSection(property: RealEstateProperty) {
 private fun ValueSection(property: RealEstateProperty, onUpdateValue: () -> Unit) {
     Card(
         shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = SurfaceWhite),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.surface),
         elevation = CardDefaults.cardElevation(0.dp),
         modifier = Modifier.fillMaxWidth()
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                Text(stringResource(Res.string.realestate_value_label), fontWeight = FontWeight.SemiBold, fontSize = 14.sp, color = TextPrimary)
+                Text(stringResource(Res.string.realestate_value_label), fontWeight = FontWeight.SemiBold, fontSize = 14.sp, color = MaterialTheme.appColors.textPrimary)
                 if (!property.isSold) {
                     TextButton(onClick = onUpdateValue) { Text(stringResource(Res.string.realestate_update_label), color = PrimaryDark, fontSize = 12.sp) }
                 }
@@ -346,7 +348,7 @@ private fun ValueSection(property: RealEstateProperty, onUpdateValue: () -> Unit
             DataRow(stringResource(Res.string.realestate_ownership_percent_label), "${formatPercent(property.ownershipPercentage)}%")
 
             if (property.isSold && property.saleValue != null) {
-                HorizontalDivider(color = BorderGray2, modifier = Modifier.padding(vertical = 4.dp))
+                HorizontalDivider(color = MaterialTheme.appColors.border2, modifier = Modifier.padding(vertical = 4.dp))
                 DataRow(stringResource(Res.string.realestate_sale_price_label), formatAmountEuro(property.saleValue))
                 val gain = property.realizedGain ?: 0.0
                 val pct = property.realizedGainPercent ?: 0.0
@@ -356,7 +358,7 @@ private fun ValueSection(property: RealEstateProperty, onUpdateValue: () -> Unit
                 )
             }
 
-            HorizontalDivider(color = BorderGray2, modifier = Modifier.padding(vertical = 4.dp))
+            HorizontalDivider(color = MaterialTheme.appColors.border2, modifier = Modifier.padding(vertical = 4.dp))
             DataRow(stringResource(Res.string.realestate_effective_value_label), formatAmountEuro(property.effectiveValue))
         }
     }
@@ -387,12 +389,12 @@ private fun SaleInfoSection(property: RealEstateProperty) {
 private fun PurchaseExpensesCard(expenses: List<es.aviferdev.n3to.domain.model.Transaction>) {
     Card(
         shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = SurfaceWhite),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.surface),
         elevation = CardDefaults.cardElevation(0.dp),
         modifier = Modifier.fillMaxWidth()
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text(stringResource(Res.string.realestate_purchase_expenses), fontWeight = FontWeight.SemiBold, fontSize = 14.sp, color = TextPrimary)
+            Text(stringResource(Res.string.realestate_purchase_expenses), fontWeight = FontWeight.SemiBold, fontSize = 14.sp, color = MaterialTheme.appColors.textPrimary)
             Spacer(Modifier.height(8.dp))
             expenses.forEach { tx ->
                 Row(
@@ -401,7 +403,7 @@ private fun PurchaseExpensesCard(expenses: List<es.aviferdev.n3to.domain.model.T
                 ) {
                     Text(
                         tx.categoryId ?: stringResource(Res.string.realestate_expense_default),
-                        fontSize = 12.sp, color = TextSecondary
+                        fontSize = 12.sp, color = MaterialTheme.appColors.textSecondary
                     )
                     Text(
                         "-${formatAmountEuro(kotlin.math.abs(tx.amount))}",
@@ -409,7 +411,7 @@ private fun PurchaseExpensesCard(expenses: List<es.aviferdev.n3to.domain.model.T
                     )
                 }
                 tx.notes?.let { note ->
-                    Text(note, fontSize = 10.sp, color = TextTertiary, modifier = Modifier.padding(start = 4.dp))
+                    Text(note, fontSize = 10.sp, color = MaterialTheme.appColors.textTertiary, modifier = Modifier.padding(start = 4.dp))
                 }
             }
         }
@@ -420,12 +422,12 @@ private fun PurchaseExpensesCard(expenses: List<es.aviferdev.n3to.domain.model.T
 private fun SaleExpensesCard(expenses: List<es.aviferdev.n3to.domain.model.Transaction>) {
     Card(
         shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = SurfaceWhite),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.surface),
         elevation = CardDefaults.cardElevation(0.dp),
         modifier = Modifier.fillMaxWidth()
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text(stringResource(Res.string.realestate_sale_expenses), fontWeight = FontWeight.SemiBold, fontSize = 14.sp, color = TextPrimary)
+            Text(stringResource(Res.string.realestate_sale_expenses), fontWeight = FontWeight.SemiBold, fontSize = 14.sp, color = MaterialTheme.appColors.textPrimary)
             Spacer(Modifier.height(8.dp))
             expenses.forEach { tx ->
                 Row(
@@ -434,7 +436,7 @@ private fun SaleExpensesCard(expenses: List<es.aviferdev.n3to.domain.model.Trans
                 ) {
                     Text(
                         tx.categoryId ?: stringResource(Res.string.realestate_expense_default),
-                        fontSize = 12.sp, color = TextSecondary
+                        fontSize = 12.sp, color = MaterialTheme.appColors.textSecondary
                     )
                     Text(
                         "-${formatAmountEuro(kotlin.math.abs(tx.amount))}",
@@ -442,7 +444,7 @@ private fun SaleExpensesCard(expenses: List<es.aviferdev.n3to.domain.model.Trans
                     )
                 }
                 tx.notes?.let { note ->
-                    Text(note, fontSize = 10.sp, color = TextTertiary, modifier = Modifier.padding(start = 4.dp))
+                    Text(note, fontSize = 10.sp, color = MaterialTheme.appColors.textTertiary, modifier = Modifier.padding(start = 4.dp))
                 }
             }
         }
@@ -453,14 +455,14 @@ private fun SaleExpensesCard(expenses: List<es.aviferdev.n3to.domain.model.Trans
 private fun MortgageSection(linkedLoan: es.aviferdev.n3to.domain.model.Loan?, onNavigateToLoan: (String) -> Unit) {
     Card(
         shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = SurfaceWhite),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.surface),
         elevation = CardDefaults.cardElevation(0.dp),
         modifier = Modifier.fillMaxWidth()
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             if (linkedLoan != null) {
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                    Text(stringResource(Res.string.realestate_mortgage_label), fontWeight = FontWeight.SemiBold, fontSize = 14.sp, color = TextPrimary)
+                    Text(stringResource(Res.string.realestate_mortgage_label), fontWeight = FontWeight.SemiBold, fontSize = 14.sp, color = MaterialTheme.appColors.textPrimary)
                     TextButton(onClick = { onNavigateToLoan(linkedLoan.id) }) { Text(stringResource(Res.string.realestate_view_label), color = PrimaryDark, fontSize = 12.sp) }
                 }
                 Spacer(Modifier.height(4.dp))
@@ -469,8 +471,8 @@ private fun MortgageSection(linkedLoan: es.aviferdev.n3to.domain.model.Loan?, on
                 DataRow(stringResource(Res.string.realestate_pending_capital_label), formatAmountEuro(linkedLoan.outstandingPrincipal))
                 DataRow(stringResource(Res.string.realestate_monthly_payment_label), formatAmountEuro(linkedLoan.monthlyPayment))
             } else {
-                Text(stringResource(Res.string.realestate_no_mortgage), fontSize = 13.sp, color = TextTertiary)
-                Text(stringResource(Res.string.realestate_mortgage_hint), fontSize = 11.sp, color = TextTertiary)
+                Text(stringResource(Res.string.realestate_no_mortgage), fontSize = 13.sp, color = MaterialTheme.appColors.textTertiary)
+                Text(stringResource(Res.string.realestate_mortgage_hint), fontSize = 11.sp, color = MaterialTheme.appColors.textTertiary)
             }
         }
     }
@@ -479,8 +481,8 @@ private fun MortgageSection(linkedLoan: es.aviferdev.n3to.domain.model.Loan?, on
 @Composable
 private fun DataRow(label: String, value: String) {
     Row(Modifier.fillMaxWidth().padding(vertical = 2.dp), horizontalArrangement = Arrangement.SpaceBetween) {
-        Text(label, fontSize = 13.sp, color = TextSecondary)
-        Text(value, fontSize = 13.sp, color = TextPrimary, fontWeight = FontWeight.Medium)
+        Text(label, fontSize = 13.sp, color = MaterialTheme.appColors.textSecondary)
+        Text(value, fontSize = 13.sp, color = MaterialTheme.appColors.textPrimary, fontWeight = FontWeight.Medium)
     }
 }
 

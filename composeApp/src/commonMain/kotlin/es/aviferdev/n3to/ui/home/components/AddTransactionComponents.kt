@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.home.components
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -47,15 +49,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.Issuer
 import es.aviferdev.n3to.ui.home.IrpfInputMode
-import es.aviferdev.n3to.ui.theme.BorderGray
+
 import es.aviferdev.n3to.ui.theme.IncomeGreen
 import es.aviferdev.n3to.ui.theme.PrimaryAlpha
 import es.aviferdev.n3to.ui.theme.PrimaryDark
-import es.aviferdev.n3to.ui.theme.SurfaceElevated
-import es.aviferdev.n3to.ui.theme.SurfaceWhite
-import es.aviferdev.n3to.ui.theme.TextPrimary
-import es.aviferdev.n3to.ui.theme.TextSecondary
-import es.aviferdev.n3to.ui.theme.TextTertiary
+
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
@@ -73,7 +71,7 @@ internal fun TypePill(
         modifier = modifier
             .clip(RoundedCornerShape(12.dp))
             .background(if (selected) selectedColor else Color.Transparent)
-            .border(1.dp, if (selected) selectedColor else BorderGray, RoundedCornerShape(12.dp))
+            .border(1.dp, if (selected) selectedColor else MaterialTheme.appColors.border, RoundedCornerShape(12.dp))
             .clickable { onClick() }
             .padding(vertical = 10.dp),
         contentAlignment = Alignment.Center
@@ -82,7 +80,7 @@ internal fun TypePill(
             label,
             fontSize = 14.sp,
             fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal,
-            color = if (selected) Color.White else TextSecondary
+            color = if (selected) Color.White else MaterialTheme.appColors.textSecondary
         )
     }
 }
@@ -100,7 +98,7 @@ internal fun ModeChip(
             .background(if (selected) PrimaryDark.copy(alpha = 0.15f) else Color.Transparent)
             .border(
                 width = if (selected) 1.5.dp else 0.5.dp,
-                color = if (selected) PrimaryDark else BorderGray,
+                color = if (selected) PrimaryDark else MaterialTheme.appColors.border,
                 shape = RoundedCornerShape(10.dp)
             )
             .clickable { onClick() }
@@ -123,7 +121,7 @@ internal fun DarkTappableRow(
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(12.dp))
-            .background(SurfaceElevated)
+            .background(MaterialTheme.appColors.surfaceElevated)
             .clickable { onClick() }
             .padding(horizontal = 14.dp, vertical = 13.dp),
         verticalAlignment = Alignment.CenterVertically
@@ -150,18 +148,18 @@ internal fun DarkTappableRow(
                 label,
                 fontSize = 10.sp,
                 fontWeight = FontWeight.SemiBold,
-                color = TextSecondary
+                color = MaterialTheme.appColors.textSecondary
             )
             Spacer(Modifier.height(2.dp))
             Text(
                 value,
                 fontSize = 13.sp,
                 fontWeight = FontWeight.Medium,
-                color = if (value.contains("…")) TextTertiary else TextPrimary
+                color = if (value.contains("…")) MaterialTheme.appColors.textTertiary else MaterialTheme.appColors.textPrimary
             )
         }
 
-        Text("›", fontSize = 20.sp, color = TextTertiary)
+        Text("›", fontSize = 20.sp, color = MaterialTheme.appColors.textTertiary)
     }
 }
 
@@ -180,7 +178,7 @@ internal fun DarkAmountInput(
             label.uppercase(),
             fontSize = 10.sp,
             fontWeight = FontWeight.SemiBold,
-            color = TextSecondary
+            color = MaterialTheme.appColors.textSecondary
         )
         Spacer(Modifier.height(6.dp))
         BasicTextField(
@@ -199,7 +197,7 @@ internal fun DarkAmountInput(
                     text = if (value.isEmpty()) "0,00 €" else "$value €",
                     fontSize = 34.sp,
                     fontWeight = FontWeight.ExtraBold,
-                    color = if (value.isEmpty()) TextTertiary else color,
+                    color = if (value.isEmpty()) MaterialTheme.appColors.textTertiary else color,
                     textAlign = TextAlign.Center,
                     letterSpacing = (-1).sp,
                     lineHeight = 36.sp,
@@ -221,17 +219,17 @@ internal fun DarkTextField(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(10.dp))
-            .background(SurfaceElevated)
+            .background(MaterialTheme.appColors.surfaceElevated)
             .padding(horizontal = 14.dp, vertical = 10.dp)
     ) {
         BasicTextField(
             value = value,
             onValueChange = onValueChange,
             singleLine = true,
-            textStyle = TextStyle(fontSize = 13.sp, color = TextPrimary),
+            textStyle = TextStyle(fontSize = 13.sp, color = MaterialTheme.appColors.textPrimary),
             decorationBox = { inner ->
                 if (value.isEmpty()) {
-                    Text(placeholder, fontSize = 13.sp, color = TextTertiary)
+                    Text(placeholder, fontSize = 13.sp, color = MaterialTheme.appColors.textTertiary)
                 }
                 inner()
             },
@@ -282,10 +280,10 @@ internal fun DateRow(
             },
             dismissButton = {
                 TextButton(onClick = { showPicker = false }) {
-                    Text("Cancelar", color = TextSecondary)
+                    Text("Cancelar", color = MaterialTheme.appColors.textSecondary)
                 }
             },
-            colors = DatePickerDefaults.colors(containerColor = SurfaceWhite)
+            colors = DatePickerDefaults.colors(containerColor = MaterialTheme.appColors.surface)
         ) {
             DatePicker(
                 state = pickerState,
@@ -308,12 +306,12 @@ internal fun DarkInlineField(
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier) {
-        Text(label, fontSize = 10.sp, fontWeight = FontWeight.SemiBold, color = TextSecondary)
+        Text(label, fontSize = 10.sp, fontWeight = FontWeight.SemiBold, color = MaterialTheme.appColors.textSecondary)
         Spacer(Modifier.height(6.dp))
         Row(
             modifier = Modifier
                 .clip(RoundedCornerShape(10.dp))
-                .background(SurfaceElevated)
+                .background(MaterialTheme.appColors.surfaceElevated)
                 .padding(horizontal = 14.dp, vertical = 10.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -332,13 +330,13 @@ internal fun DarkInlineField(
                         inner()
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             if (value.isEmpty()) {
-                                Text(placeholder, fontSize = 14.sp, color = TextTertiary)
+                                Text(placeholder, fontSize = 14.sp, color = MaterialTheme.appColors.textTertiary)
                             } else {
                                 Text(
                                     value,
                                     fontSize = 14.sp,
                                     fontWeight = FontWeight.Medium,
-                                    color = TextPrimary
+                                    color = MaterialTheme.appColors.textPrimary
                                 )
                             }
                             if (suffix.isNotEmpty()) {
@@ -346,7 +344,7 @@ internal fun DarkInlineField(
                                 Text(
                                     suffix,
                                     fontSize = 14.sp,
-                                    color = TextSecondary,
+                                    color = MaterialTheme.appColors.textSecondary,
                                     fontWeight = FontWeight.Medium
                                 )
                             }
@@ -371,7 +369,7 @@ internal fun IrpfCompactField(
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier) {
-        Text(label, fontSize = 10.sp, fontWeight = FontWeight.SemiBold, color = TextSecondary)
+        Text(label, fontSize = 10.sp, fontWeight = FontWeight.SemiBold, color = MaterialTheme.appColors.textSecondary)
         Spacer(Modifier.height(6.dp))
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -382,7 +380,7 @@ internal fun IrpfCompactField(
                 modifier = Modifier
                     .weight(1f)
                     .clip(RoundedCornerShape(10.dp))
-                    .background(SurfaceElevated)
+                    .background(MaterialTheme.appColors.surfaceElevated)
                     .padding(horizontal = 14.dp, vertical = 10.dp)
             ) {
                 BasicTextField(
@@ -406,20 +404,20 @@ internal fun IrpfCompactField(
                                     Text(
                                         if (irpfInputMode == IrpfInputMode.PERCENT) "0 %" else "0,00 €",
                                         fontSize = 14.sp,
-                                        color = TextTertiary
+                                        color = MaterialTheme.appColors.textTertiary
                                     )
                                 } else {
                                     Text(
                                         currentValue,
                                         fontSize = 14.sp,
                                         fontWeight = FontWeight.Medium,
-                                        color = TextPrimary
+                                        color = MaterialTheme.appColors.textPrimary
                                     )
                                 }
                                 Text(
                                     if (irpfInputMode == IrpfInputMode.PERCENT) "%" else "€",
                                     fontSize = 14.sp,
-                                    color = TextSecondary,
+                                    color = MaterialTheme.appColors.textSecondary,
                                     fontWeight = FontWeight.Medium
                                 )
                             }
@@ -454,7 +452,7 @@ private fun IrpfModeChip(
             .background(if (selected) PrimaryDark.copy(alpha = 0.15f) else Color.Transparent)
             .border(
                 width = if (selected) 1.5.dp else 0.5.dp,
-                color = if (selected) PrimaryDark else BorderGray,
+                color = if (selected) PrimaryDark else MaterialTheme.appColors.border,
                 shape = RoundedCornerShape(8.dp)
             )
             .clickable { onClick() }
@@ -465,7 +463,7 @@ private fun IrpfModeChip(
             text = label,
             fontSize = 13.sp,
             fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal,
-            color = if (selected) PrimaryDark else TextSecondary
+            color = if (selected) PrimaryDark else MaterialTheme.appColors.textSecondary
         )
     }
 }
@@ -497,7 +495,7 @@ internal fun IssuerSelector(
     issuerTypeLabel: String,
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
-        Text(issuerTypeLabel, fontSize = 10.sp, fontWeight = FontWeight.SemiBold, color = TextSecondary)
+        Text(issuerTypeLabel, fontSize = 10.sp, fontWeight = FontWeight.SemiBold, color = MaterialTheme.appColors.textSecondary)
         Spacer(Modifier.height(8.dp))
         if (issuers.isNotEmpty()) {
             LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -514,13 +512,13 @@ internal fun IssuerSelector(
             Surface(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(10.dp),
-                color = SurfaceElevated
+                color = MaterialTheme.appColors.surfaceElevated
             ) {
                 Text(
                     "Sin emisores. Añádelos en Ajustes.",
                     modifier = Modifier.padding(horizontal = 14.dp, vertical = 10.dp),
                     fontSize = 12.sp,
-                    color = TextSecondary
+                    color = MaterialTheme.appColors.textSecondary
                 )
             }
         }
@@ -532,10 +530,10 @@ private fun IssuerChip(name: String, icon: String, selected: Boolean, onClick: (
     Box(
         modifier = Modifier
             .clip(RoundedCornerShape(50.dp))
-            .background(if (selected) SurfaceWhite else Color.Transparent)
+            .background(if (selected) MaterialTheme.appColors.surface else Color.Transparent)
             .border(
                 if (selected) 1.5.dp else 0.5.dp,
-                if (selected) PrimaryDark else BorderGray,
+                if (selected) PrimaryDark else MaterialTheme.appColors.border,
                 RoundedCornerShape(50.dp)
             )
             .clickable { onClick() }
@@ -549,7 +547,7 @@ private fun IssuerChip(name: String, icon: String, selected: Boolean, onClick: (
                 name,
                 fontSize = 13.sp,
                 fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal,
-                color = if (selected) TextPrimary else TextSecondary
+                color = if (selected) MaterialTheme.appColors.textPrimary else MaterialTheme.appColors.textSecondary
             )
         }
     }

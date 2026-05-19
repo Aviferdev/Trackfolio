@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -19,12 +20,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import es.aviferdev.n3to.ui.theme.BorderGray
+
 import es.aviferdev.n3to.ui.theme.PrimaryAlpha
 import es.aviferdev.n3to.ui.theme.PrimaryDark
-import es.aviferdev.n3to.ui.theme.SurfaceElevated
-import es.aviferdev.n3to.ui.theme.TextPrimary
-import es.aviferdev.n3to.ui.theme.TextSecondary
+
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
@@ -37,9 +36,9 @@ internal fun CategoryChip(
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
-    val bg     = if (isSelected) PrimaryDark                          else SurfaceElevated
-    val border = if (isSelected) PrimaryDark                          else BorderGray
-    val text   = if (isSelected) MaterialTheme.colorScheme.onPrimary  else TextPrimary
+    val bg     = if (isSelected) PrimaryDark                          else MaterialTheme.appColors.surfaceElevated
+    val border = if (isSelected) PrimaryDark                          else MaterialTheme.appColors.border
+    val text   = if (isSelected) MaterialTheme.colorScheme.onPrimary  else MaterialTheme.appColors.textPrimary
 
     Row(
         modifier = Modifier
@@ -68,9 +67,9 @@ internal fun PlatformToggleChip(
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
-    val bg     = if (isSelected) PrimaryDark.copy(alpha = 0.12f) else SurfaceElevated
-    val border = if (isSelected) PrimaryDark                      else BorderGray
-    val text   = if (isSelected) PrimaryDark                      else TextPrimary
+    val bg     = if (isSelected) PrimaryDark.copy(alpha = 0.12f) else MaterialTheme.appColors.surfaceElevated
+    val border = if (isSelected) PrimaryDark                      else MaterialTheme.appColors.border
+    val text   = if (isSelected) PrimaryDark                      else MaterialTheme.appColors.textPrimary
 
     Row(
         modifier = Modifier
@@ -103,9 +102,9 @@ internal fun SectorToggleChip(
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
-    val bg     = if (isSelected) PrimaryDark.copy(alpha = 0.12f) else SurfaceElevated
-    val border = if (isSelected) PrimaryDark                      else BorderGray
-    val text   = if (isSelected) PrimaryDark                      else TextPrimary
+    val bg     = if (isSelected) PrimaryDark.copy(alpha = 0.12f) else MaterialTheme.appColors.surfaceElevated
+    val border = if (isSelected) PrimaryDark                      else MaterialTheme.appColors.border
+    val text   = if (isSelected) PrimaryDark                      else MaterialTheme.appColors.textPrimary
 
     Row(
         modifier = Modifier
@@ -138,8 +137,8 @@ internal fun PortfolioChipSimple(
     onClick: () -> Unit
 ) {
     val bg        = if (isSelected) PrimaryAlpha         else Color.Transparent
-    val border    = if (isSelected) PrimaryDark          else BorderGray
-    val textColor = if (isSelected) PrimaryDark          else TextSecondary
+    val border    = if (isSelected) PrimaryDark          else MaterialTheme.appColors.border
+    val textColor = if (isSelected) PrimaryDark          else MaterialTheme.appColors.textSecondary
 
     Box(
         modifier = Modifier

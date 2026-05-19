@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.realestate
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -35,7 +37,7 @@ fun PropertyCard(
     Card(
         modifier = modifier.fillMaxWidth().clickable(onClick = onClick),
         shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = NavySurface),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.navySurface),
         elevation = CardDefaults.cardElevation(0.dp)
     ) {
         Column(modifier = Modifier.fillMaxWidth().padding(14.dp)) {
@@ -44,8 +46,8 @@ fun PropertyCard(
                     Text(property.propertyType.emoji, fontSize = 20.sp)
                     Spacer(Modifier.width(8.dp))
                     Column {
-                        Text(property.name, fontWeight = FontWeight.SemiBold, fontSize = 13.sp, color = TextPrimary, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                        Text(property.address, fontSize = 11.sp, color = TextTertiary, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                        Text(property.name, fontWeight = FontWeight.SemiBold, fontSize = 13.sp, color = MaterialTheme.appColors.textPrimary, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                        Text(property.address, fontSize = 11.sp, color = MaterialTheme.appColors.textTertiary, maxLines = 1, overflow = TextOverflow.Ellipsis)
                     }
                 }
                 Column(horizontalAlignment = Alignment.End) {
@@ -73,7 +75,7 @@ fun PropertyCard(
                             RentalStatus.OWN_USE -> "\uD83C\uDFE0 Uso propio"
                         },
                         color = when (property.rentalStatus) {
-                            RentalStatus.RENTED -> IncomeGreen; RentalStatus.VACANT -> WarnAmber; RentalStatus.OWN_USE -> TextTertiary
+                            RentalStatus.RENTED -> IncomeGreen; RentalStatus.VACANT -> WarnAmber; RentalStatus.OWN_USE -> MaterialTheme.appColors.textTertiary
                         }
                     )
                 }
@@ -84,8 +86,8 @@ fun PropertyCard(
             if (linkedLoan != null) {
                 Spacer(Modifier.height(8.dp))
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                    Text("Hipoteca: ${formatAmountEuro(linkedLoan.outstandingPrincipal)}", fontSize = 10.sp, color = TextTertiary)
-                    Text("${linkedLoan.paidInstallments}/${linkedLoan.totalInstallments}", fontSize = 10.sp, color = TextTertiary)
+                    Text("Hipoteca: ${formatAmountEuro(linkedLoan.outstandingPrincipal)}", fontSize = 10.sp, color = MaterialTheme.appColors.textTertiary)
+                    Text("${linkedLoan.paidInstallments}/${linkedLoan.totalInstallments}", fontSize = 10.sp, color = MaterialTheme.appColors.textTertiary)
                 }
                 Spacer(Modifier.height(4.dp))
                 ProgressBar(progress = linkedLoan.progressPercent, color = ExpenseRed, height = 3.dp)
@@ -98,7 +100,7 @@ fun PropertyCard(
 @Composable
 private fun PropertyCardPreview() {
     N3toTheme {
-        Column(modifier = Modifier.padding(16.dp).background(NavyDeep)) {
+        Column(modifier = Modifier.padding(16.dp).background(MaterialTheme.appColors.navyDeep)) {
             PropertyCard(
                 property = RealEstateProperty(
                     id = "1", accountId = "acc1", name = "Mi casa", address = "Calle Mayor 1, Madrid",

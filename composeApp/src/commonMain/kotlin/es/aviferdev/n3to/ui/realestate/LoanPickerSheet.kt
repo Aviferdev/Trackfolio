@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.realestate
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -19,7 +21,7 @@ import es.aviferdev.n3to.domain.model.Loan
 import es.aviferdev.n3to.domain.model.LoanType
 import es.aviferdev.n3to.ui.common.toMaterialIcon
 import es.aviferdev.n3to.ui.theme.*
-import es.aviferdev.n3to.ui.theme.DragHandleColor
+
 import androidx.compose.ui.tooling.preview.Preview
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -40,14 +42,14 @@ fun LoanPickerSheet(
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState       = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-        containerColor   = SurfaceWhite,
+        containerColor   = MaterialTheme.appColors.surface,
         dragHandle = {
             Box(
                 modifier = Modifier
                     .padding(top = 12.dp, bottom = 4.dp)
                     .width(40.dp).height(4.dp)
                     .clip(RoundedCornerShape(2.dp))
-                    .background(DragHandleColor)
+                    .background(MaterialTheme.appColors.dragHandle)
             )
         }
     ) {
@@ -62,13 +64,13 @@ fun LoanPickerSheet(
                 "Seleccionar préstamo",
                 fontWeight = FontWeight.Bold,
                 fontSize   = 18.sp,
-                color      = TextPrimary
+                color      = MaterialTheme.appColors.textPrimary
             )
             Spacer(Modifier.height(4.dp))
             Text(
                 "Vincula una hipoteca o préstamo existente",
                 fontSize = 13.sp,
-                color    = TextTertiary
+                color    = MaterialTheme.appColors.textTertiary
             )
 
             Spacer(Modifier.height(12.dp))
@@ -84,7 +86,7 @@ fun LoanPickerSheet(
                     colors = CheckboxDefaults.colors(checkedColor = PrimaryDark)
                 )
                 Spacer(Modifier.width(4.dp))
-                Text("Solo hipotecas", fontSize = 13.sp, color = TextSecondary)
+                Text("Solo hipotecas", fontSize = 13.sp, color = MaterialTheme.appColors.textSecondary)
             }
 
             Spacer(Modifier.height(8.dp))
@@ -104,7 +106,7 @@ fun LoanPickerSheet(
                     colors   = RadioButtonDefaults.colors(selectedColor = PrimaryDark)
                 )
                 Spacer(Modifier.width(8.dp))
-                Text("Ninguno", fontSize = 14.sp, color = TextSecondary)
+                Text("Ninguno", fontSize = 14.sp, color = MaterialTheme.appColors.textSecondary)
             }
 
             Spacer(Modifier.height(4.dp))
@@ -153,9 +155,9 @@ private fun LoanPickerItem(
         )
         Spacer(Modifier.width(10.dp))
         Column(modifier = Modifier.weight(1f)) {
-            Text(loan.name, fontWeight = FontWeight.Medium, fontSize = 13.sp, color = TextPrimary)
+            Text(loan.name, fontWeight = FontWeight.Medium, fontSize = 13.sp, color = MaterialTheme.appColors.textPrimary)
             loan.lenderName?.let {
-                Text(it, fontSize = 11.sp, color = TextTertiary)
+                Text(it, fontSize = 11.sp, color = MaterialTheme.appColors.textTertiary)
             }
         }
         Column(horizontalAlignment = Alignment.End) {
@@ -168,11 +170,11 @@ private fun LoanPickerItem(
             Text(
                 "${formatAmountEuro(loan.monthlyPayment)}/mes",
                 fontSize   = 10.sp,
-                color      = TextTertiary
+                color      = MaterialTheme.appColors.textTertiary
             )
         }
     }
-    HorizontalDivider(color = BorderGray, thickness = 0.5.dp)
+    HorizontalDivider(color = MaterialTheme.appColors.border, thickness = 0.5.dp)
 }
 
 @Preview

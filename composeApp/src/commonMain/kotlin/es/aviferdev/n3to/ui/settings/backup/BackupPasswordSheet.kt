@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -51,14 +52,14 @@ fun BackupPasswordSheet(
     ModalBottomSheet(
         onDismissRequest = { if (!isLoading) onDismiss() },
         sheetState       = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-        containerColor   = NavySurface,
+        containerColor   = MaterialTheme.appColors.navySurface,
         dragHandle = {
             Box(
                 modifier = Modifier
                     .padding(top = 12.dp, bottom = 4.dp)
                     .width(40.dp).height(4.dp)
                     .clip(RoundedCornerShape(2.dp))
-                    .background(NavyBorder)
+                    .background(MaterialTheme.appColors.navyBorder)
             )
         }
     ) {
@@ -76,7 +77,7 @@ fun BackupPasswordSheet(
                 text       = if (isExport) "Exportar backup" else "Importar backup",
                 fontSize   = 18.sp,
                 fontWeight = FontWeight.SemiBold,
-                color      = TextPrimary
+                color      = MaterialTheme.appColors.textPrimary
             )
 
             Spacer(Modifier.height(8.dp))
@@ -87,7 +88,7 @@ fun BackupPasswordSheet(
                 else
                     "Introduce la contraseña con la que se cifró el backup que quieres restaurar.",
                 fontSize  = 13.sp,
-                color     = TextSecondary,
+                color     = MaterialTheme.appColors.textSecondary,
                 textAlign = TextAlign.Center
             )
 
@@ -112,7 +113,7 @@ fun BackupPasswordSheet(
                             Text(
                                 if (showPwd) "Ocultar" else "Mostrar",
                                 fontSize = 11.sp,
-                                color    = CyanAccent
+                                color    = MaterialTheme.appColors.cyanAccent
                             )
                         }
                     },
@@ -123,15 +124,15 @@ fun BackupPasswordSheet(
                     singleLine = true,
                     shape      = RoundedCornerShape(11.dp),
                     colors     = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor   = CyanAccent,
-                        unfocusedBorderColor = NavyBorder,
-                        cursorColor          = CyanAccent,
-                        focusedLabelColor    = CyanAccent,
-                        unfocusedLabelColor  = TextSecondary,
-                        focusedTextColor     = TextPrimary,
-                        unfocusedTextColor   = TextPrimary,
-                        focusedContainerColor   = NavySurfaceLight,
-                        unfocusedContainerColor = NavySurfaceLight
+                        focusedBorderColor   = MaterialTheme.appColors.cyanAccent,
+                        unfocusedBorderColor = MaterialTheme.appColors.navyBorder,
+                        cursorColor          = MaterialTheme.appColors.cyanAccent,
+                        focusedLabelColor    = MaterialTheme.appColors.cyanAccent,
+                        unfocusedLabelColor  = MaterialTheme.appColors.textSecondary,
+                        focusedTextColor     = MaterialTheme.appColors.textPrimary,
+                        unfocusedTextColor   = MaterialTheme.appColors.textPrimary,
+                        focusedContainerColor   = MaterialTheme.appColors.navySurfaceLight,
+                        unfocusedContainerColor = MaterialTheme.appColors.navySurfaceLight
                     )
                 )
 
@@ -154,7 +155,7 @@ fun BackupPasswordSheet(
                                 Text(
                                     if (showConfirm) "Ocultar" else "Mostrar",
                                     fontSize = 11.sp,
-                                    color    = CyanAccent
+                                    color    = MaterialTheme.appColors.cyanAccent
                                 )
                             }
                         },
@@ -165,15 +166,15 @@ fun BackupPasswordSheet(
                         singleLine = true,
                         shape      = RoundedCornerShape(11.dp),
                         colors     = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor   = CyanAccent,
-                            unfocusedBorderColor = NavyBorder,
-                            cursorColor          = CyanAccent,
-                            focusedLabelColor    = CyanAccent,
-                            unfocusedLabelColor  = TextSecondary,
-                            focusedTextColor     = TextPrimary,
-                            unfocusedTextColor   = TextPrimary,
-                            focusedContainerColor   = NavySurfaceLight,
-                            unfocusedContainerColor = NavySurfaceLight
+                            focusedBorderColor   = MaterialTheme.appColors.cyanAccent,
+                            unfocusedBorderColor = MaterialTheme.appColors.navyBorder,
+                            cursorColor          = MaterialTheme.appColors.cyanAccent,
+                            focusedLabelColor    = MaterialTheme.appColors.cyanAccent,
+                            unfocusedLabelColor  = MaterialTheme.appColors.textSecondary,
+                            focusedTextColor     = MaterialTheme.appColors.textPrimary,
+                            unfocusedTextColor   = MaterialTheme.appColors.textPrimary,
+                            focusedContainerColor   = MaterialTheme.appColors.navySurfaceLight,
+                            unfocusedContainerColor = MaterialTheme.appColors.navySurfaceLight
                         )
                     )
                 }
@@ -231,8 +232,8 @@ fun BackupPasswordSheet(
                         modifier = Modifier.fillMaxWidth().height(52.dp),
                         shape    = RoundedCornerShape(11.dp),
                         colors   = ButtonDefaults.buttonColors(
-                            containerColor = CyanAccent,
-                            contentColor   = NavyDeep
+                            containerColor = MaterialTheme.appColors.cyanAccent,
+                            contentColor   = MaterialTheme.appColors.navyDeep
                         )
                     ) {
                         Text("Cerrar", fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
@@ -262,7 +263,7 @@ fun BackupPasswordSheet(
                                 Text(
                                     "Cierra y vuelve a abrir la aplicación para aplicar los datos restaurados.",
                                     fontSize  = 12.sp,
-                                    color     = TextSecondary,
+                                    color     = MaterialTheme.appColors.textSecondary,
                                     textAlign = TextAlign.Center
                                 )
                             }
@@ -273,8 +274,8 @@ fun BackupPasswordSheet(
                             modifier = Modifier.fillMaxWidth().height(52.dp),
                             shape    = RoundedCornerShape(11.dp),
                             colors   = ButtonDefaults.buttonColors(
-                                containerColor = CyanAccent,
-                                contentColor   = NavyDeep
+                                containerColor = MaterialTheme.appColors.cyanAccent,
+                                contentColor   = MaterialTheme.appColors.navyDeep
                             )
                         ) {
                             Text("Entendido", fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
@@ -291,16 +292,16 @@ fun BackupPasswordSheet(
                         modifier = Modifier.fillMaxWidth().height(52.dp),
                         shape    = RoundedCornerShape(11.dp),
                         colors   = ButtonDefaults.buttonColors(
-                            containerColor         = CyanAccent,
-                            contentColor           = NavyDeep,
-                            disabledContainerColor = CyanAccent.copy(alpha = 0.28f),
-                            disabledContentColor   = NavyDeep.copy(alpha = 0.5f)
+                            containerColor         = MaterialTheme.appColors.cyanAccent,
+                            contentColor           = MaterialTheme.appColors.navyDeep,
+                            disabledContainerColor = MaterialTheme.appColors.cyanAccent.copy(alpha = 0.28f),
+                            disabledContentColor   = MaterialTheme.appColors.navyDeep.copy(alpha = 0.5f)
                         )
                     ) {
                         if (isLoading) {
                             CircularProgressIndicator(
                                 modifier    = Modifier.size(20.dp),
-                                color       = NavyDeep,
+                                color       = MaterialTheme.appColors.navyDeep,
                                 strokeWidth = 2.dp
                             )
                         } else {
@@ -313,7 +314,7 @@ fun BackupPasswordSheet(
                     }
                     Spacer(Modifier.height(12.dp))
                     TextButton(onClick = onDismiss, enabled = !isLoading) {
-                        Text("Cancelar", fontSize = 14.sp, color = TextSecondary)
+                        Text("Cancelar", fontSize = 14.sp, color = MaterialTheme.appColors.textSecondary)
                     }
                 }
             }

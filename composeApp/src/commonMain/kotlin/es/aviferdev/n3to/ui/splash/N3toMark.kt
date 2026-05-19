@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.splash
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
@@ -12,9 +14,7 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
-import es.aviferdev.n3to.ui.theme.NavyBorder
-import es.aviferdev.n3to.ui.theme.NavySurface
-import es.aviferdev.n3to.ui.theme.NavyDeep
+
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import n3to.composeapp.generated.resources.Res
@@ -38,12 +38,14 @@ fun N3toMark(
     iconSize: Dp = 64.dp,
     modifier: Modifier = Modifier
 ) {
+    val appCNavyBorder = MaterialTheme.appColors.navyBorder
+    val appCNavySurface = MaterialTheme.appColors.navySurface
     Box(
         modifier = modifier
             .size(containerSize)
             .drawBehind {
                 drawRoundRect(
-                    color = NavySurface,
+                    color = appCNavySurface,
                     cornerRadius = CornerRadius(
                         x = size.width * 0.22f,
                         y = size.height * 0.22f
@@ -51,7 +53,7 @@ fun N3toMark(
                     size = size
                 )
                 drawRoundRect(
-                    color = NavyBorder,
+                    color = appCNavyBorder,
                     cornerRadius = CornerRadius(
                         x = size.width * 0.22f,
                         y = size.height * 0.22f

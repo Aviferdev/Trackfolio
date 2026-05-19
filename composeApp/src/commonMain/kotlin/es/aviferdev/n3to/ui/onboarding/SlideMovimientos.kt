@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.onboarding
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.animation.core.EaseInOutCubic
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -33,11 +35,9 @@ import es.aviferdev.n3to.ui.theme.CategoryOrange
 import es.aviferdev.n3to.ui.theme.ExpenseRed
 import es.aviferdev.n3to.ui.theme.IncomeGreen
 import es.aviferdev.n3to.ui.theme.N3toTheme
-import es.aviferdev.n3to.ui.theme.NavyBorder
-import es.aviferdev.n3to.ui.theme.NavySurface
+
 import es.aviferdev.n3to.ui.theme.SecondaryTeal
-import es.aviferdev.n3to.ui.theme.TextPrimary
-import es.aviferdev.n3to.ui.theme.TextTertiary
+
 import es.aviferdev.n3to.ui.theme.WarnAmber
 import kotlinx.coroutines.delay
 import androidx.compose.ui.tooling.preview.Preview
@@ -93,8 +93,8 @@ fun SlideMovimientos(modifier: Modifier = Modifier) {
                     .fillMaxWidth()
                     .graphicsLayer { alpha = rowAlpha }
                     .padding(bottom = 8.dp)
-                    .background(color = NavySurface, shape = RoundedCornerShape(13.dp))
-                    .border(1.dp, NavyBorder, RoundedCornerShape(13.dp))
+                    .background(color = MaterialTheme.appColors.navySurface, shape = RoundedCornerShape(13.dp))
+                    .border(1.dp, MaterialTheme.appColors.navyBorder, RoundedCornerShape(13.dp))
                     .padding(horizontal = 14.dp, vertical = 11.dp)
             ) {
                 Row(
@@ -117,12 +117,12 @@ fun SlideMovimientos(modifier: Modifier = Modifier) {
                             text = tx.label,
                             fontSize = 13.sp,
                             fontWeight = FontWeight.Bold,
-                            color = TextPrimary
+                            color = MaterialTheme.appColors.textPrimary
                         )
                         Text(
                             text = tx.sublabel,
                             fontSize = 10.sp,
-                            color = TextTertiary,
+                            color = MaterialTheme.appColors.textTertiary,
                             modifier = Modifier.padding(top = 2.dp)
                         )
                     }

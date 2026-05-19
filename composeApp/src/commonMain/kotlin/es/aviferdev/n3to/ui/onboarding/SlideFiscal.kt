@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.onboarding
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.animation.core.EaseInOutCubic
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -36,12 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.ui.theme.IncomeGreen
 import es.aviferdev.n3to.ui.theme.N3toTheme
-import es.aviferdev.n3to.ui.theme.NavyBorder
-import es.aviferdev.n3to.ui.theme.NavySurface
-import es.aviferdev.n3to.ui.theme.NavySurfaceLight
-import es.aviferdev.n3to.ui.theme.TextPrimary
-import es.aviferdev.n3to.ui.theme.TextSecondary
-import es.aviferdev.n3to.ui.theme.TextTertiary
+
 import kotlinx.coroutines.delay
 import androidx.compose.ui.tooling.preview.Preview
 
@@ -50,6 +47,12 @@ import androidx.compose.ui.tooling.preview.Preview
  */
 @Composable
 fun SlideFiscal(modifier: Modifier = Modifier) {
+    val heroCardBg1 = MaterialTheme.appColors.heroCardStart
+    val heroCardBg2 = MaterialTheme.appColors.heroCardEnd
+    val appCNavyBorder = MaterialTheme.appColors.navyBorder
+    val appCTextPrimary = MaterialTheme.appColors.textPrimary
+    val appCTextSecondary = MaterialTheme.appColors.textSecondary
+    val appCTextTertiary = MaterialTheme.appColors.textTertiary
 
     var visible by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) { visible = true }
@@ -88,7 +91,7 @@ fun SlideFiscal(modifier: Modifier = Modifier) {
                 .drawBehind {
                     drawRect(
                         brush = Brush.linearGradient(
-                            colors = listOf(NavySurface, NavySurfaceLight),
+                            colors = listOf(heroCardBg1, heroCardBg2),
                             start = Offset(0f, 0f),
                             end = Offset(size.width, size.height)
                         )
@@ -134,8 +137,8 @@ fun SlideFiscal(modifier: Modifier = Modifier) {
             modifier = Modifier
                 .fillMaxWidth()
                 .graphicsLayer { alpha = opsAlpha }
-                .background(color = NavySurface, shape = RoundedCornerShape(13.dp))
-                .border(1.dp, NavyBorder, RoundedCornerShape(13.dp))
+                .background(color = heroCardBg1, shape = RoundedCornerShape(13.dp))
+                .border(1.dp, appCNavyBorder, RoundedCornerShape(13.dp))
                 .padding(horizontal = 14.dp, vertical = 12.dp)
         ) {
             Column {
@@ -143,7 +146,7 @@ fun SlideFiscal(modifier: Modifier = Modifier) {
                     text = "OPERACIONES MARCADAS",
                     fontSize = 10.sp,
                     fontWeight = FontWeight.Bold,
-                    color = TextTertiary,
+                    color = appCTextTertiary,
                     letterSpacing = 0.7.sp
                 )
 
@@ -156,7 +159,7 @@ fun SlideFiscal(modifier: Modifier = Modifier) {
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(1.dp)
-                                .background(NavyBorder)
+                                .background(appCNavyBorder)
                         )
                         Spacer(Modifier.height(8.dp))
                     }
@@ -167,8 +170,8 @@ fun SlideFiscal(modifier: Modifier = Modifier) {
                     ) {
                         Text(text = op.emoji, fontSize = 14.sp, color = Color.Unspecified)
                         Spacer(Modifier.width(10.dp))
-                        Text(text = op.label, fontSize = 11.sp, color = TextSecondary, modifier = Modifier.weight(1f))
-                        Text(text = op.value, fontSize = 11.sp, fontWeight = FontWeight.Bold, color = TextPrimary)
+                        Text(text = op.label, fontSize = 11.sp, color = appCTextSecondary, modifier = Modifier.weight(1f))
+                        Text(text = op.value, fontSize = 11.sp, fontWeight = FontWeight.Bold, color = appCTextPrimary)
                     }
                 }
             }

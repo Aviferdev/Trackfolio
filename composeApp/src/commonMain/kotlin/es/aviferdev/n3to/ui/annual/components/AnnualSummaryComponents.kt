@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.annual.components
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -41,16 +43,12 @@ import es.aviferdev.n3to.ui.annual.AnnualTab
 import es.aviferdev.n3to.ui.annual.CategoryExpenseComparison
 import es.aviferdev.n3to.ui.annual.GoalSummaryCard
 import es.aviferdev.n3to.ui.common.ProgressBar
-import es.aviferdev.n3to.ui.theme.BackgroundGray
-import es.aviferdev.n3to.ui.theme.BorderGray
+
 import es.aviferdev.n3to.ui.theme.ExpenseRed
 import es.aviferdev.n3to.ui.theme.IncomeGreen
 import es.aviferdev.n3to.ui.theme.MONTH_LABELS
 import es.aviferdev.n3to.ui.theme.PrimaryDark
-import es.aviferdev.n3to.ui.theme.SurfaceWhite
-import es.aviferdev.n3to.ui.theme.TextPrimary
-import es.aviferdev.n3to.ui.theme.TextSecondary
-import es.aviferdev.n3to.ui.theme.TextTertiary
+
 import es.aviferdev.n3to.ui.theme.formatAmount
 import es.aviferdev.n3to.ui.theme.formatPercent
 import es.aviferdev.n3to.ui.theme.maskAmount
@@ -166,7 +164,7 @@ internal fun AnnualTabs(
     selectedTab: AnnualTab,
     onTabSelected: (AnnualTab) -> Unit
 ) {
-    Surface(color = SurfaceWhite, shadowElevation = 1.dp) {
+    Surface(color = MaterialTheme.appColors.surface, shadowElevation = 1.dp) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -185,7 +183,7 @@ internal fun AnnualTabs(
                     Text(
                         text    = tab.displayName(),
                         fontSize = 13.sp,
-                        color   = if (isSelected) PrimaryDark else TextSecondary,
+                        color   = if (isSelected) PrimaryDark else MaterialTheme.appColors.textSecondary,
                         fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal
                     )
                     Spacer(Modifier.height(4.dp))
@@ -217,7 +215,7 @@ internal fun YearTotalsCard(summary: AnnualSummary, balancesHidden: Boolean) {
     Card(
         modifier  = Modifier.fillMaxWidth(),
         shape     = RoundedCornerShape(12.dp),
-        colors    = CardDefaults.cardColors(containerColor = SurfaceWhite),
+        colors    = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.surface),
         elevation = CardDefaults.cardElevation(0.dp)
     ) {
         Row(
@@ -230,7 +228,7 @@ internal fun YearTotalsCard(summary: AnnualSummary, balancesHidden: Boolean) {
                     .padding(vertical = 12.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(stringResource(Res.string.annual_income_label), fontSize = 10.sp, color = TextTertiary, fontWeight = FontWeight.Medium)
+                Text(stringResource(Res.string.annual_income_label), fontSize = 10.sp, color = MaterialTheme.appColors.textTertiary, fontWeight = FontWeight.Medium)
                 Spacer(Modifier.height(4.dp))
                 Text(
                     "+${maskAmount(formatAmount(summary.totalIncome), balancesHidden)} €",
@@ -240,7 +238,7 @@ internal fun YearTotalsCard(summary: AnnualSummary, balancesHidden: Boolean) {
                 )
             }
 
-            Box(modifier = Modifier.width(1.dp).height(40.dp).background(BorderGray))
+            Box(modifier = Modifier.width(1.dp).height(40.dp).background(MaterialTheme.appColors.border))
 
             Column(
                 modifier = Modifier
@@ -248,7 +246,7 @@ internal fun YearTotalsCard(summary: AnnualSummary, balancesHidden: Boolean) {
                     .padding(vertical = 12.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(stringResource(Res.string.annual_expenses_label), fontSize = 10.sp, color = TextTertiary, fontWeight = FontWeight.Medium)
+                Text(stringResource(Res.string.annual_expenses_label), fontSize = 10.sp, color = MaterialTheme.appColors.textTertiary, fontWeight = FontWeight.Medium)
                 Spacer(Modifier.height(4.dp))
                 Text(
                     "−${maskAmount(formatAmount(summary.totalExpense), balancesHidden)} €",
@@ -258,7 +256,7 @@ internal fun YearTotalsCard(summary: AnnualSummary, balancesHidden: Boolean) {
                 )
             }
 
-            Box(modifier = Modifier.width(1.dp).height(40.dp).background(BorderGray))
+            Box(modifier = Modifier.width(1.dp).height(40.dp).background(MaterialTheme.appColors.border))
 
             Column(
                 modifier = Modifier
@@ -266,7 +264,7 @@ internal fun YearTotalsCard(summary: AnnualSummary, balancesHidden: Boolean) {
                     .padding(vertical = 12.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(stringResource(Res.string.annual_savings_label), fontSize = 10.sp, color = TextTertiary, fontWeight = FontWeight.Medium)
+                Text(stringResource(Res.string.annual_savings_label), fontSize = 10.sp, color = MaterialTheme.appColors.textTertiary, fontWeight = FontWeight.Medium)
                 Spacer(Modifier.height(4.dp))
                 Text(
                     "${maskAmount(formatAmount(savings), balancesHidden)} €",
@@ -290,7 +288,7 @@ internal fun CategoryExpenseList(
         Card(
             modifier  = Modifier.fillMaxWidth(),
             shape     = RoundedCornerShape(14.dp),
-            colors    = CardDefaults.cardColors(containerColor = SurfaceWhite),
+            colors    = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.surface),
             elevation = CardDefaults.cardElevation(0.dp),
             border    = CardDefaults.outlinedCardBorder()
         ) {
@@ -304,13 +302,13 @@ internal fun CategoryExpenseList(
                     stringResource(Res.string.annual_no_data_text),
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Medium,
-                    color = TextPrimary
+                    color = MaterialTheme.appColors.textPrimary
                 )
                 Spacer(Modifier.height(4.dp))
                 Text(
                     stringResource(Res.string.annual_no_movements),
                     fontSize = 12.sp,
-                    color = TextSecondary
+                    color = MaterialTheme.appColors.textSecondary
                 )
             }
         }
@@ -320,7 +318,7 @@ internal fun CategoryExpenseList(
     Card(
         modifier  = Modifier.fillMaxWidth(),
         shape     = RoundedCornerShape(14.dp),
-        colors    = CardDefaults.cardColors(containerColor = SurfaceWhite),
+        colors    = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.surface),
         elevation = CardDefaults.cardElevation(0.dp),
         border    = CardDefaults.outlinedCardBorder()
     ) {
@@ -329,7 +327,7 @@ internal fun CategoryExpenseList(
                 title,
                 fontSize = 14.sp,
                 fontWeight = FontWeight.SemiBold,
-                color = TextPrimary
+                color = MaterialTheme.appColors.textPrimary
             )
             Spacer(Modifier.height(14.dp))
 
@@ -342,13 +340,13 @@ internal fun CategoryExpenseList(
                         Text(
                             comp.name,
                             fontSize = 12.sp,
-                            color = TextSecondary,
+                            color = MaterialTheme.appColors.textSecondary,
                             modifier = Modifier.weight(1f)
                         )
                         Text(
                             "${maskAmount(formatAmount(comp.currentAmount), balancesHidden)} €",
                             fontSize = 11.sp,
-                            color = TextTertiary,
+                            color = MaterialTheme.appColors.textTertiary,
                             modifier = Modifier.padding(end = 6.dp)
                         )
                         VariationBadge(
@@ -390,13 +388,13 @@ internal fun VariationBadge(
     } else if (previousAmount == null) {
         Surface(
             shape = RoundedCornerShape(4.dp),
-            color = BackgroundGray
+            color = MaterialTheme.appColors.background
         ) {
             Text(
                 stringResource(Res.string.annual_new_badge),
                 fontSize = 9.sp,
                 fontWeight = FontWeight.Medium,
-                color = TextTertiary
+                color = MaterialTheme.appColors.textTertiary
             )
         }
     }
@@ -420,7 +418,7 @@ internal fun MonthlyBarChart(
     Card(
         modifier  = Modifier.fillMaxWidth(),
         shape     = RoundedCornerShape(14.dp),
-        colors    = CardDefaults.cardColors(containerColor = SurfaceWhite),
+        colors    = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.surface),
         elevation = CardDefaults.cardElevation(0.dp),
         border    = CardDefaults.outlinedCardBorder()
     ) {
@@ -429,7 +427,7 @@ internal fun MonthlyBarChart(
                 text       = stringResource(Res.string.annual_monthly_evolution, year),
                 fontSize   = 14.sp,
                 fontWeight = FontWeight.SemiBold,
-                color      = TextPrimary
+                color      = MaterialTheme.appColors.textPrimary
             )
             Spacer(Modifier.height(4.dp))
 
@@ -515,7 +513,7 @@ internal fun MonthBarGroup(
         Text(
             text      = monthLabel,
             fontSize  = 9.sp,
-            color     = TextSecondary,
+            color     = MaterialTheme.appColors.textSecondary,
             textAlign = TextAlign.Center
         )
     }
@@ -531,6 +529,6 @@ internal fun LegendItem(color: Color, label: String) {
                 .background(color)
         )
         Spacer(Modifier.width(4.dp))
-        Text(label, fontSize = 11.sp, color = TextSecondary)
+        Text(label, fontSize = 11.sp, color = MaterialTheme.appColors.textSecondary)
     }
 }

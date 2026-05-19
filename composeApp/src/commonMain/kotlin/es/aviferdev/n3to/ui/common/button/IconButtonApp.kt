@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.common.button
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -15,8 +17,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.graphics.Color
-import es.aviferdev.n3to.ui.theme.SurfaceElevated
-import es.aviferdev.n3to.ui.theme.TextTertiary
+
 import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -24,8 +25,8 @@ fun IconButtonApp(
     clickButton: () -> Unit,
     icon: ImageVector,
     contentDescription: String = "none",
-    backgroundColor: Color = SurfaceElevated,
-    iconTint: Color = TextTertiary
+    backgroundColor: Color = MaterialTheme.appColors.surfaceElevated,
+    iconTint: Color = MaterialTheme.appColors.textTertiary
 ) {
     IconButton(
         onClick = clickButton,

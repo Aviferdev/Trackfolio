@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.fixedincome
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -53,7 +55,7 @@ import n3to.composeapp.generated.resources.fixedincome_not_found
 import n3to.composeapp.generated.resources.fixedincome_register_settlement
 import n3to.composeapp.generated.resources.fixedincome_sell_secondary
 import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -89,7 +91,7 @@ fun FixedIncomeDetailScreen(
     if (state.showDeleteEventDialog && state.selectedEventForDelete != null) {
         AlertDialog(
             onDismissRequest = { viewModel.hideDeleteEventDialog() },
-            containerColor = NavySurface,
+            containerColor = MaterialTheme.appColors.navySurface,
             title = {
                 Text(
                     stringResource(Res.string.fixedincome_delete_event),
@@ -112,7 +114,7 @@ fun FixedIncomeDetailScreen(
             },
             dismissButton = {
                 TextButton(onClick = { viewModel.hideDeleteEventDialog() }) {
-                    Text(stringResource(Res.string.common_cancel), color = CyanAccent)
+                    Text(stringResource(Res.string.common_cancel), color = MaterialTheme.appColors.cyanAccent)
                 }
             },
             shape = RoundedCornerShape(16.dp)
@@ -156,7 +158,7 @@ fun FixedIncomeDetailContent(
     onShowCloseSheet: (es.aviferdev.n3to.domain.model.FixedIncomeCloseType) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Box(modifier.fillMaxSize().background(NavyDeep)) {
+    Box(modifier.fillMaxSize().background(MaterialTheme.appColors.navyDeep)) {
         Column(Modifier.fillMaxSize()) {
             TopBarApp(
                 title = state.row?.position?.name ?: stringResource(Res.string.fixedincome_detail_title),
@@ -165,7 +167,7 @@ fun FixedIncomeDetailContent(
 
             if (state.isLoading) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator(color = CyanAccent)
+                    CircularProgressIndicator(color = MaterialTheme.appColors.cyanAccent)
                 }
             } else if (state.row == null) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -266,8 +268,8 @@ fun FixedIncomeDetailContent(
                                                 onClick = { onShowCloseSheet(es.aviferdev.n3to.domain.model.FixedIncomeCloseType.MATURITY) },
                                                 modifier = Modifier.fillMaxWidth(),
                                                 shape = RoundedCornerShape(12.dp),
-                                                border = BorderStroke(1.dp, NavyBorder),
-                                                colors = ButtonDefaults.outlinedButtonColors(contentColor = CyanAccent)
+                                                border = BorderStroke(1.dp, MaterialTheme.appColors.navyBorder),
+                                                colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.appColors.cyanAccent)
                                             ) {
                                                 Text(
                                                     text = stringResource(Res.string.fixedincome_liquidate_maturity),
@@ -298,8 +300,8 @@ fun FixedIncomeDetailContent(
                                                 onClick = { onShowCloseSheet(es.aviferdev.n3to.domain.model.FixedIncomeCloseType.MATURITY) },
                                                 modifier = Modifier.fillMaxWidth(),
                                                 shape = RoundedCornerShape(12.dp),
-                                                border = BorderStroke(1.dp, NavyBorder),
-                                                colors = ButtonDefaults.outlinedButtonColors(contentColor = CyanAccent)
+                                                border = BorderStroke(1.dp, MaterialTheme.appColors.navyBorder),
+                                                colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.appColors.cyanAccent)
                                             ) {
                                                 Text(
                                                     text = stringResource(Res.string.fixedincome_liquidate_maturity),

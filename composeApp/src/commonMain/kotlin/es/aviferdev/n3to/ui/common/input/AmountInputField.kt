@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.common.input
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,9 +23,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.ui.theme.PrimaryDark
-import es.aviferdev.n3to.ui.theme.SurfaceElevated
-import es.aviferdev.n3to.ui.theme.TextPrimary
-import es.aviferdev.n3to.ui.theme.TextTertiary
+
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import androidx.compose.ui.tooling.preview.Preview
 
@@ -49,7 +49,7 @@ fun AmountInputField(
             text = label,
             fontSize = 12.sp,
             fontWeight = FontWeight.Medium,
-            color = TextTertiary
+            color = MaterialTheme.appColors.textTertiary
         )
         Spacer(Modifier.height(12.dp))
         Box(
@@ -57,7 +57,7 @@ fun AmountInputField(
                 .fillMaxWidth()
                 .height(60.dp)
                 .clip(RoundedCornerShape(12.dp))
-                .background(SurfaceElevated)
+                .background(MaterialTheme.appColors.surfaceElevated)
                 .padding(horizontal = 16.dp),
             contentAlignment = Alignment.Center
         ) {
@@ -67,7 +67,7 @@ fun AmountInputField(
                 textStyle = TextStyle(
                     fontSize = 28.sp,
                     fontWeight = FontWeight.Bold,
-                    color = TextPrimary,
+                    color = MaterialTheme.appColors.textPrimary,
                     textAlign = TextAlign.Center
                 ),
                 cursorBrush = SolidColor(PrimaryDark),
@@ -79,7 +79,7 @@ fun AmountInputField(
                     text = placeholder,
                     fontSize = 28.sp,
                     fontWeight = FontWeight.Bold,
-                    color = TextTertiary.copy(alpha = 0.4f),
+                    color = MaterialTheme.appColors.textTertiary.copy(alpha = 0.4f),
                     textAlign = TextAlign.Center
                 )
             }

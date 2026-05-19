@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.common.component
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.spring
@@ -24,7 +26,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import es.aviferdev.n3to.ui.theme.CyanAccent
+
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import androidx.compose.ui.tooling.preview.Preview
 
@@ -82,7 +84,7 @@ fun NavyTab(
             modifier = Modifier
                 .height(2.dp)
                 .width(indicatorWidth)
-                .background(CyanAccent, RoundedCornerShape(1.dp))
+                .background(MaterialTheme.appColors.cyanAccent, RoundedCornerShape(1.dp))
         )
     }
 }

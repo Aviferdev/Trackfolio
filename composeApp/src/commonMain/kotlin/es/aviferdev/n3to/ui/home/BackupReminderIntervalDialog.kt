@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.home
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -48,14 +50,14 @@ fun BackupReminderIntervalDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        containerColor = NavySurface,
+        containerColor = MaterialTheme.appColors.navySurface,
         shape = RoundedCornerShape(20.dp),
         title = {
             Text(
                 text = "Recordatorio de backup",
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
-                color = TextPrimary,
+                color = MaterialTheme.appColors.textPrimary,
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.Center
             )
@@ -65,7 +67,7 @@ fun BackupReminderIntervalDialog(
                 Text(
                     text = "¿Cuándo quieres que te lo recordemos de nuevo?",
                     fontSize = 13.sp,
-                    color = TextSecondary,
+                    color = MaterialTheme.appColors.textSecondary,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
@@ -78,7 +80,7 @@ fun BackupReminderIntervalDialog(
                             .fillMaxWidth()
                             .clip(RoundedCornerShape(11.dp))
                             .background(
-                                if (isSelected) NavySurfaceLight else NavySurface
+                                if (isSelected) MaterialTheme.appColors.navySurfaceLight else MaterialTheme.appColors.navySurface
                             )
                             .clickable { selectedOption = days }
                             .padding(vertical = 10.dp, horizontal = 8.dp),
@@ -88,8 +90,8 @@ fun BackupReminderIntervalDialog(
                             selected = isSelected,
                             onClick = { selectedOption = days },
                             colors = RadioButtonDefaults.colors(
-                                selectedColor   = CyanAccent,
-                                unselectedColor = NavyBorder
+                                selectedColor   = MaterialTheme.appColors.cyanAccent,
+                                unselectedColor = MaterialTheme.appColors.navyBorder
                             )
                         )
                         Spacer(Modifier.width(8.dp))
@@ -97,7 +99,7 @@ fun BackupReminderIntervalDialog(
                             text = label,
                             fontSize = 14.sp,
                             fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
-                            color = if (isSelected) TextPrimary else TextSecondary
+                            color = if (isSelected) MaterialTheme.appColors.textPrimary else MaterialTheme.appColors.textSecondary
                         )
                     }
                 }
@@ -107,7 +109,7 @@ fun BackupReminderIntervalDialog(
                 Text(
                     text = "Si quieres desactivar este recordatorio, ve a Ajustes → Recordatorios.",
                     fontSize = 11.sp,
-                    color = TextTertiary,
+                    color = MaterialTheme.appColors.textTertiary,
                     textAlign = TextAlign.Center,
                     lineHeight = 14.sp
                 )
@@ -119,7 +121,7 @@ fun BackupReminderIntervalDialog(
             ) {
                 Text(
                     "Aceptar",
-                    color = CyanAccent,
+                    color = MaterialTheme.appColors.cyanAccent,
                     fontWeight = FontWeight.SemiBold
                 )
             }
@@ -128,7 +130,7 @@ fun BackupReminderIntervalDialog(
             TextButton(onClick = onDismiss) {
                 Text(
                     "Cancelar",
-                    color = TextSecondary
+                    color = MaterialTheme.appColors.textSecondary
                 )
             }
         }

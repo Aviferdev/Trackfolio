@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.portfolio
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.platform.nowMillis
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -263,14 +265,14 @@ fun AddEditAssetTransactionBottomSheet(
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState       = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-        containerColor   = SurfaceWhite,
+        containerColor   = MaterialTheme.appColors.surface,
         dragHandle = {
             Box(
                 modifier = Modifier
                     .padding(top = 12.dp, bottom = 4.dp)
                     .width(40.dp).height(4.dp)
                     .clip(RoundedCornerShape(2.dp))
-                    .background(BorderGray)
+                    .background(MaterialTheme.appColors.border)
             )
         }
     ) {
@@ -287,7 +289,7 @@ fun AddEditAssetTransactionBottomSheet(
                 text       = if (isEditing) stringResource(Res.string.portfolio_add_tx_title_edit) else stringResource(Res.string.portfolio_add_tx_title_new),
                 fontSize   = 18.sp,
                 fontWeight = FontWeight.SemiBold,
-                color      = TextPrimary,
+                color      = MaterialTheme.appColors.textPrimary,
                 modifier   = Modifier.padding(bottom = 16.dp)
             )
 
@@ -297,7 +299,7 @@ fun AddEditAssetTransactionBottomSheet(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(10.dp))
-                        .background(SurfaceElevated)
+                        .background(MaterialTheme.appColors.surfaceElevated)
                         .padding(4.dp),
                     horizontalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
@@ -326,7 +328,7 @@ fun AddEditAssetTransactionBottomSheet(
                     categories.filter { !AssetCategoryType.isFixedIncome(it.id) }
                 }
                 if (investmentCategories.isNotEmpty()) {
-                    Text(stringResource(Res.string.portfolio_add_tx_category_filter), fontSize = 12.sp, color = TextSecondary, fontWeight = FontWeight.Medium)
+                    Text(stringResource(Res.string.portfolio_add_tx_category_filter), fontSize = 12.sp, color = MaterialTheme.appColors.textSecondary, fontWeight = FontWeight.Medium)
                     Spacer(Modifier.height(6.dp))
                     Row(
                         modifier              = Modifier
@@ -351,14 +353,14 @@ fun AddEditAssetTransactionBottomSheet(
                     Spacer(Modifier.height(12.dp))
                 }
 
-                Text(stringResource(Res.string.portfolio_add_tx_select_asset), fontSize = 12.sp, color = TextSecondary, fontWeight = FontWeight.Medium)
+                Text(stringResource(Res.string.portfolio_add_tx_select_asset), fontSize = 12.sp, color = MaterialTheme.appColors.textSecondary, fontWeight = FontWeight.Medium)
                 Spacer(Modifier.height(8.dp))
                 if (filteredAssets.isEmpty()) {
                     if (selectedCategoryId != null && allAssets.isNotEmpty()) {
                         Text(
                             text     = stringResource(Res.string.portfolio_add_tx_no_assets_category),
                             fontSize = 12.sp,
-                            color    = TextSecondary
+                            color    = MaterialTheme.appColors.textSecondary
                         )
                     } else {
                         EmptyAssetsHint()
@@ -387,7 +389,7 @@ fun AddEditAssetTransactionBottomSheet(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(10.dp))
-                        .background(SurfaceElevated)
+                        .background(MaterialTheme.appColors.surfaceElevated)
                         .padding(horizontal = 12.dp, vertical = 10.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -407,15 +409,15 @@ fun AddEditAssetTransactionBottomSheet(
                     }
                     Spacer(Modifier.width(10.dp))
                     Column(modifier = Modifier.weight(1f)) {
-                        Text(fixedAsset.name, fontSize = 14.sp, color = TextPrimary, fontWeight = FontWeight.Medium)
-                        Text(fixedAsset.ticker, fontSize = 11.sp, color = TextSecondary)
+                        Text(fixedAsset.name, fontSize = 14.sp, color = MaterialTheme.appColors.textPrimary, fontWeight = FontWeight.Medium)
+                        Text(fixedAsset.ticker, fontSize = 11.sp, color = MaterialTheme.appColors.textSecondary)
                     }
                 }
                 Spacer(Modifier.height(16.dp))
             }
 
             // ── Plataforma (obligatoria — antes de cantidad para ventas) ─────
-            Text(stringResource(Res.string.portfolio_add_tx_platform_label), fontSize = 12.sp, color = TextSecondary, fontWeight = FontWeight.Medium)
+            Text(stringResource(Res.string.portfolio_add_tx_platform_label), fontSize = 12.sp, color = MaterialTheme.appColors.textSecondary, fontWeight = FontWeight.Medium)
             if (isSell && platformId == null && platformsWithStock.isNotEmpty()) {
                 Text(
                     text     = stringResource(Res.string.portfolio_add_tx_platform_select_hint),
@@ -432,7 +434,7 @@ fun AddEditAssetTransactionBottomSheet(
                     Text(
                         text     = stringResource(Res.string.portfolio_add_tx_platform_not_assigned),
                         fontSize = 11.sp,
-                        color    = TextSecondary,
+                        color    = MaterialTheme.appColors.textSecondary,
                         modifier = Modifier.padding(bottom = 8.dp)
                     )
                 }
@@ -477,7 +479,7 @@ fun AddEditAssetTransactionBottomSheet(
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                     colors        = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor   = if (sellExceeds) ExpenseRed else PrimaryDark,
-                        unfocusedBorderColor = if (sellExceeds) ExpenseRed else BorderGray
+                        unfocusedBorderColor = if (sellExceeds) ExpenseRed else MaterialTheme.appColors.border
                     )
                 )
                 OutlinedTextField(
@@ -485,14 +487,14 @@ fun AddEditAssetTransactionBottomSheet(
                     onValueChange = { pricePerUnit = it.filter { c -> c.isDigit() || c == ',' || c == '.' } },
                     label         = { Text(stringResource(Res.string.portfolio_add_tx_price_label)) },
                     placeholder   = { Text("0,00") },
-                    trailingIcon  = { Text("€", color = TextSecondary, modifier = Modifier.padding(end = 12.dp)) },
+                    trailingIcon  = { Text("€", color = MaterialTheme.appColors.textSecondary, modifier = Modifier.padding(end = 12.dp)) },
                     modifier      = Modifier.weight(1f),
                     singleLine    = true,
                     shape         = RoundedCornerShape(10.dp),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                     colors        = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor   = PrimaryDark,
-                        unfocusedBorderColor = BorderGray
+                        unfocusedBorderColor = MaterialTheme.appColors.border
                     )
                 )
             }
@@ -512,26 +514,26 @@ fun AddEditAssetTransactionBottomSheet(
                     else
                         stringResource(Res.string.portfolio_add_tx_available, formatQty(displayAvailable), platformLabel),
                     fontSize = 11.sp,
-                    color    = if (sellExceeds) ExpenseRed else TextSecondary
+                    color    = if (sellExceeds) ExpenseRed else MaterialTheme.appColors.textSecondary
                 )
             }
             Spacer(Modifier.height(12.dp))
 
             // ── Fecha ────────────────────────────────────────────────────────
-            Text(stringResource(Res.string.portfolio_add_tx_date_label), fontSize = 12.sp, color = TextSecondary, fontWeight = FontWeight.Medium)
+            Text(stringResource(Res.string.portfolio_add_tx_date_label), fontSize = 12.sp, color = MaterialTheme.appColors.textSecondary, fontWeight = FontWeight.Medium)
             Spacer(Modifier.height(6.dp))
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(10.dp))
-                    .border(0.5.dp, BorderGray, RoundedCornerShape(10.dp))
+                    .border(0.5.dp, MaterialTheme.appColors.border, RoundedCornerShape(10.dp))
                     .clickable { showDatePicker = true }
                     .padding(horizontal = 14.dp, vertical = 14.dp)
             ) {
                 Text(
                     text     = formatFullDate(dateMillis),
                     fontSize = 14.sp,
-                    color    = TextPrimary
+                    color    = MaterialTheme.appColors.textPrimary
                 )
             }
             Spacer(Modifier.height(12.dp))
@@ -546,7 +548,7 @@ fun AddEditAssetTransactionBottomSheet(
                     Text(
                         text     = stringResource(Res.string.portfolio_add_tx_fee_hint),
                         fontSize = 11.sp,
-                        color    = TextSecondary
+                        color    = MaterialTheme.appColors.textSecondary
                     )
                 },
                 modifier      = Modifier.fillMaxWidth(),
@@ -554,7 +556,7 @@ fun AddEditAssetTransactionBottomSheet(
                 shape         = RoundedCornerShape(10.dp),
                 colors        = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor   = PrimaryDark,
-                    unfocusedBorderColor = BorderGray
+                    unfocusedBorderColor = MaterialTheme.appColors.border
                 )
             )
             Spacer(Modifier.height(12.dp))
@@ -569,7 +571,7 @@ fun AddEditAssetTransactionBottomSheet(
                 shape         = RoundedCornerShape(10.dp),
                 colors        = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor   = PrimaryDark,
-                    unfocusedBorderColor = BorderGray
+                    unfocusedBorderColor = MaterialTheme.appColors.border
                 )
             )
 
@@ -628,10 +630,10 @@ fun AddEditAssetTransactionBottomSheet(
             },
             dismissButton = {
                 TextButton(onClick = { showDatePicker = false }) {
-                    Text(stringResource(Res.string.portfolio_add_tx_cancel), color = TextSecondary)
+                    Text(stringResource(Res.string.portfolio_add_tx_cancel), color = MaterialTheme.appColors.textSecondary)
                 }
             },
-            colors = DatePickerDefaults.colors(containerColor = SurfaceWhite)
+            colors = DatePickerDefaults.colors(containerColor = MaterialTheme.appColors.surface)
         ) {
             DatePicker(
                 state = pickerState,

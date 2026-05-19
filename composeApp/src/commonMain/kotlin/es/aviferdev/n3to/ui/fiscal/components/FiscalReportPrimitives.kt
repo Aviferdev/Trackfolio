@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.fiscal.components
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -71,16 +73,16 @@ internal fun YearStepper(year: String, onPrevious: () -> Unit, onNext: () -> Uni
             modifier = Modifier
                 .size(32.dp)
                 .clip(RoundedCornerShape(9.dp))
-                .background(NavySurfaceLight)
-                .border(0.5.dp, NavyBorder, RoundedCornerShape(9.dp))
+                .background(MaterialTheme.appColors.navySurfaceLight)
+                .border(0.5.dp, MaterialTheme.appColors.navyBorder, RoundedCornerShape(9.dp))
         ) {
-            Text("‹", fontSize = 20.sp, color = CyanAccent, fontWeight = FontWeight.Light)
+            Text("‹", fontSize = 20.sp, color = MaterialTheme.appColors.cyanAccent, fontWeight = FontWeight.Light)
         }
         Text(
             year,
             fontSize = 13.sp,
             fontWeight = FontWeight.SemiBold,
-            color = TextPrimary,
+            color = MaterialTheme.appColors.textPrimary,
             modifier = Modifier.padding(horizontal = 8.dp)
         )
         IconButton(
@@ -89,16 +91,16 @@ internal fun YearStepper(year: String, onPrevious: () -> Unit, onNext: () -> Uni
             modifier = Modifier
                 .size(32.dp)
                 .clip(RoundedCornerShape(9.dp))
-                .background(if (!isMax) NavySurfaceLight else Color.Transparent)
+                .background(if (!isMax) MaterialTheme.appColors.navySurfaceLight else Color.Transparent)
                 .then(
-                    if (!isMax) Modifier.border(0.5.dp, NavyBorder, RoundedCornerShape(9.dp))
+                    if (!isMax) Modifier.border(0.5.dp, MaterialTheme.appColors.navyBorder, RoundedCornerShape(9.dp))
                     else Modifier
                 )
         ) {
             Text(
                 "›",
                 fontSize = 20.sp,
-                color = if (!isMax) CyanAccent else TextTertiary,
+                color = if (!isMax) MaterialTheme.appColors.cyanAccent else MaterialTheme.appColors.textTertiary,
                 fontWeight = FontWeight.Light
             )
         }
@@ -111,15 +113,15 @@ internal fun ReportCard(title: String, content: @Composable ColumnScope.() -> Un
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(13.dp))
-            .background(NavySurface)
-            .border(0.5.dp, NavyBorder, RoundedCornerShape(13.dp))
+            .background(MaterialTheme.appColors.navySurface)
+            .border(0.5.dp, MaterialTheme.appColors.navyBorder, RoundedCornerShape(13.dp))
     ) {
         Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
             Text(
                 title,
                 fontSize = 13.sp,
                 fontWeight = FontWeight.Bold,
-                color = TextPrimary,
+                color = MaterialTheme.appColors.textPrimary,
                 letterSpacing = (-0.2).sp
             )
             Spacer(Modifier.height(12.dp))
@@ -134,7 +136,7 @@ internal fun MetricCell(label: String, value: Double, color: Color, modifier: Mo
         Text(
             label.uppercase(),
             fontSize = 9.sp,
-            color = TextTertiary,
+            color = MaterialTheme.appColors.textTertiary,
             fontWeight = FontWeight.Bold,
             letterSpacing = .4.sp
         )
@@ -148,12 +150,12 @@ internal fun FiscalMetricCell(label: String, amount: Double, color: Color, modif
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(9.dp))
-            .background(NavySurfaceLight)
-            .border(0.5.dp, NavyBorder, RoundedCornerShape(9.dp))
+            .background(MaterialTheme.appColors.navySurfaceLight)
+            .border(0.5.dp, MaterialTheme.appColors.navyBorder, RoundedCornerShape(9.dp))
             .padding(10.dp)
     ) {
         Column {
-            Text(label, fontSize = 10.sp, color = TextTertiary)
+            Text(label, fontSize = 10.sp, color = MaterialTheme.appColors.textTertiary)
             Spacer(Modifier.height(3.dp))
             Text(
                 "${if (amount >= 0) "" else "−"}${formatAmt(abs(amount))} €",
@@ -178,8 +180,8 @@ internal fun TaxProfileBadge(snapshot: TaxProfileSnapshot) {
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(11.dp))
-            .background(NavySurface)
-            .border(0.5.dp, CyanAccent.copy(alpha = 0.25f), RoundedCornerShape(11.dp))
+            .background(MaterialTheme.appColors.navySurface)
+            .border(0.5.dp, MaterialTheme.appColors.cyanAccent.copy(alpha = 0.25f), RoundedCornerShape(11.dp))
             .padding(horizontal = 12.dp, vertical = 10.dp)
     ) {
         Row(
@@ -192,12 +194,12 @@ internal fun TaxProfileBadge(snapshot: TaxProfileSnapshot) {
                     stringResource(Res.string.fiscal_active_profile, label),
                     fontSize = 12.sp,
                     fontWeight = FontWeight.SemiBold,
-                    color = CyanAccent
+                    color = MaterialTheme.appColors.cyanAccent
                 )
                 Text(
                     stringResource(Res.string.fiscal_profile_since, snapshot.profile.currency, snapshot.effectiveFrom),
                     fontSize = 10.sp,
-                    color = TextTertiary
+                    color = MaterialTheme.appColors.textTertiary
                 )
             }
         }

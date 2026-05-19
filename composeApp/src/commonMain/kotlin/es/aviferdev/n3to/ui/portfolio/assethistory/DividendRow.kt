@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.portfolio.assethistory
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -31,8 +33,7 @@ import es.aviferdev.n3to.domain.model.Transaction
 import es.aviferdev.n3to.ui.portfolio.formatShortDate
 import es.aviferdev.n3to.ui.theme.ExpenseRed
 import es.aviferdev.n3to.ui.theme.IncomeGreen
-import es.aviferdev.n3to.ui.theme.SurfaceWhite
-import es.aviferdev.n3to.ui.theme.TextTertiary
+
 import es.aviferdev.n3to.ui.theme.formatAmount
 import es.aviferdev.n3to.ui.theme.maskAmount
 
@@ -50,7 +51,7 @@ fun DividendRow(
     Card(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = SurfaceWhite),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.surface),
         elevation = CardDefaults.cardElevation(0.dp)
     ) {
         Row(
@@ -70,7 +71,7 @@ fun DividendRow(
                     color = IncomeGreen,
                     fontWeight = FontWeight.SemiBold
                 )
-                Text(formatShortDate(dividend.date), fontSize = 10.sp, color = TextTertiary)
+                Text(formatShortDate(dividend.date), fontSize = 10.sp, color = MaterialTheme.appColors.textTertiary)
                 if (irpf > 0) {
                     Text(
                         "Bruto: ${
@@ -84,7 +85,7 @@ fun DividendRow(
                                 balancesHidden
                             )
                         } €",
-                        fontSize = 9.sp, color = TextTertiary
+                        fontSize = 9.sp, color = MaterialTheme.appColors.textTertiary
                     )
                 }
             }

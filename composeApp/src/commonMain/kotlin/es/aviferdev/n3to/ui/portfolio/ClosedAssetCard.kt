@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.portfolio
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,10 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.ui.theme.ExpenseRed
 import es.aviferdev.n3to.ui.theme.IncomeGreen
-import es.aviferdev.n3to.ui.theme.SurfaceElevated
-import es.aviferdev.n3to.ui.theme.SurfaceWhite
-import es.aviferdev.n3to.ui.theme.TextSecondary
-import es.aviferdev.n3to.ui.theme.TextTertiary
+
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import es.aviferdev.n3to.ui.theme.formatAmount
 import es.aviferdev.n3to.ui.theme.maskAmount
@@ -45,13 +44,13 @@ fun ClosedAssetCard(
     val pnlColor = when {
         pos.realizedPnL > 0 -> IncomeGreen
         pos.realizedPnL < 0 -> ExpenseRed
-        else -> TextSecondary
+        else -> MaterialTheme.appColors.textSecondary
     }
     Card(
         onClick = onClick,
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = SurfaceWhite.copy(alpha = 0.8f)),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.surface.copy(alpha = 0.8f)),
         elevation = CardDefaults.cardElevation(0.dp)
     ) {
         Row(
@@ -64,14 +63,14 @@ fun ClosedAssetCard(
                 modifier = Modifier
                     .size(34.dp)
                     .clip(RoundedCornerShape(9.dp))
-                    .background(SurfaceElevated),
+                    .background(MaterialTheme.appColors.surfaceElevated),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
                     asset.ticker.take(3),
                     fontSize = 10.sp,
                     fontWeight = FontWeight.Bold,
-                    color = TextTertiary,
+                    color = MaterialTheme.appColors.textTertiary,
                     textAlign = TextAlign.Center
                 )
             }
@@ -81,13 +80,13 @@ fun ClosedAssetCard(
                     asset.name,
                     fontSize = 12.sp,
                     fontWeight = FontWeight.SemiBold,
-                    color = TextSecondary,
+                    color = MaterialTheme.appColors.textSecondary,
                     maxLines = 1
                 )
-                Text("Cerrada", fontSize = 10.sp, color = TextTertiary)
+                Text("Cerrada", fontSize = 10.sp, color = MaterialTheme.appColors.textTertiary)
             }
             Column(horizontalAlignment = Alignment.End) {
-                Text("Realizado", fontSize = 10.sp, color = TextTertiary)
+                Text("Realizado", fontSize = 10.sp, color = MaterialTheme.appColors.textTertiary)
                 Text(
                     if (pos.realizedPnL == 0.0) "—"
                     else "${if (pos.realizedPnL >= 0) "+" else "−"} ${maskAmount(formatAmount(abs(pos.realizedPnL)), balancesHidden)} €",

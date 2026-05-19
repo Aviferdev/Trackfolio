@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.valuable
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.platform.nowMillis
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -50,7 +52,7 @@ fun AddEditValuableBottomSheet(
         ValuableExpenseCategories.allIds.toList()
     }
 
-    ModalBottomSheet(onDismissRequest = onDismiss, containerColor = BackgroundGray) {
+    ModalBottomSheet(onDismissRequest = onDismiss, containerColor = MaterialTheme.appColors.background) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -61,7 +63,7 @@ fun AddEditValuableBottomSheet(
                 text = if (isEditing) "Editar bien" else "Nuevo bien",
                 fontWeight = FontWeight.Bold,
                 fontSize = 20.sp,
-                color = TextPrimary
+                color = MaterialTheme.appColors.textPrimary
             )
             Spacer(Modifier.height(20.dp))
 
@@ -127,7 +129,7 @@ fun AddEditValuableBottomSheet(
             Spacer(Modifier.height(16.dp))
 
             // ── Gastos de compra ──────────────────────────────────────────
-            Text("Gastos de compra", fontWeight = FontWeight.SemiBold, fontSize = 14.sp, color = TextPrimary)
+            Text("Gastos de compra", fontWeight = FontWeight.SemiBold, fontSize = 14.sp, color = MaterialTheme.appColors.textPrimary)
             Spacer(Modifier.height(8.dp))
             purchaseExpenses.forEachIndexed { index, expense ->
                 ExpenseRow(
@@ -159,7 +161,7 @@ fun AddEditValuableBottomSheet(
             Spacer(Modifier.height(12.dp))
 
             // ── Gastos de tenencia ────────────────────────────────────────
-            Text("Gastos de tenencia", fontWeight = FontWeight.SemiBold, fontSize = 14.sp, color = TextPrimary)
+            Text("Gastos de tenencia", fontWeight = FontWeight.SemiBold, fontSize = 14.sp, color = MaterialTheme.appColors.textPrimary)
             Spacer(Modifier.height(8.dp))
             holdingExpenses.forEachIndexed { index, expense ->
                 ExpenseRow(
@@ -243,7 +245,7 @@ private fun ExpenseRow(
             OutlinedButton(
                 onClick = { showCategoryMenu = true },
                 shape = RoundedCornerShape(8.dp),
-                colors = ButtonDefaults.outlinedButtonColors(contentColor = TextPrimary),
+                colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.appColors.textPrimary),
                 contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp),
                 modifier = Modifier.height(40.dp).fillMaxWidth()
             ) {
@@ -284,10 +286,10 @@ private fun ExpenseRow(
 @Composable
 private fun textFieldColors() = OutlinedTextFieldDefaults.colors(
     focusedBorderColor = BrandGreen,
-    unfocusedBorderColor = BorderGray,
-    focusedTextColor = TextPrimary,
-    unfocusedTextColor = TextPrimary,
+    unfocusedBorderColor = MaterialTheme.appColors.border,
+    focusedTextColor = MaterialTheme.appColors.textPrimary,
+    unfocusedTextColor = MaterialTheme.appColors.textPrimary,
     cursorColor = BrandGreen,
     focusedLabelColor = BrandGreen,
-    unfocusedLabelColor = TextSecondary
+    unfocusedLabelColor = MaterialTheme.appColors.textSecondary
 )

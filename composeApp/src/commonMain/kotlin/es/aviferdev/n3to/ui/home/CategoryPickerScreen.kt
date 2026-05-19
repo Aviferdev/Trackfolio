@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.home
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -99,7 +101,7 @@ fun CategoryPickerScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
-    Column(modifier = Modifier.fillMaxSize().background(BackgroundGray)) {
+    Column(modifier = Modifier.fillMaxSize().background(MaterialTheme.appColors.background)) {
         val title = if (uiState.type == TransactionType.EXPENSE) "Selecciona categoría"
                     else "Selecciona tipo de ingreso"
         TopBarApp(
@@ -201,7 +203,7 @@ private fun CategoryPickerContent(
                     if (index < filtered.lastIndex) {
                         HorizontalDivider(
                             modifier  = Modifier.padding(start = 48.dp),
-                            color     = BorderGray,
+                            color     = MaterialTheme.appColors.border,
                             thickness = 0.5.dp
                         )
                     }
@@ -216,7 +218,7 @@ private fun CategoryPickerContent(
                             Text(
                                 "Sin resultados para \"${uiState.searchQuery}\"",
                                 fontSize = 13.sp,
-                                color = TextSecondary,
+                                color = MaterialTheme.appColors.textSecondary,
                                 textAlign = TextAlign.Center
                             )
                         }
@@ -249,7 +251,7 @@ private fun CategoryPickerContent(
                     if (index < uiState.incomeTypes.lastIndex) {
                         HorizontalDivider(
                             modifier  = Modifier.padding(start = 48.dp),
-                            color     = BorderGray,
+                            color     = MaterialTheme.appColors.border,
                             thickness = 0.5.dp
                         )
                     }
@@ -273,8 +275,8 @@ private fun FrequentChip(
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(10.dp))
-            .background(SurfaceElevated)
-            .border(0.5.dp, BorderGray, RoundedCornerShape(10.dp))
+            .background(MaterialTheme.appColors.surfaceElevated)
+            .border(0.5.dp, MaterialTheme.appColors.border, RoundedCornerShape(10.dp))
             .clickable { onClick() }
             .height(60.dp)
             .padding(horizontal = 4.dp, vertical = 8.dp),
@@ -295,7 +297,7 @@ private fun FrequentChip(
                 label,
                 fontSize   = 10.sp,
                 fontWeight = FontWeight.Medium,
-                color      = TextPrimary,
+                color      = MaterialTheme.appColors.textPrimary,
                 textAlign  = TextAlign.Center,
                 maxLines   = 1,
                 lineHeight = 12.sp
@@ -317,7 +319,7 @@ private fun SearchField(
             placeholder   = {
                 Text(
                     "Buscar categoría…",
-                    color    = TextSecondary.copy(alpha = 0.5f),
+                    color    = MaterialTheme.appColors.textSecondary.copy(alpha = 0.5f),
                     fontSize = 13.sp
                 )
             },
@@ -326,7 +328,7 @@ private fun SearchField(
                     Icons.Outlined.Search,
                     contentDescription = "Buscar",
                     modifier           = Modifier.size(18.dp),
-                    tint               = TextSecondary
+                    tint               = MaterialTheme.appColors.textSecondary
                 )
             },
             singleLine    = true,
@@ -335,10 +337,10 @@ private fun SearchField(
                 .padding(bottom = 12.dp)
                 .height(48.dp),
             shape         = RoundedCornerShape(10.dp),
-            textStyle     = LocalTextStyle.current.copy(fontSize = 13.sp, color = TextPrimary),
+            textStyle     = LocalTextStyle.current.copy(fontSize = 13.sp, color = MaterialTheme.appColors.textPrimary),
             colors        = OutlinedTextFieldDefaults.colors(
                 focusedBorderColor   = PrimaryDark,
-                unfocusedBorderColor = BorderGray,
+                unfocusedBorderColor = MaterialTheme.appColors.border,
                 cursorColor          = PrimaryDark
             )
         )
@@ -383,7 +385,7 @@ private fun CategoryRow(
             name,
             fontSize   = 14.sp,
             fontWeight = FontWeight.Medium,
-            color      = TextPrimary
+            color      = MaterialTheme.appColors.textPrimary
         )
     }
 }
@@ -426,13 +428,13 @@ private fun IncomeTypeRow(
                 incomeType.label,
                 fontSize   = 14.sp,
                 fontWeight = FontWeight.Medium,
-                color      = TextPrimary
+                color      = MaterialTheme.appColors.textPrimary
             )
             if (incomeType.hasWithholdingTax) {
                 Text(
                     "Retención fiscal aplicable",
                     fontSize = 11.sp,
-                    color    = TextTertiary
+                    color    = MaterialTheme.appColors.textTertiary
                 )
             }
         }
@@ -445,7 +447,7 @@ private fun CreateCategoryButton(onClick: () -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(10.dp))
-            .border(1.dp, BorderGray.copy(alpha = 0.5f), RoundedCornerShape(10.dp))
+            .border(1.dp, MaterialTheme.appColors.border.copy(alpha = 0.5f), RoundedCornerShape(10.dp))
             .clickable { onClick() }
             .padding(vertical = 14.dp),
         horizontalArrangement = Arrangement.Center,
@@ -500,14 +502,14 @@ private fun CategoryHintCard() {
         Text(
             text = "Agrupa gastos del mismo tipo. Ejemplos:",
             fontSize = 12.sp,
-            color = TextSecondary
+            color = MaterialTheme.appColors.textSecondary
         )
         Text(
             text = "• Hogar → alquiler, hipoteca, suministros\n" +
                    "• Alimentación → supermercado, restaurantes\n" +
                    "• Transporte → gasolina, transporte público",
             fontSize = 12.sp,
-            color = TextSecondary,
+            color = MaterialTheme.appColors.textSecondary,
             lineHeight = 18.sp
         )
     }
@@ -519,7 +521,7 @@ private fun SectionLabelC(text: String) {
         text          = text.uppercase(),
         fontSize      = 10.sp,
         fontWeight    = FontWeight.Bold,
-        color         = TextTertiary,
+        color         = MaterialTheme.appColors.textTertiary,
         letterSpacing = 0.7.sp
     )
 }

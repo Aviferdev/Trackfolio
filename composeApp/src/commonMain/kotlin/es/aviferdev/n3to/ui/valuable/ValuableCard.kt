@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.valuable
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -26,7 +28,7 @@ fun ValuableCard(
     Card(
         modifier = modifier.fillMaxWidth().clickable(onClick = onClick),
         shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = NavySurface),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.navySurface),
         elevation = CardDefaults.cardElevation(0.dp)
     ) {
         Row(
@@ -39,7 +41,7 @@ fun ValuableCard(
                     text = valuable.name,
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 13.sp,
-                    color = TextPrimary,
+                    color = MaterialTheme.appColors.textPrimary,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -47,7 +49,7 @@ fun ValuableCard(
                     Text(
                         text = valuable.description,
                         fontSize = 11.sp,
-                        color = TextTertiary,
+                        color = MaterialTheme.appColors.textTertiary,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
@@ -56,7 +58,7 @@ fun ValuableCard(
                 Text(
                     text = "Compra: ${formatAmountEuro(valuable.purchasePrice)}",
                     fontSize = 11.sp,
-                    color = TextSecondary
+                    color = MaterialTheme.appColors.textSecondary
                 )
             }
             Spacer(Modifier.width(12.dp))
@@ -79,7 +81,7 @@ fun ValuableCard(
                         text = formatAmountEuro(valuable.currentValue),
                         fontWeight = FontWeight.Bold,
                         fontSize = 13.sp,
-                        color = TextPrimary
+                        color = MaterialTheme.appColors.textPrimary
                     )
                     Text(
                         text = "En stock",

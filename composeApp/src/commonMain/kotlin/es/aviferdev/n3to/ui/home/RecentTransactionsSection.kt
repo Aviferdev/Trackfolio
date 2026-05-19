@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.home
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -21,10 +23,7 @@ import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.Transaction
 import es.aviferdev.n3to.ui.common.SectionHeader
 import es.aviferdev.n3to.ui.common.metric.TransactionRow
-import es.aviferdev.n3to.ui.theme.NavyBorder
-import es.aviferdev.n3to.ui.theme.NavySurface
-import es.aviferdev.n3to.ui.theme.TextPrimary
-import es.aviferdev.n3to.ui.theme.TextTertiary
+
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import es.aviferdev.n3to.domain.model.IncomeType
 import es.aviferdev.n3to.domain.model.TransactionType
@@ -59,7 +58,7 @@ fun RecentTransactionsSection(
         Card(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(14.dp),
-            colors = CardDefaults.cardColors(containerColor = NavySurface),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.navySurface),
             elevation = CardDefaults.cardElevation(0.dp)
         ) {
             if (transactions.isEmpty()) {
@@ -74,13 +73,13 @@ fun RecentTransactionsSection(
                             stringResource(Res.string.home_no_movements_title),
                             fontSize = 14.sp,
                             fontWeight = FontWeight.SemiBold,
-                            color = TextPrimary
+                            color = MaterialTheme.appColors.textPrimary
                         )
                         Spacer(Modifier.height(4.dp))
                         Text(
                             stringResource(Res.string.home_no_movements_subtitle),
                             fontSize = 12.sp,
-                            color = TextTertiary,
+                            color = MaterialTheme.appColors.textTertiary,
                             textAlign = TextAlign.Center,
                             modifier = Modifier.padding(horizontal = 24.dp)
                         )
@@ -98,7 +97,7 @@ fun RecentTransactionsSection(
                         if (index < transactions.lastIndex) {
                             HorizontalDivider(
                                 modifier = Modifier.padding(start = 68.dp),
-                                color = NavyBorder,
+                                color = MaterialTheme.appColors.navyBorder,
                                 thickness = 0.5.dp
                             )
                         }

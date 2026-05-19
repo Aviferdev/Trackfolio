@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.navigation
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,10 +25,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.core.security.AppSettings
-import es.aviferdev.n3to.ui.theme.CyanAccent
-import es.aviferdev.n3to.ui.theme.NavySurface
-import es.aviferdev.n3to.ui.theme.TextPrimary
-import es.aviferdev.n3to.ui.theme.TextSecondary
+
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -661,13 +660,13 @@ fun N3toNavHost(
 private fun WelcomeTabsDialog(onDismiss: () -> Unit) {
     AlertDialog(
         onDismissRequest = onDismiss,
-        containerColor = NavySurface,
+        containerColor = MaterialTheme.appColors.navySurface,
         title = {
             Text(
                 "Tus 3 secciones principales",
                 fontSize = 17.sp,
                 fontWeight = FontWeight.SemiBold,
-                color = TextPrimary
+                color = MaterialTheme.appColors.textPrimary
             )
         },
         text = {
@@ -688,7 +687,7 @@ private fun WelcomeTabsDialog(onDismiss: () -> Unit) {
         },
         confirmButton = {
             TextButton(onClick = onDismiss) {
-                Text("Entendido", color = CyanAccent, fontWeight = FontWeight.SemiBold)
+                Text("Entendido", color = MaterialTheme.appColors.cyanAccent, fontWeight = FontWeight.SemiBold)
             }
         },
         shape = RoundedCornerShape(20.dp)
@@ -698,9 +697,8 @@ private fun WelcomeTabsDialog(onDismiss: () -> Unit) {
 @Composable
 private fun WelcomeTabRow(label: String, description: String) {
     Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
-        Text(label, fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = CyanAccent)
-        Text(description, fontSize = 13.sp, color = TextSecondary, lineHeight = 18.sp)
+        Text(label, fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = MaterialTheme.appColors.cyanAccent)
+        Text(description, fontSize = 13.sp, color = MaterialTheme.appColors.textSecondary, lineHeight = 18.sp)
     }
 }
-
 

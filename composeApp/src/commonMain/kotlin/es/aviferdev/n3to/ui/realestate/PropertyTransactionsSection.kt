@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.realestate
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
@@ -26,7 +28,7 @@ fun PropertyTransactionsSection(
     Card(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = SurfaceWhite),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.surface),
         elevation = CardDefaults.cardElevation(0.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
@@ -41,11 +43,11 @@ fun PropertyTransactionsSection(
                     Column {
                         Text(
                             if (tx.isIncome) "Ingreso" else tx.categoryId ?: "Gasto",
-                            fontWeight = FontWeight.Medium, fontSize = 13.sp, color = TextPrimary
+                            fontWeight = FontWeight.Medium, fontSize = 13.sp, color = MaterialTheme.appColors.textPrimary
                         )
                         Text(
                             formatDateShort(tx.date),
-                            fontSize = 11.sp, color = TextTertiary
+                            fontSize = 11.sp, color = MaterialTheme.appColors.textTertiary
                         )
                     }
                     Column(horizontalAlignment = androidx.compose.ui.Alignment.End) {
@@ -54,11 +56,11 @@ fun PropertyTransactionsSection(
                             fontWeight = FontWeight.SemiBold, fontSize = 13.sp,
                             color = if (tx.isIncome) IncomeGreen else ExpenseRed
                         )
-                        tx.notes?.let { Text(it, fontSize = 10.sp, color = TextTertiary) }
+                        tx.notes?.let { Text(it, fontSize = 10.sp, color = MaterialTheme.appColors.textTertiary) }
                     }
                 }
                 if (index < transactions.lastIndex) {
-                    HorizontalDivider(color = BorderGray, thickness = 0.5.dp, modifier = Modifier.padding(vertical = 4.dp))
+                    HorizontalDivider(color = MaterialTheme.appColors.border, thickness = 0.5.dp, modifier = Modifier.padding(vertical = 4.dp))
                 }
             }
         }

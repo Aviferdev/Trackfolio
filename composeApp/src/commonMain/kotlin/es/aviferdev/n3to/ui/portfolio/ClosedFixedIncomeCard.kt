@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.portfolio
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.platform.nowMillis
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -30,13 +32,9 @@ import es.aviferdev.n3to.domain.model.FixedIncomePosition
 import es.aviferdev.n3to.domain.model.FixedIncomeRow
 import es.aviferdev.n3to.domain.model.FixedIncomeType
 import es.aviferdev.n3to.domain.model.InterestFrequency
-import es.aviferdev.n3to.ui.theme.CyanSubtle
+
 import es.aviferdev.n3to.ui.theme.ExpenseRed
-import es.aviferdev.n3to.ui.theme.NavyBorder
-import es.aviferdev.n3to.ui.theme.NavySurface
-import es.aviferdev.n3to.ui.theme.NavySurfaceLight
-import es.aviferdev.n3to.ui.theme.PnLNegative
-import es.aviferdev.n3to.ui.theme.PnLPositive
+
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import es.aviferdev.n3to.ui.theme.formatAmount
 import es.aviferdev.n3to.ui.theme.maskAmount
@@ -53,8 +51,8 @@ fun ClosedFixedIncomeCard(
 ) {
     val position = row.position
     val pnlColor = when {
-        row.totalProfit > 0 -> PnLPositive
-        row.totalProfit < 0 -> PnLNegative
+        row.totalProfit > 0 -> MaterialTheme.appColors.pnlPositive
+        row.totalProfit < 0 -> MaterialTheme.appColors.pnlNegative
         else -> Color.White.copy(alpha = 0.4f)
     }
 
@@ -62,9 +60,9 @@ fun ClosedFixedIncomeCard(
         onClick = onClick,
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(11.dp),
-        colors = CardDefaults.cardColors(containerColor = NavySurface),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.navySurface),
         elevation = CardDefaults.cardElevation(0.dp),
-        border = BorderStroke(0.5.dp, NavyBorder)
+        border = BorderStroke(0.5.dp, MaterialTheme.appColors.navyBorder)
     ) {
         Row(
             modifier = Modifier
@@ -76,13 +74,13 @@ fun ClosedFixedIncomeCard(
                 modifier = Modifier
                     .size(34.dp)
                     .clip(RoundedCornerShape(9.dp))
-                    .background(NavySurfaceLight),
+                    .background(MaterialTheme.appColors.navySurfaceLight),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     imageVector = Icons.Filled.AccountBalance,
                     contentDescription = null,
-                    tint = CyanSubtle,
+                    tint = MaterialTheme.appColors.cyanSubtle,
                     modifier = Modifier.size(17.dp)
                 )
             }

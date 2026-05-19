@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.home
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -17,7 +19,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.ui.theme.*
-import es.aviferdev.n3to.ui.theme.DragHandleColor
+
 import androidx.compose.ui.tooling.preview.Preview
 
 /**
@@ -37,7 +39,7 @@ fun SetInitialBalanceBottomSheet(
     ModalBottomSheet(
         onDismissRequest = { /* Bloqueado — solo se puede cerrar confirmando */ },
         sheetState       = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-        containerColor   = SurfaceWhite,
+        containerColor   = MaterialTheme.appColors.surface,
         dragHandle = {
             Box(
                 modifier = Modifier
@@ -45,7 +47,7 @@ fun SetInitialBalanceBottomSheet(
                     .width(40.dp)
                     .height(4.dp)
                     .clip(RoundedCornerShape(2.dp))
-                    .background(DragHandleColor)
+                    .background(MaterialTheme.appColors.dragHandle)
             )
         }
     ) {
@@ -63,7 +65,7 @@ fun SetInitialBalanceBottomSheet(
                 text       = "Saldo inicial",
                 fontSize   = 18.sp,
                 fontWeight = FontWeight.SemiBold,
-                color      = TextPrimary
+                color      = MaterialTheme.appColors.textPrimary
             )
 
             if (accountName.isNotBlank()) {
@@ -80,7 +82,7 @@ fun SetInitialBalanceBottomSheet(
             Text(
                 text      = "Introduce el saldo actual de esta cuenta.\nEsto es obligatorio antes de poder registrar movimientos.",
                 fontSize  = 13.sp,
-                color     = TextSecondary,
+                color     = MaterialTheme.appColors.textSecondary,
                 textAlign = TextAlign.Center
             )
 
@@ -89,18 +91,18 @@ fun SetInitialBalanceBottomSheet(
             OutlinedTextField(
                 value         = amount,
                 onValueChange = { amount = it.filter { c -> c.isDigit() || c == ',' || c == '.' } },
-                placeholder   = { Text("0,00", color = TextSecondary.copy(alpha = 0.6f), fontSize = 32.sp) },
+                placeholder   = { Text("0,00", color = MaterialTheme.appColors.textSecondary.copy(alpha = 0.6f), fontSize = 32.sp) },
                 textStyle     = TextStyle(
                     fontSize   = 32.sp,
                     fontWeight = FontWeight.Bold,
-                    color      = TextPrimary,
+                    color      = MaterialTheme.appColors.textPrimary,
                     textAlign  = TextAlign.Center
                 ),
                 trailingIcon = {
                     Text(
                         "€",
                         fontSize = 20.sp,
-                        color    = TextSecondary,
+                        color    = MaterialTheme.appColors.textSecondary,
                         modifier = Modifier.padding(end = 16.dp)
                     )
                 },
@@ -109,7 +111,7 @@ fun SetInitialBalanceBottomSheet(
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                 colors          = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor   = PrimaryDark,
-                    unfocusedBorderColor = BorderGray
+                    unfocusedBorderColor = MaterialTheme.appColors.border
                 ),
                 singleLine = true
             )
@@ -118,7 +120,7 @@ fun SetInitialBalanceBottomSheet(
             Text(
                 text     = "Puede ser 0 si la cuenta está vacía.",
                 fontSize = 11.sp,
-                color    = TextSecondary
+                color    = MaterialTheme.appColors.textSecondary
             )
 
             Spacer(Modifier.height(28.dp))

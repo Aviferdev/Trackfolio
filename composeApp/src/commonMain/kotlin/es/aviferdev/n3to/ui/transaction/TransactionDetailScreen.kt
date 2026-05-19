@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.transaction
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -61,7 +63,7 @@ fun TransactionDetailScreen(
         }
     }
 
-    Column(modifier = Modifier.fillMaxSize().background(BackgroundGray)) {
+    Column(modifier = Modifier.fillMaxSize().background(MaterialTheme.appColors.background)) {
         TopBarApp(
             title = stringResource(Res.string.transaction_detail_title),
             navigateBack = onBack
@@ -124,20 +126,20 @@ fun TransactionDetailScreen(
     if (showDeleteDialog) {
         AlertDialog(
             onDismissRequest = { showDeleteDialog = false },
-            containerColor   = SurfaceWhite,
+            containerColor   = MaterialTheme.appColors.surface,
             title = {
                 Text(
                     stringResource(Res.string.transaction_detail_title) + " " + stringResource(Res.string.common_delete).lowercase(),
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
-                    color = TextPrimary
+                    color = MaterialTheme.appColors.textPrimary
                 )
             },
             text = {
                 Text(
                     "¿Seguro que quieres eliminar este movimiento? Esta acción no se puede deshacer.",
                     fontSize = 13.sp,
-                    color = TextSecondary
+                    color = MaterialTheme.appColors.textSecondary
                 )
             },
             confirmButton = {
@@ -255,7 +257,7 @@ private fun TransactionDetailContent(
                     Icon(
                         imageVector = categoryIcon,
                         contentDescription = null,
-                        tint = TextPrimary,
+                        tint = MaterialTheme.appColors.textPrimary,
                         modifier = Modifier.size(20.dp)
                     )
                     Spacer(Modifier.width(8.dp))
@@ -263,7 +265,7 @@ private fun TransactionDetailContent(
                         text = categoryName,
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Medium,
-                        color = TextPrimary
+                        color = MaterialTheme.appColors.textPrimary
                     )
                 }
             }
@@ -279,7 +281,7 @@ private fun TransactionDetailContent(
         Card(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(12.dp),
-            colors = CardDefaults.cardColors(containerColor = SurfaceWhite),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.surface),
             elevation = CardDefaults.cardElevation(0.dp)
         ) {
             Column(modifier = Modifier.padding(vertical = 4.dp)) {
@@ -449,7 +451,7 @@ private fun DetailSectionHeader(text: String) {
         text = text.uppercase(),
         fontSize = 10.sp,
         fontWeight = FontWeight.Bold,
-        color = TextTertiary,
+        color = MaterialTheme.appColors.textTertiary,
         letterSpacing = 0.7.sp
     )
 }
@@ -471,7 +473,7 @@ private fun DetailRow(
             Text(
                 text = label,
                 fontSize = 12.sp,
-                color = TextSecondary,
+                color = MaterialTheme.appColors.textSecondary,
                 modifier = Modifier.width(100.dp)
             )
             // Value — alineado a la izquierda
@@ -479,7 +481,7 @@ private fun DetailRow(
                 text = value,
                 fontSize = 13.sp,
                 fontWeight = FontWeight.Medium,
-                color = TextPrimary,
+                color = MaterialTheme.appColors.textPrimary,
                 modifier = Modifier.weight(1f),
                 textAlign = TextAlign.Start
             )
@@ -487,7 +489,7 @@ private fun DetailRow(
         if (!isLast) {
             HorizontalDivider(
                 modifier = Modifier.padding(start = 14.dp),
-                color = BorderGray,
+                color = MaterialTheme.appColors.border,
                 thickness = 0.5.dp
             )
         }

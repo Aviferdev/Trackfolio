@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.home
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -57,15 +59,11 @@ import es.aviferdev.n3to.domain.model.IncomeType
 import es.aviferdev.n3to.domain.model.Issuer
 import es.aviferdev.n3to.domain.model.TransactionType
 import es.aviferdev.n3to.ui.home.components.*
-import es.aviferdev.n3to.ui.theme.BorderGray
-import es.aviferdev.n3to.ui.theme.BorderGray2
+
 import es.aviferdev.n3to.ui.theme.ExpenseRed
 import es.aviferdev.n3to.ui.theme.IncomeGreen
 import es.aviferdev.n3to.ui.theme.PrimaryDark
-import es.aviferdev.n3to.ui.theme.SurfaceWhite
-import es.aviferdev.n3to.ui.theme.TextPrimary
-import es.aviferdev.n3to.ui.theme.TextSecondary
-import es.aviferdev.n3to.ui.theme.TextTertiary
+
 import es.aviferdev.n3to.ui.theme.WarnAmber
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -92,14 +90,14 @@ fun AddTransactionBottomSheet(
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-        containerColor = SurfaceWhite,
+        containerColor = MaterialTheme.appColors.surface,
         dragHandle = {
             Box(
                 modifier = Modifier
                     .padding(top = 12.dp, bottom = 4.dp)
                     .width(40.dp).height(4.dp)
                     .clip(RoundedCornerShape(2.dp))
-                    .background(BorderGray2)
+                    .background(MaterialTheme.appColors.border2)
             )
         }
     ) {
@@ -222,14 +220,14 @@ private fun AddTransactionSheetContent(
                 text = if (isEditing) "Editar transacción" else "Nueva transacción",
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Medium,
-                color = TextPrimary,
+                color = MaterialTheme.appColors.textPrimary,
                 modifier = Modifier.weight(1f)
             )
             IconButton(onClick = onDismiss, modifier = Modifier.size(32.dp)) {
                 Icon(
                     imageVector = Icons.Outlined.Close,
                     contentDescription = "Cerrar",
-                    tint = TextSecondary,
+                    tint = MaterialTheme.appColors.textSecondary,
                     modifier = Modifier.size(20.dp)
                 )
             }
@@ -305,7 +303,7 @@ private fun AddTransactionSheetContent(
 
         if (type == TransactionType.INCOME && selectedIncomeType != null) {
             Spacer(Modifier.height(4.dp))
-            HorizontalDivider(color = BorderGray, thickness = 0.5.dp)
+            HorizontalDivider(color = MaterialTheme.appColors.border, thickness = 0.5.dp)
             Spacer(Modifier.height(12.dp))
 
             val incType = selectedIncomeType

@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.portfolio.assethistory
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -34,10 +36,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.portfolio.FifoBreakdown
-import es.aviferdev.n3to.ui.theme.BorderGray
-import es.aviferdev.n3to.ui.theme.SurfaceWhite
-import es.aviferdev.n3to.ui.theme.TextPrimary
-import es.aviferdev.n3to.ui.theme.TextTertiary
+
 // ─── FIFO breakdown ───────────────────────────────────────────────────────────
 @Composable
 fun FifoBreakdownSection(
@@ -50,7 +49,7 @@ fun FifoBreakdownSection(
     Card(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(13.dp),
-        colors = CardDefaults.cardColors(containerColor = SurfaceWhite),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.surface),
         elevation = CardDefaults.cardElevation(0.dp)
     ) {
         Column {
@@ -70,7 +69,7 @@ fun FifoBreakdownSection(
                             "Desglose FIFO",
                             fontSize = 13.sp,
                             fontWeight = FontWeight.SemiBold,
-                            color = TextPrimary
+                            color = MaterialTheme.appColors.textPrimary
                         )
                         val subtitle = buildString {
                             val o = breakdown.openLots.size;
@@ -79,12 +78,12 @@ fun FifoBreakdownSection(
                             if (o > 0 && s > 0) append("  ·  ")
                             if (s > 0) append("$s ${if (s == 1) "cierre" else "cierres"}")
                         }
-                        Text(subtitle, fontSize = 10.sp, color = TextTertiary)
+                        Text(subtitle, fontSize = 10.sp, color = MaterialTheme.appColors.textTertiary)
                     }
                 }
                 Icon(
                     if (expanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
-                    contentDescription = null, tint = TextTertiary, modifier = Modifier.size(18.dp)
+                    contentDescription = null, tint = MaterialTheme.appColors.textTertiary, modifier = Modifier.size(18.dp)
                 )
             }
 
@@ -94,7 +93,7 @@ fun FifoBreakdownSection(
                 exit = shrinkVertically() + fadeOut()
             ) {
                 Column(modifier = Modifier.fillMaxWidth().padding(bottom = 10.dp)) {
-                    HorizontalDivider(color = BorderGray, thickness = .5.dp)
+                    HorizontalDivider(color = MaterialTheme.appColors.border, thickness = .5.dp)
                     if (breakdown.openLots.isNotEmpty()) {
                         FifoSubHeader("Lotes en cartera")
                         breakdown.openLots.forEachIndexed { i, lot ->
@@ -109,7 +108,7 @@ fun FifoBreakdownSection(
                         if (breakdown.openLots.isNotEmpty()) {
                             HorizontalDivider(
                                 modifier = Modifier.padding(horizontal = 14.dp),
-                                color = BorderGray,
+                                color = MaterialTheme.appColors.border,
                                 thickness = .5.dp
                             )
                         }

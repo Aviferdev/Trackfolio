@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.settings
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -54,16 +56,9 @@ import es.aviferdev.n3to.core.premium.PremiumManager
 import es.aviferdev.n3to.ui.common.InitialsAvatar
 import es.aviferdev.n3to.ui.common.N3toLabel
 import es.aviferdev.n3to.ui.common.navigation.TopBarApp
-import es.aviferdev.n3to.ui.theme.CyanAccent
-import es.aviferdev.n3to.ui.theme.CyanGlow
+
 import es.aviferdev.n3to.ui.theme.N3toTheme
-import es.aviferdev.n3to.ui.theme.NavyBorder
-import es.aviferdev.n3to.ui.theme.NavyDeep
-import es.aviferdev.n3to.ui.theme.NavySelected
-import es.aviferdev.n3to.ui.theme.NavySurface
-import es.aviferdev.n3to.ui.theme.NavySurfaceLight
-import es.aviferdev.n3to.ui.theme.TextPrimary
-import es.aviferdev.n3to.ui.theme.TextTertiary
+
 import kotlinx.coroutines.delay
 import androidx.compose.ui.tooling.preview.Preview
 import org.koin.compose.koinInject
@@ -98,6 +93,10 @@ fun AboutContent(
     appUserId: String = "",
     modifier: Modifier = Modifier
 ) {
+    val appCCyanAccent = MaterialTheme.appColors.cyanAccent
+    val appCNavyDeep = MaterialTheme.appColors.navyDeep
+    val appCTextPrimary = MaterialTheme.appColors.textPrimary
+    val appCTextTertiary = MaterialTheme.appColors.textTertiary
     var tapCount by remember { mutableIntStateOf(0) }
     var showDevInfo by remember { mutableStateOf(false) }
     var copiedToClipboard by remember { mutableStateOf(false) }
@@ -123,7 +122,7 @@ fun AboutContent(
         }
     }
 
-    Column(modifier = modifier.fillMaxSize().background(NavyDeep)) {
+    Column(modifier = modifier.fillMaxSize().background(appCNavyDeep)) {
         TopBarApp(title = "Acerca de", navigateBack = onBack)
 
         LazyColumn(
@@ -169,13 +168,13 @@ fun AboutContent(
                                         text = "ID RevenueCat",
                                         fontSize = 13.sp,
                                         fontWeight = FontWeight.Medium,
-                                        color = TextPrimary
+                                        color = appCTextPrimary
                                     )
                                     Spacer(Modifier.height(4.dp))
                                     Text(
                                         text = if (copiedToClipboard) "¡Copiado!" else appUserId,
                                         fontSize = 11.sp,
-                                        color = if (copiedToClipboard) CyanAccent else TextTertiary,
+                                        color = if (copiedToClipboard) appCCyanAccent else appCTextTertiary,
                                         textAlign = TextAlign.Start
                                     )
                                 }
@@ -232,6 +231,12 @@ fun AboutContent(
 // ─── HEADER — glassmorphism lite hero ────────────────────────────────────────────
 @Composable
 private fun AboutHeaderSection() {
+    val heroCardBg1 = MaterialTheme.appColors.heroCardStart
+    val heroCardBg2 = MaterialTheme.appColors.heroCardEnd
+    val appCCyanGlow = MaterialTheme.appColors.cyanGlow
+    val appCNavySelected = MaterialTheme.appColors.navySelected
+    val appCTextPrimary = MaterialTheme.appColors.textPrimary
+    val appCTextTertiary = MaterialTheme.appColors.textTertiary
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -239,7 +244,7 @@ private fun AboutHeaderSection() {
             .drawBehind {
                 drawRect(
                     brush = Brush.linearGradient(
-                        colors = listOf(NavySurface, NavySurfaceLight),
+                        colors = listOf(heroCardBg1, heroCardBg2),
                         start = Offset(0f, 0f),
                         end = Offset(size.width, size.height)
                     )
@@ -249,7 +254,7 @@ private fun AboutHeaderSection() {
                 val cy = 40.dp.toPx()
                 drawCircle(
                     brush = Brush.radialGradient(
-                        colors = listOf(CyanGlow.copy(alpha = 0.14f), Color.Transparent),
+                        colors = listOf(appCCyanGlow.copy(alpha = 0.14f), Color.Transparent),
                         center = Offset(cx, cy),
                         radius = orbRadius
                     ),
@@ -262,7 +267,7 @@ private fun AboutHeaderSection() {
     ) {
         InitialsAvatar(
             text = "N3",
-            bgColor = NavySelected,
+            bgColor = appCNavySelected,
             size = 64.dp,
             textSize = 22
         )
@@ -271,25 +276,27 @@ private fun AboutHeaderSection() {
             text = "N3to",
             fontSize = 24.sp,
             fontWeight = FontWeight.ExtraBold,
-            color = TextPrimary,
+            color = appCTextPrimary,
             letterSpacing = (-0.5).sp
         )
         Spacer(Modifier.height(4.dp))
         Text(
             text = "Controla tus finanzas personales",
             fontSize = 13.sp,
-            color = TextTertiary
+            color = appCTextTertiary
         )
     }
 }
 
-// ─── GROUP CARD — flat + NavyBorder ─────────────────────────────────────────────
+// ─── GROUP CARD — flat + appCNavyBorder ─────────────────────────────────────────────
 @Composable
 private fun AboutGroupCard(content: @Composable ColumnScope.() -> Unit) {
+    val heroCardBg1 = MaterialTheme.appColors.heroCardStart
+    val appCNavyBorder = MaterialTheme.appColors.navyBorder
     Card(
-        modifier = Modifier.fillMaxWidth().border(0.5.dp, NavyBorder, RoundedCornerShape(11.dp)),
+        modifier = Modifier.fillMaxWidth().border(0.5.dp, appCNavyBorder, RoundedCornerShape(11.dp)),
         shape = RoundedCornerShape(11.dp),
-        colors = CardDefaults.cardColors(containerColor = NavySurface),
+        colors = CardDefaults.cardColors(containerColor = heroCardBg1),
         elevation = CardDefaults.cardElevation(0.dp)
     ) {
         Column(content = content)
@@ -299,9 +306,10 @@ private fun AboutGroupCard(content: @Composable ColumnScope.() -> Unit) {
 // ─── ROW DIVIDER ────────────────────────────────────────────────────────────────
 @Composable
 private fun AboutRowDivider() {
+    val appCNavyBorder = MaterialTheme.appColors.navyBorder
     HorizontalDivider(
         modifier = Modifier.padding(start = 52.dp),
-        color = NavyBorder,
+        color = appCNavyBorder,
         thickness = 0.5.dp
     )
 }
@@ -309,23 +317,27 @@ private fun AboutRowDivider() {
 // ─── INFO ROW (solo texto, sin interactividad) ─────────────────────────────────
 @Composable
 private fun AboutInfoRow(label: String, value: String) {
+    val appCTextPrimary = MaterialTheme.appColors.textPrimary
+    val appCTextTertiary = MaterialTheme.appColors.textTertiary
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
+        val appCTextPrimary = MaterialTheme.appColors.textPrimary
+        val appCTextTertiary = MaterialTheme.appColors.textTertiary
         Text(
             text = label,
             fontSize = 13.sp,
             fontWeight = FontWeight.Medium,
-            color = TextPrimary,
+            color = appCTextPrimary,
             modifier = Modifier.weight(1f)
         )
         Text(
             text = value,
             fontSize = 13.sp,
-            color = TextTertiary
+            color = appCTextTertiary
         )
     }
 }
@@ -337,6 +349,9 @@ private fun AboutClickableInfoRow(
     value: String,
     onClick: () -> Unit
 ) {
+    val appCCyanAccent = MaterialTheme.appColors.cyanAccent
+    val appCTextPrimary = MaterialTheme.appColors.textPrimary
+    val appCTextTertiary = MaterialTheme.appColors.textTertiary
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -348,24 +363,27 @@ private fun AboutClickableInfoRow(
             text = label,
             fontSize = 13.sp,
             fontWeight = FontWeight.Medium,
-            color = TextPrimary,
+            color = appCTextPrimary,
             modifier = Modifier.weight(1f)
         )
         Text(
             text = value,
             fontSize = 13.sp,
-            color = if (value == "Copiado") CyanAccent else TextTertiary
+            color = if (value == "Copiado") appCCyanAccent else appCTextTertiary
         )
     }
 }
 
-// ─── NAVIGABLE ROW (con icono CyanAccent y flecha) ──────────────────────────────
+// ─── NAVIGABLE ROW (con icono appCCyanAccent y flecha) ──────────────────────────────
 @Composable
 private fun AboutNavigableRow(
     icon: ImageVector,
     label: String,
     onClick: () -> Unit
 ) {
+    val appCCyanAccent = MaterialTheme.appColors.cyanAccent
+    val appCTextPrimary = MaterialTheme.appColors.textPrimary
+    val appCTextTertiary = MaterialTheme.appColors.textTertiary
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -376,7 +394,7 @@ private fun AboutNavigableRow(
         Icon(
             imageVector = icon,
             contentDescription = null,
-            tint = CyanAccent,
+            tint = appCCyanAccent,
             modifier = Modifier.size(20.dp)
         )
         Spacer(Modifier.width(14.dp))
@@ -384,13 +402,13 @@ private fun AboutNavigableRow(
             text = label,
             fontSize = 13.sp,
             fontWeight = FontWeight.Medium,
-            color = TextPrimary,
+            color = appCTextPrimary,
             modifier = Modifier.weight(1f)
         )
         Icon(
             imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
             contentDescription = null,
-            tint = TextTertiary,
+            tint = appCTextTertiary,
             modifier = Modifier.size(18.dp)
         )
     }

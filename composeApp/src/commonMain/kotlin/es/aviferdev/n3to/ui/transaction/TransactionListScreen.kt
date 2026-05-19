@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.transaction
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.platform.nowMillis
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -35,8 +37,7 @@ import es.aviferdev.n3to.ui.common.dialog.DeleteConfirmDialog
 import es.aviferdev.n3to.ui.common.navigation.TopBarApp
 import es.aviferdev.n3to.ui.home.AddTransactionBottomSheet
 import es.aviferdev.n3to.ui.home.AddTransactionViewModel
-import es.aviferdev.n3to.ui.theme.BackgroundGray
-import es.aviferdev.n3to.ui.theme.BorderGray
+
 import es.aviferdev.n3to.ui.theme.LocalBalanceHidden
 import es.aviferdev.n3to.ui.theme.PrimaryDark
 import es.aviferdev.n3to.ui.theme.N3toTheme
@@ -138,7 +139,7 @@ fun TransactionListContent(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(BackgroundGray)
+            .background(MaterialTheme.appColors.background)
     ) {
         val monthNames = localizedMonthNames().map { it.replaceFirstChar { c -> c.uppercase() } }
 
@@ -226,7 +227,7 @@ fun TransactionListContent(
                     if (index < uiState.filteredTransactions.lastIndex) {
                         HorizontalDivider(
                             modifier = Modifier.padding(start = 68.dp),
-                            color = BorderGray,
+                            color = MaterialTheme.appColors.border,
                             thickness = 0.5.dp
                         )
                     }

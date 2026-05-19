@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.home
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -23,11 +25,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.HomeBalance
 import es.aviferdev.n3to.ui.theme.BrandGreen
-import es.aviferdev.n3to.ui.theme.CyanGlow
-import es.aviferdev.n3to.ui.theme.CyanSubtle
+
 import es.aviferdev.n3to.ui.theme.N3toTheme
-import es.aviferdev.n3to.ui.theme.NavySurface
-import es.aviferdev.n3to.ui.theme.NavySurfaceLight
+
 import es.aviferdev.n3to.ui.theme.formatAmount
 import es.aviferdev.n3to.ui.theme.maskAmount
 import n3to.composeapp.generated.resources.Res
@@ -43,6 +43,11 @@ fun HeroCard(
     modifier: Modifier = Modifier
 ) {
     val netWithDebts = balance.selectedAccountBalance + balance.totalOwed - balance.totalOwing
+    // Capture before DrawScope — appColors is not accessible inside drawBehind
+    val heroStart = MaterialTheme.appColors.heroCardStart
+    val heroEnd = MaterialTheme.appColors.heroCardEnd
+    val cyanGlowColor = MaterialTheme.appColors.cyanGlow
+    val cyanSubtleColor = MaterialTheme.appColors.cyanSubtle
 
     Column(
         modifier = modifier
@@ -50,28 +55,25 @@ fun HeroCard(
             .wrapContentHeight()
             .clip(RoundedCornerShape(20.dp))
             .drawBehind {
-                // Gradiente de fondo diagonal
                 drawRect(
                     brush = Brush.linearGradient(
-                        colors = listOf(NavySurface, NavySurfaceLight),
+                        colors = listOf(heroStart, heroEnd),
                         start = Offset(0f, 0f),
                         end = Offset(size.width, size.height)
                     )
                 )
-                // Orb cian — esquina superior derecha
                 val orbRadius = 90.dp.toPx()
                 val cx = size.width - 40.dp.toPx()
                 val cy = 40.dp.toPx()
                 drawCircle(
                     brush = Brush.radialGradient(
-                        colors = listOf(CyanGlow.copy(alpha = 0.14f), Color.Transparent),
+                        colors = listOf(cyanGlowColor.copy(alpha = 0.14f), Color.Transparent),
                         center = Offset(cx, cy),
                         radius = orbRadius
                     ),
                     radius = orbRadius,
                     center = Offset(cx, cy)
                 )
-                // Orb verde de marca — esquina inferior izquierda
                 val orbGreen = 65.dp.toPx()
                 val gx = 28.dp.toPx()
                 val gy = size.height - 18.dp.toPx()
@@ -119,12 +121,11 @@ fun HeroCard(
                 text = "${maskAmount(formatAmount(netWithDebts), balancesHidden)} €",
                 fontSize = 13.sp,
                 fontWeight = FontWeight.SemiBold,
-                color = CyanSubtle
+                color = cyanSubtleColor
             )
         }
     }
 }
-
 
 @Preview
 @Composable

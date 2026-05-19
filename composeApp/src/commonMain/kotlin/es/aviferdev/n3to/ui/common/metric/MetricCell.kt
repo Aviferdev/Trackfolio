@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.common.metric
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -15,9 +17,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import es.aviferdev.n3to.ui.theme.TextPrimary
-import es.aviferdev.n3to.ui.theme.TextSecondary
-import es.aviferdev.n3to.ui.theme.TextTertiary
+
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import androidx.compose.ui.tooling.preview.Preview
 
@@ -37,8 +37,8 @@ import androidx.compose.ui.tooling.preview.Preview
 fun MetricCell(
     label: String,
     value: String,
-    labelColor: Color = TextTertiary,
-    valueColor: Color = TextPrimary,
+    labelColor: Color = MaterialTheme.appColors.textTertiary,
+    valueColor: Color = MaterialTheme.appColors.textPrimary,
     horizontal: Boolean = false,
     valueSize: Int = 14,
     modifier: Modifier = Modifier
@@ -86,7 +86,7 @@ fun MetricCell(
 @Composable
 fun MetricGrid2(
     items: List<Pair<String, String>>,
-    color: Color = TextPrimary,
+    color: Color = MaterialTheme.appColors.textPrimary,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -126,7 +126,7 @@ private fun MetricCellVerticalPreview() {
         MetricCell(
             label = "Invertido",
             value = "10.000,00 €",
-            valueColor = TextPrimary
+            valueColor = MaterialTheme.appColors.textPrimary
         )
     }
 }

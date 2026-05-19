@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.portfolio.assethistory
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -10,8 +12,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import es.aviferdev.n3to.ui.theme.PnLNegative
-import es.aviferdev.n3to.ui.theme.PnLPositive
+
 import es.aviferdev.n3to.ui.theme.formatAmount
 import es.aviferdev.n3to.ui.theme.maskAmount
 import kotlin.math.abs
@@ -35,8 +36,8 @@ fun PnLChip(
     }
     val color = when {
         unavailable -> Color.White.copy(.45f)
-        amount > 0 -> PnLPositive
-        amount < 0 -> PnLNegative
+        amount > 0 -> MaterialTheme.appColors.pnlPositive
+        amount < 0 -> MaterialTheme.appColors.pnlNegative
         else -> Color.White.copy(.55f)
     }
     Column {

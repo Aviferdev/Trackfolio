@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.settings
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -89,21 +91,21 @@ fun ExpenseSettingsScreen(
     categoryState.pendingDelete?.let { pending ->
         AlertDialog(
             onDismissRequest = { categoryViewModel.cancelDelete() },
-            containerColor = NavySurface,
+            containerColor = MaterialTheme.appColors.navySurface,
             icon = { Text("\uD83D\uDDC2\uFE0F", fontSize = 28.sp) },
             title = {
                 Text(
                     "Eliminar categoría",
                     fontSize = 17.sp,
                     fontWeight = FontWeight.SemiBold,
-                    color = TextPrimary
+                    color = MaterialTheme.appColors.textPrimary
                 )
             },
             text = {
                 Text(
                     "Se eliminará «${pending.name}» del listado. Los movimientos que ya tengan asignada esta categoría conservarán su nombre y no se perderán datos.",
                     fontSize = 14.sp,
-                    color = TextSecondary
+                    color = MaterialTheme.appColors.textSecondary
                 )
             },
             confirmButton = {
@@ -113,7 +115,7 @@ fun ExpenseSettingsScreen(
             },
             dismissButton = {
                 TextButton(onClick = { categoryViewModel.cancelDelete() }) {
-                    Text("Cancelar", color = CyanAccent, fontWeight = FontWeight.Medium)
+                    Text("Cancelar", color = MaterialTheme.appColors.cyanAccent, fontWeight = FontWeight.Medium)
                 }
             },
             shape = RoundedCornerShape(16.dp)
@@ -128,14 +130,14 @@ fun ExpenseSettingsScreen(
         }
         AlertDialog(
             onDismissRequest = { categoryViewModel.clearError() },
-            containerColor = NavySurface,
+            containerColor = MaterialTheme.appColors.navySurface,
             title = {
-                Text(stringResource(Res.string.common_error), fontSize = 17.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary)
+                Text(stringResource(Res.string.common_error), fontSize = 17.sp, fontWeight = FontWeight.SemiBold, color = MaterialTheme.appColors.textPrimary)
             },
-            text = { Text(msg, fontSize = 14.sp, color = TextSecondary) },
+            text = { Text(msg, fontSize = 14.sp, color = MaterialTheme.appColors.textSecondary) },
             confirmButton = {
                 TextButton(onClick = { categoryViewModel.clearError() }) {
-                    Text(stringResource(Res.string.common_accept), color = CyanAccent, fontWeight = FontWeight.Medium)
+                    Text(stringResource(Res.string.common_accept), color = MaterialTheme.appColors.cyanAccent, fontWeight = FontWeight.Medium)
                 }
             },
             shape = RoundedCornerShape(16.dp)
@@ -155,7 +157,7 @@ fun ExpenseSettingsContent(
     modifier: Modifier = Modifier
 ) {
     Column(
-        modifier = modifier.fillMaxSize().background(NavyDeep)
+        modifier = modifier.fillMaxSize().background(MaterialTheme.appColors.navyDeep)
     ) {
         TopBarApp(
             title = "Gastos",
@@ -180,7 +182,7 @@ fun ExpenseSettingsContent(
                             modifier = Modifier.fillMaxWidth().padding(16.dp),
                             contentAlignment = Alignment.Center
                         ) {
-                            Text("Sin categorías de gastos", fontSize = 13.sp, color = TextSecondary)
+                            Text("Sin categorías de gastos", fontSize = 13.sp, color = MaterialTheme.appColors.textSecondary)
                         }
                     } else {
                         expenseCategories.forEachIndexed { index, cat ->
@@ -198,7 +200,7 @@ fun ExpenseSettingsContent(
                                 Text(
                                     text = cat.name,
                                     fontSize = 14.sp,
-                                    color = TextPrimary,
+                                    color = MaterialTheme.appColors.textPrimary,
                                     modifier = Modifier.weight(1f)
                                 )
                                 // Botón de límite (€)
@@ -210,14 +212,14 @@ fun ExpenseSettingsContent(
                                         text = "€",
                                         fontSize = 14.sp,
                                         fontWeight = FontWeight.Bold,
-                                        color = CyanAccent
+                                        color = MaterialTheme.appColors.cyanAccent
                                     )
                                 }
                                 IconButton(
                                     onClick = { onEdit(cat) },
                                     modifier = Modifier.size(28.dp)
                                 ) {
-                                    Icon(Icons.Default.Edit, "Editar", modifier = Modifier.size(14.dp), tint = TextSecondary)
+                                    Icon(Icons.Default.Edit, "Editar", modifier = Modifier.size(14.dp), tint = MaterialTheme.appColors.textSecondary)
                                 }
                                 IconButton(
                                     onClick = { onDelete(cat) },
@@ -228,7 +230,7 @@ fun ExpenseSettingsContent(
                             }
                             if (index < expenseCategories.lastIndex) {
                                 HorizontalDivider(
-                                    color = NavyBorder,
+                                    color = MaterialTheme.appColors.navyBorder,
                                     thickness = 0.5.dp,
                                     modifier = Modifier.padding(start = 36.dp)
                                 )

@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.account
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.platform.nowMillis
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.BorderStroke
@@ -29,14 +31,11 @@ import es.aviferdev.n3to.ui.common.navigation.TopBarApp
 import es.aviferdev.n3to.ui.common.component.EmptyStateView
 import es.aviferdev.n3to.ui.common.dialog.DeleteConfirmDialog
 import es.aviferdev.n3to.ui.home.SetInitialBalanceBottomSheet
-import es.aviferdev.n3to.ui.theme.BackgroundGray
-import es.aviferdev.n3to.ui.theme.BorderGray
+
 import es.aviferdev.n3to.ui.theme.ExpenseRed
 import es.aviferdev.n3to.ui.theme.LocalBalanceHidden
 import es.aviferdev.n3to.ui.theme.PrimaryDark
-import es.aviferdev.n3to.ui.theme.SurfaceWhite
-import es.aviferdev.n3to.ui.theme.TextPrimary
-import es.aviferdev.n3to.ui.theme.TextSecondary
+
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.account_add_title
@@ -127,12 +126,12 @@ fun AccountListContent(
     onDeleteAccount: (Account) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(modifier = modifier.fillMaxSize().background(BackgroundGray)) {
+    Column(modifier = modifier.fillMaxSize().background(MaterialTheme.appColors.background)) {
         TopBarApp(
             title = stringResource(Res.string.account_list_title),
             actions = {
                 IconButton(onClick = onAddClick) {
-                    Icon(Icons.Default.Add, contentDescription = stringResource(Res.string.account_add_title), tint = TextPrimary)
+                    Icon(Icons.Default.Add, contentDescription = stringResource(Res.string.account_add_title), tint = MaterialTheme.appColors.textPrimary)
                 }
             }
         )
@@ -213,11 +212,11 @@ private fun AccountCard(
     onDelete: () -> Unit
 ) {
     val borderColor by animateColorAsState(
-        targetValue = if (isSelected) PrimaryDark.copy(alpha = 0.6f) else BorderGray,
+        targetValue = if (isSelected) PrimaryDark.copy(alpha = 0.6f) else MaterialTheme.appColors.border,
         label       = "borderColor"
     )
     val containerColor by animateColorAsState(
-        targetValue = if (isSelected) SelectionLight else SurfaceWhite,
+        targetValue = if (isSelected) SelectionLight else MaterialTheme.appColors.surface,
         label       = "containerColor"
     )
 
@@ -240,14 +239,14 @@ private fun AccountCard(
                         modifier        = Modifier
                             .size(44.dp)
                             .clip(CircleShape)
-                            .background(if (isSelected) PrimaryDark else BackgroundGray),
+                            .background(if (isSelected) PrimaryDark else MaterialTheme.appColors.background),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
                             text       = account.name.firstOrNull()?.uppercaseChar()?.toString() ?: "?",
                             fontSize   = 18.sp,
                             fontWeight = FontWeight.Bold,
-                            color      = if (isSelected) Color.White else TextSecondary
+                            color      = if (isSelected) Color.White else MaterialTheme.appColors.textSecondary
                         )
                     }
                     Spacer(Modifier.width(12.dp))
@@ -257,7 +256,7 @@ private fun AccountCard(
                                 text       = account.name,
                                 fontSize   = 15.sp,
                                 fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
-                                color      = TextPrimary
+                                color      = MaterialTheme.appColors.textPrimary
                             )
                             if (account.needsInitialBalance) {
                                 Spacer(Modifier.width(6.dp))
@@ -267,13 +266,13 @@ private fun AccountCard(
                         Text(
                             text  = if (account.needsInitialBalance) "Saldo inicial pendiente" else "€",
                             fontSize = 12.sp,
-                            color = if (account.needsInitialBalance) ExpenseRed else TextSecondary
+                            color = if (account.needsInitialBalance) ExpenseRed else MaterialTheme.appColors.textSecondary
                         )
                     }
                 }
                 Row {
                     IconButton(onClick = onEdit, modifier = Modifier.size(36.dp)) {
-                        Icon(Icons.Default.Edit, contentDescription = "Editar", modifier = Modifier.size(18.dp), tint = TextSecondary)
+                        Icon(Icons.Default.Edit, contentDescription = "Editar", modifier = Modifier.size(18.dp), tint = MaterialTheme.appColors.textSecondary)
                     }
                     IconButton(onClick = onDelete, modifier = Modifier.size(36.dp)) {
                         Icon(Icons.Default.Delete, contentDescription = "Eliminar", modifier = Modifier.size(18.dp), tint = ExpenseRed)
@@ -283,7 +282,7 @@ private fun AccountCard(
 
             if (!account.needsInitialBalance) {
                 Spacer(Modifier.height(12.dp))
-                HorizontalDivider(color = BorderGray, thickness = 0.5.dp)
+                HorizontalDivider(color = MaterialTheme.appColors.border, thickness = 0.5.dp)
                 Spacer(Modifier.height(12.dp))
                 Row(
                     modifier              = Modifier.fillMaxWidth(),
@@ -291,7 +290,7 @@ private fun AccountCard(
                     verticalAlignment     = Alignment.Bottom
                 ) {
                     Column {
-                        Text("Saldo actual", fontSize = 11.sp, color = TextSecondary)
+                        Text("Saldo actual", fontSize = 11.sp, color = MaterialTheme.appColors.textSecondary)
                         Text(
                             text       = "${maskAmount(formatAmount(account.computedBalance), balancesHidden)} €",
                             fontSize   = 20.sp,

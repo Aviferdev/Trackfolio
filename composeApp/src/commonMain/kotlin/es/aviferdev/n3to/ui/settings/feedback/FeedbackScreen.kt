@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.settings.feedback
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -40,13 +42,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.ui.common.navigation.TopBarApp
-import es.aviferdev.n3to.ui.theme.CyanAccent
-import es.aviferdev.n3to.ui.theme.NavyBorder
-import es.aviferdev.n3to.ui.theme.NavyDeep
-import es.aviferdev.n3to.ui.theme.NavySurface
-import es.aviferdev.n3to.ui.theme.TextPrimary
-import es.aviferdev.n3to.ui.theme.TextSecondary
-import es.aviferdev.n3to.ui.theme.TextTertiary
+
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.feedback_category_label
 import n3to.composeapp.generated.resources.feedback_description_field
@@ -90,13 +86,13 @@ fun FeedbackScreen(
 
     Scaffold(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
-        containerColor = NavyDeep
+        containerColor = MaterialTheme.appColors.navyDeep
     ) { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .background(NavyDeep)
+                .background(MaterialTheme.appColors.navyDeep)
         ) {
             TopBarApp(
                 title = stringResource(Res.string.feedback_title),
@@ -113,7 +109,7 @@ fun FeedbackScreen(
                 Text(
                     text = stringResource(Res.string.feedback_subtitle),
                     fontSize = 13.sp,
-                    color = TextSecondary,
+                    color = MaterialTheme.appColors.textSecondary,
                     modifier = Modifier.padding(bottom = 18.dp)
                 )
 
@@ -122,7 +118,7 @@ fun FeedbackScreen(
                     text = stringResource(Res.string.feedback_category_label),
                     fontSize = 12.sp,
                     fontWeight = FontWeight.SemiBold,
-                    color = TextPrimary,
+                    color = MaterialTheme.appColors.textPrimary,
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
                 CategoryChipRow(
@@ -138,21 +134,21 @@ fun FeedbackScreen(
                     value = state.title,
                     onValueChange = viewModel::onTitleChanged,
                     label = { Text(stringResource(Res.string.feedback_title_field)) },
-                    placeholder = { Text(stringResource(Res.string.feedback_title_placeholder), color = TextTertiary) },
+                    placeholder = { Text(stringResource(Res.string.feedback_title_placeholder), color = MaterialTheme.appColors.textTertiary) },
                     singleLine = true,
                     enabled = !state.isSending,
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(11.dp),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = CyanAccent,
-                        unfocusedBorderColor = NavyBorder,
-                        focusedLabelColor = CyanAccent,
-                        unfocusedLabelColor = TextTertiary,
-                        cursorColor = CyanAccent,
-                        focusedTextColor = TextPrimary,
-                        unfocusedTextColor = TextPrimary,
-                        focusedContainerColor = NavySurface,
-                        unfocusedContainerColor = NavySurface
+                        focusedBorderColor = MaterialTheme.appColors.cyanAccent,
+                        unfocusedBorderColor = MaterialTheme.appColors.navyBorder,
+                        focusedLabelColor = MaterialTheme.appColors.cyanAccent,
+                        unfocusedLabelColor = MaterialTheme.appColors.textTertiary,
+                        cursorColor = MaterialTheme.appColors.cyanAccent,
+                        focusedTextColor = MaterialTheme.appColors.textPrimary,
+                        unfocusedTextColor = MaterialTheme.appColors.textPrimary,
+                        focusedContainerColor = MaterialTheme.appColors.navySurface,
+                        unfocusedContainerColor = MaterialTheme.appColors.navySurface
                     )
                 )
 
@@ -163,22 +159,22 @@ fun FeedbackScreen(
                     value = state.description,
                     onValueChange = viewModel::onDescriptionChanged,
                     label = { Text(stringResource(Res.string.feedback_description_field)) },
-                    placeholder = { Text(stringResource(Res.string.feedback_description_placeholder), color = TextTertiary) },
+                    placeholder = { Text(stringResource(Res.string.feedback_description_placeholder), color = MaterialTheme.appColors.textTertiary) },
                     minLines = 4,
                     maxLines = 8,
                     enabled = !state.isSending,
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(11.dp),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = CyanAccent,
-                        unfocusedBorderColor = NavyBorder,
-                        focusedLabelColor = CyanAccent,
-                        unfocusedLabelColor = TextTertiary,
-                        cursorColor = CyanAccent,
-                        focusedTextColor = TextPrimary,
-                        unfocusedTextColor = TextPrimary,
-                        focusedContainerColor = NavySurface,
-                        unfocusedContainerColor = NavySurface
+                        focusedBorderColor = MaterialTheme.appColors.cyanAccent,
+                        unfocusedBorderColor = MaterialTheme.appColors.navyBorder,
+                        focusedLabelColor = MaterialTheme.appColors.cyanAccent,
+                        unfocusedLabelColor = MaterialTheme.appColors.textTertiary,
+                        cursorColor = MaterialTheme.appColors.cyanAccent,
+                        focusedTextColor = MaterialTheme.appColors.textPrimary,
+                        unfocusedTextColor = MaterialTheme.appColors.textPrimary,
+                        focusedContainerColor = MaterialTheme.appColors.navySurface,
+                        unfocusedContainerColor = MaterialTheme.appColors.navySurface
                     )
                 )
 
@@ -191,15 +187,15 @@ fun FeedbackScreen(
                     modifier = Modifier.fillMaxWidth().height(50.dp),
                     shape = RoundedCornerShape(11.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = CyanAccent,
-                        contentColor = NavyDeep,
-                        disabledContainerColor = CyanAccent.copy(alpha = 0.4f),
-                        disabledContentColor = NavyDeep.copy(alpha = 0.6f)
+                        containerColor = MaterialTheme.appColors.cyanAccent,
+                        contentColor = MaterialTheme.appColors.navyDeep,
+                        disabledContainerColor = MaterialTheme.appColors.cyanAccent.copy(alpha = 0.4f),
+                        disabledContentColor = MaterialTheme.appColors.navyDeep.copy(alpha = 0.6f)
                     )
                 ) {
                     if (state.isSending) {
                         CircularProgressIndicator(
-                            color = NavyDeep,
+                            color = MaterialTheme.appColors.navyDeep,
                             modifier = Modifier.size(20.dp),
                             strokeWidth = 2.dp
                         )
@@ -224,7 +220,7 @@ fun FeedbackScreen(
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(11.dp),
-                    colors = CardDefaults.cardColors(containerColor = NavySurface),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.navySurface),
                     elevation = CardDefaults.cardElevation(0.dp)
                 ) {
                     Column(modifier = Modifier.padding(14.dp)) {
@@ -232,13 +228,13 @@ fun FeedbackScreen(
                             text = stringResource(Res.string.feedback_disclaimer_title),
                             fontSize = 12.sp,
                             fontWeight = FontWeight.SemiBold,
-                            color = TextPrimary
+                            color = MaterialTheme.appColors.textPrimary
                         )
                         Spacer(Modifier.height(6.dp))
                         Text(
                             text = stringResource(Res.string.feedback_disclaimer_text),
                             fontSize = 11.sp,
-                            color = TextTertiary,
+                            color = MaterialTheme.appColors.textTertiary,
                             lineHeight = 16.sp
                         )
                     }
@@ -268,12 +264,12 @@ private fun CategoryChipRow(
                     .weight(1f)
                     .clip(RoundedCornerShape(8.dp))
                     .background(
-                        if (isSelected) CyanAccent.copy(alpha = 0.12f)
-                        else NavySurface
+                        if (isSelected) MaterialTheme.appColors.cyanAccent.copy(alpha = 0.12f)
+                        else MaterialTheme.appColors.navySurface
                     )
                     .border(
                         width = if (isSelected) 1.5.dp else 0.5.dp,
-                        color = if (isSelected) CyanAccent else NavyBorder,
+                        color = if (isSelected) MaterialTheme.appColors.cyanAccent else MaterialTheme.appColors.navyBorder,
                         shape = RoundedCornerShape(8.dp)
                     )
                     .clickable { onSelected(category) }
@@ -284,7 +280,7 @@ private fun CategoryChipRow(
                     text = category.displayName,
                     fontSize = 9.sp,
                     fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
-                    color = if (isSelected) CyanAccent else TextSecondary,
+                    color = if (isSelected) MaterialTheme.appColors.cyanAccent else MaterialTheme.appColors.textSecondary,
                     maxLines = 1
                 )
             }

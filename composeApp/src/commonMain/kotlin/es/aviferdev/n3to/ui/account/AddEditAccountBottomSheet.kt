@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.account
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.platform.nowMillis
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -46,14 +48,14 @@ fun AddEditAccountBottomSheet(
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState       = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-        containerColor   = NavySurface,
+        containerColor   = MaterialTheme.appColors.navySurface,
         dragHandle = {
             Box(
                 modifier = Modifier
                     .padding(top = 12.dp, bottom = 4.dp)
                     .width(40.dp).height(4.dp)
                     .clip(RoundedCornerShape(2.dp))
-                    .background(NavyBorder)
+                    .background(MaterialTheme.appColors.navyBorder)
             )
         }
     ) {
@@ -71,7 +73,7 @@ fun AddEditAccountBottomSheet(
                              else stringResource(Res.string.account_add_title),
                 fontSize   = 18.sp,
                 fontWeight = FontWeight.SemiBold,
-                color      = TextPrimary
+                color      = MaterialTheme.appColors.textPrimary
             )
             Spacer(Modifier.height(4.dp))
             Text(
@@ -80,7 +82,7 @@ fun AddEditAccountBottomSheet(
                 else
                     "Crea un bolsillo para agrupar tus movimientos: banco, efectivo, inversión...",
                 fontSize = 11.sp,
-                color    = TextSecondary
+                color    = MaterialTheme.appColors.textSecondary
             )
 
             Spacer(Modifier.height(20.dp))
@@ -105,15 +107,15 @@ fun AddEditAccountBottomSheet(
                     imeAction      = if (isEditing) ImeAction.Done else ImeAction.Next
                 ),
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor      = CyanAccent,
-                    unfocusedBorderColor    = NavyBorder,
-                    cursorColor             = CyanAccent,
-                    focusedLabelColor       = CyanAccent,
-                    unfocusedLabelColor     = TextSecondary,
-                    focusedTextColor        = TextPrimary,
-                    unfocusedTextColor      = TextPrimary,
-                    focusedContainerColor   = NavySurfaceLight,
-                    unfocusedContainerColor = NavySurfaceLight
+                    focusedBorderColor      = MaterialTheme.appColors.cyanAccent,
+                    unfocusedBorderColor    = MaterialTheme.appColors.navyBorder,
+                    cursorColor             = MaterialTheme.appColors.cyanAccent,
+                    focusedLabelColor       = MaterialTheme.appColors.cyanAccent,
+                    unfocusedLabelColor     = MaterialTheme.appColors.textSecondary,
+                    focusedTextColor        = MaterialTheme.appColors.textPrimary,
+                    unfocusedTextColor      = MaterialTheme.appColors.textPrimary,
+                    focusedContainerColor   = MaterialTheme.appColors.navySurfaceLight,
+                    unfocusedContainerColor = MaterialTheme.appColors.navySurfaceLight
                 )
             )
 
@@ -133,7 +135,7 @@ fun AddEditAccountBottomSheet(
                         Text(
                             text     = "€",
                             fontSize = 16.sp,
-                            color    = TextSecondary,
+                            color    = MaterialTheme.appColors.textSecondary,
                             modifier = Modifier.padding(end = 16.dp)
                         )
                     },
@@ -151,15 +153,15 @@ fun AddEditAccountBottomSheet(
                         imeAction    = ImeAction.Done
                     ),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor      = CyanAccent,
-                        unfocusedBorderColor    = NavyBorder,
-                        cursorColor             = CyanAccent,
-                        focusedLabelColor       = CyanAccent,
-                        unfocusedLabelColor     = TextSecondary,
-                        focusedTextColor        = TextPrimary,
-                        unfocusedTextColor      = TextPrimary,
-                        focusedContainerColor   = NavySurfaceLight,
-                        unfocusedContainerColor = NavySurfaceLight
+                        focusedBorderColor      = MaterialTheme.appColors.cyanAccent,
+                        unfocusedBorderColor    = MaterialTheme.appColors.navyBorder,
+                        cursorColor             = MaterialTheme.appColors.cyanAccent,
+                        focusedLabelColor       = MaterialTheme.appColors.cyanAccent,
+                        unfocusedLabelColor     = MaterialTheme.appColors.textSecondary,
+                        focusedTextColor        = MaterialTheme.appColors.textPrimary,
+                        unfocusedTextColor      = MaterialTheme.appColors.textPrimary,
+                        focusedContainerColor   = MaterialTheme.appColors.navySurfaceLight,
+                        unfocusedContainerColor = MaterialTheme.appColors.navySurfaceLight
                     )
                 )
             }
@@ -186,8 +188,8 @@ fun AddEditAccountBottomSheet(
                 modifier = Modifier.fillMaxWidth().height(52.dp),
                 shape    = RoundedCornerShape(11.dp),
                 colors   = ButtonDefaults.buttonColors(
-                    containerColor = CyanAccent,
-                    contentColor   = NavyDeep
+                    containerColor = MaterialTheme.appColors.cyanAccent,
+                    contentColor   = MaterialTheme.appColors.navyDeep
                 )
             ) {
                 Text(
@@ -200,7 +202,7 @@ fun AddEditAccountBottomSheet(
 
             Spacer(Modifier.height(12.dp))
             TextButton(onClick = onDismiss, modifier = Modifier.fillMaxWidth()) {
-                Text(stringResource(Res.string.common_cancel), fontSize = 14.sp, color = TextSecondary)
+                Text(stringResource(Res.string.common_cancel), fontSize = 14.sp, color = MaterialTheme.appColors.textSecondary)
             }
         }
     }

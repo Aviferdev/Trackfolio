@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.splash
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.animation.core.EaseInOutCubic
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -20,7 +22,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import es.aviferdev.n3to.ui.theme.CyanAccent
+
 import androidx.compose.ui.tooling.preview.Preview
 
 /**
@@ -29,12 +31,12 @@ import androidx.compose.ui.tooling.preview.Preview
  * Cada dot tiene un offset de 180ms respecto al anterior, creando un efecto
  * de "ola" continua. Inspirado en el diseño splash.jsx.
  *
- * @param color Color de los dots (default TextPrimary).
+ * @param color Color de los dots (default MaterialTheme.appColors.textPrimary).
  * @param modifier Modifier adicional.
  */
 @Composable
 fun SplashLoader(
-    color: Color = CyanAccent.copy(alpha = 0.70f),
+    color: Color = MaterialTheme.appColors.cyanAccent.copy(alpha = 0.70f),
     modifier: Modifier = Modifier
 ) {
     val infiniteTransition = rememberInfiniteTransition()

@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.annual
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -37,9 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.ui.common.DonutSlice
 import es.aviferdev.n3to.ui.theme.CategoryPalette
-import es.aviferdev.n3to.ui.theme.NavySurface
-import es.aviferdev.n3to.ui.theme.TextPrimary
-import es.aviferdev.n3to.ui.theme.TextSecondary
+
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import es.aviferdev.n3to.ui.theme.formatAmountEuro
 import es.aviferdev.n3to.ui.theme.maskAmount
@@ -67,7 +67,7 @@ fun DonutChartCard(
     Card(
         modifier  = modifier.fillMaxWidth(),
         shape     = RoundedCornerShape(14.dp),
-        colors    = CardDefaults.cardColors(containerColor = NavySurface),
+        colors    = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.navySurface),
         elevation = CardDefaults.cardElevation(0.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
@@ -75,13 +75,13 @@ fun DonutChartCard(
                 text       = title,
                 fontSize   = 14.sp,
                 fontWeight = FontWeight.SemiBold,
-                color      = TextPrimary
+                color      = MaterialTheme.appColors.textPrimary
             )
             Spacer(Modifier.height(2.dp))
             Text(
                 text     = subtitle,
                 fontSize = 11.sp,
-                color    = TextSecondary
+                color    = MaterialTheme.appColors.textSecondary
             )
 
             Spacer(Modifier.height(16.dp))
@@ -103,7 +103,7 @@ fun DonutChartCard(
                         Text(
                             text     = "Total",
                             fontSize = 10.sp,
-                            color    = TextSecondary
+                            color    = MaterialTheme.appColors.textSecondary
                         )
                         Text(
                             text       = maskAmount(
@@ -112,7 +112,7 @@ fun DonutChartCard(
                             ),
                             fontSize   = 12.sp,
                             fontWeight = FontWeight.SemiBold,
-                            color      = TextPrimary
+                            color      = MaterialTheme.appColors.textPrimary
                         )
                     }
                 }
@@ -186,7 +186,7 @@ private fun DonutLegendRow(slice: DonutSlice, balancesHidden: Boolean) {
         Text(
             text     = slice.name,
             fontSize = 12.sp,
-            color    = TextPrimary,
+            color    = MaterialTheme.appColors.textPrimary,
             modifier = Modifier.weight(1f, fill = true),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
@@ -194,7 +194,7 @@ private fun DonutLegendRow(slice: DonutSlice, balancesHidden: Boolean) {
 Text(
                             text       = maskAmount(formatAmountEuro(slice.amount), balancesHidden),
                             fontSize   = 11.sp,
-                            color      = TextSecondary,
+                            color      = MaterialTheme.appColors.textSecondary,
                             fontWeight = FontWeight.Normal,
                             modifier   = Modifier.wrapContentSize()
                         )
@@ -202,7 +202,7 @@ Text(
         Text(
             text       = "(${formatPercentLegend(slice.percent)}%)",
             fontSize   = 11.sp,
-            color      = TextSecondary.copy(alpha = 0.7f),
+            color      = MaterialTheme.appColors.textSecondary.copy(alpha = 0.7f),
             fontWeight = FontWeight.Normal,
             modifier   = Modifier.wrapContentSize()
         )
@@ -214,7 +214,7 @@ private fun EmptyDonutState(title: String, subtitle: String) {
     Card(
         modifier  = Modifier.fillMaxWidth(),
         shape     = RoundedCornerShape(14.dp),
-        colors    = CardDefaults.cardColors(containerColor = NavySurface),
+        colors    = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.navySurface),
         elevation = CardDefaults.cardElevation(0.dp)
     ) {
         Column(
@@ -227,26 +227,26 @@ private fun EmptyDonutState(title: String, subtitle: String) {
                 text       = title,
                 fontSize   = 14.sp,
                 fontWeight = FontWeight.SemiBold,
-                color      = TextPrimary
+                color      = MaterialTheme.appColors.textPrimary
             )
             Spacer(Modifier.height(2.dp))
             Text(
                 text     = subtitle,
                 fontSize = 11.sp,
-                color    = TextSecondary
+                color    = MaterialTheme.appColors.textSecondary
             )
             Spacer(Modifier.height(16.dp))
             Icon(
                 imageVector = Icons.Outlined.BarChart,
                 contentDescription = null,
                 modifier = Modifier.size(32.dp),
-                tint = TextPrimary
+                tint = MaterialTheme.appColors.textPrimary
             )
             Spacer(Modifier.height(8.dp))
             Text(
                 text     = "Sin datos para este año",
                 fontSize = 13.sp,
-                color    = TextSecondary,
+                color    = MaterialTheme.appColors.textSecondary,
                 textAlign = TextAlign.Center
             )
         }

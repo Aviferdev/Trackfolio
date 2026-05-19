@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.loan
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.platform.nowMillis
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -15,7 +17,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.ui.theme.*
-import es.aviferdev.n3to.ui.theme.DragHandleColor
 
 import androidx.compose.ui.tooling.preview.Preview
 
@@ -33,14 +34,14 @@ fun UpdateLoanRateSheet(
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState       = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-        containerColor   = SurfaceWhite,
+        containerColor   = MaterialTheme.appColors.surface,
         dragHandle = {
             Box(
                 modifier = Modifier
                     .padding(top = 12.dp, bottom = 4.dp)
                     .width(40.dp).height(4.dp)
                     .clip(RoundedCornerShape(2.dp))
-                    .background(DragHandleColor)
+                    .background(MaterialTheme.appColors.dragHandle)
             )
         }
     ) {
@@ -61,7 +62,7 @@ fun UpdateLoanRateSheet(
             Text(
                 "Tipo actual: ${currentRate}%",
                 fontSize = 14.sp,
-                color = TextSecondary
+                color = MaterialTheme.appColors.textSecondary
             )
 
             Spacer(Modifier.height(16.dp))
@@ -85,7 +86,7 @@ fun UpdateLoanRateSheet(
             Text(
                 "La cuota se recalculará con el capital pendiente y las cuotas restantes.",
                 fontSize = 12.sp,
-                color = TextSecondary
+                color = MaterialTheme.appColors.textSecondary
             )
 
             Spacer(Modifier.height(24.dp))

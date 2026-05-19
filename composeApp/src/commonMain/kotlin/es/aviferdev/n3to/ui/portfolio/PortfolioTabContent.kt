@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.portfolio
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -38,8 +40,7 @@ import es.aviferdev.n3to.ui.common.LineChartWithTimeRange
 import es.aviferdev.n3to.ui.common.component.EmptyStateView
 import es.aviferdev.n3to.ui.common.component.NavyTab
 import es.aviferdev.n3to.ui.fixedincome.FixedIncomePositionCard
-import es.aviferdev.n3to.ui.theme.CyanAccent
-import es.aviferdev.n3to.ui.theme.NavyDeep
+
 import es.aviferdev.n3to.ui.theme.PrimaryDark
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.portfolio_empty_subtitle
@@ -87,7 +88,7 @@ fun PortfolioTabContent(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(NavyDeep)
+            .background(MaterialTheme.appColors.navyDeep)
     ) {
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
@@ -175,7 +176,7 @@ fun PortfolioTabContent(
                         title = stringResource(Res.string.portfolio_evolution_title),
                         subtitle = stringResource(Res.string.portfolio_monthly_value),
                         points = valueHistory.map { it.date to it.value },
-                        lineColor = CyanAccent,
+                        lineColor = MaterialTheme.appColors.cyanAccent,
                         balancesHidden = balancesHidden,
                         modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
                     )

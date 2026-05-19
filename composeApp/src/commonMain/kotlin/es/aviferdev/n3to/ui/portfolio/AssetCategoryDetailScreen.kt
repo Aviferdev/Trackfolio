@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.portfolio
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -132,21 +134,21 @@ fun AssetCategoryDetailScreen(
     state.pendingArchive?.let { pending ->
         AlertDialog(
             onDismissRequest = { viewModel.cancelArchive() },
-            containerColor = SurfaceWhite,
+            containerColor = MaterialTheme.appColors.surface,
             icon = { Icon(Icons.Outlined.Archive, contentDescription = null, modifier = Modifier.size(28.dp), tint = PrimaryDark) },
             title = {
                 Text(
                     stringResource(Res.string.portfolio_category_archive_title),
                     fontSize = 17.sp,
                     fontWeight = FontWeight.SemiBold,
-                    color = TextPrimary
+                    color = MaterialTheme.appColors.textPrimary
                 )
             },
             text = {
                 Text(
                     stringResource(Res.string.portfolio_category_archive_message, pending.name, pending.ticker),
                     fontSize = 14.sp,
-                    color = TextSecondary
+                    color = MaterialTheme.appColors.textSecondary
                 )
             },
             confirmButton = {
@@ -173,9 +175,9 @@ fun AssetCategoryDetailScreen(
         }
         AlertDialog(
             onDismissRequest = { viewModel.clearError() },
-            containerColor = SurfaceWhite,
-            title = { Text(stringResource(Res.string.common_error), fontSize = 17.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary) },
-            text = { Text(msg, fontSize = 14.sp, color = TextSecondary) },
+            containerColor = MaterialTheme.appColors.surface,
+            title = { Text(stringResource(Res.string.common_error), fontSize = 17.sp, fontWeight = FontWeight.SemiBold, color = MaterialTheme.appColors.textPrimary) },
+            text = { Text(msg, fontSize = 14.sp, color = MaterialTheme.appColors.textSecondary) },
             confirmButton = {
                 TextButton(onClick = { viewModel.clearError() }) {
                     Text(stringResource(Res.string.common_accept), color = PrimaryDark, fontWeight = FontWeight.Medium)
@@ -201,7 +203,7 @@ fun AssetCategoryDetailContent(
     modifier: Modifier = Modifier
 ) {
     Column(
-        modifier = modifier.fillMaxSize().background(BackgroundGray)
+        modifier = modifier.fillMaxSize().background(MaterialTheme.appColors.background)
     ) {
         TopBarApp(
             title = state.category?.name ?: stringResource(Res.string.portfolio_category_title),
@@ -223,7 +225,7 @@ fun AssetCategoryDetailContent(
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(14.dp),
-                    colors = CardDefaults.cardColors(containerColor = SurfaceWhite),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.surface),
                     border = CardDefaults.outlinedCardBorder(),
                     elevation = CardDefaults.cardElevation(0.dp)
                 ) {
@@ -235,7 +237,7 @@ fun AssetCategoryDetailContent(
                             Text(
                                 stringResource(Res.string.portfolio_category_empty),
                                 fontSize = 13.sp,
-                                color = TextSecondary
+                                color = MaterialTheme.appColors.textSecondary
                             )
                         }
                     } else {
@@ -249,7 +251,7 @@ fun AssetCategoryDetailContent(
                                 )
                                 if (index < state.activeAssets.lastIndex) {
                                     HorizontalDivider(
-                                        color = BorderGray,
+                                        color = MaterialTheme.appColors.border,
                                         thickness = 0.5.dp,
                                         modifier = Modifier.padding(start = 56.dp)
                                     )
@@ -273,7 +275,7 @@ fun AssetCategoryDetailContent(
                     Card(
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(14.dp),
-                        colors = CardDefaults.cardColors(containerColor = SurfaceWhite),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.surface),
                         border = CardDefaults.outlinedCardBorder(),
                         elevation = CardDefaults.cardElevation(0.dp)
                     ) {
@@ -286,7 +288,7 @@ fun AssetCategoryDetailContent(
                                 )
                                 if (index < state.activeFixedIncome.lastIndex) {
                                     HorizontalDivider(
-                                        color = BorderGray,
+                                        color = MaterialTheme.appColors.border,
                                         thickness = 0.5.dp,
                                         modifier = Modifier.padding(start = 20.dp)
                                     )
@@ -310,7 +312,7 @@ fun AssetCategoryDetailContent(
                     Card(
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(14.dp),
-                        colors = CardDefaults.cardColors(containerColor = SurfaceWhite),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.surface),
                         border = CardDefaults.outlinedCardBorder(),
                         elevation = CardDefaults.cardElevation(0.dp)
                     ) {
@@ -323,7 +325,7 @@ fun AssetCategoryDetailContent(
                                     Text(
                                         stringResource(Res.string.portfolio_category_no_platforms),
                                         fontSize = 13.sp,
-                                        color = TextSecondary
+                                        color = MaterialTheme.appColors.textSecondary
                                     )
                                     Spacer(Modifier.height(4.dp))
                                     TextButton(onClick = onOpenLinkPlatformSheet) {
@@ -350,13 +352,13 @@ fun AssetCategoryDetailContent(
                                         Text(
                                             platform.name,
                                             fontSize = 15.sp,
-                                            color = TextPrimary,
+                                            color = MaterialTheme.appColors.textPrimary,
                                             modifier = Modifier.weight(1f)
                                         )
                                     }
                                     if (index < state.categoryPlatforms.lastIndex) {
                                         HorizontalDivider(
-                                            color = BorderGray,
+                                            color = MaterialTheme.appColors.border,
                                             thickness = 0.5.dp,
                                             modifier = Modifier.padding(start = 52.dp)
                                         )
@@ -375,14 +377,14 @@ fun AssetCategoryDetailContent(
                         stringResource(Res.string.portfolio_category_archived_section),
                         fontSize = 11.sp,
                         fontWeight = FontWeight.SemiBold,
-                        color = TextSecondary
+                        color = MaterialTheme.appColors.textSecondary
                     )
                 }
                 item {
                     Card(
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(14.dp),
-                        colors = CardDefaults.cardColors(containerColor = SurfaceWhite),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.surface),
                         border = CardDefaults.outlinedCardBorder(),
                         elevation = CardDefaults.cardElevation(0.dp)
                     ) {
@@ -394,7 +396,7 @@ fun AssetCategoryDetailContent(
                                 )
                                 if (index < state.archivedAssets.lastIndex) {
                                     HorizontalDivider(
-                                        color = BorderGray,
+                                        color = MaterialTheme.appColors.border,
                                         thickness = 0.5.dp,
                                         modifier = Modifier.padding(start = 56.dp)
                                     )
@@ -476,16 +478,16 @@ private fun AssetRow(
         }
         Spacer(Modifier.width(10.dp))
         Column(modifier = Modifier.weight(1f)) {
-            Text(asset.name, fontSize = 14.sp, color = TextPrimary, maxLines = 1)
-            Text(asset.ticker, fontSize = 11.sp, color = TextSecondary)
+            Text(asset.name, fontSize = 14.sp, color = MaterialTheme.appColors.textPrimary, maxLines = 1)
+            Text(asset.ticker, fontSize = 11.sp, color = MaterialTheme.appColors.textSecondary)
         }
         IconButton(onClick = onEdit, modifier = Modifier.size(28.dp)) {
-            Icon(Icons.Default.Edit, stringResource(Res.string.portfolio_category_edit_cd), modifier = Modifier.size(14.dp), tint = TextSecondary)
+            Icon(Icons.Default.Edit, stringResource(Res.string.portfolio_category_edit_cd), modifier = Modifier.size(14.dp), tint = MaterialTheme.appColors.textSecondary)
         }
         IconButton(onClick = onArchive, modifier = Modifier.size(28.dp)) {
-            Icon(Icons.Default.Delete, stringResource(Res.string.portfolio_category_archive_cd), modifier = Modifier.size(14.dp), tint = TextSecondary)
+            Icon(Icons.Default.Delete, stringResource(Res.string.portfolio_category_archive_cd), modifier = Modifier.size(14.dp), tint = MaterialTheme.appColors.textSecondary)
         }
-        Text("›", fontSize = 18.sp, color = TextSecondary)
+        Text("›", fontSize = 18.sp, color = MaterialTheme.appColors.textSecondary)
     }
 }
 
@@ -504,20 +506,20 @@ private fun ArchivedAssetRow(
             modifier = Modifier
                 .size(34.dp)
                 .clip(RoundedCornerShape(8.dp))
-                .background(TextSecondary.copy(alpha = 0.3f)),
+                .background(MaterialTheme.appColors.textSecondary.copy(alpha = 0.3f)),
             contentAlignment = Alignment.Center
         ) {
             Text(
                 text = asset.ticker.take(3),
                 fontSize = if (asset.ticker.length > 3) 8.sp else 10.sp,
-                color = TextSecondary,
+                color = MaterialTheme.appColors.textSecondary,
                 fontWeight = FontWeight.Bold
             )
         }
         Spacer(Modifier.width(10.dp))
         Column(modifier = Modifier.weight(1f)) {
-            Text(asset.name, fontSize = 14.sp, color = TextSecondary, maxLines = 1)
-            Text(asset.ticker, fontSize = 11.sp, color = TextSecondary.copy(alpha = 0.7f))
+            Text(asset.name, fontSize = 14.sp, color = MaterialTheme.appColors.textSecondary, maxLines = 1)
+            Text(asset.ticker, fontSize = 11.sp, color = MaterialTheme.appColors.textSecondary.copy(alpha = 0.7f))
         }
         TextButton(onClick = onRestore) {
             Text(stringResource(Res.string.portfolio_category_restore), fontSize = 12.sp, color = PrimaryDark, fontWeight = FontWeight.Medium)

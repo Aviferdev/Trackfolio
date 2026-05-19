@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.fixedincome.components
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -40,9 +42,9 @@ internal fun CouponTimelineSection(
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = NavySurface),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.navySurface),
         elevation = CardDefaults.cardElevation(0.dp),
-        border = BorderStroke(0.5.dp, NavyBorder)
+        border = BorderStroke(0.5.dp, MaterialTheme.appColors.navyBorder)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
@@ -67,7 +69,7 @@ internal fun CouponTimelineSection(
                             modifier = Modifier
                                 .size(8.dp)
                                 .background(
-                                    if (coupon.isPaid) PositiveGreen else CyanAccent,
+                                    if (coupon.isPaid) PositiveGreen else MaterialTheme.appColors.cyanAccent,
                                     RoundedCornerShape(4.dp)
                                 )
                         )
@@ -80,7 +82,7 @@ internal fun CouponTimelineSection(
                                 else
                                     "🔵 ${stringResource(Res.string.fixedincome_coupon_pending)}",
                                 fontSize = 11.sp,
-                                color = if (coupon.isPaid) PositiveGreen.copy(alpha = 0.8f) else CyanAccent.copy(alpha = 0.7f)
+                                color = if (coupon.isPaid) PositiveGreen.copy(alpha = 0.8f) else MaterialTheme.appColors.cyanAccent.copy(alpha = 0.7f)
                             )
                         }
                     }
@@ -93,7 +95,7 @@ internal fun CouponTimelineSection(
                 }
 
                 if (index < schedule.lastIndex) {
-                    HorizontalDivider(color = NavyBorder, modifier = Modifier.padding(start = 20.dp))
+                    HorizontalDivider(color = MaterialTheme.appColors.navyBorder, modifier = Modifier.padding(start = 20.dp))
                 }
             }
         }

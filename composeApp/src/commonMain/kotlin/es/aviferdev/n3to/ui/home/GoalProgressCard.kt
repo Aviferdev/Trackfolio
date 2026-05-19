@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.home
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -26,13 +28,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.MonthlyGoalProgress
 import es.aviferdev.n3to.ui.common.ProgressBar
-import es.aviferdev.n3to.ui.theme.CyanAccent
+
 import es.aviferdev.n3to.ui.theme.ExpenseRed
 import es.aviferdev.n3to.ui.theme.IncomeGreen
-import es.aviferdev.n3to.ui.theme.NavySurface
-import es.aviferdev.n3to.ui.theme.TextPrimary
-import es.aviferdev.n3to.ui.theme.TextSecondary
-import es.aviferdev.n3to.ui.theme.TextTertiary
+
 import es.aviferdev.n3to.ui.theme.WarnAmber
 import es.aviferdev.n3to.ui.theme.formatAmount
 import es.aviferdev.n3to.platform.nowLocalDate
@@ -67,7 +66,7 @@ fun GoalProgressCard(
     Card(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(14.dp),
-        colors = CardDefaults.cardColors(containerColor = NavySurface),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.navySurface),
         elevation = CardDefaults.cardElevation(0.dp)
     ) {
         if (!progress.hasAnyGoal) {
@@ -81,7 +80,7 @@ fun GoalProgressCard(
                 Icon(
                     Icons.Outlined.GpsFixed,
                     contentDescription = null,
-                    tint = CyanAccent.copy(alpha = 0.7f),
+                    tint = MaterialTheme.appColors.cyanAccent.copy(alpha = 0.7f),
                     modifier = Modifier.size(28.dp)
                 )
                 Spacer(Modifier.height(8.dp))
@@ -89,13 +88,13 @@ fun GoalProgressCard(
                     text = stringResource(Res.string.home_goals_define_title),
                     fontSize = 13.sp,
                     fontWeight = FontWeight.Medium,
-                    color = CyanAccent
+                    color = MaterialTheme.appColors.cyanAccent
                 )
                 Spacer(Modifier.height(4.dp))
                 Text(
                     text = stringResource(Res.string.home_goals_define_subtitle),
                     fontSize = 11.sp,
-                    color = TextTertiary
+                    color = MaterialTheme.appColors.textTertiary
                 )
             }
         } else {
@@ -110,12 +109,12 @@ fun GoalProgressCard(
                         text = stringResource(Res.string.home_goals_monthly),
                         fontSize = 13.sp,
                         fontWeight = FontWeight.SemiBold,
-                        color = TextPrimary
+                        color = MaterialTheme.appColors.textPrimary
                     )
                     Text(
                         text = progress.monthLabel(),
                         fontSize = 11.sp,
-                        color = TextTertiary
+                        color = MaterialTheme.appColors.textTertiary
                     )
                 }
 
@@ -171,14 +170,14 @@ private fun GoalProgressRow(
                 Icon(
                     icon,
                     contentDescription = null,
-                    tint = TextSecondary,
+                    tint = MaterialTheme.appColors.textSecondary,
                     modifier = Modifier.size(16.dp)
                 )
                 Spacer(Modifier.width(6.dp))
                 Text(
                     text = label,
                     fontSize = 12.sp,
-                    color = TextSecondary
+                    color = MaterialTheme.appColors.textSecondary
                 )
             }
             Text(
@@ -189,7 +188,7 @@ private fun GoalProgressRow(
                 }",
                 fontSize = 11.sp,
                 fontWeight = FontWeight.Medium,
-                color = if (achieved) IncomeGreen else TextTertiary
+                color = if (achieved) IncomeGreen else MaterialTheme.appColors.textTertiary
             )
         }
 
@@ -215,7 +214,7 @@ private fun GoalProgressRow(
                 Text(
                     text = proj,
                     fontSize = 10.sp,
-                    color = TextTertiary,
+                    color = MaterialTheme.appColors.textTertiary,
                     fontWeight = FontWeight.Normal
                 )
             }

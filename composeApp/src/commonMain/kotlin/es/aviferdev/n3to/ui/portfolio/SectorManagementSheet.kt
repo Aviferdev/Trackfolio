@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.portfolio
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -68,7 +70,7 @@ fun SectorManagementSheet(
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-        containerColor = SurfaceWhite,
+        containerColor = MaterialTheme.appColors.surface,
         dragHandle = {
             Box(
                 modifier = Modifier
@@ -76,7 +78,7 @@ fun SectorManagementSheet(
                     .width(40.dp)
                     .height(4.dp)
                     .clip(RoundedCornerShape(2.dp))
-                    .background(BorderGray)
+                    .background(MaterialTheme.appColors.border)
             )
         }
     ) {
@@ -91,20 +93,20 @@ fun SectorManagementSheet(
                 stringResource(Res.string.portfolio_settings_sector_section),
                 fontSize = 18.sp,
                 fontWeight = FontWeight.SemiBold,
-                color = TextPrimary,
+                color = MaterialTheme.appColors.textPrimary,
                 modifier = Modifier.padding(bottom = 4.dp)
             )
             Text(
                 stringResource(Res.string.portfolio_settings_sector_empty),
                 fontSize = 11.sp,
-                color = TextSecondary,
+                color = MaterialTheme.appColors.textSecondary,
                 modifier = Modifier.padding(bottom = 18.dp)
             )
 
             Text(
                 stringResource(Res.string.portfolio_sector_new),
                 fontSize = 12.sp,
-                color = TextSecondary,
+                color = MaterialTheme.appColors.textSecondary,
                 fontWeight = FontWeight.Medium
             )
             Spacer(Modifier.height(8.dp))
@@ -117,8 +119,8 @@ fun SectorManagementSheet(
                     modifier = Modifier
                         .size(40.dp)
                         .clip(RoundedCornerShape(8.dp))
-                        .background(SurfaceElevated)
-                        .border(1.dp, BorderGray, RoundedCornerShape(8.dp)),
+                        .background(MaterialTheme.appColors.surfaceElevated)
+                        .border(1.dp, MaterialTheme.appColors.border, RoundedCornerShape(8.dp)),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
@@ -138,7 +140,7 @@ fun SectorManagementSheet(
                     shape = RoundedCornerShape(10.dp),
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = PrimaryDark,
-                        unfocusedBorderColor = BorderGray
+                        unfocusedBorderColor = MaterialTheme.appColors.border
                     )
                 )
                 Spacer(Modifier.width(8.dp))
@@ -171,10 +173,10 @@ fun SectorManagementSheet(
                         modifier = Modifier
                             .size(36.dp)
                             .clip(RoundedCornerShape(8.dp))
-                            .background(if (newIcon == icon) PrimaryDark.copy(alpha = 0.1f) else SurfaceElevated)
+                            .background(if (newIcon == icon) PrimaryDark.copy(alpha = 0.1f) else MaterialTheme.appColors.surfaceElevated)
                             .border(
                                 if (newIcon == icon) 1.5.dp else 0.5.dp,
-                                if (newIcon == icon) PrimaryDark else BorderGray,
+                                if (newIcon == icon) PrimaryDark else MaterialTheme.appColors.border,
                                 RoundedCornerShape(8.dp)
                             )
                             .clickable { newIcon = icon },
@@ -183,7 +185,7 @@ fun SectorManagementSheet(
                         Icon(
                             icon.toMaterialIcon(),
                             contentDescription = null,
-                            tint = if (newIcon == icon) PrimaryDark else TextSecondary,
+                            tint = if (newIcon == icon) PrimaryDark else MaterialTheme.appColors.textSecondary,
                             modifier = Modifier.size(20.dp)
                         )
                     }
@@ -231,21 +233,21 @@ private fun SectorItem(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(10.dp))
-            .background(SurfaceElevated)
+            .background(MaterialTheme.appColors.surfaceElevated)
             .padding(horizontal = 12.dp, vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
             sector.icon.toMaterialIcon(),
             contentDescription = null,
-            tint = TextPrimary,
+            tint = MaterialTheme.appColors.textPrimary,
             modifier = Modifier.size(24.dp)
         )
         Spacer(Modifier.width(12.dp))
         Text(
             sector.name,
             fontSize = 14.sp,
-            color = TextPrimary,
+            color = MaterialTheme.appColors.textPrimary,
             modifier = Modifier.weight(1f)
         )
         IconButton(

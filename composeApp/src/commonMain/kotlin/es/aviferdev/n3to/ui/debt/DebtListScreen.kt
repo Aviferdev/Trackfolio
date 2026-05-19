@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.debt
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -51,16 +53,12 @@ import es.aviferdev.n3to.ui.common.navigation.TopBarApp
 import es.aviferdev.n3to.ui.common.component.EmptyStateView
 import es.aviferdev.n3to.ui.common.row.SwipeRowApp
 import es.aviferdev.n3to.ui.common.separator.SpacerVerticalApp
-import es.aviferdev.n3to.ui.theme.BackgroundGray
+
 import es.aviferdev.n3to.ui.theme.ExpenseRed
 import es.aviferdev.n3to.ui.theme.IncomeGreen
 import es.aviferdev.n3to.ui.theme.LocalBalanceHidden
 import es.aviferdev.n3to.ui.theme.PrimaryDark
-import es.aviferdev.n3to.ui.theme.Surface4
-import es.aviferdev.n3to.ui.theme.SurfaceWhite
-import es.aviferdev.n3to.ui.theme.TextPrimary
-import es.aviferdev.n3to.ui.theme.TextSecondary
-import es.aviferdev.n3to.ui.theme.TextTertiary
+
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import es.aviferdev.n3to.ui.theme.formatAmount
 import es.aviferdev.n3to.ui.theme.formatDate
@@ -114,20 +112,20 @@ fun DebtListScreen(viewModel: DebtViewModel = koinViewModel()) {
     }
     debtToDelete?.let {
         AlertDialog(
-            onDismissRequest = { debtToDelete = null }, containerColor = SurfaceWhite,
+            onDismissRequest = { debtToDelete = null }, containerColor = MaterialTheme.appColors.surface,
             title = {
                 Text(
                     stringResource(Res.string.common_delete) + " " + stringResource(Res.string.debt_title).lowercase(),
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
-                    color = TextPrimary
+                    color = MaterialTheme.appColors.textPrimary
                 )
             },
             text = {
                 Text(
                     "¿Eliminar deuda con ${it.personName}?",
                     fontSize = 13.sp,
-                    color = TextSecondary
+                    color = MaterialTheme.appColors.textSecondary
                 )
             },
             confirmButton = {
@@ -148,20 +146,20 @@ fun DebtListScreen(viewModel: DebtViewModel = koinViewModel()) {
     }
     debtToMarkPaid?.let {
         AlertDialog(
-            onDismissRequest = { debtToMarkPaid = null }, containerColor = SurfaceWhite,
+            onDismissRequest = { debtToMarkPaid = null }, containerColor = MaterialTheme.appColors.surface,
             title = {
                 Text(
                     stringResource(Res.string.debt_mark_paid),
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
-                    color = TextPrimary
+                    color = MaterialTheme.appColors.textPrimary
                 )
             },
             text = {
                 Text(
                     "¿Marcar como pagado a ${it.personName}?",
                     fontSize = 13.sp,
-                    color = TextSecondary
+                    color = MaterialTheme.appColors.textSecondary
                 )
             },
             confirmButton = {
@@ -199,7 +197,7 @@ fun DebtListContent(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(BackgroundGray)
+            .background(MaterialTheme.appColors.background)
     ) {
         if (uiState.isLoading) {
             CircularProgressIndicator(
@@ -360,13 +358,13 @@ fun DebtListContentPreview() {
 
 @Composable
 private fun HeaderDebtListScreen(totalTheyOwe: Double, totalIOwe: Double, hidden: Boolean) {
-    Surface(color = BackgroundGray, shadowElevation = 0.dp) {
+    Surface(color = MaterialTheme.appColors.background, shadowElevation = 0.dp) {
         Card(
             modifier = Modifier.fillMaxWidth()
                 .padding(horizontal = 14.dp)
                 .padding(top = 12.dp),
             shape = RoundedCornerShape(12.dp),
-            colors = CardDefaults.cardColors(containerColor = SurfaceWhite),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.surface),
             elevation = CardDefaults.cardElevation(0.dp)
         ) {
             Row(
@@ -446,7 +444,7 @@ private fun DebtCard(debt: Debt, hidden: Boolean, onMarkPaid: () -> Unit, onEdit
     Card(
         modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 6.dp),
         shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = SurfaceWhite),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.surface),
         elevation = CardDefaults.cardElevation(0.dp)
     ) {
         Row(modifier = Modifier.fillMaxWidth().padding(12.dp), verticalAlignment = Alignment.Top) {
@@ -462,14 +460,14 @@ private fun DebtCard(debt: Debt, hidden: Boolean, onMarkPaid: () -> Unit, onEdit
                     debt.personName,
                     fontSize = 13.sp,
                     fontWeight = FontWeight.SemiBold,
-                    color = TextPrimary,
+                    color = MaterialTheme.appColors.textPrimary,
                     maxLines = 1
                 )
                 Spacer(Modifier.height(2.dp))
                 Text(
                     "${debt.notes ?: "Sin nota"} · ${formatDate(debt.date)}",
                     fontSize = 11.sp,
-                    color = TextTertiary,
+                    color = MaterialTheme.appColors.textTertiary,
                     maxLines = 1
                 )
             }
@@ -496,8 +494,8 @@ private fun DebtCard(debt: Debt, hidden: Boolean, onMarkPaid: () -> Unit, onEdit
                     TextButton(
                         onClick = onEdit,
                         colors = ButtonDefaults.textButtonColors(
-                            containerColor = Surface4.copy(alpha = 0.15f),
-                            contentColor = TextSecondary
+                            containerColor = MaterialTheme.appColors.surface4.copy(alpha = 0.15f),
+                            contentColor = MaterialTheme.appColors.textSecondary
                         ),
                         contentPadding = PaddingValues(horizontal = 7.dp, vertical = 3.dp),
                         modifier = Modifier.height(24.dp)

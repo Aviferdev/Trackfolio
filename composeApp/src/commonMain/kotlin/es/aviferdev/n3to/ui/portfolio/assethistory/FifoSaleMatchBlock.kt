@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.portfolio.assethistory
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -22,10 +24,7 @@ import es.aviferdev.n3to.domain.portfolio.FifoSaleMatch
 import es.aviferdev.n3to.ui.portfolio.formatShortDate
 import es.aviferdev.n3to.ui.theme.ExpenseRed
 import es.aviferdev.n3to.ui.theme.IncomeGreen
-import es.aviferdev.n3to.ui.theme.SurfaceElevated
-import es.aviferdev.n3to.ui.theme.TextPrimary
-import es.aviferdev.n3to.ui.theme.TextSecondary
-import es.aviferdev.n3to.ui.theme.TextTertiary
+
 import es.aviferdev.n3to.ui.theme.formatAmount
 import es.aviferdev.n3to.ui.theme.formatQty
 import es.aviferdev.n3to.ui.theme.maskAmount
@@ -36,13 +35,13 @@ fun FifoSaleMatchBlock(sale: FifoSaleMatch, masked: Boolean) {
     val pnlColor = when {
         sale.realizedPnL > 0 -> IncomeGreen
         sale.realizedPnL < 0 -> ExpenseRed
-        else -> TextSecondary
+        else -> MaterialTheme.appColors.textSecondary
     }
     Column(
         modifier = Modifier.fillMaxWidth()
             .padding(horizontal = 10.dp, vertical = 5.dp)
             .clip(RoundedCornerShape(10.dp))
-            .background(SurfaceElevated)
+            .background(MaterialTheme.appColors.surfaceElevated)
             .padding(horizontal = 12.dp, vertical = 10.dp)
     ) {
         Row(Modifier.fillMaxWidth(), Arrangement.SpaceBetween, Alignment.CenterVertically) {
@@ -53,7 +52,7 @@ fun FifoSaleMatchBlock(sale: FifoSaleMatch, masked: Boolean) {
                     Text(
                         "Venta de ${formatQty(sale.saleQuantity)} u.",
                         fontSize = 12.sp,
-                        color = TextPrimary,
+                        color = MaterialTheme.appColors.textPrimary,
                         fontWeight = FontWeight.SemiBold
                     )
                 }
@@ -63,11 +62,11 @@ fun FifoSaleMatchBlock(sale: FifoSaleMatch, masked: Boolean) {
                             formatAmount(sale.salePrice),
                             masked
                         )
-                    } €/u.", fontSize = 10.sp, color = TextTertiary
+                    } €/u.", fontSize = 10.sp, color = MaterialTheme.appColors.textTertiary
                 )
             }
             Column(horizontalAlignment = Alignment.End) {
-                Text("P&L", fontSize = 9.sp, color = TextTertiary)
+                Text("P&L", fontSize = 9.sp, color = MaterialTheme.appColors.textTertiary)
                 Text(
                     if (sale.realizedPnL == 0.0) "—" else "${if (sale.realizedPnL >= 0) "+" else "−"} ${
                         maskAmount(
@@ -83,7 +82,7 @@ fun FifoSaleMatchBlock(sale: FifoSaleMatch, masked: Boolean) {
             Spacer(Modifier.height(6.dp))
             sale.consumed.forEach { c ->
                 val cColor = when {
-                    c.pnl > 0 -> IncomeGreen; c.pnl < 0 -> ExpenseRed; else -> TextSecondary
+                    c.pnl > 0 -> IncomeGreen; c.pnl < 0 -> ExpenseRed; else -> MaterialTheme.appColors.textSecondary
                 }
                 Row(
                     Modifier.fillMaxWidth().padding(start = 14.dp, top = 2.dp, bottom = 2.dp),
@@ -94,7 +93,7 @@ fun FifoSaleMatchBlock(sale: FifoSaleMatch, masked: Boolean) {
                         Text(
                             "↳ ${formatQty(c.quantityConsumed)} u. del lote del ${formatShortDate(c.purchaseDate)}",
                             fontSize = 10.sp,
-                            color = TextPrimary
+                            color = MaterialTheme.appColors.textPrimary
                         )
                         Text(
                             "compra a ${
@@ -102,7 +101,7 @@ fun FifoSaleMatchBlock(sale: FifoSaleMatch, masked: Boolean) {
                                     formatAmount(c.purchasePrice),
                                     masked
                                 )
-                            } €/u.", fontSize = 9.sp, color = TextTertiary
+                            } €/u.", fontSize = 9.sp, color = MaterialTheme.appColors.textTertiary
                         )
                     }
                     Text(

@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.portfolio
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -58,19 +60,13 @@ import es.aviferdev.n3to.ui.common.navigation.TopBarApp
 import es.aviferdev.n3to.ui.fixedincome.CreateFixedIncomeBottomSheet
 import es.aviferdev.n3to.ui.fixedincome.FixedIncomePositionCard
 import es.aviferdev.n3to.ui.fixedincome.RegisterCouponBottomSheet
-import es.aviferdev.n3to.ui.theme.BorderGray
-import es.aviferdev.n3to.ui.theme.CyanAccent
+
 import es.aviferdev.n3to.ui.theme.ExpenseRed
 import es.aviferdev.n3to.ui.theme.IncomeGreen
 import es.aviferdev.n3to.ui.theme.LocalBalanceHidden
-import es.aviferdev.n3to.ui.theme.NavyBorder
-import es.aviferdev.n3to.ui.theme.NavyDeep
-import es.aviferdev.n3to.ui.theme.NavySurface
+
 import es.aviferdev.n3to.ui.theme.PrimaryDark
-import es.aviferdev.n3to.ui.theme.SurfaceWhite
-import es.aviferdev.n3to.ui.theme.TextPrimary
-import es.aviferdev.n3to.ui.theme.TextSecondary
-import es.aviferdev.n3to.ui.theme.TextTertiary
+
 import es.aviferdev.n3to.ui.theme.WarnAmber
 import es.aviferdev.n3to.ui.theme.formatAmount
 import es.aviferdev.n3to.ui.theme.formatPercent
@@ -158,7 +154,7 @@ fun PortfolioScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(NavyDeep)
+            .background(MaterialTheme.appColors.navyDeep)
     ) {
         Column(
             Modifier
@@ -172,7 +168,7 @@ fun PortfolioScreen(
                     IconActionButton(
                         onClick = onNavigateToSettings,
                         icon = Icons.Outlined.Settings,
-                        iconTint = TextSecondary,
+                        iconTint = MaterialTheme.appColors.textSecondary,
                         label = stringResource(Res.string.portfolio_settings_cd)
                     )
                 }
@@ -230,24 +226,24 @@ fun PortfolioScreen(
                     onClick = { fabMenuOpen = true },
                     modifier = Modifier.size(52.dp),
                     shape = RoundedCornerShape(16.dp),
-                    containerColor = NavySurface,
-                    contentColor = CyanAccent,
+                    containerColor = MaterialTheme.appColors.navySurface,
+                    contentColor = MaterialTheme.appColors.cyanAccent,
                     elevation = FloatingActionButtonDefaults.elevation(6.dp)
                 ) {
-                    Text("+", fontSize = 26.sp, fontWeight = FontWeight.Light, color = CyanAccent)
+                    Text("+", fontSize = 26.sp, fontWeight = FontWeight.Light, color = MaterialTheme.appColors.cyanAccent)
                 }
                 DropdownMenu(
                     expanded = fabMenuOpen,
                     onDismissRequest = { fabMenuOpen = false },
-                    containerColor = SurfaceWhite
+                    containerColor = MaterialTheme.appColors.surface
                 ) {
                     DropdownMenuItem(
-                        text = { Text(stringResource(Res.string.portfolio_new_purchase), color = TextPrimary, fontSize = 14.sp) },
+                        text = { Text(stringResource(Res.string.portfolio_new_purchase), color = MaterialTheme.appColors.textPrimary, fontSize = 14.sp) },
                         leadingIcon = { Text("↗", fontSize = 15.sp) },
                         onClick = { fabMenuOpen = false; viewModel.openAddTransactionSheet() }
                     )
                     DropdownMenuItem(
-                        text = { Text(stringResource(Res.string.portfolio_new_bond), color = TextPrimary, fontSize = 14.sp) },
+                        text = { Text(stringResource(Res.string.portfolio_new_bond), color = MaterialTheme.appColors.textPrimary, fontSize = 14.sp) },
                         leadingIcon = { Icon("🏦".toMaterialIcon(), contentDescription = null, modifier = Modifier.size(18.dp)) },
                         onClick = { fabMenuOpen = false; viewModel.openCreateFixedIncomeSheet() }
                     )
@@ -381,16 +377,14 @@ fun PortfolioScreen(
         }
         AlertDialog(
             onDismissRequest = clearFn,
-            containerColor = SurfaceWhite,
-            title = { Text(stringResource(Res.string.common_error), fontSize = 16.sp, fontWeight = FontWeight.Bold, color = TextPrimary) },
-            text = { Text(errorMsg, fontSize = 13.sp, color = TextSecondary) },
+            containerColor = MaterialTheme.appColors.surface,
+            title = { Text(stringResource(Res.string.common_error), fontSize = 16.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.appColors.textPrimary) },
+            text = { Text(errorMsg, fontSize = 13.sp, color = MaterialTheme.appColors.textSecondary) },
             confirmButton = { TextButton(onClick = clearFn) { Text(stringResource(Res.string.common_accept), color = PrimaryDark) } },
             shape = RoundedCornerShape(16.dp)
         )
     }
 }
-
-
 
 // Componentes extraídos a archivos propios:
 // PortfolioSummaryCard → PortfolioSummaryCard.kt

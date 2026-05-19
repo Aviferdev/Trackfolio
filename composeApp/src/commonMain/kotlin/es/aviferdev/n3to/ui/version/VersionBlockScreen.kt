@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.version
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -30,15 +32,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import es.aviferdev.n3to.ui.theme.CyanAccent
-import es.aviferdev.n3to.ui.theme.CyanGlow
+
 import es.aviferdev.n3to.ui.theme.N3toTheme
-import es.aviferdev.n3to.ui.theme.NavyBorder
-import es.aviferdev.n3to.ui.theme.NavyDeep
-import es.aviferdev.n3to.ui.theme.NavySurface
-import es.aviferdev.n3to.ui.theme.TextPrimary
-import es.aviferdev.n3to.ui.theme.TextSecondary
-import es.aviferdev.n3to.ui.theme.TextTertiary
+
 import androidx.compose.ui.tooling.preview.Preview
 
 /**
@@ -68,10 +64,18 @@ fun VersionBlockScreen(
     minVersion: String,
     onOpenStore: () -> Unit
 ) {
+    val appCCyanAccent = MaterialTheme.appColors.cyanAccent
+    val appCCyanGlow = MaterialTheme.appColors.cyanGlow
+    val appCNavyBorder = MaterialTheme.appColors.navyBorder
+    val appCNavyDeep = MaterialTheme.appColors.navyDeep
+    val appCNavySurface = MaterialTheme.appColors.navySurface
+    val appCTextPrimary = MaterialTheme.appColors.textPrimary
+    val appCTextSecondary = MaterialTheme.appColors.textSecondary
+    val appCTextTertiary = MaterialTheme.appColors.textTertiary
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(NavyDeep),
+            .background(appCNavyDeep),
         contentAlignment = Alignment.Center
     ) {
         // Orb decorativo cian (esquina superior derecha)
@@ -82,7 +86,7 @@ fun VersionBlockScreen(
                 .offset(x = 100.dp, y = (-100).dp)
                 .background(
                     Brush.radialGradient(
-                        colors = listOf(CyanGlow.copy(alpha = 0.10f), Color.Transparent)
+                        colors = listOf(appCCyanGlow.copy(alpha = 0.10f), Color.Transparent)
                     ),
                     CircleShape
                 )
@@ -99,11 +103,11 @@ fun VersionBlockScreen(
                     .drawBehind {
                         val cornerRadius = size.width * 0.22f
                         drawRoundRect(
-                            color = NavySurface,
+                            color = appCNavySurface,
                             cornerRadius = androidx.compose.ui.geometry.CornerRadius(cornerRadius)
                         )
                         drawRoundRect(
-                            color = NavyBorder,
+                            color = appCNavyBorder,
                             cornerRadius = androidx.compose.ui.geometry.CornerRadius(cornerRadius),
                             style = androidx.compose.ui.graphics.drawscope.Stroke(width = 1.dp.toPx())
                         )
@@ -113,7 +117,7 @@ fun VersionBlockScreen(
                 Icon(
                     imageVector = Icons.Outlined.SystemUpdate,
                     contentDescription = null,
-                    tint = CyanAccent,
+                    tint = appCCyanAccent,
                     modifier = Modifier.size(36.dp)
                 )
             }
@@ -125,7 +129,7 @@ fun VersionBlockScreen(
                 text = title,
                 fontSize = 22.sp,
                 fontWeight = FontWeight.Bold,
-                color = TextPrimary,
+                color = appCTextPrimary,
                 letterSpacing = (-0.3).sp
             )
 
@@ -135,7 +139,7 @@ fun VersionBlockScreen(
             Text(
                 text = message,
                 fontSize = 14.sp,
-                color = TextSecondary,
+                color = appCTextSecondary,
                 textAlign = TextAlign.Center
             )
 
@@ -144,7 +148,7 @@ fun VersionBlockScreen(
             Text(
                 text = "Versión mínima: $minVersion · Tu versión: $currentVersion",
                 fontSize = 12.sp,
-                color = TextTertiary,
+                color = appCTextTertiary,
                 textAlign = TextAlign.Center
             )
 
@@ -158,14 +162,14 @@ fun VersionBlockScreen(
                     .height(52.dp),
                 shape = RoundedCornerShape(14.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = CyanAccent
+                    containerColor = appCCyanAccent
                 )
             ) {
                 Text(
                     text = buttonText,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.SemiBold,
-                    color = NavyDeep
+                    color = appCNavyDeep
                 )
             }
         }

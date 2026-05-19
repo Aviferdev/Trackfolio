@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.networth
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.slideInVertically
@@ -106,12 +108,12 @@ fun NetWorthScreen(
 
     when (val state = uiState) {
         is NetWorthUiState.Loading -> Box(
-            Modifier.fillMaxSize().background(NavyDeep),
+            Modifier.fillMaxSize().background(MaterialTheme.appColors.navyDeep),
             contentAlignment = Alignment.Center
         ) { SplashLoader() }
 
         is NetWorthUiState.Error -> Box(
-            Modifier.fillMaxSize().background(NavyDeep),
+            Modifier.fillMaxSize().background(MaterialTheme.appColors.navyDeep),
             contentAlignment = Alignment.Center
         ) { Text(state.message, color = ExpenseRed) }
 
@@ -173,7 +175,7 @@ fun NetWorthContent(
     Column(
         modifier
             .fillMaxSize()
-            .background(NavyDeep)
+            .background(MaterialTheme.appColors.navyDeep)
     ) {
         TopBarApp(
             title = stringResource(Res.string.networth_title),
@@ -205,7 +207,7 @@ fun NetWorthContent(
                             title          = stringResource(Res.string.networth_evolution_title),
                             subtitle       = stringResource(Res.string.networth_monthly_title),
                             points         = historyPoints,
-                            lineColor      = CyanAccent,
+                            lineColor      = MaterialTheme.appColors.cyanAccent,
                             balancesHidden = balancesHidden
                         )
                     }
@@ -253,12 +255,12 @@ fun NetWorthContent(
                             modifier = Modifier
                                 .size(28.dp)
                                 .clip(RoundedCornerShape(8.dp))
-                                .background(NavySelected)
+                                .background(MaterialTheme.appColors.navySelected)
                         ) {
                             Icon(
                                 imageVector        = Icons.Outlined.Add,
                                 contentDescription = stringResource(Res.string.networth_add_property_cd),
-                                tint               = CyanAccent,
+                                tint               = MaterialTheme.appColors.cyanAccent,
                                 modifier           = Modifier.size(15.dp)
                             )
                         }
@@ -276,11 +278,11 @@ fun NetWorthContent(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clip(RoundedCornerShape(12.dp))
-                                .background(NavySurface)
+                                .background(MaterialTheme.appColors.navySurface)
                                 .padding(24.dp),
                             contentAlignment = Alignment.Center
                         ) {
-                            Text(stringResource(Res.string.networth_no_properties), color = TextTertiary, fontSize = 13.sp)
+                            Text(stringResource(Res.string.networth_no_properties), color = MaterialTheme.appColors.textTertiary, fontSize = 13.sp)
                         }
                     }
                 }
@@ -316,12 +318,12 @@ fun NetWorthContent(
                             modifier = Modifier
                                 .size(28.dp)
                                 .clip(RoundedCornerShape(8.dp))
-                                .background(NavySelected)
+                                .background(MaterialTheme.appColors.navySelected)
                         ) {
                             Icon(
                                 imageVector = Icons.Outlined.Add,
                                 contentDescription = "Añadir bien",
-                                tint        = CyanAccent,
+                                tint        = MaterialTheme.appColors.cyanAccent,
                                 modifier    = Modifier.size(15.dp)
                             )
                         }
@@ -339,11 +341,11 @@ fun NetWorthContent(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clip(RoundedCornerShape(12.dp))
-                                .background(NavySurface)
+                                .background(MaterialTheme.appColors.navySurface)
                                 .padding(24.dp),
                             contentAlignment = Alignment.Center
                         ) {
-                            Text("No hay bienes registrados", color = TextTertiary, fontSize = 13.sp)
+                            Text("No hay bienes registrados", color = MaterialTheme.appColors.textTertiary, fontSize = 13.sp)
                         }
                     }
                 }
@@ -377,12 +379,12 @@ fun NetWorthContent(
                             modifier = Modifier
                                 .size(28.dp)
                                 .clip(RoundedCornerShape(8.dp))
-                                .background(NavySelected)
+                                .background(MaterialTheme.appColors.navySelected)
                         ) {
                             Icon(
                                 imageVector        = Icons.Outlined.Add,
                                 contentDescription = stringResource(Res.string.networth_add_loan_cd),
-                                tint               = CyanAccent,
+                                tint               = MaterialTheme.appColors.cyanAccent,
                                 modifier           = Modifier.size(15.dp)
                             )
                         }
@@ -400,11 +402,11 @@ fun NetWorthContent(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clip(RoundedCornerShape(12.dp))
-                                .background(NavySurface)
+                                .background(MaterialTheme.appColors.navySurface)
                                 .padding(24.dp),
                             contentAlignment = Alignment.Center
                         ) {
-                            Text(stringResource(Res.string.networth_no_liabilities), color = TextTertiary, fontSize = 13.sp)
+                            Text(stringResource(Res.string.networth_no_liabilities), color = MaterialTheme.appColors.textTertiary, fontSize = 13.sp)
                         }
                     }
                 }

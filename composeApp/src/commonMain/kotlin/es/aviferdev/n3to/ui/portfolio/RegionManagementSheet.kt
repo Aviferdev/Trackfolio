@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.portfolio
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -56,7 +58,7 @@ fun RegionManagementSheet(
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-        containerColor = SurfaceWhite,
+        containerColor = MaterialTheme.appColors.surface,
         dragHandle = {
             Box(
                 modifier = Modifier
@@ -64,7 +66,7 @@ fun RegionManagementSheet(
                     .width(40.dp)
                     .height(4.dp)
                     .clip(RoundedCornerShape(2.dp))
-                    .background(BorderGray)
+                    .background(MaterialTheme.appColors.border)
             )
         }
     ) {
@@ -79,20 +81,20 @@ fun RegionManagementSheet(
                 stringResource(Res.string.portfolio_settings_region_section),
                 fontSize = 18.sp,
                 fontWeight = FontWeight.SemiBold,
-                color = TextPrimary,
+                color = MaterialTheme.appColors.textPrimary,
                 modifier = Modifier.padding(bottom = 4.dp)
             )
             Text(
                 stringResource(Res.string.portfolio_settings_region_empty),
                 fontSize = 11.sp,
-                color = TextSecondary,
+                color = MaterialTheme.appColors.textSecondary,
                 modifier = Modifier.padding(bottom = 18.dp)
             )
 
             Text(
                 stringResource(Res.string.portfolio_region_new),
                 fontSize = 12.sp,
-                color = TextSecondary,
+                color = MaterialTheme.appColors.textSecondary,
                 fontWeight = FontWeight.Medium
             )
             Spacer(Modifier.height(8.dp))
@@ -110,7 +112,7 @@ fun RegionManagementSheet(
                     shape = RoundedCornerShape(10.dp),
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = PrimaryDark,
-                        unfocusedBorderColor = BorderGray
+                        unfocusedBorderColor = MaterialTheme.appColors.border
                     )
                 )
                 Spacer(Modifier.width(8.dp))
@@ -172,14 +174,14 @@ private fun RegionItem(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(10.dp))
-            .background(SurfaceElevated)
+            .background(MaterialTheme.appColors.surfaceElevated)
             .padding(horizontal = 12.dp, vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
             region.name,
             fontSize = 14.sp,
-            color = TextPrimary,
+            color = MaterialTheme.appColors.textPrimary,
             modifier = Modifier.weight(1f)
         )
         IconButton(

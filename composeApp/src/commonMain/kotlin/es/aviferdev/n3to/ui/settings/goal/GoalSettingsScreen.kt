@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.settings.goal
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -64,18 +66,10 @@ import es.aviferdev.n3to.ui.common.help.HelpTooltipIcon
 import es.aviferdev.n3to.ui.common.input.InlineAmountField
 import es.aviferdev.n3to.ui.common.navigation.TimeStepperHeader
 import es.aviferdev.n3to.ui.common.navigation.TopBarApp
-import es.aviferdev.n3to.ui.theme.CyanAccent
-import es.aviferdev.n3to.ui.theme.CyanGlow
+
 import es.aviferdev.n3to.ui.theme.ExpenseRed
 import es.aviferdev.n3to.ui.theme.IncomeGreen
-import es.aviferdev.n3to.ui.theme.NavyBorder
-import es.aviferdev.n3to.ui.theme.NavyDeep
-import es.aviferdev.n3to.ui.theme.NavySelected
-import es.aviferdev.n3to.ui.theme.NavySurface
-import es.aviferdev.n3to.ui.theme.NavySurfaceLight
-import es.aviferdev.n3to.ui.theme.TextPrimary
-import es.aviferdev.n3to.ui.theme.TextSecondary
-import es.aviferdev.n3to.ui.theme.TextTertiary
+
 import kotlinx.coroutines.delay
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -108,15 +102,15 @@ fun GoalSettingsScreen(
     // Deselect if the year changes (data reload)
     LaunchedEffect(state.year) { selectedMonthKey = null }
 
-    Column(modifier = Modifier.fillMaxSize().background(NavyDeep)) {
+    Column(modifier = Modifier.fillMaxSize().background(MaterialTheme.appColors.navyDeep)) {
         TopBarApp(
             title = "Objetivos mensuales",
             navigateBack = {
                 if (state.isDirty) viewModel.save()
                 navigateBack()
             },
-            containerColor = NavySurface,
-            dividerColor = NavyBorder
+            containerColor = MaterialTheme.appColors.navySurface,
+            dividerColor = MaterialTheme.appColors.navyBorder
         )
 
         TimeStepperHeader(
@@ -124,8 +118,8 @@ fun GoalSettingsScreen(
             canGoBack = state.canGoPrevious,
             onPrevious = { viewModel.previousYear() },
             onNext = {},
-            containerColor = NavySurface,
-            dividerColor = NavyBorder
+            containerColor = MaterialTheme.appColors.navySurface,
+            dividerColor = MaterialTheme.appColors.navyBorder
         )
 
         AnimatedVisibility(
@@ -137,7 +131,7 @@ fun GoalSettingsScreen(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
-                    CircularProgressIndicator(color = CyanAccent, strokeWidth = 2.dp)
+                    CircularProgressIndicator(color = MaterialTheme.appColors.cyanAccent, strokeWidth = 2.dp)
                 }
             } else {
                 LazyColumn(
@@ -167,24 +161,24 @@ fun GoalSettingsScreen(
                             OutlinedTextField(
                                 value = state.baseSavingsText,
                                 onValueChange = viewModel::onBaseSavingsChange,
-                                placeholder = { Text("Ej: 500", color = TextTertiary) },
+                                placeholder = { Text("Ej: 500", color = MaterialTheme.appColors.textTertiary) },
                                 trailingIcon = {
                                     Text(
                                         "€",
                                         fontSize = 14.sp,
-                                        color = TextTertiary,
+                                        color = MaterialTheme.appColors.textTertiary,
                                         modifier = Modifier.padding(end = 12.dp)
                                     )
                                 },
                                 singleLine = true,
                                 colors = OutlinedTextFieldDefaults.colors(
                                     focusedBorderColor = IncomeGreen,
-                                    unfocusedBorderColor = NavyBorder,
+                                    unfocusedBorderColor = MaterialTheme.appColors.navyBorder,
                                     cursorColor = IncomeGreen,
-                                    focusedTextColor = TextPrimary,
-                                    unfocusedTextColor = TextPrimary,
-                                    focusedContainerColor = NavyDeep,
-                                    unfocusedContainerColor = NavyDeep
+                                    focusedTextColor = MaterialTheme.appColors.textPrimary,
+                                    unfocusedTextColor = MaterialTheme.appColors.textPrimary,
+                                    focusedContainerColor = MaterialTheme.appColors.navyDeep,
+                                    unfocusedContainerColor = MaterialTheme.appColors.navyDeep
                                 ),
                                 shape = RoundedCornerShape(11.dp),
                                 modifier = Modifier.fillMaxWidth()
@@ -200,11 +194,11 @@ fun GoalSettingsScreen(
                                     Icon(
                                         Icons.AutoMirrored.Outlined.TrendingUp,
                                         contentDescription = null,
-                                        tint = CyanAccent,
+                                        tint = MaterialTheme.appColors.cyanAccent,
                                         modifier = Modifier.size(18.dp)
                                     )
                                 },
-                                iconBackground = CyanAccent.copy(alpha = 0.12f),
+                                iconBackground = MaterialTheme.appColors.cyanAccent.copy(alpha = 0.12f),
                                 label = "INVERSIÓN MENSUAL BASE",
                                 description = "Lo que destinas a compra de activos: acciones, fondos, ETFs, etc."
                             )
@@ -212,24 +206,24 @@ fun GoalSettingsScreen(
                             OutlinedTextField(
                                 value = state.baseInvestmentText,
                                 onValueChange = viewModel::onBaseInvestmentChange,
-                                placeholder = { Text("Ej: 300", color = TextTertiary) },
+                                placeholder = { Text("Ej: 300", color = MaterialTheme.appColors.textTertiary) },
                                 trailingIcon = {
                                     Text(
                                         "€",
                                         fontSize = 14.sp,
-                                        color = TextTertiary,
+                                        color = MaterialTheme.appColors.textTertiary,
                                         modifier = Modifier.padding(end = 12.dp)
                                     )
                                 },
                                 singleLine = true,
                                 colors = OutlinedTextFieldDefaults.colors(
-                                    focusedBorderColor = CyanAccent,
-                                    unfocusedBorderColor = NavyBorder,
-                                    cursorColor = CyanAccent,
-                                    focusedTextColor = TextPrimary,
-                                    unfocusedTextColor = TextPrimary,
-                                    focusedContainerColor = NavyDeep,
-                                    unfocusedContainerColor = NavyDeep
+                                    focusedBorderColor = MaterialTheme.appColors.cyanAccent,
+                                    unfocusedBorderColor = MaterialTheme.appColors.navyBorder,
+                                    cursorColor = MaterialTheme.appColors.cyanAccent,
+                                    focusedTextColor = MaterialTheme.appColors.textPrimary,
+                                    unfocusedTextColor = MaterialTheme.appColors.textPrimary,
+                                    focusedContainerColor = MaterialTheme.appColors.navyDeep,
+                                    unfocusedContainerColor = MaterialTheme.appColors.navyDeep
                                 ),
                                 shape = RoundedCornerShape(11.dp),
                                 modifier = Modifier.fillMaxWidth()
@@ -252,7 +246,7 @@ fun GoalSettingsScreen(
                                         fontSize = 10.sp,
                                         fontWeight = FontWeight.SemiBold,
                                         letterSpacing = 0.8.sp,
-                                        color = TextTertiary
+                                        color = MaterialTheme.appColors.textTertiary
                                     )
                                     Text(
                                         text = if (state.customizedCount > 0)
@@ -260,7 +254,7 @@ fun GoalSettingsScreen(
                                         else
                                             "Toca un mes para ajustarlo",
                                         fontSize = 11.sp,
-                                        color = if (state.customizedCount > 0) CyanAccent else TextTertiary
+                                        color = if (state.customizedCount > 0) MaterialTheme.appColors.cyanAccent else MaterialTheme.appColors.textTertiary
                                     )
                                 }
                                 HelpTooltipIcon(
@@ -307,7 +301,7 @@ fun GoalSettingsScreen(
                                 if (month != null) {
                                     Column(modifier = Modifier.padding(top = 4.dp)) {
                                         HorizontalDivider(
-                                            color = NavyBorder,
+                                            color = MaterialTheme.appColors.navyBorder,
                                             thickness = 0.5.dp,
                                             modifier = Modifier.padding(bottom = 12.dp)
                                         )
@@ -322,7 +316,7 @@ fun GoalSettingsScreen(
                                                 month.monthLabel,
                                                 fontSize = 14.sp,
                                                 fontWeight = FontWeight.SemiBold,
-                                                color = TextPrimary
+                                                color = MaterialTheme.appColors.textPrimary
                                             )
                                             Row(verticalAlignment = Alignment.CenterVertically) {
                                                 if (month.isCustomized) {
@@ -345,7 +339,7 @@ fun GoalSettingsScreen(
                                                     Icon(
                                                         Icons.Outlined.Close,
                                                         contentDescription = "Cerrar",
-                                                        tint = TextTertiary,
+                                                        tint = MaterialTheme.appColors.textTertiary,
                                                         modifier = Modifier.size(16.dp)
                                                     )
                                                 }
@@ -368,7 +362,7 @@ fun GoalSettingsScreen(
                                                 placeholder = "Base",
                                                 suffix = "€",
                                                 singleLine = true,
-                                                containerColor = NavySurfaceLight,
+                                                containerColor = MaterialTheme.appColors.navySurfaceLight,
                                                 cursorColor = IncomeGreen,
                                                 modifier = Modifier.weight(1f)
                                             )
@@ -381,8 +375,8 @@ fun GoalSettingsScreen(
                                                 placeholder = "Base",
                                                 suffix = "€",
                                                 singleLine = true,
-                                                containerColor = NavySurfaceLight,
-                                                cursorColor = CyanAccent,
+                                                containerColor = MaterialTheme.appColors.navySurfaceLight,
+                                                cursorColor = MaterialTheme.appColors.cyanAccent,
                                                 modifier = Modifier.weight(1f)
                                             )
                                         }
@@ -398,10 +392,10 @@ fun GoalSettingsScreen(
                             onClick = viewModel::save,
                             enabled = state.isDirty && !state.isSaving,
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = CyanAccent,
-                                disabledContainerColor = CyanAccent.copy(alpha = 0.3f),
-                                contentColor = NavyDeep,
-                                disabledContentColor = NavyDeep.copy(alpha = 0.5f)
+                                containerColor = MaterialTheme.appColors.cyanAccent,
+                                disabledContainerColor = MaterialTheme.appColors.cyanAccent.copy(alpha = 0.3f),
+                                contentColor = MaterialTheme.appColors.navyDeep,
+                                disabledContentColor = MaterialTheme.appColors.navyDeep.copy(alpha = 0.5f)
                             ),
                             shape = RoundedCornerShape(14.dp),
                             modifier = Modifier
@@ -410,7 +404,7 @@ fun GoalSettingsScreen(
                         ) {
                             if (state.isSaving) {
                                 CircularProgressIndicator(
-                                    color = NavyDeep,
+                                    color = MaterialTheme.appColors.navyDeep,
                                     strokeWidth = 2.dp,
                                     modifier = Modifier.size(18.dp)
                                 )
@@ -460,8 +454,8 @@ private fun GoalSettingsHeroCard() {
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(20.dp))
-            .background(Brush.linearGradient(listOf(NavySurface, NavySurfaceLight)))
-            .border(0.5.dp, NavyBorder, RoundedCornerShape(20.dp))
+            .background(Brush.linearGradient(listOf(MaterialTheme.appColors.navySurface, MaterialTheme.appColors.navySurfaceLight)))
+            .border(0.5.dp, MaterialTheme.appColors.navyBorder, RoundedCornerShape(20.dp))
     ) {
         Box(
             modifier = Modifier
@@ -469,7 +463,7 @@ private fun GoalSettingsHeroCard() {
                 .align(Alignment.TopEnd)
                 .padding(top = 8.dp, end = 8.dp)
                 .background(
-                    Brush.radialGradient(listOf(CyanGlow.copy(alpha = 0.14f), Color.Transparent)),
+                    Brush.radialGradient(listOf(MaterialTheme.appColors.cyanGlow.copy(alpha = 0.14f), Color.Transparent)),
                     shape = CircleShape
                 )
         )
@@ -478,13 +472,13 @@ private fun GoalSettingsHeroCard() {
                 modifier = Modifier
                     .size(40.dp)
                     .clip(RoundedCornerShape(11.dp))
-                    .background(CyanAccent.copy(alpha = 0.12f)),
+                    .background(MaterialTheme.appColors.cyanAccent.copy(alpha = 0.12f)),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     imageVector = Icons.Outlined.GpsFixed,
                     contentDescription = null,
-                    tint = CyanAccent,
+                    tint = MaterialTheme.appColors.cyanAccent,
                     modifier = Modifier.size(22.dp)
                 )
             }
@@ -494,7 +488,7 @@ private fun GoalSettingsHeroCard() {
                 fontSize = 10.sp,
                 fontWeight = FontWeight.SemiBold,
                 letterSpacing = 1.2.sp,
-                color = CyanAccent.copy(alpha = 0.8f)
+                color = MaterialTheme.appColors.cyanAccent.copy(alpha = 0.8f)
             )
             Spacer(Modifier.height(2.dp))
             Text(
@@ -502,13 +496,13 @@ private fun GoalSettingsHeroCard() {
                 fontSize = 20.sp,
                 fontWeight = FontWeight.ExtraBold,
                 letterSpacing = (-0.5).sp,
-                color = TextPrimary
+                color = MaterialTheme.appColors.textPrimary
             )
             Spacer(Modifier.height(6.dp))
             Text(
                 text = "Define cuánto quieres ahorrar e invertir cada mes. Establece una base anual y ajusta los meses con ingresos o gastos excepcionales.",
                 fontSize = 12.sp,
-                color = TextSecondary,
+                color = MaterialTheme.appColors.textSecondary,
                 lineHeight = 17.sp
             )
         }
@@ -523,8 +517,8 @@ private fun NavySectionCard(content: @Composable ColumnScope.() -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(14.dp))
-            .background(NavySurface)
-            .border(0.5.dp, NavyBorder, RoundedCornerShape(14.dp))
+            .background(MaterialTheme.appColors.navySurface)
+            .border(0.5.dp, MaterialTheme.appColors.navyBorder, RoundedCornerShape(14.dp))
             .padding(horizontal = 16.dp, vertical = 14.dp),
         content = content
     )
@@ -554,12 +548,12 @@ private fun GoalTypeHeader(
                 fontSize = 10.sp,
                 fontWeight = FontWeight.SemiBold,
                 letterSpacing = 0.8.sp,
-                color = TextTertiary
+                color = MaterialTheme.appColors.textTertiary
             )
             Text(
                 text = description,
                 fontSize = 11.sp,
-                color = TextTertiary,
+                color = MaterialTheme.appColors.textTertiary,
                 lineHeight = 15.sp
             )
         }
@@ -582,19 +576,19 @@ private fun MonthChip(
             .clip(RoundedCornerShape(9.dp))
             .background(
                 when {
-                    isPast -> NavySurface
-                    isSelected -> NavySelected
-                    isCustomized -> NavySelected.copy(alpha = 0.6f)
-                    else -> NavySurface
+                    isPast -> MaterialTheme.appColors.navySurface
+                    isSelected -> MaterialTheme.appColors.navySelected
+                    isCustomized -> MaterialTheme.appColors.navySelected.copy(alpha = 0.6f)
+                    else -> MaterialTheme.appColors.navySurface
                 }
             )
             .border(
                 width = if (!isPast && (isSelected || isCustomized)) 1.dp else 0.5.dp,
                 color = when {
-                    isPast -> NavyBorder.copy(alpha = 0.4f)
-                    isSelected -> CyanAccent
-                    isCustomized -> CyanAccent.copy(alpha = 0.5f)
-                    else -> NavyBorder
+                    isPast -> MaterialTheme.appColors.navyBorder.copy(alpha = 0.4f)
+                    isSelected -> MaterialTheme.appColors.cyanAccent
+                    isCustomized -> MaterialTheme.appColors.cyanAccent.copy(alpha = 0.5f)
+                    else -> MaterialTheme.appColors.navyBorder
                 },
                 shape = RoundedCornerShape(9.dp)
             )
@@ -608,10 +602,10 @@ private fun MonthChip(
                 fontSize = 11.sp,
                 fontWeight = if (!isPast && (isSelected || isCustomized)) FontWeight.SemiBold else FontWeight.Normal,
                 color = when {
-                    isPast -> TextTertiary.copy(alpha = 0.4f)
-                    isSelected -> CyanAccent
-                    isCustomized -> CyanAccent.copy(alpha = 0.7f)
-                    else -> TextSecondary
+                    isPast -> MaterialTheme.appColors.textTertiary.copy(alpha = 0.4f)
+                    isSelected -> MaterialTheme.appColors.cyanAccent
+                    isCustomized -> MaterialTheme.appColors.cyanAccent.copy(alpha = 0.7f)
+                    else -> MaterialTheme.appColors.textSecondary
                 }
             )
             if (isCustomized && !isPast) {
@@ -620,7 +614,7 @@ private fun MonthChip(
                     modifier = Modifier
                         .size(4.dp)
                         .background(
-                            if (isSelected) CyanAccent else CyanAccent.copy(alpha = 0.6f),
+                            if (isSelected) MaterialTheme.appColors.cyanAccent else MaterialTheme.appColors.cyanAccent.copy(alpha = 0.6f),
                             CircleShape
                         )
                 )

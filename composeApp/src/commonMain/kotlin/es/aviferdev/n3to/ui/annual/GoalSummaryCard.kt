@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.annual
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -30,10 +32,6 @@ import es.aviferdev.n3to.domain.model.MonthlyGoalProgress
 import es.aviferdev.n3to.ui.theme.ExpenseRed
 import es.aviferdev.n3to.ui.theme.IncomeGreen
 import es.aviferdev.n3to.ui.theme.PrimaryDark
-import es.aviferdev.n3to.ui.theme.SurfaceWhite
-import es.aviferdev.n3to.ui.theme.TextPrimary
-import es.aviferdev.n3to.ui.theme.TextSecondary
-import es.aviferdev.n3to.ui.theme.TextTertiary
 
 /**
  * Tarjeta de resumen anual de cumplimiento de objetivos.
@@ -61,7 +59,7 @@ fun GoalSummaryCard(
     Card(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(14.dp),
-        colors = CardDefaults.cardColors(containerColor = SurfaceWhite),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.surface),
         elevation = CardDefaults.cardElevation(0.dp),
         border = CardDefaults.outlinedCardBorder()
     ) {
@@ -79,7 +77,7 @@ fun GoalSummaryCard(
                     text = "Cumplimiento de objetivos",
                     fontSize = 14.sp,
                     fontWeight = FontWeight.SemiBold,
-                    color = TextPrimary
+                    color = MaterialTheme.appColors.textPrimary
                 )
             }
 
@@ -92,7 +90,7 @@ fun GoalSummaryCard(
             ) {
                 GoalLegendItem(color = IncomeGreen, label = "Cumplido")
                 GoalLegendItem(color = ExpenseRed, label = "No cumplido")
-                GoalLegendItem(color = TextTertiary, label = "Sin objetivo")
+                GoalLegendItem(color = MaterialTheme.appColors.textTertiary, label = "Sin objetivo")
             }
 
             Spacer(Modifier.height(12.dp))
@@ -140,7 +138,7 @@ private fun GoalLegendItem(color: androidx.compose.ui.graphics.Color, label: Str
                 .background(color, CircleShape)
         )
         Spacer(Modifier.width(4.dp))
-        Text(label, fontSize = 9.sp, color = TextTertiary)
+        Text(label, fontSize = 9.sp, color = MaterialTheme.appColors.textTertiary)
     }
 }
 
@@ -160,17 +158,17 @@ private fun GoalTypeSummaryRow(
             Icon(
                 icon,
                 contentDescription = null,
-                tint = TextSecondary,
+                tint = MaterialTheme.appColors.textSecondary,
                 modifier = Modifier.size(14.dp)
             )
             Spacer(Modifier.width(4.dp))
-            Text(label, fontSize = 12.sp, fontWeight = FontWeight.Medium, color = TextPrimary)
+            Text(label, fontSize = 12.sp, fontWeight = FontWeight.Medium, color = MaterialTheme.appColors.textPrimary)
         }
         Text(
             text = "$achieved / $total meses",
             fontSize = 11.sp,
             fontWeight = FontWeight.SemiBold,
-            color = if (achieved == total && total > 0) IncomeGreen else TextSecondary
+            color = if (achieved == total && total > 0) IncomeGreen else MaterialTheme.appColors.textSecondary
         )
     }
 }
@@ -198,7 +196,7 @@ private fun MonthIndicatorRow(
             val color = when (status) {
                 GoalStatus.ACHIEVED -> IncomeGreen
                 GoalStatus.FAILED -> ExpenseRed
-                GoalStatus.NO_GOAL -> TextTertiary
+                GoalStatus.NO_GOAL -> MaterialTheme.appColors.textTertiary
             }
             val symbol = when (status) {
                 GoalStatus.ACHIEVED -> "✓"

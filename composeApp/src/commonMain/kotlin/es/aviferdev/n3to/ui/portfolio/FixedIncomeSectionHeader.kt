@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.portfolio
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.size
@@ -13,8 +15,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.ui.common.toMaterialIcon
-import es.aviferdev.n3to.ui.theme.TextPrimary
-import es.aviferdev.n3to.ui.theme.TextTertiary
+
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.portfolio_fixed_income_section
@@ -30,19 +31,19 @@ fun FixedIncomeSectionHeader(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Icon("🏦".toMaterialIcon(), contentDescription = null, tint = TextPrimary, modifier = Modifier.size(18.dp))
+        Icon("🏦".toMaterialIcon(), contentDescription = null, tint = MaterialTheme.appColors.textPrimary, modifier = Modifier.size(18.dp))
         Spacer(Modifier.width(6.dp))
         Text(
             text = stringResource(Res.string.portfolio_fixed_income_section),
             fontSize = 12.sp,
             fontWeight = FontWeight.Bold,
-            color = TextPrimary
+            color = MaterialTheme.appColors.textPrimary
         )
         Spacer(Modifier.width(5.dp))
         Text(
             text = "($count)",
             fontSize = 11.sp,
-            color = TextTertiary
+            color = MaterialTheme.appColors.textTertiary
         )
     }
 }

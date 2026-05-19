@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.common.input
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -29,9 +31,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.ui.theme.PrimaryDark
-import es.aviferdev.n3to.ui.theme.SurfaceElevated
-import es.aviferdev.n3to.ui.theme.TextPrimary
-import es.aviferdev.n3to.ui.theme.TextTertiary
+
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import es.aviferdev.n3to.ui.theme.formatDateFullLocalized
 import n3to.composeapp.generated.resources.Res
@@ -76,14 +76,14 @@ fun DatePickerRow(
             text = label,
             fontSize = 13.sp,
             fontWeight = FontWeight.Medium,
-            color = TextTertiary
+            color = MaterialTheme.appColors.textTertiary
         )
         Spacer(Modifier.height(4.dp))
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(10.dp))
-                .background(SurfaceElevated)
+                .background(MaterialTheme.appColors.surfaceElevated)
                 .clickable { showPicker = true }
                 .padding(horizontal = 14.dp, vertical = 14.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -93,7 +93,7 @@ fun DatePickerRow(
                 text = dateText,
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Medium,
-                color = if (dateMillis > 0) TextPrimary else TextTertiary
+                color = if (dateMillis > 0) MaterialTheme.appColors.textPrimary else MaterialTheme.appColors.textTertiary
             )
             Text(
                 text = "📅",
@@ -127,7 +127,7 @@ fun DatePickerRow(
             },
             dismissButton = {
                 TextButton(onClick = { showPicker = false }) {
-                    Text(stringResource(Res.string.common_cancel), color = TextTertiary)
+                    Text(stringResource(Res.string.common_cancel), color = MaterialTheme.appColors.textTertiary)
                 }
             }
         ) {

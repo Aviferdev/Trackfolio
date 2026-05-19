@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.portfolio.assethistory
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -21,15 +23,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.portfolio.AssetPosition
-import es.aviferdev.n3to.ui.theme.PnLNegative
-import es.aviferdev.n3to.ui.theme.PnLPositive
+
 import es.aviferdev.n3to.ui.theme.PrimaryDark
 import es.aviferdev.n3to.ui.theme.formatAmount
 import es.aviferdev.n3to.ui.theme.formatPercent
 import es.aviferdev.n3to.ui.theme.formatQty
 import es.aviferdev.n3to.ui.theme.maskAmount
 import kotlin.math.abs
-
 
 // ─── Position card ────────────────────────────────────────────────────────────
 @Composable
@@ -40,8 +40,8 @@ fun PositionCard(
 ) {
     val isOpen = position.netQuantity > 0.0
     val pnlColor = when {
-        position.totalPnL > 0 -> PnLPositive
-        position.totalPnL < 0 -> PnLNegative
+        position.totalPnL > 0 -> MaterialTheme.appColors.pnlPositive
+        position.totalPnL < 0 -> MaterialTheme.appColors.pnlNegative
         else -> Color.White
     }
 

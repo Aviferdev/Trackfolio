@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.portfolio
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.platform.nowMillis
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -74,14 +76,14 @@ fun AddEditPlatformSheet(
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState       = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-        containerColor   = SurfaceWhite,
+        containerColor   = MaterialTheme.appColors.surface,
         dragHandle = {
             Box(
                 modifier = Modifier
                     .padding(top = 12.dp, bottom = 4.dp)
                     .width(40.dp).height(4.dp)
                     .clip(RoundedCornerShape(2.dp))
-                    .background(BorderGray)
+                    .background(MaterialTheme.appColors.border)
             )
         }
     ) {
@@ -97,18 +99,18 @@ fun AddEditPlatformSheet(
                 text       = if (isEditing) stringResource(Res.string.portfolio_platform_edit_title) else stringResource(Res.string.portfolio_platform_create_title),
                 fontSize   = 18.sp,
                 fontWeight = FontWeight.SemiBold,
-                color      = TextPrimary
+                color      = MaterialTheme.appColors.textPrimary
             )
             Spacer(Modifier.height(4.dp))
             Text(
                 text     = stringResource(Res.string.portfolio_add_asset_platforms_hint),
                 fontSize = 11.sp,
-                color    = TextSecondary
+                color    = MaterialTheme.appColors.textSecondary
             )
             Spacer(Modifier.height(20.dp))
 
             // ── Selector de icono ────────────────────────────────────────────
-            Text(stringResource(Res.string.portfolio_platform_icon_label), fontSize = 12.sp, color = TextSecondary, fontWeight = FontWeight.Medium)
+            Text(stringResource(Res.string.portfolio_platform_icon_label), fontSize = 12.sp, color = MaterialTheme.appColors.textSecondary, fontWeight = FontWeight.Medium)
             Spacer(Modifier.height(8.dp))
 
             Row(
@@ -123,10 +125,10 @@ fun AddEditPlatformSheet(
                         modifier = Modifier
                             .size(40.dp)
                             .clip(RoundedCornerShape(10.dp))
-                            .background(if (isSel) SurfaceElevated else SurfaceWhite)
+                            .background(if (isSel) MaterialTheme.appColors.surfaceElevated else MaterialTheme.appColors.surface)
                             .border(
                                 width = if (isSel) 1.5.dp else 0.5.dp,
-                                color = if (isSel) PrimaryDark else BorderGray,
+                                color = if (isSel) PrimaryDark else MaterialTheme.appColors.border,
                                 shape = RoundedCornerShape(10.dp)
                             )
                             .clickable { icon = ic },
@@ -135,7 +137,7 @@ fun AddEditPlatformSheet(
                         Icon(
                             imageVector = ic.toMaterialIcon(),
                             contentDescription = null,
-                            tint = if (isSel) PrimaryDark else TextSecondary,
+                            tint = if (isSel) PrimaryDark else MaterialTheme.appColors.textSecondary,
                             modifier = Modifier.size(22.dp)
                         )
                     }
@@ -160,7 +162,7 @@ fun AddEditPlatformSheet(
                 ),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor   = PrimaryDark,
-                    unfocusedBorderColor = BorderGray
+                    unfocusedBorderColor = MaterialTheme.appColors.border
                 )
             )
 
@@ -182,7 +184,7 @@ fun AddEditPlatformSheet(
                 ),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor   = PrimaryDark,
-                    unfocusedBorderColor = BorderGray
+                    unfocusedBorderColor = MaterialTheme.appColors.border
                 )
             )
 
@@ -207,7 +209,7 @@ fun AddEditPlatformSheet(
 
             Spacer(Modifier.height(8.dp))
             TextButton(onClick = onDismiss, modifier = Modifier.fillMaxWidth()) {
-                Text(stringResource(Res.string.common_cancel), fontSize = 14.sp, color = TextSecondary)
+                Text(stringResource(Res.string.common_cancel), fontSize = 14.sp, color = MaterialTheme.appColors.textSecondary)
             }
         }
     }

@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.onboarding
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.animation.core.EaseInOutCubic
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -35,11 +37,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import es.aviferdev.n3to.ui.theme.CyanGlow
+
 import es.aviferdev.n3to.ui.theme.N3toTheme
-import es.aviferdev.n3to.ui.theme.NavyDeep
-import es.aviferdev.n3to.ui.theme.TextPrimary
-import es.aviferdev.n3to.ui.theme.TextSecondary
+
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.app_icon
 import n3to.composeapp.generated.resources.onboarding_welcome_subtitle
@@ -54,6 +54,10 @@ import kotlin.math.min
  */
 @Composable
 fun SlideWelcome(modifier: Modifier = Modifier) {
+    val appCCyanGlow = MaterialTheme.appColors.cyanGlow
+    val appCNavyDeep = MaterialTheme.appColors.navyDeep
+    val appCTextPrimary = MaterialTheme.appColors.textPrimary
+    val appCTextSecondary = MaterialTheme.appColors.textSecondary
 
     var visible by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) { visible = true }
@@ -103,8 +107,8 @@ fun SlideWelcome(modifier: Modifier = Modifier) {
                         drawCircle(
                             brush = Brush.radialGradient(
                                 colors = listOf(
-                                    CyanGlow.copy(alpha = 0.25f),
-                                    CyanGlow.copy(alpha = 0f)
+                                    appCCyanGlow.copy(alpha = 0.25f),
+                                    appCCyanGlow.copy(alpha = 0f)
                                 ),
                                 center = center,
                                 radius = gradientRadius
@@ -130,7 +134,7 @@ fun SlideWelcome(modifier: Modifier = Modifier) {
                         .drawBehind {
                             val cornerRadiusPx = size.width * 225f / 1024f
                             drawRoundRect(
-                                color = NavyDeep,
+                                color = appCNavyDeep,
                                 cornerRadius = CornerRadius(cornerRadiusPx, cornerRadiusPx),
                                 size = size
                             )
@@ -150,7 +154,7 @@ fun SlideWelcome(modifier: Modifier = Modifier) {
             text = stringResource(Res.string.onboarding_welcome_title),
             fontSize = 30.sp,
             fontWeight = FontWeight.ExtraBold,
-            color = TextPrimary,
+            color = appCTextPrimary,
             letterSpacing = (-1.2).sp,
             textAlign = TextAlign.Center,
             lineHeight = 36.sp,
@@ -162,7 +166,7 @@ fun SlideWelcome(modifier: Modifier = Modifier) {
         Text(
             text = stringResource(Res.string.onboarding_welcome_subtitle),
             fontSize = 15.sp,
-            color = TextSecondary,
+            color = appCTextSecondary,
             textAlign = TextAlign.Center,
             lineHeight = 23.sp,
             modifier = Modifier

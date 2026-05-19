@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.splash
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -30,10 +32,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import es.aviferdev.n3to.ui.theme.CyanGlow
-import es.aviferdev.n3to.ui.theme.NavyDeep
-import es.aviferdev.n3to.ui.theme.TextPrimary
-import es.aviferdev.n3to.ui.theme.TextTertiary
+
 import kotlinx.coroutines.delay
 import androidx.compose.ui.tooling.preview.Preview
 
@@ -105,7 +104,7 @@ fun SplashScreen(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(NavyDeep),
+                .background(MaterialTheme.appColors.navyDeep),
             contentAlignment = Alignment.Center
         ) {
             // Orb decorativo cian (esquina superior derecha, igual que HeroCard)
@@ -117,7 +116,7 @@ fun SplashScreen(
                     .background(
                         Brush.radialGradient(
                             colors = listOf(
-                                CyanGlow.copy(alpha = 0.10f),
+                                MaterialTheme.appColors.cyanGlow.copy(alpha = 0.10f),
                                 Color.Transparent
                             )
                         ),
@@ -144,7 +143,7 @@ fun SplashScreen(
                         text = "N3to",
                         fontSize = 32.sp,
                         fontWeight = FontWeight.SemiBold,
-                        color = TextPrimary,
+                        color = MaterialTheme.appColors.textPrimary,
                         letterSpacing = (-0.64).sp,
                         textAlign = TextAlign.Center
                     )
@@ -153,7 +152,7 @@ fun SplashScreen(
                         text = "Track every move.",
                         fontSize = 13.sp,
                         fontWeight = FontWeight.Normal,
-                        color = TextTertiary,
+                        color = MaterialTheme.appColors.textTertiary,
                         letterSpacing = 0.26.sp,
                         textAlign = TextAlign.Center
                     )

@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.portfolio
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.platform.nowMillis
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -57,14 +59,14 @@ fun LinkPlatformToCategorySheet(
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState       = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-        containerColor   = SurfaceWhite,
+        containerColor   = MaterialTheme.appColors.surface,
         dragHandle = {
             Box(
                 modifier = Modifier
                     .padding(top = 12.dp, bottom = 4.dp)
                     .width(40.dp).height(4.dp)
                     .clip(RoundedCornerShape(2.dp))
-                    .background(BorderGray)
+                    .background(MaterialTheme.appColors.border)
             )
         }
     ) {
@@ -81,13 +83,13 @@ fun LinkPlatformToCategorySheet(
                 text = "Plataformas de $categoryName",
                 fontSize = 18.sp,
                 fontWeight = FontWeight.SemiBold,
-                color = TextPrimary
+                color = MaterialTheme.appColors.textPrimary
             )
             Spacer(Modifier.height(4.dp))
             Text(
                 text = stringResource(Res.string.portfolio_asset_detail_platform_desc),
                 fontSize = 12.sp,
-                color = TextSecondary
+                color = MaterialTheme.appColors.textSecondary
             )
             Spacer(Modifier.height(16.dp))
 
@@ -97,7 +99,7 @@ fun LinkPlatformToCategorySheet(
                     stringResource(Res.string.portfolio_asset_detail_linked_platforms),
                     fontSize = 11.sp,
                     fontWeight = FontWeight.SemiBold,
-                    color = TextSecondary
+                    color = MaterialTheme.appColors.textSecondary
                 )
                 Spacer(Modifier.height(8.dp))
                 linkedPlatforms.forEach { p ->
@@ -116,13 +118,13 @@ fun LinkPlatformToCategorySheet(
                     stringResource(Res.string.portfolio_add_asset_select_platform),
                     fontSize = 11.sp,
                     fontWeight = FontWeight.SemiBold,
-                    color = TextSecondary
+                    color = MaterialTheme.appColors.textSecondary
                 )
                 Spacer(Modifier.height(4.dp))
                 Text(
                     stringResource(Res.string.portfolio_asset_detail_platform_link_hint),
                     fontSize = 11.sp,
-                    color = TextSecondary.copy(alpha = 0.7f)
+                    color = MaterialTheme.appColors.textSecondary.copy(alpha = 0.7f)
                 )
                 Spacer(Modifier.height(8.dp))
                 unlinkedPlatforms.forEach { p ->
@@ -137,7 +139,7 @@ fun LinkPlatformToCategorySheet(
                 Text(
                     stringResource(Res.string.portfolio_add_asset_no_platforms_hint),
                     fontSize = 12.sp,
-                    color = TextSecondary,
+                    color = MaterialTheme.appColors.textSecondary,
                     modifier = Modifier.padding(vertical = 8.dp)
                 )
             }
@@ -155,10 +157,10 @@ private fun PlatformLinkRow(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(10.dp))
-            .background(if (isLinked) PrimaryDark.copy(alpha = 0.06f) else SurfaceElevated)
+            .background(if (isLinked) PrimaryDark.copy(alpha = 0.06f) else MaterialTheme.appColors.surfaceElevated)
             .border(
                 0.5.dp,
-                if (isLinked) PrimaryDark.copy(alpha = 0.3f) else BorderGray,
+                if (isLinked) PrimaryDark.copy(alpha = 0.3f) else MaterialTheme.appColors.border,
                 RoundedCornerShape(10.dp)
             )
             .clickable(onClick = onToggle)
@@ -170,14 +172,14 @@ private fun PlatformLinkRow(
         Text(
             platform.name,
             fontSize = 14.sp,
-            color = TextPrimary,
+            color = MaterialTheme.appColors.textPrimary,
             fontWeight = FontWeight.Medium,
             modifier = Modifier.weight(1f)
         )
         if (isLinked) {
             Text("✓", fontSize = 16.sp, color = PrimaryDark, fontWeight = FontWeight.Bold)
         } else {
-            Text("+", fontSize = 18.sp, color = TextSecondary, fontWeight = FontWeight.Light)
+            Text("+", fontSize = 18.sp, color = MaterialTheme.appColors.textSecondary, fontWeight = FontWeight.Light)
         }
     }
     Spacer(Modifier.height(6.dp))

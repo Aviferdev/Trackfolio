@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.security
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -38,15 +40,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.core.security.BiometricAuthenticator
 import es.aviferdev.n3to.core.security.BiometricResult
-import es.aviferdev.n3to.ui.theme.CyanAccent
-import es.aviferdev.n3to.ui.theme.CyanGlow
+
 import es.aviferdev.n3to.ui.theme.ErrorSoft
-import es.aviferdev.n3to.ui.theme.NavyBorder
-import es.aviferdev.n3to.ui.theme.NavyDeep
-import es.aviferdev.n3to.ui.theme.NavySurface
-import es.aviferdev.n3to.ui.theme.TextPrimary
-import es.aviferdev.n3to.ui.theme.TextSecondary
-import es.aviferdev.n3to.ui.theme.TextTertiary
+
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.security_biometric_not_available
 import n3to.composeapp.generated.resources.security_unlock_hint
@@ -56,6 +52,13 @@ import org.koin.compose.koinInject
 
 @Composable
 fun LockScreen(onUnlocked: () -> Unit) {
+    val appCCyanAccent = MaterialTheme.appColors.cyanAccent
+    val appCCyanGlow = MaterialTheme.appColors.cyanGlow
+    val appCNavyBorder = MaterialTheme.appColors.navyBorder
+    val appCNavyDeep = MaterialTheme.appColors.navyDeep
+    val appCNavySurface = MaterialTheme.appColors.navySurface
+    val appCTextPrimary = MaterialTheme.appColors.textPrimary
+    val appCTextSecondary = MaterialTheme.appColors.textSecondary
     val authenticator: BiometricAuthenticator = koinInject()
     var errorMessage     by remember { mutableStateOf<String?>(null) }
     var isAuthenticating by remember { mutableStateOf(false) }
@@ -83,7 +86,7 @@ fun LockScreen(onUnlocked: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(NavyDeep),
+            .background(appCNavyDeep),
         contentAlignment = Alignment.Center
     ) {
         // Orb decorativo cian (esquina superior derecha)
@@ -94,7 +97,7 @@ fun LockScreen(onUnlocked: () -> Unit) {
                 .offset(x = 100.dp, y = (-100).dp)
                 .background(
                     Brush.radialGradient(
-                        colors = listOf(CyanGlow.copy(alpha = 0.10f), Color.Transparent)
+                        colors = listOf(appCCyanGlow.copy(alpha = 0.10f), Color.Transparent)
                     ),
                     CircleShape
                 )
@@ -111,11 +114,11 @@ fun LockScreen(onUnlocked: () -> Unit) {
                     .drawBehind {
                         val cornerRadius = size.width * 0.22f
                         drawRoundRect(
-                            color = NavySurface,
+                            color = appCNavySurface,
                             cornerRadius = androidx.compose.ui.geometry.CornerRadius(cornerRadius)
                         )
                         drawRoundRect(
-                            color = NavyBorder,
+                            color = appCNavyBorder,
                             cornerRadius = androidx.compose.ui.geometry.CornerRadius(cornerRadius),
                             style = androidx.compose.ui.graphics.drawscope.Stroke(width = 1.dp.toPx())
                         )
@@ -125,7 +128,7 @@ fun LockScreen(onUnlocked: () -> Unit) {
                 Icon(
                     imageVector = Icons.Outlined.Lock,
                     contentDescription = null,
-                    tint = CyanAccent,
+                    tint = appCCyanAccent,
                     modifier = Modifier.size(36.dp)
                 )
             }
@@ -136,14 +139,14 @@ fun LockScreen(onUnlocked: () -> Unit) {
                 "N3to",
                 fontSize   = 26.sp,
                 fontWeight = FontWeight.Bold,
-                color      = TextPrimary,
+                color      = appCTextPrimary,
                 letterSpacing = (-0.5).sp
             )
             Spacer(Modifier.height(8.dp))
             Text(
                 "La app está bloqueada.\nAutentícate para continuar.",
                 fontSize  = 14.sp,
-                color     = TextSecondary,
+                color     = appCTextSecondary,
                 textAlign = TextAlign.Center
             )
 
@@ -152,7 +155,7 @@ fun LockScreen(onUnlocked: () -> Unit) {
                 Box(
                     modifier = Modifier
                         .clip(RoundedCornerShape(10.dp))
-                        .background(NavySurface)
+                        .background(appCNavySurface)
                         .padding(horizontal = 16.dp, vertical = 10.dp)
                 ) {
                     Text(
@@ -189,14 +192,14 @@ fun LockScreen(onUnlocked: () -> Unit) {
                     .height(52.dp),
                 shape    = RoundedCornerShape(14.dp),
                 colors   = ButtonDefaults.buttonColors(
-                    containerColor         = CyanAccent,
-                    disabledContainerColor = CyanAccent.copy(alpha = 0.38f)
+                    containerColor         = appCCyanAccent,
+                    disabledContainerColor = appCCyanAccent.copy(alpha = 0.38f)
                 )
             ) {
                 if (isAuthenticating) {
                     CircularProgressIndicator(
                         modifier    = Modifier.size(20.dp),
-                        color       = NavyDeep,
+                        color       = appCNavyDeep,
                         strokeWidth = 2.dp
                     )
                 } else {
@@ -204,7 +207,7 @@ fun LockScreen(onUnlocked: () -> Unit) {
                         "Desbloquear",
                         fontSize   = 16.sp,
                         fontWeight = FontWeight.SemiBold,
-                        color      = NavyDeep
+                        color      = appCNavyDeep
                     )
                 }
             }

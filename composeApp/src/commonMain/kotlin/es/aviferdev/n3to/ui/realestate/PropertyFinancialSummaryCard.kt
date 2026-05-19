@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.realestate
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
@@ -24,7 +26,7 @@ fun PropertyFinancialSummaryCard(
     Card(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = SurfaceWhite),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.surface),
         elevation = CardDefaults.cardElevation(0.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
@@ -35,7 +37,7 @@ fun PropertyFinancialSummaryCard(
                 DataRowLabel("Yield bruto s/ compra", "${formatPercent(summary.grossYieldOnPurchase)}%")
                 DataRowLabel("Yield bruto s/ valor actual", "${formatPercent(summary.grossYieldOnCurrent)}%")
                 Spacer(Modifier.height(8.dp))
-                HorizontalDivider(color = BorderGray, thickness = 0.5.dp)
+                HorizontalDivider(color = MaterialTheme.appColors.border, thickness = 0.5.dp)
                 Spacer(Modifier.height(8.dp))
             }
 
@@ -50,11 +52,11 @@ fun PropertyFinancialSummaryCard(
                 DataRowLabel("Gastos de venta", formatAmountEuro(summary.totalSaleExpenses))
             }
 
-            HorizontalDivider(color = BorderGray2, thickness = 0.5.dp, modifier = Modifier.padding(vertical = 4.dp))
+            HorizontalDivider(color = MaterialTheme.appColors.border2, thickness = 0.5.dp, modifier = Modifier.padding(vertical = 4.dp))
 
             // Cashflow neto
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                Text("Cashflow neto", fontWeight = FontWeight.SemiBold, fontSize = 13.sp, color = TextPrimary)
+                Text("Cashflow neto", fontWeight = FontWeight.SemiBold, fontSize = 13.sp, color = MaterialTheme.appColors.textPrimary)
                 Text(
                     if (summary.netCashflow >= 0) formatAmountEuro(summary.netCashflow) else "-${formatAmountEuro(-summary.netCashflow)}",
                     fontWeight = FontWeight.Bold, fontSize = 13.sp,
@@ -68,7 +70,7 @@ fun PropertyFinancialSummaryCard(
                 HorizontalDivider(color = PrimaryDark.copy(alpha = 0.3f), thickness = 0.5.dp)
                 Spacer(Modifier.height(8.dp))
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                    Text("Retorno total", fontWeight = FontWeight.Bold, fontSize = 14.sp, color = TextPrimary)
+                    Text("Retorno total", fontWeight = FontWeight.Bold, fontSize = 14.sp, color = MaterialTheme.appColors.textPrimary)
                     Column(horizontalAlignment = androidx.compose.ui.Alignment.End) {
                         Text(
                             if (summary.totalReturn >= 0) "+${formatAmountEuro(summary.totalReturn)}" else "-${formatAmountEuro(-summary.totalReturn)}",
@@ -92,8 +94,8 @@ fun PropertyFinancialSummaryCard(
 @Composable
 private fun DataRowLabel(label: String, value: String) {
     Row(Modifier.fillMaxWidth().padding(vertical = 2.dp), horizontalArrangement = Arrangement.SpaceBetween) {
-        Text(label, fontSize = 13.sp, color = TextSecondary)
-        Text(value, fontSize = 13.sp, color = TextPrimary, fontWeight = FontWeight.Medium)
+        Text(label, fontSize = 13.sp, color = MaterialTheme.appColors.textSecondary)
+        Text(value, fontSize = 13.sp, color = MaterialTheme.appColors.textPrimary, fontWeight = FontWeight.Medium)
     }
 }
 

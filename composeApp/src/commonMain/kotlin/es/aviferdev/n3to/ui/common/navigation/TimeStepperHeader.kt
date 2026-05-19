@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.common.navigation
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -27,11 +29,7 @@ import androidx.compose.ui.graphics.Color
 import es.aviferdev.n3to.ui.common.button.IconButtonApp
 import es.aviferdev.n3to.ui.common.separator.SpacerHorizontalApp
 import es.aviferdev.n3to.ui.common.separator.SpacerVerticalApp
-import es.aviferdev.n3to.ui.theme.BorderGray
-import es.aviferdev.n3to.ui.theme.SurfaceElevated
-import es.aviferdev.n3to.ui.theme.SurfaceWhite
-import es.aviferdev.n3to.ui.theme.TextPrimary
-import es.aviferdev.n3to.ui.theme.TextTertiary
+
 import androidx.compose.ui.tooling.preview.Preview
 
 /**
@@ -48,8 +46,8 @@ fun TimeStepperHeader(
     canGoBack: Boolean,
     onPrevious: () -> Unit,
     onNext: () -> Unit,
-    containerColor: Color = SurfaceWhite,
-    dividerColor: Color = BorderGray,
+    containerColor: Color = MaterialTheme.appColors.surface,
+    dividerColor: Color = MaterialTheme.appColors.border,
 ) {
     Row(
         modifier = Modifier
@@ -70,14 +68,14 @@ fun TimeStepperHeader(
                 text = currentValue,
                 fontSize = 15.sp,
                 fontWeight = FontWeight.SemiBold,
-                color = TextPrimary
+                color = MaterialTheme.appColors.textPrimary
             )
             if (currentValueSecondary != null) {
                 Text(
                     text = currentValueSecondary,
                     fontSize = 11.sp,
                     fontWeight = FontWeight.Normal,
-                    color = TextTertiary
+                    color = MaterialTheme.appColors.textTertiary
                 )
             }
         }
@@ -95,13 +93,13 @@ private fun StepperArrowButton(enabled: Boolean, onClick: () -> Unit, label: Str
         modifier = Modifier
             .size(34.dp)
             .clip(RoundedCornerShape(9.dp))
-            .background(if (enabled) SurfaceElevated else androidx.compose.ui.graphics.Color.Transparent)
+            .background(if (enabled) MaterialTheme.appColors.surfaceElevated else androidx.compose.ui.graphics.Color.Transparent)
     ) {
         Text(
             text = label,
             fontSize = 22.sp,
             fontWeight = FontWeight.Light,
-            color = if (enabled) TextPrimary else TextTertiary
+            color = if (enabled) MaterialTheme.appColors.textPrimary else MaterialTheme.appColors.textTertiary
         )
     }
 }

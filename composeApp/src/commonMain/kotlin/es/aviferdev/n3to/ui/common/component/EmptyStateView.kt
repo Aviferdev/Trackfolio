@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.common.component
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -25,8 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.ui.common.toMaterialIcon
 import es.aviferdev.n3to.ui.theme.PrimaryDark
-import es.aviferdev.n3to.ui.theme.TextPrimary
-import es.aviferdev.n3to.ui.theme.TextTertiary
+
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import androidx.compose.ui.tooling.preview.Preview
 
@@ -77,13 +78,13 @@ fun EmptyStateView(
                 title,
                 fontSize = 17.sp,
                 fontWeight = FontWeight.Bold,
-                color = TextPrimary
+                color = MaterialTheme.appColors.textPrimary
             )
             Spacer(Modifier.height(8.dp))
             Text(
                 subtitle,
                 fontSize = 13.sp,
-                color = TextTertiary,
+                color = MaterialTheme.appColors.textTertiary,
                 textAlign = TextAlign.Center
             )
             if (actionLabel != null && onAction != null) {

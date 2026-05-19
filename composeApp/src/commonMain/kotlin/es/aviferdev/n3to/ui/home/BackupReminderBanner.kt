@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.home
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -60,15 +62,15 @@ fun BackupReminderBanner(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(12.dp))
-                .border(0.5.dp, NavyBorder, RoundedCornerShape(12.dp))
-                .background(NavySurface)
+                .border(0.5.dp, MaterialTheme.appColors.navyBorder, RoundedCornerShape(12.dp))
+                .background(MaterialTheme.appColors.navySurface)
                 .padding(horizontal = 14.dp, vertical = 11.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
                 imageVector        = Icons.Outlined.SaveAlt,
                 contentDescription = null,
-                tint               = CyanAccent,
+                tint               = MaterialTheme.appColors.cyanAccent,
                 modifier           = Modifier.size(18.dp)
             )
             Spacer(Modifier.width(10.dp))
@@ -76,21 +78,21 @@ fun BackupReminderBanner(
                 text = if (neverBackup) stringResource(Res.string.home_backup_never)
                        else stringResource(Res.string.home_backup_days_format, daysSinceLastBackup),
                 fontSize   = 12.sp,
-                color      = TextSecondary,
+                color      = MaterialTheme.appColors.textSecondary,
                 fontWeight = FontWeight.Medium,
                 modifier   = Modifier.weight(1f)
             )
             Box(
                 modifier = Modifier
                     .clip(RoundedCornerShape(8.dp))
-                    .background(CyanAccent)
+                    .background(MaterialTheme.appColors.cyanAccent)
                     .clickable { onBackupClick() }
                     .padding(horizontal = 12.dp, vertical = 4.dp)
             ) {
                 Text(
                     text       = stringResource(Res.string.home_backup_action),
                     fontSize   = 11.sp,
-                    color      = NavyDeep,
+                    color      = MaterialTheme.appColors.navyDeep,
                     fontWeight = FontWeight.Bold
                 )
             }
@@ -102,7 +104,7 @@ fun BackupReminderBanner(
                     .size(24.dp),
                 contentAlignment = Alignment.Center
             ) {
-                Text("×", fontSize = 16.sp, color = TextTertiary)
+                Text("×", fontSize = 16.sp, color = MaterialTheme.appColors.textTertiary)
             }
         }
     }

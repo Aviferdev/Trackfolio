@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.common.metric
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -35,8 +37,7 @@ import es.aviferdev.n3to.ui.common.toMaterialIcon
 import es.aviferdev.n3to.ui.theme.ExpenseRed
 import es.aviferdev.n3to.ui.theme.IncomeGreen
 import es.aviferdev.n3to.ui.theme.PrimaryDark
-import es.aviferdev.n3to.ui.theme.TextPrimary
-import es.aviferdev.n3to.ui.theme.TextTertiary
+
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import es.aviferdev.n3to.ui.theme.formatAmount
 import es.aviferdev.n3to.ui.theme.formatDate
@@ -150,7 +151,7 @@ fun TransactionRow(
                 label,
                 fontSize = 13.sp,
                 fontWeight = FontWeight.SemiBold,
-                color = TextPrimary,
+                color = MaterialTheme.appColors.textPrimary,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
@@ -161,21 +162,21 @@ fun TransactionRow(
                         Text(
                             subtitle,
                             fontSize = 11.sp,
-                            color = TextTertiary,
+                            color = MaterialTheme.appColors.textTertiary,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
                     }
                     if (subtitle != null && dateFormatted.isNotEmpty()) {
                         Spacer(Modifier.width(4.dp))
-                        Text("·", fontSize = 11.sp, color = TextTertiary)
+                        Text("·", fontSize = 11.sp, color = MaterialTheme.appColors.textTertiary)
                         Spacer(Modifier.width(4.dp))
                     }
                     if (dateFormatted.isNotEmpty()) {
                         Text(
                             dateFormatted,
                             fontSize = 11.sp,
-                            color = TextTertiary,
+                            color = MaterialTheme.appColors.textTertiary,
                             maxLines = 1
                         )
                     }
@@ -187,7 +188,7 @@ fun TransactionRow(
                     Text(
                         dateFormatted,
                         fontSize = 11.sp,
-                        color = TextTertiary,
+                        color = MaterialTheme.appColors.textTertiary,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
@@ -210,7 +211,7 @@ fun TransactionRow(
                 Text(
                     "Bruto: ${formatAmount(transaction.grossAmount)} €",
                     fontSize = 9.sp,
-                    color = TextTertiary,
+                    color = MaterialTheme.appColors.textTertiary,
                     maxLines = 1
                 )
             }
@@ -225,7 +226,7 @@ fun TransactionRow(
             Text(
                 "›",
                 fontSize = 20.sp,
-                color = TextTertiary,
+                color = MaterialTheme.appColors.textTertiary,
                 fontWeight = FontWeight.Light
             )
         }

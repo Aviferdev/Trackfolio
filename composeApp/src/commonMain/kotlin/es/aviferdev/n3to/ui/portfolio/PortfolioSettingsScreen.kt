@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.portfolio
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -134,9 +136,9 @@ fun PortfolioSettingsScreen(
         }
         AlertDialog(
             onDismissRequest = { platformViewModel.clearError() },
-            containerColor   = SurfaceWhite,
-            title = { Text(stringResource(Res.string.common_error), fontSize = 17.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary) },
-            text  = { Text(errorText, fontSize = 14.sp, color = TextSecondary) },
+            containerColor   = MaterialTheme.appColors.surface,
+            title = { Text(stringResource(Res.string.common_error), fontSize = 17.sp, fontWeight = FontWeight.SemiBold, color = MaterialTheme.appColors.textPrimary) },
+            text  = { Text(errorText, fontSize = 14.sp, color = MaterialTheme.appColors.textSecondary) },
             confirmButton = {
                 TextButton(onClick = { platformViewModel.clearError() }) {
                     Text(stringResource(Res.string.common_accept), color = PrimaryDark, fontWeight = FontWeight.Medium)
@@ -173,9 +175,9 @@ fun PortfolioSettingsScreen(
     if (deletingPortfolio != null) {
         AlertDialog(
             onDismissRequest = { deletingPortfolio = null },
-            containerColor = SurfaceWhite,
-            title = { Text(stringResource(Res.string.portfolio_settings_delete_portfolio_title), fontSize = 16.sp, fontWeight = FontWeight.Bold, color = TextPrimary) },
-            text = { Text(stringResource(Res.string.portfolio_settings_delete_portfolio_message, deletingPortfolio!!.name), fontSize = 13.sp, color = TextSecondary) },
+            containerColor = MaterialTheme.appColors.surface,
+            title = { Text(stringResource(Res.string.portfolio_settings_delete_portfolio_title), fontSize = 16.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.appColors.textPrimary) },
+            text = { Text(stringResource(Res.string.portfolio_settings_delete_portfolio_message, deletingPortfolio!!.name), fontSize = 13.sp, color = MaterialTheme.appColors.textSecondary) },
             confirmButton = {
                     TextButton(onClick = {
                         portCoroutine.launch {
@@ -216,7 +218,7 @@ fun PortfolioSettingsContent(
     }
 
     Column(
-        modifier = modifier.fillMaxSize().background(BackgroundGray)
+        modifier = modifier.fillMaxSize().background(MaterialTheme.appColors.background)
     ) {
         TopBarApp(title = stringResource(Res.string.portfolio_settings_title), navigateBack = onBack)
 
@@ -229,7 +231,7 @@ fun PortfolioSettingsContent(
                     stringResource(Res.string.portfolio_settings_category_section),
                     fontSize = 11.sp,
                     fontWeight = FontWeight.SemiBold,
-                    color = TextSecondary
+                    color = MaterialTheme.appColors.textSecondary
                 )
             }
             item {
@@ -248,20 +250,20 @@ fun PortfolioSettingsContent(
                                 Text(
                                     text = category.name,
                                     fontSize = 15.sp,
-                                    color = TextPrimary
+                                    color = MaterialTheme.appColors.textPrimary
                                 )
                                 Text(
                                     text = if (count == 1) stringResource(Res.string.portfolio_settings_category_count_one, count)
                                     else stringResource(Res.string.portfolio_settings_category_count_many, count),
                                     fontSize = 11.sp,
-                                    color = TextSecondary
+                                    color = MaterialTheme.appColors.textSecondary
                                 )
                             }
-                            Text("›", fontSize = 18.sp, color = TextSecondary)
+                            Text("›", fontSize = 18.sp, color = MaterialTheme.appColors.textSecondary)
                         }
                         if (index < categories.lastIndex) {
                             HorizontalDivider(
-                                color = BorderGray,
+                                color = MaterialTheme.appColors.border,
                                 thickness = 0.5.dp,
                                 modifier = Modifier.padding(start = 52.dp)
                             )
@@ -277,7 +279,7 @@ fun PortfolioSettingsContent(
                     stringResource(Res.string.portfolio_settings_portfolio_section),
                     fontSize   = 11.sp,
                     fontWeight = FontWeight.SemiBold,
-                    color      = TextSecondary
+                    color      = MaterialTheme.appColors.textSecondary
                 )
             }
             item {
@@ -286,7 +288,7 @@ fun PortfolioSettingsContent(
                         Text(
                             stringResource(Res.string.portfolio_settings_no_portfolios),
                             fontSize = 13.sp,
-                            color = TextSecondary,
+                            color = MaterialTheme.appColors.textSecondary,
                             modifier = Modifier.padding(16.dp)
                         )
                     } else {
@@ -297,21 +299,21 @@ fun PortfolioSettingsContent(
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Column(modifier = Modifier.weight(1f)) {
-                                    Text(portfolio.name, fontSize = 14.sp, fontWeight = FontWeight.Medium, color = TextPrimary)
+                                    Text(portfolio.name, fontSize = 14.sp, fontWeight = FontWeight.Medium, color = MaterialTheme.appColors.textPrimary)
                                     if (portfolio.description != null) {
-                                        Text(portfolio.description, fontSize = 11.sp, color = TextSecondary)
+                                        Text(portfolio.description, fontSize = 11.sp, color = MaterialTheme.appColors.textSecondary)
                                     }
                                 }
                                 Spacer(Modifier.width(8.dp))
                                 IconButton(onClick = { onEditPortfolio(portfolio) }, modifier = Modifier.size(32.dp)) {
-                                    Icon(Icons.Default.Edit, contentDescription = stringResource(Res.string.portfolio_settings_edit_cd), tint = TextSecondary, modifier = Modifier.size(16.dp))
+                                    Icon(Icons.Default.Edit, contentDescription = stringResource(Res.string.portfolio_settings_edit_cd), tint = MaterialTheme.appColors.textSecondary, modifier = Modifier.size(16.dp))
                                 }
                                 IconButton(onClick = { onDeletePortfolio(portfolio) }, modifier = Modifier.size(32.dp)) {
                                     Icon(Icons.Default.Delete, contentDescription = stringResource(Res.string.portfolio_settings_delete_cd), tint = ExpenseRed, modifier = Modifier.size(16.dp))
                                 }
                             }
                             if (index < portfolios.lastIndex) {
-                                HorizontalDivider(color = BorderGray, thickness = 0.5.dp, modifier = Modifier.padding(start = 52.dp))
+                                HorizontalDivider(color = MaterialTheme.appColors.border, thickness = 0.5.dp, modifier = Modifier.padding(start = 52.dp))
                             }
                         }
                     }
@@ -324,7 +326,7 @@ fun PortfolioSettingsContent(
                     stringResource(Res.string.portfolio_settings_reminder_section),
                     fontSize   = 11.sp,
                     fontWeight = FontWeight.SemiBold,
-                    color      = TextSecondary
+                    color      = MaterialTheme.appColors.textSecondary
                 )
             }
             item {
@@ -338,13 +340,13 @@ fun PortfolioSettingsContent(
                             stringResource(Res.string.portfolio_settings_reminder_title),
                             fontSize   = 14.sp,
                             fontWeight = FontWeight.Medium,
-                            color      = TextPrimary
+                            color      = MaterialTheme.appColors.textPrimary
                         )
                         Spacer(Modifier.height(4.dp))
                         Text(
                             stringResource(Res.string.portfolio_settings_reminder_desc),
                             fontSize = 12.sp,
-                            color    = TextSecondary
+                            color    = MaterialTheme.appColors.textSecondary
                         )
                         Spacer(Modifier.height(14.dp))
                         Row(
@@ -358,11 +360,11 @@ fun PortfolioSettingsContent(
                                     shape   = RoundedCornerShape(8.dp),
                                     colors  = ButtonDefaults.outlinedButtonColors(
                                         containerColor = if (isSelected) PrimaryDark else Color.Transparent,
-                                        contentColor   = if (isSelected) Color.White else TextPrimary
+                                        contentColor   = if (isSelected) Color.White else MaterialTheme.appColors.textPrimary
                                     ),
                                     border = BorderStroke(
                                         width = 1.dp,
-                                        color = if (isSelected) PrimaryDark else BorderGray
+                                        color = if (isSelected) PrimaryDark else MaterialTheme.appColors.border
                                     ),
                                     modifier = Modifier.weight(1f)
                                 ) {
@@ -392,7 +394,7 @@ fun PortfolioSettingsContent(
                         Text(
                             stringResource(Res.string.portfolio_settings_platform_empty),
                             fontSize    = 13.sp,
-                            color       = TextSecondary,
+                            color       = MaterialTheme.appColors.textSecondary,
                             modifier    = Modifier.padding(horizontal = 16.dp, vertical = 18.dp)
                         )
                     } else {
@@ -410,22 +412,22 @@ fun PortfolioSettingsContent(
                                     Text(
                                         text     = platform.name,
                                         fontSize = 15.sp,
-                                        color    = TextPrimary
+                                        color    = MaterialTheme.appColors.textPrimary
                                     )
                                     if (!platform.notes.isNullOrBlank()) {
                                         Text(
                                             text     = platform.notes,
                                             fontSize = 11.sp,
-                                            color    = TextSecondary,
+                                            color    = MaterialTheme.appColors.textSecondary,
                                             maxLines = 1
                                         )
                                     }
                                 }
-                                Text("›", fontSize = 18.sp, color = TextSecondary)
+                                Text("›", fontSize = 18.sp, color = MaterialTheme.appColors.textSecondary)
                             }
                             if (index < platformState.platforms.lastIndex) {
                                 HorizontalDivider(
-                                    color     = BorderGray,
+                                    color     = MaterialTheme.appColors.border,
                                     thickness = 0.5.dp,
                                     modifier  = Modifier.padding(start = 52.dp)
                                 )
@@ -450,7 +452,7 @@ fun PortfolioSettingsContent(
                         Text(
                             stringResource(Res.string.portfolio_settings_sector_empty),
                             fontSize    = 13.sp,
-                            color       = TextSecondary,
+                            color       = MaterialTheme.appColors.textSecondary,
                             modifier    = Modifier.padding(horizontal = 16.dp, vertical = 18.dp)
                         )
                     } else {
@@ -465,13 +467,13 @@ fun PortfolioSettingsContent(
                                 Text(
                                     text = sector.name,
                                     fontSize = 15.sp,
-                                    color = TextPrimary,
+                                    color = MaterialTheme.appColors.textPrimary,
                                     modifier = Modifier.weight(1f)
                                 )
                             }
                             if (index < sectors.lastIndex) {
                                 HorizontalDivider(
-                                    color = BorderGray,
+                                    color = MaterialTheme.appColors.border,
                                     thickness = 0.5.dp,
                                     modifier = Modifier.padding(start = 52.dp)
                                 )
@@ -496,7 +498,7 @@ fun PortfolioSettingsContent(
                         Text(
                             stringResource(Res.string.portfolio_settings_region_empty),
                             fontSize    = 13.sp,
-                            color       = TextSecondary,
+                            color       = MaterialTheme.appColors.textSecondary,
                             modifier    = Modifier.padding(horizontal = 16.dp, vertical = 18.dp)
                         )
                     } else {
@@ -509,13 +511,13 @@ fun PortfolioSettingsContent(
                                 Text(
                                     text = region.name,
                                     fontSize = 15.sp,
-                                    color = TextPrimary,
+                                    color = MaterialTheme.appColors.textPrimary,
                                     modifier = Modifier.weight(1f)
                                 )
                             }
                             if (index < regions.lastIndex) {
                                 HorizontalDivider(
-                                    color = BorderGray,
+                                    color = MaterialTheme.appColors.border,
                                     thickness = 0.5.dp,
                                     modifier = Modifier.padding(start = 16.dp)
                                 )
@@ -576,8 +578,8 @@ private fun SettingsGroupCard(content: @Composable ColumnScope.() -> Unit) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(14.dp),
-        colors = CardDefaults.cardColors(containerColor = SurfaceWhite),
-        border = BorderStroke(0.5.dp, BorderGray),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.surface),
+        border = BorderStroke(0.5.dp, MaterialTheme.appColors.border),
         elevation = CardDefaults.cardElevation(0.dp)
     ) { Column(content = content) }
 }

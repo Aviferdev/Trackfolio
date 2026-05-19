@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.portfolio
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -36,7 +38,7 @@ fun AddEditPortfolioBottomSheet(
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-        containerColor = SurfaceWhite
+        containerColor = MaterialTheme.appColors.surface
     ) {
         Column(
             modifier = Modifier
@@ -49,7 +51,7 @@ fun AddEditPortfolioBottomSheet(
                 text = if (isEditing) stringResource(Res.string.portfolio_edit_portfolio_title_alt) else stringResource(Res.string.portfolio_new_portfolio_title),
                 fontSize = 18.sp,
                 fontWeight = FontWeight.SemiBold,
-                color = TextPrimary,
+                color = MaterialTheme.appColors.textPrimary,
                 modifier = Modifier.padding(bottom = 20.dp)
             )
 
@@ -65,7 +67,7 @@ fun AddEditPortfolioBottomSheet(
                 shape = RoundedCornerShape(10.dp),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = PrimaryDark,
-                    unfocusedBorderColor = BorderGray
+                    unfocusedBorderColor = MaterialTheme.appColors.border
                 )
             )
 
@@ -81,7 +83,7 @@ fun AddEditPortfolioBottomSheet(
                 shape = RoundedCornerShape(10.dp),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = PrimaryDark,
-                    unfocusedBorderColor = BorderGray
+                    unfocusedBorderColor = MaterialTheme.appColors.border
                 )
             )
 

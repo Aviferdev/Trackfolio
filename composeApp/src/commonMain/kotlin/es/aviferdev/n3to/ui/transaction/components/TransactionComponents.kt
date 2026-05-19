@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.transaction.components
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -59,15 +61,12 @@ import es.aviferdev.n3to.domain.model.IncomeType
 import es.aviferdev.n3to.domain.model.TaxRole
 import es.aviferdev.n3to.domain.model.Transaction
 import es.aviferdev.n3to.ui.common.N3toLabel
-import es.aviferdev.n3to.ui.theme.BorderGray
+
 import es.aviferdev.n3to.ui.theme.ExpenseRed
 import es.aviferdev.n3to.ui.theme.IncomeGreen
 import es.aviferdev.n3to.ui.theme.PrimaryAlpha
 import es.aviferdev.n3to.ui.theme.PrimaryDark
-import es.aviferdev.n3to.ui.theme.SurfaceWhite
-import es.aviferdev.n3to.ui.theme.TextPrimary
-import es.aviferdev.n3to.ui.theme.TextSecondary
-import es.aviferdev.n3to.ui.theme.TextTertiary
+
 import es.aviferdev.n3to.ui.theme.formatAmount
 import es.aviferdev.n3to.ui.theme.formatDate
 import es.aviferdev.n3to.ui.theme.maskAmount
@@ -90,14 +89,14 @@ internal fun SearchBar(query: String, onChange: (String) -> Unit) {
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 10.dp)
             .clip(RoundedCornerShape(9.dp))
-            .background(SurfaceWhite)
+            .background(MaterialTheme.appColors.surface)
             .padding(horizontal = 10.dp, vertical = 7.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
             imageVector = Icons.Outlined.Search,
             contentDescription = stringResource(Res.string.common_search_cd),
-            tint = TextTertiary,
+            tint = MaterialTheme.appColors.textTertiary,
             modifier = Modifier.size(16.dp)
         )
         Spacer(Modifier.width(8.dp))
@@ -106,13 +105,13 @@ internal fun SearchBar(query: String, onChange: (String) -> Unit) {
             onValueChange = onChange,
             singleLine = true,
             modifier = Modifier.weight(1f),
-            textStyle = LocalTextStyle.current.copy(color = TextPrimary, fontSize = 12.sp),
+            textStyle = LocalTextStyle.current.copy(color = MaterialTheme.appColors.textPrimary, fontSize = 12.sp),
             decorationBox = { inner ->
                 if (query.isEmpty()) {
                     Text(
                         stringResource(Res.string.transaction_search_hint),
                         fontSize = 12.sp,
-                        color = TextTertiary
+                        color = MaterialTheme.appColors.textTertiary
                     )
                 }
                 inner()
@@ -123,7 +122,7 @@ internal fun SearchBar(query: String, onChange: (String) -> Unit) {
                 onClick = { onChange("") },
                 contentPadding = PaddingValues(horizontal = 4.dp)
             ) {
-                Text("×", fontSize = 16.sp, color = TextTertiary)
+                Text("×", fontSize = 16.sp, color = MaterialTheme.appColors.textTertiary)
             }
         }
     }
@@ -137,7 +136,7 @@ internal fun TotalsRow(totalIncome: Double, totalExpense: Double, balancesHidden
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 12.dp),
         shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = SurfaceWhite),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.surface),
         elevation = CardDefaults.cardElevation(0.dp)
     ) {
         Row(
@@ -150,12 +149,12 @@ internal fun TotalsRow(totalIncome: Double, totalExpense: Double, balancesHidden
                 label = stringResource(Res.string.transaction_filter_income), amount = totalIncome, color = IncomeGreen,
                 prefix = "+", balancesHidden = balancesHidden, modifier = Modifier.weight(1f)
             )
-            Box(Modifier.width(1.dp).height(40.dp).background(BorderGray))
+            Box(Modifier.width(1.dp).height(40.dp).background(MaterialTheme.appColors.border))
             TotalCell(
                 label = stringResource(Res.string.transaction_filter_expense), amount = totalExpense, color = ExpenseRed,
                 prefix = "−", balancesHidden = balancesHidden, modifier = Modifier.weight(1f)
             )
-            Box(Modifier.width(1.dp).height(40.dp).background(BorderGray))
+            Box(Modifier.width(1.dp).height(40.dp).background(MaterialTheme.appColors.border))
             TotalCell(
                 label = "Balance", amount = kotlin.math.abs(balance),
                 color = if (balance >= 0) PrimaryDark else ExpenseRed,
@@ -234,7 +233,7 @@ internal fun TransactionCard(
     val dateFormatted = formatDate(transaction.date)
 
     Row(
-        modifier = Modifier.fillMaxWidth().background(SurfaceWhite)
+        modifier = Modifier.fillMaxWidth().background(MaterialTheme.appColors.surface)
             .then(
                 if (onClick != null) Modifier.clickable { onClick() }
                 else Modifier
@@ -262,7 +261,7 @@ internal fun TransactionCard(
                 label,
                 fontSize   = 13.sp,
                 fontWeight = FontWeight.SemiBold,
-                color      = TextPrimary,
+                color      = MaterialTheme.appColors.textPrimary,
                 maxLines   = 1,
                 overflow   = TextOverflow.Ellipsis
             )
@@ -273,21 +272,21 @@ internal fun TransactionCard(
                         Text(
                             subtitle,
                             fontSize = 11.sp,
-                            color    = TextTertiary,
+                            color    = MaterialTheme.appColors.textTertiary,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
                     }
                     if (subtitle != null && dateFormatted.isNotEmpty()) {
                         Spacer(Modifier.width(4.dp))
-                        Text("·", fontSize = 11.sp, color = TextTertiary)
+                        Text("·", fontSize = 11.sp, color = MaterialTheme.appColors.textTertiary)
                         Spacer(Modifier.width(4.dp))
                     }
                     if (dateFormatted.isNotEmpty()) {
                         Text(
                             dateFormatted,
                             fontSize = 11.sp,
-                            color    = TextTertiary,
+                            color    = MaterialTheme.appColors.textTertiary,
                             maxLines = 1
                         )
                     }
@@ -314,7 +313,7 @@ internal fun TransactionCard(
                 Text(
                     "Bruto: ${formatAmount(transaction.grossAmount)} €",
                     fontSize = 9.sp,
-                    color    = TextTertiary,
+                    color    = MaterialTheme.appColors.textTertiary,
                     maxLines = 1
                 )
             }
@@ -326,7 +325,7 @@ internal fun TransactionCard(
         Text(
             "›",
             fontSize = 20.sp,
-            color = TextTertiary,
+            color = MaterialTheme.appColors.textTertiary,
             fontWeight = FontWeight.Light,
             modifier = Modifier.align(Alignment.CenterVertically)
         )
@@ -402,5 +401,5 @@ internal fun SwipeToDeleteContainer(onDelete: () -> Unit, content: @Composable (
                 )
             }
         }
-    ) { Surface(color = SurfaceWhite) { content() } }
+    ) { Surface(color = MaterialTheme.appColors.surface) { content() } }
 }

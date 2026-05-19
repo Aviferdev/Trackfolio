@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.fixedincome
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.platform.nowMillis
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -77,18 +79,18 @@ fun CloseFixedIncomeBottomSheet(
     val isValid = grossAmountStr.toDoubleOrNull() != null
 
     val navyFieldColors = OutlinedTextFieldDefaults.colors(
-        focusedBorderColor = CyanAccent,
-        unfocusedBorderColor = NavyBorder,
-        focusedLabelColor = CyanAccent,
-        unfocusedLabelColor = TextSecondary,
-        cursorColor = CyanAccent,
-        focusedTextColor = TextPrimary,
-        unfocusedTextColor = TextPrimary
+        focusedBorderColor = MaterialTheme.appColors.cyanAccent,
+        unfocusedBorderColor = MaterialTheme.appColors.navyBorder,
+        focusedLabelColor = MaterialTheme.appColors.cyanAccent,
+        unfocusedLabelColor = MaterialTheme.appColors.textSecondary,
+        cursorColor = MaterialTheme.appColors.cyanAccent,
+        focusedTextColor = MaterialTheme.appColors.textPrimary,
+        unfocusedTextColor = MaterialTheme.appColors.textPrimary
     )
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
-        containerColor = NavySurface,
+        containerColor = MaterialTheme.appColors.navySurface,
         sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     ) {
         Column(
@@ -101,7 +103,7 @@ fun CloseFixedIncomeBottomSheet(
                 text = stringResource(Res.string.fixedincome_close_title),
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
-                color = TextPrimary
+                color = MaterialTheme.appColors.textPrimary
             )
 
             Spacer(Modifier.height(8.dp))
@@ -109,12 +111,12 @@ fun CloseFixedIncomeBottomSheet(
             Text(
                 text = position.name,
                 fontSize = 14.sp,
-                color = CyanAccent.copy(alpha = 0.7f)
+                color = MaterialTheme.appColors.cyanAccent.copy(alpha = 0.7f)
             )
 
             Spacer(Modifier.height(20.dp))
 
-            Text(stringResource(Res.string.fixedincome_close_type_label), fontSize = 12.sp, color = TextSecondary)
+            Text(stringResource(Res.string.fixedincome_close_type_label), fontSize = 12.sp, color = MaterialTheme.appColors.textSecondary)
             Spacer(Modifier.height(8.dp))
 
             availableCloseTypes.forEach { closeType ->
@@ -134,14 +136,14 @@ fun CloseFixedIncomeBottomSheet(
                         selected = selectedCloseType == closeType,
                         onClick = { selectedCloseType = closeType },
                         colors = RadioButtonDefaults.colors(
-                            selectedColor = CyanAccent,
-                            unselectedColor = NavyBorder
+                            selectedColor = MaterialTheme.appColors.cyanAccent,
+                            unselectedColor = MaterialTheme.appColors.navyBorder
                         )
                     )
                     Text(
                         text = label,
                         fontSize = 15.sp,
-                        color = if (selectedCloseType == closeType) TextPrimary else TextSecondary,
+                        color = if (selectedCloseType == closeType) MaterialTheme.appColors.textPrimary else MaterialTheme.appColors.textSecondary,
                         modifier = Modifier.padding(start = 8.dp)
                     )
                 }
@@ -206,7 +208,7 @@ fun CloseFixedIncomeBottomSheet(
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
-                colors = CardDefaults.cardColors(containerColor = NavySurfaceLight),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.navySurfaceLight),
                 elevation = CardDefaults.cardElevation(0.dp)
             ) {
                 Row(
@@ -215,12 +217,12 @@ fun CloseFixedIncomeBottomSheet(
                         .padding(horizontal = 14.dp, vertical = 12.dp),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Text(stringResource(Res.string.fixedincome_net_amount_label), fontSize = 13.sp, color = TextSecondary)
+                    Text(stringResource(Res.string.fixedincome_net_amount_label), fontSize = 13.sp, color = MaterialTheme.appColors.textSecondary)
                     Text(
                         text = formatEuro(netAmount),
                         fontSize = 15.sp,
                         fontWeight = FontWeight.SemiBold,
-                        color = PnLPositive
+                        color = MaterialTheme.appColors.pnlPositive
                     )
                 }
             }
@@ -253,8 +255,8 @@ fun CloseFixedIncomeBottomSheet(
                 modifier = Modifier.fillMaxWidth(),
                 enabled = isValid,
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = CyanAccent,
-                    contentColor = NavyDeep
+                    containerColor = MaterialTheme.appColors.cyanAccent,
+                    contentColor = MaterialTheme.appColors.navyDeep
                 ),
                 shape = RoundedCornerShape(12.dp)
             ) {

@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.home
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.platform.nowHour
 import es.aviferdev.n3to.platform.nowMillis
 import androidx.compose.foundation.background
@@ -68,15 +70,11 @@ import es.aviferdev.n3to.ui.reconciliation.ReconciliationViewModel
 import es.aviferdev.n3to.ui.settings.SetCategoryLimitSheet
 import es.aviferdev.n3to.ui.settings.backup.BackupPasswordSheet
 import es.aviferdev.n3to.ui.settings.backup.BackupViewModel
-import es.aviferdev.n3to.ui.theme.CyanAccent
+
 import es.aviferdev.n3to.ui.theme.ExpenseRed
 import es.aviferdev.n3to.ui.theme.LocalBalanceHidden
 import es.aviferdev.n3to.ui.theme.N3toTheme
-import es.aviferdev.n3to.ui.theme.NavyDeep
-import es.aviferdev.n3to.ui.theme.NavySurface
-import es.aviferdev.n3to.ui.theme.TextPrimary
-import es.aviferdev.n3to.ui.theme.TextSecondary
-import es.aviferdev.n3to.ui.theme.TextTertiary
+
 import es.aviferdev.n3to.ui.version.VersionUpdateBanner
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
@@ -95,7 +93,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.qualifier.named
-
 
 // ─────────────────────────────────────────────────────────────────────────────
 //  HomeScreen — entry point (sin cambios de lógica/VM)
@@ -190,13 +187,13 @@ fun HomeScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(NavyDeep)
+            .background(MaterialTheme.appColors.navyDeep)
     ) {
         when (val state = uiState) {
             is HomeUiState.Loading -> {
                 CircularProgressIndicator(
                     modifier = Modifier.align(Alignment.Center),
-                    color = CyanAccent
+                    color = MaterialTheme.appColors.cyanAccent
                 )
             }
 
@@ -292,14 +289,14 @@ fun HomeScreen(
                 .padding(end = 20.dp, bottom = 136.dp)
                 .size(52.dp),
             shape = RoundedCornerShape(16.dp),
-            containerColor = NavySurface,
-            contentColor = CyanAccent,
+            containerColor = MaterialTheme.appColors.navySurface,
+            contentColor = MaterialTheme.appColors.cyanAccent,
             elevation = FloatingActionButtonDefaults.elevation(
                 defaultElevation = 6.dp,
                 pressedElevation = 10.dp
             )
         ) {
-            Text("+", fontSize = 26.sp, fontWeight = FontWeight.Light, color = CyanAccent)
+            Text("+", fontSize = 26.sp, fontWeight = FontWeight.Light, color = MaterialTheme.appColors.cyanAccent)
         }
     }
 
@@ -452,14 +449,14 @@ fun HomeContent(
                 Text(
                     text = greeting,
                     fontSize = 12.sp,
-                    color = TextTertiary,
+                    color = MaterialTheme.appColors.textTertiary,
                     fontWeight = FontWeight.Normal
                 )
                 Text(
                     text = "N3to",
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
-                    color = TextPrimary,
+                    color = MaterialTheme.appColors.textPrimary,
                     letterSpacing = (-0.3).sp
                 )
             }
@@ -467,13 +464,13 @@ fun HomeContent(
                 IconActionButton(
                     onClick = onToggleBalances,
                     icon = if (balancesHidden) Icons.Outlined.VisibilityOff else Icons.Outlined.Visibility,
-                    iconTint = TextSecondary,
+                    iconTint = MaterialTheme.appColors.textSecondary,
                     label = if (balancesHidden) stringResource(Res.string.home_show_balances) else stringResource(Res.string.home_hide_balances)
                 )
                 IconActionButton(
                     onClick = onNavigateToSettings,
                     icon = Icons.Outlined.Settings,
-                    iconTint = TextSecondary,
+                    iconTint = MaterialTheme.appColors.textSecondary,
                     label = stringResource(Res.string.home_settings_cd)
                 )
             }

@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.realestate
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -41,13 +43,13 @@ fun MortgageReminderBanner(
                         "Vincula una hipoteca a $propertyName",
                         fontWeight = FontWeight.SemiBold,
                         fontSize = 13.sp,
-                        color = es.aviferdev.n3to.ui.theme.TextPrimary
+                        color = MaterialTheme.appColors.textPrimary
                     )
                     Spacer(Modifier.height(2.dp))
                     Text(
                         "Registra la hipoteca asociada para un cálculo preciso de tu patrimonio neto.",
                         fontSize = 11.sp,
-                        color = es.aviferdev.n3to.ui.theme.TextSecondary
+                        color = MaterialTheme.appColors.textSecondary
                     )
                     Spacer(Modifier.height(8.dp))
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -60,7 +62,7 @@ fun MortgageReminderBanner(
                         TextButton(onClick = {
                             dismissed = true
                             onDismiss()
-                        }) { Text("Descartar", color = es.aviferdev.n3to.ui.theme.TextTertiary, fontSize = 11.sp) }
+                        }) { Text("Descartar", color = MaterialTheme.appColors.textTertiary, fontSize = 11.sp) }
                     }
                 }
             }

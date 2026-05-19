@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.fixedincome.components
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -54,14 +56,14 @@ internal fun DistributionSection(
     Card(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = SurfaceWhite)
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.surface)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
                 text = stringResource(Res.string.fixedincome_distribution_title),
                 fontSize = 16.sp,
                 fontWeight = FontWeight.SemiBold,
-                color = TextPrimary
+                color = MaterialTheme.appColors.textPrimary
             )
 
             Spacer(Modifier.height(12.dp))
@@ -72,12 +74,12 @@ internal fun DistributionSection(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Column {
-                    Text(stringResource(Res.string.fixedincome_region_label), fontSize = 11.sp, color = TextSecondary)
+                    Text(stringResource(Res.string.fixedincome_region_label), fontSize = 11.sp, color = MaterialTheme.appColors.textSecondary)
                     Text(
                         text = position?.region ?: stringResource(Res.string.fixedincome_no_region),
                         fontSize = 13.sp,
                         fontWeight = FontWeight.Medium,
-                        color = if (position?.region != null) TextPrimary else TextTertiary
+                        color = if (position?.region != null) MaterialTheme.appColors.textPrimary else MaterialTheme.appColors.textTertiary
                     )
                 }
                 TextButton(onClick = { showRegionDialog = true }) {
@@ -93,12 +95,12 @@ internal fun DistributionSection(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Column {
-                    Text(stringResource(Res.string.fixedincome_sector_label), fontSize = 11.sp, color = TextSecondary)
+                    Text(stringResource(Res.string.fixedincome_sector_label), fontSize = 11.sp, color = MaterialTheme.appColors.textSecondary)
                     Text(
                         text = position?.sector ?: stringResource(Res.string.fixedincome_no_sector),
                         fontSize = 13.sp,
                         fontWeight = FontWeight.Medium,
-                        color = if (position?.sector != null) TextPrimary else TextTertiary
+                        color = if (position?.sector != null) MaterialTheme.appColors.textPrimary else MaterialTheme.appColors.textTertiary
                     )
                 }
                 TextButton(onClick = { showSectorDialog = true }) {
@@ -111,7 +113,7 @@ internal fun DistributionSection(
     if (showRegionDialog) {
         AlertDialog(
             onDismissRequest = { showRegionDialog = false },
-            containerColor = SurfaceWhite,
+            containerColor = MaterialTheme.appColors.surface,
             title = {
                 Text(
                     stringResource(Res.string.fixedincome_select_region),
@@ -131,7 +133,7 @@ internal fun DistributionSection(
                         ) {
                             Text(
                                 text = region,
-                                color = if (position?.region == region) PrimaryDark else TextPrimary,
+                                color = if (position?.region == region) PrimaryDark else MaterialTheme.appColors.textPrimary,
                                 fontWeight = if (position?.region == region) FontWeight.Bold else FontWeight.Normal
                             )
                         }
@@ -140,7 +142,7 @@ internal fun DistributionSection(
             },
             confirmButton = {
                 TextButton(onClick = { showRegionDialog = false }) {
-                    Text(stringResource(Res.string.common_cancel), color = TextSecondary)
+                    Text(stringResource(Res.string.common_cancel), color = MaterialTheme.appColors.textSecondary)
                 }
             }
         )
@@ -149,7 +151,7 @@ internal fun DistributionSection(
     if (showSectorDialog) {
         AlertDialog(
             onDismissRequest = { showSectorDialog = false },
-            containerColor = SurfaceWhite,
+            containerColor = MaterialTheme.appColors.surface,
             title = {
                 Text(
                     stringResource(Res.string.fixedincome_select_sector),
@@ -169,7 +171,7 @@ internal fun DistributionSection(
                         ) {
                             Text(
                                 text = sector,
-                                color = if (position?.sector == sector) PrimaryDark else TextPrimary,
+                                color = if (position?.sector == sector) PrimaryDark else MaterialTheme.appColors.textPrimary,
                                 fontWeight = if (position?.sector == sector) FontWeight.Bold else FontWeight.Normal
                             )
                         }
@@ -178,7 +180,7 @@ internal fun DistributionSection(
             },
             confirmButton = {
                 TextButton(onClick = { showSectorDialog = false }) {
-                    Text(stringResource(Res.string.common_cancel), color = TextSecondary)
+                    Text(stringResource(Res.string.common_cancel), color = MaterialTheme.appColors.textSecondary)
                 }
             }
         )

@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.networth.components
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -50,6 +52,11 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun NetWorthHeroCard(data: NetWorthData, balancesHidden: Boolean) {
+    val heroCardBg1 = MaterialTheme.appColors.heroCardStart
+    val heroCardBg2 = MaterialTheme.appColors.heroCardEnd
+    val appCCyanGlow = MaterialTheme.appColors.cyanGlow
+    val appCPnlNegativeSoft = MaterialTheme.appColors.pnlNegativeSoft
+    val appCPnlPositiveSoft = MaterialTheme.appColors.pnlPositiveSoft
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -57,7 +64,7 @@ internal fun NetWorthHeroCard(data: NetWorthData, balancesHidden: Boolean) {
             .drawBehind {
                 drawRect(
                     brush = Brush.linearGradient(
-                        colors = listOf(NavySurface, NavySurfaceLight),
+                        colors = listOf(heroCardBg1, heroCardBg2),
                         start  = Offset(0f, 0f),
                         end    = Offset(size.width, size.height)
                     )
@@ -67,7 +74,7 @@ internal fun NetWorthHeroCard(data: NetWorthData, balancesHidden: Boolean) {
                 val cy = 40.dp.toPx()
                 drawCircle(
                     brush = Brush.radialGradient(
-                        colors = listOf(CyanGlow.copy(alpha = 0.14f), Color.Transparent),
+                        colors = listOf(appCCyanGlow.copy(alpha = 0.14f), Color.Transparent),
                         center = Offset(cx, cy),
                         radius = orbRadius
                     ),
@@ -97,7 +104,7 @@ internal fun NetWorthHeroCard(data: NetWorthData, balancesHidden: Boolean) {
             NetWorthMetric(
                 label = stringResource(Res.string.networth_assets_label_alt),
                 value = "+${maskAmount(formatCurrency(data.totalAssets), balancesHidden)}",
-                color = PnLPositiveSoft
+                color = appCPnlPositiveSoft
             )
             Box(
                 Modifier
@@ -109,7 +116,7 @@ internal fun NetWorthHeroCard(data: NetWorthData, balancesHidden: Boolean) {
             NetWorthMetric(
                 label = stringResource(Res.string.networth_liabilities_label_alt),
                 value = "−${maskAmount(formatCurrency(data.totalLiabilities), balancesHidden)}",
-                color = PnLNegativeSoft
+                color = appCPnlNegativeSoft
             )
         }
     }
@@ -126,45 +133,50 @@ private fun NetWorthMetric(label: String, value: String, color: Color) {
 
 @Composable
 internal fun AssetsSummaryCard(data: NetWorthData, balancesHidden: Boolean) {
+    val heroCardBg1 = MaterialTheme.appColors.heroCardStart
+    val appCCyanAccent = MaterialTheme.appColors.cyanAccent
+    val appCNavyBorder = MaterialTheme.appColors.navyBorder
     Card(
         modifier  = Modifier.fillMaxWidth(),
         shape     = RoundedCornerShape(12.dp),
-        colors    = CardDefaults.cardColors(containerColor = NavySurface),
+        colors    = CardDefaults.cardColors(containerColor = heroCardBg1),
         elevation = CardDefaults.cardElevation(0.dp)
     ) {
+        val appCCyanAccent = MaterialTheme.appColors.cyanAccent
+        val appCNavyBorder = MaterialTheme.appColors.navyBorder
         Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
             AssetRow(stringResource(Res.string.networth_accounts_label), data.totalAccountBalance, balancesHidden)
             if (data.totalPortfolioValue > 0) {
                 Spacer(Modifier.height(10.dp))
-                HorizontalDivider(color = NavyBorder, thickness = 0.5.dp)
+                HorizontalDivider(color = appCNavyBorder, thickness = 0.5.dp)
                 Spacer(Modifier.height(10.dp))
                 AssetRow(stringResource(Res.string.networth_portfolio_label), data.totalPortfolioValue, balancesHidden)
             }
             if (data.totalFixedIncomeValue > 0) {
                 Spacer(Modifier.height(10.dp))
-                HorizontalDivider(color = NavyBorder, thickness = 0.5.dp)
+                HorizontalDivider(color = appCNavyBorder, thickness = 0.5.dp)
                 Spacer(Modifier.height(10.dp))
                 AssetRow(stringResource(Res.string.networth_fixedincome_label), data.totalFixedIncomeValue, balancesHidden)
             }
             if (data.totalValuablesValue > 0) {
                 Spacer(Modifier.height(10.dp))
-                HorizontalDivider(color = NavyBorder, thickness = 0.5.dp)
+                HorizontalDivider(color = appCNavyBorder, thickness = 0.5.dp)
                 Spacer(Modifier.height(10.dp))
                 AssetRow("Bienes", data.totalValuablesValue, balancesHidden)
             }
-            HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp), color = NavyBorder, thickness = 0.5.dp)
+            HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp), color = appCNavyBorder, thickness = 0.5.dp)
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                 Text(
                     stringResource(Res.string.networth_total_assets_label),
                     fontWeight = FontWeight.SemiBold,
                     fontSize   = 13.sp,
-                    color      = CyanAccent
+                    color      = appCCyanAccent
                 )
                 Text(
                     maskAmount(formatCurrency(data.totalAssets), balancesHidden),
                     fontWeight = FontWeight.Bold,
                     fontSize   = 13.sp,
-                    color      = CyanAccent
+                    color      = appCCyanAccent
                 )
             }
         }
@@ -173,12 +185,16 @@ internal fun AssetsSummaryCard(data: NetWorthData, balancesHidden: Boolean) {
 
 @Composable
 private fun AssetRow(label: String, amount: Double, balancesHidden: Boolean) {
+    val appCTextPrimary = MaterialTheme.appColors.textPrimary
+    val appCTextSecondary = MaterialTheme.appColors.textSecondary
     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-        Text(label, fontSize = 13.sp, color = TextSecondary)
+    val appCTextPrimary = MaterialTheme.appColors.textPrimary
+    val appCTextSecondary = MaterialTheme.appColors.textSecondary
+        Text(label, fontSize = 13.sp, color = appCTextSecondary)
         Text(
             maskAmount(formatCurrency(amount), balancesHidden),
             fontSize   = 13.sp,
-            color      = TextPrimary,
+            color      = appCTextPrimary,
             fontWeight = FontWeight.SemiBold
         )
     }
@@ -186,18 +202,21 @@ private fun AssetRow(label: String, amount: Double, balancesHidden: Boolean) {
 
 @Composable
 internal fun EverydayDebtsRow(amount: Double, balancesHidden: Boolean) {
+    val heroCardBg1 = MaterialTheme.appColors.heroCardStart
+    val appCTextSecondary = MaterialTheme.appColors.textSecondary
     Card(
         modifier  = Modifier.fillMaxWidth(),
         shape     = RoundedCornerShape(12.dp),
-        colors    = CardDefaults.cardColors(containerColor = NavySurface),
+        colors    = CardDefaults.cardColors(containerColor = heroCardBg1),
         elevation = CardDefaults.cardElevation(0.dp)
     ) {
+        val appCTextSecondary = MaterialTheme.appColors.textSecondary
         Row(
             modifier              = Modifier.fillMaxWidth().padding(16.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment     = Alignment.CenterVertically
         ) {
-            Text(stringResource(Res.string.networth_debts_label), fontSize = 13.sp, color = TextSecondary)
+            Text(stringResource(Res.string.networth_debts_label), fontSize = 13.sp, color = appCTextSecondary)
             Text(
                 "−${maskAmount(formatCurrency(amount), balancesHidden)}",
                 fontSize   = 13.sp,
@@ -210,10 +229,14 @@ internal fun EverydayDebtsRow(amount: Double, balancesHidden: Boolean) {
 
 @Composable
 internal fun LoanCard(loan: Loan, onClick: () -> Unit) {
+    val heroCardBg1 = MaterialTheme.appColors.heroCardStart
+    val appCCyanAccent = MaterialTheme.appColors.cyanAccent
+    val appCTextPrimary = MaterialTheme.appColors.textPrimary
+    val appCTextTertiary = MaterialTheme.appColors.textTertiary
     Card(
         modifier  = Modifier.fillMaxWidth().clickable(onClick = onClick),
         shape     = RoundedCornerShape(12.dp),
-        colors    = CardDefaults.cardColors(containerColor = NavySurface),
+        colors    = CardDefaults.cardColors(containerColor = heroCardBg1),
         elevation = CardDefaults.cardElevation(0.dp)
     ) {
         Column(modifier = Modifier.fillMaxWidth().padding(14.dp)) {
@@ -227,12 +250,12 @@ internal fun LoanCard(loan: Loan, onClick: () -> Unit) {
                         loan.type.toMaterialIcon(),
                         contentDescription = null,
                         modifier           = Modifier.size(22.dp),
-                        tint               = CyanAccent
+                        tint               = appCCyanAccent
                     )
                     Spacer(Modifier.width(10.dp))
                     Column {
-                        Text(loan.name, fontWeight = FontWeight.SemiBold, fontSize = 13.sp, color = TextPrimary)
-                        loan.lenderName?.let { Text(it, fontSize = 11.sp, color = TextTertiary) }
+                        Text(loan.name, fontWeight = FontWeight.SemiBold, fontSize = 13.sp, color = appCTextPrimary)
+                        loan.lenderName?.let { Text(it, fontSize = 11.sp, color = appCTextTertiary) }
                     }
                 }
                 Column(horizontalAlignment = Alignment.End) {
@@ -242,20 +265,20 @@ internal fun LoanCard(loan: Loan, onClick: () -> Unit) {
                         fontSize   = 13.sp,
                         color      = ExpenseRed
                     )
-                    Text(stringResource(Res.string.networth_of_format, formatCurrency(loan.totalAmount)), fontSize = 10.sp, color = TextTertiary)
+                    Text(stringResource(Res.string.networth_of_format, formatCurrency(loan.totalAmount)), fontSize = 10.sp, color = appCTextTertiary)
                 }
             }
 
             Spacer(Modifier.height(12.dp))
 
-            ProgressBar(progress = loan.progressPercent, color = CyanAccent, height = 4.dp)
+            ProgressBar(progress = loan.progressPercent, color = appCCyanAccent, height = 4.dp)
 
             Spacer(Modifier.height(6.dp))
 
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                Text(stringResource(Res.string.networth_installments_format, loan.paidInstallments, loan.totalInstallments), fontSize = 10.sp, color = TextTertiary)
-                Text(stringResource(Res.string.networth_monthly_format, formatCurrency(loan.monthlyPayment)), fontSize = 10.sp, color = TextTertiary)
-                Text("${loan.currentInterestRate}%", fontSize = 10.sp, color = TextTertiary)
+                Text(stringResource(Res.string.networth_installments_format, loan.paidInstallments, loan.totalInstallments), fontSize = 10.sp, color = appCTextTertiary)
+                Text(stringResource(Res.string.networth_monthly_format, formatCurrency(loan.monthlyPayment)), fontSize = 10.sp, color = appCTextTertiary)
+                Text("${loan.currentInterestRate}%", fontSize = 10.sp, color = appCTextTertiary)
             }
         }
     }

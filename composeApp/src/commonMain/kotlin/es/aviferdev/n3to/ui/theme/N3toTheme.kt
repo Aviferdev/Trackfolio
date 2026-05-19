@@ -4,6 +4,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.ReadOnlyComposable
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 
 // ─── Paleta Revolut-style (DARK MODE) ──────────────────────────────────────────
@@ -90,6 +93,110 @@ val CategoryPalette: List<Color> = listOf(
 val N3toSparkline = BrandGreen
 val UncategorizedColor: Color = Color(0xFF6E7480)
 
+// ─── Theme-adaptive color system ──────────────────────────────────────────────
+
+data class AppColors(
+    // Backgrounds & surfaces
+    val background: Color,
+    val surface: Color,
+    val surfaceElevated: Color,
+    val surface3: Color,
+    val surface4: Color,
+    // Navy fintech design system (card/sheet backgrounds)
+    val navyDeep: Color,
+    val navySurface: Color,
+    val navySurfaceLight: Color,
+    val navySelected: Color,
+    val navyBorder: Color,
+    // Hero card gradient (stays colored even in light mode for white-text readability)
+    val heroCardStart: Color,
+    val heroCardEnd: Color,
+    // Borders
+    val border: Color,
+    val border2: Color,
+    // Text
+    val textPrimary: Color,
+    val textSecondary: Color,
+    val textTertiary: Color,
+    val textDisabled: Color,
+    // Cyan interactive (darker in light mode for white-bg contrast)
+    val cyanAccent: Color,
+    val cyanGlow: Color,
+    val cyanSubtle: Color,
+    // Utility
+    val dragHandle: Color,
+    // P&L chip colors (saturated in dark, readable in light)
+    val pnlPositive: Color,
+    val pnlNegative: Color,
+    val pnlPositiveSoft: Color,
+    val pnlNegativeSoft: Color,
+)
+
+private fun darkAppColors() = AppColors(
+    background = BackgroundGray,
+    surface = SurfaceWhite,
+    surfaceElevated = SurfaceElevated,
+    surface3 = Surface3,
+    surface4 = Surface4,
+    navyDeep = NavyDeep,
+    navySurface = NavySurface,
+    navySurfaceLight = NavySurfaceLight,
+    navySelected = NavySelected,
+    navyBorder = NavyBorder,
+    heroCardStart = NavySurface,
+    heroCardEnd = NavySurfaceLight,
+    border = BorderGray,
+    border2 = BorderGray2,
+    textPrimary = TextPrimary,
+    textSecondary = TextSecondary,
+    textTertiary = TextTertiary,
+    textDisabled = TextDisabled,
+    cyanAccent = CyanAccent,
+    cyanGlow = CyanGlow,
+    cyanSubtle = CyanSubtle,
+    dragHandle = DragHandleColor,
+    pnlPositive = PnLPositive,
+    pnlNegative = PnLNegative,
+    pnlPositiveSoft = PnLPositiveSoft,
+    pnlNegativeSoft = PnLNegativeSoft,
+)
+
+private fun lightAppColors() = AppColors(
+    background = BackgroundWhite,
+    surface = SurfaceLight,
+    surfaceElevated = SurfaceLightElevated,
+    surface3 = ChipBgLight,
+    surface4 = SurfaceLightElevated,
+    navyDeep = BackgroundWhite,
+    navySurface = SurfaceLight,
+    navySurfaceLight = SurfaceLightElevated,
+    navySelected = SelectionLight,
+    navyBorder = BorderLight,
+    heroCardStart = PrimaryDark,
+    heroCardEnd = PrimaryVariant,
+    border = BorderLight,
+    border2 = BorderLight2,
+    textPrimary = TextPrimaryLight,
+    textSecondary = TextSecondaryLight,
+    textTertiary = TextTertiaryLight,
+    textDisabled = Color(0xFFBBBBBB),
+    cyanAccent = Color(0xFF0284C7),   // sky-600 — legible sobre fondo blanco
+    cyanGlow = Color(0xFF0891B2),     // cyan-600
+    cyanSubtle = Color(0xFF0369A1),   // sky-700
+    dragHandle = DragHandleColor,
+    pnlPositive = Color(0xFF16A34A),     // green-600
+    pnlNegative = Color(0xFFDC2626),     // red-600
+    pnlPositiveSoft = Color(0xFFDCFCE7), // green-100 bg
+    pnlNegativeSoft = Color(0xFFFEE2E2), // red-100 bg
+)
+
+val LocalAppColors = staticCompositionLocalOf { darkAppColors() }
+
+val MaterialTheme.appColors: AppColors
+    @Composable
+    @ReadOnlyComposable
+    get() = LocalAppColors.current
+
 // ─── Material color schemes ────────────────────────────────────────────────────
 private val DarkColors = darkColorScheme(
     primary = PrimaryDark,
@@ -151,19 +258,16 @@ private val LightColors = lightColorScheme(
     scrim = Color(0xA6000000)
 )
 
-/**
- * Tema de Trackfolio.
- *
- * @param darkTheme Si es `true`, usa el esquema oscuro. Si es `false`, usa el claro.
- * @param content Contenido a renderizar con el tema.
- */
 @Composable
 fun N3toTheme(
     darkTheme: Boolean = true,
     content: @Composable () -> Unit
 ) {
-    MaterialTheme(
-        colorScheme = if (darkTheme) DarkColors else LightColors,
-        content = content
-    )
+    val appColors = if (darkTheme) darkAppColors() else lightAppColors()
+    CompositionLocalProvider(LocalAppColors provides appColors) {
+        MaterialTheme(
+            colorScheme = if (darkTheme) DarkColors else LightColors,
+            content = content
+        )
+    }
 }

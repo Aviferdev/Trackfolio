@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.common
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.*
@@ -69,22 +71,22 @@ fun LineChartCard(
     Card(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = NavySurface),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.navySurface),
         elevation = CardDefaults.cardElevation(0.dp),
-        border = BorderStroke(0.5.dp, NavyBorder)
+        border = BorderStroke(0.5.dp, MaterialTheme.appColors.navyBorder)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
                 text = title,
                 fontSize = 14.sp,
                 fontWeight = FontWeight.SemiBold,
-                color = TextPrimary
+                color = MaterialTheme.appColors.textPrimary
             )
             Spacer(Modifier.height(2.dp))
             Text(
                 text = subtitle,
                 fontSize = 11.sp,
-                color = TextSecondary
+                color = MaterialTheme.appColors.textSecondary
             )
             if (timeRangeSelector != null) {
                 Spacer(Modifier.height(10.dp))
@@ -122,9 +124,9 @@ private fun LineChartCanvas(
     rotateXLabels: Boolean = false,
     modifier: Modifier = Modifier
 ) {
-    val guideColor = TextSecondary.copy(alpha = 0.15f)
-    val axisColor = TextSecondary.copy(alpha = 0.35f)
-    val labelColor = TextSecondary
+    val guideColor = MaterialTheme.appColors.textSecondary.copy(alpha = 0.15f)
+    val axisColor = MaterialTheme.appColors.textSecondary.copy(alpha = 0.35f)
+    val labelColor = MaterialTheme.appColors.textSecondary
     val areaColor = lineColor.copy(alpha = 0.12f)
 
     val minVal = points.minOf { it.second }
@@ -289,13 +291,13 @@ private fun EmptyLineChartState() {
             Text(
                 text = "Sin datos suficientes",
                 fontSize = 13.sp,
-                color = TextSecondary,
+                color = MaterialTheme.appColors.textSecondary,
                 textAlign = TextAlign.Center
             )
             Text(
                 text = "Actualiza precios para ver la evolución",
                 fontSize = 11.sp,
-                color = TextSecondary.copy(alpha = 0.7f),
+                color = MaterialTheme.appColors.textSecondary.copy(alpha = 0.7f),
                 textAlign = TextAlign.Center
             )
         }

@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.portfolio.assethistory
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,8 +23,7 @@ import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.portfolio.FifoOpenLot
 import es.aviferdev.n3to.ui.portfolio.formatShortDate
 import es.aviferdev.n3to.ui.theme.IncomeGreen
-import es.aviferdev.n3to.ui.theme.TextPrimary
-import es.aviferdev.n3to.ui.theme.TextTertiary
+
 import es.aviferdev.n3to.ui.theme.formatAmount
 import es.aviferdev.n3to.ui.theme.formatQty
 import es.aviferdev.n3to.ui.theme.maskAmount
@@ -50,7 +51,7 @@ fun FifoOpenLotRow(index: Int, lot: FifoOpenLot, masked: Boolean) {
                         masked
                     )
                 } €",
-                fontSize = 12.sp, color = TextPrimary, fontWeight = FontWeight.Medium
+                fontSize = 12.sp, color = MaterialTheme.appColors.textPrimary, fontWeight = FontWeight.Medium
             )
             Text(
                 "Comprado el ${formatShortDate(lot.purchaseDate)}${
@@ -60,13 +61,13 @@ fun FifoOpenLotRow(index: Int, lot: FifoOpenLot, masked: Boolean) {
                         )
                     } de ${formatQty(lot.originalQuantity)} restantes" else ""
                 }",
-                fontSize = 10.sp, color = TextTertiary
+                fontSize = 10.sp, color = MaterialTheme.appColors.textTertiary
             )
         }
         Text(
             "${maskAmount(formatAmount(lot.remainingCost), masked)} €",
             fontSize = 11.sp,
-            color = TextPrimary,
+            color = MaterialTheme.appColors.textPrimary,
             fontWeight = FontWeight.SemiBold
         )
     }

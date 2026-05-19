@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.common.navigation
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
@@ -26,22 +28,16 @@ import n3to.composeapp.generated.resources.common_back_cd
 import org.jetbrains.compose.resources.stringResource
 import es.aviferdev.n3to.ui.common.separator.SpacerHorizontalApp
 import androidx.compose.ui.graphics.Color
-import es.aviferdev.n3to.ui.theme.NavyBorder
-import es.aviferdev.n3to.ui.theme.NavySelected
-import es.aviferdev.n3to.ui.theme.NavySurface
-import es.aviferdev.n3to.ui.theme.TextPrimary
-import es.aviferdev.n3to.ui.theme.TextSecondary
-import es.aviferdev.n3to.ui.theme.TextTertiary
-import androidx.compose.ui.tooling.preview.Preview
 
+import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
 fun TopBarApp(
     title: String,
     navigateBack: (() -> Unit)? = null,
     subtitle: String? = null,
-    containerColor: Color = NavySurface,
-    dividerColor: Color = NavyBorder,
+    containerColor: Color = MaterialTheme.appColors.navySurface,
+    dividerColor: Color = MaterialTheme.appColors.navyBorder,
     actions: @Composable RowScope.() -> Unit = {}
 ) {
     Surface(color = containerColor) {
@@ -58,8 +54,8 @@ fun TopBarApp(
                     clickButton = navigateBack,
                     icon = Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = stringResource(Res.string.common_back_cd),
-                    backgroundColor = NavySelected,
-                    iconTint = TextSecondary
+                    backgroundColor = MaterialTheme.appColors.navySelected,
+                    iconTint = MaterialTheme.appColors.textSecondary
                 )
                 SpacerHorizontalApp(8.dp)
             } else {
@@ -70,7 +66,7 @@ fun TopBarApp(
                     text = title,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
-                    color = TextPrimary,
+                    color = MaterialTheme.appColors.textPrimary,
                     letterSpacing = (-0.3).sp
                 )
                 if (subtitle != null) {
@@ -78,7 +74,7 @@ fun TopBarApp(
                         text = subtitle,
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Normal,
-                        color = TextTertiary
+                        color = MaterialTheme.appColors.textTertiary
                     )
                 }
             }

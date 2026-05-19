@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.portfolio
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,14 +25,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import es.aviferdev.n3to.ui.theme.CyanAccent
-import es.aviferdev.n3to.ui.theme.CyanGlow
-import es.aviferdev.n3to.ui.theme.CyanSubtle
+
 import es.aviferdev.n3to.ui.theme.N3toTheme
-import es.aviferdev.n3to.ui.theme.NavySurface
-import es.aviferdev.n3to.ui.theme.NavySurfaceLight
-import es.aviferdev.n3to.ui.theme.PnLNegative
-import es.aviferdev.n3to.ui.theme.PnLPositive
+
 import es.aviferdev.n3to.ui.theme.formatAmount
 import es.aviferdev.n3to.ui.theme.formatPercent
 import es.aviferdev.n3to.ui.theme.maskAmount
@@ -58,6 +55,12 @@ fun PortfolioSummaryCard(
     balancesHidden: Boolean,
     modifier: Modifier = Modifier
 ) {
+    val heroCardBg1 = MaterialTheme.appColors.heroCardStart
+    val heroCardBg2 = MaterialTheme.appColors.heroCardEnd
+    val appCCyanGlow = MaterialTheme.appColors.cyanGlow
+    val appCCyanSubtle = MaterialTheme.appColors.cyanSubtle
+    val appCPnlPositive = MaterialTheme.appColors.pnlPositive
+    val appCPnlNegative = MaterialTheme.appColors.pnlNegative
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -65,7 +68,7 @@ fun PortfolioSummaryCard(
             .drawBehind {
                 drawRect(
                     brush = Brush.linearGradient(
-                        colors = listOf(NavySurface, NavySurfaceLight),
+                        colors = listOf(heroCardBg1, heroCardBg2),
                         start = Offset(0f, 0f),
                         end = Offset(size.width, size.height)
                     )
@@ -75,7 +78,7 @@ fun PortfolioSummaryCard(
                 val cy = 30.dp.toPx()
                 drawCircle(
                     brush = Brush.radialGradient(
-                        colors = listOf(CyanGlow.copy(alpha = 0.13f), Color.Transparent),
+                        colors = listOf(appCCyanGlow.copy(alpha = 0.13f), Color.Transparent),
                         center = Offset(cx, cy),
                         radius = orbRadius
                     ),
@@ -136,8 +139,8 @@ fun PortfolioSummaryCard(
                 secondary = if (totalPnL == 0.0) null
                 else "${if (totalPnLPercent >= 0) "+" else "−"}${formatPercent(abs(totalPnLPercent))}%",
                 color = when {
-                    totalPnL > 0 -> PnLPositive
-                    totalPnL < 0 -> PnLNegative
+                    totalPnL > 0 -> appCPnlPositive
+                    totalPnL < 0 -> appCPnlNegative
                     else -> Color.White
                 },
                 modifier = Modifier.weight(1f).padding(start = 16.dp)
@@ -155,7 +158,7 @@ fun PortfolioSummaryCard(
             if (positionsCount == 1) stringResource(Res.string.portfolio_summary_positions_one, positionsCount)
             else stringResource(Res.string.portfolio_summary_positions_many, positionsCount),
             fontSize = 10.sp,
-            color = CyanSubtle.copy(alpha = 0.6f)
+            color = appCCyanSubtle.copy(alpha = 0.6f)
         )
     }
 }
@@ -186,9 +189,11 @@ fun PortfolioMetric(
 
 @Composable
 fun PnLChip(label: String, amount: Double, masked: Boolean) {
+    val appCPnlPositive = MaterialTheme.appColors.pnlPositive
+    val appCPnlNegative = MaterialTheme.appColors.pnlNegative
     val color = when {
-        amount > 0 -> PnLPositive
-        amount < 0 -> PnLNegative
+        amount > 0 -> appCPnlPositive
+        amount < 0 -> appCPnlNegative
         else -> Color.White.copy(alpha = 0.5f)
     }
     Column {

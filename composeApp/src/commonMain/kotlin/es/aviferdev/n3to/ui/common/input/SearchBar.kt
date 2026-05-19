@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.common.input
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -28,9 +30,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.ui.theme.PrimaryDark
-import es.aviferdev.n3to.ui.theme.SurfaceWhite
-import es.aviferdev.n3to.ui.theme.TextPrimary
-import es.aviferdev.n3to.ui.theme.TextTertiary
+
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.common_clear_search_cd
@@ -59,14 +59,14 @@ fun SearchBar(
             .fillMaxWidth()
             .height(42.dp)
             .clip(RoundedCornerShape(9.dp))
-            .background(SurfaceWhite)
+            .background(MaterialTheme.appColors.surface)
             .padding(horizontal = 10.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
             imageVector = Icons.Outlined.Search,
             contentDescription = stringResource(Res.string.common_search_cd),
-            tint = TextTertiary,
+            tint = MaterialTheme.appColors.textTertiary,
             modifier = Modifier.size(17.dp)
         )
         Spacer(Modifier.width(8.dp))
@@ -76,7 +76,7 @@ fun SearchBar(
                 Text(
                     text = placeholder,
                     fontSize = 13.sp,
-                    color = TextTertiary
+                    color = MaterialTheme.appColors.textTertiary
                 )
             }
             BasicTextField(
@@ -85,7 +85,7 @@ fun SearchBar(
                 singleLine = true,
                 textStyle = TextStyle(
                     fontSize = 13.sp,
-                    color = TextPrimary,
+                    color = MaterialTheme.appColors.textPrimary,
                     fontWeight = FontWeight.Normal
                 ),
                 cursorBrush = SolidColor(PrimaryDark)
@@ -100,7 +100,7 @@ fun SearchBar(
                 Icon(
                     Icons.Default.Close,
                     contentDescription = stringResource(Res.string.common_clear_search_cd),
-                    tint = TextTertiary,
+                    tint = MaterialTheme.appColors.textTertiary,
                     modifier = Modifier.size(16.dp)
                 )
             }

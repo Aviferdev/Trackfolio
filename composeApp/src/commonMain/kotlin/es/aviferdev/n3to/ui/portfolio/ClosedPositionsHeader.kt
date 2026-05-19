@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.portfolio
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -18,7 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import es.aviferdev.n3to.ui.theme.TextTertiary
+
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.portfolio_category_group_collapse
@@ -44,21 +46,21 @@ fun ClosedPositionsHeader(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Text("✓", fontSize = 14.sp, color = TextTertiary)
+            Text("✓", fontSize = 14.sp, color = MaterialTheme.appColors.textTertiary)
             Spacer(Modifier.width(8.dp))
             Text(
                 stringResource(Res.string.portfolio_closed_positions),
                 fontSize = 12.sp,
                 fontWeight = FontWeight.SemiBold,
-                color = TextTertiary
+                color = MaterialTheme.appColors.textTertiary
             )
             Spacer(Modifier.width(5.dp))
-            Text("($count)", fontSize = 11.sp, color = TextTertiary)
+            Text("($count)", fontSize = 11.sp, color = MaterialTheme.appColors.textTertiary)
         }
         Icon(
             if (expanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
             contentDescription = if (expanded) stringResource(Res.string.portfolio_category_group_collapse) else stringResource(Res.string.portfolio_category_group_expand),
-            tint = TextTertiary,
+            tint = MaterialTheme.appColors.textTertiary,
             modifier = Modifier.size(18.dp)
         )
     }

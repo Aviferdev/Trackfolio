@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.fixedincome.components
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -46,6 +48,11 @@ internal fun FixedIncomeDetailHeader(
     balancesHidden: Boolean,
     simulation: MaturitySimulation? = null
 ) {
+    val heroCardBg1 = MaterialTheme.appColors.heroCardStart
+    val heroCardBg2 = MaterialTheme.appColors.heroCardEnd
+    val appCCyanGlow = MaterialTheme.appColors.cyanGlow
+    val appCTextPrimary = MaterialTheme.appColors.textPrimary
+    val appCTextTertiary = MaterialTheme.appColors.textTertiary
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -54,7 +61,7 @@ internal fun FixedIncomeDetailHeader(
             .drawBehind {
                 drawRect(
                     brush = Brush.linearGradient(
-                        colors = listOf(NavySurface, NavySurfaceLight),
+                        colors = listOf(heroCardBg1, heroCardBg2),
                         start = Offset(0f, 0f),
                         end = Offset(size.width, size.height)
                     )
@@ -64,7 +71,7 @@ internal fun FixedIncomeDetailHeader(
                 val cy = 30.dp.toPx()
                 drawCircle(
                     brush = Brush.radialGradient(
-                        colors = listOf(CyanGlow.copy(alpha = 0.14f), Color.Transparent),
+                        colors = listOf(appCCyanGlow.copy(alpha = 0.14f), Color.Transparent),
                         center = Offset(cx, cy),
                         radius = orbRadius
                     ),
@@ -96,13 +103,13 @@ internal fun FixedIncomeDetailHeader(
                         "${maskAmount(formatAmount(position.principal), balancesHidden)} €",
                         fontSize = 22.sp,
                         fontWeight = FontWeight.Bold,
-                        color = TextPrimary,
+                        color = appCTextPrimary,
                         letterSpacing = (-0.8).sp
                     )
                     Text(
                         stringResource(Res.string.fixedincome_nominal_label),
                         fontSize = 11.sp,
-                        color = TextTertiary,
+                        color = appCTextTertiary,
                         modifier = Modifier.padding(top = 3.dp)
                     )
                 }
@@ -154,13 +161,16 @@ internal fun FixedIncomeDetailHeader(
 
 @Composable
 internal fun DetailCell(label: String, value: String, modifier: Modifier = Modifier) {
+    val appCNavySurfaceLight = MaterialTheme.appColors.navySurfaceLight
+    val appCCyanAccent = MaterialTheme.appColors.cyanAccent
     Column(
         modifier = modifier
             .clip(RoundedCornerShape(10.dp))
-            .background(NavySurfaceLight)
+            .background(appCNavySurfaceLight)
             .padding(10.dp)
     ) {
-        Text(label, fontSize = 10.sp, color = CyanAccent.copy(alpha = 0.7f))
+        val appCCyanAccent = MaterialTheme.appColors.cyanAccent
+        Text(label, fontSize = 10.sp, color = appCCyanAccent.copy(alpha = 0.7f))
         Spacer(Modifier.height(2.dp))
         Text(value, fontSize = 12.sp, fontWeight = FontWeight.SemiBold, color = Color.White)
     }

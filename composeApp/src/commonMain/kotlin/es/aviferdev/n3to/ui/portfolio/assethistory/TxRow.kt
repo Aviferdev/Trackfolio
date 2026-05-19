@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.portfolio.assethistory
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -31,10 +33,7 @@ import es.aviferdev.n3to.domain.model.Platform
 import es.aviferdev.n3to.ui.portfolio.formatShortDate
 import es.aviferdev.n3to.ui.theme.ExpenseRed
 import es.aviferdev.n3to.ui.theme.IncomeGreen
-import es.aviferdev.n3to.ui.theme.SurfaceWhite
-import es.aviferdev.n3to.ui.theme.TextPrimary
-import es.aviferdev.n3to.ui.theme.TextSecondary
-import es.aviferdev.n3to.ui.theme.TextTertiary
+
 import es.aviferdev.n3to.ui.theme.formatAmount
 import es.aviferdev.n3to.ui.theme.formatQty
 import es.aviferdev.n3to.ui.theme.maskAmount
@@ -66,7 +65,7 @@ fun TxRow(
     Card(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = SurfaceWhite),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.surface),
         elevation = CardDefaults.cardElevation(0.dp)
     ) {
         Row(
@@ -96,27 +95,27 @@ fun TxRow(
                                 formatAmount(tx.pricePerUnit),
                                 balancesHidden
                             )
-                        } €", fontSize = 11.sp, color = TextPrimary
+                        } €", fontSize = 11.sp, color = MaterialTheme.appColors.textPrimary
                     )
                 }
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(formatShortDate(tx.date), fontSize = 10.sp, color = TextTertiary)
+                    Text(formatShortDate(tx.date), fontSize = 10.sp, color = MaterialTheme.appColors.textTertiary)
                     if (platform != null) {
-                        Text("  ·  ", fontSize = 10.sp, color = TextTertiary)
+                        Text("  ·  ", fontSize = 10.sp, color = MaterialTheme.appColors.textTertiary)
                         Text(platform.icon, fontSize = 11.sp)
                         Spacer(Modifier.width(2.dp))
-                        Text(platform.name, fontSize = 10.sp, color = TextTertiary)
+                        Text(platform.name, fontSize = 10.sp, color = MaterialTheme.appColors.textTertiary)
                     }
                 }
                 if (!tx.feeNote.isNullOrBlank()) Text(
                     "Com: ${tx.feeNote}",
                     fontSize = 9.sp,
-                    color = TextTertiary
+                    color = MaterialTheme.appColors.textTertiary
                 )
                 if (!tx.notes.isNullOrBlank()) Text(
                     tx.notes,
                     fontSize = 9.sp,
-                    color = TextTertiary,
+                    color = MaterialTheme.appColors.textTertiary,
                     maxLines = 2
                 )
             }
@@ -138,7 +137,7 @@ fun TxRow(
                                 Icons.Default.Edit,
                                 null,
                                 modifier = Modifier.size(13.dp),
-                                tint = TextSecondary
+                                tint = MaterialTheme.appColors.textSecondary
                             )
                         }
                     }

@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.realestate
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.platform.nowMillis
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -24,7 +26,6 @@ import com.benasher44.uuid.uuid4
 import es.aviferdev.n3to.domain.model.Category
 import es.aviferdev.n3to.domain.model.PropertyExpense
 import es.aviferdev.n3to.ui.theme.*
-import es.aviferdev.n3to.ui.theme.DragHandleColor
 
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.common_accept
@@ -83,16 +84,16 @@ fun SellPropertySheet(
                 }) { Text(stringResource(Res.string.common_accept), color = PrimaryDark) }
             },
             dismissButton = {
-                TextButton(onClick = { showDatePicker = false }) { Text(stringResource(Res.string.common_cancel), color = TextTertiary) }
+                TextButton(onClick = { showDatePicker = false }) { Text(stringResource(Res.string.common_cancel), color = MaterialTheme.appColors.textTertiary) }
             },
-            colors = DatePickerDefaults.colors(containerColor = SurfaceWhite)
+            colors = DatePickerDefaults.colors(containerColor = MaterialTheme.appColors.surface)
         ) {
             DatePicker(
                 state = datePickerState,
                 colors = DatePickerDefaults.colors(
                     selectedDayContainerColor = PrimaryDark,
                     todayDateBorderColor = PrimaryDark,
-                    containerColor = SurfaceWhite
+                    containerColor = MaterialTheme.appColors.surface
                 )
             )
         }
@@ -101,14 +102,14 @@ fun SellPropertySheet(
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-        containerColor = SurfaceWhite,
+        containerColor = MaterialTheme.appColors.surface,
         dragHandle = {
             Box(
                 modifier = Modifier
                     .padding(top = 12.dp, bottom = 4.dp)
                     .width(40.dp).height(4.dp)
                     .clip(RoundedCornerShape(2.dp))
-                    .background(DragHandleColor)
+                    .background(MaterialTheme.appColors.dragHandle)
             )
         }
     ) {
@@ -123,32 +124,32 @@ fun SellPropertySheet(
                 stringResource(Res.string.realestate_sell_title),
                 fontWeight = FontWeight.Bold,
                 fontSize = 18.sp,
-                color = TextPrimary
+                color = MaterialTheme.appColors.textPrimary
             )
             Text(
                 propertyName,
                 fontSize = 13.sp,
-                color = TextTertiary,
+                color = MaterialTheme.appColors.textTertiary,
                 modifier = Modifier.padding(top = 4.dp)
             )
 
             Spacer(Modifier.height(20.dp))
 
             // ── Precio de venta ─────────────────────────────────────────────
-            Text(stringResource(Res.string.realestate_sell_price), fontSize = 13.sp, color = TextSecondary)
+            Text(stringResource(Res.string.realestate_sell_price), fontSize = 13.sp, color = MaterialTheme.appColors.textSecondary)
             Spacer(Modifier.height(6.dp))
             OutlinedTextField(
                 value = saleValueText,
                 onValueChange = { saleValueText = it.filter { c -> c.isDigit() || c == ',' || c == '.' } },
-                placeholder = { Text(stringResource(Res.string.realestate_sale_price_hint), color = TextTertiary.copy(alpha = 0.6f), fontSize = 14.sp) },
+                placeholder = { Text(stringResource(Res.string.realestate_sale_price_hint), color = MaterialTheme.appColors.textTertiary.copy(alpha = 0.6f), fontSize = 14.sp) },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                trailingIcon = { Text("€", fontSize = 16.sp, color = TextSecondary, modifier = Modifier.padding(end = 12.dp)) },
+                trailingIcon = { Text("€", fontSize = 16.sp, color = MaterialTheme.appColors.textSecondary, modifier = Modifier.padding(end = 12.dp)) },
                 shape = RoundedCornerShape(10.dp),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = PrimaryDark,
-                    unfocusedBorderColor = BorderGray,
+                    unfocusedBorderColor = MaterialTheme.appColors.border,
                     cursorColor = PrimaryDark,
                     focusedLabelColor = PrimaryDark
                 )
@@ -157,7 +158,7 @@ fun SellPropertySheet(
             Spacer(Modifier.height(16.dp))
 
             // ── Fecha de venta ──────────────────────────────────────────────
-            Text(stringResource(Res.string.realestate_sale_date_title), fontSize = 13.sp, color = TextSecondary)
+            Text(stringResource(Res.string.realestate_sale_date_title), fontSize = 13.sp, color = MaterialTheme.appColors.textSecondary)
             Spacer(Modifier.height(6.dp))
             OutlinedTextField(
                 value = formatSellDate(saleDateMillis),
@@ -167,14 +168,14 @@ fun SellPropertySheet(
                 shape = RoundedCornerShape(10.dp),
                 trailingIcon = {
                     IconButton(onClick = { showDatePicker = true }) {
-                        Icon(Icons.Outlined.CalendarMonth, stringResource(Res.string.common_action_cd), tint = TextTertiary)
+                        Icon(Icons.Outlined.CalendarMonth, stringResource(Res.string.common_action_cd), tint = MaterialTheme.appColors.textTertiary)
                     }
                 },
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = PrimaryDark,
-                    unfocusedBorderColor = BorderGray,
-                    disabledTextColor = TextPrimary,
-                    disabledBorderColor = BorderGray
+                    unfocusedBorderColor = MaterialTheme.appColors.border,
+                    disabledTextColor = MaterialTheme.appColors.textPrimary,
+                    disabledBorderColor = MaterialTheme.appColors.border
                 ),
                 enabled = true
             )
@@ -187,7 +188,7 @@ fun SellPropertySheet(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(stringResource(Res.string.realestate_sale_expenses_title_alt), fontWeight = FontWeight.SemiBold, fontSize = 14.sp, color = TextPrimary)
+                Text(stringResource(Res.string.realestate_sale_expenses_title_alt), fontWeight = FontWeight.SemiBold, fontSize = 14.sp, color = MaterialTheme.appColors.textPrimary)
                 TextButton(
                     onClick = {
                         val firstCategory = expenseCategories.firstOrNull()?.id ?: ""
@@ -206,7 +207,7 @@ fun SellPropertySheet(
                 Text(
                     stringResource(Res.string.realestate_no_sale_expenses),
                     fontSize = 12.sp,
-                    color = TextTertiary,
+                    color = MaterialTheme.appColors.textTertiary,
                     modifier = Modifier.padding(vertical = 8.dp)
                 )
             } else {
@@ -234,25 +235,25 @@ fun SellPropertySheet(
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(10.dp),
-                    colors = CardDefaults.cardColors(containerColor = BackgroundGray),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.background),
                     elevation = CardDefaults.cardElevation(0.dp)
                 ) {
                     Column(modifier = Modifier.padding(14.dp)) {
-                        Text(stringResource(Res.string.realestate_sale_summary), fontWeight = FontWeight.SemiBold, fontSize = 13.sp, color = TextPrimary)
+                        Text(stringResource(Res.string.realestate_sale_summary), fontWeight = FontWeight.SemiBold, fontSize = 13.sp, color = MaterialTheme.appColors.textPrimary)
                         Spacer(Modifier.height(8.dp))
                         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                            Text(stringResource(Res.string.realestate_sale_price_short), fontSize = 12.sp, color = TextSecondary)
+                            Text(stringResource(Res.string.realestate_sale_price_short), fontSize = 12.sp, color = MaterialTheme.appColors.textSecondary)
                             Text(formatAmountEuro(saleValue), fontSize = 12.sp, color = IncomeGreen, fontWeight = FontWeight.Medium)
                         }
                         if (totalExpenses > 0) {
                             Row(Modifier.fillMaxWidth().padding(top = 4.dp), horizontalArrangement = Arrangement.SpaceBetween) {
-                                Text(stringResource(Res.string.realestate_sale_expenses_short), fontSize = 12.sp, color = TextSecondary)
+                                Text(stringResource(Res.string.realestate_sale_expenses_short), fontSize = 12.sp, color = MaterialTheme.appColors.textSecondary)
                                 Text("-${formatAmountEuro(totalExpenses)}", fontSize = 12.sp, color = ExpenseRed, fontWeight = FontWeight.Medium)
                             }
                         }
-                        HorizontalDivider(color = BorderGray2, modifier = Modifier.padding(vertical = 6.dp))
+                        HorizontalDivider(color = MaterialTheme.appColors.border2, modifier = Modifier.padding(vertical = 6.dp))
                         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                            Text(stringResource(Res.string.realestate_net_proceeds), fontWeight = FontWeight.SemiBold, fontSize = 13.sp, color = TextPrimary)
+                            Text(stringResource(Res.string.realestate_net_proceeds), fontWeight = FontWeight.SemiBold, fontSize = 13.sp, color = MaterialTheme.appColors.textPrimary)
                             Text(
                                 formatAmountEuro(netProceeds),
                                 fontWeight = FontWeight.Bold, fontSize = 13.sp,

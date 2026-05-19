@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.portfolio.assethistory
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.platform.nowMillis
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -20,9 +22,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.ui.portfolio.components.formatFullDate
 import es.aviferdev.n3to.ui.theme.ExpenseRed
-import es.aviferdev.n3to.ui.theme.SurfaceWhite
-import es.aviferdev.n3to.ui.theme.TextPrimary
-import es.aviferdev.n3to.ui.theme.TextTertiary
 
 // ─── Maturity date card ───────────────────────────────────────────────────────
 @Composable
@@ -32,7 +31,7 @@ fun MaturityDateCard(maturityDate: Long, modifier: Modifier = Modifier) {
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(13.dp),
         colors = CardDefaults.cardColors(
-            containerColor = if (isExpired) ExpenseRed.copy(.08f) else SurfaceWhite
+            containerColor = if (isExpired) ExpenseRed.copy(.08f) else MaterialTheme.appColors.surface
         ),
         elevation = CardDefaults.cardElevation(0.dp)
     ) {
@@ -43,13 +42,13 @@ fun MaturityDateCard(maturityDate: Long, modifier: Modifier = Modifier) {
             Text(if (isExpired) "⏰" else "📅", fontSize = 22.sp)
             Spacer(Modifier.width(12.dp))
             Column(modifier = Modifier.weight(1f)) {
-                Text("Vencimiento", fontSize = 10.sp, color = TextTertiary)
+                Text("Vencimiento", fontSize = 10.sp, color = MaterialTheme.appColors.textTertiary)
                 Spacer(Modifier.height(2.dp))
                 Text(
                     formatFullDate(maturityDate),
                     fontSize = 14.sp,
                     fontWeight = FontWeight.SemiBold,
-                    color = if (isExpired) ExpenseRed else TextPrimary
+                    color = if (isExpired) ExpenseRed else MaterialTheme.appColors.textPrimary
                 )
                 if (isExpired) Text(
                     "Vencido",

@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.fixedincome
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.platform.nowMillis
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.BorderStroke
@@ -48,9 +50,9 @@ fun FixedIncomeSection(
         Card(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(16.dp),
-            colors = CardDefaults.cardColors(containerColor = NavySurface),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.navySurface),
             elevation = CardDefaults.cardElevation(0.dp),
-            border = BorderStroke(0.5.dp, NavyBorder)
+            border = BorderStroke(0.5.dp, MaterialTheme.appColors.navyBorder)
         ) {
             Column(modifier = Modifier.padding(16.dp)) {
                 Row(
@@ -62,7 +64,7 @@ fun FixedIncomeSection(
                         Icon(
                             Icons.Filled.AccountBalance,
                             contentDescription = null,
-                            tint = CyanAccent,
+                            tint = MaterialTheme.appColors.cyanAccent,
                             modifier = Modifier.size(20.dp)
                         )
                         Spacer(Modifier.width(8.dp))
@@ -120,7 +122,7 @@ fun FixedIncomeSection(
                             text = "+${maskAmount(formatAmount(summary.totalCollectedInterest), balancesHidden)} €",
                             fontSize = 14.sp,
                             fontWeight = FontWeight.SemiBold,
-                            color = if (summary.totalCollectedInterest >= 0) PnLPositive else Color.White.copy(alpha = 0.55f)
+                            color = if (summary.totalCollectedInterest >= 0) MaterialTheme.appColors.pnlPositive else Color.White.copy(alpha = 0.55f)
                         )
                     }
                     Column(horizontalAlignment = Alignment.End) {
@@ -131,8 +133,8 @@ fun FixedIncomeSection(
                             fontSize = 14.sp,
                             fontWeight = FontWeight.SemiBold,
                             color = when {
-                                summary.totalNetProfit > 0 -> PnLPositive
-                                summary.totalNetProfit < 0 -> PnLNegative
+                                summary.totalNetProfit > 0 -> MaterialTheme.appColors.pnlPositive
+                                summary.totalNetProfit < 0 -> MaterialTheme.appColors.pnlNegative
                                 else -> Color.White
                             }
                         )
@@ -172,9 +174,9 @@ fun FixedIncomePositionCard(
             .fillMaxWidth()
             .clickable(onClick = onClick),
         shape = RoundedCornerShape(11.dp),
-        colors = CardDefaults.cardColors(containerColor = NavySurface),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.navySurface),
         elevation = CardDefaults.cardElevation(0.dp),
-        border = BorderStroke(0.5.dp, NavyBorder)
+        border = BorderStroke(0.5.dp, MaterialTheme.appColors.navyBorder)
     ) {
         Row(
             modifier = Modifier
@@ -185,13 +187,13 @@ fun FixedIncomePositionCard(
             Box(
                 modifier = Modifier
                     .size(40.dp)
-                    .background(NavySurfaceLight, RoundedCornerShape(10.dp)),
+                    .background(MaterialTheme.appColors.navySurfaceLight, RoundedCornerShape(10.dp)),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     imageVector = Icons.Filled.AccountBalance,
                     contentDescription = null,
-                    tint = CyanAccent,
+                    tint = MaterialTheme.appColors.cyanAccent,
                     modifier = Modifier.size(20.dp)
                 )
             }
@@ -221,7 +223,7 @@ fun FixedIncomePositionCard(
             Column(horizontalAlignment = Alignment.End) {
                 StatusTag(
                     label = if (position.isOpen) "ACTIVO" else "CERRADO",
-                    color = if (position.isOpen) PnLPositive else Color.White.copy(alpha = 0.3f)
+                    color = if (position.isOpen) MaterialTheme.appColors.pnlPositive else Color.White.copy(alpha = 0.3f)
                 )
                 if (position.isOpen) {
                     val interestToShow = if (row.collectedInterest > 0) row.collectedInterest else position.accruedInterestToDate
@@ -232,7 +234,7 @@ fun FixedIncomePositionCard(
                             text = "$interestLabel: +${maskAmount(formatAmount(interestToShow), balancesHidden)} €",
                             fontSize = 11.sp,
                             fontWeight = FontWeight.SemiBold,
-                            color = PnLPositive
+                            color = MaterialTheme.appColors.pnlPositive
                         )
                     }
                     if (position.hasPeriodicCoupons && onRegisterCoupon != null) {
@@ -244,7 +246,7 @@ fun FixedIncomePositionCard(
                             Text(
                                 text = "Registrar",
                                 fontSize = 10.sp,
-                                color = CyanAccent
+                                color = MaterialTheme.appColors.cyanAccent
                             )
                         }
                     }
@@ -265,7 +267,7 @@ fun FixedIncomeProgressBar(
             .fillMaxWidth()
             .height(8.dp)
             .clip(RoundedCornerShape(4.dp))
-            .background(NavyBorder)
+            .background(MaterialTheme.appColors.navyBorder)
     ) {
         Box(
             modifier = Modifier

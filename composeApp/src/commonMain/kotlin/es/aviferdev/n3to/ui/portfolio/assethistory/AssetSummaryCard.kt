@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.portfolio.assethistory
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -22,18 +24,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.portfolio.AssetPosition
-import es.aviferdev.n3to.ui.theme.BorderGray
+
 import es.aviferdev.n3to.ui.theme.ExpenseRed
 import es.aviferdev.n3to.ui.theme.IncomeGreen
-import es.aviferdev.n3to.ui.theme.SurfaceWhite
-import es.aviferdev.n3to.ui.theme.TextPrimary
-import es.aviferdev.n3to.ui.theme.TextSecondary
-import es.aviferdev.n3to.ui.theme.TextTertiary
+
 import es.aviferdev.n3to.ui.theme.formatAmount
 import es.aviferdev.n3to.ui.theme.formatPercent
 import es.aviferdev.n3to.ui.theme.formatQty
 import kotlin.math.abs
-
 
 // ─── Summary card (price + position) ───────────────────────────────────────────
 @Composable
@@ -48,7 +46,7 @@ fun AssetSummaryCard(
     Card(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = SurfaceWhite),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.surface),
         elevation = CardDefaults.cardElevation(0.dp)
     ) {
         Column(modifier = Modifier.fillMaxWidth()) {
@@ -65,14 +63,14 @@ fun AssetSummaryCard(
                     Text(
                         "P&L FIFO",
                         fontSize = 10.sp,
-                        color = TextTertiary,
+                        color = MaterialTheme.appColors.textTertiary,
                         fontWeight = FontWeight.Medium
                     )
                     Spacer(Modifier.height(4.dp))
                     val pnlColor = when {
                         (position?.totalPnL ?: 0.0) > 0 -> IncomeGreen
                         (position?.totalPnL ?: 0.0) < 0 -> ExpenseRed
-                        else -> TextPrimary
+                        else -> MaterialTheme.appColors.textPrimary
                     }
                     Text(
                         if ((position?.totalPnL ?: 0.0) == 0.0) "—"
@@ -88,7 +86,7 @@ fun AssetSummaryCard(
                 }
 
                 // Divider
-                Box(modifier = Modifier.width(1.dp).height(40.dp).background(BorderGray))
+                Box(modifier = Modifier.width(1.dp).height(40.dp).background(MaterialTheme.appColors.border))
 
                 // Posición
                 Column(
@@ -98,7 +96,7 @@ fun AssetSummaryCard(
                     Text(
                         "Posición",
                         fontSize = 10.sp,
-                        color = TextTertiary,
+                        color = MaterialTheme.appColors.textTertiary,
                         fontWeight = FontWeight.Medium
                     )
                     Spacer(Modifier.height(4.dp))
@@ -106,12 +104,12 @@ fun AssetSummaryCard(
                         if (isOpen) "${formatQty(position!!.netQuantity)} uds" else "—",
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Bold,
-                        color = TextPrimary
+                        color = MaterialTheme.appColors.textPrimary
                     )
                 }
 
                 // Divider
-                Box(modifier = Modifier.width(1.dp).height(40.dp).background(BorderGray))
+                Box(modifier = Modifier.width(1.dp).height(40.dp).background(MaterialTheme.appColors.border))
 
                 // Coste medio
                 Column(
@@ -121,7 +119,7 @@ fun AssetSummaryCard(
                     Text(
                         "Coste medio",
                         fontSize = 10.sp,
-                        color = TextTertiary,
+                        color = MaterialTheme.appColors.textTertiary,
                         fontWeight = FontWeight.Medium
                     )
                     Spacer(Modifier.height(4.dp))
@@ -133,13 +131,13 @@ fun AssetSummaryCard(
                         } €" else "—",
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Bold,
-                        color = TextSecondary
+                        color = MaterialTheme.appColors.textSecondary
                     )
                 }
             }
 
             // Bottom row: Precio actual
-            HorizontalDivider(color = BorderGray, thickness = 0.5.dp)
+            HorizontalDivider(color = MaterialTheme.appColors.border, thickness = 0.5.dp)
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -147,13 +145,13 @@ fun AssetSummaryCard(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("Precio actual", fontSize = 11.sp, color = TextTertiary)
+                Text("Precio actual", fontSize = 11.sp, color = MaterialTheme.appColors.textTertiary)
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
                         currentPrice?.let { "${formatAmount(it)} €" } ?: "—",
                         fontSize = 13.sp,
                         fontWeight = FontWeight.Bold,
-                        color = TextPrimary
+                        color = MaterialTheme.appColors.textPrimary
                     )
                     if (currentPrice != null && position?.averageCostOfRemaining != null && position.averageCostOfRemaining > 0) {
                         val pctChange =

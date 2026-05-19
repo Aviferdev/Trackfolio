@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.settings
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.platform.nowMillis
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -18,7 +20,6 @@ import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.Issuer
 import es.aviferdev.n3to.domain.model.IssuerType
 import es.aviferdev.n3to.ui.theme.*
-import es.aviferdev.n3to.ui.theme.DragHandleColor
 
 import androidx.compose.ui.tooling.preview.Preview
 
@@ -45,7 +46,7 @@ fun AddEditIssuerSheet(
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-        containerColor = SurfaceWhite,
+        containerColor = MaterialTheme.appColors.surface,
         shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
         dragHandle = {
             Box(
@@ -53,7 +54,7 @@ fun AddEditIssuerSheet(
                     .padding(top = 12.dp, bottom = 4.dp)
                     .width(40.dp).height(4.dp)
                     .clip(RoundedCornerShape(2.dp))
-                    .background(DragHandleColor)
+                    .background(MaterialTheme.appColors.dragHandle)
             )
         }
     ) {
@@ -73,10 +74,10 @@ fun AddEditIssuerSheet(
                     if (isEditing) "Editar emisor" else "Nuevo emisor",
                     fontSize = 16.sp,
                     fontWeight = FontWeight.SemiBold,
-                    color = TextPrimary
+                    color = MaterialTheme.appColors.textPrimary
                 )
                 IconButton(onClick = onDismiss) {
-                    Icon(Icons.Default.Close, "Cerrar", tint = TextSecondary)
+                    Icon(Icons.Default.Close, "Cerrar", tint = MaterialTheme.appColors.textSecondary)
                 }
             }
 
@@ -86,13 +87,13 @@ fun AddEditIssuerSheet(
                 value = name,
                 onValueChange = { name = it },
                 modifier = Modifier.fillMaxWidth(),
-                placeholder = { Text("Nombre del emisor", color = TextTertiary) },
+                placeholder = { Text("Nombre del emisor", color = MaterialTheme.appColors.textTertiary) },
                 singleLine = true,
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = PrimaryDark,
-                    unfocusedBorderColor = BorderGray,
-                    focusedTextColor = TextPrimary,
-                    unfocusedTextColor = TextPrimary,
+                    unfocusedBorderColor = MaterialTheme.appColors.border,
+                    focusedTextColor = MaterialTheme.appColors.textPrimary,
+                    unfocusedTextColor = MaterialTheme.appColors.textPrimary,
                     cursorColor = PrimaryDark
                 ),
                 shape = RoundedCornerShape(10.dp)
@@ -120,7 +121,7 @@ fun AddEditIssuerSheet(
             Spacer(Modifier.height(8.dp))
 
             TextButton(onClick = onDismiss) {
-                Text("Cancelar", color = TextSecondary, fontSize = 14.sp)
+                Text("Cancelar", color = MaterialTheme.appColors.textSecondary, fontSize = 14.sp)
             }
         }
     }

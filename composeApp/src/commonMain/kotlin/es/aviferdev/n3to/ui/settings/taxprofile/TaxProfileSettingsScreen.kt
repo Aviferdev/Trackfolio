@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.settings.taxprofile
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -53,14 +55,10 @@ import es.aviferdev.n3to.ui.common.help.HelpKeys
 import es.aviferdev.n3to.ui.common.help.HelpTooltipIcon
 import es.aviferdev.n3to.ui.common.input.DatePickerRow
 import es.aviferdev.n3to.ui.common.navigation.TopBarApp
-import es.aviferdev.n3to.ui.theme.BackgroundGray
+
 import es.aviferdev.n3to.ui.theme.ExpenseRed
 import es.aviferdev.n3to.ui.theme.PrimaryDark
-import es.aviferdev.n3to.ui.theme.SurfaceWhite
-import es.aviferdev.n3to.ui.theme.TextPrimary
-import es.aviferdev.n3to.ui.theme.TextSecondary
-import es.aviferdev.n3to.ui.theme.TextTertiary
-import es.aviferdev.n3to.ui.theme.DragHandleColor
+
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -71,7 +69,7 @@ fun TaxProfileSettingsScreen(
     val state by viewModel.uiState.collectAsState()
 
     Scaffold(
-        containerColor = BackgroundGray,
+        containerColor = MaterialTheme.appColors.background,
         topBar = { TopBarApp(title = "Perfil fiscal", navigateBack = onBack) },
         floatingActionButton = {
             FloatingActionButton(
@@ -91,14 +89,14 @@ fun TaxProfileSettingsScreen(
                 contentAlignment = Alignment.Center
             ) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text("Sin perfiles fiscales", fontSize = 15.sp, fontWeight = FontWeight.Medium, color = TextSecondary)
+                    Text("Sin perfiles fiscales", fontSize = 15.sp, fontWeight = FontWeight.Medium, color = MaterialTheme.appColors.textSecondary)
                     Spacer(Modifier.height(4.dp))
-                    Text("Añade uno con el botón +", fontSize = 13.sp, color = TextTertiary)
+                    Text("Añade uno con el botón +", fontSize = 13.sp, color = MaterialTheme.appColors.textTertiary)
                     Spacer(Modifier.height(16.dp))
                     Text(
                         "El perfil fiscal define los tramos IRPF y tipos de rendimiento que se aplican en el informe fiscal. Sin él, los cálculos no serán precisos.",
                         fontSize = 12.sp,
-                        color = TextTertiary,
+                        color = MaterialTheme.appColors.textTertiary,
                         modifier = Modifier.padding(horizontal = 40.dp)
                     )
                 }
@@ -148,14 +146,14 @@ fun TaxProfileSettingsScreen(
     if (state.pendingDeleteId != null) {
         AlertDialog(
             onDismissRequest = { viewModel.cancelDelete() },
-            containerColor = SurfaceWhite,
+            containerColor = MaterialTheme.appColors.surface,
             title = {
-                Text("Eliminar perfil", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = TextPrimary)
+                Text("Eliminar perfil", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.appColors.textPrimary)
             },
             text = {
                 Text(
                     "Se eliminará este perfil fiscal. Los movimientos ya registrados no se verán afectados.",
-                    fontSize = 13.sp, color = TextSecondary
+                    fontSize = 13.sp, color = MaterialTheme.appColors.textSecondary
                 )
             },
             confirmButton = {
@@ -176,9 +174,9 @@ fun TaxProfileSettingsScreen(
     state.error?.let { msg ->
         AlertDialog(
             onDismissRequest = { viewModel.clearError() },
-            containerColor = SurfaceWhite,
-            title = { Text("Error", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = TextPrimary) },
-            text = { Text(msg, fontSize = 13.sp, color = TextSecondary) },
+            containerColor = MaterialTheme.appColors.surface,
+            title = { Text("Error", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.appColors.textPrimary) },
+            text = { Text(msg, fontSize = 13.sp, color = MaterialTheme.appColors.textSecondary) },
             confirmButton = {
                 TextButton(onClick = { viewModel.clearError() }) {
                     Text("Aceptar", color = PrimaryDark, fontWeight = FontWeight.SemiBold)
@@ -199,7 +197,7 @@ private fun TaxProfileSnapshotRow(
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = SurfaceWhite),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.surface),
         elevation = CardDefaults.cardElevation(0.dp)
     ) {
         Row(
@@ -218,12 +216,12 @@ private fun TaxProfileSnapshotRow(
                     text = profileLabel(snapshot.profile.countryCode),
                     fontSize = 14.sp,
                     fontWeight = FontWeight.SemiBold,
-                    color = TextPrimary
+                    color = MaterialTheme.appColors.textPrimary
                 )
                 Text(
                     text = "${snapshot.profile.currency}  ·  desde ${snapshot.effectiveFrom}",
                     fontSize = 12.sp,
-                    color = TextTertiary
+                    color = MaterialTheme.appColors.textTertiary
                 )
             }
             IconButton(onClick = onDelete) {
@@ -250,13 +248,13 @@ private fun AddTaxProfileSheet(
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-        containerColor = SurfaceWhite,
+        containerColor = MaterialTheme.appColors.surface,
         dragHandle = {
             Box(
                 modifier = Modifier
                     .padding(top = 12.dp, bottom = 4.dp)
                     .width(40.dp).height(4.dp)
-                    .background(DragHandleColor, RoundedCornerShape(2.dp))
+                    .background(MaterialTheme.appColors.dragHandle, RoundedCornerShape(2.dp))
             )
         }
     ) {
@@ -271,7 +269,7 @@ private fun AddTaxProfileSheet(
                 text = "Nuevo perfil fiscal",
                 fontSize = 17.sp,
                 fontWeight = FontWeight.Bold,
-                color = TextPrimary,
+                color = MaterialTheme.appColors.textPrimary,
                 modifier = Modifier.padding(top = 8.dp)
             )
 
@@ -282,7 +280,7 @@ private fun AddTaxProfileSheet(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Text("País / sistema fiscal", fontSize = 13.sp, fontWeight = FontWeight.Medium, color = TextTertiary)
+                    Text("País / sistema fiscal", fontSize = 13.sp, fontWeight = FontWeight.Medium, color = MaterialTheme.appColors.textTertiary)
                     HelpTooltipIcon(
                         title = HelpContent.texts[HelpKeys.IRPF_SYSTEM]?.title ?: "",
                         body  = HelpContent.texts[HelpKeys.IRPF_SYSTEM]?.body  ?: ""
@@ -308,7 +306,7 @@ private fun AddTaxProfileSheet(
             Text(
                 "Si cambias de sistema fiscal (p. ej. al mudarte de país), añade un nuevo perfil con la fecha en que comenzó el cambio.",
                 fontSize = 11.sp,
-                color = TextTertiary
+                color = MaterialTheme.appColors.textTertiary
             )
 
             // ── Guardar ───────────────────────────────────────────────────────

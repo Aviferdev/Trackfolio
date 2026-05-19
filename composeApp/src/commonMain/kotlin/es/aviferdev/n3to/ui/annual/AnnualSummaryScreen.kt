@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.annual
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -24,7 +26,7 @@ import es.aviferdev.n3to.ui.annual.components.*
 import es.aviferdev.n3to.ui.common.component.EmptyStateView
 import es.aviferdev.n3to.ui.common.navigation.TimeStepperHeader
 import es.aviferdev.n3to.ui.common.navigation.TopBarApp
-import es.aviferdev.n3to.ui.theme.BackgroundGray
+
 import es.aviferdev.n3to.ui.theme.LocalBalanceHidden
 import es.aviferdev.n3to.ui.theme.PrimaryDark
 import n3to.composeapp.generated.resources.Res
@@ -50,7 +52,7 @@ fun AnnualSummaryScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(BackgroundGray)
+            .background(MaterialTheme.appColors.background)
     ) {
         TopBarApp(title = stringResource(Res.string.annual_title), navigateBack = navigateBack)
 

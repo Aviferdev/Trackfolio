@@ -33,6 +33,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -79,16 +80,9 @@ import n3to.composeapp.generated.resources.premium_themes
 import n3to.composeapp.generated.resources.premium_already_premium
 import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.unit.sp
-import es.aviferdev.n3to.ui.theme.CyanAccent
-import es.aviferdev.n3to.ui.theme.CyanGlow
+
 import es.aviferdev.n3to.ui.theme.ExpenseRed
-import es.aviferdev.n3to.ui.theme.NavyBorder
-import es.aviferdev.n3to.ui.theme.NavyDeep
-import es.aviferdev.n3to.ui.theme.NavySurface
-import es.aviferdev.n3to.ui.theme.NavySurfaceLight
-import es.aviferdev.n3to.ui.theme.TextPrimary
-import es.aviferdev.n3to.ui.theme.TextSecondary
-import es.aviferdev.n3to.ui.theme.TextTertiary
+
 import es.aviferdev.n3to.ui.common.navigation.TopBarApp
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -107,6 +101,7 @@ fun PremiumScreen(
     onBack: () -> Unit,
     viewModel: PremiumViewModel = koinViewModel()
 ) {
+    val appCCyanAccent = MaterialTheme.appColors.cyanAccent
     val uiState by viewModel.uiState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -260,7 +255,7 @@ fun PremiumScreen(
                     CircularProgressIndicator(
                         modifier = Modifier.size(16.dp),
                         strokeWidth = 2.dp,
-                        color = CyanAccent
+                        color = appCCyanAccent
                     )
                 } else {
                     Icon(Icons.Default.Restore, null, modifier = Modifier.size(18.dp))
@@ -281,6 +276,12 @@ fun PremiumScreen(
 // ─────────────────────────────────────────────────────────────────────────────
 @Composable
 private fun PremiumHeroCard(modifier: Modifier = Modifier) {
+    val heroCardBg1 = MaterialTheme.appColors.heroCardStart
+    val heroCardBg2 = MaterialTheme.appColors.heroCardEnd
+    val appCCyanAccent = MaterialTheme.appColors.cyanAccent
+    val appCCyanGlow = MaterialTheme.appColors.cyanGlow
+    val appCTextPrimary = MaterialTheme.appColors.textPrimary
+    val appCTextSecondary = MaterialTheme.appColors.textSecondary
     Column(
         modifier = modifier
             .wrapContentHeight()
@@ -288,7 +289,7 @@ private fun PremiumHeroCard(modifier: Modifier = Modifier) {
             .drawBehind {
                 drawRect(
                     brush = Brush.linearGradient(
-                        colors = listOf(NavySurface, NavySurfaceLight),
+                        colors = listOf(heroCardBg1, heroCardBg2),
                         start = Offset(0f, 0f),
                         end = Offset(size.width, size.height)
                     )
@@ -298,7 +299,7 @@ private fun PremiumHeroCard(modifier: Modifier = Modifier) {
                 val cy = 30.dp.toPx()
                 drawCircle(
                     brush = Brush.radialGradient(
-                        colors = listOf(CyanGlow.copy(alpha = 0.18f), Color.Transparent),
+                        colors = listOf(appCCyanGlow.copy(alpha = 0.18f), Color.Transparent),
                         center = Offset(cx, cy),
                         radius = orbRadius
                     ),
@@ -313,13 +314,13 @@ private fun PremiumHeroCard(modifier: Modifier = Modifier) {
             modifier = Modifier
                 .size(68.dp)
                 .clip(CircleShape)
-                .background(CyanAccent.copy(alpha = 0.12f)),
+                .background(appCCyanAccent.copy(alpha = 0.12f)),
             contentAlignment = Alignment.Center
         ) {
             Icon(
                 Icons.Default.WorkspacePremium,
                 contentDescription = null,
-                tint = CyanAccent,
+                tint = appCCyanAccent,
                 modifier = Modifier.size(38.dp)
             )
         }
@@ -330,7 +331,7 @@ private fun PremiumHeroCard(modifier: Modifier = Modifier) {
             "Trackfolio Premium",
             fontSize = 22.sp,
             fontWeight = FontWeight.ExtraBold,
-            color = TextPrimary,
+            color = appCTextPrimary,
             letterSpacing = (-0.8).sp
         )
 
@@ -339,7 +340,7 @@ private fun PremiumHeroCard(modifier: Modifier = Modifier) {
         Text(
             "Desbloquea todo el potencial\nde tus finanzas personales",
             fontSize = 13.sp,
-            color = TextSecondary,
+            color = appCTextSecondary,
             textAlign = TextAlign.Center,
             lineHeight = 19.sp
         )
@@ -354,6 +355,9 @@ private fun PremiumFeatureRow(
     title: String,
     description: String
 ) {
+    val appCCyanAccent = MaterialTheme.appColors.cyanAccent
+    val appCTextPrimary = MaterialTheme.appColors.textPrimary
+    val appCTextTertiary = MaterialTheme.appColors.textTertiary
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -364,13 +368,13 @@ private fun PremiumFeatureRow(
             modifier = Modifier
                 .size(38.dp)
                 .clip(RoundedCornerShape(11.dp))
-                .background(CyanAccent.copy(alpha = 0.10f)),
+                .background(appCCyanAccent.copy(alpha = 0.10f)),
             contentAlignment = Alignment.Center
         ) {
             Icon(
                 Icons.Default.CheckCircle,
                 contentDescription = null,
-                tint = CyanAccent,
+                tint = appCCyanAccent,
                 modifier = Modifier.size(20.dp)
             )
         }
@@ -380,12 +384,12 @@ private fun PremiumFeatureRow(
                 title,
                 fontSize = 14.sp,
                 fontWeight = FontWeight.SemiBold,
-                color = TextPrimary
+                color = appCTextPrimary
             )
             Text(
                 description,
                 fontSize = 12.sp,
-                color = TextTertiary,
+                color = appCTextTertiary,
                 lineHeight = 16.sp
             )
         }
@@ -402,7 +406,13 @@ private fun PremiumProductCard(
     isAnyPurchasing: Boolean,
     onClick: () -> Unit
 ) {
-    val borderColor = if (product.isBestValue) CyanAccent else NavyBorder
+    val heroCardBg1 = MaterialTheme.appColors.heroCardStart
+    val appCCyanAccent = MaterialTheme.appColors.cyanAccent
+    val appCNavyBorder = MaterialTheme.appColors.navyBorder
+    val appCTextPrimary = MaterialTheme.appColors.textPrimary
+    val appCTextSecondary = MaterialTheme.appColors.textSecondary
+    val appCTextTertiary = MaterialTheme.appColors.textTertiary
+    val borderColor = if (product.isBestValue) appCCyanAccent else appCNavyBorder
     val borderWidth = if (product.isBestValue) 1.5.dp else 0.5.dp
 
     Column(
@@ -411,7 +421,7 @@ private fun PremiumProductCard(
             .padding(horizontal = 16.dp)
             .clip(RoundedCornerShape(16.dp))
             .border(borderWidth, borderColor, RoundedCornerShape(16.dp))
-            .background(NavySurface)
+            .background(heroCardBg1)
             .clickable(enabled = !isAnyPurchasing, onClick = onClick)
     ) {
         Column(
@@ -427,21 +437,21 @@ private fun PremiumProductCard(
                 Text(
                     product.title,
                     fontSize = 11.sp,
-                    color = TextTertiary,
+                    color = appCTextTertiary,
                     fontWeight = FontWeight.Normal
                 )
                 if (product.isBestValue) {
                     Box(
                         modifier = Modifier
                             .clip(RoundedCornerShape(6.dp))
-                            .background(CyanAccent.copy(alpha = 0.12f))
+                            .background(appCCyanAccent.copy(alpha = 0.12f))
                             .padding(horizontal = 8.dp, vertical = 3.dp)
                     ) {
                         Text(
                             stringResource(Res.string.premium_best_value),
                             fontSize = 10.sp,
                             fontWeight = FontWeight.Bold,
-                            color = CyanAccent
+                            color = appCCyanAccent
                         )
                     }
                 }
@@ -454,7 +464,7 @@ private fun PremiumProductCard(
                     product.price,
                     fontSize = 30.sp,
                     fontWeight = FontWeight.ExtraBold,
-                    color = TextPrimary,
+                    color = appCTextPrimary,
                     letterSpacing = (-1.5).sp,
                     lineHeight = 30.sp
                 )
@@ -462,7 +472,7 @@ private fun PremiumProductCard(
                 Text(
                     product.period,
                     fontSize = 13.sp,
-                    color = TextSecondary,
+                    color = appCTextSecondary,
                     modifier = Modifier.padding(bottom = 3.dp)
                 )
             }
@@ -475,8 +485,8 @@ private fun PremiumProductCard(
                         .fillMaxWidth()
                         .height(2.dp)
                         .clip(RoundedCornerShape(1.dp)),
-                    color = CyanAccent,
-                    trackColor = CyanAccent.copy(alpha = 0.15f)
+                    color = appCCyanAccent,
+                    trackColor = appCCyanAccent.copy(alpha = 0.15f)
                 )
             } else {
                 Row(
@@ -488,12 +498,12 @@ private fun PremiumProductCard(
                         "Comenzar",
                         fontSize = 13.sp,
                         fontWeight = FontWeight.SemiBold,
-                        color = CyanAccent
+                        color = appCCyanAccent
                     )
                     Text(
                         "→",
                         fontSize = 16.sp,
-                        color = CyanAccent
+                        color = appCCyanAccent
                     )
                 }
             }
@@ -506,6 +516,11 @@ private fun PremiumProductCard(
 // ─────────────────────────────────────────────────────────────────────────────
 @Composable
 private fun PremiumActiveCard(isLifetime: Boolean) {
+    val heroCardBg1 = MaterialTheme.appColors.heroCardStart
+    val heroCardBg2 = MaterialTheme.appColors.heroCardEnd
+    val appCCyanAccent = MaterialTheme.appColors.cyanAccent
+    val appCCyanGlow = MaterialTheme.appColors.cyanGlow
+    val appCTextPrimary = MaterialTheme.appColors.textPrimary
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -514,7 +529,7 @@ private fun PremiumActiveCard(isLifetime: Boolean) {
             .drawBehind {
                 drawRect(
                     brush = Brush.linearGradient(
-                        colors = listOf(NavySurface, NavySurfaceLight),
+                        colors = listOf(heroCardBg1, heroCardBg2),
                         start = Offset(0f, 0f),
                         end = Offset(size.width, size.height)
                     )
@@ -524,7 +539,7 @@ private fun PremiumActiveCard(isLifetime: Boolean) {
                 val cy = 30.dp.toPx()
                 drawCircle(
                     brush = Brush.radialGradient(
-                        colors = listOf(CyanGlow.copy(alpha = 0.14f), Color.Transparent),
+                        colors = listOf(appCCyanGlow.copy(alpha = 0.14f), Color.Transparent),
                         center = Offset(cx, cy),
                         radius = orbRadius
                     ),
@@ -539,13 +554,13 @@ private fun PremiumActiveCard(isLifetime: Boolean) {
             modifier = Modifier
                 .size(60.dp)
                 .clip(CircleShape)
-                .background(CyanAccent.copy(alpha = 0.12f)),
+                .background(appCCyanAccent.copy(alpha = 0.12f)),
             contentAlignment = Alignment.Center
         ) {
             Icon(
                 Icons.Default.Star,
                 contentDescription = null,
-                tint = CyanAccent,
+                tint = appCCyanAccent,
                 modifier = Modifier.size(32.dp)
             )
         }
@@ -556,7 +571,7 @@ private fun PremiumActiveCard(isLifetime: Boolean) {
             "Ya eres Premium",
             fontSize = 20.sp,
             fontWeight = FontWeight.ExtraBold,
-            color = TextPrimary,
+            color = appCTextPrimary,
             letterSpacing = (-0.5).sp
         )
 
@@ -565,13 +580,13 @@ private fun PremiumActiveCard(isLifetime: Boolean) {
             Box(
                 modifier = Modifier
                     .clip(RoundedCornerShape(8.dp))
-                    .background(CyanAccent.copy(alpha = 0.10f))
+                    .background(appCCyanAccent.copy(alpha = 0.10f))
                     .padding(horizontal = 12.dp, vertical = 4.dp)
             ) {
                 Text(
                     "Acceso vitalicio",
                     fontSize = 12.sp,
-                    color = CyanAccent,
+                    color = appCCyanAccent,
                     fontWeight = FontWeight.SemiBold
                 )
             }
@@ -587,6 +602,9 @@ private fun PremiumErrorCard(
     message: String,
     onRetry: () -> Unit
 ) {
+    val appCCyanAccent = MaterialTheme.appColors.cyanAccent
+    val appCNavyDeep = MaterialTheme.appColors.navyDeep
+    val appCTextSecondary = MaterialTheme.appColors.textSecondary
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -600,7 +618,7 @@ private fun PremiumErrorCard(
         Text(
             message,
             fontSize = 13.sp,
-            color = TextSecondary,
+            color = appCTextSecondary,
             textAlign = TextAlign.Center,
             lineHeight = 18.sp
         )
@@ -609,8 +627,8 @@ private fun PremiumErrorCard(
             onClick = onRetry,
             shape = RoundedCornerShape(12.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = CyanAccent,
-                contentColor = NavyDeep
+                containerColor = appCCyanAccent,
+                contentColor = appCNavyDeep
             )
         ) {
             Text("Reintentar", fontWeight = FontWeight.SemiBold)

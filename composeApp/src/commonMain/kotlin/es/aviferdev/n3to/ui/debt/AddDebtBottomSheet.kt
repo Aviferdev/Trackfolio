@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.debt
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -20,7 +22,7 @@ import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.Debt
 import es.aviferdev.n3to.domain.model.DebtDirection
 import es.aviferdev.n3to.ui.theme.*
-import es.aviferdev.n3to.ui.theme.DragHandleColor
+
 import androidx.compose.ui.tooling.preview.Preview
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -50,14 +52,14 @@ fun AddDebtBottomSheet(
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-        containerColor = SurfaceWhite,
+        containerColor = MaterialTheme.appColors.surface,
         dragHandle = {
             Box(
                 modifier = Modifier
                     .padding(top = 12.dp, bottom = 4.dp)
                     .width(40.dp).height(4.dp)
                     .clip(RoundedCornerShape(2.dp))
-                    .background(DragHandleColor)
+                    .background(MaterialTheme.appColors.dragHandle)
             )
         }
     ) {
@@ -126,12 +128,12 @@ fun AddDebtBottomSheetContent(
             text       = if (isEditing) "Editar deuda" else "Nueva deuda",
             fontSize   = 18.sp,
             fontWeight = FontWeight.SemiBold,
-            color      = TextPrimary
+            color      = MaterialTheme.appColors.textPrimary
         )
 
         Spacer(Modifier.height(20.dp))
 
-        Text(text = "Tipo de deuda", fontSize = 13.sp, color = TextSecondary)
+        Text(text = "Tipo de deuda", fontSize = 13.sp, color = MaterialTheme.appColors.textSecondary)
         Spacer(Modifier.height(8.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             DirectionChip(
@@ -150,56 +152,56 @@ fun AddDebtBottomSheetContent(
 
         Spacer(Modifier.height(20.dp))
 
-        Text(text = "Persona", fontSize = 13.sp, color = TextSecondary)
+        Text(text = "Persona", fontSize = 13.sp, color = MaterialTheme.appColors.textSecondary)
         Spacer(Modifier.height(8.dp))
         OutlinedTextField(
             value         = personName,
             onValueChange = onPersonNameChange,
-            placeholder   = { Text("Nombre o apodo", color = TextSecondary.copy(alpha = 0.6f), fontSize = 14.sp) },
+            placeholder   = { Text("Nombre o apodo", color = MaterialTheme.appColors.textSecondary.copy(alpha = 0.6f), fontSize = 14.sp) },
             modifier      = Modifier.fillMaxWidth(),
             shape         = RoundedCornerShape(8.dp),
             keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words),
             colors        = OutlinedTextFieldDefaults.colors(
                 focusedBorderColor   = PrimaryDark,
-                unfocusedBorderColor = BorderGray
+                unfocusedBorderColor = MaterialTheme.appColors.border
             ),
             singleLine = true
         )
 
         Spacer(Modifier.height(16.dp))
 
-        Text(text = "Importe", fontSize = 13.sp, color = TextSecondary)
+        Text(text = "Importe", fontSize = 13.sp, color = MaterialTheme.appColors.textSecondary)
         Spacer(Modifier.height(8.dp))
         OutlinedTextField(
             value         = amount,
             onValueChange = onAmountChange,
-            placeholder   = { Text("0,00", color = TextSecondary.copy(alpha = 0.6f), fontSize = 14.sp) },
+            placeholder   = { Text("0,00", color = MaterialTheme.appColors.textSecondary.copy(alpha = 0.6f), fontSize = 14.sp) },
             modifier      = Modifier.fillMaxWidth(),
             shape         = RoundedCornerShape(8.dp),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
             trailingIcon  = {
-                Text("€", fontSize = 16.sp, color = TextSecondary, modifier = Modifier.padding(end = 12.dp))
+                Text("€", fontSize = 16.sp, color = MaterialTheme.appColors.textSecondary, modifier = Modifier.padding(end = 12.dp))
             },
             colors = OutlinedTextFieldDefaults.colors(
                 focusedBorderColor   = PrimaryDark,
-                unfocusedBorderColor = BorderGray
+                unfocusedBorderColor = MaterialTheme.appColors.border
             ),
             singleLine = true
         )
 
         Spacer(Modifier.height(16.dp))
 
-        Text(text = "Nota (opcional)", fontSize = 13.sp, color = TextSecondary)
+        Text(text = "Nota (opcional)", fontSize = 13.sp, color = MaterialTheme.appColors.textSecondary)
         Spacer(Modifier.height(8.dp))
         OutlinedTextField(
             value         = notes,
             onValueChange = onNotesChange,
-            placeholder   = { Text("Ej. Cena del viernes", color = TextSecondary.copy(alpha = 0.6f), fontSize = 14.sp) },
+            placeholder   = { Text("Ej. Cena del viernes", color = MaterialTheme.appColors.textSecondary.copy(alpha = 0.6f), fontSize = 14.sp) },
             modifier      = Modifier.fillMaxWidth(),
             shape         = RoundedCornerShape(8.dp),
             colors        = OutlinedTextFieldDefaults.colors(
                 focusedBorderColor   = PrimaryDark,
-                unfocusedBorderColor = BorderGray
+                unfocusedBorderColor = MaterialTheme.appColors.border
             ),
             singleLine = true
         )
@@ -236,7 +238,7 @@ private fun DirectionChip(
         modifier = Modifier
             .clip(RoundedCornerShape(50.dp))
             .background(if (selected) selectedColor else Color.Transparent)
-            .border(1.dp, if (selected) selectedColor else BorderGray, RoundedCornerShape(50.dp))
+            .border(1.dp, if (selected) selectedColor else MaterialTheme.appColors.border, RoundedCornerShape(50.dp))
             .clickable { onClick() }
             .padding(horizontal = 20.dp, vertical = 8.dp),
         contentAlignment = Alignment.Center
@@ -245,7 +247,7 @@ private fun DirectionChip(
             text       = label,
             fontSize   = 14.sp,
             fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal,
-            color      = if (selected) Color.White else TextSecondary
+            color      = if (selected) Color.White else MaterialTheme.appColors.textSecondary
         )
     }
 }

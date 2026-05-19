@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.settings
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -57,16 +59,10 @@ import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.ui.settings.components.*
 import es.aviferdev.n3to.core.browser.rememberUrlOpener
 import es.aviferdev.n3to.ui.common.navigation.TopBarApp
-import es.aviferdev.n3to.ui.theme.CyanAccent
-import es.aviferdev.n3to.ui.theme.CyanSubtle
+
 import es.aviferdev.n3to.ui.theme.ExpenseRed
 import es.aviferdev.n3to.ui.theme.IncomeGreen
-import es.aviferdev.n3to.ui.theme.NavyBorder
-import es.aviferdev.n3to.ui.theme.NavyDeep
-import es.aviferdev.n3to.ui.theme.NavySurface
-import es.aviferdev.n3to.ui.theme.TextPrimary
-import es.aviferdev.n3to.ui.theme.TextSecondary
-import es.aviferdev.n3to.ui.theme.TextTertiary
+
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
@@ -117,21 +113,21 @@ fun PrivacySettingsScreen(
     if (uiState.showRevokeConfirmation) {
         AlertDialog(
             onDismissRequest = viewModel::dismissRevokeConfirmation,
-            containerColor = NavySurface,
+            containerColor = MaterialTheme.appColors.navySurface,
             shape = RoundedCornerShape(16.dp),
             title = {
                 Text(
                     "¿Revocar todo el consentimiento?",
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
-                    color = TextPrimary
+                    color = MaterialTheme.appColors.textPrimary
                 )
             },
             text = {
                 Text(
                     "Se desactivarán el análisis de uso y los informes de errores. Esta acción se aplica inmediatamente.",
                     fontSize = 13.sp,
-                    color = TextSecondary
+                    color = MaterialTheme.appColors.textSecondary
                 )
             },
             confirmButton = {
@@ -141,13 +137,13 @@ fun PrivacySettingsScreen(
             },
             dismissButton = {
                 TextButton(onClick = viewModel::dismissRevokeConfirmation) {
-                    Text("Cancelar", color = CyanAccent)
+                    Text("Cancelar", color = MaterialTheme.appColors.cyanAccent)
                 }
             }
         )
     }
 
-    Box(modifier = Modifier.fillMaxSize().background(NavyDeep)) {
+    Box(modifier = Modifier.fillMaxSize().background(MaterialTheme.appColors.navyDeep)) {
         Column(modifier = Modifier.fillMaxSize()) {
             TopBarApp(title = "Privacidad y datos", navigateBack = onBack)
 
@@ -156,7 +152,7 @@ fun PrivacySettingsScreen(
                     modifier = Modifier.weight(1f).fillMaxWidth(),
                     contentAlignment = Alignment.Center
                 ) {
-                    CircularProgressIndicator(color = CyanAccent)
+                    CircularProgressIndicator(color = MaterialTheme.appColors.cyanAccent)
                 }
             } else {
                 Column(
@@ -192,7 +188,7 @@ fun PrivacySettingsScreen(
                         Text(
                             "Consentimiento registrado el ${dt.date}",
                             fontSize = 11.sp,
-                            color = TextTertiary,
+                            color = MaterialTheme.appColors.textTertiary,
                             modifier = Modifier.padding(horizontal = 4.dp)
                         )
                     }
@@ -318,13 +314,13 @@ fun PrivacySettingsScreen(
                     Text(
                         "Al revocar, todos los datos de seguimiento se desactivan inmediatamente.",
                         fontSize = 11.sp,
-                        color = TextTertiary
+                        color = MaterialTheme.appColors.textTertiary
                     )
 
                     Spacer(Modifier.height(16.dp))
 
                     TextButton(onClick = { urlOpener.openUrl(PRIVACY_POLICY_URL) }) {
-                        Text("Política de Privacidad", color = CyanAccent, fontSize = 13.sp)
+                        Text("Política de Privacidad", color = MaterialTheme.appColors.cyanAccent, fontSize = 13.sp)
                     }
 
                     Spacer(Modifier.height(32.dp))
@@ -339,17 +335,17 @@ fun PrivacySettingsScreen(
     }
 }
 
-// ─── Premium card — resalta el borde con CyanAccent cuando premium está activo ──
+// ─── Premium card — resalta el borde con MaterialTheme.appColors.cyanAccent cuando premium está activo ──
 @Composable
 private fun PrivacyPremiumCard(
     isPremium: Boolean,
     content: @Composable ColumnScope.() -> Unit
 ) {
-    val borderColor = if (isPremium) CyanAccent.copy(alpha = 0.35f) else NavyBorder
+    val borderColor = if (isPremium) MaterialTheme.appColors.cyanAccent.copy(alpha = 0.35f) else MaterialTheme.appColors.navyBorder
     Card(
         modifier = Modifier.fillMaxWidth().border(0.5.dp, borderColor, RoundedCornerShape(11.dp)),
         shape = RoundedCornerShape(11.dp),
-        colors = CardDefaults.cardColors(containerColor = NavySurface),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.navySurface),
         elevation = CardDefaults.cardElevation(0.dp)
     ) {
         Column(content = content)
@@ -373,22 +369,22 @@ private fun PrivacyToggleItem(
     ) {
         Icon(
             icon, null,
-            tint = if (checked) CyanAccent else TextTertiary,
+            tint = if (checked) MaterialTheme.appColors.cyanAccent else MaterialTheme.appColors.textTertiary,
             modifier = Modifier.size(20.dp)
         )
         Spacer(Modifier.width(14.dp))
         Column(Modifier.weight(1f)) {
-            Text(title, fontSize = 13.sp, fontWeight = FontWeight.Medium, color = TextPrimary)
-            Text(desc, fontSize = 11.sp, color = TextTertiary)
+            Text(title, fontSize = 13.sp, fontWeight = FontWeight.Medium, color = MaterialTheme.appColors.textPrimary)
+            Text(desc, fontSize = 11.sp, color = MaterialTheme.appColors.textTertiary)
         }
         Switch(
             checked = checked,
             onCheckedChange = onCheckedChange,
             colors = SwitchDefaults.colors(
                 checkedThumbColor = Color.White,
-                checkedTrackColor = CyanAccent,
+                checkedTrackColor = MaterialTheme.appColors.cyanAccent,
                 uncheckedThumbColor = Color.White,
-                uncheckedTrackColor = NavySurface
+                uncheckedTrackColor = MaterialTheme.appColors.navySurface
             )
         )
     }
@@ -403,16 +399,16 @@ private fun PrivacyInfoRow(icon: ImageVector, label: String, value: String) {
             .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Icon(icon, null, tint = CyanAccent, modifier = Modifier.size(20.dp))
+        Icon(icon, null, tint = MaterialTheme.appColors.cyanAccent, modifier = Modifier.size(20.dp))
         Spacer(Modifier.width(14.dp))
         Text(
             label,
             fontSize = 13.sp,
             fontWeight = FontWeight.Medium,
-            color = TextPrimary,
+            color = MaterialTheme.appColors.textPrimary,
             modifier = Modifier.weight(1f)
         )
-        Text(value, fontSize = 13.sp, color = CyanSubtle)
+        Text(value, fontSize = 13.sp, color = MaterialTheme.appColors.cyanSubtle)
     }
 }
 
@@ -426,19 +422,19 @@ private fun PrivacyNavigableRow(icon: ImageVector, label: String, onClick: () ->
             .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Icon(icon, null, tint = CyanAccent, modifier = Modifier.size(20.dp))
+        Icon(icon, null, tint = MaterialTheme.appColors.cyanAccent, modifier = Modifier.size(20.dp))
         Spacer(Modifier.width(14.dp))
         Text(
             label,
             fontSize = 13.sp,
             fontWeight = FontWeight.Medium,
-            color = TextPrimary,
+            color = MaterialTheme.appColors.textPrimary,
             modifier = Modifier.weight(1f)
         )
         Icon(
             Icons.AutoMirrored.Filled.KeyboardArrowRight,
             null,
-            tint = TextTertiary,
+            tint = MaterialTheme.appColors.textTertiary,
             modifier = Modifier.size(18.dp)
         )
     }
@@ -453,7 +449,7 @@ private fun PrivacyDataRow(
     isInfo: Boolean = false
 ) {
     val iconTint = when {
-        isInfo -> CyanAccent
+        isInfo -> MaterialTheme.appColors.cyanAccent
         active -> IncomeGreen
         else   -> ExpenseRed
     }
@@ -465,6 +461,6 @@ private fun PrivacyDataRow(
     ) {
         Icon(icon, null, tint = iconTint, modifier = Modifier.size(20.dp))
         Spacer(Modifier.width(14.dp))
-        Text(label, fontSize = 13.sp, color = TextPrimary)
+        Text(label, fontSize = 13.sp, color = MaterialTheme.appColors.textPrimary)
     }
 }

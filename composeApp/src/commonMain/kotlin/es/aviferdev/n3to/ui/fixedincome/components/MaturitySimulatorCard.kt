@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.fixedincome.components
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -40,9 +42,9 @@ internal fun MaturitySimulatorCard(
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = NavySurface),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.navySurface),
         elevation = CardDefaults.cardElevation(0.dp),
-        border = BorderStroke(0.5.dp, NavyBorder)
+        border = BorderStroke(0.5.dp, MaterialTheme.appColors.navyBorder)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
@@ -61,7 +63,7 @@ internal fun MaturitySimulatorCard(
             SimulatorRow(
                 label = stringResource(Res.string.fixedincome_gross_interest),
                 value = "+ ${maskAmount(formatAmount(simulation.grossInterest), balancesHidden)}",
-                valueColor = PnLPositive
+                valueColor = MaterialTheme.appColors.pnlPositive
             )
             SimulatorRow(
                 label = stringResource(Res.string.fixedincome_coupons_received),
@@ -71,17 +73,17 @@ internal fun MaturitySimulatorCard(
             SimulatorRow(
                 label = stringResource(Res.string.fixedincome_estimated_irpf, "19"),
                 value = "- ${maskAmount(formatAmount(simulation.estimatedIrpf), balancesHidden)}",
-                valueColor = PnLNegative
+                valueColor = MaterialTheme.appColors.pnlNegative
             )
             if (simulation.estimatedCommission > 0) {
                 SimulatorRow(
                     label = stringResource(Res.string.fixedincome_estimated_commissions),
                     value = "- ${maskAmount(formatAmount(simulation.estimatedCommission), balancesHidden)}",
-                    valueColor = PnLNegative
+                    valueColor = MaterialTheme.appColors.pnlNegative
                 )
             }
 
-            HorizontalDivider(color = NavyBorder, modifier = Modifier.padding(vertical = 8.dp))
+            HorizontalDivider(color = MaterialTheme.appColors.navyBorder, modifier = Modifier.padding(vertical = 8.dp))
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -97,7 +99,7 @@ internal fun MaturitySimulatorCard(
                     text = "${maskAmount(formatAmount(simulation.netAtMaturity), balancesHidden)} €",
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold,
-                    color = CyanAccent
+                    color = MaterialTheme.appColors.cyanAccent
                 )
             }
 
@@ -108,7 +110,7 @@ internal fun MaturitySimulatorCard(
                 text = "${stringResource(Res.string.fixedincome_net_profit_label)}: $sign${maskAmount(formatAmount(simulation.netProfit), balancesHidden)} €",
                 fontSize = 13.sp,
                 fontWeight = FontWeight.Medium,
-                color = if (simulation.netProfit >= 0) PnLPositive else PnLNegative
+                color = if (simulation.netProfit >= 0) MaterialTheme.appColors.pnlPositive else MaterialTheme.appColors.pnlNegative
             )
         }
     }

@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.realestate
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -43,7 +45,7 @@ fun PropertyExpenseRow(
     Card(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(10.dp),
-        colors = CardDefaults.cardColors(containerColor = BackgroundGray),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.background),
         elevation = CardDefaults.cardElevation(0.dp)
     ) {
         Column(modifier = Modifier.padding(12.dp)) {
@@ -60,7 +62,7 @@ fun PropertyExpenseRow(
                         onClick = { showCategoryMenu = true },
                         shape = RoundedCornerShape(8.dp),
                         colors = ButtonDefaults.outlinedButtonColors(
-                            contentColor = if (selectedCategory != null) PrimaryDark else TextTertiary
+                            contentColor = if (selectedCategory != null) PrimaryDark else MaterialTheme.appColors.textTertiary
                         ),
                         contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp),
                         modifier = Modifier.height(36.dp)
@@ -75,7 +77,7 @@ fun PropertyExpenseRow(
                     DropdownMenu(
                         expanded = showCategoryMenu,
                         onDismissRequest = { showCategoryMenu = false },
-                        containerColor = SurfaceWhite
+                        containerColor = MaterialTheme.appColors.surface
                     ) {
                         categories.forEach { category ->
                             DropdownMenuItem(
@@ -83,7 +85,7 @@ fun PropertyExpenseRow(
                                     Text(
                                         text = category.name,
                                         fontSize = 13.sp,
-                                        color = TextPrimary,
+                                        color = MaterialTheme.appColors.textPrimary,
                                         fontWeight = if (category.id == expense.categoryId) FontWeight.SemiBold else FontWeight.Normal
                                     )
                                 },
@@ -127,16 +129,16 @@ fun PropertyExpenseRow(
                             onExpenseChange(expense.copy(amount = amount))
                         }
                     },
-                    placeholder = { Text("0,00", fontSize = 13.sp, color = TextTertiary) },
+                    placeholder = { Text("0,00", fontSize = 13.sp, color = MaterialTheme.appColors.textTertiary) },
                     modifier = Modifier.weight(1f),
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                    trailingIcon = { Text("€", fontSize = 14.sp, color = TextSecondary, modifier = Modifier.padding(end = 8.dp)) },
-                    textStyle = LocalTextStyle.current.copy(fontSize = 13.sp, color = TextPrimary),
+                    trailingIcon = { Text("€", fontSize = 14.sp, color = MaterialTheme.appColors.textSecondary, modifier = Modifier.padding(end = 8.dp)) },
+                    textStyle = LocalTextStyle.current.copy(fontSize = 13.sp, color = MaterialTheme.appColors.textPrimary),
                     shape = RoundedCornerShape(8.dp),
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = PrimaryDark,
-                        unfocusedBorderColor = BorderGray
+                        unfocusedBorderColor = MaterialTheme.appColors.border
                     )
                 )
 
@@ -146,14 +148,14 @@ fun PropertyExpenseRow(
                         notesText = it
                         onExpenseChange(expense.copy(notes = it.ifBlank { null }))
                     },
-                    placeholder = { Text("Nota", fontSize = 12.sp, color = TextTertiary) },
+                    placeholder = { Text("Nota", fontSize = 12.sp, color = MaterialTheme.appColors.textTertiary) },
                     modifier = Modifier.weight(1f),
                     singleLine = true,
-                    textStyle = LocalTextStyle.current.copy(fontSize = 12.sp, color = TextPrimary),
+                    textStyle = LocalTextStyle.current.copy(fontSize = 12.sp, color = MaterialTheme.appColors.textPrimary),
                     shape = RoundedCornerShape(8.dp),
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = PrimaryDark,
-                        unfocusedBorderColor = BorderGray
+                        unfocusedBorderColor = MaterialTheme.appColors.border
                     )
                 )
             }

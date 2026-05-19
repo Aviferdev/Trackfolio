@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.valuable
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -72,11 +74,11 @@ fun ValuableDetailScreen(
     if (uiState.showLoanPicker && summary != null) {
         AlertDialog(
             onDismissRequest = { viewModel.hideLoanPicker() },
-            containerColor = NavySurface,
-            title = { Text("Vincular préstamo", fontWeight = FontWeight.Bold, color = TextPrimary) },
+            containerColor = MaterialTheme.appColors.navySurface,
+            title = { Text("Vincular préstamo", fontWeight = FontWeight.Bold, color = MaterialTheme.appColors.textPrimary) },
             text = {
                 if (uiState.availableLoans.isEmpty()) {
-                    Text("No hay préstamos disponibles", color = TextTertiary, fontSize = 14.sp)
+                    Text("No hay préstamos disponibles", color = MaterialTheme.appColors.textTertiary, fontSize = 14.sp)
                 } else {
                     Column {
                         uiState.availableLoans.forEach { loan ->
@@ -90,11 +92,11 @@ fun ValuableDetailScreen(
                                     .padding(vertical = 8.dp),
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
-                                Text(loan.name, fontSize = 14.sp, color = TextPrimary)
+                                Text(loan.name, fontSize = 14.sp, color = MaterialTheme.appColors.textPrimary)
                                 Text(
                                     formatAmountEuro(loan.outstandingPrincipal),
                                     fontSize = 13.sp,
-                                    color = TextSecondary
+                                    color = MaterialTheme.appColors.textSecondary
                                 )
                             }
                         }
@@ -104,7 +106,7 @@ fun ValuableDetailScreen(
             confirmButton = {},
             dismissButton = {
                 TextButton(onClick = { viewModel.hideLoanPicker() }) {
-                    Text("Cerrar", color = TextTertiary)
+                    Text("Cerrar", color = MaterialTheme.appColors.textTertiary)
                 }
             }
         )
@@ -114,8 +116,8 @@ fun ValuableDetailScreen(
         var valueText by remember { mutableStateOf(summary.valuable.currentValue.toString()) }
         AlertDialog(
             onDismissRequest = { viewModel.hideValueDialog() },
-            containerColor = NavySurface,
-            title = { Text("Actualizar valor", fontWeight = FontWeight.Bold, color = TextPrimary) },
+            containerColor = MaterialTheme.appColors.navySurface,
+            title = { Text("Actualizar valor", fontWeight = FontWeight.Bold, color = MaterialTheme.appColors.textPrimary) },
             text = {
                 OutlinedTextField(
                     value = valueText,
@@ -124,9 +126,9 @@ fun ValuableDetailScreen(
                     singleLine = true,
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = BrandGreen,
-                        unfocusedBorderColor = BorderGray,
-                        focusedTextColor = TextPrimary,
-                        unfocusedTextColor = TextPrimary
+                        unfocusedBorderColor = MaterialTheme.appColors.border,
+                        focusedTextColor = MaterialTheme.appColors.textPrimary,
+                        unfocusedTextColor = MaterialTheme.appColors.textPrimary
                     )
                 )
             },
@@ -137,7 +139,7 @@ fun ValuableDetailScreen(
                 }) { Text("Actualizar", color = BrandGreen) }
             },
             dismissButton = {
-                TextButton(onClick = { viewModel.hideValueDialog() }) { Text("Cancelar", color = TextTertiary) }
+                TextButton(onClick = { viewModel.hideValueDialog() }) { Text("Cancelar", color = MaterialTheme.appColors.textTertiary) }
             }
         )
     }
@@ -166,10 +168,10 @@ fun ValuableDetailScreen(
                         }
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = BackgroundGray, titleContentColor = TextPrimary)
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.appColors.background, titleContentColor = MaterialTheme.appColors.textPrimary)
             )
         },
-        containerColor = BackgroundGray
+        containerColor = MaterialTheme.appColors.background
     ) { padding ->
         if (summary == null) {
             Box(Modifier.fillMaxSize().padding(padding), contentAlignment = Alignment.Center) {
@@ -191,12 +193,12 @@ fun ValuableDetailScreen(
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(14.dp),
-                    colors = CardDefaults.cardColors(containerColor = NavySurface),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.navySurface),
                     elevation = CardDefaults.cardElevation(0.dp)
                 ) {
                     Column(Modifier.padding(20.dp)) {
                         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                            Text("Balance", fontWeight = FontWeight.Bold, fontSize = 15.sp, color = TextPrimary)
+                            Text("Balance", fontWeight = FontWeight.Bold, fontSize = 15.sp, color = MaterialTheme.appColors.textPrimary)
                             if (valuable.isSold) {
                                 val profit = summary.realizedProfit
                                 val profitPct = summary.realizedProfitPercent
@@ -211,7 +213,7 @@ fun ValuableDetailScreen(
                                     text = formatAmountEuro(valuable.currentValue),
                                     fontWeight = FontWeight.Bold,
                                     fontSize = 18.sp,
-                                    color = TextPrimary
+                                    color = MaterialTheme.appColors.textPrimary
                                 )
                             }
                         }
@@ -225,7 +227,7 @@ fun ValuableDetailScreen(
                             }
                         }
                         Spacer(Modifier.height(12.dp))
-                        HorizontalDivider(color = BorderGray, thickness = 0.5.dp)
+                        HorizontalDivider(color = MaterialTheme.appColors.border, thickness = 0.5.dp)
                         Spacer(Modifier.height(12.dp))
 
                         // Métricas
@@ -243,7 +245,7 @@ fun ValuableDetailScreen(
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(14.dp),
-                    colors = CardDefaults.cardColors(containerColor = NavySurface),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.navySurface),
                     elevation = CardDefaults.cardElevation(0.dp)
                 ) {
                     Column(Modifier.padding(16.dp)) {
@@ -269,7 +271,7 @@ fun ValuableDetailScreen(
                             DetailRow("Notas", valuable.notes)
                         }
                         Spacer(Modifier.height(12.dp))
-                        HorizontalDivider(color = BorderGray, thickness = 0.5.dp)
+                        HorizontalDivider(color = MaterialTheme.appColors.border, thickness = 0.5.dp)
                         Spacer(Modifier.height(8.dp))
                         Row(
                             modifier = Modifier.fillMaxWidth(),
@@ -305,7 +307,7 @@ fun ValuableDetailScreen(
                     Card(
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(14.dp),
-                        colors = CardDefaults.cardColors(containerColor = NavySurface),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.navySurface),
                         elevation = CardDefaults.cardElevation(0.dp)
                     ) {
                         Column(Modifier.padding(16.dp)) {
@@ -320,7 +322,7 @@ fun ValuableDetailScreen(
                             if (summary.saleExpenses > 0) {
                                 DetailRow("Gastos venta", formatAmountEuro(summary.saleExpenses))
                             }
-                            HorizontalDivider(color = BorderGray, thickness = 0.5.dp, modifier = Modifier.padding(vertical = 8.dp))
+                            HorizontalDivider(color = MaterialTheme.appColors.border, thickness = 0.5.dp, modifier = Modifier.padding(vertical = 8.dp))
                             DetailRow("Total gastos", formatAmountEuro(summary.totalExpenses))
                         }
                     }
@@ -335,8 +337,8 @@ fun ValuableDetailScreen(
 @Composable
 private fun MetricItem(label: String, value: String) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(label, fontSize = 11.sp, color = TextTertiary)
-        Text(value, fontWeight = FontWeight.SemiBold, fontSize = 14.sp, color = TextPrimary)
+        Text(label, fontSize = 11.sp, color = MaterialTheme.appColors.textTertiary)
+        Text(value, fontWeight = FontWeight.SemiBold, fontSize = 14.sp, color = MaterialTheme.appColors.textPrimary)
     }
 }
 
@@ -346,8 +348,8 @@ private fun DetailRow(label: String, value: String) {
         modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Text(label, fontSize = 13.sp, color = TextSecondary)
-        Text(value, fontSize = 13.sp, fontWeight = FontWeight.Medium, color = TextPrimary)
+        Text(label, fontSize = 13.sp, color = MaterialTheme.appColors.textSecondary)
+        Text(value, fontSize = 13.sp, fontWeight = FontWeight.Medium, color = MaterialTheme.appColors.textPrimary)
     }
 }
 

@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.realestate
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
@@ -27,7 +29,7 @@ fun RentalPeriodHistorySection(
     Card(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = SurfaceWhite),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.surface),
         elevation = CardDefaults.cardElevation(0.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
@@ -41,7 +43,7 @@ fun RentalPeriodHistorySection(
                 ) {
                     Column {
                         Row {
-                            Text("${period.monthlyRent.toInt()} €/mes", fontWeight = FontWeight.SemiBold, fontSize = 13.sp, color = TextPrimary)
+                            Text("${period.monthlyRent.toInt()} €/mes", fontWeight = FontWeight.SemiBold, fontSize = 13.sp, color = MaterialTheme.appColors.textPrimary)
                             Spacer(Modifier.width(6.dp))
                             if (period.isActive) {
                                 StatusTag(label = "Activo", color = IncomeGreen)
@@ -51,14 +53,14 @@ fun RentalPeriodHistorySection(
                         val dateRange = "${formatDateShort(period.startDate)} — ${
                             period.endDate?.let { formatDateShort(it) } ?: "actualidad"
                         }"
-                        Text(dateRange, fontSize = 11.sp, color = TextTertiary)
+                        Text(dateRange, fontSize = 11.sp, color = MaterialTheme.appColors.textTertiary)
                         period.notes?.let {
-                            Text(it, fontSize = 11.sp, color = TextTertiary)
+                            Text(it, fontSize = 11.sp, color = MaterialTheme.appColors.textTertiary)
                         }
                     }
                 }
                 if (index < periods.lastIndex) {
-                    HorizontalDivider(color = BorderGray, thickness = 0.5.dp, modifier = Modifier.padding(vertical = 4.dp))
+                    HorizontalDivider(color = MaterialTheme.appColors.border, thickness = 0.5.dp, modifier = Modifier.padding(vertical = 4.dp))
                 }
             }
         }

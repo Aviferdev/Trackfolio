@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.portfolio
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
@@ -28,15 +30,10 @@ import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.Asset
 import es.aviferdev.n3to.domain.portfolio.AssetPosition
 import es.aviferdev.n3to.ui.common.component.IconActionButton
-import es.aviferdev.n3to.ui.theme.CyanAccent
+
 import es.aviferdev.n3to.ui.theme.ExpenseRed
 import es.aviferdev.n3to.ui.theme.IncomeGreen
-import es.aviferdev.n3to.ui.theme.NavyBorder
-import es.aviferdev.n3to.ui.theme.NavySelected
-import es.aviferdev.n3to.ui.theme.NavySurface
-import es.aviferdev.n3to.ui.theme.TextPrimary
-import es.aviferdev.n3to.ui.theme.TextSecondary
-import es.aviferdev.n3to.ui.theme.TextTertiary
+
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import es.aviferdev.n3to.ui.theme.formatAmount
 import es.aviferdev.n3to.ui.theme.maskAmount
@@ -57,14 +54,14 @@ fun AssetCard(
     val pnlColor = when {
         pos.totalPnL > 0 -> IncomeGreen
         pos.totalPnL < 0 -> ExpenseRed
-        else -> TextSecondary
+        else -> MaterialTheme.appColors.textSecondary
     }
 
     Card(
         onClick = onClick,
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(13.dp),
-        colors = CardDefaults.cardColors(containerColor = NavySurface),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.navySurface),
         elevation = CardDefaults.cardElevation(0.dp)
     ) {
         Row(
@@ -77,15 +74,15 @@ fun AssetCard(
                 modifier = Modifier
                     .size(42.dp)
                     .clip(RoundedCornerShape(11.dp))
-                    .background(NavySelected)
-                    .border(1.dp, NavyBorder, RoundedCornerShape(11.dp)),
+                    .background(MaterialTheme.appColors.navySelected)
+                    .border(1.dp, MaterialTheme.appColors.navyBorder, RoundedCornerShape(11.dp)),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
                     asset.ticker.take(4),
                     fontSize = if (asset.ticker.length > 4) 8.sp else 10.sp,
                     fontWeight = FontWeight.Bold,
-                    color = CyanAccent,
+                    color = MaterialTheme.appColors.cyanAccent,
                     textAlign = TextAlign.Center,
                     letterSpacing = (-0.3).sp
                 )
@@ -96,14 +93,14 @@ fun AssetCard(
                     asset.name,
                     fontSize = 13.sp,
                     fontWeight = FontWeight.SemiBold,
-                    color = TextPrimary,
+                    color = MaterialTheme.appColors.textPrimary,
                     maxLines = 1
                 )
                 Spacer(Modifier.height(2.dp))
                 Text(
                     "${formatQty(pos.netQuantity)} × ${maskAmount(formatAmount(pos.averageCostOfRemaining), balancesHidden)} €",
                     fontSize = 11.sp,
-                    color = TextTertiary
+                    color = MaterialTheme.appColors.textTertiary
                 )
             }
             Spacer(Modifier.width(8.dp))
@@ -112,7 +109,7 @@ fun AssetCard(
                     if (pos.hasCurrentPrice) "${maskAmount(formatAmount(pos.currentValue), balancesHidden)} €" else "—",
                     fontSize = 13.sp,
                     fontWeight = FontWeight.Bold,
-                    color = TextPrimary
+                    color = MaterialTheme.appColors.textPrimary
                 )
                 if (pos.hasCurrentPrice) {
                     Text(
@@ -128,7 +125,7 @@ fun AssetCard(
                 onClick = onUpdatePrice,
                 icon = Icons.Outlined.Refresh,
                 label = "Actualizar precio",
-                iconTint = CyanAccent
+                iconTint = MaterialTheme.appColors.cyanAccent
             )
         }
     }

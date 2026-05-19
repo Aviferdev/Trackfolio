@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.common.loading
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -24,9 +26,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.ui.splash.SplashLoader
-import es.aviferdev.n3to.ui.theme.CyanGlow
-import es.aviferdev.n3to.ui.theme.NavyDeep
-import es.aviferdev.n3to.ui.theme.TextSecondary
 
 /**
  * Overlay de carga global que bloquea toda interacción con la pantalla.
@@ -52,7 +51,7 @@ fun GlobalLoadingOverlay(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(NavyDeep.copy(alpha = 0.78f))
+                .background(MaterialTheme.appColors.navyDeep.copy(alpha = 0.78f))
                 .pointerInput(Unit) {
                     awaitPointerEventScope {
                         while (true) {
@@ -71,7 +70,7 @@ fun GlobalLoadingOverlay(
                     .background(
                         Brush.radialGradient(
                             colors = listOf(
-                                CyanGlow.copy(alpha = 0.10f),
+                                MaterialTheme.appColors.cyanGlow.copy(alpha = 0.10f),
                                 Color.Transparent
                             )
                         ),
@@ -87,7 +86,7 @@ fun GlobalLoadingOverlay(
                         text       = message,
                         fontSize   = 14.sp,
                         fontWeight = FontWeight.Medium,
-                        color      = TextSecondary
+                        color      = MaterialTheme.appColors.textSecondary
                     )
                 }
             }

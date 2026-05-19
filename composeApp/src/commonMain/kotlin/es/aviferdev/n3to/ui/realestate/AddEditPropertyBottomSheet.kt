@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.realestate
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.platform.nowMillis
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -39,7 +41,7 @@ import es.aviferdev.n3to.domain.usecase.realestate.SavePropertyUseCase
 import es.aviferdev.n3to.ui.account.AccountSession
 import es.aviferdev.n3to.ui.common.component.SelectableChip
 import es.aviferdev.n3to.ui.theme.*
-import es.aviferdev.n3to.ui.theme.DragHandleColor
+
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 
@@ -140,21 +142,21 @@ fun AddEditPropertyBottomSheet(
         DatePickerDialog(
             onDismissRequest = { showDatePicker = false },
             confirmButton = { TextButton(onClick = { datePickerState.selectedDateMillis?.let { acquisitionDateMillis = it }; showDatePicker = false }) { Text(stringResource(Res.string.common_accept), color = PrimaryDark) } },
-            dismissButton = { TextButton(onClick = { showDatePicker = false }) { Text(stringResource(Res.string.common_cancel), color = TextTertiary) } }
-        ) { DatePicker(state = datePickerState, colors = DatePickerDefaults.colors(containerColor = SurfaceWhite)) }
+            dismissButton = { TextButton(onClick = { showDatePicker = false }) { Text(stringResource(Res.string.common_cancel), color = MaterialTheme.appColors.textTertiary) } }
+        ) { DatePicker(state = datePickerState, colors = DatePickerDefaults.colors(containerColor = MaterialTheme.appColors.surface)) }
     }
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-        containerColor = SurfaceWhite,
+        containerColor = MaterialTheme.appColors.surface,
         dragHandle = {
             Box(
                 modifier = Modifier
                     .padding(top = 12.dp, bottom = 4.dp)
                     .width(40.dp).height(4.dp)
                     .clip(RoundedCornerShape(2.dp))
-                    .background(DragHandleColor)
+                    .background(MaterialTheme.appColors.dragHandle)
             )
         }
     ) {
@@ -169,7 +171,7 @@ fun AddEditPropertyBottomSheet(
                 if (isEditing) stringResource(Res.string.realestate_edit_title) else stringResource(Res.string.realestate_new_title),
                 fontWeight = FontWeight.Bold,
                 fontSize = 18.sp,
-                color = TextPrimary
+                color = MaterialTheme.appColors.textPrimary
             )
 
             Spacer(Modifier.height(20.dp))
@@ -179,7 +181,7 @@ fun AddEditPropertyBottomSheet(
             Spacer(Modifier.height(6.dp))
             OutlinedTextField(
                 value = name, onValueChange = { name = it },
-                placeholder = { Text(stringResource(Res.string.realestate_name_placeholder), color = TextTertiary.copy(alpha = 0.6f)) },
+                placeholder = { Text(stringResource(Res.string.realestate_name_placeholder), color = MaterialTheme.appColors.textTertiary.copy(alpha = 0.6f)) },
                 singleLine = true, modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(10.dp),
                 colors = fieldColors()
@@ -192,7 +194,7 @@ fun AddEditPropertyBottomSheet(
             Spacer(Modifier.height(6.dp))
             OutlinedTextField(
                 value = address, onValueChange = { address = it },
-                placeholder = { Text(stringResource(Res.string.realestate_address_placeholder), color = TextTertiary.copy(alpha = 0.6f)) },
+                placeholder = { Text(stringResource(Res.string.realestate_address_placeholder), color = MaterialTheme.appColors.textTertiary.copy(alpha = 0.6f)) },
                 singleLine = true, modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(10.dp),
                 colors = fieldColors()
@@ -247,7 +249,7 @@ fun AddEditPropertyBottomSheet(
                 colors = fieldColors(),
                 trailingIcon = {
                     IconButton(onClick = { showDatePicker = true }) {
-                        Icon(Icons.Outlined.CalendarMonth, stringResource(Res.string.common_action_cd), tint = TextTertiary)
+                        Icon(Icons.Outlined.CalendarMonth, stringResource(Res.string.common_action_cd), tint = MaterialTheme.appColors.textTertiary)
                     }
                 }
             )
@@ -326,14 +328,14 @@ fun AddEditPropertyBottomSheet(
                         stringResource(Res.string.realestate_purchase_expenses_title),
                         fontWeight = FontWeight.SemiBold,
                         fontSize = 14.sp,
-                        color = TextPrimary
+                        color = MaterialTheme.appColors.textPrimary
                     )
                     Spacer(Modifier.width(4.dp))
                     Icon(
                         if (showPurchaseExpenses) Icons.Outlined.ExpandLess else Icons.Outlined.ExpandMore,
                         null,
                         modifier = Modifier.size(18.dp),
-                        tint = TextTertiary
+                        tint = MaterialTheme.appColors.textTertiary
                     )
                 }
                 if (showPurchaseExpenses) {
@@ -356,7 +358,7 @@ fun AddEditPropertyBottomSheet(
                     Text(
                         stringResource(Res.string.realestate_no_expenses),
                         fontSize = 12.sp,
-                        color = TextTertiary,
+                        color = MaterialTheme.appColors.textTertiary,
                         modifier = Modifier.padding(vertical = 4.dp)
                     )
                 } else {
@@ -382,7 +384,7 @@ fun AddEditPropertyBottomSheet(
                             stringResource(Res.string.realestate_total_expenses_format, formatAmountEuro(totalPurchaseCosts)),
                             fontSize = 12.sp,
                             fontWeight = FontWeight.Medium,
-                            color = TextPrimary
+                            color = MaterialTheme.appColors.textPrimary
                         )
                     }
                 }
@@ -446,18 +448,18 @@ fun AddEditPropertyBottomSheet(
 
 @Composable
 private fun SectionLabel(text: String) {
-    Text(text, fontSize = 13.sp, color = TextSecondary)
+    Text(text, fontSize = 13.sp, color = MaterialTheme.appColors.textSecondary)
 }
 
 @Composable
 private fun fieldColors() = OutlinedTextFieldDefaults.colors(
     focusedBorderColor = PrimaryDark,
-    unfocusedBorderColor = BorderGray,
+    unfocusedBorderColor = MaterialTheme.appColors.border,
     cursorColor = PrimaryDark,
     focusedLabelColor = PrimaryDark,
-    unfocusedLabelColor = TextTertiary,
-    focusedTextColor = TextPrimary,
-    unfocusedTextColor = TextPrimary
+    unfocusedLabelColor = MaterialTheme.appColors.textTertiary,
+    focusedTextColor = MaterialTheme.appColors.textPrimary,
+    unfocusedTextColor = MaterialTheme.appColors.textPrimary
 )
 
 private fun formatDate(epochMillis: Long): String {

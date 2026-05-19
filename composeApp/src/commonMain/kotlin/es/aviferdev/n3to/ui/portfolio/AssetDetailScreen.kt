@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.portfolio
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -37,6 +39,10 @@ fun AssetDetailScreen(
     onBack: () -> Unit,
     viewModel: AssetDetailViewModel = koinViewModel(parameters = { parametersOf(assetId) })
 ) {
+    val heroCardBg1 = MaterialTheme.appColors.heroCardStart
+    val appCCyanAccent = MaterialTheme.appColors.cyanAccent
+    val appCTextPrimary = MaterialTheme.appColors.textPrimary
+    val appCTextSecondary = MaterialTheme.appColors.textSecondary
     val state by viewModel.uiState.collectAsState()
 
     AssetDetailContent(
@@ -57,19 +63,19 @@ fun AssetDetailScreen(
     state.error?.let { msg ->
         AlertDialog(
             onDismissRequest = { viewModel.clearError() },
-            containerColor = NavySurface,
+            containerColor = heroCardBg1,
             title = {
                 Text(
                     "Error",
                     fontSize = 17.sp,
                     fontWeight = FontWeight.SemiBold,
-                    color = TextPrimary
+                    color = appCTextPrimary
                 )
             },
-            text = { Text(msg, fontSize = 14.sp, color = TextSecondary) },
+            text = { Text(msg, fontSize = 14.sp, color = appCTextSecondary) },
             confirmButton = {
                 TextButton(onClick = { viewModel.clearError() }) {
-                    Text("Aceptar", color = CyanAccent, fontWeight = FontWeight.Medium)
+                    Text("Aceptar", color = appCCyanAccent, fontWeight = FontWeight.Medium)
                 }
             },
             shape = RoundedCornerShape(16.dp)
@@ -85,10 +91,14 @@ fun AssetDetailContent(
     onUnlinkPlatform: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val appCNavyBorder = MaterialTheme.appColors.navyBorder
+    val appCNavyDeep = MaterialTheme.appColors.navyDeep
+    val appCTextPrimary = MaterialTheme.appColors.textPrimary
+    val appCTextTertiary = MaterialTheme.appColors.textTertiary
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(NavyDeep)
+            .background(appCNavyDeep)
     ) {
         TopBarApp(
             title = state.asset?.name ?: "Activo",
@@ -111,7 +121,7 @@ fun AssetDetailContent(
                 Text(
                     "Selecciona en qué plataformas (brokers, bancos, exchanges) tienes este activo.",
                     fontSize = 12.sp,
-                    color = TextTertiary
+                    color = appCTextTertiary
                 )
             }
 
@@ -122,7 +132,7 @@ fun AssetDetailContent(
                             Text(
                                 "No hay plataformas creadas. Crea la primera para vincularla a este activo.",
                                 fontSize = 13.sp,
-                                color = TextTertiary,
+                                color = appCTextTertiary,
                                 textAlign = TextAlign.Center,
                                 modifier = Modifier.fillMaxWidth()
                             )
@@ -153,7 +163,7 @@ fun AssetDetailContent(
                         Text(
                             "Para vincular plataformas, ve a Ajustes › Portfolio › Plataformas.",
                             fontSize = 12.sp,
-                            color = TextTertiary,
+                            color = appCTextTertiary,
                             modifier = Modifier.padding(vertical = 4.dp)
                         )
                     }
@@ -178,7 +188,7 @@ fun AssetDetailContent(
                                     Text(
                                         text = platform.name,
                                         fontSize = 14.sp,
-                                        color = TextPrimary,
+                                        color = appCTextPrimary,
                                         modifier = Modifier.weight(1f)
                                     )
                                     IconButton(
@@ -195,7 +205,7 @@ fun AssetDetailContent(
                                 }
                                 if (index < state.linkedPlatforms.lastIndex) {
                                     HorizontalDivider(
-                                        color = NavyBorder,
+                                        color = appCNavyBorder,
                                         thickness = 0.5.dp,
                                         modifier = Modifier.padding(start = 48.dp)
                                     )
@@ -215,6 +225,10 @@ fun AssetDetailContent(
 
 @Composable
 private fun AssetHeroCard(asset: Asset, modifier: Modifier = Modifier) {
+    val heroCardBg1 = MaterialTheme.appColors.heroCardStart
+    val heroCardBg2 = MaterialTheme.appColors.heroCardEnd
+    val appCCyanGlow = MaterialTheme.appColors.cyanGlow
+    val appCCyanSubtle = MaterialTheme.appColors.cyanSubtle
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -223,7 +237,7 @@ private fun AssetHeroCard(asset: Asset, modifier: Modifier = Modifier) {
             .drawBehind {
                 drawRect(
                     brush = Brush.linearGradient(
-                        colors = listOf(NavySurface, NavySurfaceLight),
+                        colors = listOf(heroCardBg1, heroCardBg2),
                         start = Offset(0f, 0f),
                         end = Offset(size.width, size.height)
                     )
@@ -233,7 +247,7 @@ private fun AssetHeroCard(asset: Asset, modifier: Modifier = Modifier) {
                 val cy = 40.dp.toPx()
                 drawCircle(
                     brush = Brush.radialGradient(
-                        colors = listOf(CyanGlow.copy(alpha = 0.14f), Color.Transparent),
+                        colors = listOf(appCCyanGlow.copy(alpha = 0.14f), Color.Transparent),
                         center = Offset(cx, cy),
                         radius = orbRadius
                     ),
@@ -286,7 +300,7 @@ private fun AssetHeroCard(asset: Asset, modifier: Modifier = Modifier) {
                     text = "${formatAmount(price)} €",
                     fontSize = 13.sp,
                     fontWeight = FontWeight.SemiBold,
-                    color = CyanSubtle
+                    color = appCCyanSubtle
                 )
             }
         }
@@ -295,23 +309,26 @@ private fun AssetHeroCard(asset: Asset, modifier: Modifier = Modifier) {
 
 @Composable
 private fun NavySectionLabel(text: String) {
+    val appCTextTertiary = MaterialTheme.appColors.textTertiary
     Text(
         text = text,
         fontSize = 11.sp,
         fontWeight = FontWeight.SemiBold,
-        color = TextTertiary,
+        color = appCTextTertiary,
         letterSpacing = 0.8.sp
     )
 }
 
 @Composable
 private fun NavyCard(content: @Composable () -> Unit) {
+    val heroCardBg1 = MaterialTheme.appColors.heroCardStart
+    val appCNavyBorder = MaterialTheme.appColors.navyBorder
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(14.dp))
-            .background(NavySurface)
-            .border(0.5.dp, NavyBorder, RoundedCornerShape(14.dp))
+            .background(heroCardBg1)
+            .border(0.5.dp, appCNavyBorder, RoundedCornerShape(14.dp))
     ) {
         content()
     }
@@ -324,9 +341,13 @@ private fun PlatformToggleChip(
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
-    val bg     = if (isSelected) CyanAccent.copy(alpha = 0.12f) else NavySurfaceLight
-    val border = if (isSelected) CyanAccent                      else NavyBorder
-    val text   = if (isSelected) CyanAccent                      else TextSecondary
+    val appCNavySurfaceLight = MaterialTheme.appColors.navySurfaceLight
+    val appCCyanAccent = MaterialTheme.appColors.cyanAccent
+    val appCNavyBorder = MaterialTheme.appColors.navyBorder
+    val appCTextSecondary = MaterialTheme.appColors.textSecondary
+    val bg     = if (isSelected) appCCyanAccent.copy(alpha = 0.12f) else appCNavySurfaceLight
+    val border = if (isSelected) appCCyanAccent                      else appCNavyBorder
+    val text   = if (isSelected) appCCyanAccent                      else appCTextSecondary
 
     Row(
         modifier = Modifier
@@ -347,7 +368,7 @@ private fun PlatformToggleChip(
         )
         if (isSelected) {
             Spacer(Modifier.width(4.dp))
-            Text("✓", fontSize = 12.sp, color = CyanAccent, fontWeight = FontWeight.Bold)
+            Text("✓", fontSize = 12.sp, color = appCCyanAccent, fontWeight = FontWeight.Bold)
         }
     }
 }

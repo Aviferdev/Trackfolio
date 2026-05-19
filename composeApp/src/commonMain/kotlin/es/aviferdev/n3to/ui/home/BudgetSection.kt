@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.home
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -39,9 +41,9 @@ fun BudgetSection(
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .border(0.5.dp, NavyBorder, RoundedCornerShape(11.dp)),
+            .border(0.5.dp, MaterialTheme.appColors.navyBorder, RoundedCornerShape(11.dp)),
         shape = RoundedCornerShape(11.dp),
-        colors = CardDefaults.cardColors(containerColor = NavySurface),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.navySurface),
         elevation = CardDefaults.cardElevation(0.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
@@ -62,7 +64,7 @@ fun BudgetSection(
                     )
                     if (index < statuses.lastIndex) {
                         HorizontalDivider(
-                            color = NavyBorder,
+                            color = MaterialTheme.appColors.navyBorder,
                             thickness = 0.5.dp,
                             modifier = Modifier.padding(vertical = 12.dp)
                         )
@@ -98,7 +100,7 @@ private fun BudgetRow(
                 text = status.categoryName,
                 fontSize = 13.sp,
                 fontWeight = FontWeight.Medium,
-                color = TextPrimary,
+                color = MaterialTheme.appColors.textPrimary,
                 modifier = Modifier.weight(1f)
             )
             if (!noIncome) {
@@ -133,7 +135,7 @@ private fun BudgetRow(
             Text(
                 text = "Sin ingresos este año",
                 fontSize = 11.sp,
-                color = TextTertiary,
+                color = MaterialTheme.appColors.textTertiary,
                 modifier = Modifier.padding(vertical = 2.dp)
             )
         }
@@ -149,12 +151,12 @@ private fun BudgetRow(
                 Text(
                     text = "${formatAmount(status.spent)} de ${formatAmount(status.effectiveLimit)}",
                     fontSize = 11.sp,
-                    color = TextSecondary
+                    color = MaterialTheme.appColors.textSecondary
                 )
                 Text(
                     text = "Restan ${formatAmount(status.remaining)}",
                     fontSize = 11.sp,
-                    color = if (status.isOverBudget) ExpenseRed else TextTertiary
+                    color = if (status.isOverBudget) ExpenseRed else MaterialTheme.appColors.textTertiary
                 )
             }
         }
@@ -191,13 +193,13 @@ private fun EmptyBudgetCard(
             text = "Sin presupuestos",
             fontSize = 15.sp,
             fontWeight = FontWeight.SemiBold,
-            color = TextPrimary
+            color = MaterialTheme.appColors.textPrimary
         )
         Spacer(Modifier.height(4.dp))
         Text(
             text = "Configura límites de gasto por categoría\npara controlar mejor tus finanzas",
             fontSize = 12.sp,
-            color = TextSecondary,
+            color = MaterialTheme.appColors.textSecondary,
             textAlign = TextAlign.Center
         )
         Spacer(Modifier.height(12.dp))
@@ -208,7 +210,7 @@ private fun EmptyBudgetCard(
                 "Configurar",
                 fontSize = 13.sp,
                 fontWeight = FontWeight.SemiBold,
-                color = CyanAccent
+                color = MaterialTheme.appColors.cyanAccent
             )
         }
         Spacer(Modifier.height(4.dp))

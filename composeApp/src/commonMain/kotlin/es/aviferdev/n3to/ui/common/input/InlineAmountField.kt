@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.common.input
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -25,9 +27,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.ui.theme.PrimaryDark
-import es.aviferdev.n3to.ui.theme.SurfaceElevated
-import es.aviferdev.n3to.ui.theme.TextPrimary
-import es.aviferdev.n3to.ui.theme.TextTertiary
+
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import androidx.compose.ui.tooling.preview.Preview
 
@@ -51,7 +51,7 @@ fun InlineAmountField(
     placeholder: String = "",
     suffix: String? = null,
     singleLine: Boolean = false,
-    containerColor: Color = SurfaceElevated,
+    containerColor: Color = MaterialTheme.appColors.surfaceElevated,
     cursorColor: Color = PrimaryDark,
     modifier: Modifier = Modifier
 ) {
@@ -60,7 +60,7 @@ fun InlineAmountField(
             text = label,
             fontSize = 13.sp,
             fontWeight = FontWeight.Medium,
-            color = TextTertiary
+            color = MaterialTheme.appColors.textTertiary
         )
         Spacer(Modifier.height(4.dp))
         Row(
@@ -78,7 +78,7 @@ fun InlineAmountField(
                         text = placeholder,
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Medium,
-                        color = TextTertiary.copy(alpha = 0.5f)
+                        color = MaterialTheme.appColors.textTertiary.copy(alpha = 0.5f)
                     )
                 }
                 BasicTextField(
@@ -88,7 +88,7 @@ fun InlineAmountField(
                     textStyle = TextStyle(
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Medium,
-                        color = TextPrimary
+                        color = MaterialTheme.appColors.textPrimary
                     ),
                     cursorBrush = SolidColor(cursorColor),
                     modifier = Modifier.fillMaxWidth()
@@ -99,7 +99,7 @@ fun InlineAmountField(
                 Text(
                     text = suffix,
                     fontSize = 14.sp,
-                    color = TextTertiary
+                    color = MaterialTheme.appColors.textTertiary
                 )
             }
         }

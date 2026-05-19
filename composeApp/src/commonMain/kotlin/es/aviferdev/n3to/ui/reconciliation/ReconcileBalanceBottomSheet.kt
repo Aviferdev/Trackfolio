@@ -16,6 +16,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -35,9 +36,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.ui.theme.PrimaryDark
-import es.aviferdev.n3to.ui.theme.SurfaceElevated
-import es.aviferdev.n3to.ui.theme.TextPrimary
-import es.aviferdev.n3to.ui.theme.TextSecondary
+
 import es.aviferdev.n3to.ui.theme.formatAmount
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.account_computed_balance
@@ -63,7 +62,7 @@ fun ReconcileBalanceBottomSheet(
             onDismiss()
         },
         sheetState     = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-        containerColor = SurfaceElevated,
+        containerColor = MaterialTheme.appColors.surfaceElevated,
         shape          = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp)
     ) {
         ReconcileBalanceBottomSheetContent(
@@ -101,7 +100,7 @@ fun ReconcileBalanceBottomSheetContent(
             text       = stringResource(Res.string.reconciliation_title),
             fontSize   = 20.sp,
             fontWeight = FontWeight.Bold,
-            color      = TextPrimary
+            color      = MaterialTheme.appColors.textPrimary
         )
 
         Spacer(Modifier.height(8.dp))
@@ -109,14 +108,14 @@ fun ReconcileBalanceBottomSheetContent(
         Text(
             text      = stringResource(Res.string.account_computed_balance),
             fontSize  = 13.sp,
-            color     = TextSecondary
+            color     = MaterialTheme.appColors.textSecondary
         )
 
         Text(
             text       = "${formatAmount(state.computedBalance)} €",
             fontSize   = 24.sp,
             fontWeight = FontWeight.SemiBold,
-            color      = TextPrimary
+            color      = MaterialTheme.appColors.textPrimary
         )
 
         Spacer(Modifier.height(20.dp))
@@ -154,7 +153,7 @@ fun ReconcileBalanceBottomSheetContent(
             val color = when {
                 diff > 0  -> MaterialTheme.colorScheme.primary
                 diff < 0  -> MaterialTheme.colorScheme.error
-                else      -> TextSecondary
+                else      -> MaterialTheme.appColors.textSecondary
             }
             Text(
                 text       = "Diferencia: ${sign}${formatAmount(diff)} €",

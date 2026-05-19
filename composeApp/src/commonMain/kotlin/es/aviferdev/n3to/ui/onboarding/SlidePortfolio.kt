@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.onboarding
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.EaseInOutCubic
 import androidx.compose.animation.core.animateFloatAsState
@@ -41,14 +43,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import es.aviferdev.n3to.ui.theme.CyanAccent
-import es.aviferdev.n3to.ui.theme.CyanSubtle
+
 import es.aviferdev.n3to.ui.theme.IncomeGreen
 import es.aviferdev.n3to.ui.theme.N3toTheme
-import es.aviferdev.n3to.ui.theme.NavyBorder
-import es.aviferdev.n3to.ui.theme.NavySurface
-import es.aviferdev.n3to.ui.theme.TextPrimary
-import es.aviferdev.n3to.ui.theme.TextTertiary
+
 import kotlinx.coroutines.delay
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.portfolio_summary_total_pnl
@@ -62,6 +60,12 @@ import androidx.compose.ui.tooling.preview.Preview
  */
 @Composable
 fun SlidePortfolio(modifier: Modifier = Modifier) {
+    val appCCyanAccent = MaterialTheme.appColors.cyanAccent
+    val appCCyanSubtle = MaterialTheme.appColors.cyanSubtle
+    val appCNavyBorder = MaterialTheme.appColors.navyBorder
+    val appCNavySurface = MaterialTheme.appColors.navySurface
+    val appCTextPrimary = MaterialTheme.appColors.textPrimary
+    val appCTextTertiary = MaterialTheme.appColors.textTertiary
 
     var visible by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) { visible = true }
@@ -101,7 +105,7 @@ fun SlidePortfolio(modifier: Modifier = Modifier) {
 
     // Colores visibles sobre fondo navy para cada ticker
     val stocks = listOf(
-        StockPill("AAPL", "+13,8%", CyanSubtle),
+        StockPill("AAPL", "+13,8%", appCCyanSubtle),
         StockPill("NVDA", "+36,4%", Color(0xFF76B900)),
         StockPill("MSFT", "+9,0%",  Color(0xFF00A4EF))
     )
@@ -119,8 +123,8 @@ fun SlidePortfolio(modifier: Modifier = Modifier) {
             modifier = Modifier
                 .fillMaxWidth()
                 .graphicsLayer { alpha = cardAlpha }
-                .background(color = NavySurface, shape = RoundedCornerShape(16.dp))
-                .border(1.dp, NavyBorder, RoundedCornerShape(16.dp))
+                .background(color = appCNavySurface, shape = RoundedCornerShape(16.dp))
+                .border(1.dp, appCNavyBorder, RoundedCornerShape(16.dp))
                 .padding(18.dp)
         ) {
             Column {
@@ -133,7 +137,7 @@ fun SlidePortfolio(modifier: Modifier = Modifier) {
                         text = stringResource(Res.string.portfolio_summary_total_value).uppercase(),
                         fontSize = 10.sp,
                         fontWeight = FontWeight.Bold,
-                        color = TextTertiary,
+                        color = appCTextTertiary,
                         letterSpacing = 0.7.sp
                     )
                     Text(text = "+5,6%", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = IncomeGreen)
@@ -145,7 +149,7 @@ fun SlidePortfolio(modifier: Modifier = Modifier) {
                     text = "41.409,90 €",
                     fontSize = 26.sp,
                     fontWeight = FontWeight.ExtraBold,
-                    color = TextPrimary,
+                    color = appCTextPrimary,
                     letterSpacing = (-1).sp
                 )
 
@@ -178,13 +182,13 @@ fun SlidePortfolio(modifier: Modifier = Modifier) {
                     drawPath(
                         path = areaPath,
                         brush = Brush.verticalGradient(
-                            colors = listOf(CyanAccent.copy(alpha = 0.20f), CyanAccent.copy(alpha = 0f)),
+                            colors = listOf(appCCyanAccent.copy(alpha = 0.20f), appCCyanAccent.copy(alpha = 0f)),
                             startY = 0f, endY = cvH
                         )
                     )
                     drawPath(
                         path = chartPath,
-                        color = CyanAccent,
+                        color = appCCyanAccent,
                         style = Stroke(
                             width = 2.dp.toPx(),
                             cap = StrokeCap.Round,
@@ -208,8 +212,8 @@ fun SlidePortfolio(modifier: Modifier = Modifier) {
                     modifier = Modifier
                         .weight(1f)
                         .graphicsLayer { alpha = pillAlphas[index] }
-                        .background(color = NavySurface, shape = RoundedCornerShape(12.dp))
-                        .border(1.dp, NavyBorder, RoundedCornerShape(12.dp))
+                        .background(color = appCNavySurface, shape = RoundedCornerShape(12.dp))
+                        .border(1.dp, appCNavyBorder, RoundedCornerShape(12.dp))
                         .padding(vertical = 10.dp, horizontal = 8.dp)
                 ) {
                     Column(
@@ -239,16 +243,16 @@ fun SlidePortfolio(modifier: Modifier = Modifier) {
             modifier = Modifier
                 .fillMaxWidth()
                 .graphicsLayer { alpha = calloutAlpha }
-                .background(color = CyanAccent.copy(alpha = 0.10f), shape = RoundedCornerShape(11.dp))
-                .border(1.dp, NavyBorder, RoundedCornerShape(11.dp))
+                .background(color = appCCyanAccent.copy(alpha = 0.10f), shape = RoundedCornerShape(11.dp))
+                .border(1.dp, appCNavyBorder, RoundedCornerShape(11.dp))
                 .padding(horizontal = 12.dp, vertical = 9.dp)
         ) {
             Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                 Text(text = "🧮", fontSize = 14.sp, color = Color.Unspecified)
                 Spacer(Modifier.width(8.dp))
-                Text(text = stringResource(Res.string.onboarding_portfolio_desc), fontSize = 11.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary)
+                Text(text = stringResource(Res.string.onboarding_portfolio_desc), fontSize = 11.sp, fontWeight = FontWeight.SemiBold, color = appCTextPrimary)
                 Spacer(Modifier.weight(1f))
-                Text(text = stringResource(Res.string.portfolio_summary_total_pnl), fontSize = 10.sp, color = TextTertiary)
+                Text(text = stringResource(Res.string.portfolio_summary_total_pnl), fontSize = 10.sp, color = appCTextTertiary)
             }
         }
     }

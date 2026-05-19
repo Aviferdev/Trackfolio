@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.common.component
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -14,12 +16,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import es.aviferdev.n3to.ui.theme.BorderGray2
+
 import es.aviferdev.n3to.ui.theme.PrimaryAlpha
 import es.aviferdev.n3to.ui.theme.PrimaryDark
-import es.aviferdev.n3to.ui.theme.TextPrimary
-import es.aviferdev.n3to.ui.theme.TextSecondary
-import es.aviferdev.n3to.ui.theme.TextTertiary
+
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import androidx.compose.ui.tooling.preview.Preview
 
@@ -43,8 +43,8 @@ fun SelectableChip(
     onClick: () -> Unit,
     accentColor: Color = PrimaryDark,
     selectedBgColor: Color = PrimaryAlpha,
-    borderColorUnselected: Color = BorderGray2,
-    textColorUnselected: Color = TextTertiary,
+    borderColorUnselected: Color = MaterialTheme.appColors.border2,
+    textColorUnselected: Color = MaterialTheme.appColors.textTertiary,
     modifier: Modifier = Modifier
 ) {
     Box(

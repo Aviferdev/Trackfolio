@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.common.component
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -20,10 +22,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import es.aviferdev.n3to.ui.theme.NavyBorder
-import es.aviferdev.n3to.ui.theme.NavySurface
-import es.aviferdev.n3to.ui.theme.TextPrimary
-import es.aviferdev.n3to.ui.theme.TextTertiary
+
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.common_action_cd
@@ -39,15 +38,15 @@ fun IconActionButton(
     onClick: () -> Unit,
     icon: ImageVector? = null,
     label: String? = null,
-    iconTint: Color = TextTertiary,
+    iconTint: Color = MaterialTheme.appColors.textTertiary,
     modifier: Modifier = Modifier
 ) {
     val shape = RoundedCornerShape(10.dp)
     Box(
         modifier = modifier
             .clip(shape)
-            .background(NavySurface)
-            .border(1.dp, NavyBorder, shape)
+            .background(MaterialTheme.appColors.navySurface)
+            .border(1.dp, MaterialTheme.appColors.navyBorder, shape)
             .clickable(onClick = onClick)
             .padding(10.dp),
         contentAlignment = Alignment.Center
@@ -64,7 +63,7 @@ fun IconActionButton(
                 label,
                 fontSize = 13.sp,
                 fontWeight = FontWeight.SemiBold,
-                color = TextPrimary
+                color = MaterialTheme.appColors.textPrimary
             )
         }
     }

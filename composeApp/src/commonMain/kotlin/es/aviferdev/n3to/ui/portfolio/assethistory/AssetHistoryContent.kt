@@ -1,6 +1,7 @@
 package es.aviferdev.n3to.ui.portfolio.assethistory
 
-
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -41,12 +42,9 @@ import es.aviferdev.n3to.domain.portfolio.AssetPosition
 import es.aviferdev.n3to.ui.common.navigation.TopBarApp
 import es.aviferdev.n3to.ui.common.toMaterialIcon
 import es.aviferdev.n3to.ui.portfolio.AssetHistoryUiState
-import es.aviferdev.n3to.ui.theme.BackgroundGray
+
 import es.aviferdev.n3to.ui.theme.PrimaryDark
-import es.aviferdev.n3to.ui.theme.SurfaceWhite
-import es.aviferdev.n3to.ui.theme.TextPrimary
-import es.aviferdev.n3to.ui.theme.TextSecondary
-import es.aviferdev.n3to.ui.theme.TextTertiary
+
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.error_asset_not_found
@@ -73,7 +71,7 @@ fun AssetHistoryContent(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(BackgroundGray)
+            .background(MaterialTheme.appColors.background)
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
             TopBarApp(
@@ -89,7 +87,7 @@ fun AssetHistoryContent(
                             Icon(
                                 Icons.Outlined.Refresh,
                                 contentDescription = "Actualizar precio",
-                                tint = TextSecondary
+                                tint = MaterialTheme.appColors.textSecondary
                             )
                         }
                     }
@@ -109,7 +107,7 @@ fun AssetHistoryContent(
                     Text(
                         stringResource(Res.string.error_asset_not_found),
                         fontSize = 13.sp,
-                        color = TextTertiary
+                        color = MaterialTheme.appColors.textTertiary
                     )
                 }
 
@@ -222,14 +220,14 @@ fun AssetHistoryContent(
                 DropdownMenu(
                     expanded = fabMenuOpen,
                     onDismissRequest = onFabDismiss,
-                    containerColor = SurfaceWhite
+                    containerColor = MaterialTheme.appColors.surface
                 ) {
                     if (!isFixedIncome) {
                         DropdownMenuItem(
                             text = {
                                 Text(
                                     "Nuevo movimiento",
-                                    color = TextPrimary,
+                                    color = MaterialTheme.appColors.textPrimary,
                                     fontSize = 14.sp
                                 )
                             },
@@ -240,7 +238,7 @@ fun AssetHistoryContent(
                             text = {
                                 Text(
                                     "Registrar dividendo",
-                                    color = TextPrimary,
+                                    color = MaterialTheme.appColors.textPrimary,
                                     fontSize = 14.sp
                                 )
                             },
@@ -253,7 +251,7 @@ fun AssetHistoryContent(
                             text = {
                                 Text(
                                     "Traspasar fondo",
-                                    color = TextPrimary,
+                                    color = MaterialTheme.appColors.textPrimary,
                                     fontSize = 14.sp
                                 )
                             },
@@ -266,9 +264,6 @@ fun AssetHistoryContent(
         }
     }
 }
-
-
-
 
 @Preview
 @Composable

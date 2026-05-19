@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.common.component
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -16,9 +18,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import es.aviferdev.n3to.ui.theme.CyanAccent
-import es.aviferdev.n3to.ui.theme.NavyBorder
-import es.aviferdev.n3to.ui.theme.TextSecondary
+
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import androidx.compose.ui.tooling.preview.Preview
 
@@ -39,8 +39,8 @@ fun NavySelectorChip(
     Box(
         modifier = modifier
             .clip(shape)
-            .background(if (selected) CyanAccent.copy(alpha = 0.15f) else Color.Transparent)
-            .border(1.dp, if (selected) CyanAccent else NavyBorder, shape)
+            .background(if (selected) MaterialTheme.appColors.cyanAccent.copy(alpha = 0.15f) else Color.Transparent)
+            .border(1.dp, if (selected) MaterialTheme.appColors.cyanAccent else MaterialTheme.appColors.navyBorder, shape)
             .clickable(onClick = onClick)
             .padding(horizontal = 14.dp, vertical = 6.dp)
     ) {
@@ -48,7 +48,7 @@ fun NavySelectorChip(
             text = label,
             fontSize = 12.sp,
             fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal,
-            color = if (selected) CyanAccent else TextSecondary
+            color = if (selected) MaterialTheme.appColors.cyanAccent else MaterialTheme.appColors.textSecondary
         )
     }
 }

@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.annual
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -30,11 +32,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.MonthlyInvestment
-import es.aviferdev.n3to.ui.theme.BorderGray
+
 import es.aviferdev.n3to.ui.theme.PrimaryDark
-import es.aviferdev.n3to.ui.theme.SurfaceWhite
-import es.aviferdev.n3to.ui.theme.TextPrimary
-import es.aviferdev.n3to.ui.theme.TextSecondary
+
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import es.aviferdev.n3to.ui.theme.formatAmountEuro
 import es.aviferdev.n3to.ui.theme.maskAmount
@@ -65,7 +65,7 @@ fun InvestmentBarChart(
     Card(
         modifier  = modifier.fillMaxWidth(),
         shape     = RoundedCornerShape(14.dp),
-        colors    = CardDefaults.cardColors(containerColor = SurfaceWhite),
+        colors    = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.surface),
         elevation = CardDefaults.cardElevation(0.dp),
         border    = CardDefaults.outlinedCardBorder()
     ) {
@@ -74,7 +74,7 @@ fun InvestmentBarChart(
                 text       = "Inversión mensual $year",
                 fontSize   = 14.sp,
                 fontWeight = FontWeight.SemiBold,
-                color      = TextPrimary
+                color      = MaterialTheme.appColors.textPrimary
             )
             Spacer(Modifier.height(4.dp))
 
@@ -145,7 +145,7 @@ private fun InvestmentBar(
         Text(
             text      = monthLabel,
             fontSize  = 9.sp,
-            color     = TextSecondary,
+            color     = MaterialTheme.appColors.textSecondary,
             textAlign = TextAlign.Center
         )
     }
@@ -156,7 +156,7 @@ private fun EmptyInvestmentState(year: String) {
     Card(
         modifier  = Modifier.fillMaxWidth(),
         shape     = RoundedCornerShape(14.dp),
-        colors    = CardDefaults.cardColors(containerColor = SurfaceWhite),
+        colors    = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.surface),
         elevation = CardDefaults.cardElevation(0.dp),
         border    = CardDefaults.outlinedCardBorder()
     ) {
@@ -170,7 +170,7 @@ private fun EmptyInvestmentState(year: String) {
                 text       = "Inversión mensual $year",
                 fontSize   = 14.sp,
                 fontWeight = FontWeight.SemiBold,
-                color      = TextPrimary
+                color      = MaterialTheme.appColors.textPrimary
             )
             Spacer(Modifier.height(16.dp))
             Icon(Icons.AutoMirrored.Outlined.ShowChart, contentDescription = null, modifier = Modifier.size(32.dp), tint = PrimaryDark)
@@ -178,7 +178,7 @@ private fun EmptyInvestmentState(year: String) {
             Text(
                 text     = "Sin inversiones este año",
                 fontSize = 13.sp,
-                color    = TextSecondary,
+                color    = MaterialTheme.appColors.textSecondary,
                 textAlign = TextAlign.Center
             )
         }

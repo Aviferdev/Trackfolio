@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.realestate
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -17,7 +19,7 @@ import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.RealEstateProperty
 import es.aviferdev.n3to.ui.common.DeltaIndicator
 import es.aviferdev.n3to.ui.theme.*
-import es.aviferdev.n3to.ui.theme.DragHandleColor
+
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.realestate_current_value_label
 import n3to.composeapp.generated.resources.realestate_new_value
@@ -46,21 +48,21 @@ fun UpdatePropertyValueSheet(
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState       = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-        containerColor   = SurfaceWhite,
+        containerColor   = MaterialTheme.appColors.surface,
         dragHandle = {
             Box(Modifier.padding(top = 12.dp, bottom = 4.dp).width(40.dp).height(4.dp)
-                .clip(RoundedCornerShape(2.dp)).background(DragHandleColor))
+                .clip(RoundedCornerShape(2.dp)).background(MaterialTheme.appColors.dragHandle))
         }
     ) {
         Column(Modifier.fillMaxWidth().padding(horizontal = 20.dp).padding(bottom = 32.dp)) {
-            Text(stringResource(Res.string.realestate_update_value_title), fontWeight = FontWeight.Bold, fontSize = 18.sp, color = TextPrimary)
+            Text(stringResource(Res.string.realestate_update_value_title), fontWeight = FontWeight.Bold, fontSize = 18.sp, color = MaterialTheme.appColors.textPrimary)
             Spacer(Modifier.height(4.dp))
-            Text(property.name, fontSize = 13.sp, color = TextTertiary)
+            Text(property.name, fontSize = 13.sp, color = MaterialTheme.appColors.textTertiary)
             Spacer(Modifier.height(16.dp))
 
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                Text(stringResource(Res.string.realestate_value_label), fontSize = 13.sp, color = TextSecondary)
-                Text(formatAmountEuro(property.currentEstimatedValue), fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary)
+                Text(stringResource(Res.string.realestate_value_label), fontSize = 13.sp, color = MaterialTheme.appColors.textSecondary)
+                Text(formatAmountEuro(property.currentEstimatedValue), fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = MaterialTheme.appColors.textPrimary)
             }
             Spacer(Modifier.height(12.dp))
 
@@ -68,14 +70,14 @@ fun UpdatePropertyValueSheet(
                 value = newValueText, onValueChange = { newValueText = it },
                 label = { Text(stringResource(Res.string.realestate_new_value)) },
                 singleLine = true, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = PrimaryDark, unfocusedBorderColor = BorderGray, cursorColor = PrimaryDark, focusedLabelColor = PrimaryDark, unfocusedLabelColor = TextTertiary, focusedTextColor = TextPrimary, unfocusedTextColor = TextPrimary),
+                colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = PrimaryDark, unfocusedBorderColor = MaterialTheme.appColors.border, cursorColor = PrimaryDark, focusedLabelColor = PrimaryDark, unfocusedLabelColor = MaterialTheme.appColors.textTertiary, focusedTextColor = MaterialTheme.appColors.textPrimary, unfocusedTextColor = MaterialTheme.appColors.textPrimary),
                 modifier = Modifier.fillMaxWidth()
             )
 
             if (newValue > 0 && newValue != property.currentEstimatedValue) {
                 Spacer(Modifier.height(8.dp))
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                    Text(stringResource(Res.string.realestate_current_value_label), fontSize = 13.sp, color = TextSecondary)
+                    Text(stringResource(Res.string.realestate_current_value_label), fontSize = 13.sp, color = MaterialTheme.appColors.textSecondary)
                     DeltaIndicator(value = "${formatAmountEuro(valueDiff)} (${formatPercentSigned(diffPercent)})", isPositive = valueDiff >= 0)
                 }
             }

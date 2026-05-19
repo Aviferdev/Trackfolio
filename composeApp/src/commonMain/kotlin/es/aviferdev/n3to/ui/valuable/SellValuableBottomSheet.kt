@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.valuable
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.platform.nowMillis
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -33,14 +35,14 @@ fun SellValuableBottomSheet(
     var saleExpenses by remember { mutableStateOf(listOf<ValuableExpense>()) }
     val expenseCategories = remember { ValuableExpenseCategories.allIds.toList() }
 
-    ModalBottomSheet(onDismissRequest = onDismiss, containerColor = BackgroundGray) {
+    ModalBottomSheet(onDismissRequest = onDismiss, containerColor = MaterialTheme.appColors.background) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 20.dp, vertical = 8.dp)
                 .verticalScroll(rememberScrollState())
         ) {
-            Text("Vender: $valuableName", fontWeight = FontWeight.Bold, fontSize = 20.sp, color = TextPrimary)
+            Text("Vender: $valuableName", fontWeight = FontWeight.Bold, fontSize = 20.sp, color = MaterialTheme.appColors.textPrimary)
             Spacer(Modifier.height(20.dp))
 
             OutlinedTextField(
@@ -60,7 +62,7 @@ fun SellValuableBottomSheet(
             Spacer(Modifier.height(16.dp))
 
             // Gastos de venta
-            Text("Gastos de venta", fontWeight = FontWeight.SemiBold, fontSize = 14.sp, color = TextPrimary)
+            Text("Gastos de venta", fontWeight = FontWeight.SemiBold, fontSize = 14.sp, color = MaterialTheme.appColors.textPrimary)
             Spacer(Modifier.height(8.dp))
             saleExpenses.forEachIndexed { index, expense ->
                 Row(
@@ -74,7 +76,7 @@ fun SellValuableBottomSheet(
                         OutlinedButton(
                             onClick = { showCategoryMenu = true },
                             shape = RoundedCornerShape(8.dp),
-                            colors = ButtonDefaults.outlinedButtonColors(contentColor = TextPrimary),
+                            colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.appColors.textPrimary),
                             contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp),
                             modifier = Modifier.height(40.dp).fillMaxWidth()
                         ) {
@@ -147,12 +149,11 @@ fun SellValuableBottomSheet(
 @Composable
 private fun textFieldColors() = OutlinedTextFieldDefaults.colors(
     focusedBorderColor = BrandGreen,
-    unfocusedBorderColor = BorderGray,
-    focusedTextColor = TextPrimary,
-    unfocusedTextColor = TextPrimary,
+    unfocusedBorderColor = MaterialTheme.appColors.border,
+    focusedTextColor = MaterialTheme.appColors.textPrimary,
+    unfocusedTextColor = MaterialTheme.appColors.textPrimary,
     cursorColor = BrandGreen,
     focusedLabelColor = BrandGreen,
-    unfocusedLabelColor = TextSecondary
+    unfocusedLabelColor = MaterialTheme.appColors.textSecondary
 )
-
 

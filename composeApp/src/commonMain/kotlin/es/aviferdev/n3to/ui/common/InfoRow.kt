@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.common
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,11 +18,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import es.aviferdev.n3to.ui.theme.BorderGray
+
 import es.aviferdev.n3to.ui.theme.ExpenseRed
 import es.aviferdev.n3to.ui.theme.IncomeGreen
-import es.aviferdev.n3to.ui.theme.TextPrimary
-import es.aviferdev.n3to.ui.theme.TextSecondary
+
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import androidx.compose.ui.tooling.preview.Preview
 
@@ -65,7 +66,7 @@ fun InfoRow(
         }
         if (!isLast) {
             HorizontalDivider(
-                color     = BorderGray,
+                color     = MaterialTheme.appColors.border,
                 thickness = 0.5.dp,
                 modifier  = Modifier.padding(start = 16.dp, end = 16.dp)
             )
@@ -82,8 +83,8 @@ private fun InfoRowPreview() {
                 left = { InitialsAvatar("A", bgColor = IncomeGreen) },
                 mid = {
                     Column {
-                        Text("Apple Inc.", fontSize = 14.sp, fontWeight = FontWeight.Medium, color = TextPrimary)
-                        Text("10 acciones", fontSize = 11.sp, color = TextSecondary)
+                        Text("Apple Inc.", fontSize = 14.sp, fontWeight = FontWeight.Medium, color = MaterialTheme.appColors.textPrimary)
+                        Text("10 acciones", fontSize = 11.sp, color = MaterialTheme.appColors.textSecondary)
                     }
                 },
                 right = { Text("+1.234,56 €", fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = IncomeGreen) },
@@ -94,8 +95,8 @@ private fun InfoRowPreview() {
                 left = { InitialsAvatar("G", bgColor = ExpenseRed) },
                 mid = {
                     Column {
-                        Text("Gas Natural", fontSize = 14.sp, fontWeight = FontWeight.Medium, color = TextPrimary)
-                        Text("5 acciones", fontSize = 11.sp, color = TextSecondary)
+                        Text("Gas Natural", fontSize = 14.sp, fontWeight = FontWeight.Medium, color = MaterialTheme.appColors.textPrimary)
+                        Text("5 acciones", fontSize = 11.sp, color = MaterialTheme.appColors.textSecondary)
                     }
                 },
                 right = { Text("-456,78 €", fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = ExpenseRed) },

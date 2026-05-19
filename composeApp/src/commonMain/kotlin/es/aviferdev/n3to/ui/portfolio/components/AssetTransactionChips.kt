@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.portfolio.components
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -20,11 +22,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import es.aviferdev.n3to.ui.theme.BorderGray
+
 import es.aviferdev.n3to.ui.theme.PrimaryDark
-import es.aviferdev.n3to.ui.theme.SurfaceElevated
-import es.aviferdev.n3to.ui.theme.TextPrimary
-import es.aviferdev.n3to.ui.theme.TextSecondary
+
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.portfolio_add_tx_no_assets_hint
 import n3to.composeapp.generated.resources.portfolio_add_tx_no_platforms_hint
@@ -55,7 +55,7 @@ internal fun TypeToggle(
         Text(
             text       = label,
             fontSize   = 14.sp,
-            color      = if (isSel) selColor else TextSecondary,
+            color      = if (isSel) selColor else MaterialTheme.appColors.textSecondary,
             fontWeight = if (isSel) FontWeight.SemiBold else FontWeight.Medium
         )
     }
@@ -68,9 +68,9 @@ internal fun CategoryFilterChip(
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
-    val bg     = if (isSelected) PrimaryDark   else SurfaceElevated
-    val border = if (isSelected) PrimaryDark   else BorderGray
-    val text   = if (isSelected) Color.White   else TextPrimary
+    val bg     = if (isSelected) PrimaryDark   else MaterialTheme.appColors.surfaceElevated
+    val border = if (isSelected) PrimaryDark   else MaterialTheme.appColors.border
+    val text   = if (isSelected) Color.White   else MaterialTheme.appColors.textPrimary
 
     Row(
         modifier = Modifier
@@ -101,9 +101,9 @@ internal fun AssetChip(
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
-    val bg     = if (isSelected) PrimaryDark   else SurfaceElevated
-    val border = if (isSelected) PrimaryDark   else BorderGray
-    val text   = if (isSelected) Color.White   else TextPrimary
+    val bg     = if (isSelected) PrimaryDark   else MaterialTheme.appColors.surfaceElevated
+    val border = if (isSelected) PrimaryDark   else MaterialTheme.appColors.border
+    val text   = if (isSelected) Color.White   else MaterialTheme.appColors.textPrimary
 
     Row(
         modifier = Modifier
@@ -130,19 +130,19 @@ internal fun PlatformChip(
     onClick: () -> Unit
 ) {
     val bg = when {
-        !enabled   -> SurfaceElevated.copy(alpha = 0.5f)
+        !enabled   -> MaterialTheme.appColors.surfaceElevated.copy(alpha = 0.5f)
         isSelected -> PrimaryDark
-        else       -> SurfaceElevated
+        else       -> MaterialTheme.appColors.surfaceElevated
     }
     val border = when {
-        !enabled   -> BorderGray.copy(alpha = 0.3f)
+        !enabled   -> MaterialTheme.appColors.border.copy(alpha = 0.3f)
         isSelected -> PrimaryDark
-        else       -> BorderGray
+        else       -> MaterialTheme.appColors.border
     }
     val text = when {
-        !enabled   -> TextSecondary.copy(alpha = 0.4f)
+        !enabled   -> MaterialTheme.appColors.textSecondary.copy(alpha = 0.4f)
         isSelected -> Color.White
-        else       -> TextPrimary
+        else       -> MaterialTheme.appColors.textPrimary
     }
 
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -168,7 +168,7 @@ internal fun PlatformChip(
             Text(
                 text       = badge,
                 fontSize   = 10.sp,
-                color      = if (isSelected) PrimaryDark else TextSecondary,
+                color      = if (isSelected) PrimaryDark else MaterialTheme.appColors.textSecondary,
                 fontWeight = FontWeight.Medium,
                 modifier   = Modifier.padding(top = 2.dp)
             )
@@ -176,7 +176,7 @@ internal fun PlatformChip(
             Text(
                 text     = stringResource(Res.string.portfolio_add_tx_no_units_badge),
                 fontSize = 10.sp,
-                color    = TextSecondary.copy(alpha = 0.5f),
+                color    = MaterialTheme.appColors.textSecondary.copy(alpha = 0.5f),
                 modifier = Modifier.padding(top = 2.dp)
             )
         }
@@ -189,11 +189,11 @@ internal fun EmptyAssetsHint() {
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(10.dp))
-            .background(SurfaceElevated)
+            .background(MaterialTheme.appColors.surfaceElevated)
             .padding(16.dp),
         contentAlignment = Alignment.Center
     ) {
-        Text(text = stringResource(Res.string.portfolio_add_tx_no_assets_hint), fontSize = 12.sp, color = TextSecondary)
+        Text(text = stringResource(Res.string.portfolio_add_tx_no_assets_hint), fontSize = 12.sp, color = MaterialTheme.appColors.textSecondary)
     }
 }
 
@@ -203,9 +203,9 @@ internal fun EmptyPlatformsInlineHint() {
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(10.dp))
-            .background(SurfaceElevated)
+            .background(MaterialTheme.appColors.surfaceElevated)
             .padding(14.dp)
     ) {
-        Text(text = stringResource(Res.string.portfolio_add_tx_no_platforms_hint), fontSize = 12.sp, color = TextSecondary)
+        Text(text = stringResource(Res.string.portfolio_add_tx_no_platforms_hint), fontSize = 12.sp, color = MaterialTheme.appColors.textSecondary)
     }
 }

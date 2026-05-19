@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
@@ -37,7 +38,7 @@ import es.aviferdev.n3to.ui.navigation.N3toNavHost
 import es.aviferdev.n3to.ui.onboarding.OnboardingScreen
 import es.aviferdev.n3to.ui.security.LockScreen
 import es.aviferdev.n3to.ui.splash.SplashScreen
-import es.aviferdev.n3to.ui.theme.BackgroundGray
+import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.ui.theme.LocalBalanceHidden
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import es.aviferdev.n3to.ui.theme.PrimaryDark
@@ -140,7 +141,7 @@ fun App() {
                 // Paso 1: Chequeo de versión (antes de cualquier contenido)
                 versionStatus is VersionManager.Status.Checking -> {
                     Box(
-                        modifier = Modifier.fillMaxSize().background(BackgroundGray),
+                        modifier = Modifier.fillMaxSize().background(MaterialTheme.appColors.background),
                         contentAlignment = Alignment.Center
                     ) {
                         CircularProgressIndicator(color = PrimaryDark)

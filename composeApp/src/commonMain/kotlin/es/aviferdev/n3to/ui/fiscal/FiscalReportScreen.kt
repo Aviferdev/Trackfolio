@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.fiscal
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -30,7 +32,7 @@ import n3to.composeapp.generated.resources.fiscal_net_only_warning
 import n3to.composeapp.generated.resources.fiscal_no_data_year
 import n3to.composeapp.generated.resources.fiscal_title
 import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -75,7 +77,7 @@ fun FiscalReportContent(
     modifier: Modifier = Modifier,
     taxProfile: TaxProfileSnapshot? = state.activeTaxProfile
 ) {
-    Column(modifier = modifier.fillMaxSize().background(NavyDeep)) {
+    Column(modifier = modifier.fillMaxSize().background(MaterialTheme.appColors.navyDeep)) {
         TopBarApp(
             title = stringResource(Res.string.fiscal_title),
             subtitle = state.selectedYear,
@@ -111,7 +113,7 @@ fun FiscalReportContent(
 
         if (state.isLoading) {
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator(color = CyanAccent)
+                CircularProgressIndicator(color = MaterialTheme.appColors.cyanAccent)
             }
         } else {
             Column(modifier = Modifier.weight(1f)) {
@@ -139,13 +141,13 @@ fun FiscalReportContent(
                                     Icons.AutoMirrored.Outlined.Assignment,
                                     contentDescription = null,
                                     modifier = Modifier.size(44.dp),
-                                    tint = CyanAccent.copy(alpha = 0.5f)
+                                    tint = MaterialTheme.appColors.cyanAccent.copy(alpha = 0.5f)
                                 )
                                 Spacer(Modifier.height(12.dp))
                                 Text(
                                     stringResource(Res.string.fiscal_no_data_year, state.selectedYear),
                                     fontSize = 15.sp,
-                                    color = TextTertiary,
+                                    color = MaterialTheme.appColors.textTertiary,
                                     textAlign = TextAlign.Center
                                 )
                             }
@@ -154,7 +156,7 @@ fun FiscalReportContent(
                     Spacer(Modifier.height(8.dp))
                 }
 
-                Box(modifier = Modifier.fillMaxWidth().background(NavySurface)) {
+                Box(modifier = Modifier.fillMaxWidth().background(MaterialTheme.appColors.navySurface)) {
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -162,7 +164,7 @@ fun FiscalReportContent(
                             .padding(16.dp),
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        HorizontalDivider(color = NavyBorder, thickness = .5.dp, modifier = Modifier.padding(bottom = 8.dp))
+                        HorizontalDivider(color = MaterialTheme.appColors.navyBorder, thickness = .5.dp, modifier = Modifier.padding(bottom = 8.dp))
                         state.errorMessage?.let { err ->
                             Text(err, fontSize = 11.sp, color = ExpenseRed, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
                         }
@@ -172,14 +174,14 @@ fun FiscalReportContent(
                             modifier = Modifier.fillMaxWidth().height(50.dp),
                             shape = RoundedCornerShape(12.dp),
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = CyanAccent,
-                                contentColor = NavyDeep,
-                                disabledContainerColor = NavySurfaceLight,
-                                disabledContentColor = TextTertiary
+                                containerColor = MaterialTheme.appColors.cyanAccent,
+                                contentColor = MaterialTheme.appColors.navyDeep,
+                                disabledContainerColor = MaterialTheme.appColors.navySurfaceLight,
+                                disabledContentColor = MaterialTheme.appColors.textTertiary
                             )
                         ) {
                             if (state.isGenerating) {
-                                CircularProgressIndicator(color = NavyDeep, modifier = Modifier.size(18.dp), strokeWidth = 2.dp)
+                                CircularProgressIndicator(color = MaterialTheme.appColors.navyDeep, modifier = Modifier.size(18.dp), strokeWidth = 2.dp)
                                 Spacer(Modifier.width(8.dp))
                             } else {
                                 Text("📄", fontSize = 16.sp)

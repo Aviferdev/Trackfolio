@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.portfolio
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.platform.nowMillis
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -53,7 +55,7 @@ fun UpdateCurrentPriceSheet(
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState       = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-        containerColor   = SurfaceWhite,
+        containerColor   = MaterialTheme.appColors.surface,
         dragHandle = {
             Box(
                 modifier = Modifier
@@ -61,7 +63,7 @@ fun UpdateCurrentPriceSheet(
                     .width(40.dp)
                     .height(4.dp)
                     .clip(RoundedCornerShape(2.dp))
-                    .background(BorderGray)
+                    .background(MaterialTheme.appColors.border)
             )
         }
     ) {
@@ -79,13 +81,13 @@ fun UpdateCurrentPriceSheet(
                 text       = stringResource(Res.string.portfolio_update_price_title),
                 fontSize   = 18.sp,
                 fontWeight = FontWeight.SemiBold,
-                color      = TextPrimary
+                color      = MaterialTheme.appColors.textPrimary
             )
             Spacer(Modifier.height(4.dp))
             Text(
                 text       = "${asset.ticker} · ${asset.name}",
                 fontSize   = 13.sp,
-                color      = TextSecondary,
+                color      = MaterialTheme.appColors.textSecondary,
                 fontWeight = FontWeight.Medium,
                 textAlign  = TextAlign.Center
             )
@@ -99,7 +101,7 @@ fun UpdateCurrentPriceSheet(
             Text(
                 text      = currentLabel,
                 fontSize  = 12.sp,
-                color     = TextSecondary,
+                color     = MaterialTheme.appColors.textSecondary,
                 textAlign = TextAlign.Center
             )
 
@@ -108,18 +110,18 @@ fun UpdateCurrentPriceSheet(
             OutlinedTextField(
                 value         = price,
                 onValueChange = { price = it.filter { c -> c.isDigit() || c == ',' || c == '.' } },
-                placeholder   = { Text("0,00", color = TextSecondary.copy(alpha = 0.6f), fontSize = 32.sp) },
+                placeholder   = { Text("0,00", color = MaterialTheme.appColors.textSecondary.copy(alpha = 0.6f), fontSize = 32.sp) },
                 textStyle     = TextStyle(
                     fontSize   = 32.sp,
                     fontWeight = FontWeight.Bold,
-                    color      = TextPrimary,
+                    color      = MaterialTheme.appColors.textPrimary,
                     textAlign  = TextAlign.Center
                 ),
                 trailingIcon = {
                     Text(
                         "€",
                         fontSize = 20.sp,
-                        color    = TextSecondary,
+                        color    = MaterialTheme.appColors.textSecondary,
                         modifier = Modifier.padding(end = 16.dp)
                     )
                 },
@@ -128,7 +130,7 @@ fun UpdateCurrentPriceSheet(
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                 colors          = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor   = PrimaryDark,
-                    unfocusedBorderColor = BorderGray
+                    unfocusedBorderColor = MaterialTheme.appColors.border
                 ),
                 singleLine = true
             )
@@ -137,7 +139,7 @@ fun UpdateCurrentPriceSheet(
             Text(
                 text     = stringResource(Res.string.portfolio_update_save_hint),
                 fontSize = 11.sp,
-                color    = TextSecondary
+                color    = MaterialTheme.appColors.textSecondary
             )
 
             Spacer(Modifier.height(28.dp))
@@ -160,7 +162,7 @@ fun UpdateCurrentPriceSheet(
 
             Spacer(Modifier.height(8.dp))
             TextButton(onClick = onDismiss, modifier = Modifier.fillMaxWidth()) {
-                Text(stringResource(Res.string.portfolio_update_cancel), fontSize = 14.sp, color = TextSecondary)
+                Text(stringResource(Res.string.portfolio_update_cancel), fontSize = 14.sp, color = MaterialTheme.appColors.textSecondary)
             }
         }
     }

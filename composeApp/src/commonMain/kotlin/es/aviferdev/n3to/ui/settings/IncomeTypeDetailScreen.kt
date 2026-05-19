@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.settings
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -79,15 +81,15 @@ fun IncomeTypeDetailScreen(
     issuerState.pendingDelete?.let { pending ->
         AlertDialog(
             onDismissRequest = { issuerViewModel.cancelDelete() },
-            containerColor = NavySurface,
+            containerColor = MaterialTheme.appColors.navySurface,
             icon = { Text(pending.icon, fontSize = 28.sp) },
             title = {
-                Text("Archivar emisor", fontSize = 17.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary)
+                Text("Archivar emisor", fontSize = 17.sp, fontWeight = FontWeight.SemiBold, color = MaterialTheme.appColors.textPrimary)
             },
             text = {
                 Text(
                     "Se archivará «${pending.name}». No aparecerá en los selectores de ingresos nuevos, pero los movimientos históricos conservarán la referencia.",
-                    fontSize = 14.sp, color = TextSecondary
+                    fontSize = 14.sp, color = MaterialTheme.appColors.textSecondary
                 )
             },
             confirmButton = {
@@ -97,7 +99,7 @@ fun IncomeTypeDetailScreen(
             },
             dismissButton = {
                 TextButton(onClick = { issuerViewModel.cancelDelete() }) {
-                    Text("Cancelar", color = CyanAccent, fontWeight = FontWeight.Medium)
+                    Text("Cancelar", color = MaterialTheme.appColors.cyanAccent, fontWeight = FontWeight.Medium)
                 }
             },
             shape = RoundedCornerShape(16.dp)
@@ -111,12 +113,12 @@ fun IncomeTypeDetailScreen(
         }
         AlertDialog(
             onDismissRequest = { issuerViewModel.clearError() },
-            containerColor = NavySurface,
-            title = { Text(stringResource(Res.string.common_error), fontSize = 17.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary) },
-            text = { Text(msg, fontSize = 14.sp, color = TextSecondary) },
+            containerColor = MaterialTheme.appColors.navySurface,
+            title = { Text(stringResource(Res.string.common_error), fontSize = 17.sp, fontWeight = FontWeight.SemiBold, color = MaterialTheme.appColors.textPrimary) },
+            text = { Text(msg, fontSize = 14.sp, color = MaterialTheme.appColors.textSecondary) },
             confirmButton = {
                 TextButton(onClick = { issuerViewModel.clearError() }) {
-                    Text(stringResource(Res.string.common_accept), color = CyanAccent, fontWeight = FontWeight.Medium)
+                    Text(stringResource(Res.string.common_accept), color = MaterialTheme.appColors.cyanAccent, fontWeight = FontWeight.Medium)
                 }
             },
             shape = RoundedCornerShape(16.dp)
@@ -138,13 +140,13 @@ fun IncomeTypeDetailContent(
     modifier: Modifier = Modifier
 ) {
     Column(
-        modifier = modifier.fillMaxSize().background(NavyDeep)
+        modifier = modifier.fillMaxSize().background(MaterialTheme.appColors.navyDeep)
     ) {
         TopBarApp(
             title = title,
             navigateBack = onBack,
-            containerColor = NavySurface,
-            dividerColor = NavyBorder
+            containerColor = MaterialTheme.appColors.navySurface,
+            dividerColor = MaterialTheme.appColors.navyBorder
         )
 
         LazyColumn(
@@ -168,7 +170,7 @@ fun IncomeTypeDetailContent(
                             Text(
                                 emptyLabel,
                                 fontSize = 13.sp,
-                                color = TextSecondary
+                                color = MaterialTheme.appColors.textSecondary
                             )
                         }
                     } else {
@@ -183,14 +185,14 @@ fun IncomeTypeDetailContent(
                                 Text(
                                     text = issuer.name,
                                     fontSize = 14.sp,
-                                    color = TextPrimary,
+                                    color = MaterialTheme.appColors.textPrimary,
                                     modifier = Modifier.weight(1f)
                                 )
                                 IconButton(
                                     onClick = { onEdit(issuer) },
                                     modifier = Modifier.size(28.dp)
                                 ) {
-                                    Icon(Icons.Default.Edit, "Editar", modifier = Modifier.size(14.dp), tint = TextSecondary)
+                                    Icon(Icons.Default.Edit, "Editar", modifier = Modifier.size(14.dp), tint = MaterialTheme.appColors.textSecondary)
                                 }
                                 IconButton(
                                     onClick = { onDelete(issuer) },
@@ -201,7 +203,7 @@ fun IncomeTypeDetailContent(
                             }
                             if (index < issuers.lastIndex) {
                                 HorizontalDivider(
-                                    color = NavyBorder,
+                                    color = MaterialTheme.appColors.navyBorder,
                                     thickness = 0.5.dp,
                                     modifier = Modifier.padding(start = 52.dp)
                                 )
@@ -236,5 +238,4 @@ fun IncomeTypeDetailContentPreview() {
         )
     }
 }
-
 

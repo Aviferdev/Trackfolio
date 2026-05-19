@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.portfolio
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.platform.nowMillis
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -59,13 +61,10 @@ import es.aviferdev.n3to.domain.model.AssetCategory
 import es.aviferdev.n3to.domain.model.AssetCategoryType
 import es.aviferdev.n3to.domain.model.Platform
 import es.aviferdev.n3to.domain.model.Portfolio
-import es.aviferdev.n3to.ui.theme.BorderGray
+
 import es.aviferdev.n3to.ui.theme.ExpenseRed
 import es.aviferdev.n3to.ui.theme.PrimaryDark
-import es.aviferdev.n3to.ui.theme.SurfaceWhite
-import es.aviferdev.n3to.ui.theme.SurfaceElevated
-import es.aviferdev.n3to.ui.theme.TextPrimary
-import es.aviferdev.n3to.ui.theme.TextSecondary
+
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import n3to.composeapp.generated.resources.Res
 import es.aviferdev.n3to.ui.portfolio.components.*
@@ -105,7 +104,6 @@ import n3to.composeapp.generated.resources.portfolio_add_asset_title_create
 import n3to.composeapp.generated.resources.portfolio_add_asset_title_edit
 import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -190,7 +188,7 @@ fun AddEditAssetBottomSheet(
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = sheetState,
-        containerColor = SurfaceWhite,
+        containerColor = MaterialTheme.appColors.surface,
         dragHandle = { BottomSheetDefaults.DragHandle() }
     ) {
         Column(
@@ -206,13 +204,13 @@ fun AddEditAssetBottomSheet(
                 text       = if (isEditing) stringResource(Res.string.portfolio_add_asset_title_edit) else stringResource(Res.string.portfolio_add_asset_title_create),
                 fontSize   = 18.sp,
                 fontWeight = FontWeight.SemiBold,
-                color      = TextPrimary,
+                color      = MaterialTheme.appColors.textPrimary,
                 modifier   = Modifier.padding(bottom = 4.dp)
             )
             Text(
                 text     = stringResource(Res.string.portfolio_add_asset_desc),
                 fontSize = 11.sp,
-                color    = TextSecondary,
+                color    = MaterialTheme.appColors.textSecondary,
                 modifier = Modifier.padding(bottom = 18.dp)
             )
 
@@ -225,14 +223,14 @@ fun AddEditAssetBottomSheet(
                     Text(
                         text       = stringResource(Res.string.portfolio_add_asset_category_label),
                         fontSize   = 12.sp,
-                        color      = TextSecondary,
+                        color      = MaterialTheme.appColors.textSecondary,
                         fontWeight = FontWeight.Medium,
                         modifier   = Modifier.weight(1f)
                     )
                     Icon(
                         imageVector = Icons.AutoMirrored.Outlined.HelpOutline,
                         contentDescription = "Ayuda sobre tipos de activo",
-                        tint = TextSecondary,
+                        tint = MaterialTheme.appColors.textSecondary,
                         modifier = Modifier
                             .size(16.dp)
                             .clickable { showCategoryHelp = true }
@@ -266,7 +264,7 @@ fun AddEditAssetBottomSheet(
                 Text(
                     text       = stringResource(Res.string.portfolio_add_asset_portfolio_label),
                     fontSize   = 12.sp,
-                    color      = TextSecondary,
+                    color      = MaterialTheme.appColors.textSecondary,
                     fontWeight = FontWeight.Medium
                 )
                 Spacer(Modifier.height(8.dp))
@@ -308,7 +306,7 @@ fun AddEditAssetBottomSheet(
                 keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Characters),
                 colors        = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor   = PrimaryDark,
-                    unfocusedBorderColor = BorderGray
+                    unfocusedBorderColor = MaterialTheme.appColors.border
                 )
             )
             Spacer(Modifier.height(12.dp))
@@ -328,7 +326,7 @@ fun AddEditAssetBottomSheet(
                 shape         = RoundedCornerShape(10.dp),
                 colors        = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor   = PrimaryDark,
-                    unfocusedBorderColor = BorderGray
+                    unfocusedBorderColor = MaterialTheme.appColors.border
                 )
             )
 Spacer(Modifier.height(12.dp))
@@ -338,7 +336,7 @@ Spacer(Modifier.height(12.dp))
                 Text(
                     text       = stringResource(Res.string.portfolio_add_asset_composition_label),
                     fontSize   = 12.sp,
-                    color      = TextSecondary,
+                    color      = MaterialTheme.appColors.textSecondary,
                     fontWeight = FontWeight.Medium
                 )
                 Spacer(Modifier.height(8.dp))
@@ -374,14 +372,14 @@ Spacer(Modifier.height(12.dp))
                         Text(
                             text     = "$pct%",
                             fontSize = 9.sp,
-                            color    = if (pct == fixedIncomePercent) PrimaryDark else TextSecondary
+                            color    = if (pct == fixedIncomePercent) PrimaryDark else MaterialTheme.appColors.textSecondary
                         )
                     }
                 }
                 Text(
                     text     = stringResource(Res.string.portfolio_add_asset_composition_hint, 100 - fixedIncomePercent),
                     fontSize = 10.sp,
-                    color    = TextSecondary,
+                    color    = MaterialTheme.appColors.textSecondary,
                     modifier = Modifier.padding(top = 4.dp)
                 )
                 Spacer(Modifier.height(12.dp))
@@ -392,18 +390,18 @@ Spacer(Modifier.height(12.dp))
                 Text(
                     text     = stringResource(Res.string.portfolio_add_asset_market_price_label),
                     fontSize = 12.sp,
-                    color    = TextSecondary,
+                    color    = MaterialTheme.appColors.textSecondary,
                     fontWeight = FontWeight.Medium
                 )
                 Spacer(Modifier.height(8.dp))
                 Text(
                     text     = stringResource(Res.string.portfolio_add_asset_fi_price_hint),
                     fontSize = 11.sp,
-                    color    = TextSecondary,
+                    color    = MaterialTheme.appColors.textSecondary,
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(10.dp))
-                        .background(SurfaceElevated)
+                        .background(MaterialTheme.appColors.surfaceElevated)
                         .padding(12.dp)
                 )
                 Spacer(Modifier.height(12.dp))
@@ -413,12 +411,12 @@ Spacer(Modifier.height(12.dp))
                     onValueChange = { currentPrice = it.filter { c -> c.isDigit() || c == ',' || c == '.' } },
                     label         = { Text(stringResource(Res.string.portfolio_add_asset_price_optional)) },
                     placeholder   = { Text(stringResource(Res.string.portfolio_add_asset_price_placeholder_val)) },
-                    trailingIcon  = { Text("€", color = TextSecondary, modifier = Modifier.padding(end = 12.dp)) },
+                    trailingIcon  = { Text("€", color = MaterialTheme.appColors.textSecondary, modifier = Modifier.padding(end = 12.dp)) },
                     supportingText = {
                         Text(
                             text     = stringResource(Res.string.portfolio_add_asset_price_desc),
                             fontSize = 11.sp,
-                            color    = TextSecondary
+                            color    = MaterialTheme.appColors.textSecondary
                         )
                     },
                     modifier      = Modifier.fillMaxWidth(),
@@ -427,7 +425,7 @@ Spacer(Modifier.height(12.dp))
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                     colors        = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor   = PrimaryDark,
-                        unfocusedBorderColor = BorderGray
+                        unfocusedBorderColor = MaterialTheme.appColors.border
                     )
                 )
                 Spacer(Modifier.height(12.dp))
@@ -438,7 +436,7 @@ Spacer(Modifier.height(12.dp))
                 Text(
                     text       = stringResource(Res.string.portfolio_add_asset_platforms_label),
                     fontSize   = 12.sp,
-                    color      = TextSecondary,
+                    color      = MaterialTheme.appColors.textSecondary,
                     fontWeight = FontWeight.Medium
                 )
                 Spacer(Modifier.height(8.dp))
@@ -467,14 +465,14 @@ Spacer(Modifier.height(12.dp))
                 Text(
                     stringResource(Res.string.portfolio_add_asset_platforms_hint),
                     fontSize = 10.sp,
-                    color = TextSecondary
+                    color = MaterialTheme.appColors.textSecondary
                 )
                 Spacer(Modifier.height(12.dp))
             } else {
                 Text(
                     text     = stringResource(Res.string.portfolio_add_asset_no_platforms_hint),
                     fontSize = 11.sp,
-                    color    = TextSecondary,
+                    color    = MaterialTheme.appColors.textSecondary,
                     modifier = Modifier.padding(bottom = 12.dp)
                 )
             }
@@ -485,7 +483,7 @@ Spacer(Modifier.height(12.dp))
                 Text(
                     text       = stringResource(Res.string.portfolio_add_asset_sectors_label),
                     fontSize   = 12.sp,
-                    color      = TextSecondary,
+                    color      = MaterialTheme.appColors.textSecondary,
                     fontWeight = FontWeight.Medium
                 )
                 Spacer(Modifier.height(8.dp))
@@ -514,7 +512,7 @@ Spacer(Modifier.height(12.dp))
                 Text(
                     stringResource(Res.string.portfolio_add_asset_sectors_hint),
                     fontSize = 10.sp,
-                    color = TextSecondary
+                    color = MaterialTheme.appColors.textSecondary
                 )
             }
 
@@ -524,14 +522,14 @@ Spacer(Modifier.height(12.dp))
                 Text(
                     text       = stringResource(Res.string.portfolio_add_asset_regions_label),
                     fontSize   = 12.sp,
-                    color      = TextSecondary,
+                    color      = MaterialTheme.appColors.textSecondary,
                     fontWeight = FontWeight.Medium
                 )
                 Spacer(Modifier.height(4.dp))
                 Text(
                     stringResource(Res.string.portfolio_add_asset_regions_hint),
                     fontSize = 10.sp,
-                    color = TextSecondary
+                    color = MaterialTheme.appColors.textSecondary
                 )
                 Spacer(Modifier.height(8.dp))
                 allRegions.forEach { region ->
@@ -543,7 +541,7 @@ Spacer(Modifier.height(12.dp))
                         Text(
                             text = region.name,
                             fontSize = 12.sp,
-                            color = TextPrimary,
+                            color = MaterialTheme.appColors.textPrimary,
                             modifier = Modifier.width(100.dp)
                         )
                         Slider(
@@ -561,13 +559,13 @@ Spacer(Modifier.height(12.dp))
                         Text(
                             text = "${currentValue}%",
                             fontSize = 11.sp,
-                            color = TextPrimary,
+                            color = MaterialTheme.appColors.textPrimary,
                             modifier = Modifier.width(40.dp)
                         )
                     }
                 }
                 val totalPercent = regionPercents.values.sum()
-                val totalColor = if (totalPercent > 100) ExpenseRed else TextSecondary
+                val totalColor = if (totalPercent > 100) ExpenseRed else MaterialTheme.appColors.textSecondary
                 Text(
                     text = stringResource(Res.string.portfolio_add_asset_regions_total, totalPercent),
                     fontSize = 10.sp,
@@ -582,18 +580,18 @@ Spacer(Modifier.height(12.dp))
                 Text(
                     text       = stringResource(Res.string.portfolio_add_asset_maturity_date_label),
                     fontSize   = 12.sp,
-                    color      = TextSecondary,
+                    color      = MaterialTheme.appColors.textSecondary,
                     fontWeight = FontWeight.Medium
                 )
                 Spacer(Modifier.height(8.dp))
                 Text(
                     text     = formatFullDate(maturityDateMillis),
                     fontSize = 14.sp,
-                    color    = TextPrimary,
+                    color    = MaterialTheme.appColors.textPrimary,
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(10.dp))
-                        .border(0.5.dp, BorderGray, RoundedCornerShape(10.dp))
+                        .border(0.5.dp, MaterialTheme.appColors.border, RoundedCornerShape(10.dp))
                         .clickable { showMaturityDatePicker = true }
                         .padding(horizontal = 14.dp, vertical = 14.dp)
                 )
@@ -601,7 +599,7 @@ Spacer(Modifier.height(12.dp))
                 Text(
                     stringResource(Res.string.portfolio_add_asset_maturity_hint),
                     fontSize = 10.sp,
-                    color = TextSecondary
+                    color = MaterialTheme.appColors.textSecondary
                 )
             }
 
@@ -615,7 +613,7 @@ Spacer(Modifier.height(12.dp))
                 shape         = RoundedCornerShape(10.dp),
                 colors        = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor   = PrimaryDark,
-                    unfocusedBorderColor = BorderGray
+                    unfocusedBorderColor = MaterialTheme.appColors.border
                 )
             )
 
@@ -665,9 +663,9 @@ Spacer(Modifier.height(12.dp))
     if (showCategoryHelp) {
         AlertDialog(
             onDismissRequest = { showCategoryHelp = false },
-            containerColor = SurfaceWhite,
+            containerColor = MaterialTheme.appColors.surface,
             title = {
-                Text("Tipos de activo", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = TextPrimary)
+                Text("Tipos de activo", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.appColors.textPrimary)
             },
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -705,10 +703,10 @@ Spacer(Modifier.height(12.dp))
             },
             dismissButton = {
                 TextButton(onClick = { showMaturityDatePicker = false }) {
-                    Text(stringResource(Res.string.portfolio_add_asset_cancel), color = TextSecondary)
+                    Text(stringResource(Res.string.portfolio_add_asset_cancel), color = MaterialTheme.appColors.textSecondary)
                 }
             },
-            colors = DatePickerDefaults.colors(containerColor = SurfaceWhite)
+            colors = DatePickerDefaults.colors(containerColor = MaterialTheme.appColors.surface)
         ) {
             DatePicker(
                 state = pickerState,
@@ -721,14 +719,13 @@ Spacer(Modifier.height(12.dp))
     }
 }
 
-
 @Composable
 private fun AssetTypeHelpRow(icon: String, title: String, description: String) {
     Row(verticalAlignment = Alignment.Top) {
         Text(icon, fontSize = 16.sp, modifier = Modifier.width(28.dp))
         Column {
-            Text(title, fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary)
-            Text(description, fontSize = 11.sp, color = TextSecondary)
+            Text(title, fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = MaterialTheme.appColors.textPrimary)
+            Text(description, fontSize = 11.sp, color = MaterialTheme.appColors.textSecondary)
         }
     }
 }

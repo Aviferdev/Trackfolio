@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.portfolio
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -72,17 +74,12 @@ import es.aviferdev.n3to.domain.portfolio.FifoOpenLot
 import es.aviferdev.n3to.domain.portfolio.FifoSaleMatch
 import es.aviferdev.n3to.ui.common.navigation.TopBarApp
 import es.aviferdev.n3to.ui.portfolio.assethistory.AssetHistoryContent
-import es.aviferdev.n3to.ui.theme.BackgroundGray
-import es.aviferdev.n3to.ui.theme.BorderGray
+
 import es.aviferdev.n3to.ui.theme.ExpenseRed
 import es.aviferdev.n3to.ui.theme.IncomeGreen
 import es.aviferdev.n3to.ui.theme.LocalBalanceHidden
 import es.aviferdev.n3to.ui.theme.PrimaryDark
-import es.aviferdev.n3to.ui.theme.SurfaceElevated
-import es.aviferdev.n3to.ui.theme.SurfaceWhite
-import es.aviferdev.n3to.ui.theme.TextPrimary
-import es.aviferdev.n3to.ui.theme.TextSecondary
-import es.aviferdev.n3to.ui.theme.TextTertiary
+
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import es.aviferdev.n3to.ui.theme.formatAmount
 import es.aviferdev.n3to.ui.theme.maskAmount
@@ -152,12 +149,12 @@ fun AssetHistoryScreen(
     state.pendingDelete?.let { tx ->
         AlertDialog(
             onDismissRequest = { viewModel.cancelDelete() },
-            containerColor = SurfaceWhite,
+            containerColor = MaterialTheme.appColors.surface,
             icon = { Text("⚠️", fontSize = 26.sp) },
             title = {
                 Text(
                     if (tx.isTransfer) "Eliminar traspaso" else "Eliminar movimiento",
-                    fontSize = 16.sp, fontWeight = FontWeight.Bold, color = TextPrimary
+                    fontSize = 16.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.appColors.textPrimary
                 )
             },
             text = {
@@ -166,7 +163,7 @@ fun AssetHistoryScreen(
                         "Se eliminarán ambas patas del traspaso. El P&L se recalculará. Esta acción no se puede deshacer."
                     else
                         "Se eliminará el movimiento del ${formatFullDate(tx.date)}. El P&L se recalculará. Esta acción no se puede deshacer.",
-                    fontSize = 13.sp, color = TextSecondary
+                    fontSize = 13.sp, color = MaterialTheme.appColors.textSecondary
                 )
             },
             confirmButton = {
@@ -193,16 +190,16 @@ fun AssetHistoryScreen(
         }
         AlertDialog(
             onDismissRequest = { viewModel.clearError() },
-            containerColor = SurfaceWhite,
+            containerColor = MaterialTheme.appColors.surface,
             title = {
                 Text(
                     stringResource(Res.string.common_error),
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
-                    color = TextPrimary
+                    color = MaterialTheme.appColors.textPrimary
                 )
             },
-            text = { Text(msg, fontSize = 13.sp, color = TextSecondary) },
+            text = { Text(msg, fontSize = 13.sp, color = MaterialTheme.appColors.textSecondary) },
             confirmButton = {
                 TextButton(onClick = { viewModel.clearError() }) {
                     Text(

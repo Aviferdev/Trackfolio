@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.valuable
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -38,12 +40,12 @@ fun ValuableListScreen(
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = BackgroundGray,
-                    titleContentColor = TextPrimary
+                    containerColor = MaterialTheme.appColors.background,
+                    titleContentColor = MaterialTheme.appColors.textPrimary
                 )
             )
         },
-        containerColor = BackgroundGray
+        containerColor = MaterialTheme.appColors.background
     ) { padding ->
         Box(Modifier.fillMaxSize().padding(padding)) {
             if (uiState.isLoading) {
@@ -73,7 +75,7 @@ fun ValuableListScreen(
                                 "En stock (${active.size})",
                                 fontWeight = FontWeight.SemiBold,
                                 fontSize = 14.sp,
-                                color = TextSecondary,
+                                color = MaterialTheme.appColors.textSecondary,
                                 modifier = Modifier.padding(vertical = 8.dp)
                             )
                         }
@@ -92,7 +94,7 @@ fun ValuableListScreen(
                                 "Vendidos (${sold.size})",
                                 fontWeight = FontWeight.SemiBold,
                                 fontSize = 14.sp,
-                                color = TextSecondary,
+                                color = MaterialTheme.appColors.textSecondary,
                                 modifier = Modifier.padding(vertical = 8.dp)
                             )
                         }

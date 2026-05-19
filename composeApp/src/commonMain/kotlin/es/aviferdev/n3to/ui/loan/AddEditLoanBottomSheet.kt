@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.loan
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.platform.nowMillis
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -43,7 +45,7 @@ import es.aviferdev.n3to.domain.model.LoanType
 import es.aviferdev.n3to.domain.usecase.loan.SaveLoanUseCase
 import es.aviferdev.n3to.ui.account.AccountSession
 import es.aviferdev.n3to.ui.theme.*
-import es.aviferdev.n3to.ui.theme.DragHandleColor
+
 import kotlinx.coroutines.launch
 
 import kotlinx.datetime.Instant
@@ -122,14 +124,14 @@ fun AddEditLoanBottomSheet(
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState       = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-        containerColor   = SurfaceWhite,
+        containerColor   = MaterialTheme.appColors.surface,
         dragHandle = {
             Box(
                 modifier = Modifier
                     .padding(top = 12.dp, bottom = 4.dp)
                     .width(40.dp).height(4.dp)
                     .clip(RoundedCornerShape(2.dp))
-                    .background(DragHandleColor)
+                    .background(MaterialTheme.appColors.dragHandle)
             )
         }
     ) {
@@ -150,7 +152,7 @@ fun AddEditLoanBottomSheet(
             Spacer(Modifier.height(20.dp))
 
             // ── Tipo de préstamo ─────────────────────────────────────────────
-            Text(stringResource(Res.string.loan_type_label), fontSize = 13.sp, color = TextSecondary)
+            Text(stringResource(Res.string.loan_type_label), fontSize = 13.sp, color = MaterialTheme.appColors.textSecondary)
             Spacer(Modifier.height(8.dp))
             LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 items(LoanType.entries.toList()) { type ->
@@ -158,7 +160,7 @@ fun AddEditLoanBottomSheet(
                     Box(
                         modifier = Modifier
                             .clip(RoundedCornerShape(20.dp))
-                            .background(if (selected) PrimaryDark else SurfaceElevated)
+                            .background(if (selected) PrimaryDark else MaterialTheme.appColors.surfaceElevated)
                             .clickable { selectedType = type }
                             .padding(horizontal = 14.dp, vertical = 8.dp)
                     ) {
@@ -242,13 +244,13 @@ fun AddEditLoanBottomSheet(
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(8.dp),
-                    colors = CardDefaults.cardColors(containerColor = SurfaceElevated)
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.surfaceElevated)
                 ) {
                     Row(
                         modifier = Modifier.fillMaxWidth().padding(12.dp),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Text(stringResource(Res.string.loan_monthly_payment), fontSize = 13.sp, color = TextSecondary)
+                        Text(stringResource(Res.string.loan_monthly_payment), fontSize = 13.sp, color = MaterialTheme.appColors.textSecondary)
                         Text(
                             "${formatAmount(previewPayment)} €/mes",
                             fontSize = 14.sp,
@@ -261,20 +263,20 @@ fun AddEditLoanBottomSheet(
 
             // ── Fecha de inicio ───────────────────────────────────────────────
             Spacer(Modifier.height(16.dp))
-            Text(stringResource(Res.string.fixedincome_start_date_label), fontSize = 12.sp, color = TextSecondary, fontWeight = FontWeight.Medium)
+            Text(stringResource(Res.string.fixedincome_start_date_label), fontSize = 12.sp, color = MaterialTheme.appColors.textSecondary, fontWeight = FontWeight.Medium)
             Spacer(Modifier.height(6.dp))
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(10.dp))
-                    .border(0.5.dp, BorderGray, RoundedCornerShape(10.dp))
+                    .border(0.5.dp, MaterialTheme.appColors.border, RoundedCornerShape(10.dp))
                     .clickable { showStartDatePicker = true }
                     .padding(horizontal = 14.dp, vertical = 14.dp)
             ) {
                 Text(
                     text     = formatFullDate(startDateMillis),
                     fontSize = 14.sp,
-                    color    = TextPrimary
+                    color    = MaterialTheme.appColors.textPrimary
                 )
             }
 
@@ -429,10 +431,10 @@ fun AddEditLoanBottomSheet(
             },
             dismissButton = {
                 TextButton(onClick = { showStartDatePicker = false }) {
-                    Text("Cancelar", color = TextSecondary)
+                    Text("Cancelar", color = MaterialTheme.appColors.textSecondary)
                 }
             },
-            colors = DatePickerDefaults.colors(containerColor = SurfaceWhite)
+            colors = DatePickerDefaults.colors(containerColor = MaterialTheme.appColors.surface)
         ) {
             DatePicker(
                 state = pickerState,

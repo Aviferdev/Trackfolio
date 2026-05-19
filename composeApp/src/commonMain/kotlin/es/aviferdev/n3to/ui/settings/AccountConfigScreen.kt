@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.settings
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.animation.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -54,7 +56,7 @@ fun AccountConfigScreen(
     var contentVisible by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) { delay(60); contentVisible = true }
 
-    Column(modifier = Modifier.fillMaxSize().background(NavyDeep)) {
+    Column(modifier = Modifier.fillMaxSize().background(MaterialTheme.appColors.navyDeep)) {
         TopBarApp(
             title = account?.name ?: "Configuración",
             navigateBack = onBack
@@ -138,7 +140,7 @@ fun AccountConfigScreen(
                             icon = Icons.Outlined.Edit,
                             label = "Editar cuenta",
                             onClick = { viewModel.openEditSheet() },
-                            color = CyanAccent,
+                            color = MaterialTheme.appColors.cyanAccent,
                             showChevron = true
                         )
                         SettingsRowDivider()
@@ -213,7 +215,7 @@ private fun ActionRow(
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
                 contentDescription = null,
-                tint = TextTertiary,
+                tint = MaterialTheme.appColors.textTertiary,
                 modifier = Modifier.size(18.dp)
             )
         }

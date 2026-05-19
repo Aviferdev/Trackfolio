@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.onboarding
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.animation.core.EaseInOutCubic
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -40,15 +42,11 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import es.aviferdev.n3to.ui.theme.CyanSubtle
+
 import es.aviferdev.n3to.ui.theme.ExpenseRed
 import es.aviferdev.n3to.ui.theme.IncomeGreen
 import es.aviferdev.n3to.ui.theme.N3toTheme
-import es.aviferdev.n3to.ui.theme.NavyBorder
-import es.aviferdev.n3to.ui.theme.NavySurface
-import es.aviferdev.n3to.ui.theme.NavySurfaceLight
-import es.aviferdev.n3to.ui.theme.TextPrimary
-import es.aviferdev.n3to.ui.theme.TextSecondary
+
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.onboarding_disponible_deudas
 import n3to.composeapp.generated.resources.onboarding_efectivo_total
@@ -60,6 +58,10 @@ import androidx.compose.ui.tooling.preview.Preview
  */
 @Composable
 fun SlidePatrimonio(modifier: Modifier = Modifier) {
+    val heroCardBg1 = MaterialTheme.appColors.heroCardStart
+    val heroCardBg2 = MaterialTheme.appColors.heroCardEnd
+    val appCCyanSubtle = MaterialTheme.appColors.cyanSubtle
+    val appCNavyBorder = MaterialTheme.appColors.navyBorder
 
     var visible by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) { visible = true }
@@ -96,7 +98,7 @@ fun SlidePatrimonio(modifier: Modifier = Modifier) {
                 .drawBehind {
                     drawRect(
                         brush = Brush.linearGradient(
-                            colors = listOf(NavySurface, NavySurfaceLight),
+                            colors = listOf(heroCardBg1, heroCardBg2),
                             start = Offset(0f, 0f),
                             end = Offset(size.width, size.height)
                         )
@@ -148,12 +150,12 @@ fun SlidePatrimonio(modifier: Modifier = Modifier) {
                     color = Color.White.copy(alpha = 0.6f)
                 )
                 Spacer(Modifier.height(3.dp))
-                // CyanSubtle para el valor secundario, igual que HeroCard
+                // appCCyanSubtle para el valor secundario, igual que HeroCard
                 Text(
                     text = "11.890,50 €",
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
-                    color = CyanSubtle,
+                    color = appCCyanSubtle,
                     letterSpacing = (-0.5).sp
                 )
             }
@@ -165,8 +167,8 @@ fun SlidePatrimonio(modifier: Modifier = Modifier) {
                 .align(Alignment.TopEnd)
                 .offset(y = 24.dp)
                 .graphicsLayer { translationY = floatOffset2 }
-                .background(color = NavySurface, shape = RoundedCornerShape(14.dp))
-                .border(1.dp, NavyBorder, RoundedCornerShape(14.dp))
+                .background(color = heroCardBg1, shape = RoundedCornerShape(14.dp))
+                .border(1.dp, appCNavyBorder, RoundedCornerShape(14.dp))
                 .padding(horizontal = 12.dp, vertical = 10.dp)
         ) {
             Column {
@@ -182,8 +184,8 @@ fun SlidePatrimonio(modifier: Modifier = Modifier) {
                 .align(Alignment.BottomStart)
                 .offset(y = (-24).dp)
                 .graphicsLayer { translationY = floatOffset3 }
-                .background(color = NavySurface, shape = RoundedCornerShape(14.dp))
-                .border(1.dp, NavyBorder, RoundedCornerShape(14.dp))
+                .background(color = heroCardBg1, shape = RoundedCornerShape(14.dp))
+                .border(1.dp, appCNavyBorder, RoundedCornerShape(14.dp))
                 .padding(horizontal = 12.dp, vertical = 10.dp)
         ) {
             Column {

@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.loan
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -72,18 +74,18 @@ fun LoanDetailScreen(
     if (showArchiveConfirm && uiState.loan != null) {
         AlertDialog(
             onDismissRequest = { showArchiveConfirm = false },
-            containerColor   = SurfaceWhite,
+            containerColor   = MaterialTheme.appColors.surface,
             icon             = { Text("⚠️", fontSize = 26.sp) },
             title = {
                 Text(
                     "Archivar préstamo",
-                    fontSize = 16.sp, fontWeight = FontWeight.Bold, color = TextPrimary
+                    fontSize = 16.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.appColors.textPrimary
                 )
             },
             text = {
                 Text(
                     "¿Estás seguro de que quieres archivar «${uiState.loan!!.name}»? Desaparecerá de la pantalla principal pero sus datos se mantendrán.",
-                    fontSize = 13.sp, color = TextSecondary
+                    fontSize = 13.sp, color = MaterialTheme.appColors.textSecondary
                 )
             },
             confirmButton = {
@@ -120,15 +122,15 @@ fun LoanDetailContent(
     modifier: Modifier = Modifier
 ) {
     Column(
-        modifier = modifier.fillMaxSize().background(BackgroundGray)
+        modifier = modifier.fillMaxSize().background(MaterialTheme.appColors.background)
     ) {
         TopBarApp(
             title = uiState.loan?.name ?: stringResource(Res.string.loan_detail_title),
             navigateBack = onBack,
             actions = {
                 IconButton(onClick = onEditClick) {
-                    Icon(Icons.Outlined.Edit, stringResource(Res.string.settings_edit_cd), tint = TextSecondary)
-                    Icon(Icons.Outlined.Edit, stringResource(Res.string.loan_change_rate), tint = TextSecondary)
+                    Icon(Icons.Outlined.Edit, stringResource(Res.string.settings_edit_cd), tint = MaterialTheme.appColors.textSecondary)
+                    Icon(Icons.Outlined.Edit, stringResource(Res.string.loan_change_rate), tint = MaterialTheme.appColors.textSecondary)
                     Icon(Icons.Outlined.Delete, stringResource(Res.string.loan_archive_title), tint = ExpenseRed)
                 }
             }
@@ -140,7 +142,7 @@ fun LoanDetailContent(
             }
         } else if (uiState.loan == null) {
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text(stringResource(Res.string.loan_not_found), color = TextTertiary, fontSize = 13.sp)
+                Text(stringResource(Res.string.loan_not_found), color = MaterialTheme.appColors.textTertiary, fontSize = 13.sp)
             }
         } else {
             val loan = uiState.loan
@@ -300,7 +302,7 @@ private fun LoanDetailsGrid(loan: Loan) {
                     Card(
                         modifier  = Modifier.fillMaxWidth(),
                         shape     = RoundedCornerShape(12.dp),
-                        colors    = CardDefaults.cardColors(containerColor = SurfaceWhite),
+                        colors    = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.surface),
                         elevation = CardDefaults.cardElevation(0.dp)
                     ) {
                         Column(Modifier.padding(12.dp)) {
@@ -308,11 +310,11 @@ private fun LoanDetailsGrid(loan: Loan) {
                                 label.uppercase(),
                                 fontSize      = 9.sp,
                                 fontWeight    = FontWeight.Bold,
-                                color         = TextTertiary,
+                                color         = MaterialTheme.appColors.textTertiary,
                                 letterSpacing = .5.sp
                             )
                             Spacer(Modifier.height(4.dp))
-                            Text(value, fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary)
+                            Text(value, fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = MaterialTheme.appColors.textPrimary)
                         }
                     }
                 }
@@ -327,7 +329,7 @@ private fun RateChangeRow(change: LoanRateChange) {
     Card(
         modifier  = Modifier.fillMaxWidth(),
         shape     = RoundedCornerShape(11.dp),
-        colors    = CardDefaults.cardColors(containerColor = SurfaceWhite),
+        colors    = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.surface),
         elevation = CardDefaults.cardElevation(0.dp)
     ) {
         Row(
@@ -336,7 +338,7 @@ private fun RateChangeRow(change: LoanRateChange) {
             verticalAlignment     = Alignment.CenterVertically
         ) {
             Column {
-                Text(formatDate(change.effectiveDate), fontSize = 12.sp, color = TextSecondary)
+                Text(formatDate(change.effectiveDate), fontSize = 12.sp, color = MaterialTheme.appColors.textSecondary)
                 Text(
                     "Δ ${if (change.newRate > change.previousRate) "+" else ""}${
                         formatPercent(change.newRate - change.previousRate)}%",
@@ -345,8 +347,8 @@ private fun RateChangeRow(change: LoanRateChange) {
                 )
             }
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                Text("${formatPercent(change.previousRate)}%", fontSize = 13.sp, color = TextSecondary)
-                Text("→", fontSize = 13.sp, color = TextTertiary)
+                Text("${formatPercent(change.previousRate)}%", fontSize = 13.sp, color = MaterialTheme.appColors.textSecondary)
+                Text("→", fontSize = 13.sp, color = MaterialTheme.appColors.textTertiary)
                 Text("${formatPercent(change.newRate)}%", fontSize = 13.sp, color = PrimaryDark, fontWeight = FontWeight.Bold)
             }
         }
@@ -365,21 +367,21 @@ private fun AmortizationHeader() {
                 h,
                 fontSize  = 9.sp,
                 fontWeight = FontWeight.Bold,
-                color     = TextTertiary,
+                color     = MaterialTheme.appColors.textTertiary,
                 letterSpacing = .4.sp,
                 modifier  = Modifier.weight(w),
                 textAlign = if (h == "#" || h == "Fecha") TextAlign.Start else TextAlign.End
             )
         }
     }
-    HorizontalDivider(color = BorderGray, thickness = .5.dp)
+    HorizontalDivider(color = MaterialTheme.appColors.border, thickness = .5.dp)
 }
 
 @Composable
 private fun AmortizationRow(entry: AmortizationEntry, paidInstallments: Int) {
     val isPaid   = entry.installmentNumber <= paidInstallments
     val isNext   = entry.installmentNumber == paidInstallments + 1
-    val txtColor = if (isPaid) TextPrimary else TextTertiary
+    val txtColor = if (isPaid) MaterialTheme.appColors.textPrimary else MaterialTheme.appColors.textTertiary
 
     Row(
         modifier = Modifier
@@ -394,9 +396,9 @@ private fun AmortizationRow(entry: AmortizationEntry, paidInstallments: Int) {
         Text(formatCurrencyShort(entry.monthlyPayment),  fontSize = 10.sp, color = txtColor,    textAlign = TextAlign.End, modifier = Modifier.weight(1.2f))
         Text(formatCurrencyShort(entry.interestPortion), fontSize = 10.sp, color = ExpenseRed.copy(if (isPaid) 1f else .5f), textAlign = TextAlign.End, modifier = Modifier.weight(1.2f))
         Text(formatCurrencyShort(entry.principalPortion),fontSize = 10.sp, color = IncomeGreen.copy(if (isPaid) 1f else .5f),textAlign = TextAlign.End, modifier = Modifier.weight(1.2f))
-        Text(formatCurrencyShort(entry.outstandingBalance), fontSize = 10.sp, color = if (isPaid) PrimaryDark else TextTertiary, fontWeight = if (isPaid) FontWeight.SemiBold else FontWeight.Normal, textAlign = TextAlign.End, modifier = Modifier.weight(1.4f))
+        Text(formatCurrencyShort(entry.outstandingBalance), fontSize = 10.sp, color = if (isPaid) PrimaryDark else MaterialTheme.appColors.textTertiary, fontWeight = if (isPaid) FontWeight.SemiBold else FontWeight.Normal, textAlign = TextAlign.End, modifier = Modifier.weight(1.4f))
     }
-    HorizontalDivider(color = BorderGray, thickness = .3.dp)
+    HorizontalDivider(color = MaterialTheme.appColors.border, thickness = .3.dp)
 }
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -406,7 +408,7 @@ private fun SectionLabel(text: String) {
         text.uppercase(),
         fontSize      = 10.sp,
         fontWeight    = FontWeight.Bold,
-        color         = TextTertiary,
+        color         = MaterialTheme.appColors.textTertiary,
         letterSpacing = .7.sp,
         modifier      = Modifier.padding(top = 4.dp)
     )

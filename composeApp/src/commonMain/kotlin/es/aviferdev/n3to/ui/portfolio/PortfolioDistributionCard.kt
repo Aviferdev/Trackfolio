@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.portfolio
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -34,10 +36,7 @@ import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.ui.common.toMaterialIcon
 import androidx.compose.foundation.BorderStroke
 import es.aviferdev.n3to.ui.theme.CategoryPalette
-import es.aviferdev.n3to.ui.theme.NavyBorder
-import es.aviferdev.n3to.ui.theme.NavySurface
-import es.aviferdev.n3to.ui.theme.TextPrimary
-import es.aviferdev.n3to.ui.theme.TextSecondary
+
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import es.aviferdev.n3to.ui.theme.WarnAmber
 import es.aviferdev.n3to.ui.theme.formatAmountEuro
@@ -73,9 +72,9 @@ fun PortfolioDistributionCard(
     Card(
         modifier  = modifier.fillMaxWidth(),
         shape     = RoundedCornerShape(16.dp),
-        colors    = CardDefaults.cardColors(containerColor = NavySurface),
+        colors    = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.navySurface),
         elevation = CardDefaults.cardElevation(0.dp),
-        border    = BorderStroke(0.5.dp, NavyBorder)
+        border    = BorderStroke(0.5.dp, MaterialTheme.appColors.navyBorder)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(
@@ -87,7 +86,7 @@ fun PortfolioDistributionCard(
                     text       = title,
                     fontSize   = 14.sp,
                     fontWeight = FontWeight.SemiBold,
-                    color      = TextPrimary
+                    color      = MaterialTheme.appColors.textPrimary
                 )
                 if (fixedIncomePercent > 0) {
                     Text(
@@ -102,7 +101,7 @@ fun PortfolioDistributionCard(
             Text(
                 text     = "Sobre el valor actual",
                 fontSize = 11.sp,
-                color    = TextSecondary
+                color    = MaterialTheme.appColors.textSecondary
             )
             if (viewSelector != null) {
                 Spacer(Modifier.height(10.dp))
@@ -128,7 +127,7 @@ fun PortfolioDistributionCard(
                         Text(
                             text     = "Total",
                             fontSize = 10.sp,
-                            color    = TextSecondary
+                            color    = MaterialTheme.appColors.textSecondary
                         )
                         Text(
                             text       = maskAmount(
@@ -137,7 +136,7 @@ fun PortfolioDistributionCard(
                             ),
                             fontSize   = 13.sp,
                             fontWeight = FontWeight.SemiBold,
-                            color      = TextPrimary
+                            color      = MaterialTheme.appColors.textPrimary
                         )
                     }
                 }
@@ -206,21 +205,21 @@ private fun LegendRow(slice: CategorySlice) {
         Icon(
             imageVector = slice.icon.toMaterialIcon(),
             contentDescription = null,
-            tint = TextPrimary,
+            tint = MaterialTheme.appColors.textPrimary,
             modifier = Modifier.size(14.dp)
         )
         Spacer(Modifier.width(4.dp))
         Text(
             text     = slice.name,
             fontSize = 12.sp,
-            color    = TextPrimary,
+            color    = MaterialTheme.appColors.textPrimary,
             modifier = Modifier.weight(1f, fill = true),
             maxLines = 1
         )
         Text(
             text       = "${formatPercentLegend(slice.percent)}%",
             fontSize   = 12.sp,
-            color      = TextSecondary,
+            color      = MaterialTheme.appColors.textSecondary,
             fontWeight = FontWeight.SemiBold,
             modifier   = Modifier.wrapContentSize()
         )

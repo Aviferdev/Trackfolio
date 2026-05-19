@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.ui.common.navigation
 
+import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -31,11 +33,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavDestination.Companion.hierarchy
 import es.aviferdev.n3to.ui.navigation.BottomNavItem
-import es.aviferdev.n3to.ui.theme.CyanAccent
-import es.aviferdev.n3to.ui.theme.NavyBorder
-import es.aviferdev.n3to.ui.theme.NavySelected
-import es.aviferdev.n3to.ui.theme.NavySurface
-import es.aviferdev.n3to.ui.theme.TextSecondary
 
 @Composable
 fun FloatingBottomNavBar(
@@ -57,10 +54,10 @@ fun FloatingBottomNavBar(
             .padding(top = 8.dp)
             .padding(bottom = 12.dp)
             .navigationBarsPadding()
-            .border(0.5.dp, NavyBorder, RoundedCornerShape(28.dp)),
+            .border(0.5.dp, MaterialTheme.appColors.navyBorder, RoundedCornerShape(28.dp)),
         shape = RoundedCornerShape(28.dp),
         shadowElevation = 0.dp,
-        color = NavySurface
+        color = MaterialTheme.appColors.navySurface
     ) {
         Row(
             modifier = Modifier
@@ -79,12 +76,12 @@ fun FloatingBottomNavBar(
                     label = "scale"
                 )
                 val iconColor by animateColorAsState(
-                    targetValue = if (selected) CyanAccent else TextSecondary,
+                    targetValue = if (selected) MaterialTheme.appColors.cyanAccent else MaterialTheme.appColors.textSecondary,
                     animationSpec = tween(durationMillis = 200),
                     label = "iconColor"
                 )
                 val textColor by animateColorAsState(
-                    targetValue = if (selected) CyanAccent else TextSecondary,
+                    targetValue = if (selected) MaterialTheme.appColors.cyanAccent else MaterialTheme.appColors.textSecondary,
                     animationSpec = tween(durationMillis = 200),
                     label = "textColor"
                 )
@@ -92,10 +89,10 @@ fun FloatingBottomNavBar(
                 Box(
                     modifier = Modifier
                         .clip(RoundedCornerShape(20.dp))
-                        .background(if (selected) NavySelected else Color.Transparent)
+                        .background(if (selected) MaterialTheme.appColors.navySelected else Color.Transparent)
                         .border(
                             width = if (selected) 0.5.dp else 0.dp,
-                            color = if (selected) NavyBorder else Color.Transparent,
+                            color = if (selected) MaterialTheme.appColors.navyBorder else Color.Transparent,
                             shape = RoundedCornerShape(20.dp)
                         )
                         .clickable { onItemClick(item) }
