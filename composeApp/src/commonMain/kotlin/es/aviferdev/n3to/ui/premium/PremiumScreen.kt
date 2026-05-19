@@ -58,6 +58,7 @@ import n3to.composeapp.generated.resources.premium_ad_free_desc
 import n3to.composeapp.generated.resources.premium_annual_label
 import n3to.composeapp.generated.resources.premium_best_value
 import n3to.composeapp.generated.resources.premium_lifetime_label
+import n3to.composeapp.generated.resources.premium_title
 import n3to.composeapp.generated.resources.premium_monthly_label
 import n3to.composeapp.generated.resources.premium_multiple_accounts_desc
 import n3to.composeapp.generated.resources.premium_restore
@@ -328,7 +329,7 @@ private fun PremiumHeroCard(modifier: Modifier = Modifier) {
         Spacer(Modifier.height(18.dp))
 
         Text(
-            "Trackfolio Premium",
+            stringResource(Res.string.premium_title),
             fontSize = 22.sp,
             fontWeight = FontWeight.ExtraBold,
             color = appCTextPrimary,
@@ -568,7 +569,7 @@ private fun PremiumActiveCard(isLifetime: Boolean) {
         Spacer(Modifier.height(14.dp))
 
         Text(
-            "Ya eres Premium",
+            stringResource(Res.string.premium_already_premium),
             fontSize = 20.sp,
             fontWeight = FontWeight.ExtraBold,
             color = appCTextPrimary,
@@ -584,7 +585,7 @@ private fun PremiumActiveCard(isLifetime: Boolean) {
                     .padding(horizontal = 12.dp, vertical = 4.dp)
             ) {
                 Text(
-                    "Acceso vitalicio",
+                    stringResource(Res.string.premium_lifetime_value),
                     fontSize = 12.sp,
                     color = appCCyanAccent,
                     fontWeight = FontWeight.SemiBold
@@ -631,7 +632,7 @@ private fun PremiumErrorCard(
                 contentColor = appCNavyDeep
             )
         ) {
-            Text("Reintentar", fontWeight = FontWeight.SemiBold)
+            Text(stringResource(Res.string.common_retry), fontWeight = FontWeight.SemiBold)
         }
     }
 }

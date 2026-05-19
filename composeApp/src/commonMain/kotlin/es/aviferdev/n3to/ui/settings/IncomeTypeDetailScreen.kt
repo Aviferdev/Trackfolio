@@ -28,8 +28,13 @@ import es.aviferdev.n3to.ui.theme.*
 import androidx.compose.ui.tooling.preview.Preview
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.common_accept
+import n3to.composeapp.generated.resources.common_archive
+import n3to.composeapp.generated.resources.common_cancel
+import n3to.composeapp.generated.resources.common_delete
+import n3to.composeapp.generated.resources.common_edit
 import n3to.composeapp.generated.resources.common_error
 import n3to.composeapp.generated.resources.error_issuer_already_exists
+import n3to.composeapp.generated.resources.income_type_archive_title
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -84,7 +89,7 @@ fun IncomeTypeDetailScreen(
             containerColor = MaterialTheme.appColors.navySurface,
             icon = { Text(pending.icon, fontSize = 28.sp) },
             title = {
-                Text("Archivar emisor", fontSize = 17.sp, fontWeight = FontWeight.SemiBold, color = MaterialTheme.appColors.textPrimary)
+                Text(stringResource(Res.string.income_type_archive_title), fontSize = 17.sp, fontWeight = FontWeight.SemiBold, color = MaterialTheme.appColors.textPrimary)
             },
             text = {
                 Text(
@@ -94,12 +99,12 @@ fun IncomeTypeDetailScreen(
             },
             confirmButton = {
                 TextButton(onClick = { issuerViewModel.confirmDelete() }) {
-                    Text("Archivar", color = MaterialTheme.appColors.expense, fontWeight = FontWeight.Medium)
+                    Text(stringResource(Res.string.common_archive), color = MaterialTheme.appColors.expense, fontWeight = FontWeight.Medium)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { issuerViewModel.cancelDelete() }) {
-                    Text("Cancelar", color = MaterialTheme.appColors.cyanAccent, fontWeight = FontWeight.Medium)
+                    Text(stringResource(Res.string.common_cancel), color = MaterialTheme.appColors.cyanAccent, fontWeight = FontWeight.Medium)
                 }
             },
             shape = RoundedCornerShape(16.dp)
@@ -192,13 +197,13 @@ fun IncomeTypeDetailContent(
                                     onClick = { onEdit(issuer) },
                                     modifier = Modifier.size(28.dp)
                                 ) {
-                                    Icon(Icons.Default.Edit, "Editar", modifier = Modifier.size(14.dp), tint = MaterialTheme.appColors.textSecondary)
+                                    Icon(Icons.Default.Edit, stringResource(Res.string.common_edit), modifier = Modifier.size(14.dp), tint = MaterialTheme.appColors.textSecondary)
                                 }
                                 IconButton(
                                     onClick = { onDelete(issuer) },
                                     modifier = Modifier.size(28.dp)
                                 ) {
-                                    Icon(Icons.Default.Delete, "Eliminar", modifier = Modifier.size(14.dp), tint = MaterialTheme.appColors.expense)
+                                    Icon(Icons.Default.Delete, stringResource(Res.string.common_delete), modifier = Modifier.size(14.dp), tint = MaterialTheme.appColors.expense)
                                 }
                             }
                             if (index < issuers.lastIndex) {

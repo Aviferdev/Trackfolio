@@ -34,6 +34,9 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 
 import kotlinx.coroutines.delay
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.app_name
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 
 /**
@@ -140,7 +143,7 @@ fun SplashScreen(
                     modifier = Modifier.alpha(textAlpha)
                 ) {
                     Text(
-                        text = "N3to",
+                        text = stringResource(Res.string.app_name),
                         fontSize = 32.sp,
                         fontWeight = FontWeight.SemiBold,
                         color = MaterialTheme.appColors.textPrimary,

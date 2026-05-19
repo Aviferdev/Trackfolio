@@ -45,6 +45,8 @@ import es.aviferdev.n3to.ui.theme.localizedMonthNames
 import es.aviferdev.n3to.ui.transaction.components.*
 import kotlinx.coroutines.delay
 import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.transaction_delete_message
+import n3to.composeapp.generated.resources.transaction_delete_title
 import n3to.composeapp.generated.resources.transaction_no_movements
 import n3to.composeapp.generated.resources.transaction_no_results
 import n3to.composeapp.generated.resources.transaction_title
@@ -90,8 +92,8 @@ fun TransactionListScreen(
     // ── Dialogs / Sheets ──────────────────────────────────────────────────────
     txToDelete?.let { tx ->
         DeleteConfirmDialog(
-            title = "Eliminar movimiento",
-            message = "¿Seguro que quieres eliminar este movimiento? Esta acción no se puede deshacer.",
+            title = stringResource(Res.string.transaction_delete_title),
+            message = stringResource(Res.string.transaction_delete_message),
             onConfirm = { viewModel.deleteTransaction(tx.id); txToDelete = null },
             onDismiss = { txToDelete = null }
         )

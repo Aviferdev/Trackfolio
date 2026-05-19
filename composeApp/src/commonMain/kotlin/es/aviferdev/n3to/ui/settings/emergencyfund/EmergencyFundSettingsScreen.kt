@@ -65,7 +65,25 @@ import es.aviferdev.n3to.ui.common.navigation.TopBarApp
 import es.aviferdev.n3to.ui.theme.ExpenseRed
 
 import kotlinx.coroutines.delay
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.common_save
+import n3to.composeapp.generated.resources.ef_average_expense_label
+import n3to.composeapp.generated.resources.ef_estimated_expense_label
+import n3to.composeapp.generated.resources.ef_exclude_categories_hint
+import n3to.composeapp.generated.resources.ef_months_hint
+import n3to.composeapp.generated.resources.ef_months_placeholder
+import n3to.composeapp.generated.resources.ef_no_categories
+import n3to.composeapp.generated.resources.ef_onboarding_badge
+import n3to.composeapp.generated.resources.ef_onboarding_subtitle
+import n3to.composeapp.generated.resources.ef_onboarding_title
+import n3to.composeapp.generated.resources.ef_recommendation_text
+import n3to.composeapp.generated.resources.ef_recommendation_title
+import n3to.composeapp.generated.resources.ef_what_is_text
+import n3to.composeapp.generated.resources.ef_what_is_title
+import n3to.composeapp.generated.resources.ef_expense_placeholder
+import n3to.composeapp.generated.resources.home_section_emergency_fund
 
 @Composable
 fun EmergencyFundSettingsScreen(
@@ -86,7 +104,7 @@ fun EmergencyFundSettingsScreen(
 
     Column(modifier = Modifier.fillMaxSize().background(MaterialTheme.appColors.navyDeep)) {
         TopBarApp(
-            title = "Fondo de emergencia",
+            title = stringResource(Res.string.home_section_emergency_fund),
             navigateBack = navigateBack,
             containerColor = MaterialTheme.appColors.navySurface,
             dividerColor = MaterialTheme.appColors.navyBorder
@@ -116,8 +134,7 @@ fun EmergencyFundSettingsScreen(
                     // ── Descripción ──
                     item {
                         Text(
-                            text = "Define cuántos meses de gastos quieres tener cubiertos " +
-                                    "con tu saldo disponible como fondo de emergencia.",
+                            text = stringResource(Res.string.ef_months_hint),
                             fontSize = 13.sp,
                             color = MaterialTheme.appColors.textSecondary,
                             lineHeight = 19.sp
@@ -137,7 +154,7 @@ fun EmergencyFundSettingsScreen(
                             OutlinedTextField(
                                 value = state.monthsText,
                                 onValueChange = viewModel::onMonthsChange,
-                                placeholder = { Text("Ej: 6", color = MaterialTheme.appColors.textTertiary) },
+                                placeholder = { Text(stringResource(Res.string.ef_months_placeholder), color = MaterialTheme.appColors.textTertiary) },
                                 singleLine = true,
                                 colors = OutlinedTextFieldDefaults.colors(
                                     focusedBorderColor = MaterialTheme.appColors.cyanAccent,
@@ -171,13 +188,13 @@ fun EmergencyFundSettingsScreen(
                             Spacer(Modifier.height(10.dp))
                             Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                                 MethodChip(
-                                    label = "Gasto estimado",
+                                    label = stringResource(Res.string.ef_estimated_expense_label),
                                     selected = state.method == EmergencyFundMethod.MANUAL,
                                     onClick = { viewModel.onMethodChange(EmergencyFundMethod.MANUAL) },
                                     modifier = Modifier.weight(1f)
                                 )
                                 MethodChip(
-                                    label = "Media de gastos",
+                                    label = stringResource(Res.string.ef_average_expense_label),
                                     selected = state.method == EmergencyFundMethod.AUTO,
                                     onClick = { viewModel.onMethodChange(EmergencyFundMethod.AUTO) },
                                     modifier = Modifier.weight(1f)
@@ -195,7 +212,7 @@ fun EmergencyFundSettingsScreen(
                                 OutlinedTextField(
                                     value = state.manualExpenseText,
                                     onValueChange = viewModel::onManualExpenseChange,
-                                    placeholder = { Text("Ej: 1500", color = MaterialTheme.appColors.textTertiary) },
+                                    placeholder = { Text(stringResource(Res.string.ef_expense_placeholder), color = MaterialTheme.appColors.textTertiary) },
                                     singleLine = true,
                                     colors = OutlinedTextFieldDefaults.colors(
                                         focusedBorderColor = MaterialTheme.appColors.cyanAccent,
@@ -220,8 +237,7 @@ fun EmergencyFundSettingsScreen(
                                 SectionLabel("Excluir categorías")
                                 Spacer(Modifier.height(4.dp))
                                 Text(
-                                    text = "Selecciona las categorías que NO quieres incluir " +
-                                            "en el cálculo de la media mensual.",
+                                    text = stringResource(Res.string.ef_exclude_categories_hint),
                                     fontSize = 11.sp,
                                     color = MaterialTheme.appColors.textTertiary,
                                     lineHeight = 16.sp
@@ -230,8 +246,7 @@ fun EmergencyFundSettingsScreen(
                                 if (state.expenseCategories.isEmpty()) {
                                     Spacer(Modifier.height(12.dp))
                                     Text(
-                                        text = "No hay categorías de gasto disponibles. " +
-                                                "Crea alguna desde Ajustes > Categorías.",
+                                        text = stringResource(Res.string.ef_no_categories),
                                         fontSize = 12.sp,
                                         color = MaterialTheme.appColors.textTertiary,
                                         lineHeight = 16.sp
@@ -292,7 +307,7 @@ fun EmergencyFundSettingsScreen(
                                 )
                                 Spacer(Modifier.width(8.dp))
                                 Text(
-                                    "Guardar",
+                                    stringResource(Res.string.common_save),
                                     fontWeight = FontWeight.Bold,
                                     fontSize = 14.sp,
                                     letterSpacing = 0.2.sp
@@ -368,7 +383,7 @@ private fun EmergencyFundInfoCard() {
                 modifier = Modifier.size(16.dp)
             )
             Text(
-                text = "¿QUÉ ES?",
+                text = stringResource(Res.string.ef_what_is_title),
                 fontSize = 10.sp,
                 fontWeight = FontWeight.SemiBold,
                 letterSpacing = 0.8.sp,
@@ -376,21 +391,21 @@ private fun EmergencyFundInfoCard() {
             )
         }
         Text(
-            text = "Un colchón de dinero líquido para cubrir imprevistos sin endeudarte: pérdida de empleo, gastos médicos o reparaciones urgentes.",
+            text = stringResource(Res.string.ef_what_is_text),
             fontSize = 12.sp,
             color = MaterialTheme.appColors.textSecondary,
             lineHeight = 17.sp
         )
         HorizontalDivider(color = MaterialTheme.appColors.cyanAccent.copy(alpha = 0.15f), thickness = 0.5.dp)
         Text(
-            text = "CUÁNTO SE RECOMIENDA",
+            text = stringResource(Res.string.ef_recommendation_title),
             fontSize = 10.sp,
             fontWeight = FontWeight.SemiBold,
             letterSpacing = 0.8.sp,
             color = MaterialTheme.appColors.textTertiary
         )
         Text(
-            text = "• 3–6 meses con empleo estable\n• 6–12 meses si eres autónomo o tienes cargas familiares",
+            text = stringResource(Res.string.ef_recommendation_text),
             fontSize = 12.sp,
             color = MaterialTheme.appColors.textSecondary,
             lineHeight = 18.sp
@@ -444,7 +459,7 @@ private fun EmergencyFundHeroCard() {
             }
             Spacer(Modifier.height(12.dp))
             Text(
-                text = "PROTECCIÓN FINANCIERA",
+                text = stringResource(Res.string.ef_onboarding_badge),
                 fontSize = 10.sp,
                 fontWeight = FontWeight.SemiBold,
                 letterSpacing = 1.2.sp,
@@ -452,7 +467,7 @@ private fun EmergencyFundHeroCard() {
             )
             Spacer(Modifier.height(2.dp))
             Text(
-                text = "Fondo de emergencia",
+                text = stringResource(Res.string.ef_onboarding_title),
                 fontSize = 20.sp,
                 fontWeight = FontWeight.ExtraBold,
                 letterSpacing = (-0.5).sp,
@@ -460,7 +475,7 @@ private fun EmergencyFundHeroCard() {
             )
             Spacer(Modifier.height(6.dp))
             Text(
-                text = "Configura cuántos meses de cobertura necesitas.",
+                text = stringResource(Res.string.ef_onboarding_subtitle),
                 fontSize = 12.sp,
                 color = MaterialTheme.appColors.textSecondary,
                 lineHeight = 17.sp

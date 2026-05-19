@@ -427,11 +427,11 @@ fun AddEditLoanBottomSheet(
                         startDateMillis = selected
                     }
                     showStartDatePicker = false
-                }) { Text("Aceptar", color = MaterialTheme.appColors.primary) }
+                }) { Text(stringResource(Res.string.common_accept), color = MaterialTheme.appColors.primary) }
             },
             dismissButton = {
                 TextButton(onClick = { showStartDatePicker = false }) {
-                    Text("Cancelar", color = MaterialTheme.appColors.textSecondary)
+                    Text(stringResource(Res.string.common_cancel), color = MaterialTheme.appColors.textSecondary)
                 }
             },
             colors = DatePickerDefaults.colors(containerColor = MaterialTheme.appColors.surface)

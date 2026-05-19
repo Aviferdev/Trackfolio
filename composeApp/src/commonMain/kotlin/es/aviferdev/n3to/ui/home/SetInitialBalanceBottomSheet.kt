@@ -20,10 +20,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.ui.theme.*
 import n3to.composeapp.generated.resources.Res
-//import n3to.composeapp.generated.resources.account_initial_balance_set_btn    //TODO
-//import n3to.composeapp.generated.resources.account_initial_balance_zero_hint
-//import n3to.composeapp.generated.resources.account_set_initial_balance_desc
-//import n3to.composeapp.generated.resources.account_set_initial_balance_title
+import n3to.composeapp.generated.resources.account_set_balance_btn
+import n3to.composeapp.generated.resources.account_set_balance_desc
+import n3to.composeapp.generated.resources.account_set_balance_hint
+import n3to.composeapp.generated.resources.account_set_balance_title
 import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 
@@ -67,7 +67,7 @@ fun SetInitialBalanceBottomSheet(
             Spacer(Modifier.height(4.dp))
 
             Text(
-                text       = "stringResource(Res.string.account_set_initial_balance_title)",    //TODO
+                text       = stringResource(Res.string.account_set_balance_title),
                 fontSize   = 18.sp,
                 fontWeight = FontWeight.SemiBold,
                 color      = MaterialTheme.appColors.textPrimary
@@ -85,7 +85,7 @@ fun SetInitialBalanceBottomSheet(
 
             Spacer(Modifier.height(8.dp))
             Text(
-                text      = "stringResource(Res.string.account_set_initial_balance_desc)",    //TODO
+                text      = stringResource(Res.string.account_set_balance_desc),
                 fontSize  = 13.sp,
                 color     = MaterialTheme.appColors.textSecondary,
                 textAlign = TextAlign.Center
@@ -123,7 +123,7 @@ fun SetInitialBalanceBottomSheet(
 
             Spacer(Modifier.height(8.dp))
             Text(
-                text     = "stringResource(Res.string.account_initial_balance_zero_hint)",    //TODO
+                text     = stringResource(Res.string.account_set_balance_hint),
                 fontSize = 11.sp,
                 color    = MaterialTheme.appColors.textSecondary
             )
@@ -143,7 +143,7 @@ fun SetInitialBalanceBottomSheet(
                     disabledContainerColor = MaterialTheme.appColors.primary.copy(alpha = 0.38f)
                 )
             ) {
-                Text("stringResource(Res.string.account_initial_balance_set_btn)", fontSize = 16.sp, fontWeight = FontWeight.Medium)    //TODO
+                Text(stringResource(Res.string.account_set_balance_btn), fontSize = 16.sp, fontWeight = FontWeight.Medium)
             }
         }
     }

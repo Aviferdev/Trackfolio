@@ -31,6 +31,14 @@ import es.aviferdev.n3to.ui.common.navigation.TopBarApp
 import es.aviferdev.n3to.ui.theme.*
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.common_accept
+import n3to.composeapp.generated.resources.common_error
+import n3to.composeapp.generated.resources.portfolio_asset_detail_linked_platforms
+import n3to.composeapp.generated.resources.portfolio_asset_detail_platform_desc
+import n3to.composeapp.generated.resources.portfolio_asset_detail_platform_empty
+import n3to.composeapp.generated.resources.portfolio_asset_detail_platform_link_hint
+import n3to.composeapp.generated.resources.portfolio_asset_detail_platform_section
+import n3to.composeapp.generated.resources.portfolio_asset_detail_title
+import n3to.composeapp.generated.resources.portfolio_asset_detail_unlink_cd
 import n3to.composeapp.generated.resources.portfolio_update_price_current
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -70,7 +78,7 @@ fun AssetDetailScreen(
             containerColor = heroCardBg1,
             title = {
                 Text(
-                    "Error",
+                    stringResource(Res.string.common_error),
                     fontSize = 17.sp,
                     fontWeight = FontWeight.SemiBold,
                     color = appCTextPrimary
@@ -105,7 +113,7 @@ fun AssetDetailContent(
             .background(appCNavyDeep)
     ) {
         TopBarApp(
-            title = state.asset?.name ?: "Activo",
+            title = state.asset?.name ?: stringResource(Res.string.portfolio_asset_detail_title),
             subtitle = state.asset?.ticker,
             navigateBack = onBack
         )
@@ -120,10 +128,10 @@ fun AssetDetailContent(
             }
 
             item {
-                NavySectionLabel("PLATAFORMAS")
+                NavySectionLabel(stringResource(Res.string.portfolio_asset_detail_platform_section))
                 Spacer(Modifier.height(4.dp))
                 Text(
-                    "Selecciona en qué plataformas (brokers, bancos, exchanges) tienes este activo.",
+                    stringResource(Res.string.portfolio_asset_detail_platform_desc),
                     fontSize = 12.sp,
                     color = appCTextTertiary
                 )
@@ -134,7 +142,7 @@ fun AssetDetailContent(
                     Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
                         if (state.allPlatforms.isEmpty()) {
                             Text(
-                                "No hay plataformas creadas. Crea la primera para vincularla a este activo.",
+                                stringResource(Res.string.portfolio_asset_detail_platform_empty),
                                 fontSize = 13.sp,
                                 color = appCTextTertiary,
                                 textAlign = TextAlign.Center,
@@ -165,7 +173,7 @@ fun AssetDetailContent(
                         Spacer(Modifier.height(12.dp))
 
                         Text(
-                            "Para vincular plataformas, ve a Ajustes › Portfolio › Plataformas.",
+                            stringResource(Res.string.portfolio_asset_detail_platform_link_hint),
                             fontSize = 12.sp,
                             color = appCTextTertiary,
                             modifier = Modifier.padding(vertical = 4.dp)
@@ -176,7 +184,7 @@ fun AssetDetailContent(
 
             if (state.linkedPlatforms.isNotEmpty()) {
                 item { Spacer(Modifier.height(4.dp)) }
-                item { NavySectionLabel("PLATAFORMAS VINCULADAS") }
+                item { NavySectionLabel(stringResource(Res.string.portfolio_asset_detail_linked_platforms)) }
                 item {
                     NavyCard {
                         Column {
@@ -201,7 +209,7 @@ fun AssetDetailContent(
                                     ) {
                                         Icon(
                                             Icons.Default.Delete,
-                                            "Desvincular",
+                                            stringResource(Res.string.portfolio_asset_detail_unlink_cd),
                                             modifier = Modifier.size(14.dp),
                                             tint = MaterialTheme.appColors.expense
                                         )

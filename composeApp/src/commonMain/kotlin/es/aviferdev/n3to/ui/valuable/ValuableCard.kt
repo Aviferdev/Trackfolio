@@ -19,9 +19,9 @@ import es.aviferdev.n3to.domain.model.Valuable
 import es.aviferdev.n3to.ui.common.DeltaIndicator
 import es.aviferdev.n3to.ui.theme.*
 import org.jetbrains.compose.resources.stringResource
-import trackfolio.composeapp.generated.resources.Res
-import trackfolio.composeapp.generated.resources.valuable_in_stock
-import trackfolio.composeapp.generated.resources.valuable_purchase_format
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.valuable_in_stock
+import n3to.composeapp.generated.resources.valuable_purchase_format
 
 @Composable
 fun ValuableCard(

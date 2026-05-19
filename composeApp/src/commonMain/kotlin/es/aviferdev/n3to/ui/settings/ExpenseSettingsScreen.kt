@@ -29,9 +29,15 @@ import es.aviferdev.n3to.ui.common.navigation.TopBarApp
 import es.aviferdev.n3to.ui.theme.*
 import androidx.compose.ui.tooling.preview.Preview
 import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.annual_tab_expenses
 import n3to.composeapp.generated.resources.common_accept
+import n3to.composeapp.generated.resources.common_cancel
+import n3to.composeapp.generated.resources.common_delete
+import n3to.composeapp.generated.resources.common_edit
 import n3to.composeapp.generated.resources.common_error
 import n3to.composeapp.generated.resources.error_category_already_exists
+import n3to.composeapp.generated.resources.expense_categories_section
+import n3to.composeapp.generated.resources.expense_no_categories
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -110,12 +116,12 @@ fun ExpenseSettingsScreen(
             },
             confirmButton = {
                 TextButton(onClick = { categoryViewModel.confirmDelete() }) {
-                    Text("Eliminar", color = MaterialTheme.appColors.expense, fontWeight = FontWeight.Medium)
+                    Text(stringResource(Res.string.common_delete), color = MaterialTheme.appColors.expense, fontWeight = FontWeight.Medium)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { categoryViewModel.cancelDelete() }) {
-                    Text("Cancelar", color = MaterialTheme.appColors.cyanAccent, fontWeight = FontWeight.Medium)
+                    Text(stringResource(Res.string.common_cancel), color = MaterialTheme.appColors.cyanAccent, fontWeight = FontWeight.Medium)
                 }
             },
             shape = RoundedCornerShape(16.dp)
@@ -160,7 +166,7 @@ fun ExpenseSettingsContent(
         modifier = modifier.fillMaxSize().background(MaterialTheme.appColors.navyDeep)
     ) {
         TopBarApp(
-            title = "Gastos",
+            title = stringResource(Res.string.annual_tab_expenses),
             navigateBack = onBack
         )
 
@@ -170,7 +176,7 @@ fun ExpenseSettingsContent(
         ) {
             item {
                 SectionHeader(
-                    label = "CATEGORÍAS",
+                    label = stringResource(Res.string.expense_categories_section),
                     actionLabel = "+ Nueva",
                     onAction = onAdd
                 )
@@ -182,7 +188,7 @@ fun ExpenseSettingsContent(
                             modifier = Modifier.fillMaxWidth().padding(16.dp),
                             contentAlignment = Alignment.Center
                         ) {
-                            Text("Sin categorías de gastos", fontSize = 13.sp, color = MaterialTheme.appColors.textSecondary)
+                            Text(stringResource(Res.string.expense_no_categories), fontSize = 13.sp, color = MaterialTheme.appColors.textSecondary)
                         }
                     } else {
                         expenseCategories.forEachIndexed { index, cat ->
@@ -219,13 +225,13 @@ fun ExpenseSettingsContent(
                                     onClick = { onEdit(cat) },
                                     modifier = Modifier.size(28.dp)
                                 ) {
-                                    Icon(Icons.Default.Edit, "Editar", modifier = Modifier.size(14.dp), tint = MaterialTheme.appColors.textSecondary)
+                                    Icon(Icons.Default.Edit, stringResource(Res.string.common_edit), modifier = Modifier.size(14.dp), tint = MaterialTheme.appColors.textSecondary)
                                 }
                                 IconButton(
                                     onClick = { onDelete(cat) },
                                     modifier = Modifier.size(28.dp)
                                 ) {
-                                    Icon(Icons.Default.Delete, "Eliminar", modifier = Modifier.size(14.dp), tint = MaterialTheme.appColors.expense)
+                                    Icon(Icons.Default.Delete, stringResource(Res.string.common_delete), modifier = Modifier.size(14.dp), tint = MaterialTheme.appColors.expense)
                                 }
                             }
                             if (index < expenseCategories.lastIndex) {

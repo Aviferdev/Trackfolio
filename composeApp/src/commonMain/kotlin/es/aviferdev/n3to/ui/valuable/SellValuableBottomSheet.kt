@@ -22,15 +22,15 @@ import es.aviferdev.n3to.domain.model.ValuableExpenseCategories
 import es.aviferdev.n3to.ui.common.input.DatePickerRow
 import es.aviferdev.n3to.ui.theme.*
 import org.jetbrains.compose.resources.stringResource
-import trackfolio.composeapp.generated.resources.Res
-import trackfolio.composeapp.generated.resources.valuable_add_sell_expense
-import trackfolio.composeapp.generated.resources.valuable_confirm_sale
-import trackfolio.composeapp.generated.resources.valuable_expense_amount_label
-import trackfolio.composeapp.generated.resources.valuable_expense_delete_cd
-import trackfolio.composeapp.generated.resources.valuable_sell_date_label
-import trackfolio.composeapp.generated.resources.valuable_sell_expenses_title
-import trackfolio.composeapp.generated.resources.valuable_sell_price_label
-import trackfolio.composeapp.generated.resources.valuable_sell_title_format
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.valuable_add_sell_expense
+import n3to.composeapp.generated.resources.valuable_confirm_sale
+import n3to.composeapp.generated.resources.valuable_expense_amount_label
+import n3to.composeapp.generated.resources.valuable_expense_delete_cd
+import n3to.composeapp.generated.resources.valuable_sell_date_label
+import n3to.composeapp.generated.resources.valuable_sell_expenses_title
+import n3to.composeapp.generated.resources.valuable_sell_price_label
+import n3to.composeapp.generated.resources.valuable_sell_title_format
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

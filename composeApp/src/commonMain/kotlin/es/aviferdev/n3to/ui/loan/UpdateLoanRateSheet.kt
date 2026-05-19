@@ -17,6 +17,12 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.ui.theme.*
+import org.jetbrains.compose.resources.stringResource
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.loan_apply_rate_change
+import n3to.composeapp.generated.resources.loan_change_rate
+import n3to.composeapp.generated.resources.loan_new_rate_label
+import n3to.composeapp.generated.resources.loan_rate_placeholder
 
 import androidx.compose.ui.tooling.preview.Preview
 
@@ -51,7 +57,7 @@ fun UpdateLoanRateSheet(
                 .padding(horizontal = 20.dp, vertical = 12.dp)
         ) {
             Text(
-                "Actualizar tipo de interés",
+                stringResource(Res.string.loan_change_rate),
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.appColors.primary
@@ -70,8 +76,8 @@ fun UpdateLoanRateSheet(
             OutlinedTextField(
                 value = newRateText,
                 onValueChange = { newRateText = it.filter { c -> c.isDigit() || c == ',' || c == '.' } },
-                label = { Text("Nuevo tipo anual (%)") },
-                placeholder = { Text("Ej: 3,25") },
+                label = { Text(stringResource(Res.string.loan_new_rate_label)) },
+                placeholder = { Text(stringResource(Res.string.loan_rate_placeholder)) },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
@@ -102,7 +108,7 @@ fun UpdateLoanRateSheet(
                 shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.appColors.primary)
             ) {
-                Text("Aplicar cambio", fontSize = 16.sp)
+                Text(stringResource(Res.string.loan_apply_rate_change), fontSize = 16.sp)
             }
 
             Spacer(Modifier.height(32.dp))

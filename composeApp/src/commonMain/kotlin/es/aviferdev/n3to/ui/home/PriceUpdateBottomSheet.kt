@@ -54,11 +54,11 @@ import es.aviferdev.n3to.ui.theme.formatAmount
 import es.aviferdev.n3to.ui.theme.formatDate
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.common_close
-//import n3to.composeapp.generated.resources.portfolio_update_price_completed_format
-//import n3to.composeapp.generated.resources.portfolio_update_price_confirm_cd
-//import n3to.composeapp.generated.resources.portfolio_update_price_last_format    //TODO
-//import n3to.composeapp.generated.resources.portfolio_update_price_new_placeholder
-//import n3to.composeapp.generated.resources.portfolio_update_price_no_price
+import n3to.composeapp.generated.resources.common_confirm
+import n3to.composeapp.generated.resources.portfolio_asset_new_price_placeholder
+import n3to.composeapp.generated.resources.portfolio_asset_no_price_registered
+import n3to.composeapp.generated.resources.portfolio_update_bulk_progress
+import n3to.composeapp.generated.resources.portfolio_update_price_last_format
 import n3to.composeapp.generated.resources.portfolio_update_price_title
 import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -106,7 +106,7 @@ fun PriceUpdateBottomSheet(
                 modifier   = Modifier.padding(bottom = 4.dp)
             )
             Text(
-                text     = "stringResource(Res.string.portfolio_update_price_completed_format, completedCount, totalCount)",    //TODO
+                text     = stringResource(Res.string.portfolio_update_bulk_progress, completedCount, totalCount),
                 fontSize = 13.sp,
                 color    = MaterialTheme.appColors.textSecondary
             )
@@ -195,7 +195,7 @@ private fun AssetPriceUpdateRow(
                     if (isCompleted) {
                         Icon(
                             Icons.Default.Check,
-                            contentDescription = "stringResource(Res.string.portfolio_update_price_confirm_cd)",    //TODO
+                            contentDescription = stringResource(Res.string.common_confirm),
                             tint     = Color.White,
                             modifier = Modifier.size(20.dp)
                         )
@@ -233,13 +233,13 @@ private fun AssetPriceUpdateRow(
                     }
                     if (asset.currentPriceUpdatedAt != null) {
                         Text(
-                            text     = "stringResource(Res.string.portfolio_update_price_last_format, formatDate(asset.currentPriceUpdatedAt))",    //TODO
+                            text     = stringResource(Res.string.portfolio_update_price_last_format, formatDate(asset.currentPriceUpdatedAt)),
                             fontSize = 10.sp,
                             color    = MaterialTheme.appColors.textSecondary.copy(alpha = 0.7f)
                         )
                     } else {
                         Text(
-                            text     = "stringResource(Res.string.portfolio_update_price_no_price)",    //TODO
+                            text     = stringResource(Res.string.portfolio_asset_no_price_registered),
                             fontSize = 10.sp,
                             color    = MaterialTheme.appColors.textSecondary.copy(alpha = 0.7f)
                         )
@@ -258,7 +258,7 @@ private fun AssetPriceUpdateRow(
                         onValueChange = { new ->
                             onPriceInputChange(new.filter { c -> c.isDigit() || c == ',' || c == '.' })
                         },
-                        placeholder     = { Text("stringResource(Res.string.portfolio_update_price_new_placeholder)", fontSize = 14.sp, color = MaterialTheme.appColors.textSecondary.copy(alpha = 0.5f)) },    //TODO
+                        placeholder     = { Text(stringResource(Res.string.portfolio_asset_new_price_placeholder), fontSize = 14.sp, color = MaterialTheme.appColors.textSecondary.copy(alpha = 0.5f)) },
                         textStyle       = TextStyle(fontSize = 14.sp, color = MaterialTheme.appColors.textPrimary),
                         modifier        = Modifier.weight(1f).height(48.dp),
                         shape           = RoundedCornerShape(8.dp),
@@ -281,7 +281,7 @@ private fun AssetPriceUpdateRow(
                         ),
                         modifier = Modifier.size(48.dp)
                     ) {
-                        Icon(Icons.Default.Check, "stringResource(Res.string.portfolio_update_price_confirm_cd)", modifier = Modifier.size(20.dp))    //TODO
+                        Icon(Icons.Default.Check, stringResource(Res.string.common_confirm), modifier = Modifier.size(20.dp))
                     }
                 }
             }

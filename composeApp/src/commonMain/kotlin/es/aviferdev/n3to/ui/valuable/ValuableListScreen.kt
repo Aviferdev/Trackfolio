@@ -19,7 +19,13 @@ import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.ui.account.AccountSession
 import es.aviferdev.n3to.ui.common.component.EmptyStateView
 import es.aviferdev.n3to.ui.theme.*
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.common_back_cd
+import n3to.composeapp.generated.resources.valuable_empty_subtitle
+import n3to.composeapp.generated.resources.valuable_empty_title
+import n3to.composeapp.generated.resources.valuable_list_title
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -33,10 +39,10 @@ fun ValuableListScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Bienes") },
+                title = { Text(stringResource(Res.string.valuable_list_title)) },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(Res.string.common_back_cd))
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -56,8 +62,8 @@ fun ValuableListScreen(
             } else if (uiState.valuables.isEmpty()) {
                 EmptyStateView(
                     icon = Icons.Outlined.Sell,
-                    title = "No hay bienes",
-                    subtitle = "Añade tu primer bien para empezar a seguir su valor",
+                    title = stringResource(Res.string.valuable_empty_title),
+                    subtitle = stringResource(Res.string.valuable_empty_subtitle),
                     modifier = Modifier.align(Alignment.Center)
                 )
             } else {

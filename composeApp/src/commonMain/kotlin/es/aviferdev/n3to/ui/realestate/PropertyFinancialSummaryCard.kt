@@ -20,6 +20,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.realestate_cashflow_label
 import n3to.composeapp.generated.resources.realestate_profitability_label
+import n3to.composeapp.generated.resources.realestate_purchase_expenses
+import n3to.composeapp.generated.resources.realestate_sale_expenses
 import n3to.composeapp.generated.resources.realestate_total_return_label
 import org.jetbrains.compose.resources.stringResource
 
@@ -51,10 +53,10 @@ fun PropertyFinancialSummaryCard(
 
             // Gastos de compra/venta
             if (summary.totalPurchaseExpenses > 0) {
-                DataRowLabel("Gastos de compra", formatAmountEuro(summary.totalPurchaseExpenses))
+                DataRowLabel(stringResource(Res.string.realestate_purchase_expenses), formatAmountEuro(summary.totalPurchaseExpenses))
             }
             if (summary.totalSaleExpenses > 0) {
-                DataRowLabel("Gastos de venta", formatAmountEuro(summary.totalSaleExpenses))
+                DataRowLabel(stringResource(Res.string.realestate_sale_expenses), formatAmountEuro(summary.totalSaleExpenses))
             }
 
             HorizontalDivider(color = MaterialTheme.appColors.border2, thickness = 0.5.dp, modifier = Modifier.padding(vertical = 4.dp))

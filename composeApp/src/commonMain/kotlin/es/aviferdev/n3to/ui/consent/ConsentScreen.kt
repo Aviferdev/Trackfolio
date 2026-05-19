@@ -43,6 +43,7 @@ import n3to.composeapp.generated.resources.consent_decline
 import n3to.composeapp.generated.resources.consent_privacy_policy
 import n3to.composeapp.generated.resources.onboarding_welcome_subtitle
 import n3to.composeapp.generated.resources.privacy_analytics_title
+import n3to.composeapp.generated.resources.consent_crash_description
 import n3to.composeapp.generated.resources.privacy_crash_title
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -197,7 +198,7 @@ fun ConsentScreen(
             ConsentToggleItem(
                 icon = Icons.Default.BugReport,
                 title = stringResource(Res.string.privacy_crash_title),
-                description = "Si la app tiene un error, nos avisa para que podamos arreglarlo rápido.",
+                description = stringResource(Res.string.consent_crash_description),
                 checked = uiState.crashReporting,
                 onCheckedChange = viewModel::onCrashReportingToggle
             )

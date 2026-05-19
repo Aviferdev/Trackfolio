@@ -20,6 +20,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.ui.theme.*
+import org.jetbrains.compose.resources.stringResource
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.common_cancel
+import n3to.composeapp.generated.resources.common_close
 import androidx.compose.ui.tooling.preview.Preview
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -236,7 +240,7 @@ fun BackupPasswordSheet(
                             contentColor   = MaterialTheme.appColors.navyDeep
                         )
                     ) {
-                        Text("Cerrar", fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
+                        Text(stringResource(Res.string.common_close), fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
                     }
                 }
                 isSuccess && !isExport -> {
@@ -314,7 +318,7 @@ fun BackupPasswordSheet(
                     }
                     Spacer(Modifier.height(12.dp))
                     TextButton(onClick = onDismiss, enabled = !isLoading) {
-                        Text("Cancelar", fontSize = 14.sp, color = MaterialTheme.appColors.textSecondary)
+                        Text(stringResource(Res.string.common_cancel), fontSize = 14.sp, color = MaterialTheme.appColors.textSecondary)
                     }
                 }
             }

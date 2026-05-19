@@ -45,6 +45,8 @@ import n3to.composeapp.generated.resources.networth_assets_label_alt
 import n3to.composeapp.generated.resources.networth_evolution_title
 import n3to.composeapp.generated.resources.networth_liabilities_label_alt
 import n3to.composeapp.generated.resources.networth_monthly_title
+import n3to.composeapp.generated.resources.networth_no_account_subtitle
+import n3to.composeapp.generated.resources.networth_no_account_title
 import n3to.composeapp.generated.resources.networth_no_liabilities
 import n3to.composeapp.generated.resources.networth_no_properties
 import n3to.composeapp.generated.resources.networth_no_valuables
@@ -123,8 +125,8 @@ fun NetWorthScreen(
         ) {
             EmptyStateView(
                 icon        = "\uD83C\uDFE6",
-                title       = "Sin cuenta configurada",
-                subtitle    = "Crea una cuenta desde Ajustes\npara ver tu patrimonio neto",
+                title       = stringResource(Res.string.networth_no_account_title),
+                subtitle    = stringResource(Res.string.networth_no_account_subtitle),
                 actionLabel = "Ir a Ajustes",
                 onAction    = onNavigateToSettings
             )

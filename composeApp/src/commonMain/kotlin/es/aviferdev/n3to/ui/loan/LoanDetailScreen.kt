@@ -78,7 +78,7 @@ fun LoanDetailScreen(
             icon             = { Text("⚠️", fontSize = 26.sp) },
             title = {
                 Text(
-                    "Archivar préstamo",
+                    stringResource(Res.string.loan_archive_title),
                     fontSize = 16.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.appColors.textPrimary
                 )
             },

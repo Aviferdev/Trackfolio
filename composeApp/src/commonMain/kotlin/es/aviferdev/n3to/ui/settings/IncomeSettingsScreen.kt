@@ -22,6 +22,10 @@ import es.aviferdev.n3to.ui.common.SectionHeader
 import es.aviferdev.n3to.ui.common.toMaterialIcon
 import es.aviferdev.n3to.ui.common.navigation.TopBarApp
 import es.aviferdev.n3to.ui.theme.*
+import org.jetbrains.compose.resources.stringResource
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.annual_tab_income
+import n3to.composeapp.generated.resources.income_types_section
 import androidx.compose.ui.tooling.preview.Preview
 
 /** Tipos de ingreso visibles en la Home (excluye los gestionados desde Portfolio). */
@@ -41,7 +45,7 @@ fun IncomeSettingsScreen(
         modifier = Modifier.fillMaxSize().background(MaterialTheme.appColors.navyDeep)
     ) {
         TopBarApp(
-            title = "Ingresos",
+            title = stringResource(Res.string.annual_tab_income),
             navigateBack = onBack,
             containerColor = MaterialTheme.appColors.navySurface,
             dividerColor = MaterialTheme.appColors.navyBorder
@@ -51,7 +55,7 @@ fun IncomeSettingsScreen(
             contentPadding = PaddingValues(horizontal = 20.dp, vertical = 20.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            item { SectionHeader(label = "TIPOS DE INGRESO") }
+            item { SectionHeader(label = stringResource(Res.string.income_types_section)) }
             item {
                 SettingsGroupCard {
                     HOME_INCOME_TYPES.forEachIndexed { index, incomeType ->

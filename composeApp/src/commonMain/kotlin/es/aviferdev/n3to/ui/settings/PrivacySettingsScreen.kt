@@ -61,6 +61,40 @@ import es.aviferdev.n3to.core.browser.rememberUrlOpener
 import es.aviferdev.n3to.ui.common.navigation.TopBarApp
 
 import es.aviferdev.n3to.ui.theme.ExpenseRed
+import org.jetbrains.compose.resources.stringResource
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.common_cancel
+import n3to.composeapp.generated.resources.privacy_analytics_desc
+import n3to.composeapp.generated.resources.privacy_analytics_title
+import n3to.composeapp.generated.resources.privacy_consent_date_format
+import n3to.composeapp.generated.resources.privacy_crash_desc
+import n3to.composeapp.generated.resources.privacy_crash_title
+import n3to.composeapp.generated.resources.privacy_data_crash_reports
+import n3to.composeapp.generated.resources.privacy_data_feedback
+import n3to.composeapp.generated.resources.privacy_data_financial
+import n3to.composeapp.generated.resources.privacy_data_personal
+import n3to.composeapp.generated.resources.privacy_data_revenuecat
+import n3to.composeapp.generated.resources.privacy_data_screens
+import n3to.composeapp.generated.resources.privacy_policy_link
+import n3to.composeapp.generated.resources.privacy_premium_active_label
+import n3to.composeapp.generated.resources.privacy_premium_free
+import n3to.composeapp.generated.resources.privacy_premium_lifetime_value
+import n3to.composeapp.generated.resources.privacy_premium_manage
+import n3to.composeapp.generated.resources.privacy_premium_plan
+import n3to.composeapp.generated.resources.privacy_premium_restore
+import n3to.composeapp.generated.resources.privacy_premium_subscription_value
+import n3to.composeapp.generated.resources.privacy_premium_valid_until
+import n3to.composeapp.generated.resources.privacy_restore_error
+import n3to.composeapp.generated.resources.privacy_restore_success
+import n3to.composeapp.generated.resources.privacy_revoke_all_button
+import n3to.composeapp.generated.resources.privacy_revoke_all_hint
+import n3to.composeapp.generated.resources.privacy_revoke_confirm
+import n3to.composeapp.generated.resources.privacy_revoke_message
+import n3to.composeapp.generated.resources.privacy_revoke_title
+import n3to.composeapp.generated.resources.privacy_section_consent
+import n3to.composeapp.generated.resources.privacy_section_data_collected
+import n3to.composeapp.generated.resources.privacy_section_premium
+import n3to.composeapp.generated.resources.settings_privacy_data
 
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
@@ -116,7 +150,7 @@ fun PrivacySettingsScreen(
             shape = RoundedCornerShape(16.dp),
             title = {
                 Text(
-                    "¿Revocar todo el consentimiento?",
+                    stringResource(Res.string.privacy_revoke_title),
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.appColors.textPrimary
@@ -124,19 +158,19 @@ fun PrivacySettingsScreen(
             },
             text = {
                 Text(
-                    "Se desactivarán el análisis de uso y los informes de errores. Esta acción se aplica inmediatamente.",
+                    stringResource(Res.string.privacy_revoke_message),
                     fontSize = 13.sp,
                     color = MaterialTheme.appColors.textSecondary
                 )
             },
             confirmButton = {
                 TextButton(onClick = viewModel::confirmRevokeAll) {
-                    Text("Revocar todo", color = MaterialTheme.appColors.expense, fontWeight = FontWeight.SemiBold)
+                    Text(stringResource(Res.string.privacy_revoke_confirm), color = MaterialTheme.appColors.expense, fontWeight = FontWeight.SemiBold)
                 }
             },
             dismissButton = {
                 TextButton(onClick = viewModel::dismissRevokeConfirmation) {
-                    Text("Cancelar", color = MaterialTheme.appColors.cyanAccent)
+                    Text(stringResource(Res.string.common_cancel), color = MaterialTheme.appColors.cyanAccent)
                 }
             }
         )
@@ -144,7 +178,7 @@ fun PrivacySettingsScreen(
 
     Box(modifier = Modifier.fillMaxSize().background(MaterialTheme.appColors.navyDeep)) {
         Column(modifier = Modifier.fillMaxSize()) {
-            TopBarApp(title = "Privacidad y datos", navigateBack = onBack)
+            TopBarApp(title = stringResource(Res.string.settings_privacy_data), navigateBack = onBack)
 
             if (uiState.isLoading) {
                 Box(
@@ -161,20 +195,20 @@ fun PrivacySettingsScreen(
                         .padding(horizontal = 16.dp, vertical = 14.dp)
                 ) {
                     // ── Sección 1: Consentimiento ──────────────────────────────
-                    SettingsSectionHeader(label = "Consentimiento")
+                    SettingsSectionHeader(label = stringResource(Res.string.privacy_section_consent))
                     SettingsGroupCard {
                         PrivacyToggleItem(
                             icon = Icons.Default.Build,
-                            title = "Ayúdanos a mejorar",
-                            desc = "Análisis de uso anónimo para mejorar la app.",
+                            title = stringResource(Res.string.privacy_analytics_title),
+                            desc = stringResource(Res.string.privacy_analytics_desc),
                             checked = uiState.preferences.analytics,
                             onCheckedChange = viewModel::updateAnalytics
                         )
                         SettingsRowDivider()
                         PrivacyToggleItem(
                             icon = Icons.Default.BugReport,
-                            title = "Avísame si algo falla",
-                            desc = "Informes de errores anónimos para corregir fallos.",
+                            title = stringResource(Res.string.privacy_crash_title),
+                            desc = stringResource(Res.string.privacy_crash_desc),
                             checked = uiState.preferences.crashReporting,
                             onCheckedChange = viewModel::updateCrashReporting
                         )
@@ -185,7 +219,7 @@ fun PrivacySettingsScreen(
                             .toLocalDateTime(TimeZone.currentSystemDefault())
                         Spacer(Modifier.height(6.dp))
                         Text(
-                            "Consentimiento registrado el ${dt.date}",
+                            stringResource(Res.string.privacy_consent_date_format, "${dt.date}"),
                             fontSize = 11.sp,
                             color = MaterialTheme.appColors.textTertiary,
                             modifier = Modifier.padding(horizontal = 4.dp)
@@ -195,13 +229,13 @@ fun PrivacySettingsScreen(
                     Spacer(Modifier.height(20.dp))
 
                     // ── Sección 2: Trackfolio Premium ──────────────────────────
-                    SettingsSectionHeader(label = "Trackfolio Premium")
+                    SettingsSectionHeader(label = stringResource(Res.string.privacy_section_premium))
                     PrivacyPremiumCard(isPremium = uiState.premiumStatus.isPremium) {
                         if (uiState.premiumStatus.isPremium) {
                             PrivacyInfoRow(
                                 icon = Icons.Default.Star,
-                                label = "Premium activo",
-                                value = if (uiState.premiumStatus.isLifetime) "Acceso vitalicio" else "Suscripción activa"
+                                label = stringResource(Res.string.privacy_premium_active_label),
+                                value = if (uiState.premiumStatus.isLifetime) stringResource(Res.string.privacy_premium_lifetime_value) else stringResource(Res.string.privacy_premium_subscription_value)
                             )
                             if (!uiState.premiumStatus.isLifetime) {
                                 val expiryDate = uiState.premiumStatus.expiryDate
@@ -211,7 +245,7 @@ fun PrivacySettingsScreen(
                                     SettingsRowDivider()
                                     PrivacyInfoRow(
                                         icon = Icons.Default.CalendarMonth,
-                                        label = "Válido hasta",
+                                        label = stringResource(Res.string.privacy_premium_valid_until),
                                         value = "${expiry.date}"
                                     )
                                 }
@@ -220,15 +254,15 @@ fun PrivacySettingsScreen(
                                 SettingsRowDivider()
                                 PrivacyNavigableRow(
                                     icon = Icons.Default.Settings,
-                                    label = "Gestionar suscripción",
+                                    label = stringResource(Res.string.privacy_premium_manage),
                                     onClick = { urlOpener.openUrl(uiState.premiumStatus.managementUrl!!) }
                                 )
                             }
                         } else {
                             PrivacyInfoRow(
                                 icon = Icons.Default.WorkspacePremium,
-                                label = "Plan actual",
-                                value = "Gratuito"
+                                label = stringResource(Res.string.privacy_premium_plan),
+                                value = stringResource(Res.string.privacy_premium_free)
                             )
                             SettingsRowDivider()
                             PrivacyNavigableRow(
@@ -241,7 +275,7 @@ fun PrivacySettingsScreen(
                         SettingsRowDivider()
                         PrivacyNavigableRow(
                             icon = Icons.Default.Restore,
-                            label = "Restaurar compra",
+                            label = stringResource(Res.string.privacy_premium_restore),
                             onClick = { viewModel.restorePurchases() }
                         )
                     }
@@ -249,42 +283,42 @@ fun PrivacySettingsScreen(
                     Spacer(Modifier.height(20.dp))
 
                     // ── Sección 3: Datos recopilados ───────────────────────────
-                    SettingsSectionHeader(label = "Datos recopilados")
+                    SettingsSectionHeader(label = stringResource(Res.string.privacy_section_data_collected))
                     SettingsGroupCard {
                         PrivacyDataRow(
                             icon = if (uiState.preferences.analytics) Icons.Default.CheckCircle else Icons.Default.Cancel,
-                            label = "Pantallas visitadas",
+                            label = stringResource(Res.string.privacy_data_screens),
                             active = uiState.preferences.analytics
                         )
                         SettingsRowDivider()
                         PrivacyDataRow(
                             icon = if (uiState.preferences.crashReporting) Icons.Default.CheckCircle else Icons.Default.Cancel,
-                            label = "Informes de errores",
+                            label = stringResource(Res.string.privacy_data_crash_reports),
                             active = uiState.preferences.crashReporting
                         )
                         SettingsRowDivider()
                         PrivacyDataRow(
                             icon = Icons.Default.Cancel,
-                            label = "Datos financieros",
+                            label = stringResource(Res.string.privacy_data_financial),
                             active = false
                         )
                         SettingsRowDivider()
                         PrivacyDataRow(
                             icon = Icons.Default.Cancel,
-                            label = "Información personal",
+                            label = stringResource(Res.string.privacy_data_personal),
                             active = false
                         )
                         SettingsRowDivider()
                         PrivacyDataRow(
                             icon = Icons.Default.Info,
-                            label = "Gestión de suscripción (RevenueCat)",
+                            label = stringResource(Res.string.privacy_data_revenuecat),
                             active = true,
                             isInfo = true
                         )
                         SettingsRowDivider()
                         PrivacyDataRow(
                             icon = Icons.Default.Info,
-                            label = "Sugerencias y feedback",
+                            label = stringResource(Res.string.privacy_data_feedback),
                             active = true,
                             isInfo = true
                         )
@@ -303,7 +337,7 @@ fun PrivacySettingsScreen(
                         )
                     ) {
                         Text(
-                            "Revocar todo el consentimiento",
+                            stringResource(Res.string.privacy_revoke_all_button),
                             fontSize = 13.sp,
                             fontWeight = FontWeight.SemiBold
                         )
@@ -311,7 +345,7 @@ fun PrivacySettingsScreen(
 
                     Spacer(Modifier.height(8.dp))
                     Text(
-                        "Al revocar, todos los datos de seguimiento se desactivan inmediatamente.",
+                        stringResource(Res.string.privacy_revoke_all_hint),
                         fontSize = 11.sp,
                         color = MaterialTheme.appColors.textTertiary
                     )
@@ -319,7 +353,7 @@ fun PrivacySettingsScreen(
                     Spacer(Modifier.height(16.dp))
 
                     TextButton(onClick = { urlOpener.openUrl(PRIVACY_POLICY_URL) }) {
-                        Text("Política de Privacidad", color = MaterialTheme.appColors.cyanAccent, fontSize = 13.sp)
+                        Text(stringResource(Res.string.privacy_policy_link), color = MaterialTheme.appColors.cyanAccent, fontSize = 13.sp)
                     }
 
                     Spacer(Modifier.height(32.dp))

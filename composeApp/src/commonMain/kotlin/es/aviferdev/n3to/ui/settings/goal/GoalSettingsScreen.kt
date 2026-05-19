@@ -70,7 +70,21 @@ import es.aviferdev.n3to.ui.common.navigation.TopBarApp
 import es.aviferdev.n3to.ui.theme.ExpenseRed
 
 import kotlinx.coroutines.delay
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.common_close
+import n3to.composeapp.generated.resources.common_save
+import n3to.composeapp.generated.resources.goal_base_placeholder
+import n3to.composeapp.generated.resources.goal_investment_base_label
+import n3to.composeapp.generated.resources.goal_investment_placeholder
+import n3to.composeapp.generated.resources.goal_onboarding_badge
+import n3to.composeapp.generated.resources.goal_onboarding_subtitle
+import n3to.composeapp.generated.resources.goal_savings_base_label
+import n3to.composeapp.generated.resources.goal_savings_placeholder
+import n3to.composeapp.generated.resources.home_goals_investment
+import n3to.composeapp.generated.resources.home_goals_savings
+import n3to.composeapp.generated.resources.settings_monthly_goals_label
 
 @Composable
 fun GoalSettingsScreen(
@@ -103,7 +117,7 @@ fun GoalSettingsScreen(
 
     Column(modifier = Modifier.fillMaxSize().background(MaterialTheme.appColors.navyDeep)) {
         TopBarApp(
-            title = "Objetivos mensuales",
+            title = stringResource(Res.string.settings_monthly_goals_label),
             navigateBack = {
                 if (state.isDirty) viewModel.save()
                 navigateBack()
@@ -153,14 +167,14 @@ fun GoalSettingsScreen(
                                     )
                                 },
                                 iconBackground = MaterialTheme.appColors.income.copy(alpha = 0.12f),
-                                label = "AHORRO MENSUAL BASE",
+                                label = stringResource(Res.string.goal_savings_base_label),
                                 description = "Lo que reservas cada mes como ahorro líquido o en cuenta de ahorro."
                             )
                             Spacer(Modifier.height(12.dp))
                             OutlinedTextField(
                                 value = state.baseSavingsText,
                                 onValueChange = viewModel::onBaseSavingsChange,
-                                placeholder = { Text("Ej: 500", color = MaterialTheme.appColors.textTertiary) },
+                                placeholder = { Text(stringResource(Res.string.goal_savings_placeholder), color = MaterialTheme.appColors.textTertiary) },
                                 trailingIcon = {
                                     Text(
                                         "€",
@@ -198,14 +212,14 @@ fun GoalSettingsScreen(
                                     )
                                 },
                                 iconBackground = MaterialTheme.appColors.cyanAccent.copy(alpha = 0.12f),
-                                label = "INVERSIÓN MENSUAL BASE",
+                                label = stringResource(Res.string.goal_investment_base_label),
                                 description = "Lo que destinas a compra de activos: acciones, fondos, ETFs, etc."
                             )
                             Spacer(Modifier.height(12.dp))
                             OutlinedTextField(
                                 value = state.baseInvestmentText,
                                 onValueChange = viewModel::onBaseInvestmentChange,
-                                placeholder = { Text("Ej: 300", color = MaterialTheme.appColors.textTertiary) },
+                                placeholder = { Text(stringResource(Res.string.goal_investment_placeholder), color = MaterialTheme.appColors.textTertiary) },
                                 trailingIcon = {
                                     Text(
                                         "€",
@@ -337,7 +351,7 @@ fun GoalSettingsScreen(
                                                 ) {
                                                     Icon(
                                                         Icons.Outlined.Close,
-                                                        contentDescription = "Cerrar",
+                                                        contentDescription = stringResource(Res.string.common_close),
                                                         tint = MaterialTheme.appColors.textTertiary,
                                                         modifier = Modifier.size(16.dp)
                                                     )
@@ -353,12 +367,12 @@ fun GoalSettingsScreen(
                                             horizontalArrangement = Arrangement.spacedBy(10.dp)
                                         ) {
                                             InlineAmountField(
-                                                label = "Ahorro",
+                                                label = stringResource(Res.string.home_goals_savings),
                                                 value = month.savingsText,
                                                 onChange = {
                                                     viewModel.onMonthSavingsChange(month.month, it)
                                                 },
-                                                placeholder = "Base",
+                                                placeholder = stringResource(Res.string.goal_base_placeholder),
                                                 suffix = "€",
                                                 singleLine = true,
                                                 containerColor = MaterialTheme.appColors.navySurfaceLight,
@@ -366,12 +380,12 @@ fun GoalSettingsScreen(
                                                 modifier = Modifier.weight(1f)
                                             )
                                             InlineAmountField(
-                                                label = "Inversión",
+                                                label = stringResource(Res.string.home_goals_investment),
                                                 value = month.investmentText,
                                                 onChange = {
                                                     viewModel.onMonthInvestmentChange(month.month, it)
                                                 },
-                                                placeholder = "Base",
+                                                placeholder = stringResource(Res.string.goal_base_placeholder),
                                                 suffix = "€",
                                                 singleLine = true,
                                                 containerColor = MaterialTheme.appColors.navySurfaceLight,
@@ -415,7 +429,7 @@ fun GoalSettingsScreen(
                                 )
                                 Spacer(Modifier.width(8.dp))
                                 Text(
-                                    "Guardar",
+                                    stringResource(Res.string.common_save),
                                     fontWeight = FontWeight.Bold,
                                     fontSize = 14.sp,
                                     letterSpacing = 0.2.sp
@@ -483,7 +497,7 @@ private fun GoalSettingsHeroCard() {
             }
             Spacer(Modifier.height(12.dp))
             Text(
-                text = "PLANIFICACIÓN FINANCIERA",
+                text = stringResource(Res.string.goal_onboarding_badge),
                 fontSize = 10.sp,
                 fontWeight = FontWeight.SemiBold,
                 letterSpacing = 1.2.sp,
@@ -491,7 +505,7 @@ private fun GoalSettingsHeroCard() {
             )
             Spacer(Modifier.height(2.dp))
             Text(
-                text = "Objetivos mensuales",
+                text = stringResource(Res.string.settings_monthly_goals_label),
                 fontSize = 20.sp,
                 fontWeight = FontWeight.ExtraBold,
                 letterSpacing = (-0.5).sp,
@@ -499,7 +513,7 @@ private fun GoalSettingsHeroCard() {
             )
             Spacer(Modifier.height(6.dp))
             Text(
-                text = "Define cuánto quieres ahorrar e invertir cada mes. Establece una base anual y ajusta los meses con ingresos o gastos excepcionales.",
+                text = stringResource(Res.string.goal_onboarding_subtitle),
                 fontSize = 12.sp,
                 color = MaterialTheme.appColors.textSecondary,
                 lineHeight = 17.sp

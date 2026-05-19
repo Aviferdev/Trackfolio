@@ -105,6 +105,8 @@ import n3to.composeapp.generated.resources.portfolio_add_asset_ticker_placeholde
 import n3to.composeapp.generated.resources.portfolio_add_asset_ticker_required
 import n3to.composeapp.generated.resources.portfolio_add_asset_title_create
 import n3to.composeapp.generated.resources.portfolio_add_asset_title_edit
+import n3to.composeapp.generated.resources.common_understood
+import n3to.composeapp.generated.resources.help_asset_types_title
 import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 
@@ -832,7 +834,7 @@ Spacer(Modifier.height(12.dp))
             onDismissRequest = { showCategoryHelp = false },
             containerColor = MaterialTheme.appColors.surface,
             title = {
-                Text("Tipos de activo", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.appColors.textPrimary)
+                Text(stringResource(Res.string.help_asset_types_title), fontSize = 16.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.appColors.textPrimary)
             },
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -845,7 +847,7 @@ Spacer(Modifier.height(12.dp))
             },
             confirmButton = {
                 TextButton(onClick = { showCategoryHelp = false }) {
-                    Text("Entendido", color = MaterialTheme.appColors.primary, fontWeight = FontWeight.SemiBold)
+                    Text(stringResource(Res.string.common_understood), color = MaterialTheme.appColors.primary, fontWeight = FontWeight.SemiBold)
                 }
             },
             shape = RoundedCornerShape(16.dp)

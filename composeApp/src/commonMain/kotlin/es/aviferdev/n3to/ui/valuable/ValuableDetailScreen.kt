@@ -25,7 +25,25 @@ import es.aviferdev.n3to.ui.common.SectionHeader
 import es.aviferdev.n3to.ui.common.dialog.DeleteConfirmDialog
 import es.aviferdev.n3to.ui.theme.*
 import kotlinx.datetime.toLocalDateTime
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.common_cancel
+import n3to.composeapp.generated.resources.common_close
+import n3to.composeapp.generated.resources.common_update
+import n3to.composeapp.generated.resources.common_back_cd
+import n3to.composeapp.generated.resources.valuable_back_cd
+import n3to.composeapp.generated.resources.valuable_balance_label
+import n3to.composeapp.generated.resources.valuable_delete_message
+import n3to.composeapp.generated.resources.valuable_delete_title
+import n3to.composeapp.generated.resources.valuable_link_loan_title
+import n3to.composeapp.generated.resources.valuable_new_value_label
+import n3to.composeapp.generated.resources.valuable_no_loans
+import n3to.composeapp.generated.resources.valuable_sell_cd
+import n3to.composeapp.generated.resources.valuable_update_value_btn
+import n3to.composeapp.generated.resources.valuable_update_value_title
+import n3to.composeapp.generated.resources.common_edit
+import n3to.composeapp.generated.resources.common_delete
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -63,8 +81,8 @@ fun ValuableDetailScreen(
 
     if (uiState.showDeleteDialog) {
         DeleteConfirmDialog(
-            title = "Eliminar bien",
-            message = "¿Estás seguro de eliminar este bien? También se eliminarán todas las transacciones vinculadas.",
+            title = stringResource(Res.string.valuable_delete_title),
+            message = stringResource(Res.string.valuable_delete_message),
             onConfirm = { viewModel.deleteValuable() },
             onDismiss = { viewModel.hideDeleteDialog() }
         )
@@ -75,10 +93,10 @@ fun ValuableDetailScreen(
         AlertDialog(
             onDismissRequest = { viewModel.hideLoanPicker() },
             containerColor = MaterialTheme.appColors.navySurface,
-            title = { Text("Vincular préstamo", fontWeight = FontWeight.Bold, color = MaterialTheme.appColors.textPrimary) },
+            title = { Text(stringResource(Res.string.valuable_link_loan_title), fontWeight = FontWeight.Bold, color = MaterialTheme.appColors.textPrimary) },
             text = {
                 if (uiState.availableLoans.isEmpty()) {
-                    Text("No hay préstamos disponibles", color = MaterialTheme.appColors.textTertiary, fontSize = 14.sp)
+                    Text(stringResource(Res.string.valuable_no_loans), color = MaterialTheme.appColors.textTertiary, fontSize = 14.sp)
                 } else {
                     Column {
                         uiState.availableLoans.forEach { loan ->
@@ -106,7 +124,7 @@ fun ValuableDetailScreen(
             confirmButton = {},
             dismissButton = {
                 TextButton(onClick = { viewModel.hideLoanPicker() }) {
-                    Text("Cerrar", color = MaterialTheme.appColors.textTertiary)
+                    Text(stringResource(Res.string.common_close), color = MaterialTheme.appColors.textTertiary)
                 }
             }
         )
@@ -117,12 +135,12 @@ fun ValuableDetailScreen(
         AlertDialog(
             onDismissRequest = { viewModel.hideValueDialog() },
             containerColor = MaterialTheme.appColors.navySurface,
-            title = { Text("Actualizar valor", fontWeight = FontWeight.Bold, color = MaterialTheme.appColors.textPrimary) },
+            title = { Text(stringResource(Res.string.valuable_update_value_title), fontWeight = FontWeight.Bold, color = MaterialTheme.appColors.textPrimary) },
             text = {
                 OutlinedTextField(
                     value = valueText,
                     onValueChange = { valueText = it },
-                    label = { Text("Nuevo valor estimado") },
+                    label = { Text(stringResource(Res.string.valuable_new_value_label)) },
                     singleLine = true,
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = MaterialTheme.appColors.income,
@@ -136,10 +154,10 @@ fun ValuableDetailScreen(
                 TextButton(onClick = {
                     valueText.toDoubleOrNull()?.let { viewModel.updateEstimatedValue(it) }
                     viewModel.hideValueDialog()
-                }) { Text("Actualizar", color = MaterialTheme.appColors.income) }
+                }) { Text(stringResource(Res.string.common_update), color = MaterialTheme.appColors.income) }
             },
             dismissButton = {
-                TextButton(onClick = { viewModel.hideValueDialog() }) { Text("Cancelar", color = MaterialTheme.appColors.textTertiary) }
+                TextButton(onClick = { viewModel.hideValueDialog() }) { Text(stringResource(Res.string.common_cancel), color = MaterialTheme.appColors.textTertiary) }
             }
         )
     }
@@ -150,21 +168,21 @@ fun ValuableDetailScreen(
                 title = { Text(summary?.valuable?.name ?: "Detalle bien") },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(Res.string.valuable_back_cd))
                     }
                 },
                 actions = {
                     if (summary != null) {
                         if (!summary.valuable.isSold) {
                             IconButton(onClick = { viewModel.showSellSheet() }) {
-                                Icon(Icons.Outlined.Sell, contentDescription = "Vender")
+                                Icon(Icons.Outlined.Sell, contentDescription = stringResource(Res.string.valuable_sell_cd))
                             }
                         }
                         IconButton(onClick = { viewModel.showEditSheet() }) {
-                            Icon(Icons.Outlined.Edit, contentDescription = "Editar")
+                            Icon(Icons.Outlined.Edit, contentDescription = stringResource(Res.string.common_edit))
                         }
                         IconButton(onClick = { viewModel.showDeleteDialog() }) {
-                            Icon(Icons.Outlined.Delete, contentDescription = "Eliminar")
+                            Icon(Icons.Outlined.Delete, contentDescription = stringResource(Res.string.common_delete))
                         }
                     }
                 },
@@ -198,7 +216,7 @@ fun ValuableDetailScreen(
                 ) {
                     Column(Modifier.padding(20.dp)) {
                         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                            Text("Balance", fontWeight = FontWeight.Bold, fontSize = 15.sp, color = MaterialTheme.appColors.textPrimary)
+                            Text(stringResource(Res.string.valuable_balance_label), fontWeight = FontWeight.Bold, fontSize = 15.sp, color = MaterialTheme.appColors.textPrimary)
                             if (valuable.isSold) {
                                 val profit = summary.realizedProfit
                                 val profitPct = summary.realizedProfitPercent
@@ -284,7 +302,7 @@ fun ValuableDetailScreen(
                                     shape = RoundedCornerShape(8.dp),
                                     colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.appColors.primary)
                                 ) {
-                                    Text("Actualizar valor", fontSize = 11.sp)
+                                    Text(stringResource(Res.string.valuable_update_value_btn), fontSize = 11.sp)
                                 }
                                 OutlinedButton(
                                     onClick = { viewModel.showLoanPicker() },
@@ -293,7 +311,7 @@ fun ValuableDetailScreen(
                                     colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.appColors.primary)
                                 ) {
                                     Text(
-                                        if (valuable.linkedLoanId != null) "Cambiar préstamo" else "Vincular préstamo",
+                                        if (valuable.linkedLoanId != null) "Cambiar préstamo" else stringResource(Res.string.valuable_link_loan_title),
                                         fontSize = 11.sp
                                     )
                                 }

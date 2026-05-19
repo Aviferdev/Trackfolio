@@ -48,6 +48,7 @@ import n3to.composeapp.generated.resources.networth_of_format
 import n3to.composeapp.generated.resources.networth_portfolio_label
 import n3to.composeapp.generated.resources.networth_total_assets_label
 import n3to.composeapp.generated.resources.networth_total_label
+import n3to.composeapp.generated.resources.networth_valuables_label
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -162,7 +163,7 @@ internal fun AssetsSummaryCard(data: NetWorthData, balancesHidden: Boolean) {
                 Spacer(Modifier.height(10.dp))
                 HorizontalDivider(color = appCNavyBorder, thickness = 0.5.dp)
                 Spacer(Modifier.height(10.dp))
-                AssetRow("Bienes", data.totalValuablesValue, balancesHidden)
+                AssetRow(stringResource(Res.string.networth_valuables_label), data.totalValuablesValue, balancesHidden)
             }
             HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp), color = appCNavyBorder, thickness = 0.5.dp)
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {

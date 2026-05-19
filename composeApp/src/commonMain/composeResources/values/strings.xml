@@ -1294,6 +1294,7 @@
 
     <!-- PRICE UPDATE - missing -->
     <string name="price_update_bulk_title">Actualizar precios</string>
+    <string name="portfolio_update_price_last_format">Último: %1$s</string>
 
     <!-- BACKUP - missing -->
     <string name="backup_reminder_dialog_title">Recordatorio de backup</string>

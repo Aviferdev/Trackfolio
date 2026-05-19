@@ -92,6 +92,7 @@ import n3to.composeapp.generated.resources.common_cancel
 import n3to.composeapp.generated.resources.common_delete
 import n3to.composeapp.generated.resources.common_error
 import n3to.composeapp.generated.resources.error_asset_not_found
+import n3to.composeapp.generated.resources.transaction_delete_title
 import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import es.aviferdev.n3to.ui.portfolio.components.formatFullDate
@@ -154,7 +155,7 @@ fun AssetHistoryScreen(
             icon = { Text("⚠️", fontSize = 26.sp) },
             title = {
                 Text(
-                    if (tx.isTransfer) "Eliminar traspaso" else "Eliminar movimiento",
+                    if (tx.isTransfer) "Eliminar traspaso" else stringResource(Res.string.transaction_delete_title),
                     fontSize = 16.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.appColors.textPrimary
                 )
             },

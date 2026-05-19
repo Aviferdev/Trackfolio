@@ -23,6 +23,8 @@ import es.aviferdev.n3to.domain.model.Debt
 import es.aviferdev.n3to.domain.model.DebtDirection
 import es.aviferdev.n3to.ui.theme.*
 import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.common_save_changes
+import n3to.composeapp.generated.resources.debt_add_title
 import n3to.composeapp.generated.resources.debt_amount_label
 import n3to.composeapp.generated.resources.debt_i_owe
 import n3to.composeapp.generated.resources.debt_note_optional
@@ -30,6 +32,7 @@ import n3to.composeapp.generated.resources.debt_note_placeholder
 import n3to.composeapp.generated.resources.debt_person_label
 import n3to.composeapp.generated.resources.debt_person_placeholder
 import n3to.composeapp.generated.resources.debt_they_owe
+import n3to.composeapp.generated.resources.debt_edit_title
 import n3to.composeapp.generated.resources.debt_type_label
 import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -134,7 +137,7 @@ fun AddDebtBottomSheetContent(
             .padding(bottom = 32.dp)
     ) {
         Text(
-            text       = if (isEditing) "Editar deuda" else "Nueva deuda",
+            text       = if (isEditing) stringResource(Res.string.debt_edit_title) else stringResource(Res.string.debt_add_title),
             fontSize   = 18.sp,
             fontWeight = FontWeight.SemiBold,
             color      = MaterialTheme.appColors.textPrimary
@@ -228,7 +231,7 @@ fun AddDebtBottomSheetContent(
             )
         ) {
             Text(
-                if (isEditing) "Guardar cambios" else "Guardar deuda",
+                if (isEditing) stringResource(Res.string.common_save_changes) else "Guardar deuda",
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Medium
             )

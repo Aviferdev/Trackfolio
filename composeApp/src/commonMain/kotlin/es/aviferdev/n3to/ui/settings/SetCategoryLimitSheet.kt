@@ -20,6 +20,12 @@ import es.aviferdev.n3to.domain.model.LimitType
 import es.aviferdev.n3to.ui.common.component.SelectableChip
 import es.aviferdev.n3to.ui.common.input.AmountInputField
 import es.aviferdev.n3to.ui.theme.*
+import org.jetbrains.compose.resources.stringResource
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.category_remove_limit
+import n3to.composeapp.generated.resources.common_cancel
+import n3to.composeapp.generated.resources.common_close
+import n3to.composeapp.generated.resources.common_save
 
 import androidx.compose.ui.tooling.preview.Preview
 
@@ -86,7 +92,7 @@ fun SetCategoryLimitSheet(
                     )
                 }
                 IconButton(onClick = onDismiss) {
-                    Icon(Icons.Default.Close, "Cerrar", tint = MaterialTheme.appColors.textSecondary)
+                    Icon(Icons.Default.Close, stringResource(Res.string.common_close), tint = MaterialTheme.appColors.textSecondary)
                 }
             }
 
@@ -150,21 +156,21 @@ fun SetCategoryLimitSheet(
                     disabledContainerColor = MaterialTheme.appColors.primary.copy(alpha = 0.3f)
                 )
             ) {
-                Text("Guardar", fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = Color.White)
+                Text(stringResource(Res.string.common_save), fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = Color.White)
             }
 
             // ── Botón Quitar límite (solo si hay límite actual) ────────────────
             if (currentLimit > 0.0) {
                 Spacer(Modifier.height(8.dp))
                 TextButton(onClick = { onSave(0.0, LimitType.FIXED) }) {
-                    Text("Quitar límite", color = MaterialTheme.appColors.expense, fontSize = 14.sp)
+                    Text(stringResource(Res.string.category_remove_limit), color = MaterialTheme.appColors.expense, fontSize = 14.sp)
                 }
             }
 
             Spacer(Modifier.height(4.dp))
 
             TextButton(onClick = onDismiss) {
-                Text("Cancelar", color = MaterialTheme.appColors.textSecondary, fontSize = 14.sp)
+                Text(stringResource(Res.string.common_cancel), color = MaterialTheme.appColors.textSecondary, fontSize = 14.sp)
             }
         }
     }

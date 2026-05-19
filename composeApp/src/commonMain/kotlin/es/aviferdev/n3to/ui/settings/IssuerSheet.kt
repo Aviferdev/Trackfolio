@@ -20,6 +20,13 @@ import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.Issuer
 import es.aviferdev.n3to.domain.model.IssuerType
 import es.aviferdev.n3to.ui.theme.*
+import org.jetbrains.compose.resources.stringResource
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.common_cancel
+import n3to.composeapp.generated.resources.common_close
+import n3to.composeapp.generated.resources.common_save
+import n3to.composeapp.generated.resources.fixedincome_new_issuer
+import n3to.composeapp.generated.resources.issuer_name_placeholder
 
 import androidx.compose.ui.tooling.preview.Preview
 
@@ -71,13 +78,13 @@ fun AddEditIssuerSheet(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    if (isEditing) "Editar emisor" else "Nuevo emisor",
+                    if (isEditing) "Editar emisor" else stringResource(Res.string.fixedincome_new_issuer),
                     fontSize = 16.sp,
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.appColors.textPrimary
                 )
                 IconButton(onClick = onDismiss) {
-                    Icon(Icons.Default.Close, "Cerrar", tint = MaterialTheme.appColors.textSecondary)
+                    Icon(Icons.Default.Close, stringResource(Res.string.common_close), tint = MaterialTheme.appColors.textSecondary)
                 }
             }
 
@@ -87,7 +94,7 @@ fun AddEditIssuerSheet(
                 value = name,
                 onValueChange = { name = it },
                 modifier = Modifier.fillMaxWidth(),
-                placeholder = { Text("Nombre del emisor", color = MaterialTheme.appColors.textTertiary) },
+                placeholder = { Text(stringResource(Res.string.issuer_name_placeholder), color = MaterialTheme.appColors.textTertiary) },
                 singleLine = true,
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = MaterialTheme.appColors.primary,
@@ -115,13 +122,13 @@ fun AddEditIssuerSheet(
                     disabledContainerColor = MaterialTheme.appColors.primary.copy(alpha = 0.3f)
                 )
             ) {
-                Text("Guardar", fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = Color.White)
+                Text(stringResource(Res.string.common_save), fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = Color.White)
             }
 
             Spacer(Modifier.height(8.dp))
 
             TextButton(onClick = onDismiss) {
-                Text("Cancelar", color = MaterialTheme.appColors.textSecondary, fontSize = 14.sp)
+                Text(stringResource(Res.string.common_cancel), color = MaterialTheme.appColors.textSecondary, fontSize = 14.sp)
             }
         }
     }

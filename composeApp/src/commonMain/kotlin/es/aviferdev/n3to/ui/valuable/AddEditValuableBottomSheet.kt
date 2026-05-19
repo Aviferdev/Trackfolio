@@ -27,25 +27,25 @@ import es.aviferdev.n3to.domain.model.ValuableExpenseCategories
 import es.aviferdev.n3to.ui.common.input.DatePickerRow
 import es.aviferdev.n3to.ui.theme.*
 import org.jetbrains.compose.resources.stringResource
-import trackfolio.composeapp.generated.resources.Res
-import trackfolio.composeapp.generated.resources.common_save
-import trackfolio.composeapp.generated.resources.valuable_add_holding_expense
-import trackfolio.composeapp.generated.resources.valuable_add_purchase_expense
-import trackfolio.composeapp.generated.resources.valuable_description_label
-import trackfolio.composeapp.generated.resources.valuable_description_placeholder
-import trackfolio.composeapp.generated.resources.valuable_estimated_value_label
-import trackfolio.composeapp.generated.resources.valuable_estimated_value_placeholder
-import trackfolio.composeapp.generated.resources.valuable_expense_amount_label
-import trackfolio.composeapp.generated.resources.valuable_expense_delete_cd
-import trackfolio.composeapp.generated.resources.valuable_holding_expenses_title
-import trackfolio.composeapp.generated.resources.valuable_name_label
-import trackfolio.composeapp.generated.resources.valuable_name_placeholder
-import trackfolio.composeapp.generated.resources.valuable_notes_label
-import trackfolio.composeapp.generated.resources.valuable_purchase_date_label
-import trackfolio.composeapp.generated.resources.valuable_purchase_expenses_title
-import trackfolio.composeapp.generated.resources.valuable_purchase_price_label
-import trackfolio.composeapp.generated.resources.portfolio_add_asset_title_edit
-import trackfolio.composeapp.generated.resources.valuable_list_title
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.common_save
+import n3to.composeapp.generated.resources.valuable_add_holding_expense
+import n3to.composeapp.generated.resources.valuable_add_purchase_expense
+import n3to.composeapp.generated.resources.valuable_description_label
+import n3to.composeapp.generated.resources.valuable_description_placeholder
+import n3to.composeapp.generated.resources.valuable_estimated_value_label
+import n3to.composeapp.generated.resources.valuable_estimated_value_placeholder
+import n3to.composeapp.generated.resources.valuable_expense_amount_label
+import n3to.composeapp.generated.resources.valuable_expense_delete_cd
+import n3to.composeapp.generated.resources.valuable_holding_expenses_title
+import n3to.composeapp.generated.resources.valuable_name_label
+import n3to.composeapp.generated.resources.valuable_name_placeholder
+import n3to.composeapp.generated.resources.valuable_notes_label
+import n3to.composeapp.generated.resources.valuable_purchase_date_label
+import n3to.composeapp.generated.resources.valuable_purchase_expenses_title
+import n3to.composeapp.generated.resources.valuable_purchase_price_label
+import n3to.composeapp.generated.resources.portfolio_add_asset_title_edit
+import n3to.composeapp.generated.resources.valuable_list_title
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

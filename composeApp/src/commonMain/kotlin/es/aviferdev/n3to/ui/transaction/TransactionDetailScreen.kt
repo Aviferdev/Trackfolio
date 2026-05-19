@@ -33,8 +33,18 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.common_cancel
+import n3to.composeapp.generated.resources.common_category_label
+import n3to.composeapp.generated.resources.common_date_label
 import n3to.composeapp.generated.resources.common_delete
 import n3to.composeapp.generated.resources.common_error
+import n3to.composeapp.generated.resources.common_retry
+import n3to.composeapp.generated.resources.fiscal_commissions_short
+import n3to.composeapp.generated.resources.transaction_delete_message
+import n3to.composeapp.generated.resources.transaction_detail_account_label
+import n3to.composeapp.generated.resources.transaction_detail_delete_cd
+import n3to.composeapp.generated.resources.transaction_detail_edit_cd
+import n3to.composeapp.generated.resources.transaction_detail_issuer_label
+import n3to.composeapp.generated.resources.transaction_detail_notes_label
 import n3to.composeapp.generated.resources.transaction_detail_title
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -97,7 +107,7 @@ fun TransactionDetailScreen(
                             onClick = { viewModel.refresh() },
                             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.appColors.primary)
                         ) {
-                            Text("Reintentar")
+                            Text(stringResource(Res.string.common_retry))
                         }
                     }
                 }
@@ -137,7 +147,7 @@ fun TransactionDetailScreen(
             },
             text = {
                 Text(
-                    "¿Seguro que quieres eliminar este movimiento? Esta acción no se puede deshacer.",
+                    stringResource(Res.string.transaction_delete_message),
                     fontSize = 13.sp,
                     color = MaterialTheme.appColors.textSecondary
                 )
@@ -287,21 +297,21 @@ private fun TransactionDetailContent(
             Column(modifier = Modifier.padding(vertical = 4.dp)) {
                 // Categoría
                 DetailRow(
-                    label = "Categoría",
+                    label = stringResource(Res.string.common_category_label),
                     value = categoryName,
                     isLast = false
                 )
 
                 // Cuenta
                 DetailRow(
-                    label = "Cuenta",
+                    label = stringResource(Res.string.transaction_detail_account_label),
                     value = accountName,
                     isLast = false
                 )
 
                 // Fecha
                 DetailRow(
-                    label = "Fecha",
+                    label = stringResource(Res.string.common_date_label),
                     value = formatDetailDate(transaction.date),
                     isLast = false
                 )
@@ -310,7 +320,7 @@ private fun TransactionDetailContent(
                 val notes = transaction.notes
                 if (!notes.isNullOrBlank()) {
                     DetailRow(
-                        label = "Notas",
+                        label = stringResource(Res.string.transaction_detail_notes_label),
                         value = notes,
                         isLast = !shouldShowIncomeDetails(transaction)
                     )
@@ -337,7 +347,7 @@ private fun TransactionDetailContent(
                     val commissionAmount = transaction.commissionAmount
                     if (commissionAmount != null && commissionAmount > 0) {
                         DetailRow(
-                            label = "Comisiones",
+                            label = stringResource(Res.string.fiscal_commissions_short),
                             value = "${formatAmount(commissionAmount)} €",
                             isLast = false
                         )
@@ -345,7 +355,7 @@ private fun TransactionDetailContent(
                     val issuerName = transaction.issuerName
                     if (!issuerName.isNullOrBlank()) {
                         DetailRow(
-                            label = "Emisor",
+                            label = stringResource(Res.string.transaction_detail_issuer_label),
                             value = issuerName,
                             isLast = true
                         )
@@ -379,12 +389,12 @@ private fun TransactionDetailContent(
                 ) {
                     Icon(
                         imageVector = Icons.Outlined.Edit,
-                        contentDescription = "Editar",
+                        contentDescription = stringResource(Res.string.transaction_detail_edit_cd),
                         modifier = Modifier.size(18.dp)
                     )
                     Spacer(Modifier.width(6.dp))
                     Text(
-                        "Editar",
+                        stringResource(Res.string.transaction_detail_edit_cd),
                         fontSize = 15.sp,
                         fontWeight = FontWeight.Medium
                     )
@@ -405,12 +415,12 @@ private fun TransactionDetailContent(
                 ) {
                     Icon(
                         imageVector = Icons.Outlined.Delete,
-                        contentDescription = "Eliminar",
+                        contentDescription = stringResource(Res.string.transaction_detail_delete_cd),
                         modifier = Modifier.size(18.dp)
                     )
                     Spacer(Modifier.width(6.dp))
                     Text(
-                        "Eliminar",
+                        stringResource(Res.string.transaction_detail_delete_cd),
                         fontSize = 15.sp,
                         fontWeight = FontWeight.Medium
                     )

@@ -33,8 +33,23 @@ import es.aviferdev.n3to.ui.common.help.HelpKeys
 import es.aviferdev.n3to.ui.common.navigation.TopBarApp
 import es.aviferdev.n3to.ui.theme.*
 import kotlinx.coroutines.delay
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.account_delete_full_message
+import n3to.composeapp.generated.resources.settings_account_section_categories
+import n3to.composeapp.generated.resources.settings_account_section_fiscal
+import n3to.composeapp.generated.resources.settings_account_section_maintenance
+import n3to.composeapp.generated.resources.settings_account_section_planning
+import n3to.composeapp.generated.resources.settings_delete_account_label
+import n3to.composeapp.generated.resources.settings_delete_account_title
+import n3to.composeapp.generated.resources.settings_edit_account_label
+import n3to.composeapp.generated.resources.settings_expense_categories_label
+import n3to.composeapp.generated.resources.settings_income_types_label
+import n3to.composeapp.generated.resources.settings_monthly_goals_label
+import n3to.composeapp.generated.resources.settings_tax_profile_label
+import n3to.composeapp.generated.resources.home_section_emergency_fund
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -81,17 +96,17 @@ fun AccountConfigScreen(
 
                 // — Categorías —
                 item {
-                    SettingsSectionHeader(label = "Categorías")
+                    SettingsSectionHeader(label = stringResource(Res.string.settings_account_section_categories))
                     SettingsGroupCard {
                         SettingsNavigableRow(
                             icon = Icons.AutoMirrored.Outlined.TrendingDown,
-                            label = "Categorías de gastos",
+                            label = stringResource(Res.string.settings_expense_categories_label),
                             onClick = onNavigateToExpenseSettings
                         )
                         SettingsRowDivider()
                         SettingsNavigableRow(
                             icon = Icons.AutoMirrored.Outlined.TrendingUp,
-                            label = "Tipos de ingresos",
+                            label = stringResource(Res.string.settings_income_types_label),
                             onClick = onNavigateToIncomeSettings
                         )
                     }
@@ -99,11 +114,11 @@ fun AccountConfigScreen(
 
                 // — Fiscalidad —
                 item {
-                    SettingsSectionHeader(label = "Fiscalidad")
+                    SettingsSectionHeader(label = stringResource(Res.string.settings_account_section_fiscal))
                     SettingsGroupCard {
                         SettingsNavigableRow(
                             icon = Icons.Outlined.AccountBalance,
-                            label = "Perfil fiscal",
+                            label = stringResource(Res.string.settings_tax_profile_label),
                             onClick = onNavigateToTaxProfile
                         )
                     }
@@ -111,17 +126,17 @@ fun AccountConfigScreen(
 
                 // — Planificación —
                 item {
-                    SettingsSectionHeader(label = "Planificación")
+                    SettingsSectionHeader(label = stringResource(Res.string.settings_account_section_planning))
                     SettingsGroupCard {
                         SettingsNavigableRow(
                             icon = Icons.Outlined.GpsFixed,
-                            label = "Objetivos mensuales",
+                            label = stringResource(Res.string.settings_monthly_goals_label),
                             onClick = onNavigateToGoals
                         )
                         SettingsRowDivider()
                         SettingsNavigableRow(
                             icon = Icons.Outlined.Shield,
-                            label = "Fondo de emergencia",
+                            label = stringResource(Res.string.home_section_emergency_fund),
                             onClick = onNavigateToEmergencyFund
                         )
                     }
@@ -129,7 +144,7 @@ fun AccountConfigScreen(
 
                 // — Mantenimiento —
                 item {
-                    SettingsSectionHeader(label = "Mantenimiento")
+                    SettingsSectionHeader(label = stringResource(Res.string.settings_account_section_maintenance))
                     SettingsGroupCard {
                         SettingsReconciliationIntervalRow(
                             interval = state.reconciliationInterval,
@@ -138,7 +153,7 @@ fun AccountConfigScreen(
                         SettingsRowDivider()
                         ActionRow(
                             icon = Icons.Outlined.Edit,
-                            label = "Editar cuenta",
+                            label = stringResource(Res.string.settings_edit_account_label),
                             onClick = { viewModel.openEditSheet() },
                             color = MaterialTheme.appColors.cyanAccent,
                             showChevron = true
@@ -146,7 +161,7 @@ fun AccountConfigScreen(
                         SettingsRowDivider()
                         ActionRow(
                             icon = Icons.Outlined.Delete,
-                            label = "Eliminar cuenta",
+                            label = stringResource(Res.string.settings_delete_account_label),
                             onClick = { viewModel.requestDelete() },
                             color = MaterialTheme.appColors.expense
                         )
@@ -171,8 +186,8 @@ fun AccountConfigScreen(
     // — Delete confirm —
     if (viewModel.showDeleteConfirm.collectAsState().value) {
         DeleteConfirmDialog(
-            title = "Eliminar cuenta",
-            message = "¿Eliminar \"${account?.name}\"? Esto también eliminará todos sus movimientos, activos y datos asociados.",
+            title = stringResource(Res.string.settings_delete_account_title),
+            message = stringResource(Res.string.account_delete_full_message, account?.name ?: ""),
             onConfirm = {
                 viewModel.confirmDelete()
                 onBack()
