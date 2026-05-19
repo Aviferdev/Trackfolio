@@ -206,8 +206,24 @@ class PortfolioViewModel(
     private val _showAddPortfolioSheet = MutableStateFlow(false)
     val showAddPortfolioSheet: StateFlow<Boolean> = _showAddPortfolioSheet.asStateFlow()
 
-    private val _portfolios = MutableStateFlow<List<Portfolio>>(emptyList())
-    val portfolios: StateFlow<List<Portfolio>> = _portfolios.asStateFlow()
+    private val _portfolios: StateFlow<List<Portfolio>> = session.selectedAccountId
+        .flatMapLatest { accountId ->
+            if (accountId == null) flowOf(emptyList())
+            else getPortfoliosByAccount(accountId)
+        }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+    val portfolios: StateFlow<List<Portfolio>> = _portfolios
+
+    init {
+        viewModelScope.launch {
+            portfolios.collect { list ->
+                val currentId = _selectedPortfolioId.value
+                if (currentId != null && list.none { it.id == currentId }) {
+                    _selectedPortfolioId.value = null
+                }
+            }
+        }
+    }
 
     fun selectPortfolio(id: String?) { _selectedPortfolioId.value = id }
     fun openAddPortfolioSheet()  { _showAddPortfolioSheet.value = true }
@@ -290,16 +306,6 @@ class PortfolioViewModel(
                 val nearMaturityFlow = getNearMaturityPositions?.invoke(accountId) ?: flowOf(emptyList())
                 val bondIssuersFlow  = getBondIssuers(accountId, IssuerType.BOND_ISSUER)
                 val bankIssuersFlow  = getBondIssuers(accountId, IssuerType.BANK)
-
-                viewModelScope.launch {
-                    getPortfoliosByAccount(accountId).collect { list ->
-                        _portfolios.value = list
-                        val currentId = _selectedPortfolioId.value
-                        if (currentId != null && list.none { it.id == currentId }) {
-                            _selectedPortfolioId.value = null
-                        }
-                    }
-                }
 
                 val baseDataFlow = combine(
                     getAssetsByAccount(accountId),

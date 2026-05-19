@@ -90,7 +90,7 @@ fun PortfolioSettingsScreen(
 
     // ── Portfolio management ────────────────────────────────────────────────
     val session = koinInject<AccountSession>()
-    val portfolioVM = koinInject<PortfolioViewModel>()
+    val portfolioVM: PortfolioViewModel = koinViewModel()
     val savePortfolio = koinInject<SavePortfolioUseCase>()
     val updatePortfolio = koinInject<UpdatePortfolioUseCase>()
     val deletePortfolio = koinInject<DeletePortfolioUseCase>()
