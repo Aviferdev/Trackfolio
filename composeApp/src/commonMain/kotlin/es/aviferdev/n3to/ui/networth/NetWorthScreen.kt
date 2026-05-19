@@ -23,6 +23,7 @@ import es.aviferdev.n3to.domain.model.NetWorthData
 import es.aviferdev.n3to.domain.model.NetWorthHistoryPoint
 import es.aviferdev.n3to.ui.annual.DonutChartCard
 import es.aviferdev.n3to.ui.common.*
+import es.aviferdev.n3to.ui.common.component.EmptyStateView
 import es.aviferdev.n3to.ui.common.LineChartWithTimeRange
 import es.aviferdev.n3to.ui.common.navigation.TopBarApp
 import es.aviferdev.n3to.ui.loan.AddEditLoanBottomSheet
@@ -58,6 +59,7 @@ fun NetWorthScreen(
     onLoanClick: (String) -> Unit = {},
     onPropertyClick: (String) -> Unit = {},
     onValuableClick: (String) -> Unit = {},
+    onNavigateToSettings: () -> Unit = {},
     viewModel: NetWorthViewModel = koinViewModel()
 ) {
     val uiState              by viewModel.uiState.collectAsState()
@@ -111,6 +113,19 @@ fun NetWorthScreen(
             Modifier.fillMaxSize().background(MaterialTheme.appColors.navyDeep),
             contentAlignment = Alignment.Center
         ) { SplashLoader() }
+
+        is NetWorthUiState.Empty -> Box(
+            Modifier.fillMaxSize().background(MaterialTheme.appColors.navyDeep),
+            contentAlignment = Alignment.Center
+        ) {
+            EmptyStateView(
+                icon        = "\uD83C\uDFE6",
+                title       = "Sin cuenta configurada",
+                subtitle    = "Crea una cuenta desde Ajustes\npara ver tu patrimonio neto",
+                actionLabel = "Ir a Ajustes",
+                onAction    = onNavigateToSettings
+            )
+        }
 
         is NetWorthUiState.Error -> Box(
             Modifier.fillMaxSize().background(MaterialTheme.appColors.navyDeep),

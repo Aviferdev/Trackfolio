@@ -360,6 +360,9 @@ fun N3toNavHost(
                             navController.navigate(Screen.ValuableDetail.buildRoute(valuableId)) {
                                 launchSingleTop = true
                             }
+                        },
+                        onNavigateToSettings = {
+                            navController.navigate(Screen.Settings.route) { launchSingleTop = true }
                         }
                     )
                 }

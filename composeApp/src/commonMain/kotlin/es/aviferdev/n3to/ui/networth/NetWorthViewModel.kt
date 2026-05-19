@@ -28,6 +28,7 @@ import kotlinx.coroutines.launch
 
 sealed class NetWorthUiState {
     data object Loading : NetWorthUiState()
+    data object Empty : NetWorthUiState()
     data class Success(
         val data: NetWorthData,
         val netWorthHistory: List<NetWorthHistoryPoint> = emptyList(),
@@ -47,7 +48,7 @@ class NetWorthViewModel(
 
     val uiState: StateFlow<NetWorthUiState> = session.selectedAccountId
         .flatMapLatest { accountId ->
-            if (accountId == null) flowOf(NetWorthUiState.Loading)
+            if (accountId == null) flowOf(NetWorthUiState.Empty)
             else {
                 val dataFlow = getNetWorthData(accountId)
                 val historyFlow = getNetWorthHistory(accountId)
