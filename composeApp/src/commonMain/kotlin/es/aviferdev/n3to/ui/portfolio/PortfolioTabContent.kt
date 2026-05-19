@@ -40,6 +40,7 @@ import es.aviferdev.n3to.ui.common.LineChartWithTimeRange
 import es.aviferdev.n3to.ui.common.component.EmptyStateView
 import es.aviferdev.n3to.ui.common.component.NavyTab
 import es.aviferdev.n3to.ui.fixedincome.FixedIncomePositionCard
+import es.aviferdev.n3to.ui.savingsrates.SavingsRatePreviewCard
 
 import es.aviferdev.n3to.ui.theme.PrimaryDark
 import n3to.composeapp.generated.resources.Res
@@ -82,6 +83,7 @@ fun PortfolioTabContent(
     onNavigateToSettings: () -> Unit,
     onAssetClick: (String) -> Unit,
     onFixedIncomeClick: (String) -> Unit,
+    onNavigateToSavingsRates: () -> Unit = {},
     onSelectDistributionView: (DistributionView) -> Unit,
     onOpenUpdatePriceSheet: (Asset) -> Unit,
     onShowRegisterCouponSheet: (FixedIncomePosition) -> Unit,
@@ -303,6 +305,15 @@ fun PortfolioTabContent(
                             }
                         }
                     }
+                }
+            }
+
+            if (isTodasTab) {
+                item(key = "savings_rates_preview") {
+                    SavingsRatePreviewCard(
+                        onNavigateToSavingsRates = onNavigateToSavingsRates,
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                    )
                 }
             }
         }

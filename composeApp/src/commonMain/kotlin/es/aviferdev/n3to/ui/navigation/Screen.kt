@@ -71,6 +71,8 @@ sealed class Screen(val route: String) {
         fun buildRoute(valuableId: String): String = "valuable_detail/$valuableId"
     }
 
+    data object SavingsRates : Screen("savings_rates")
+
     data object GoalSettings : Screen("goals_settings")
 
     data object EmergencyFundSettings : Screen("settings_emergency_fund")

@@ -4,6 +4,8 @@ import es.aviferdev.n3to.data.datasource.price.ExchangeRateRemoteDataSource
 import es.aviferdev.n3to.data.datasource.price.ExchangeRateRemoteDataSourceImpl
 import es.aviferdev.n3to.data.datasource.price.PriceRemoteDataSource
 import es.aviferdev.n3to.data.datasource.price.PriceRemoteDataSourceImpl
+import es.aviferdev.n3to.data.datasource.savingsrates.SavingsRatesRemoteDataSource
+import es.aviferdev.n3to.data.datasource.savingsrates.SavingsRatesRemoteDataSourceImpl
 import es.aviferdev.n3to.platform.httpClientEngine
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
@@ -32,4 +34,5 @@ val networkModule = module {
     // ── Remote DataSources ──
     single<PriceRemoteDataSource> { PriceRemoteDataSourceImpl(get()) }
     single<ExchangeRateRemoteDataSource> { ExchangeRateRemoteDataSourceImpl(get()) }
+    single<SavingsRatesRemoteDataSource> { SavingsRatesRemoteDataSourceImpl(get()) }
 }

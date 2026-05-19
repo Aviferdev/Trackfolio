@@ -54,6 +54,7 @@ import es.aviferdev.n3to.ui.common.LineChartWithTimeRange
 import es.aviferdev.n3to.ui.common.component.EmptyStateView
 import es.aviferdev.n3to.ui.common.component.IconActionButton
 import es.aviferdev.n3to.ui.common.component.NavyTabRow
+import es.aviferdev.n3to.ui.savingsrates.SavingsRatePreviewCard
 import es.aviferdev.n3to.ui.fixedincome.EditFixedIncomeBottomSheet
 import es.aviferdev.n3to.ui.common.button.IconButtonApp
 import es.aviferdev.n3to.ui.common.navigation.TopBarApp
@@ -108,6 +109,7 @@ fun PortfolioScreen(
     onAssetClick: (String) -> Unit = {},
     onNavigateToSettings: () -> Unit = {},
     onFixedIncomeClick: (String) -> Unit = {},
+    onNavigateToSavingsRates: () -> Unit = {},
     viewModel: PortfolioViewModel = koinViewModel(),
     catalogViewModel: AssetCatalogViewModel = koinViewModel(),
     platformViewModel: PlatformViewModel = koinViewModel(),
@@ -205,6 +207,7 @@ fun PortfolioScreen(
                     onNavigateToSettings = onNavigateToSettings,
                     onAssetClick = onAssetClick,
                     onFixedIncomeClick = onFixedIncomeClick,
+                    onNavigateToSavingsRates = onNavigateToSavingsRates,
                     onSelectDistributionView = { viewModel.selectDistributionView(it) },
                     onOpenUpdatePriceSheet = { asset -> viewModel.openUpdatePriceSheet(asset) },
                     onShowRegisterCouponSheet = { position -> viewModel.showRegisterCouponSheet(position) }

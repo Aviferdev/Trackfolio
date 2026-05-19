@@ -64,6 +64,7 @@ import es.aviferdev.n3to.ui.settings.SettingsScreen
 import es.aviferdev.n3to.ui.settings.emergencyfund.EmergencyFundSettingsScreen
 import es.aviferdev.n3to.ui.settings.goal.GoalSettingsScreen
 import es.aviferdev.n3to.ui.settings.taxprofile.TaxProfileSettingsScreen
+import es.aviferdev.n3to.ui.savingsrates.SavingsRatesScreen
 import es.aviferdev.n3to.ui.transaction.TransactionDetailScreen
 import es.aviferdev.n3to.ui.transaction.TransactionListScreen
 import n3to.composeapp.generated.resources.Res
@@ -344,7 +345,18 @@ fun N3toNavHost(
                             navController.navigate(Screen.FixedIncomeDetail.buildRoute(positionId)) {
                                 launchSingleTop = true
                             }
+                        },
+                        onNavigateToSavingsRates = {
+                            navController.navigate(Screen.SavingsRates.route) {
+                                launchSingleTop = true
+                            }
                         }
+                    )
+                }
+
+                composable(Screen.SavingsRates.route) {
+                    SavingsRatesScreen(
+                        onNavigateBack = { navController.popBackStack() }
                     )
                 }
                 composable(Screen.NetWorth.route) {

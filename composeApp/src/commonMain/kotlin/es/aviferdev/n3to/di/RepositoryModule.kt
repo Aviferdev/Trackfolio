@@ -105,8 +105,10 @@ import es.aviferdev.n3to.domain.repository.TaxProfileSnapshotRepository
 import es.aviferdev.n3to.domain.repository.ValuableRepository
 import es.aviferdev.n3to.domain.repository.PriceRepository
 import es.aviferdev.n3to.domain.repository.ExchangeRateRepository
+import es.aviferdev.n3to.domain.repository.SavingsRatesRepository
 import es.aviferdev.n3to.data.repository.price.PriceRepositoryImpl
 import es.aviferdev.n3to.data.repository.price.ExchangeRateRepositoryImpl
+import es.aviferdev.n3to.data.repository.savingsrates.SavingsRatesRepositoryImpl
 import org.koin.dsl.module
 
 val repositoryModule = module {
@@ -183,4 +185,7 @@ val repositoryModule = module {
     // ── Price / Exchange Rate Repositories ─────────────────────────────────────
     single<PriceRepository>                     { PriceRepositoryImpl(get()) }
     single<ExchangeRateRepository>              { ExchangeRateRepositoryImpl(get(), get()) }
+
+    // ── Savings Rates Repository ────────────────────────────────────────────────
+    single<SavingsRatesRepository>              { SavingsRatesRepositoryImpl(get(), get()) }
 }

@@ -202,6 +202,8 @@ import es.aviferdev.n3to.ui.transaction.TransactionDetailViewModel
 import es.aviferdev.n3to.ui.transaction.TransactionViewModel
 import es.aviferdev.n3to.ui.valuable.ValuableDetailViewModel
 import es.aviferdev.n3to.ui.valuable.ValuableListViewModel
+import es.aviferdev.n3to.domain.usecase.savingsrates.GetSavingsRatesUseCase
+import es.aviferdev.n3to.ui.savingsrates.SavingsRatesViewModel
 import org.koin.core.module.dsl.viewModel
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
@@ -747,4 +749,8 @@ val useCaseModule = module {
             session         = get()
         )
     }
+
+    // ── Savings Rates ────────────────────────────────────────────────────────────
+    factory { GetSavingsRatesUseCase(get()) }
+    viewModel { SavingsRatesViewModel(get()) }
 }
