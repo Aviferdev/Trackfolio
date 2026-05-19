@@ -1,0 +1,1487 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- =====================================================================
+         COMMON – Buttons, actions and generic labels
+         ===================================================================== -->
+    <string name="common_cancel">キャンセル</string>
+    <string name="common_accept">承認</string>
+    <string name="common_delete">削除</string>
+    <string name="common_save">保存</string>
+    <string name="common_close">閉じる</string>
+    <string name="common_error">エラー</string>
+    <string name="common_loading">読み込み中…</string>
+    <string name="common_update">更新</string>
+    <string name="common_archive">アーカイブ</string>
+    <string name="common_search_placeholder">検索…</string>
+
+    <!-- Accessibility content descriptions -->
+    <string name="common_search_cd">検索</string>
+    <string name="common_clear_search_cd">検索をクリア</string>
+    <string name="common_back_cd">戻る</string>
+    <string name="common_action_cd">アクション</string>
+
+    <!-- Generic empty states -->
+    <string name="common_empty_title">データなし</string>
+    <string name="common_empty_subtitle">表示する項目がありません</string>
+
+    <!-- =====================================================================
+         NAVIGATION – Bottom bar
+         ===================================================================== -->
+    <string name="nav_home">ホーム</string>
+    <string name="nav_portfolio">ポートフォリオ</string>
+    <string name="nav_networth">純資産</string>
+
+    <!-- =====================================================================
+         DATES – Full months
+         ===================================================================== -->
+    <string name="date_month_full_01">1月</string>
+    <string name="date_month_full_02">2月</string>
+    <string name="date_month_full_03">3月</string>
+    <string name="date_month_full_04">4月</string>
+    <string name="date_month_full_05">5月</string>
+    <string name="date_month_full_06">6月</string>
+    <string name="date_month_full_07">7月</string>
+    <string name="date_month_full_08">8月</string>
+    <string name="date_month_full_09">9月</string>
+    <string name="date_month_full_10">10月</string>
+    <string name="date_month_full_11">11月</string>
+    <string name="date_month_full_12">12月</string>
+
+    <!-- DATES – Short months (3 letters) -->
+    <string name="date_month_short_01">1月</string>
+    <string name="date_month_short_02">2月</string>
+    <string name="date_month_short_03">3月</string>
+    <string name="date_month_short_04">4月</string>
+    <string name="date_month_short_05">5月</string>
+    <string name="date_month_short_06">6月</string>
+    <string name="date_month_short_07">7月</string>
+    <string name="date_month_short_08">8月</string>
+    <string name="date_month_short_09">9月</string>
+    <string name="date_month_short_10">10月</string>
+    <string name="date_month_short_11">11月</string>
+    <string name="date_month_short_12">12月</string>
+
+    <!-- DATES – Relative -->
+    <string name="date_today">今日</string>
+    <string name="date_yesterday">昨日</string>
+    <string name="date_just_now">たった今</string>
+    <string name="date_one_minute_ago">1分前</string>
+    <string name="date_minutes_ago">%1$d分前</string>
+    <string name="date_one_hour_ago">1時間前</string>
+    <string name="date_hours_ago">%1$d時間前</string>
+    <string name="date_days_ago">%1$d日前</string>
+    <string name="date_one_month_ago">1ヶ月前</string>
+    <string name="date_months_ago">%1$dヶ月前</string>
+    <string name="date_one_year_ago">1年前</string>
+    <string name="date_years_ago">%1$d年前</string>
+
+    <!-- DATES – Full date format (day of month of year) -->
+    <string name="date_format_dmy">%1$d %2$s %3$d</string>
+
+    <!-- DATES – Selector -->
+    <string name="common_select_date">日付を選択</string>
+
+    <!-- =====================================================================
+         GREETINGS – By time of day
+         ===================================================================== -->
+    <string name="greeting_morning">おはようございます</string>
+    <string name="greeting_afternoon">こんにちは</string>
+    <string name="greeting_evening">こんばんは</string>
+
+    <!-- =====================================================================
+         HOME – HeroCard, quick access, sections
+         ===================================================================== -->
+    <string name="home_hero_balance_label">口座残高</string>
+    <string name="home_hero_net_with_debts">借入金を含む純資産</string>
+    <string name="home_show_balances">残高を表示</string>
+    <string name="home_hide_balances">残高を非表示</string>
+    <string name="home_confirm_identity">本人確認</string>
+    <string name="home_section_goals">目標</string>
+    <string name="home_section_emergency_fund">緊急予備資金</string>
+    <string name="home_section_recent">最近の取引</string>
+    <string name="home_view_all">すべて表示</string>
+    <string name="home_no_movements_title">取引なし</string>
+    <string name="home_no_movements_subtitle">+を押して最初の取引を追加</string>
+    <string name="home_quick_resumen">サマリー</string>
+    <string name="home_quick_debts">負債</string>
+    <string name="home_quick_fiscal">税務</string>
+    <string name="home_settings_cd">設定</string>
+
+    <!-- HOME – Emergency fund -->
+    <string name="home_ef_configure_title">緊急予備資金を設定</string>
+    <string name="home_ef_configure_subtitle">残高を安全に保つ — タップして設定</string>
+    <string name="home_ef_covered">確保済み ✅</string>
+    <string name="home_ef_months">%1$dヶ月</string>
+    <string name="home_ef_current_balance">現在の残高</string>
+    <string name="home_ef_target">目標額</string>
+    <string name="home_ef_missing_format">基金を満たすにはさらに%1$sが必要です</string>
+    <string name="home_ef_monthly_avg_format">平均支出: %1$s/月</string>
+
+    <!-- HOME – Goals -->
+    <string name="home_goals_define_title">月間目標を設定</string>
+    <string name="home_goals_define_subtitle">貯蓄＆投資 — タップして設定</string>
+    <string name="home_goals_monthly">今月の目標</string>
+    <string name="home_goals_savings">貯蓄</string>
+    <string name="home_goals_investment">投資</string>
+    <string name="home_goals_projection_above">📈 予測: %1$s — 目標超過 (+%2$s)</string>
+    <string name="home_goals_pace_needed">📊 現在のペース: %1$s€/日 — 目標達成には%2$s€/日が必要</string>
+    <string name="home_goals_no_movement">📊 今月はまだ動きなし</string>
+
+    <!-- HOME – Banners -->
+    <string name="home_price_reminder_one">%1$d個の資産に未更新の価格 (&gt;7日)</string>
+    <string name="home_price_reminder_many">%1$d個の資産に未更新の価格 (&gt;7日)</string>
+    <string name="home_backup_never">まだバックアップを作成していません</string>
+    <string name="home_backup_days_format">最後のバックアップから%1$d日</string>
+    <string name="home_backup_action">バックアップを作成</string>
+    <string name="home_maturity_title">間近の満期</string>
+    <string name="home_maturity_more_format">+%1$d件</string>
+
+    <!-- =====================================================================
+         TRANSACTION – Default labels
+         ===================================================================== -->
+    <string name="transaction_label_investment">投資</string>
+    <string name="transaction_label_balance_adjustment">残高調整</string>
+    <string name="transaction_label_income">収入</string>
+    <string name="transaction_label_expense">支出</string>
+
+    <!-- =====================================================================
+         SETTINGS – Section titles and options
+         ===================================================================== -->
+    <string name="settings_title">設定</string>
+    <string name="settings_section_accounts">口座</string>
+    <string name="settings_section_security">セキュリティ</string>
+    <string name="settings_section_reminders">リマインダー</string>
+    <string name="settings_section_appearance">外観</string>
+    <string name="settings_section_privacy">プライバシー</string>
+    <string name="settings_section_data">データ</string>
+    <string name="settings_section_info">情報</string>
+    <string name="settings_add_account">口座を追加</string>
+    <string name="settings_add">追加</string>
+
+    <!-- Settings – Security -->
+    <string name="settings_biometric_lock">生体認証ロック</string>
+    <string name="settings_biometric_enabled">有効</string>
+    <string name="settings_biometric_disabled">無効</string>
+    <string name="settings_biometric_activate">生体認証を有効化</string>
+    <string name="settings_biometric_title">生体認証</string>
+    <string name="settings_biometric_unavailable">生体認証が利用できません。端末設定で指紋またはPINを設定してください。</string>
+
+    <!-- Settings – Appearance -->
+    <string name="settings_dark_theme">ダークテーマ</string>
+    <string name="settings_theme_enabled">有効</string>
+    <string name="settings_theme_disabled">無効</string>
+
+    <!-- Settings – Premium -->
+    <string name="settings_premium_title">Trackfolio Premium</string>
+    <string name="settings_premium_lifetime">永久</string>
+    <string name="settings_premium_active">有効</string>
+    <string name="settings_premium_cta">Premiumを入手</string>
+    <string name="settings_premium_limit_title">無料アカウント数の制限</string>
+    <string name="settings_premium_limit_message">無料プランの%1$d口座の上限に達しました。Premiumで無制限の口座をご利用いただけます。</string>
+
+    <!-- Settings – Privacy -->
+    <string name="settings_privacy_data">プライバシー＆データ</string>
+
+    <!-- Settings – Data -->
+    <string name="settings_backup">バックアップ</string>
+    <string name="settings_backup_reminder_title">バックアップリマインダー</string>
+    <string name="settings_backup_reminder_off">無効</string>
+
+    <!-- Settings – Reminders -->
+    <string name="settings_interval_7d">7日</string>
+    <string name="settings_interval_15d">15日</string>
+    <string name="settings_interval_30d">30日</string>
+    <string name="settings_reconciliation_reminder_title">残高調整リマインダー</string>
+
+    <!-- Settings – Info -->
+    <string name="settings_about">このアプリについて</string>
+    <string name="settings_show_onboarding">イントロを表示</string>
+
+    <!-- Settings – Dialogs -->
+    <string name="settings_delete_account_title">口座を削除</string>
+    <string name="settings_delete_account_message">「%1$s」を削除しますか？関連するすべての取引も削除されます。</string>
+    <string name="settings_not_now">今はしない</string>
+    <string name="settings_configure_cd">設定</string>
+    <string name="settings_edit_cd">編集</string>
+
+    <!-- =====================================================================
+         PORTFOLIO – Common portfolio strings
+         ===================================================================== -->
+    <string name="portfolio_title">ポートフォリオ</string>
+    <string name="portfolio_evolution_title">価値の推移</string>
+    <string name="portfolio_monthly_value">月次ポートフォリオ価値</string>
+    <string name="portfolio_empty_title">ポジションなし</string>
+    <string name="portfolio_empty_subtitle">+を押して最初の投資を登録</string>
+    <string name="portfolio_new_purchase">新規購入</string>
+    <string name="portfolio_new_bond">新規債券/定期預金</string>
+    <string name="portfolio_settings_cd">ポートフォリオ設定</string>
+    <string name="portfolio_distribution_view_category">カテゴリ</string>
+    <string name="portfolio_distribution_view_composition">構成</string>
+    <string name="portfolio_distribution_view_region">地域</string>
+    <string name="portfolio_distribution_view_sector">セクター</string>
+
+    <!-- PORTFOLIO – Summary -->
+    <string name="portfolio_summary_total_value">総額</string>
+    <string name="portfolio_summary_invested">投資額</string>
+    <string name="portfolio_summary_total_pnl">総利益</string>
+    <string name="portfolio_summary_realized">実現損益</string>
+    <string name="portfolio_summary_unrealized">未実現損益</string>
+    <string name="portfolio_summary_positions_one">%1$d件のオープンポジション</string>
+    <string name="portfolio_summary_positions_many">%1$d件のオープンポジション</string>
+
+    <!-- =====================================================================
+         PRIVACY – Privacy and data screen
+         ===================================================================== -->
+    <string name="privacy_restore_success">購入が正常に復元されました</string>
+    <string name="privacy_restore_error">エラー: %1$s</string>
+    <string name="privacy_back_cd">戻る</string>
+    <string name="privacy_revoke_title">すべての同意を取り消しますか？</string>
+    <string name="privacy_revoke_message">使用状況分析とエラーレポートが無効になります。この操作は即座に反映されます。</string>
+    <string name="privacy_revoke_confirm">すべてを取り消す</string>
+
+    <!-- Privacy – Consent -->
+    <string name="privacy_section_consent">同意</string>
+    <string name="privacy_analytics_title">改善にご協力ください</string>
+    <string name="privacy_analytics_desc">アプリ改善のための匿名使用状況分析。</string>
+    <string name="privacy_crash_title">問題が発生したら通知</string>
+    <string name="privacy_crash_desc">バグ修正のための匿名エラーレポート。</string>
+    <string name="privacy_consent_date_format">%1$sに同意を記録</string>
+
+    <!-- Privacy – Premium -->
+    <string name="privacy_premium_active_label">Premium有効</string>
+    <string name="privacy_premium_lifetime_value">永久アクセス</string>
+    <string name="privacy_premium_subscription_value">アクティブなサブスクリプション</string>
+    <string name="privacy_premium_valid_until">有効期限</string>
+    <string name="privacy_premium_manage">サブスクリプションを管理</string>
+    <string name="privacy_premium_plan">現在のプラン</string>
+    <string name="privacy_premium_free">無料</string>
+    <string name="privacy_premium_no_ads_value">Premiumにアップグレードすると</string>
+    <string name="privacy_premium_restore">購入を復元</string>
+
+    <!-- Privacy – Data collected -->
+    <string name="privacy_section_data_collected">収集されるデータ</string>
+    <string name="privacy_data_screens">閲覧した画面</string>
+    <string name="privacy_data_crash_reports">エラーレポート</string>
+    <string name="privacy_data_financial">財務データ</string>
+    <string name="privacy_data_personal">個人情報</string>
+    <string name="privacy_data_revenuecat">サブスクリプション管理 (RevenueCat)</string>
+
+    <!-- Privacy – Actions -->
+    <string name="privacy_revoke_all_button">すべての同意を取り消す</string>
+    <string name="privacy_revoke_all_hint">取り消すと、すべての追跡データが直ちに無効になります。</string>
+    <string name="privacy_policy_link">プライバシーポリシー</string>
+
+    <!-- =====================================================================
+         PORTFOLIO – Settings
+         ===================================================================== -->
+    <string name="portfolio_settings_title">ポートフォリオ設定</string>
+    <string name="portfolio_settings_category_section">資産カテゴリ</string>
+    <string name="portfolio_settings_category_count_one">%1$d資産</string>
+    <string name="portfolio_settings_category_count_many">%1$d資産</string>
+    <string name="portfolio_settings_portfolio_section">ポートフォリオ</string>
+    <string name="portfolio_settings_no_portfolios">ポートフォリオがありません。ポートフォリオ画面から作成してください。</string>
+    <string name="portfolio_settings_edit_cd">編集</string>
+    <string name="portfolio_settings_delete_cd">削除</string>
+    <string name="portfolio_settings_reminder_section">価格リマインダー</string>
+    <string name="portfolio_settings_reminder_title">リマインダー頻度</string>
+    <string name="portfolio_settings_reminder_desc">定期的に資産価格の更新をリマインドします。</string>
+    <string name="portfolio_settings_platform_section">プラットフォーム</string>
+    <string name="portfolio_settings_platform_empty">プラットフォームがありません。取引に関連付ける証券会社、取引所、銀行を追加してください。</string>
+    <string name="portfolio_settings_sector_section">セクター</string>
+    <string name="portfolio_settings_sector_empty">資産をセクター（テクノロジー、ヘルスケア、エネルギー…）ごとに分類し、業種別エクスポージャーを分析します。</string>
+    <string name="portfolio_settings_region_section">地域</string>
+    <string name="portfolio_settings_region_empty">地域（米国、欧州、アジア…）ごとに地理的分布を定義し、国際的なエクスポージャーを分析します。</string>
+    <string name="portfolio_settings_manage">管理</string>
+    <string name="portfolio_settings_add">追加</string>
+    <string name="portfolio_settings_delete_portfolio_title">ポートフォリオを削除</string>
+    <string name="portfolio_settings_delete_portfolio_message">「%1$s」を削除しますか？資産は「ポートフォリオなし」に移動されます。</string>
+
+    <!-- PORTFOLIO – Asset detail -->
+    <string name="portfolio_asset_detail_title">資産</string>
+    <string name="portfolio_asset_detail_platform_section">プラットフォーム</string>
+    <string name="portfolio_asset_detail_platform_desc">この資産を保有するプラットフォーム（証券会社、銀行、取引所）を選択してください。</string>
+    <string name="portfolio_asset_detail_platform_empty">プラットフォームが作成されていません。最初のプラットフォームを作成してこの資産にリンクしてください。</string>
+    <string name="portfolio_asset_detail_platform_link_hint">プラットフォームをリンクするには、設定 › ポートフォリオ › プラットフォームに移動してください。</string>
+    <string name="portfolio_asset_detail_linked_platforms">リンク済みプラットフォーム</string>
+    <string name="portfolio_asset_detail_unlink_cd">リンク解除</string>
+
+    <!-- PORTFOLIO – Asset history -->
+    <string name="portfolio_asset_history_add">追加</string>
+    <string name="portfolio_asset_history_filter_all">すべて</string>
+    <string name="portfolio_asset_history_filter_buy">購入</string>
+    <string name="portfolio_asset_history_filter_sell">売却</string>
+    <string name="portfolio_asset_history_no_data">履歴データなし</string>
+
+    <!-- PORTFOLIO – Compound effect card -->
+    <string name="portfolio_compound_effect_title">複利効果</string>
+    <string name="portfolio_compound_effect_projection">予測</string>
+    <string name="portfolio_compound_effect_estimated">獲得額</string>
+
+    <!-- PORTFOLIO – Add/Edit asset sheet -->
+    <string name="portfolio_add_asset_title_create">資産を作成</string>
+    <string name="portfolio_add_asset_title_edit">資産を編集</string>
+    <string name="portfolio_add_asset_name_label">資産名</string>
+    <string name="portfolio_add_asset_ticker_label">ティッカー</string>
+    <string name="portfolio_add_asset_category_label">カテゴリ</string>
+    <string name="portfolio_add_asset_price_label">単価</string>
+    <string name="portfolio_add_asset_price_placeholder">市場価格</string>
+    <string name="portfolio_add_asset_notes_label">メモ</string>
+    <string name="portfolio_add_asset_platform_label">プラットフォーム</string>
+    <string name="portfolio_add_asset_save">変更を保存</string>
+    <string name="portfolio_add_asset_name_required">名前が必要です</string>
+    <string name="portfolio_add_asset_no_price">この資産にはまだ価格が登録されていません</string>
+    <string name="portfolio_add_asset_select_category">カテゴリを選択</string>
+    <string name="portfolio_add_asset_select_platform">ユニットを保有する場所を選択</string>
+    <string name="portfolio_add_asset_no_platforms">リンクされたプラットフォームなし</string>
+
+    <!-- PORTFOLIO – Add transaction sheet -->
+    <string name="portfolio_add_tx_title">取引を登録</string>
+    <string name="portfolio_add_tx_title_edit">取引を編集</string>
+    <string name="portfolio_add_tx_date">日付</string>
+    <string name="portfolio_add_tx_qty">数量</string>
+    <string name="portfolio_add_tx_price">単価</string>
+    <string name="portfolio_add_tx_gross">総額</string>
+    <string name="portfolio_add_tx_gross_placeholder">総額を入力</string>
+    <string name="portfolio_add_tx_net">正味</string>
+    <string name="portfolio_add_tx_fee">総額</string>
+    <string name="portfolio_add_tx_fee_placeholder">例: 0.5%、1.20€</string>
+    <string name="portfolio_add_tx_platform">プラットフォーム</string>
+    <string name="portfolio_add_tx_notes">メモ</string>
+    <string name="portfolio_add_tx_select_asset">資産を選択</string>
+    <string name="portfolio_add_tx_no_units">ユニットなし</string>
+    <string name="portfolio_add_tx_name_required">名前が必要です</string>
+
+    <!-- PORTFOLIO – Dividend sheet -->
+    <string name="portfolio_dividend_title">配当金を登録</string>
+    <string name="portfolio_dividend_amount">総額</string>
+    <string name="portfolio_dividend_withholding">源泉徴収</string>
+    <string name="portfolio_dividend_date">日付</string>
+    <string name="portfolio_dividend_notes">メモ</string>
+
+    <!-- PORTFOLIO – Transfer sheet -->
+    <string name="portfolio_transfer_title">資金移動</string>
+    <string name="portfolio_transfer_from">移動元ファンド</string>
+    <string name="portfolio_transfer_to">移動先ファンド</string>
+    <string name="portfolio_transfer_qty">移管する口数</string>
+    <string name="portfolio_transfer_date">移管日</string>
+    <string name="portfolio_transfer_confirm">移管を確認</string>
+
+    <!-- PORTFOLIO – Update price sheet -->
+    <string name="portfolio_update_price_title">価格を更新</string>
+    <string name="portfolio_update_price_save">価格を保存</string>
+
+    <!-- PORTFOLIO – Management sheets -->
+    <string name="portfolio_new_sector_title">新規セクター</string>
+    <string name="portfolio_new_region_title">新規地域</string>
+    <string name="portfolio_new_platform_title">新規プラットフォーム</string>
+    <string name="portfolio_edit_platform_title">プラットフォームを編集</string>
+    <string name="portfolio_link_platform_title">プラットフォームをリンク</string>
+    <string name="portfolio_platform_name">名前</string>
+    <string name="portfolio_platform_icon">アイコン</string>
+    <string name="portfolio_platform_notes">メモ</string>
+
+    <!-- PORTFOLIO – Portfolio management -->
+    <string name="portfolio_new_portfolio_title">新規ポートフォリオ</string>
+    <string name="portfolio_edit_portfolio_title">ポートフォリオを編集</string>
+    <string name="portfolio_name_required">名前が必要です</string>
+    <string name="portfolio_without">ポートフォリオなし</string>
+
+    <!-- PORTFOLIO – Subcomponents -->
+    <string name="portfolio_category_group_assets">%1$d資産</string>
+    <string name="portfolio_category_invested_format">投資額: %1$s€</string>
+    <string name="portfolio_category_current_format">現在: %1$s€</string>
+    <string name="portfolio_category_group_expand">展開</string>
+    <string name="portfolio_category_group_collapse">折りたたむ</string>
+    <string name="portfolio_closed_positions">クローズ済みポジション</string>
+    <string name="portfolio_closed_positions_count">%1$d件クローズ</string>
+    <string name="portfolio_fixed_income_section">債券</string>
+    <string name="portfolio_fixed_income_count">%1$dポジション</string>
+
+    <!-- =====================================================================
+         TRANSACTION – Transaction screens
+         ===================================================================== -->
+    <string name="transaction_title">取引</string>
+    <string name="transaction_search_hint">取引を検索…</string>
+    <string name="transaction_no_results">検索条件に一致する取引はありません</string>
+    <string name="transaction_no_movements">取引が登録されていません</string>
+    <string name="transaction_detail_title">取引詳細</string>
+    <string name="transaction_detail_not_found">取引が見つかりません</string>
+    <string name="transaction_type_income">収入</string>
+    <string name="transaction_type_expense">支出</string>
+    <string name="transaction_type_adjustment">調整</string>
+    <string name="transaction_type_transfer">振替</string>
+    <string name="transaction_filter_all">すべて</string>
+    <string name="transaction_filter_income">収入</string>
+    <string name="transaction_filter_expense">支出</string>
+
+    <!-- =====================================================================
+         ACCOUNT – Account screens
+         ===================================================================== -->
+    <string name="account_list_title">マイ口座</string>
+    <string name="account_add_title">口座を追加</string>
+    <string name="account_edit_title">口座を編集</string>
+    <string name="account_name_label">名前またはニックネーム</string>
+    <string name="account_name_placeholder">例: BBVA普通預金</string>
+    <string name="account_initial_balance">初期残高未設定</string>
+    <string name="account_no_accounts">口座がまだありません</string>
+    <string name="account_empty_subtitle">設定から最初の口座を作成して始めましょう</string>
+    <string name="account_balance_label">現在の残高</string>
+    <string name="account_computed_balance">計算残高</string>
+    <string name="account_delete_confirm_title">口座を削除</string>
+    <string name="account_configure_cd">設定</string>
+    <string name="account_edit_cd">編集</string>
+    <string name="account_delete_cd">削除</string>
+
+    <!-- =====================================================================
+         FIXED INCOME – Fixed income
+         ===================================================================== -->
+    <string name="fixedincome_title">債券</string>
+    <string name="fixedincome_detail_title">債券ポジション</string>
+    <string name="fixedincome_not_found">ポジションが見つかりません</string>
+    <string name="fixedincome_create_title">新規債券ポジション</string>
+    <string name="fixedincome_edit_title">債券ポジションを編集</string>
+    <string name="fixedincome_name_label">名前</string>
+    <string name="fixedincome_ticker_label">ティッカー</string>
+    <string name="fixedincome_type_label">商品タイプ</string>
+    <string name="fixedincome_principal_label">元本</string>
+    <string name="fixedincome_interest_label">年利率(%)</string>
+    <string name="fixedincome_frequency_label">利払頻度</string>
+    <string name="fixedincome_start_date">開始日</string>
+    <string name="fixedincome_maturity_date">満期日</string>
+    <string name="fixedincome_auto_renew">満期時に自動更新</string>
+    <string name="fixedincome_save">変更を保存</string>
+    <string name="fixedincome_cancel_title">早期解約</string>
+    <string name="fixedincome_close_confirm">清算を確認</string>
+    <string name="fixedincome_register_coupon">クーポン/利息を登録</string>
+    <string name="fixedincome_sell_secondary">市場で売却</string>
+    <string name="fixedincome_value_label">現在価値</string>
+    <string name="fixedincome_invested_label">投下資本</string>
+    <string name="fixedincome_yield_gross">購入時の総利回り</string>
+    <string name="fixedincome_yield_current">現在価値の総利回り</string>
+    <string name="fixedincome_net_maturity">満期時の推定純額</string>
+    <string name="fixedincome_coupon_calendar">支払スケジュール</string>
+    <string name="fixedincome_coupons_received">受取クーポン</string>
+    <string name="fixedincome_maturity_simulation">満期シミュレーション</string>
+
+    <!-- =====================================================================
+         LOAN – Loans
+         ===================================================================== -->
+    <string name="loan_detail_title">ローンの詳細</string>
+    <string name="loan_not_found">ローンが見つかりません</string>
+    <string name="loan_add_title">ローンを追加</string>
+    <string name="loan_edit_title">ローンを編集</string>
+    <string name="loan_name_label">ローン名</string>
+    <string name="loan_type_label">種類</string>
+    <string name="loan_entity_label">貸付機関</string>
+    <string name="loan_principal_label">初期元本</string>
+    <string name="loan_interest_label">金利</string>
+    <string name="loan_term_label">期間(ヶ月)</string>
+    <string name="loan_monthly_payment">月々の支払額</string>
+    <string name="loan_pending_capital">残存元本</string>
+    <string name="loan_amortization_title">返済スケジュール</string>
+    <string name="loan_amortization_type">返済方法</string>
+    <string name="loan_history_title">金利履歴</string>
+    <string name="loan_archive_title">ローンをアーカイブ</string>
+    <string name="loan_change_rate">金利を更新</string>
+    <string name="loan_progress">進捗</string>
+
+    <!-- =====================================================================
+         DEBT – Debts
+         ===================================================================== -->
+    <string name="debt_title">負債</string>
+    <string name="debt_add_title">新規負債</string>
+    <string name="debt_edit_title">負債を編集</string>
+    <string name="debt_no_debts">負債なし</string>
+    <string name="debt_type_label">負債の種類</string>
+    <string name="debt_person_label">相手</string>
+    <string name="debt_amount_label">金額</string>
+    <string name="debt_description_label">内容</string>
+    <string name="debt_i_owe">私が借りている</string>
+    <string name="debt_they_owe">相手が借りている</string>
+    <string name="debt_mark_paid">返済済みにする</string>
+    <string name="debt_paid">返済済み</string>
+    <string name="debt_pending">未返済</string>
+
+    <!-- =====================================================================
+         REAL ESTATE – Real estate
+         ===================================================================== -->
+    <string name="realestate_detail_title">物件詳細</string>
+    <string name="realestate_add_title">物件を追加</string>
+    <string name="realestate_edit_title">物件を編集</string>
+    <string name="realestate_no_properties">物件が登録されていません</string>
+    <string name="realestate_name_label">名前</string>
+    <string name="realestate_address_label">住所</string>
+    <string name="realestate_type_label">物件タイプ</string>
+    <string name="realestate_estimated_value">推定価値</string>
+    <string name="realestate_mortgage_label">住宅ローン</string>
+    <string name="realestate_rental_status">賃貸状況</string>
+    <string name="realestate_rental_income">賃貸収入</string>
+    <string name="realestate_expenses_label">支出</string>
+    <string name="realestate_sell_title">物件を売却</string>
+    <string name="realestate_sell_price">売却価格</string>
+    <string name="realestate_sell_expenses">売却費用</string>
+    <string name="realestate_sell_confirm">売却を確認</string>
+    <string name="realestate_archived_title">物件をアーカイブ</string>
+    <string name="realestate_sold">売却済み</string>
+    <string name="realestate_net_equity">純資産価値</string>
+
+    <!-- =====================================================================
+         NET WORTH – Net worth
+         ===================================================================== -->
+    <string name="networth_title">純資産</string>
+    <string name="networth_total_label">純資産</string>
+    <string name="networth_assets_label">総資産</string>
+    <string name="networth_liabilities_label">負債</string>
+    <string name="networth_evolution_title">純資産の推移</string>
+    <string name="networth_no_data">今年のデータはありません</string>
+    <string name="networth_monthly_title">月次純資産</string>
+    <string name="networth_cash_label">現金</string>
+    <string name="networth_investments_label">投資</string>
+    <string name="networth_realestate_label">不動産</string>
+
+    <!-- =====================================================================
+         FISCAL – Fiscal report
+         ===================================================================== -->
+    <string name="fiscal_title">税務レポート</string>
+    <string name="fiscal_generate_title">PDFを生成＆共有</string>
+    <string name="fiscal_ready">税務レポート準備完了</string>
+    <string name="fiscal_taxable_base">課税ベース %1$s</string>
+    <string name="fiscal_income_title">収入</string>
+    <string name="fiscal_expenses_title">支出</string>
+    <string name="fiscal_capital_gains">キャピタルゲイン</string>
+    <string name="fiscal_dividends_title">配当金</string>
+    <string name="fiscal_withholdings_title">源泉徴収</string>
+    <string name="fiscal_total_income">総収入</string>
+    <string name="fiscal_total_expenses">総支出</string>
+    <string name="fiscal_net_result">純結果</string>
+    <string name="fiscal_no_data">取引を追加してサマリーを表示</string>
+
+    <!-- =====================================================================
+         ANNUAL – Annual summary
+         ===================================================================== -->
+    <string name="annual_title">年間サマリー</string>
+    <string name="annual_tab_summary">サマリー</string>
+    <string name="annual_tab_expenses">支出</string>
+    <string name="annual_tab_income">収入</string>
+    <string name="annual_tab_investments">投資</string>
+    <string name="annual_goal_compliance">目標達成率</string>
+    <string name="annual_goal_met">達成</string>
+    <string name="annual_goal_not_met">未達成</string>
+    <string name="annual_no_goal">目標なし</string>
+    <string name="annual_monthly_evolution">月次推移 %1$s</string>
+
+    <!-- =====================================================================
+         ONBOARDING – Introduction
+         ===================================================================== -->
+    <string name="onboarding_welcome_title">N3toへようこそ</string>
+    <string name="onboarding_welcome_subtitle">あなたの資産はあなたのもの</string>
+    <string name="onboarding_skip">スキップ</string>
+    <string name="onboarding_continue">続ける</string>
+    <string name="onboarding_start">始める</string>
+    <string name="onboarding_slide_portfolio_title">投資ポートフォリオ</string>
+    <string name="onboarding_slide_movements_title">意味のある取引</string>
+    <string name="onboarding_slide_networth_title">明確な純資産</string>
+    <string name="onboarding_slide_fiscal_title">税務レポート</string>
+    <string name="onboarding_slide_realestate_title">不動産資産</string>
+
+    <!-- =====================================================================
+         RECONCILIATION – Reconciliation
+         ===================================================================== -->
+    <string name="reconciliation_banner_text">残高照合からしばらく経っています</string>
+    <string name="reconciliation_title">残高照合</string>
+    <string name="reconciliation_balanced">残高は一致しています</string>
+    <string name="reconciliation_adjust">残高を調整</string>
+
+    <!-- =====================================================================
+         SECURITY – Lock
+         ===================================================================== -->
+    <string name="security_unlock_title">N3toのロックを解除</string>
+    <string name="security_unlock_hint">指紋、Face ID、またはPINを使用</string>
+    <string name="security_biometric_not_available">この端末では生体認証が利用できません</string>
+
+    <!-- =====================================================================
+         PREMIUM – Premium screen
+         ===================================================================== -->
+    <string name="premium_title">Trackfolio Premium</string>
+    <string name="premium_already_premium">すでにPremiumです</string>
+    <string name="premium_unlock_features">すべての機能をアンロック</string>
+    <string name="premium_unlimited_accounts">無制限の口座</string>
+    <string name="premium_themes">限定テーマ</string>
+    <string name="premium_ad_free">中断のないアプリ体験</string>
+    <string name="premium_manage_accounts">制限なくすべての口座を管理</string>
+    <string name="premium_customize">ライト/ダークテーマでカスタマイズ</string>
+    <string name="premium_subscribe">Premiumを入手</string>
+    <string name="premium_restore">購入を復元</string>
+    <string name="premium_restore_success">購入が正常に復元されました</string>
+    <string name="premium_restore_cancelled">復元がキャンセルされました</string>
+
+    <!-- =====================================================================
+         CONSENT – Consent
+         ===================================================================== -->
+    <string name="consent_title">始める前に</string>
+    <string name="consent_accept">同意して続ける</string>
+    <string name="consent_decline">同意せずに続ける</string>
+    <string name="consent_privacy_policy">プライバシーポリシーを表示</string>
+    <string name="consent_data_description">あなたの口座、取引、残高は端末にローカル保存されます。許可した場合のみデータを共有します。</string>
+    <string name="consent_crash_description">アプリがクラッシュした場合、迅速な修正のために通知されます。</string>
+    <string name="security_locked_message">アプリはロックされています。\n続けるには認証してください。</string>
+    <string name="security_unlock_button">ロック解除</string>
+    <string name="version_block_message">アプリを続けて使用するにはN3toを更新する必要があります。</string>
+    <string name="version_block_version_info">最低バージョン: %1$s · 現在のバージョン: %2$s</string>
+    <string name="reconciliation_real_balance">実際の残高 (€)</string>
+    <string name="reconciliation_diff_format">差額: %1$s%2$s€</string>
+    <string name="reconciliation_done">完了</string>
+    <string name="reconciliation_adjust_label">残高を調整</string>
+    <string name="fixedincome_delete_event">イベントを削除</string>
+    <string name="fixedincome_distribution_title">配分</string>
+    <string name="fixedincome_no_region">未割り当て</string>
+    <string name="fixedincome_no_sector">未割り当て</string>
+    <string name="fixedincome_select_region">地域を選択</string>
+    <string name="fixedincome_select_sector">セクターを選択</string>
+    <string name="fixedincome_status_active">アクティブ</string>
+    <string name="fixedincome_status_closed">クローズ</string>
+    <string name="fixedincome_change_region">変更</string>
+    <string name="fixedincome_change_sector">変更</string>
+    <string name="fixedincome_platform_label">プラットフォーム</string>
+    <string name="fixedincome_liquidate_maturity">満期時に清算</string>
+    <string name="fixedincome_annual_coupon">年間クーポン</string>
+    <string name="fixedincome_maturity_label">満期</string>
+    <string name="fixedincome_est_nir">推定純利回り</string>
+    <string name="fixedincome_register_settlement">清算を登録</string>
+    <string name="fixedincome_event_history">イベント履歴</string>
+    <string name="fixedincome_no_events">イベント未登録</string>
+    <string name="fixedincome_gross_interest">総利息</string>
+    <string name="fixedincome_estimated_irpf">推定源泉徴収 (%1$s%%)</string>
+    <string name="fixedincome_estimated_commissions">推定手数料</string>
+    <string name="fixedincome_net_profit_label">総純利益</string>
+    <string name="fixedincome_region_label">地域</string>
+    <string name="fixedincome_sector_label">セクター</string>
+    <string name="fixedincome_delete_event_confirm">イベント%1$sを削除しますか？</string>
+    <string name="fixedincome_header_label">債券 · %1$s</string>
+    <string name="fixedincome_nominal_label">元本</string>
+    <string name="fixedincome_coupon_paid">受取済み</string>
+    <string name="fixedincome_coupon_pending">未受取</string>
+    <string name="fixedincome_retention_label">源泉徴収</string>
+    <string name="fixedincome_commission_label">手数料</string>
+    <string name="fixedincome_gross_label">総額</string>
+    <string name="fixedincome_maturity_sim_irpf">推定源泉徴収 (%1$s%%)</string>
+    <string name="fixedincome_yield_label">利回り</string>
+    <string name="fixedincome_capital_short">資本</string>
+
+    <!-- NET WORTH -->
+    <string name="networth_add_property_cd">物件を追加</string>
+    <string name="networth_add_loan_cd">ローンを追加</string>
+    <string name="networth_no_properties">物件が登録されていません</string>
+    <string name="networth_no_liabilities">負債が登録されていません</string>
+    <string name="networth_assets_label_alt">資産</string>
+    <string name="networth_liabilities_label_alt">負債</string>
+    <string name="networth_accounts_label">口座残高</string>
+    <string name="networth_portfolio_label">投資ポートフォリオ</string>
+    <string name="networth_fixedincome_label">債券</string>
+    <string name="networth_total_assets_label">総資産</string>
+    <string name="networth_debts_label">日常の負債</string>
+    <string name="networth_installments_format">%1$d/%2$d回</string>
+    <string name="networth_monthly_format">%1$s/月</string>
+    <string name="networth_of_format">%1$sの</string>
+
+    <!-- FISCAL -->
+    <string name="fiscal_generating_pdf">PDFを生成中…</string>
+    <string name="fiscal_net_only_warning">一部の収入が正味金額のみで登録されています。税務内訳が不完全な可能性があります。</string>
+    <string name="fiscal_no_data_year">%1$sのデータはありません</string>
+    <string name="fiscal_year_title">%1$s年 · サマリー</string>
+    <string name="fiscal_no_movements">取引が登録されていません。</string>
+    <string name="fiscal_income_label">総収入</string>
+    <string name="fiscal_withholding_label">税務源泉徴収</string>
+    <string name="fiscal_capital_gains_card">キャピタルゲイン</string>
+    <string name="fiscal_taxable_base_est">推定課税ベース</string>
+    <string name="fiscal_tax_breakdown_title">税務内訳 %1$s</string>
+    <string name="fiscal_gross_total">総額合計</string>
+    <string name="fiscal_irpf_total">源泉徴収額</string>
+    <string name="fiscal_net_total">正味合計</string>
+    <string name="fiscal_social_security">社会保障</string>
+    <string name="fiscal_commissions_short">手数料</string>
+    <string name="fiscal_income_type_header">収入タイプ</string>
+    <string name="fiscal_gross_header">総額</string>
+    <string name="fiscal_withholding_short">源泉徴収</string>
+    <string name="fiscal_net_header">正味</string>
+    <string name="fiscal_percent_header">%</string>
+    <string name="fiscal_incomes_with_tax_info">税務情報が入力された収入のみを含みます。</string>
+    <string name="fiscal_monthly_title">月次内訳</string>
+    <string name="fiscal_no_movements_year">%1$sに取引はありません。</string>
+    <string name="fiscal_month_header">月</string>
+    <string name="fiscal_income_header">収入</string>
+    <string name="fiscal_expenses_header">支出</string>
+    <string name="fiscal_balance_header">残高</string>
+    <string name="fiscal_debts_title">アクティブな負債</string>
+    <string name="fiscal_i_owe">私が借りている</string>
+    <string name="fiscal_they_owe">相手が借りている</string>
+    <string name="fiscal_portfolio_title">投資ポートフォリオ</string>
+    <string name="fiscal_invested_label">投資額</string>
+    <string name="fiscal_current_value_label">現在価値</string>
+    <string name="fiscal_realized_pnl_label">実現P&amp;L</string>
+    <string name="fiscal_asset_header">資産</string>
+    <string name="fiscal_units_header">数量</string>
+    <string name="fiscal_avg_price_header">平均価格</string>
+    <string name="fiscal_pnl_total_header">総P&amp;L</string>
+    <string name="fiscal_no_category">カテゴリなし</string>
+    <string name="fiscal_year_activity">%1$sの活動</string>
+    <string name="fiscal_buys_header">購入</string>
+    <string name="fiscal_sales_header">売却</string>
+    <string name="fiscal_active_profile">アクティブな税務プロファイル: %1$s</string>
+    <string name="fiscal_profile_since">%1$s · %2$sから有効</string>
+    <string name="fiscal_pdf_password_title">レポートを保護</string>
+    <string name="fiscal_pdf_password_desc">PDFを保護するためのパスワードを入力してください。保護しない場合は空白のままにしてください。</string>
+    <string name="fiscal_password_label">パスワード</string>
+    <string name="fiscal_password_optional">任意</string>
+    <string name="fiscal_confirm_password_label">パスワードを確認</string>
+    <string name="fiscal_password_mismatch">パスワードが一致しません</string>
+    <string name="fiscal_password_min_length">最低4文字</string>
+    <string name="fiscal_generate_without_password">パスワードなしで生成</string>
+    <string name="fiscal_generate_with_password">パスワード付きで生成</string>
+    <string name="fiscal_cancel">キャンセル</string>
+    <string name="fiscal_count_format">%1$d件の収入%2$s</string>
+
+    <!-- REAL ESTATE -->
+    <string name="realestate_options_menu_cd">オプション</string>
+    <string name="realestate_edit_label">編集</string>
+    <string name="realestate_update_value">価値を更新</string>
+    <string name="realestate_change_rental_status">賃貸状況を変更</string>
+    <string name="realestate_sell_property">物件を売却</string>
+    <string name="realestate_archive_label">アーカイブ</string>
+    <string name="realestate_value_label">価値</string>
+    <string name="realestate_update_label">更新</string>
+    <string name="realestate_estimated_value_label">推定価値</string>
+    <string name="realestate_purchase_value_label">購入価格</string>
+    <string name="realestate_ownership_percent_label">所有%</string>
+    <string name="realestate_sale_price_label">売却価格</string>
+    <string name="realestate_capital_gain_label">実現益</string>
+    <string name="realestate_effective_value_label">実効価値</string>
+    <string name="realestate_sold_badge">売却済み</string>
+    <string name="realestate_rented_badge">賃貸中</string>
+    <string name="realestate_vacant_badge">空き家</string>
+    <string name="realestate_own_use_badge">自用</string>
+    <string name="realestate_sale_date_label">売却日</string>
+    <string name="realestate_purchase_expenses">購入費用</string>
+    <string name="realestate_sale_expenses">売却費用</string>
+    <string name="realestate_expense_default">支出</string>
+    <string name="realestate_view_label">表示</string>
+    <string name="realestate_loan_label">ローン</string>
+    <string name="realestate_lender_label">貸付機関</string>
+    <string name="realestate_pending_capital_label">残存元本</string>
+    <string name="realestate_monthly_payment_label">月々の支払額</string>
+    <string name="realestate_no_mortgage">リンクされた住宅ローンなし</string>
+    <string name="realestate_mortgage_hint">正確な純資産計算のために住宅ローンをリンクしてください。</string>
+    <string name="realestate_archive_confirm_title">物件をアーカイブ</string>
+    <string name="realestate_archive_confirm_msg">この物件をアーカイブしてもよろしいですか？\n純資産画面から非表示になります。</string>
+
+    <!-- ANNUAL -->
+    <string name="annual_no_data_title">今年のデータはありません</string>
+    <string name="annual_no_data_subtitle">取引を追加してサマリーを表示</string>
+    <string name="annual_income_label">収入</string>
+    <string name="annual_expenses_label">支出</string>
+    <string name="annual_savings_label">貯蓄</string>
+    <string name="annual_expense_categories_title">支出カテゴリ</string>
+    <string name="annual_income_types_title">収入タイプ</string>
+    <string name="annual_no_data_text">データなし</string>
+    <string name="annual_no_movements">取引が登録されていません</string>
+    <string name="annual_new_badge">新規</string>
+    <string name="annual_income_legend">収入</string>
+    <string name="annual_expense_legend">支出</string>
+
+    <!-- PORTFOLIO - Add/Edit Asset (missing) -->
+    <string name="portfolio_add_asset_desc">資産プロフィールと取引プラットフォームを定義します。</string>
+    <string name="portfolio_add_asset_portfolio_label">ポートフォリオ</string>
+    <string name="portfolio_add_asset_no_portfolio">ポートフォリオなし</string>
+    <string name="portfolio_add_asset_ticker_placeholder">例: AAPL, BTC, IAG.MC</string>
+    <string name="portfolio_add_asset_ticker_required">必須</string>
+    <string name="portfolio_add_asset_name_placeholder">例: Apple Inc., Bitcoin</string>
+    <string name="portfolio_add_asset_composition_label">FI / EQ構成</string>
+    <string name="portfolio_add_asset_composition_hint">FI: 債券 (%1$d%% EQ: 株式)</string>
+    <string name="portfolio_add_asset_market_price_label">市場価格</string>
+    <string name="portfolio_add_asset_fi_price_hint">債券資産は市場価格を使用しません。これらの資産を登録するには債券ポジションシステムを使用してください。</string>
+    <string name="portfolio_add_asset_price_optional">現在価格（任意）</string>
+    <string name="portfolio_add_asset_price_placeholder_val">0.00</string>
+    <string name="portfolio_add_asset_price_desc">現在価値と値上がり益の計算に使用されます。</string>
+    <string name="portfolio_add_asset_platforms_label">この資産を取引するプラットフォーム</string>
+    <string name="portfolio_add_asset_platforms_hint">この資産を売買するすべてのプラットフォームを選択してください。</string>
+    <string name="portfolio_add_asset_no_platforms_hint">リンクするには、まず資産設定からプラットフォームを作成してください。</string>
+    <string name="portfolio_add_asset_sectors_label">セクター</string>
+    <string name="portfolio_add_asset_sectors_hint">資産を1つ以上のセクターに分類します。</string>
+    <string name="portfolio_add_asset_regions_label">地域配分</string>
+    <string name="portfolio_add_asset_regions_hint">地域ごとの投資比率を割り当てます（任意）</string>
+    <string name="portfolio_add_asset_regions_total">合計: %1$d%% (≤ 100%%である必要があります)</string>
+    <string name="portfolio_add_asset_maturity_date_label">満期日</string>
+    <string name="portfolio_add_asset_maturity_hint">タップして満期日を選択。</string>
+    <string name="portfolio_add_asset_notes_optional">メモ（任意）</string>
+    <string name="portfolio_add_asset_save_changes">変更を保存</string>
+    <string name="portfolio_add_asset_create">資産を作成</string>
+    <string name="portfolio_add_asset_cancel">キャンセル</string>
+
+    <!-- PORTFOLIO - Category Detail -->
+    <string name="portfolio_category_title">カテゴリ</string>
+    <string name="portfolio_category_assets_section">資産</string>
+    <string name="portfolio_category_new_asset">+ 新規</string>
+    <string name="portfolio_category_empty">このカテゴリに資産はありません</string>
+    <string name="portfolio_category_fixed_income_section">債券</string>
+    <string name="portfolio_category_platforms_section">プラットフォーム</string>
+    <string name="portfolio_category_no_platforms">リンクされたプラットフォームなし</string>
+    <string name="portfolio_category_add_platform">+ プラットフォームを追加</string>
+    <string name="portfolio_category_archived_section">アーカイブ</string>
+    <string name="portfolio_category_archive_title">資産をアーカイブ</string>
+    <string name="portfolio_category_archive_message">「%1$s (%2$s)」はアーカイブされます。取引とP&amp;L履歴は保持されます。</string>
+    <string name="portfolio_category_archive_confirm">アーカイブ</string>
+    <string name="portfolio_category_restore">復元</string>
+    <string name="portfolio_category_edit_cd">編集</string>
+    <string name="portfolio_category_archive_cd">アーカイブ</string>
+
+    <!-- PORTFOLIO - Add Transaction -->
+    <string name="portfolio_add_tx_title_new">新規取引</string>
+    <string name="portfolio_add_tx_new">取引を登録</string>
+    <string name="portfolio_add_tx_save_changes">変更を保存</string>
+    <string name="portfolio_add_tx_type_buy">購入</string>
+    <string name="portfolio_add_tx_type_sell">売却</string>
+    <string name="portfolio_add_tx_category_filter">カテゴリ</string>
+    <string name="portfolio_add_tx_category_all">すべて</string>
+    <string name="portfolio_add_tx_no_assets_category">このカテゴリに資産はありません</string>
+    <string name="portfolio_add_tx_no_assets_hint">まだ資産がありません。設定 › ポートフォリオ › 資産から先に作成してください。</string>
+    <string name="portfolio_add_tx_platform_label">プラットフォーム</string>
+    <string name="portfolio_add_tx_platform_select_hint">ユニットを保有する場所を選択</string>
+    <string name="portfolio_add_tx_no_platforms_hint">プラットフォームが作成されていません。設定 › ポートフォリオ › プラットフォームに移動して作成してください。</string>
+    <string name="portfolio_add_tx_platform_not_assigned">この資産に割り当てられたプラットフォームがありません。設定からリンクしてください。</string>
+    <string name="portfolio_add_tx_qty_label">数量</string>
+    <string name="portfolio_add_tx_price_label">単価</string>
+    <string name="portfolio_add_tx_available">利用可能: %1$sユニット%2$s（その日付時点）</string>
+    <string name="portfolio_add_tx_only_available">その日付時点で%1$sユニットのみ利用可能%2$sです</string>
+    <string name="portfolio_add_tx_date_label">日付</string>
+    <string name="portfolio_add_tx_fee_label">手数料（任意）</string>
+    <string name="portfolio_add_tx_fee_hint">情報テキスト。P&amp;L計算には含まれません。</string>
+    <string name="portfolio_add_tx_notes_label">メモ（任意）</string>
+    <string name="portfolio_add_tx_platform_label_inline">（%1$s）</string>
+    <string name="portfolio_add_tx_units_label">ユニット</string>
+    <string name="portfolio_add_tx_no_units_badge">ユニットなし</string>
+    <string name="portfolio_add_tx_accept">承認</string>
+    <string name="portfolio_add_tx_cancel">キャンセル</string>
+
+    <!-- PORTFOLIO - Transfer Fund -->
+    <string name="portfolio_transfer_desc">税務中立の移管。原価基準は移動先ファンドに引き継がれます。</string>
+    <string name="portfolio_transfer_source_label">移動元ファンド</string>
+    <string name="portfolio_transfer_dest_label">移動先ファンド</string>
+    <string name="portfolio_transfer_no_destinations">この口座に他に移管可能なファンドはありません。設定 › ポートフォリオから移動先ファンドを先に作成してください。</string>
+    <string name="portfolio_transfer_qty_label">移管する口数</string>
+    <string name="portfolio_transfer_available">利用可能: %1$s口（その日付時点）</string>
+    <string name="portfolio_transfer_only_available">その日付時点で%1$s口のみ利用可能です</string>
+    <string name="portfolio_transfer_vl_label">移動先ファンドの基準価額（1口あたり価格）</string>
+    <string name="portfolio_transfer_date_label">移管日</string>
+    <string name="portfolio_transfer_source_platform">移動元プラットフォーム</string>
+    <string name="portfolio_transfer_dest_platform">移動先プラットフォーム</string>
+    <string name="portfolio_transfer_no_platforms">利用可能なプラットフォームがありません。</string>
+    <string name="portfolio_transfer_confirm_btn">移管を確認</string>
+
+    <!-- =====================================================================
+         VERSION – Update
+         ===================================================================== -->
+    <string name="version_update_available">バージョン%1$sが利用可能です</string>
+    <string name="version_block_title">アップデートが必要です</string>
+    <string name="version_update_now">今すぐ更新</string>
+
+    <!-- FIXED INCOME - Create/Edit -->
+    <string name="fixedincome_create_position">ポジションを作成</string>
+    <string name="fixedincome_save_changes">変更を保存</string>
+    <string name="fixedincome_duration_label">期間（ヶ月）</string>
+    <string name="fixedincome_duration_title">期間</string>
+    <string name="fixedincome_years_label">年</string>
+    <string name="fixedincome_months_label">ヶ月</string>
+    <string name="fixedincome_entity_financial_label">金融機関</string>
+    <string name="fixedincome_issuer_state_label">発行者（国）</string>
+    <string name="fixedincome_issuer_entity_label">発行者（国/企業）</string>
+    <string name="fixedincome_new_issuer">新規発行者</string>
+    <string name="fixedincome_no_issuers_hint">発行者がいません。新規作成してください。</string>
+    <string name="fixedincome_issuer_name_label">名前</string>
+    <string name="fixedincome_icon_label">アイコン</string>
+    <string name="fixedincome_create_issuer">作成</string>
+    <string name="fixedincome_capital_label">元本 (€)</string>
+    <string name="fixedincome_capital_invested_label">投下資本 (€)</string>
+    <string name="fixedincome_nominal_value_label">額面価格 (€)</string>
+    <string name="fixedincome_nominal_hint">額面価格は債券のパー価格です（利息と償還計算の基礎）</string>
+    <string name="fixedincome_fee_notes_label">手数料メモ（任意）</string>
+    <string name="fixedincome_select_date_cd">日付を選択</string>
+    <string name="fixedincome_auto_calculated">自動計算</string>
+    <string name="fixedincome_region_title">地域</string>
+    <string name="fixedincome_sector_title">セクター</string>
+    <string name="fixedincome_start_date_label">開始日</string>
+    <string name="fixedincome_maturity_date_label">満期日</string>
+    <string name="fixedincome_auto_renew_label">満期時に自動更新</string>
+    <string name="fixedincome_duration_guide">%1$sの標準範囲: %2$d - %3$dヶ月</string>
+
+    <!-- REAL ESTATE - AddEditProperty -->
+    <string name="realestate_name_placeholder">例: 私の家</string>
+    <string name="realestate_address_placeholder">例: 123 Main St, マドリッド</string>
+    <string name="realestate_purchase_price_label">購入価格 (€)</string>
+    <string name="realestate_current_value_label">現在価値 (€)</string>
+    <string name="realestate_acquisition_date_label">取得日</string>
+    <string name="realestate_ownership_label">所有%</string>
+    <string name="realestate_rental_status_label">賃貸状況</string>
+    <string name="realestate_monthly_rent_label">月額家賃 (€)</string>
+    <string name="realestate_change_mortgage">住宅ローンを変更</string>
+    <string name="realestate_link_mortgage">住宅ローンをリンク</string>
+    <string name="realestate_purchase_expenses_title">購入費用</string>
+    <string name="realestate_add_expense">追加</string>
+    <string name="realestate_no_expenses">購入費用はありません。「追加」をタップして、公証人手数料、税金、鑑定料などを含めてください。</string>
+    <string name="realestate_total_expenses_format">総費用: %1$s</string>
+    <string name="realestate_save_changes">変更を保存</string>
+    <string name="realestate_add_property">物件を追加</string>
+    <string name="realestate_new_title">新規物件</string>
+
+    <!-- REAL ESTATE - SellProperty -->
+    <string name="realestate_sale_price_hint">例: 275000</string>
+    <string name="realestate_sale_date_title">売却日</string>
+    <string name="realestate_sale_expenses_title_alt">売却費用</string>
+    <string name="realestate_add_sale_expense">費用を追加</string>
+    <string name="realestate_no_sale_expenses">売却費用（手数料、キャピタルゲイン、公証人…）をまだ追加していません</string>
+    <string name="realestate_sale_summary">サマリー</string>
+    <string name="realestate_sale_price_short">売却価格</string>
+    <string name="realestate_sale_expenses_short">売却費用</string>
+    <string name="realestate_net_proceeds">正味収入</string>
+    <string name="realestate_confirm_sale">売却を確認</string>
+
+    <!-- LOAN -->
+    <string name="loan_new_title">新規ローン</string>
+    <string name="loan_save">保存</string>
+    <string name="loan_name_placeholder">例: マイホーム住宅ローン</string>
+    <string name="loan_lender_placeholder">例: サンタンデール銀行</string>
+    <string name="loan_principal_placeholder">例: 150000</string>
+    <string name="loan_interest_placeholder">例: 3.5</string>
+    <string name="loan_term_placeholder">例: 360</string>
+    <string name="loan_interest_only">利息のみ</string>
+    <string name="loan_interest_only_hint">利息のみ: 元本は償却されません</string>
+
+    <!-- PREMIUM -->
+    <string name="premium_trackfolio_title">Trackfolio Premium</string>
+    <string name="premium_already_premium_subtitle">すでにPremiumです</string>
+    <string name="premium_features_title">Premium機能</string>
+    <string name="premium_multiple_accounts">複数口座</string>
+    <string name="premium_fiscal_report">税務レポート</string>
+    <string name="premium_backup">バックアップ</string>
+    <string name="premium_priority_support">優先サポート</string>
+    <string name="premium_coming_soon">近日公開</string>
+    <string name="premium_already_purchased">すでにPremiumをご購入いただいています。ご支援ありがとうございます！</string>
+    <string name="premium_purchase_error">購入処理中にエラーが発生しました</string>
+    <string name="premium_restore_error">購入の復元中にエラーが発生しました</string>
+    <string name="premium_restoring">購入を復元中…</string>
+
+    <!-- PORTFOLIO - Dividends -->
+    <string name="portfolio_dividend_save">配当金を保存</string>
+
+    <!-- ONBOARDING -->
+    <string name="onboarding_welcome_title_alt">N3toへようこそ</string>
+    <string name="onboarding_welcome_desc">あなたの資産を、あなたの管理下に</string>
+    <string name="onboarding_patrimonio_title">明確な純資産</string>
+    <string name="onboarding_patrimonio_desc">純資産、資産、負債をリアルタイムで可視化</string>
+    <string name="onboarding_portfolio_desc">株式、ETF、ファンド、債券を一元管理</string>
+    <string name="onboarding_movements_desc">カテゴリ別に整理された収入、支出、投資</string>
+    <string name="onboarding_fiscal_desc">収入タイプ別に自動集計される税務レポート</string>
+    <string name="onboarding_realestate_desc">物件、賃貸、住宅ローンを管理</string>
+
+    <!-- FIXED INCOME - RegisterCoupon -->
+    <string name="fixedincome_coupon_amount_label">総額 (€)</string>
+    <string name="fixedincome_irpf_percent_label">源泉徴収率(%)</string>
+    <string name="fixedincome_commission_field">手数料 (€)</string>
+    <string name="fixedincome_register_coupon_btn">登録</string>
+
+    <!-- FIXED INCOME - Close -->
+    <string name="fixedincome_close_maturity">満期時に清算</string>
+    <string name="fixedincome_close_early">早期解約</string>
+    <string name="fixedincome_close_secondary">市場売却</string>
+    <string name="fixedincome_close_date">クローズ日</string>
+    <string name="fixedincome_close_notes">メモ</string>
+    <string name="fixedincome_close_confirm_btn">クローズを確認</string>
+
+    <!-- PORTFOLIO - Update price -->
+    <string name="portfolio_update_price_current">現在価格</string>
+    <string name="portfolio_update_price_date">日付</string>
+
+    <!-- COMMON add missing -->
+    <string name="common_add">追加</string>
+    <string name="common_create">作成</string>
+    <string name="common_name">名前</string>
+    <string name="common_save_changes">変更を保存</string>
+    <string name="common_confirm">確認</string>
+    <string name="common_retry">再試行</string>
+    <string name="common_restore">復元</string>
+    <string name="common_no_data">データなし</string>
+
+    <!-- PREMIUM - missing -->
+    <string name="premium_multiple_accounts_desc">制限なくすべての口座を管理</string>
+    <string name="premium_ad_free_desc">中断のないアプリ体験</string>
+    <string name="premium_themes_desc">ライト/ダークテーマでカスタマイズ</string>
+    <string name="premium_welcome">Trackfolio Premiumへようこそ！</string>
+    <string name="premium_error_format">エラー: %1$s</string>
+    <string name="premium_restore_error_format">復元エラー: %1$s</string>
+    <string name="premium_restore_cd">購入を復元</string>
+    <string name="premium_best_value">ベストバリュー</string>
+    <string name="premium_monthly_label">月額</string>
+    <string name="premium_annual_label">年額</string>
+    <string name="premium_lifetime_label">永久</string>
+    <string name="premium_lifetime_value">永久アクセス</string>
+    <string name="premium_back_cd">戻る</string>
+
+    <!-- PORTFOLIO - Update price -->
+    <string name="portfolio_update_previous_price">前回価格: %1$s</string>
+    <string name="portfolio_update_no_price">この資産にはまだ価格が登録されていません</string>
+    <string name="portfolio_update_save_hint">現在の日時で記録されます。</string>
+    <string name="portfolio_update_save">価格を保存</string>
+    <string name="portfolio_update_cancel">キャンセル</string>
+
+    <!-- FIXED INCOME - Coupon registration -->
+    <string name="fixedincome_coupon_register_title">クーポン/利息を登録</string>
+    <string name="fixedincome_net_amount_est">推定正味金額</string>
+    <string name="fixedincome_register_coupon_btn_alt">支払を登録</string>
+    <string name="fixedincome_close_title">ポジションを清算</string>
+    <string name="fixedincome_close_type_label">クローズ方法</string>
+    <string name="fixedincome_close_maturity_type">満期</string>
+    <string name="fixedincome_close_secondary_type">市場売却</string>
+    <string name="fixedincome_close_early_type">早期解約</string>
+    <string name="fixedincome_gross_received_label">受取総額 (€)</string>
+    <string name="fixedincome_irpf_label">源泉徴収率(%)</string>
+    <string name="fixedincome_commission_eur_label">手数料 (€)</string>
+    <string name="fixedincome_net_amount_label">正味金額</string>
+    <string name="fixedincome_confirm_close">清算を確認</string>
+
+    <!-- PORTFOLIO - Dividend -->
+    <string name="portfolio_dividend_title_alt">配当金</string>
+    <string name="portfolio_dividend_asset_label">資産</string>
+    <string name="portfolio_dividend_gross_hint">総額を入力</string>
+    <string name="portfolio_dividend_gross_label">総額</string>
+    <string name="portfolio_dividend_withholding_label">税務源泉徴収</string>
+    <string name="portfolio_dividend_gross_short">総額</string>
+    <string name="portfolio_dividend_withholding_short">源泉徴収</string>
+    <string name="portfolio_dividend_net_short">正味</string>
+    <string name="portfolio_dividend_select_asset_error">資産を選択してください</string>
+    <string name="portfolio_dividend_valid_amount_error">有効な総額を入力してください</string>
+    <string name="portfolio_dividend_register">配当金を登録</string>
+
+    <!-- LOW PRIORITY - remaining strings -->
+    <string name="realestate_change_rental_title">賃貸状況を変更</string>
+    <string name="realestate_change_rental_date">変更日</string>
+    <string name="realestate_rent_amount">家賃額</string>
+    <string name="realestate_update_value_title">価値を更新</string>
+    <string name="realestate_new_value">新規推定価値</string>
+    <string name="portfolio_platform_create_title">新規プラットフォーム</string>
+    <string name="portfolio_platform_edit_title">プラットフォームを編集</string>
+    <string name="portfolio_platform_name_label">名前</string>
+    <string name="portfolio_platform_icon_label">アイコン</string>
+    <string name="portfolio_platform_notes_label">メモ</string>
+    <string name="portfolio_platform_save">保存</string>
+    <string name="portfolio_platform_cancel">キャンセル</string>
+    <string name="portfolio_sector_new">新規セクター</string>
+    <string name="portfolio_sector_name">セクター名</string>
+    <string name="portfolio_region_new">新規地域</string>
+    <string name="portfolio_region_name">地域名</string>
+    <string name="portfolio_asset_detail_title_alt">資産詳細</string>
+    <string name="portfolio_asset_history_title">資産履歴</string>
+    <string name="portfolio_edit_portfolio_title_alt">ポートフォリオを編集</string>
+    <string name="portfolio_portfolio_name">名前</string>
+    <string name="portfolio_portfolio_desc">説明</string>
+    <string name="portfolio_save">保存</string>
+    <string name="portfolio_compound_effect_title_alt">複利効果</string>
+    <string name="version_block_title_alt">アップデートが必要です</string>
+    <string name="version_block_message_alt">続けるにはN3toを更新してください</string>
+    <string name="version_update_btn">今すぐ更新</string>
+    <string name="splash_loading">読み込み中…</string>
+    <string name="onboarding_efectivo_total">総現金</string>
+    <string name="onboarding_disponible_deudas">借入金控除後残高</string>
+    <string name="onboarding_seccion_patrimonio">セクション · 純資産</string>
+
+    <!-- FASE 4 - Domain Enums resourceKey -->
+    <string name="income_type_salary">給与</string>
+    <string name="income_type_freelance">フリーランス</string>
+    <string name="income_type_bank_interest">銀行利息</string>
+    <string name="income_type_bond_deposit">債券または定期預金</string>
+    <string name="income_type_dividend">配当金</string>
+    <string name="income_type_bonus_prize">勤務先ボーナス</string>
+    <string name="income_type_prize_lottery">賞金/宝くじ</string>
+    <string name="income_type_rental_income">賃貸収入</string>
+    <string name="income_type_exempt_income">非課税収入</string>
+    <string name="loan_type_mortgage">住宅ローン</string>
+    <string name="loan_type_car">自動車ローン</string>
+    <string name="loan_type_student">奨学金ローン</string>
+    <string name="loan_type_personal">個人ローン</string>
+    <string name="loan_type_other">その他</string>
+    <string name="fixedincome_type_bill">財務省短期証券</string>
+    <string name="fixedincome_type_bond">国債</string>
+    <string name="fixedincome_type_government_obligation">政府債券</string>
+    <string name="fixedincome_type_corporate_bond">社債</string>
+    <string name="fixedincome_type_deposit">定期預金</string>
+    <string name="fixedincome_event_acquisition">取得</string>
+    <string name="fixedincome_event_coupon">クーポン/定期利息</string>
+    <string name="fixedincome_event_maturity_settlement">満期清算</string>
+    <string name="fixedincome_event_secondary_sale">市場売却</string>
+    <string name="fixedincome_event_early_cancellation">早期解約</string>
+    <string name="fixedincome_event_partial_amortization">一部償還</string>
+    <string name="interest_frequency_at_maturity">満期時一括</string>
+    <string name="interest_frequency_monthly">毎月</string>
+    <string name="interest_frequency_quarterly">四半期ごと</string>
+    <string name="interest_frequency_semiannual">半期ごと</string>
+    <string name="interest_frequency_annual">年1回</string>
+    <string name="property_type_primary_home">主たる住居</string>
+    <string name="property_type_secondary_home">別荘</string>
+    <string name="property_type_investment">投資用</string>
+    <string name="rental_status_own_use">自用</string>
+    <string name="rental_status_rented">賃貸中</string>
+    <string name="rental_status_vacant">空き家</string>
+    <string name="issuer_type_employer">企業/クライアント</string>
+    <string name="issuer_type_bank">銀行機関</string>
+    <string name="issuer_type_bond_issuer">債券/預金発行者</string>
+    <string name="issuer_type_dividend_source">株式</string>
+    <string name="issuer_type_promotion_platform">プラットフォーム/コンテスト</string>
+    <string name="issuer_type_exempt_source">収入源</string>
+    <string name="fixedincome_category_government">政府債務</string>
+    <string name="fixedincome_category_corporate">社債</string>
+    <string name="fixedincome_category_deposit">預金</string>
+
+    <!-- FASE 4 - ViewModel error messages -->
+    <string name="error_category_already_exists">同じ名前のカテゴリがすでに存在します</string>
+    <string name="error_issuer_already_exists">同じ名前の発行者がすでに存在します</string>
+    <string name="error_platform_already_exists">同じ名前のプラットフォームがすでに存在します</string>
+    <string name="error_asset_not_found">資産が見つかりません</string>
+    <string name="error_asset_ticker_required">ティッカーと名前が必要です</string>
+    <string name="error_account_required">最初に口座を選択してください</string>
+    <string name="error_position_not_found">ポジションが見つかりません</string>
+    <string name="error_fi_no_buy_sell">債券資産は売買取引をサポートしていません</string>
+    <string name="error_price_history_save">価格履歴の保存エラー: %1$s</string>
+    <string name="error_category_already_exists_alt">同じ名前のカテゴリがすでに存在します</string>
+    <string name="error_asset_already_exists">この口座にはティッカー%1$sの資産がすでに存在します</string>
+    <string name="error_cannot_archive_with_open_positions">「%1$s」はオープンポジションがあるためアーカイブできません。先にポジションをクローズまたは移管してください。</string>
+    <string name="error_cannot_archive_with_open_positions_qty">「%1$s」はオープンポジション（%2$sユニット）があるためアーカイブできません。先にポジションをクローズまたは移管してください。</string>
+    <string name="error_fi_create_position">債券ポジションの作成エラー</string>
+    <string name="error_coupon_register">クーポン登録エラー</string>
+    <string name="error_no_account_selected">口座が選択されていません</string>
+    <string name="error_load_data">データ読み込みエラー</string>
+    <string name="error_cannot_archive_asset">「%1$s」はオープンポジションがあるためアーカイブできません。先にポジションをクローズまたは移管してください。</string>
+    <string name="error_fiscal_load">データ読み込みエラー</string>
+    <string name="error_reconciliation">残高照合エラー</string>
+    <string name="error_goal_settings">目標設定の保存エラー</string>
+    <string name="error_emergency_fund_settings">緊急予備資金設定の保存エラー</string>
+    <string name="error_transaction_detail">取引詳細の読み込みエラー</string>
+    <string name="error_networth_load">純資産の読み込みエラー</string>
+    <string name="error_add_transaction">正味金額を計算できませんでした</string>
+
+    <!-- =====================================================================
+         FEEDBACK – Feedback form
+         ===================================================================== -->
+    <string name="settings_feedback">フィードバックを送信</string>
+    <string name="feedback_title">フィードバックを送信</string>
+    <string name="feedback_subtitle">あなたのアイデアがN3toの改善に役立ちます。この送信は匿名です。</string>
+    <string name="feedback_category_label">フィードバックカテゴリ</string>
+    <string name="feedback_category_new_feature">新機能</string>
+    <string name="feedback_category_improvement">改善</string>
+    <string name="feedback_category_bug">バグ報告</string>
+    <string name="feedback_category_other">その他</string>
+    <string name="feedback_title_field">タイトル</string>
+    <string name="feedback_title_placeholder">アイデアを数語で要約</string>
+    <string name="feedback_description_field">説明</string>
+    <string name="feedback_description_placeholder">提案内容を詳しく説明…</string>
+    <string name="feedback_send_button">フィードバックを送信</string>
+    <string name="feedback_sending">送信中…</string>
+    <string name="feedback_success">ありがとうございます！フィードバックが正常に送信されました。</string>
+    <string name="feedback_error_empty">タイトルと説明を入力してください。</string>
+    <string name="feedback_error_network">接続エラー。インターネット接続を確認してください。</string>
+    <string name="feedback_disclaimer_title">プライバシーについて</string>
+    <string name="feedback_disclaimer_text">メッセージに個人データ（名前、メールアドレス、電話番号）を含めないでください。フィードバックはFirebase経由で匿名送信されます。</string>
+
+    <!-- FEEDBACK – Data collected (Privacy) -->
+    <string name="privacy_data_feedback">フィードバックと提案</string>
+
+    <!-- REAL ESTATE – Explanation separation vs. portfolio -->
+    <string name="realestate_why_separate">不動産は独自の指標（賃貸利回り、リンクされた住宅ローン、異なる税務影響）があるため、個別に管理されます。</string>
+
+    <!-- PREMIUM – Feature descriptions -->
+    <string name="premium_fiscal_report_desc">年間のキャピタルゲインと源泉徴収レポートを生成</string>
+    <string name="premium_backup_desc">すべてのデータのローカルバックアップを保存および復元</string>
+
+    <!-- COMMON - missing -->
+    <string name="common_total">合計</string>
+    <string name="common_help_cd">ヘルプ</string>
+    <string name="common_understood">了解</string>
+    <string name="common_edit">編集</string>
+    <string name="common_active_badge">有効</string>
+    <string name="common_none">なし</string>
+    <string name="common_dismiss">閉じる</string>
+    <string name="common_completed_cd">完了</string>
+    <string name="common_note_placeholder">メモ</string>
+    <string name="common_insufficient_data">データ不足</string>
+    <string name="common_amount_label">金額</string>
+    <string name="common_date_label">日付</string>
+    <string name="common_category_label">カテゴリ</string>
+    <string name="common_description_label">説明</string>
+
+    <!-- ACCOUNT - missing -->
+    <string name="account_active_badge">有効</string>
+    <string name="account_balance_short">現在の残高</string>
+    <string name="account_name_supporting_text">アプリ全体で表示される名前です。例: 普通預金、現金、Degiro…</string>
+    <string name="account_initial_balance_label">初期残高</string>
+    <string name="account_initial_balance_valid_hint">有効な金額を入力してください（0可）</string>
+    <string name="account_initial_balance_desc">この口座にすでにある金額を入力してください。空の場合は0を設定します。</string>
+    <string name="account_delete_full_message">「%1$s」を削除しますか？関連するすべての取引、資産、データも削除されます。</string>
+    <string name="account_set_balance_btn">残高を設定</string>
+    <string name="account_set_balance_title">初期残高</string>
+    <string name="account_set_balance_desc">この口座の現在残高を入力してください。\nこれは取引を登録する前に必要です。</string>
+    <string name="account_set_balance_hint">口座が空の場合は0に設定できます。</string>
+
+    <!-- ANNUAL - missing -->
+    <string name="annual_investment_monthly_format">月次投資 %1$s</string>
+    <string name="annual_no_investments">今年は投資がありません</string>
+    <string name="annual_income_by_source">収入源別</string>
+
+    <!-- TRANSACTION - missing -->
+    <string name="transaction_delete_title">取引を削除</string>
+    <string name="transaction_delete_message">この取引を削除してもよろしいですか？\nこの操作は元に戻せません。</string>
+    <string name="transaction_income_type_label">収入タイプ</string>
+    <string name="transaction_note_placeholder">メモを追加…</string>
+    <string name="transaction_mode_fiscal">税務</string>
+    <string name="transaction_mode_net_only">正味のみ</string>
+    <string name="transaction_net_amount_label">正味金額</string>
+    <string name="transaction_net_estimated">推定正味</string>
+    <string name="transaction_detail_account_label">口座</string>
+    <string name="transaction_detail_notes_label">メモ</string>
+    <string name="transaction_detail_issuer_label">発行者</string>
+    <string name="transaction_detail_edit_cd">編集</string>
+    <string name="transaction_detail_delete_cd">削除</string>
+
+    <!-- BUDGET - missing -->
+    <string name="budget_no_income">今年の収入はありません</string>
+    <string name="budget_remaining_format">残り%1$s</string>
+    <string name="budget_limit_exceeded">上限超過！</string>
+    <string name="budget_empty_title">予算なし</string>
+    <string name="budget_empty_subtitle">カテゴリ別に支出制限を設定して\n財務管理を改善しましょう</string>
+    <string name="home_section_budgets">予算</string>
+
+    <!-- CATEGORY - missing -->
+    <string name="category_create_cd">カテゴリを作成</string>
+    <string name="category_help_title">カテゴリの整理方法</string>
+    <string name="category_help_text">同じタイプの支出をグループ化します。例:</string>
+    <string name="category_help_examples">• 住まい → 家賃、住宅ローン、光熱費\n• レジャー → 外食、映画、旅行\n• 健康 → 薬局、医者、ジム</string>
+    <string name="category_name_placeholder">カテゴリ名</string>
+    <string name="category_remove_limit">制限を削除</string>
+
+    <!-- HELP - missing -->
+    <string name="help_account_title">口座とは？</string>
+    <string name="help_tax_profile_title">税務プロファイルとは？</string>
+    <string name="help_tax_system_title">税制</string>
+    <string name="help_goals_title">月間目標</string>
+    <string name="help_customize_months_title">月のカスタマイズ</string>
+    <string name="help_asset_types_title">資産タイプ</string>
+    <string name="help_asset_help_cd">資産タイプのヘルプ</string>
+
+    <!-- PORTFOLIO - missing -->
+    <string name="portfolio_update_prices_hint">推移を表示するには価格を更新</string>
+    <string name="portfolio_asset_no_price_registered">価格未登録</string>
+    <string name="portfolio_asset_new_price_placeholder">新価格</string>
+    <string name="portfolio_update_bulk_title">価格を更新</string>
+    <string name="portfolio_update_bulk_progress">%1$d/%2$d 更新済み</string>
+    <string name="portfolio_distribution_subtitle">現在価値ベース</string>
+    <string name="portfolio_closed_badge">クローズ</string>
+    <string name="portfolio_no_portfolios_title">ポートフォリオなし</string>
+    <string name="portfolio_no_portfolios_subtitle">設定からポートフォリオを作成して\n投資の整理を始めましょう</string>
+    <string name="portfolio_no_positions_select">ポジションがありません。\nポートフォリオを選択して+\nを押して最初の投資を追加</string>
+    <string name="portfolio_no_positions_wallet">このポートフォリオにはまだ取引がありません。\n+を押して最初の投資を追加</string>
+    <string name="portfolio_compound_no_effect">ポートフォリオがプラスになると\n複利効果が働きます。投資を続けましょう！</string>
+    <string name="portfolio_compound_low_effect">まだ顕著な複利効果はありません。\n長期投資を続けてください。</string>
+
+    <!-- PRICE UPDATE - missing -->
+    <string name="price_update_bulk_title">価格を更新</string>
+
+    <!-- BACKUP - missing -->
+    <string name="backup_reminder_dialog_title">バックアップリマインダー</string>
+    <string name="backup_reminder_dialog_message">次回のリマインダーはいつにしますか？</string>
+    <string name="backup_reminder_dialog_hint">このリマインダーを無効にするには、設定 › リマインダーに移動してください。</string>
+
+    <!-- DEBT - missing -->
+    <string name="debt_person_placeholder">名前またはニックネーム</string>
+    <string name="debt_note_optional">メモ（任意）</string>
+    <string name="debt_note_placeholder">例: 金曜日の夕食</string>
+    <string name="debt_mark_paid_confirm">はい、返済済み</string>
+    <string name="debt_empty_subtitle">「新規負債」を押して\n未返済の負債を登録</string>
+    <string name="debt_edit_label">編集</string>
+
+    <!-- EXPENSE SETTINGS - missing -->
+    <string name="expense_categories_section">カテゴリ</string>
+    <string name="expense_no_categories">支出カテゴリがありません</string>
+
+    <!-- INCOME SETTINGS - missing -->
+    <string name="income_types_section">収入タイプ</string>
+    <string name="income_type_archive_title">発行者をアーカイブ</string>
+    <string name="issuer_name_placeholder">発行者名</string>
+
+    <!-- GOAL SETTINGS - missing -->
+    <string name="goal_settings_title">月間目標</string>
+    <string name="goal_savings_base_label">基準月次貯蓄額</string>
+    <string name="goal_savings_placeholder">例: 500</string>
+    <string name="goal_investment_base_label">基準月次投資額</string>
+    <string name="goal_investment_placeholder">例: 300</string>
+    <string name="goal_base_placeholder">基準</string>
+    <string name="goal_saved_message">目標を保存しました</string>
+    <string name="goal_onboarding_badge">財務計画</string>
+    <string name="goal_onboarding_subtitle">毎月の貯蓄額と投資額を設定します。年間基準額を設定し、臨時の収入や支出がある月は調整できます。</string>
+
+    <!-- EMERGENCY FUND SETTINGS - missing -->
+    <string name="ef_months_hint">緊急予備資金でカバーしたい支出月数を設定します。</string>
+    <string name="ef_months_placeholder">例: 6</string>
+    <string name="ef_estimated_expense_label">推定支出</string>
+    <string name="ef_average_expense_label">平均支出</string>
+    <string name="ef_expense_placeholder">例: 1500</string>
+    <string name="ef_exclude_categories_hint">月次支出計算から除外するカテゴリを選択します。</string>
+    <string name="ef_no_categories">利用可能な支出カテゴリがありません。設定 › 支出で作成してください。</string>
+    <string name="ef_what_is_title">これは何ですか？</string>
+    <string name="ef_what_is_text">借金をせずに緊急時（失業、医療費、緊急修理）に対応するための現金クッションです。</string>
+    <string name="ef_recommendation_title">推奨額</string>
+    <string name="ef_recommendation_text">• 安定した雇用: 3～6ヶ月分\n• 自営業または扶養家族あり: 6～12ヶ月分</string>
+    <string name="ef_onboarding_badge">資産防衛</string>
+    <string name="ef_onboarding_title">緊急予備資金</string>
+    <string name="ef_onboarding_subtitle">カバーしたい月数を設定します。</string>
+    <string name="ef_saved_message">緊急予備資金を保存しました</string>
+
+    <!-- TAX PROFILE SETTINGS - missing -->
+    <string name="tax_profile_title">税務プロファイル</string>
+    <string name="tax_profile_add_cd">プロファイルを追加</string>
+    <string name="tax_profile_empty_title">税務プロファイルなし</string>
+    <string name="tax_profile_empty_subtitle">+ボタンで追加</string>
+    <string name="tax_profile_history_section">プロファイル履歴</string>
+    <string name="tax_profile_history_hint">最も新しいプロファイル（開始日基準）が現在の税務計算に適用されます。使用した税制ごとに1つ設定できます。</string>
+    <string name="tax_profile_delete_title">プロファイルを削除</string>
+    <string name="tax_profile_new_title">新規税務プロファイル</string>
+    <string name="tax_profile_country_label">国/税制</string>
+    <string name="tax_profile_valid_from_label">有効開始日</string>
+    <string name="tax_profile_delete_cd">削除</string>
+
+    <!-- ACCOUNT CONFIG SETTINGS - missing -->
+    <string name="settings_account_section_categories">カテゴリ</string>
+    <string name="settings_expense_categories_label">支出カテゴリ</string>
+    <string name="settings_income_types_label">収入タイプ</string>
+    <string name="settings_account_section_fiscal">税務</string>
+    <string name="settings_tax_profile_label">税務プロファイル</string>
+    <string name="settings_account_section_planning">計画</string>
+    <string name="settings_monthly_goals_label">月間目標</string>
+    <string name="settings_account_section_maintenance">メンテナンス</string>
+    <string name="settings_edit_account_label">口座を編集</string>
+    <string name="settings_delete_account_label">口座を削除</string>
+
+    <!-- ABOUT SCREEN - missing -->
+    <string name="about_title">このアプリについて</string>
+    <string name="about_section_app">アプリ</string>
+    <string name="about_version_label">バージョン</string>
+    <string name="about_revenuecat_id_label">RevenueCat ID</string>
+    <string name="about_section_dev">開発</string>
+    <string name="about_developer_label">開発者</string>
+    <string name="about_developer_value">AviferDev</string>
+    <string name="about_license_label">ライセンス</string>
+    <string name="about_license_value">プロプライエタリ</string>
+    <string name="about_contact_label">お問い合わせ</string>
+    <string name="about_section_rate">N3toはいかがですか？</string>
+    <string name="about_rate_app_label">アプリを評価</string>
+    <string name="about_share_app_label">アプリを共有</string>
+    <string name="about_tagline">個人財務を管理する</string>
+    <string name="about_app_name">N3to</string>
+
+    <!-- NET WORTH - missing -->
+    <string name="networth_no_account_title">口座が設定されていません</string>
+    <string name="networth_no_account_subtitle">設定から口座を作成して\n純資産を確認しましょう</string>
+    <string name="networth_valuables_label">貴重品</string>
+    <string name="networth_add_valuable_cd">貴重品を追加</string>
+    <string name="networth_no_valuables">貴重品が登録されていません</string>
+
+    <!-- VALUABLE - missing -->
+    <string name="valuable_list_title">貴重品</string>
+    <string name="valuable_empty_title">貴重品なし</string>
+    <string name="valuable_empty_subtitle">最初の貴重品を追加して価値の追跡を開始</string>
+    <string name="valuable_name_label">名前</string>
+    <string name="valuable_name_placeholder">例: CNC旋盤</string>
+    <string name="valuable_description_label">説明（任意）</string>
+    <string name="valuable_description_placeholder">ブランド、モデル、年式…</string>
+    <string name="valuable_purchase_price_label">購入価格</string>
+    <string name="valuable_estimated_value_label">推定価値（任意）</string>
+    <string name="valuable_estimated_value_placeholder">未入力の場合は購入価格が使用されます</string>
+    <string name="valuable_notes_label">メモ（任意）</string>
+    <string name="valuable_purchase_expenses_title">購入費用</string>
+    <string name="valuable_add_purchase_expense">購入費用を追加</string>
+    <string name="valuable_holding_expenses_title">保有費用</string>
+    <string name="valuable_add_holding_expense">保有費用を追加</string>
+    <string name="valuable_purchase_date_label">購入日</string>
+    <string name="valuable_expense_amount_label">金額</string>
+    <string name="valuable_expense_delete_cd">削除</string>
+    <string name="valuable_sell_title_format">売却: %1$s</string>
+    <string name="valuable_sell_price_label">売却価格</string>
+    <string name="valuable_sell_date_label">売却日</string>
+    <string name="valuable_sell_expenses_title">売却費用</string>
+    <string name="valuable_add_sell_expense">売却費用を追加</string>
+    <string name="valuable_confirm_sale">売却を確認</string>
+    <string name="valuable_purchase_format">購入: %1$s</string>
+    <string name="valuable_in_stock">保有中</string>
+    <string name="valuable_delete_title">貴重品を削除</string>
+    <string name="valuable_delete_message">この貴重品を削除してもよろしいですか？関連するすべての取引も削除されます。</string>
+    <string name="valuable_link_loan_title">ローンをリンク</string>
+    <string name="valuable_no_loans">利用可能なローンはありません</string>
+    <string name="valuable_update_value_title">価値を更新</string>
+    <string name="valuable_new_value_label">新規推定価値</string>
+    <string name="valuable_update_value_btn">価値を更新</string>
+    <string name="valuable_balance_label">残高</string>
+    <string name="valuable_sell_cd">売却</string>
+    <string name="valuable_back_cd">戻る</string>
+
+    <!-- REAL ESTATE - missing -->
+    <string name="realestate_profitability_label">収益性</string>
+    <string name="realestate_cashflow_label">純キャッシュフロー</string>
+    <string name="realestate_total_return_label">総収益率</string>
+    <string name="realestate_linked_transactions">関連取引</string>
+    <string name="realestate_rental_history_label">賃貸履歴</string>
+    <string name="realestate_expense_delete_cd">支出を削除</string>
+    <string name="realestate_mortgage_amount_format">住宅ローン: %1$s</string>
+    <string name="realestate_add_mortgage">住宅ローンを追加</string>
+    <string name="realestate_loan_only_mortgages">住宅ローンのみ</string>
+    <string name="realestate_sold_with_emoji">✅ 売却済み</string>
+    <string name="realestate_no_mortgage_short">🏠 住宅ローンなし</string>
+
+    <!-- LOAN - missing -->
+    <string name="loan_new_rate_label">新規年利率(%)</string>
+    <string name="loan_rate_placeholder">例: 3.25</string>
+    <string name="loan_apply_rate_change">変更を適用</string>
+
+    <!-- SPLASH / BRANDING -->
+    <string name="app_name_cd">N3to</string>
+    <string name="app_tagline">すべての動きを追跡。</string>
+    <string name="app_name">N3to</string>
+
+    <!-- ONBOARDING - missing slide data -->
+    <string name="onboarding_example_label">例</string>
+    <string name="onboarding_realestate_name">マイホーム</string>
+    <string name="onboarding_realestate_type">不動産資産</string>
+    <string name="onboarding_realestate_value_label">推定価値</string>
+    <string name="onboarding_realestate_mortgage_label">住宅ローン</string>
+    <string name="onboarding_realestate_contribution">純資産に貢献</string>
+    <string name="onboarding_fiscal_base_label">課税ベース 2025</string>
+    <string name="onboarding_fiscal_rendimientos">収益</string>
+    <string name="onboarding_fiscal_retenciones">源泉徴収</string>
+    <string name="onboarding_fiscal_operations_label">記録済み取引</string>
+    <string name="onboarding_portfolio_label">📈 ポートフォリオ</string>
+    <string name="onboarding_hipoteca_label">🏠 住宅ローン</string>
+    <string name="onboarding_portfolio_example_badge">例</string>
+
+    <!-- PRIVACY - missing -->
+    <string name="privacy_section_premium">Trackfolio Premium</string>
+
+    <!-- COMMON - search category placeholder -->
+    <string name="common_search_category_placeholder">カテゴリを検索…</string>
+
+    <!-- LANGUAGE SELECTOR -->
+    <string name="settings_language">言語</string>
+    <string name="language_system">システム言語</string>
+    <string name="language_spanish">スペイン語</string>
+    <string name="language_english">英語</string>
+    <string name="language_french">Français</string>
+    <string name="language_german">Deutsch</string>
+    <string name="language_chinese">中文</string>
+    <string name="language_russian">Русский</string>
+    <string name="language_japanese">日本語</string>
+    <string name="language_beta">ベータ</string>
+    <string name="language_select_title">言語を選択</string>
+</resources>

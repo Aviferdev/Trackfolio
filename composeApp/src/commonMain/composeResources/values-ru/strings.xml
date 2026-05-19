@@ -1,0 +1,1487 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- =====================================================================
+         COMMON – Buttons, actions and generic labels
+         ===================================================================== -->
+    <string name="common_cancel">Отмена</string>
+    <string name="common_accept">Принять</string>
+    <string name="common_delete">Удалить</string>
+    <string name="common_save">Сохранить</string>
+    <string name="common_close">Закрыть</string>
+    <string name="common_error">Ошибка</string>
+    <string name="common_loading">Загрузка…</string>
+    <string name="common_update">Обновить</string>
+    <string name="common_archive">Архивировать</string>
+    <string name="common_search_placeholder">Поиск…</string>
+
+    <!-- Accessibility content descriptions -->
+    <string name="common_search_cd">Поиск</string>
+    <string name="common_clear_search_cd">Очистить поиск</string>
+    <string name="common_back_cd">Назад</string>
+    <string name="common_action_cd">Действие</string>
+
+    <!-- Generic empty states -->
+    <string name="common_empty_title">Нет данных</string>
+    <string name="common_empty_subtitle">Нет элементов для отображения</string>
+
+    <!-- =====================================================================
+         NAVIGATION – Bottom bar
+         ===================================================================== -->
+    <string name="nav_home">Главная</string>
+    <string name="nav_portfolio">Портфель</string>
+    <string name="nav_networth">Капитал</string>
+
+    <!-- =====================================================================
+         DATES – Full months
+         ===================================================================== -->
+    <string name="date_month_full_01">января</string>
+    <string name="date_month_full_02">февраля</string>
+    <string name="date_month_full_03">марта</string>
+    <string name="date_month_full_04">апреля</string>
+    <string name="date_month_full_05">мая</string>
+    <string name="date_month_full_06">июня</string>
+    <string name="date_month_full_07">июля</string>
+    <string name="date_month_full_08">августа</string>
+    <string name="date_month_full_09">сентября</string>
+    <string name="date_month_full_10">октября</string>
+    <string name="date_month_full_11">ноября</string>
+    <string name="date_month_full_12">декабря</string>
+
+    <!-- DATES – Short months (3 letters) -->
+    <string name="date_month_short_01">янв.</string>
+    <string name="date_month_short_02">февр.</string>
+    <string name="date_month_short_03">март</string>
+    <string name="date_month_short_04">апр.</string>
+    <string name="date_month_short_05">май</string>
+    <string name="date_month_short_06">июнь</string>
+    <string name="date_month_short_07">июль</string>
+    <string name="date_month_short_08">авг.</string>
+    <string name="date_month_short_09">сент.</string>
+    <string name="date_month_short_10">окт.</string>
+    <string name="date_month_short_11">нояб.</string>
+    <string name="date_month_short_12">дек.</string>
+
+    <!-- DATES – Relative -->
+    <string name="date_today">сегодня</string>
+    <string name="date_yesterday">вчера</string>
+    <string name="date_just_now">только что</string>
+    <string name="date_one_minute_ago">1 минуту назад</string>
+    <string name="date_minutes_ago">%1$d минут назад</string>
+    <string name="date_one_hour_ago">1 час назад</string>
+    <string name="date_hours_ago">%1$d часов назад</string>
+    <string name="date_days_ago">%1$d дней назад</string>
+    <string name="date_one_month_ago">1 месяц назад</string>
+    <string name="date_months_ago">%1$d месяцев назад</string>
+    <string name="date_one_year_ago">1 год назад</string>
+    <string name="date_years_ago">%1$d лет назад</string>
+
+    <!-- DATES – Full date format (day of month of year) -->
+    <string name="date_format_dmy">%1$d %2$s %3$d</string>
+
+    <!-- DATES – Selector -->
+    <string name="common_select_date">Выберите дату</string>
+
+    <!-- =====================================================================
+         GREETINGS – By time of day
+         ===================================================================== -->
+    <string name="greeting_morning">Доброе утро</string>
+    <string name="greeting_afternoon">Добрый день</string>
+    <string name="greeting_evening">Добрый вечер</string>
+
+    <!-- =====================================================================
+         HOME – HeroCard, quick access, sections
+         ===================================================================== -->
+    <string name="home_hero_balance_label">Баланс счёта</string>
+    <string name="home_hero_net_with_debts">Нетто с долгами</string>
+    <string name="home_show_balances">Показать балансы</string>
+    <string name="home_hide_balances">Скрыть балансы</string>
+    <string name="home_confirm_identity">Подтвердите личность</string>
+    <string name="home_section_goals">Цели</string>
+    <string name="home_section_emergency_fund">Резервный фонд</string>
+    <string name="home_section_recent">Последние операции</string>
+    <string name="home_view_all">Смотреть всё</string>
+    <string name="home_no_movements_title">Нет операций</string>
+    <string name="home_no_movements_subtitle">Нажмите +, чтобы добавить первую операцию</string>
+    <string name="home_quick_resumen">Сводка</string>
+    <string name="home_quick_debts">Долги</string>
+    <string name="home_quick_fiscal">Налоги</string>
+    <string name="home_settings_cd">Настройки</string>
+
+    <!-- HOME – Emergency fund -->
+    <string name="home_ef_configure_title">Настройте резервный фонд</string>
+    <string name="home_ef_configure_subtitle">Обеспечьте безопасность баланса — Нажмите, чтобы настроить</string>
+    <string name="home_ef_covered">Покрыто ✅</string>
+    <string name="home_ef_months">%1$d мес.</string>
+    <string name="home_ef_current_balance">Текущий баланс</string>
+    <string name="home_ef_target">Цель</string>
+    <string name="home_ef_missing_format">Вам нужно ещё %1$s для покрытия фонда</string>
+    <string name="home_ef_monthly_avg_format">Ср. расход: %1$s/мес.</string>
+
+    <!-- HOME – Goals -->
+    <string name="home_goals_define_title">Установите ежемесячные цели</string>
+    <string name="home_goals_define_subtitle">Сбережения &amp; инвестиции — Нажмите, чтобы настроить</string>
+    <string name="home_goals_monthly">Цели месяца</string>
+    <string name="home_goals_savings">Сбережения</string>
+    <string name="home_goals_investment">Инвестиции</string>
+    <string name="home_goals_projection_above">📈 Прогноз: %1$s — выше цели (+%2$s)</string>
+    <string name="home_goals_pace_needed">📊 Текущий темп: %1$s€/день — Нужно %2$s€/день для достижения цели</string>
+    <string name="home_goals_no_movement">📊 В этом месяце пока нет движений</string>
+
+    <!-- HOME – Banners -->
+    <string name="home_price_reminder_one">%1$d актив без обновлённой цены (&gt;7 дней)</string>
+    <string name="home_price_reminder_many">%1$d активов без обновлённой цены (&gt;7 дней)</string>
+    <string name="home_backup_never">Вы ещё не сделали резервную копию</string>
+    <string name="home_backup_days_format">%1$d дней с последней резервной копии</string>
+    <string name="home_backup_action">Создать копию</string>
+    <string name="home_maturity_title">Предстоящие погашения</string>
+    <string name="home_maturity_more_format">+%1$d ещё</string>
+
+    <!-- =====================================================================
+         TRANSACTION – Default labels
+         ===================================================================== -->
+    <string name="transaction_label_investment">Инвестиция</string>
+    <string name="transaction_label_balance_adjustment">Корректировка баланса</string>
+    <string name="transaction_label_income">Доход</string>
+    <string name="transaction_label_expense">Расход</string>
+
+    <!-- =====================================================================
+         SETTINGS – Section titles and options
+         ===================================================================== -->
+    <string name="settings_title">Настройки</string>
+    <string name="settings_section_accounts">Счета</string>
+    <string name="settings_section_security">Безопасность</string>
+    <string name="settings_section_reminders">Напоминания</string>
+    <string name="settings_section_appearance">Внешний вид</string>
+    <string name="settings_section_privacy">Конфиденциальность</string>
+    <string name="settings_section_data">Данные</string>
+    <string name="settings_section_info">Информация</string>
+    <string name="settings_add_account">Добавить счёт</string>
+    <string name="settings_add">Добавить</string>
+
+    <!-- Settings – Security -->
+    <string name="settings_biometric_lock">Биометрическая блокировка</string>
+    <string name="settings_biometric_enabled">Включено</string>
+    <string name="settings_biometric_disabled">Отключено</string>
+    <string name="settings_biometric_activate">Включить биометрию</string>
+    <string name="settings_biometric_title">Биометрия</string>
+    <string name="settings_biometric_unavailable">Биометрия недоступна. Настройте отпечаток пальца или PIN-код в настройках устройства.</string>
+
+    <!-- Settings – Appearance -->
+    <string name="settings_dark_theme">Тёмная тема</string>
+    <string name="settings_theme_enabled">Включено</string>
+    <string name="settings_theme_disabled">Отключено</string>
+
+    <!-- Settings – Premium -->
+    <string name="settings_premium_title">Trackfolio Premium</string>
+    <string name="settings_premium_lifetime">Навсегда</string>
+    <string name="settings_premium_active">Активна</string>
+    <string name="settings_premium_cta">Купить Premium</string>
+    <string name="settings_premium_limit_title">Лимит бесплатных счетов</string>
+    <string name="settings_premium_limit_message">Вы достигли лимита в %1$d счетов в бесплатной версии. Оформите Premium для неограниченного количества счетов.</string>
+
+    <!-- Settings – Privacy -->
+    <string name="settings_privacy_data">Конфиденциальность &amp; данные</string>
+
+    <!-- Settings – Data -->
+    <string name="settings_backup">Резервное копирование</string>
+    <string name="settings_backup_reminder_title">Напоминание о резервной копии</string>
+    <string name="settings_backup_reminder_off">Отключено</string>
+
+    <!-- Settings – Reminders -->
+    <string name="settings_interval_7d">7 дней</string>
+    <string name="settings_interval_15d">15 дней</string>
+    <string name="settings_interval_30d">30 дней</string>
+    <string name="settings_reconciliation_reminder_title">Напоминание о сверке</string>
+
+    <!-- Settings – Info -->
+    <string name="settings_about">О приложении</string>
+    <string name="settings_show_onboarding">Показать приветствие</string>
+
+    <!-- Settings – Dialogs -->
+    <string name="settings_delete_account_title">Удалить счёт</string>
+    <string name="settings_delete_account_message">Удалить «%1$s»? Это также удалит все его операции.</string>
+    <string name="settings_not_now">Не сейчас</string>
+    <string name="settings_configure_cd">Настроить</string>
+    <string name="settings_edit_cd">Редактировать</string>
+
+    <!-- =====================================================================
+         PORTFOLIO – Common portfolio strings
+         ===================================================================== -->
+    <string name="portfolio_title">Портфель</string>
+    <string name="portfolio_evolution_title">Динамика стоимости</string>
+    <string name="portfolio_monthly_value">Ежемесячная стоимость портфеля</string>
+    <string name="portfolio_empty_title">Нет позиций</string>
+    <string name="portfolio_empty_subtitle">Нажмите +, чтобы зарегистрировать\nпервую инвестицию</string>
+    <string name="portfolio_new_purchase">Новая покупка</string>
+    <string name="portfolio_new_bond">Новая облигация/вклад</string>
+    <string name="portfolio_settings_cd">Настройки портфеля</string>
+    <string name="portfolio_distribution_view_category">Категория</string>
+    <string name="portfolio_distribution_view_composition">Состав</string>
+    <string name="portfolio_distribution_view_region">Регион</string>
+    <string name="portfolio_distribution_view_sector">Сектор</string>
+
+    <!-- PORTFOLIO – Summary -->
+    <string name="portfolio_summary_total_value">Общая стоимость</string>
+    <string name="portfolio_summary_invested">Инвестировано</string>
+    <string name="portfolio_summary_total_pnl">Общая прибыль</string>
+    <string name="portfolio_summary_realized">Реализованная</string>
+    <string name="portfolio_summary_unrealized">Нереализованная</string>
+    <string name="portfolio_summary_positions_one">%1$d открытая позиция</string>
+    <string name="portfolio_summary_positions_many">%1$d открытых позиций</string>
+
+    <!-- =====================================================================
+         PRIVACY – Privacy and data screen
+         ===================================================================== -->
+    <string name="privacy_restore_success">Покупки успешно восстановлены</string>
+    <string name="privacy_restore_error">Ошибка: %1$s</string>
+    <string name="privacy_back_cd">Назад</string>
+    <string name="privacy_revoke_title">Отозвать все согласия?</string>
+    <string name="privacy_revoke_message">Аналитика использования и отчёты об ошибках будут отключены. Изменения вступают в силу немедленно.</string>
+    <string name="privacy_revoke_confirm">Отозвать всё</string>
+
+    <!-- Privacy – Consent -->
+    <string name="privacy_section_consent">Согласие</string>
+    <string name="privacy_analytics_title">Помогите нам стать лучше</string>
+    <string name="privacy_analytics_desc">Анонимная аналитика использования для улучшения приложения.</string>
+    <string name="privacy_crash_title">Сообщать об ошибках</string>
+    <string name="privacy_crash_desc">Анонимные отчёты об ошибках для исправления багов.</string>
+    <string name="privacy_consent_date_format">Согласие записано %1$s</string>
+
+    <!-- Privacy – Premium -->
+    <string name="privacy_premium_active_label">Premium активен</string>
+    <string name="privacy_premium_lifetime_value">Пожизненный доступ</string>
+    <string name="privacy_premium_subscription_value">Активная подписка</string>
+    <string name="privacy_premium_valid_until">Действителен до</string>
+    <string name="privacy_premium_manage">Управление подпиской</string>
+    <string name="privacy_premium_plan">Текущий план</string>
+    <string name="privacy_premium_free">Бесплатно</string>
+    <string name="privacy_premium_no_ads_value">При подключении Premium</string>
+    <string name="privacy_premium_restore">Восстановить покупку</string>
+
+    <!-- Privacy – Data collected -->
+    <string name="privacy_section_data_collected">Собираемые данные</string>
+    <string name="privacy_data_screens">Посещённые экраны</string>
+    <string name="privacy_data_crash_reports">Отчёты об ошибках</string>
+    <string name="privacy_data_financial">Финансовые данные</string>
+    <string name="privacy_data_personal">Личная информация</string>
+    <string name="privacy_data_revenuecat">Управление подписками (RevenueCat)</string>
+
+    <!-- Privacy – Actions -->
+    <string name="privacy_revoke_all_button">Отозвать все согласия</string>
+    <string name="privacy_revoke_all_hint">После отзыва все данные отслеживания немедленно отключаются.</string>
+    <string name="privacy_policy_link">Политика конфиденциальности</string>
+
+    <!-- =====================================================================
+         PORTFOLIO – Settings
+         ===================================================================== -->
+    <string name="portfolio_settings_title">Настройки портфеля</string>
+    <string name="portfolio_settings_category_section">КАТЕГОРИИ АКТИВОВ</string>
+    <string name="portfolio_settings_category_count_one">%1$d актив</string>
+    <string name="portfolio_settings_category_count_many">%1$d активов</string>
+    <string name="portfolio_settings_portfolio_section">ПОРТФЕЛИ</string>
+    <string name="portfolio_settings_no_portfolios">Нет портфелей. Создайте новый на экране портфеля.</string>
+    <string name="portfolio_settings_edit_cd">Редактировать</string>
+    <string name="portfolio_settings_delete_cd">Удалить</string>
+    <string name="portfolio_settings_reminder_section">НАПОМИНАНИЕ О ЦЕНАХ</string>
+    <string name="portfolio_settings_reminder_title">Периодичность напоминаний</string>
+    <string name="portfolio_settings_reminder_desc">Я буду напоминать вам регулярно обновлять цены активов.</string>
+    <string name="portfolio_settings_platform_section">ПЛАТФОРМЫ</string>
+    <string name="portfolio_settings_platform_empty">Нет платформ. Добавьте брокеров, биржи или банки, чтобы связать их с вашими операциями.</string>
+    <string name="portfolio_settings_sector_section">СЕКТОРА</string>
+    <string name="portfolio_settings_sector_empty">Классифицируйте активы по секторам (Технологии, Здравоохранение, Энергетика…), чтобы анализировать распределение по отраслям.</string>
+    <string name="portfolio_settings_region_section">РЕГИОНЫ</string>
+    <string name="portfolio_settings_region_empty">Определите географическое распределение по регионам (США, Европа, Азия…), чтобы анализировать международную экспозицию.</string>
+    <string name="portfolio_settings_manage">Управление</string>
+    <string name="portfolio_settings_add">Добавить</string>
+    <string name="portfolio_settings_delete_portfolio_title">Удалить портфель</string>
+    <string name="portfolio_settings_delete_portfolio_message">Удалить «%1$s»? Активы будут перемещены в «Без портфеля».</string>
+
+    <!-- PORTFOLIO – Asset detail -->
+    <string name="portfolio_asset_detail_title">Актив</string>
+    <string name="portfolio_asset_detail_platform_section">ПЛАТФОРМЫ</string>
+    <string name="portfolio_asset_detail_platform_desc">Выберите платформы (брокеры, банки, биржи), на которых хранится этот актив.</string>
+    <string name="portfolio_asset_detail_platform_empty">Нет созданных платформ. Создайте первую, чтобы связать её с этим активом.</string>
+    <string name="portfolio_asset_detail_platform_link_hint">Чтобы связать платформы, перейдите в Настройки › Портфель › Платформы.</string>
+    <string name="portfolio_asset_detail_linked_platforms">СВЯЗАННЫЕ ПЛАТФОРМЫ</string>
+    <string name="portfolio_asset_detail_unlink_cd">Отвязать</string>
+
+    <!-- PORTFOLIO – Asset history -->
+    <string name="portfolio_asset_history_add">Добавить</string>
+    <string name="portfolio_asset_history_filter_all">Все</string>
+    <string name="portfolio_asset_history_filter_buy">Покупка</string>
+    <string name="portfolio_asset_history_filter_sell">Продажа</string>
+    <string name="portfolio_asset_history_no_data">Нет исторических данных</string>
+
+    <!-- PORTFOLIO – Compound effect card -->
+    <string name="portfolio_compound_effect_title">Сложный процент</string>
+    <string name="portfolio_compound_effect_projection">Прогноз</string>
+    <string name="portfolio_compound_effect_estimated">Вы заработали</string>
+
+    <!-- PORTFOLIO – Add/Edit asset sheet -->
+    <string name="portfolio_add_asset_title_create">Создать актив</string>
+    <string name="portfolio_add_asset_title_edit">Редактировать актив</string>
+    <string name="portfolio_add_asset_name_label">Название актива</string>
+    <string name="portfolio_add_asset_ticker_label">Тикер</string>
+    <string name="portfolio_add_asset_category_label">Категория</string>
+    <string name="portfolio_add_asset_price_label">Цена за единицу</string>
+    <string name="portfolio_add_asset_price_placeholder">Рыночная цена</string>
+    <string name="portfolio_add_asset_notes_label">Заметки</string>
+    <string name="portfolio_add_asset_platform_label">Платформа</string>
+    <string name="portfolio_add_asset_save">Сохранить изменения</string>
+    <string name="portfolio_add_asset_name_required">Название обязательно</string>
+    <string name="portfolio_add_asset_no_price">Цена для этого актива ещё не указана</string>
+    <string name="portfolio_add_asset_select_category">Выберите категорию</string>
+    <string name="portfolio_add_asset_select_platform">Выберите, где хранятся единицы</string>
+    <string name="portfolio_add_asset_no_platforms">Нет связанных платформ</string>
+
+    <!-- PORTFOLIO – Add transaction sheet -->
+    <string name="portfolio_add_tx_title">Регистрация операции</string>
+    <string name="portfolio_add_tx_title_edit">Редактировать операцию</string>
+    <string name="portfolio_add_tx_date">Дата</string>
+    <string name="portfolio_add_tx_qty">Количество</string>
+    <string name="portfolio_add_tx_price">Цена за единицу</string>
+    <string name="portfolio_add_tx_gross">Сумма брутто</string>
+    <string name="portfolio_add_tx_gross_placeholder">Введите сумму брутто</string>
+    <string name="portfolio_add_tx_net">Нетто</string>
+    <string name="portfolio_add_tx_fee">Брутто</string>
+    <string name="portfolio_add_tx_fee_placeholder">Напр. 0,5%, 1,20 €</string>
+    <string name="portfolio_add_tx_platform">Платформа</string>
+    <string name="portfolio_add_tx_notes">Заметки</string>
+    <string name="portfolio_add_tx_select_asset">Выберите актив</string>
+    <string name="portfolio_add_tx_no_units">Нет единиц</string>
+    <string name="portfolio_add_tx_name_required">Название обязательно</string>
+
+    <!-- PORTFOLIO – Dividend sheet -->
+    <string name="portfolio_dividend_title">Регистрация дивиденда</string>
+    <string name="portfolio_dividend_amount">Сумма брутто</string>
+    <string name="portfolio_dividend_withholding">Удержание</string>
+    <string name="portfolio_dividend_date">Дата</string>
+    <string name="portfolio_dividend_notes">Заметки</string>
+
+    <!-- PORTFOLIO – Transfer sheet -->
+    <string name="portfolio_transfer_title">Перевод средств</string>
+    <string name="portfolio_transfer_from">Фонд-источник</string>
+    <string name="portfolio_transfer_to">Фонд-назначение</string>
+    <string name="portfolio_transfer_qty">Доли для перевода</string>
+    <string name="portfolio_transfer_date">Дата перевода</string>
+    <string name="portfolio_transfer_confirm">Подтвердить перевод</string>
+
+    <!-- PORTFOLIO – Update price sheet -->
+    <string name="portfolio_update_price_title">Обновить цену</string>
+    <string name="portfolio_update_price_save">Сохранить цену</string>
+
+    <!-- PORTFOLIO – Management sheets -->
+    <string name="portfolio_new_sector_title">Новый сектор</string>
+    <string name="portfolio_new_region_title">Новый регион</string>
+    <string name="portfolio_new_platform_title">Новая платформа</string>
+    <string name="portfolio_edit_platform_title">Редактировать платформу</string>
+    <string name="portfolio_link_platform_title">Связать платформу</string>
+    <string name="portfolio_platform_name">Название</string>
+    <string name="portfolio_platform_icon">Иконка</string>
+    <string name="portfolio_platform_notes">Заметки</string>
+
+    <!-- PORTFOLIO – Portfolio management -->
+    <string name="portfolio_new_portfolio_title">Новый портфель</string>
+    <string name="portfolio_edit_portfolio_title">Редактировать портфель</string>
+    <string name="portfolio_name_required">Название обязательно</string>
+    <string name="portfolio_without">Без портфеля</string>
+
+    <!-- PORTFOLIO – Subcomponents -->
+    <string name="portfolio_category_group_assets">%1$d активов</string>
+    <string name="portfolio_category_invested_format">Инвестировано: %1$s €</string>
+    <string name="portfolio_category_current_format">Текущая: %1$s €</string>
+    <string name="portfolio_category_group_expand">Развернуть</string>
+    <string name="portfolio_category_group_collapse">Свернуть</string>
+    <string name="portfolio_closed_positions">Закрытые позиции</string>
+    <string name="portfolio_closed_positions_count">%1$d закрыто</string>
+    <string name="portfolio_fixed_income_section">Фиксированный доход</string>
+    <string name="portfolio_fixed_income_count">%1$d позиций</string>
+
+    <!-- =====================================================================
+         TRANSACTION – Transaction screens
+         ===================================================================== -->
+    <string name="transaction_title">Операции</string>
+    <string name="transaction_search_hint">Поиск операций…</string>
+    <string name="transaction_no_results">Нет операций, соответствующих вашему запросу</string>
+    <string name="transaction_no_movements">Нет зарегистрированных операций</string>
+    <string name="transaction_detail_title">Детали операции</string>
+    <string name="transaction_detail_not_found">Операция не найдена</string>
+    <string name="transaction_type_income">Доход</string>
+    <string name="transaction_type_expense">Расход</string>
+    <string name="transaction_type_adjustment">Корректировка</string>
+    <string name="transaction_type_transfer">Перевод</string>
+    <string name="transaction_filter_all">Все</string>
+    <string name="transaction_filter_income">Доходы</string>
+    <string name="transaction_filter_expense">Расходы</string>
+
+    <!-- =====================================================================
+         ACCOUNT – Account screens
+         ===================================================================== -->
+    <string name="account_list_title">Мои счета</string>
+    <string name="account_add_title">Добавить счёт</string>
+    <string name="account_edit_title">Редактировать счёт</string>
+    <string name="account_name_label">Название или псевдоним</string>
+    <string name="account_name_placeholder">Напр. Расчётный счёт BBVA</string>
+    <string name="account_initial_balance">Начальный баланс не установлен</string>
+    <string name="account_no_accounts">Ещё нет счетов</string>
+    <string name="account_empty_subtitle">Создайте первый счёт через\nНастройки, чтобы начать</string>
+    <string name="account_balance_label">Текущий баланс</string>
+    <string name="account_computed_balance">Расчётный баланс</string>
+    <string name="account_delete_confirm_title">Удалить счёт</string>
+    <string name="account_configure_cd">Настроить</string>
+    <string name="account_edit_cd">Редактировать</string>
+    <string name="account_delete_cd">Удалить</string>
+
+    <!-- =====================================================================
+         FIXED INCOME – Fixed income
+         ===================================================================== -->
+    <string name="fixedincome_title">Фиксированный доход</string>
+    <string name="fixedincome_detail_title">Позиция фиксированного дохода</string>
+    <string name="fixedincome_not_found">Позиция не найдена</string>
+    <string name="fixedincome_create_title">Новая позиция фиксированного дохода</string>
+    <string name="fixedincome_edit_title">Редактировать позицию фиксированного дохода</string>
+    <string name="fixedincome_name_label">Название</string>
+    <string name="fixedincome_ticker_label">Тикер</string>
+    <string name="fixedincome_type_label">Тип продукта</string>
+    <string name="fixedincome_principal_label">Основная сумма</string>
+    <string name="fixedincome_interest_label">Годовая ставка (%)</string>
+    <string name="fixedincome_frequency_label">Периодичность выплаты процентов</string>
+    <string name="fixedincome_start_date">Дата начала</string>
+    <string name="fixedincome_maturity_date">Дата погашения</string>
+    <string name="fixedincome_auto_renew">Автопродление при погашении</string>
+    <string name="fixedincome_save">Сохранить изменения</string>
+    <string name="fixedincome_cancel_title">Досрочное расторжение</string>
+    <string name="fixedincome_close_confirm">Подтвердить расчёт</string>
+    <string name="fixedincome_register_coupon">Зарегистрировать купон / проценты</string>
+    <string name="fixedincome_sell_secondary">Продать на вторичном рынке</string>
+    <string name="fixedincome_value_label">Текущая стоимость</string>
+    <string name="fixedincome_invested_label">Инвестированный капитал</string>
+    <string name="fixedincome_yield_gross">Валовая доходность при покупке</string>
+    <string name="fixedincome_yield_current">Валовая доходность от текущей стоимости</string>
+    <string name="fixedincome_net_maturity">Расчётная чистая сумма при погашении</string>
+    <string name="fixedincome_coupon_calendar">График выплат</string>
+    <string name="fixedincome_coupons_received">Полученные купоны</string>
+    <string name="fixedincome_maturity_simulation">Симуляция погашения</string>
+
+    <!-- =====================================================================
+         LOAN – Loans
+         ===================================================================== -->
+    <string name="loan_detail_title">Детали кредита</string>
+    <string name="loan_not_found">Кредит не найден</string>
+    <string name="loan_add_title">Добавить кредит</string>
+    <string name="loan_edit_title">Редактировать кредит</string>
+    <string name="loan_name_label">Название кредита</string>
+    <string name="loan_type_label">Тип</string>
+    <string name="loan_entity_label">Организация</string>
+    <string name="loan_principal_label">Первоначальный капитал</string>
+    <string name="loan_interest_label">Процентная ставка</string>
+    <string name="loan_term_label">Срок (месяцев)</string>
+    <string name="loan_monthly_payment">Ежемесячный платёж</string>
+    <string name="loan_pending_capital">Остаток капитала</string>
+    <string name="loan_amortization_title">График амортизации</string>
+    <string name="loan_amortization_type">Амортизация</string>
+    <string name="loan_history_title">История процентных ставок</string>
+    <string name="loan_archive_title">Архивировать кредит</string>
+    <string name="loan_change_rate">Обновить процентную ставку</string>
+    <string name="loan_progress">Прогресс</string>
+
+    <!-- =====================================================================
+         DEBT – Debts
+         ===================================================================== -->
+    <string name="debt_title">Долги</string>
+    <string name="debt_add_title">Новый долг</string>
+    <string name="debt_edit_title">Редактировать долг</string>
+    <string name="debt_no_debts">Нет долгов</string>
+    <string name="debt_type_label">Тип долга</string>
+    <string name="debt_person_label">Человек</string>
+    <string name="debt_amount_label">Сумма</string>
+    <string name="debt_description_label">Концепция</string>
+    <string name="debt_i_owe">Я должен</string>
+    <string name="debt_they_owe">Должны мне</string>
+    <string name="debt_mark_paid">Отметить оплаченным</string>
+    <string name="debt_paid">Оплачено</string>
+    <string name="debt_pending">Ожидает</string>
+
+    <!-- =====================================================================
+         REAL ESTATE – Real estate
+         ===================================================================== -->
+    <string name="realestate_detail_title">Детали недвижимости</string>
+    <string name="realestate_add_title">Добавить недвижимость</string>
+    <string name="realestate_edit_title">Редактировать недвижимость</string>
+    <string name="realestate_no_properties">Нет зарегистрированной недвижимости</string>
+    <string name="realestate_name_label">Название</string>
+    <string name="realestate_address_label">Адрес</string>
+    <string name="realestate_type_label">Тип недвижимости</string>
+    <string name="realestate_estimated_value">Оценочная стоимость</string>
+    <string name="realestate_mortgage_label">Ипотека</string>
+    <string name="realestate_rental_status">Статус аренды</string>
+    <string name="realestate_rental_income">Доход от аренды</string>
+    <string name="realestate_expenses_label">Расходы</string>
+    <string name="realestate_sell_title">Продать недвижимость</string>
+    <string name="realestate_sell_price">Цена продажи</string>
+    <string name="realestate_sell_expenses">Расходы на продажу</string>
+    <string name="realestate_sell_confirm">Подтвердить продажу</string>
+    <string name="realestate_archived_title">Архивировать недвижимость</string>
+    <string name="realestate_sold">Недвижимость продана</string>
+    <string name="realestate_net_equity">Чистая стоимость</string>
+
+    <!-- =====================================================================
+         NET WORTH – Net worth
+         ===================================================================== -->
+    <string name="networth_title">Капитал</string>
+    <string name="networth_total_label">Собственный капитал</string>
+    <string name="networth_assets_label">Всего активов</string>
+    <string name="networth_liabilities_label">Обязательства</string>
+    <string name="networth_evolution_title">Динамика капитала</string>
+    <string name="networth_no_data">Нет данных за этот год</string>
+    <string name="networth_monthly_title">Ежемесячный капитал</string>
+    <string name="networth_cash_label">Наличные</string>
+    <string name="networth_investments_label">Инвестиции</string>
+    <string name="networth_realestate_label">Недвижимость</string>
+
+    <!-- =====================================================================
+         FISCAL – Fiscal report
+         ===================================================================== -->
+    <string name="fiscal_title">Налоговый отчёт</string>
+    <string name="fiscal_generate_title">Создать &amp; поделиться PDF</string>
+    <string name="fiscal_ready">Налоговый отчёт готов</string>
+    <string name="fiscal_taxable_base">НАЛОГООБЛАГАЕМАЯ БАЗА %1$s</string>
+    <string name="fiscal_income_title">Доходы</string>
+    <string name="fiscal_expenses_title">Расходы</string>
+    <string name="fiscal_capital_gains">Прирост капитала</string>
+    <string name="fiscal_dividends_title">Дивиденды</string>
+    <string name="fiscal_withholdings_title">УДЕРЖАНИЯ</string>
+    <string name="fiscal_total_income">Общий доход</string>
+    <string name="fiscal_total_expenses">Общие расходы</string>
+    <string name="fiscal_net_result">Чистый результат</string>
+    <string name="fiscal_no_data">Добавьте операции, чтобы увидеть сводку</string>
+
+    <!-- =====================================================================
+         ANNUAL – Annual summary
+         ===================================================================== -->
+    <string name="annual_title">Годовой обзор</string>
+    <string name="annual_tab_summary">Сводка</string>
+    <string name="annual_tab_expenses">Расходы</string>
+    <string name="annual_tab_income">Доходы</string>
+    <string name="annual_tab_investments">Инвестиции</string>
+    <string name="annual_goal_compliance">Выполнение целей</string>
+    <string name="annual_goal_met">Выполнена</string>
+    <string name="annual_goal_not_met">Не выполнена</string>
+    <string name="annual_no_goal">Нет цели</string>
+    <string name="annual_monthly_evolution">Динамика за %1$s</string>
+
+    <!-- =====================================================================
+         ONBOARDING – Introduction
+         ===================================================================== -->
+    <string name="onboarding_welcome_title">Добро пожаловать в N3to</string>
+    <string name="onboarding_welcome_subtitle">Ваши финансы принадлежат вам</string>
+    <string name="onboarding_skip">Пропустить</string>
+    <string name="onboarding_continue">Продолжить</string>
+    <string name="onboarding_start">Начать</string>
+    <string name="onboarding_slide_portfolio_title">Инвестиционный портфель</string>
+    <string name="onboarding_slide_movements_title">Осмысленные операции</string>
+    <string name="onboarding_slide_networth_title">Ваш капитал наглядно</string>
+    <string name="onboarding_slide_fiscal_title">Налоговый отчёт</string>
+    <string name="onboarding_slide_realestate_title">Недвижимость</string>
+
+    <!-- =====================================================================
+         RECONCILIATION – Reconciliation
+         ===================================================================== -->
+    <string name="reconciliation_banner_text">Прошло много времени с последней сверки баланса</string>
+    <string name="reconciliation_title">Сверка баланса</string>
+    <string name="reconciliation_balanced">Баланс уже совпадает</string>
+    <string name="reconciliation_adjust">Скорректировать баланс</string>
+
+    <!-- =====================================================================
+         SECURITY – Lock
+         ===================================================================== -->
+    <string name="security_unlock_title">Разблокировать N3to</string>
+    <string name="security_unlock_hint">Используйте отпечаток пальца, Face ID или PIN-код</string>
+    <string name="security_biometric_not_available">Биометрия недоступна на этом устройстве</string>
+
+    <!-- =====================================================================
+         PREMIUM – Premium screen
+         ===================================================================== -->
+    <string name="premium_title">Trackfolio Premium</string>
+    <string name="premium_already_premium">У вас уже есть Premium</string>
+    <string name="premium_unlock_features">Откройте все возможности</string>
+    <string name="premium_unlimited_accounts">Неограниченное количество счетов</string>
+    <string name="premium_themes">Эксклюзивные темы</string>
+    <string name="premium_ad_free">Пользуйтесь приложением без рекламы</string>
+    <string name="premium_manage_accounts">Управляйте всеми счетами без ограничений</string>
+    <string name="premium_customize">Настройте приложение со светлой и тёмной темами</string>
+    <string name="premium_subscribe">Купить Premium</string>
+    <string name="premium_restore">Восстановить покупку</string>
+    <string name="premium_restore_success">Покупки успешно восстановлены</string>
+    <string name="premium_restore_cancelled">Восстановление отменено</string>
+
+    <!-- =====================================================================
+         CONSENT – Consent
+         ===================================================================== -->
+    <string name="consent_title">Прежде чем начать</string>
+    <string name="consent_accept">Принять и продолжить</string>
+    <string name="consent_decline">Отклонить и продолжить</string>
+    <string name="consent_privacy_policy">Посмотреть политику конфиденциальности</string>
+    <string name="consent_data_description">Ваши счета, операции и балансы хранятся локально на устройстве. Мы передаём данные только с вашего разрешения.</string>
+    <string name="consent_crash_description">Если приложение аварийно завершится, мы получим уведомление, чтобы быстро устранить проблему.</string>
+    <string name="security_locked_message">Приложение заблокировано.\nАвторизуйтесь, чтобы продолжить.</string>
+    <string name="security_unlock_button">Разблокировать</string>
+    <string name="version_block_message">Для продолжения работы необходимо обновить N3to.</string>
+    <string name="version_block_version_info">Минимальная версия: %1$s · Ваша версия: %2$s</string>
+    <string name="reconciliation_real_balance">Реальный баланс (€)</string>
+    <string name="reconciliation_diff_format">Разница: %1$s%2$s €</string>
+    <string name="reconciliation_done">Готово</string>
+    <string name="reconciliation_adjust_label">Скорректировать баланс</string>
+    <string name="fixedincome_delete_event">Удалить событие</string>
+    <string name="fixedincome_distribution_title">Распределение</string>
+    <string name="fixedincome_no_region">Не назначен</string>
+    <string name="fixedincome_no_sector">Не назначен</string>
+    <string name="fixedincome_select_region">Выберите регион</string>
+    <string name="fixedincome_select_sector">Выберите сектор</string>
+    <string name="fixedincome_status_active">АКТИВНА</string>
+    <string name="fixedincome_status_closed">ЗАКРЫТА</string>
+    <string name="fixedincome_change_region">Изменить</string>
+    <string name="fixedincome_change_sector">Изменить</string>
+    <string name="fixedincome_platform_label">Платформа</string>
+    <string name="fixedincome_liquidate_maturity">Погасить при наступлении срока</string>
+    <string name="fixedincome_annual_coupon">Годовой купон</string>
+    <string name="fixedincome_maturity_label">Погашение</string>
+    <string name="fixedincome_est_nir">Расчётная чистая доходность</string>
+    <string name="fixedincome_register_settlement">Зарегистрировать расчёт</string>
+    <string name="fixedincome_event_history">История событий</string>
+    <string name="fixedincome_no_events">Нет зарегистрированных событий</string>
+    <string name="fixedincome_gross_interest">Валовые проценты</string>
+    <string name="fixedincome_estimated_irpf">Расчётное удержание (%1$s%%)</string>
+    <string name="fixedincome_estimated_commissions">Расчётные комиссии</string>
+    <string name="fixedincome_net_profit_label">Чистая прибыль</string>
+    <string name="fixedincome_region_label">Регион</string>
+    <string name="fixedincome_sector_label">Сектор</string>
+    <string name="fixedincome_delete_event_confirm">Удалить событие %1$s?</string>
+    <string name="fixedincome_header_label">Фиксированный доход · %1$s</string>
+    <string name="fixedincome_nominal_label">Основная сумма</string>
+    <string name="fixedincome_coupon_paid">Получен</string>
+    <string name="fixedincome_coupon_pending">Ожидает</string>
+    <string name="fixedincome_retention_label">Удержание</string>
+    <string name="fixedincome_commission_label">Комиссия</string>
+    <string name="fixedincome_gross_label">Брутто</string>
+    <string name="fixedincome_maturity_sim_irpf">Расчётное удержание (%1$s%%)</string>
+    <string name="fixedincome_yield_label">Доходность</string>
+    <string name="fixedincome_capital_short">Капитал</string>
+
+    <!-- NET WORTH -->
+    <string name="networth_add_property_cd">Добавить недвижимость</string>
+    <string name="networth_add_loan_cd">Добавить кредит</string>
+    <string name="networth_no_properties">Нет зарегистрированной недвижимости</string>
+    <string name="networth_no_liabilities">Нет зарегистрированных обязательств</string>
+    <string name="networth_assets_label_alt">Активы</string>
+    <string name="networth_liabilities_label_alt">Обязательства</string>
+    <string name="networth_accounts_label">Баланс счетов</string>
+    <string name="networth_portfolio_label">Инвестиционный портфель</string>
+    <string name="networth_fixedincome_label">Фиксированный доход</string>
+    <string name="networth_total_assets_label">Всего активов</string>
+    <string name="networth_debts_label">Текущие долги</string>
+    <string name="networth_installments_format">%1$d/%2$d платежей</string>
+    <string name="networth_monthly_format">%1$s/мес.</string>
+    <string name="networth_of_format">из %1$s</string>
+
+    <!-- FISCAL -->
+    <string name="fiscal_generating_pdf">Создание PDF…</string>
+    <string name="fiscal_net_only_warning">Некоторые доходы зарегистрированы только в сумме нетто. Налоговая разбивка может быть неполной.</string>
+    <string name="fiscal_no_data_year">Нет данных за %1$s</string>
+    <string name="fiscal_year_title">%1$s год · Сводка</string>
+    <string name="fiscal_no_movements">Нет зарегистрированных операций.</string>
+    <string name="fiscal_income_label">Общий доход</string>
+    <string name="fiscal_withholding_label">Налоговые удержания</string>
+    <string name="fiscal_capital_gains_card">Прирост капитала</string>
+    <string name="fiscal_taxable_base_est">Расчётная налогооблагаемая база</string>
+    <string name="fiscal_tax_breakdown_title">Распределение налогов %1$s</string>
+    <string name="fiscal_gross_total">Итого брутто</string>
+    <string name="fiscal_irpf_total">Налоговое удержание</string>
+    <string name="fiscal_net_total">Итого нетто</string>
+    <string name="fiscal_social_security">Социальное страхование</string>
+    <string name="fiscal_commissions_short">Комиссии</string>
+    <string name="fiscal_income_type_header">Тип дохода</string>
+    <string name="fiscal_gross_header">Брутто</string>
+    <string name="fiscal_withholding_short">Удержание</string>
+    <string name="fiscal_net_header">Нетто</string>
+    <string name="fiscal_percent_header">%%</string>
+    <string name="fiscal_incomes_with_tax_info">Включает только доходы с указанной налоговой информацией.</string>
+    <string name="fiscal_monthly_title">Помесячная разбивка</string>
+    <string name="fiscal_no_movements_year">Нет операций в %1$s.</string>
+    <string name="fiscal_month_header">Месяц</string>
+    <string name="fiscal_income_header">Доходы</string>
+    <string name="fiscal_expenses_header">Расходы</string>
+    <string name="fiscal_balance_header">Баланс</string>
+    <string name="fiscal_debts_title">Активные долги</string>
+    <string name="fiscal_i_owe">Я должен</string>
+    <string name="fiscal_they_owe">Должны мне</string>
+    <string name="fiscal_portfolio_title">Инвестиционный портфель</string>
+    <string name="fiscal_invested_label">Инвестировано</string>
+    <string name="fiscal_current_value_label">Текущая стоимость</string>
+    <string name="fiscal_realized_pnl_label">Реал. П/У</string>
+    <string name="fiscal_asset_header">Актив</string>
+    <string name="fiscal_units_header">Единицы</string>
+    <string name="fiscal_avg_price_header">Ср. цена</string>
+    <string name="fiscal_pnl_total_header">Общий П/У</string>
+    <string name="fiscal_no_category">Нет категории</string>
+    <string name="fiscal_year_activity">Активность в %1$s</string>
+    <string name="fiscal_buys_header">Покупки</string>
+    <string name="fiscal_sales_header">Продажи</string>
+    <string name="fiscal_active_profile">Активный налоговый профиль: %1$s</string>
+    <string name="fiscal_profile_since">%1$s · действует с %2$s</string>
+    <string name="fiscal_pdf_password_title">Защитить отчёт</string>
+    <string name="fiscal_pdf_password_desc">Введите пароль для защиты PDF. Оставьте пустым, если не хотите защищать.</string>
+    <string name="fiscal_password_label">Пароль</string>
+    <string name="fiscal_password_optional">Необязательно</string>
+    <string name="fiscal_confirm_password_label">Подтвердите пароль</string>
+    <string name="fiscal_password_mismatch">Пароли не совпадают</string>
+    <string name="fiscal_password_min_length">Минимум 4 символа</string>
+    <string name="fiscal_generate_without_password">Создать без пароля</string>
+    <string name="fiscal_generate_with_password">Создать с паролем</string>
+    <string name="fiscal_cancel">Отмена</string>
+    <string name="fiscal_count_format">%1$d доход%2$s</string>
+
+    <!-- REAL ESTATE -->
+    <string name="realestate_options_menu_cd">Опции</string>
+    <string name="realestate_edit_label">Редактировать</string>
+    <string name="realestate_update_value">Обновить стоимость</string>
+    <string name="realestate_change_rental_status">Изменить статус аренды</string>
+    <string name="realestate_sell_property">Продать недвижимость</string>
+    <string name="realestate_archive_label">Архивировать</string>
+    <string name="realestate_value_label">Стоимость</string>
+    <string name="realestate_update_label">Обновить</string>
+    <string name="realestate_estimated_value_label">Оценочная стоимость</string>
+    <string name="realestate_purchase_value_label">Стоимость покупки</string>
+    <string name="realestate_ownership_percent_label">%% собственности</string>
+    <string name="realestate_sale_price_label">Цена продажи</string>
+    <string name="realestate_capital_gain_label">Реализованная прибыль</string>
+    <string name="realestate_effective_value_label">Эффективная стоимость</string>
+    <string name="realestate_sold_badge">Продано</string>
+    <string name="realestate_rented_badge">Арендовано</string>
+    <string name="realestate_vacant_badge">Свободно</string>
+    <string name="realestate_own_use_badge">Собственное использование</string>
+    <string name="realestate_sale_date_label">Дата продажи</string>
+    <string name="realestate_purchase_expenses">Расходы на покупку</string>
+    <string name="realestate_sale_expenses">Расходы на продажу</string>
+    <string name="realestate_expense_default">Расход</string>
+    <string name="realestate_view_label">Просмотр</string>
+    <string name="realestate_loan_label">Кредит</string>
+    <string name="realestate_lender_label">Организация</string>
+    <string name="realestate_pending_capital_label">Остаток капитала</string>
+    <string name="realestate_monthly_payment_label">Ежемесячный платёж</string>
+    <string name="realestate_no_mortgage">Нет связанной ипотеки</string>
+    <string name="realestate_mortgage_hint">Привяжите ипотеку для точного расчёта капитала.</string>
+    <string name="realestate_archive_confirm_title">Архивировать недвижимость</string>
+    <string name="realestate_archive_confirm_msg">Вы уверены, что хотите архивировать эту недвижимость?\nОна будет скрыта на экране капитала.</string>
+
+    <!-- ANNUAL -->
+    <string name="annual_no_data_title">Нет данных за этот год</string>
+    <string name="annual_no_data_subtitle">Добавьте операции, чтобы увидеть сводку</string>
+    <string name="annual_income_label">Доходы</string>
+    <string name="annual_expenses_label">Расходы</string>
+    <string name="annual_savings_label">Сбережения</string>
+    <string name="annual_expense_categories_title">Категории расходов</string>
+    <string name="annual_income_types_title">Типы доходов</string>
+    <string name="annual_no_data_text">Нет данных</string>
+    <string name="annual_no_movements">Нет зарегистрированных операций</string>
+    <string name="annual_new_badge">Новое</string>
+    <string name="annual_income_legend">Доходы</string>
+    <string name="annual_expense_legend">Расходы</string>
+
+    <!-- PORTFOLIO - Add/Edit Asset (missing) -->
+    <string name="portfolio_add_asset_desc">Определите профиль актива и платформы, на которых вы торгуете.</string>
+    <string name="portfolio_add_asset_portfolio_label">Портфель</string>
+    <string name="portfolio_add_asset_no_portfolio">Без портфеля</string>
+    <string name="portfolio_add_asset_ticker_placeholder">Напр. AAPL, BTC, IAG.MC</string>
+    <string name="portfolio_add_asset_ticker_required">Обязательно</string>
+    <string name="portfolio_add_asset_name_placeholder">Напр. Apple Inc., Bitcoin</string>
+    <string name="portfolio_add_asset_composition_label">Состав ФД / ДА</string>
+    <string name="portfolio_add_asset_composition_hint">ФД: Фиксированный доход (%1$d%% ДА: Долевые активы)</string>
+    <string name="portfolio_add_asset_market_price_label">Рыночная цена</string>
+    <string name="portfolio_add_asset_fi_price_hint">Активы с фиксированным доходом не используют рыночную цену. Используйте систему позиций фиксированного дохода для регистрации таких активов.</string>
+    <string name="portfolio_add_asset_price_optional">Текущая цена (необязательно)</string>
+    <string name="portfolio_add_asset_price_placeholder_val">0.00</string>
+    <string name="portfolio_add_asset_price_desc">Используется для расчёта текущей стоимости и прироста.</string>
+    <string name="portfolio_add_asset_platforms_label">Платформы для торговли этим активом</string>
+    <string name="portfolio_add_asset_platforms_hint">Выберите все платформы, где вы покупаете или продаёте этот актив.</string>
+    <string name="portfolio_add_asset_no_platforms_hint">Сначала создайте платформы в настройках актива, чтобы связать их.</string>
+    <string name="portfolio_add_asset_sectors_label">Сектора</string>
+    <string name="portfolio_add_asset_sectors_hint">Классифицируйте актив по одному или нескольким секторам.</string>
+    <string name="portfolio_add_asset_regions_label">Региональное распределение</string>
+    <string name="portfolio_add_asset_regions_hint">Укажите процент инвестиций по регионам (необязательно)</string>
+    <string name="portfolio_add_asset_regions_total">Всего: %1$d%% (должно быть ≤ 100%%)</string>
+    <string name="portfolio_add_asset_maturity_date_label">Дата погашения</string>
+    <string name="portfolio_add_asset_maturity_hint">Нажмите, чтобы выбрать дату погашения.</string>
+    <string name="portfolio_add_asset_notes_optional">Заметка (необязательно)</string>
+    <string name="portfolio_add_asset_save_changes">Сохранить изменения</string>
+    <string name="portfolio_add_asset_create">Создать актив</string>
+    <string name="portfolio_add_asset_cancel">Отмена</string>
+
+    <!-- PORTFOLIO - Category Detail -->
+    <string name="portfolio_category_title">Категория</string>
+    <string name="portfolio_category_assets_section">АКТИВЫ</string>
+    <string name="portfolio_category_new_asset">+ Создать</string>
+    <string name="portfolio_category_empty">Нет активов в этой категории</string>
+    <string name="portfolio_category_fixed_income_section">ФИКСИРОВАННЫЙ ДОХОД</string>
+    <string name="portfolio_category_platforms_section">ПЛАТФОРМЫ</string>
+    <string name="portfolio_category_no_platforms">Нет связанных платформ</string>
+    <string name="portfolio_category_add_platform">+ Добавить платформу</string>
+    <string name="portfolio_category_archived_section">АРХИВ</string>
+    <string name="portfolio_category_archive_title">Архивировать актив</string>
+    <string name="portfolio_category_archive_message">«%1$s (%2$s)» будет архивирован. Его операции и история П/У будут сохранены.</string>
+    <string name="portfolio_category_archive_confirm">Архивировать</string>
+    <string name="portfolio_category_restore">Восстановить</string>
+    <string name="portfolio_category_edit_cd">Редактировать</string>
+    <string name="portfolio_category_archive_cd">Архивировать</string>
+
+    <!-- PORTFOLIO - Add Transaction -->
+    <string name="portfolio_add_tx_title_new">Новая операция</string>
+    <string name="portfolio_add_tx_new">Регистрация операции</string>
+    <string name="portfolio_add_tx_save_changes">Сохранить изменения</string>
+    <string name="portfolio_add_tx_type_buy">Покупка</string>
+    <string name="portfolio_add_tx_type_sell">Продажа</string>
+    <string name="portfolio_add_tx_category_filter">Категория</string>
+    <string name="portfolio_add_tx_category_all">Все</string>
+    <string name="portfolio_add_tx_no_assets_category">Нет активов в этой категории</string>
+    <string name="portfolio_add_tx_no_assets_hint">У вас ещё нет активов. Сначала создайте их через Настройки › Портфель › Активы.</string>
+    <string name="portfolio_add_tx_platform_label">Платформа</string>
+    <string name="portfolio_add_tx_platform_select_hint">Выберите, где хранятся единицы</string>
+    <string name="portfolio_add_tx_no_platforms_hint">Нет созданных платформ. Перейдите в Настройки › Портфель › Платформы, чтобы создать.</string>
+    <string name="portfolio_add_tx_platform_not_assigned">У этого актива нет назначенных платформ. Свяжите одну в настройках.</string>
+    <string name="portfolio_add_tx_qty_label">Количество</string>
+    <string name="portfolio_add_tx_price_label">Цена за единицу</string>
+    <string name="portfolio_add_tx_available">Доступно: %1$s единиц%2$s на эту дату</string>
+    <string name="portfolio_add_tx_only_available">У вас только %1$s единиц доступно%2$s на эту дату</string>
+    <string name="portfolio_add_tx_date_label">Дата</string>
+    <string name="portfolio_add_tx_fee_label">Комиссия (необязательно)</string>
+    <string name="portfolio_add_tx_fee_hint">Информационное поле. Не включается в расчёт П/У.</string>
+    <string name="portfolio_add_tx_notes_label">Заметка (необязательно)</string>
+    <string name="portfolio_add_tx_platform_label_inline"> на %1$s</string>
+    <string name="portfolio_add_tx_units_label">ед.</string>
+    <string name="portfolio_add_tx_no_units_badge">Нет единиц</string>
+    <string name="portfolio_add_tx_accept">Принять</string>
+    <string name="portfolio_add_tx_cancel">Отмена</string>
+
+    <!-- PORTFOLIO - Transfer Fund -->
+    <string name="portfolio_transfer_desc">Налогово-нейтральный перевод. Себестоимость переносится в фонд назначения.</string>
+    <string name="portfolio_transfer_source_label">Фонд-источник</string>
+    <string name="portfolio_transfer_dest_label">Фонд-назначение</string>
+    <string name="portfolio_transfer_no_destinations">Нет других доступных фондов для перевода в этом счёте. Сначала создайте фонд назначения через Настройки › Портфель.</string>
+    <string name="portfolio_transfer_qty_label">Доли для перевода</string>
+    <string name="portfolio_transfer_available">Доступно: %1$s долей на эту дату</string>
+    <string name="portfolio_transfer_only_available">У вас только %1$s долей доступно на эту дату</string>
+    <string name="portfolio_transfer_vl_label">СЧА фонда назначения (цена за долю)</string>
+    <string name="portfolio_transfer_date_label">Дата перевода</string>
+    <string name="portfolio_transfer_source_platform">Платформа-источник</string>
+    <string name="portfolio_transfer_dest_platform">Платформа-назначение</string>
+    <string name="portfolio_transfer_no_platforms">Нет доступных платформ.</string>
+    <string name="portfolio_transfer_confirm_btn">Подтвердить перевод</string>
+
+    <!-- =====================================================================
+         VERSION – Update
+         ===================================================================== -->
+    <string name="version_update_available">Доступна версия %1$s</string>
+    <string name="version_block_title">Требуется обновление</string>
+    <string name="version_update_now">Обновить сейчас</string>
+
+    <!-- FIXED INCOME - Create/Edit -->
+    <string name="fixedincome_create_position">Создать позицию</string>
+    <string name="fixedincome_save_changes">Сохранить изменения</string>
+    <string name="fixedincome_duration_label">Срок (месяцев)</string>
+    <string name="fixedincome_duration_title">Срок</string>
+    <string name="fixedincome_years_label">Лет</string>
+    <string name="fixedincome_months_label">Месяцев</string>
+    <string name="fixedincome_entity_financial_label">Финансовая организация</string>
+    <string name="fixedincome_issuer_state_label">Эмитент (Государство)</string>
+    <string name="fixedincome_issuer_entity_label">Эмитент (Государство/Компания)</string>
+    <string name="fixedincome_new_issuer">Новый эмитент</string>
+    <string name="fixedincome_no_issuers_hint">Нет эмитентов. Создайте нового.</string>
+    <string name="fixedincome_issuer_name_label">Название</string>
+    <string name="fixedincome_icon_label">Иконка</string>
+    <string name="fixedincome_create_issuer">Создать</string>
+    <string name="fixedincome_capital_label">Капитал (€)</string>
+    <string name="fixedincome_capital_invested_label">Инвестированный капитал (€)</string>
+    <string name="fixedincome_nominal_value_label">Номинальная стоимость (€)</string>
+    <string name="fixedincome_nominal_hint">Номинальная стоимость — это номинал облигации (основа для расчёта процентов и амортизации)</string>
+    <string name="fixedincome_fee_notes_label">Примечания к комиссии (необязательно)</string>
+    <string name="fixedincome_select_date_cd">Выбрать дату</string>
+    <string name="fixedincome_auto_calculated">Рассчитывается автоматически</string>
+    <string name="fixedincome_region_title">Регион</string>
+    <string name="fixedincome_sector_title">Сектор</string>
+    <string name="fixedincome_start_date_label">Дата начала</string>
+    <string name="fixedincome_maturity_date_label">Дата погашения</string>
+    <string name="fixedincome_auto_renew_label">Автопродление при погашении</string>
+    <string name="fixedincome_duration_guide">Обычный диапазон для %1$s: %2$d - %3$d месяцев</string>
+
+    <!-- REAL ESTATE - AddEditProperty -->
+    <string name="realestate_name_placeholder">Напр. Мой дом</string>
+    <string name="realestate_address_placeholder">Напр. ул. Главная, 123, Мадрид</string>
+    <string name="realestate_purchase_price_label">Покупка (€)</string>
+    <string name="realestate_current_value_label">Текущая стоимость (€)</string>
+    <string name="realestate_acquisition_date_label">Дата приобретения</string>
+    <string name="realestate_ownership_label">% собственности</string>
+    <string name="realestate_rental_status_label">Статус аренды</string>
+    <string name="realestate_monthly_rent_label">Ежемесячная аренда (€)</string>
+    <string name="realestate_change_mortgage">Изменить ипотеку</string>
+    <string name="realestate_link_mortgage">Привязать ипотеку</string>
+    <string name="realestate_purchase_expenses_title">Расходы на покупку</string>
+    <string name="realestate_add_expense">Добавить</string>
+    <string name="realestate_no_expenses">Нет расходов на покупку. Нажмите «Добавить», чтобы включить нотариус, налоги, оценку и т.д.</string>
+    <string name="realestate_total_expenses_format">Всего расходов: %1$s</string>
+    <string name="realestate_save_changes">Сохранить изменения</string>
+    <string name="realestate_add_property">Добавить недвижимость</string>
+    <string name="realestate_new_title">Новая недвижимость</string>
+
+    <!-- REAL ESTATE - SellProperty -->
+    <string name="realestate_sale_price_hint">Напр. 275000</string>
+    <string name="realestate_sale_date_title">Дата продажи</string>
+    <string name="realestate_sale_expenses_title_alt">Расходы на продажу</string>
+    <string name="realestate_add_sale_expense">Добавить расход</string>
+    <string name="realestate_no_sale_expenses">Вы не добавили расходы на продажу (комиссия, налог на прирост капитала, нотариус…)</string>
+    <string name="realestate_sale_summary">Сводка</string>
+    <string name="realestate_sale_price_short">Цена продажи</string>
+    <string name="realestate_sale_expenses_short">Расходы на продажу</string>
+    <string name="realestate_net_proceeds">Чистая выручка</string>
+    <string name="realestate_confirm_sale">Подтвердить продажу</string>
+
+    <!-- LOAN -->
+    <string name="loan_new_title">Новый кредит</string>
+    <string name="loan_save">Сохранить</string>
+    <string name="loan_name_placeholder">Напр. Ипотека на дом</string>
+    <string name="loan_lender_placeholder">Напр. Банк Сантандер</string>
+    <string name="loan_principal_placeholder">Напр. 150000</string>
+    <string name="loan_interest_placeholder">Напр. 3,5</string>
+    <string name="loan_term_placeholder">Напр. 360</string>
+    <string name="loan_interest_only">Только проценты</string>
+    <string name="loan_interest_only_hint">Только проценты: основная сумма не амортизируется</string>
+
+    <!-- PREMIUM -->
+    <string name="premium_trackfolio_title">Trackfolio Premium</string>
+    <string name="premium_already_premium_subtitle">У вас уже есть Premium</string>
+    <string name="premium_features_title">Возможности Premium</string>
+    <string name="premium_multiple_accounts">Несколько счетов</string>
+    <string name="premium_fiscal_report">Налоговый отчёт</string>
+    <string name="premium_backup">Резервное копирование</string>
+    <string name="premium_priority_support">Приоритетная поддержка</string>
+    <string name="premium_coming_soon">Скоро</string>
+    <string name="premium_already_purchased">Вы уже приобрели Premium. Спасибо за поддержку!</string>
+    <string name="premium_purchase_error">Ошибка обработки покупки</string>
+    <string name="premium_restore_error">Ошибка восстановления покупки</string>
+    <string name="premium_restoring">Восстановление покупки…</string>
+
+    <!-- PORTFOLIO - Dividends -->
+    <string name="portfolio_dividend_save">Сохранить дивиденд</string>
+
+    <!-- ONBOARDING -->
+    <string name="onboarding_welcome_title_alt">Добро пожаловать в N3to</string>
+    <string name="onboarding_welcome_desc">Ваши финансы под вашим контролем</string>
+    <string name="onboarding_patrimonio_title">Ваш капитал наглядно</string>
+    <string name="onboarding_patrimonio_desc">Визуализируйте свой капитал, активы и обязательства в реальном времени</string>
+    <string name="onboarding_portfolio_desc">Акции, ETF, фонды и фиксированный доход в одном месте</string>
+    <string name="onboarding_movements_desc">Доходы, расходы и инвестиции, организованные по категориям</string>
+    <string name="onboarding_fiscal_desc">Автоматизированный налоговый отчёт с разбивкой по типам доходов</string>
+    <string name="onboarding_realestate_desc">Управляйте недвижимостью, арендой и ипотеками</string>
+
+    <!-- FIXED INCOME - RegisterCoupon -->
+    <string name="fixedincome_coupon_amount_label">Сумма брутто (€)</string>
+    <string name="fixedincome_irpf_percent_label">Налоговое удержание (%)</string>
+    <string name="fixedincome_commission_field">Комиссия (€)</string>
+    <string name="fixedincome_register_coupon_btn">Зарегистрировать</string>
+
+    <!-- FIXED INCOME - Close -->
+    <string name="fixedincome_close_maturity">Погасить при наступлении срока</string>
+    <string name="fixedincome_close_early">Досрочное расторжение</string>
+    <string name="fixedincome_close_secondary">Продажа на вторичном рынке</string>
+    <string name="fixedincome_close_date">Дата закрытия</string>
+    <string name="fixedincome_close_notes">Заметки</string>
+    <string name="fixedincome_close_confirm_btn">Подтвердить закрытие</string>
+
+    <!-- PORTFOLIO - Update price -->
+    <string name="portfolio_update_price_current">Текущая цена</string>
+    <string name="portfolio_update_price_date">Дата</string>
+
+    <!-- COMMON add missing -->
+    <string name="common_add">Добавить</string>
+    <string name="common_create">Создать</string>
+    <string name="common_name">Название</string>
+    <string name="common_save_changes">Сохранить изменения</string>
+    <string name="common_confirm">Подтвердить</string>
+    <string name="common_retry">Повторить</string>
+    <string name="common_restore">Восстановить</string>
+    <string name="common_no_data">Нет данных</string>
+
+    <!-- PREMIUM - missing -->
+    <string name="premium_multiple_accounts_desc">Управляйте всеми счетами без ограничений</string>
+    <string name="premium_ad_free_desc">Пользуйтесь приложением без рекламы</string>
+    <string name="premium_themes_desc">Настройте приложение со светлой и тёмной темами</string>
+    <string name="premium_welcome">Добро пожаловать в Trackfolio Premium!</string>
+    <string name="premium_error_format">Ошибка: %1$s</string>
+    <string name="premium_restore_error_format">Ошибка восстановления: %1$s</string>
+    <string name="premium_restore_cd">Восстановить покупку</string>
+    <string name="premium_best_value">Лучшая цена</string>
+    <string name="premium_monthly_label">Ежемесячно</string>
+    <string name="premium_annual_label">Ежегодно</string>
+    <string name="premium_lifetime_label">Навсегда</string>
+    <string name="premium_lifetime_value">Пожизненный доступ</string>
+    <string name="premium_back_cd">Назад</string>
+
+    <!-- PORTFOLIO - Update price -->
+    <string name="portfolio_update_previous_price">Предыдущая цена: %1$s</string>
+    <string name="portfolio_update_no_price">Цена для этого актива ещё не указана</string>
+    <string name="portfolio_update_save_hint">Будет записано с текущими датой и временем.</string>
+    <string name="portfolio_update_save">Сохранить цену</string>
+    <string name="portfolio_update_cancel">Отмена</string>
+
+    <!-- FIXED INCOME - Coupon registration -->
+    <string name="fixedincome_coupon_register_title">Зарегистрировать купон / проценты</string>
+    <string name="fixedincome_net_amount_est">Расчётная чистая сумма</string>
+    <string name="fixedincome_register_coupon_btn_alt">Зарегистрировать платеж</string>
+    <string name="fixedincome_close_title">Ликвидировать позицию</string>
+    <string name="fixedincome_close_type_label">Тип закрытия</string>
+    <string name="fixedincome_close_maturity_type">Погашение</string>
+    <string name="fixedincome_close_secondary_type">Продажа на вторичном рынке</string>
+    <string name="fixedincome_close_early_type">Досрочное расторжение</string>
+    <string name="fixedincome_gross_received_label">Полученная сумма брутто (€)</string>
+    <string name="fixedincome_irpf_label">Удержание (%)</string>
+    <string name="fixedincome_commission_eur_label">Комиссия (€)</string>
+    <string name="fixedincome_net_amount_label">Чистая сумма</string>
+    <string name="fixedincome_confirm_close">Подтвердить расчёт</string>
+
+    <!-- PORTFOLIO - Dividend -->
+    <string name="portfolio_dividend_title_alt">Дивиденд</string>
+    <string name="portfolio_dividend_asset_label">Актив</string>
+    <string name="portfolio_dividend_gross_hint">Введите сумму брутто</string>
+    <string name="portfolio_dividend_gross_label">Сумма брутто</string>
+    <string name="portfolio_dividend_withholding_label">Налоговое удержание</string>
+    <string name="portfolio_dividend_gross_short">Брутто</string>
+    <string name="portfolio_dividend_withholding_short">Удержание</string>
+    <string name="portfolio_dividend_net_short">Нетто</string>
+    <string name="portfolio_dividend_select_asset_error">Выберите актив</string>
+    <string name="portfolio_dividend_valid_amount_error">Введите корректную сумму брутто</string>
+    <string name="portfolio_dividend_register">Зарегистрировать дивиденд</string>
+
+    <!-- LOW PRIORITY - remaining strings -->
+    <string name="realestate_change_rental_title">Изменить статус аренды</string>
+    <string name="realestate_change_rental_date">Дата изменения</string>
+    <string name="realestate_rent_amount">Сумма аренды</string>
+    <string name="realestate_update_value_title">Обновить стоимость</string>
+    <string name="realestate_new_value">Новая оценочная стоимость</string>
+    <string name="portfolio_platform_create_title">Новая платформа</string>
+    <string name="portfolio_platform_edit_title">Редактировать платформу</string>
+    <string name="portfolio_platform_name_label">Название</string>
+    <string name="portfolio_platform_icon_label">Иконка</string>
+    <string name="portfolio_platform_notes_label">Заметки</string>
+    <string name="portfolio_platform_save">Сохранить</string>
+    <string name="portfolio_platform_cancel">Отмена</string>
+    <string name="portfolio_sector_new">Новый сектор</string>
+    <string name="portfolio_sector_name">Название сектора</string>
+    <string name="portfolio_region_new">Новый регион</string>
+    <string name="portfolio_region_name">Название региона</string>
+    <string name="portfolio_asset_detail_title_alt">Детали актива</string>
+    <string name="portfolio_asset_history_title">История актива</string>
+    <string name="portfolio_edit_portfolio_title_alt">Редактировать портфель</string>
+    <string name="portfolio_portfolio_name">Название</string>
+    <string name="portfolio_portfolio_desc">Описание</string>
+    <string name="portfolio_save">Сохранить</string>
+    <string name="portfolio_compound_effect_title_alt">Сложный процент</string>
+    <string name="version_block_title_alt">Требуется обновление</string>
+    <string name="version_block_message_alt">Для продолжения работы необходимо обновить N3to</string>
+    <string name="version_update_btn">Обновить сейчас</string>
+    <string name="splash_loading">Загрузка…</string>
+    <string name="onboarding_efectivo_total">ВСЕГО НАЛИЧНЫХ</string>
+    <string name="onboarding_disponible_deudas">Доступно с учётом долгов</string>
+    <string name="onboarding_seccion_patrimonio">РАЗДЕЛ · КАПИТАЛ</string>
+
+    <!-- FASE 4 - Domain Enums resourceKey -->
+    <string name="income_type_salary">Зарплата</string>
+    <string name="income_type_freelance">Фриланс</string>
+    <string name="income_type_bank_interest">Банковские проценты</string>
+    <string name="income_type_bond_deposit">Облигации или вклады</string>
+    <string name="income_type_dividend">Дивиденды</string>
+    <string name="income_type_bonus_prize">Премия</string>
+    <string name="income_type_prize_lottery">Приз / Лотерея</string>
+    <string name="income_type_rental_income">Доход от аренды</string>
+    <string name="income_type_exempt_income">Необлагаемый доход</string>
+    <string name="loan_type_mortgage">Ипотека</string>
+    <string name="loan_type_car">Автокредит</string>
+    <string name="loan_type_student">Студенческий кредит</string>
+    <string name="loan_type_personal">Потребительский кредит</string>
+    <string name="loan_type_other">Другое</string>
+    <string name="fixedincome_type_bill">Казначейский вексель</string>
+    <string name="fixedincome_type_bond">Государственная облигация</string>
+    <string name="fixedincome_type_government_obligation">Государственное обязательство</string>
+    <string name="fixedincome_type_corporate_bond">Корпоративная облигация</string>
+    <string name="fixedincome_type_deposit">Срочный вклад</string>
+    <string name="fixedincome_event_acquisition">Приобретение</string>
+    <string name="fixedincome_event_coupon">Купон / Периодические проценты</string>
+    <string name="fixedincome_event_maturity_settlement">Расчёт при погашении</string>
+    <string name="fixedincome_event_secondary_sale">Продажа на вторичном рынке</string>
+    <string name="fixedincome_event_early_cancellation">Досрочное расторжение</string>
+    <string name="fixedincome_event_partial_amortization">Частичная амортизация</string>
+    <string name="interest_frequency_at_maturity">При погашении</string>
+    <string name="interest_frequency_monthly">Ежемесячно</string>
+    <string name="interest_frequency_quarterly">Ежеквартально</string>
+    <string name="interest_frequency_semiannual">Раз в полгода</string>
+    <string name="interest_frequency_annual">Ежегодно</string>
+    <string name="property_type_primary_home">Основное жильё</string>
+    <string name="property_type_secondary_home">Вторичное жильё</string>
+    <string name="property_type_investment">Инвестиция</string>
+    <string name="rental_status_own_use">Собственное использование</string>
+    <string name="rental_status_rented">Арендовано</string>
+    <string name="rental_status_vacant">Свободно</string>
+    <string name="issuer_type_employer">Компания / Клиент</string>
+    <string name="issuer_type_bank">Банковская организация</string>
+    <string name="issuer_type_bond_issuer">Эмитент облигаций / вкладов</string>
+    <string name="issuer_type_dividend_source">Акции</string>
+    <string name="issuer_type_promotion_platform">Платформа / конкурс</string>
+    <string name="issuer_type_exempt_source">Источник дохода</string>
+    <string name="fixedincome_category_government">Государственный долг</string>
+    <string name="fixedincome_category_corporate">Корпоративный долг</string>
+    <string name="fixedincome_category_deposit">Вклады</string>
+
+    <!-- FASE 4 - ViewModel error messages -->
+    <string name="error_category_already_exists">Категория с таким названием уже существует</string>
+    <string name="error_issuer_already_exists">Эмитент с таким названием уже существует</string>
+    <string name="error_platform_already_exists">Платформа с таким названием уже существует</string>
+    <string name="error_asset_not_found">Актив не найден</string>
+    <string name="error_asset_ticker_required">Тикер и название обязательны</string>
+    <string name="error_account_required">Сначала выберите счёт</string>
+    <string name="error_position_not_found">Позиция не найдена</string>
+    <string name="error_fi_no_buy_sell">Активы с фиксированным доходом не поддерживают операции покупки/продажи</string>
+    <string name="error_price_history_save">Ошибка сохранения истории цен: %1$s</string>
+    <string name="error_category_already_exists_alt">Категория с таким названием уже существует</string>
+    <string name="error_asset_already_exists">Актив с тикером %1$s уже существует в этом счёте</string>
+    <string name="error_cannot_archive_with_open_positions">Нельзя архивировать «%1$s», так как у него есть открытые позиции. Сначала закройте или переведите позиции.</string>
+    <string name="error_cannot_archive_with_open_positions_qty">Нельзя архивировать «%1$s», так как у него есть открытые позиции (%2$s ед.). Сначала закройте или переведите позиции.</string>
+    <string name="error_fi_create_position">Ошибка создания позиции фиксированного дохода</string>
+    <string name="error_coupon_register">Ошибка регистрации купона</string>
+    <string name="error_no_account_selected">Не выбран счёт</string>
+    <string name="error_load_data">Ошибка загрузки данных</string>
+    <string name="error_cannot_archive_asset">Нельзя архивировать «%1$s», так как у него есть открытые позиции. Сначала закройте или переведите позиции.</string>
+    <string name="error_fiscal_load">Ошибка загрузки данных</string>
+    <string name="error_reconciliation">Ошибка сверки</string>
+    <string name="error_goal_settings">Ошибка сохранения целей</string>
+    <string name="error_emergency_fund_settings">Ошибка сохранения настроек резервного фонда</string>
+    <string name="error_transaction_detail">Ошибка загрузки деталей операции</string>
+    <string name="error_networth_load">Ошибка загрузки капитала</string>
+    <string name="error_add_transaction">Не удалось рассчитать чистую сумму</string>
+
+    <!-- =====================================================================
+         FEEDBACK – Feedback form
+         ===================================================================== -->
+    <string name="settings_feedback">Отправить отзыв</string>
+    <string name="feedback_title">Отправить отзыв</string>
+    <string name="feedback_subtitle">Ваши идеи помогают нам улучшать N3to. Это сообщение анонимно.</string>
+    <string name="feedback_category_label">Категория отзыва</string>
+    <string name="feedback_category_new_feature">Новая функция</string>
+    <string name="feedback_category_improvement">Улучшение</string>
+    <string name="feedback_category_bug">Сообщить об ошибке</string>
+    <string name="feedback_category_other">Другое</string>
+    <string name="feedback_title_field">Заголовок</string>
+    <string name="feedback_title_placeholder">Опишите идею в нескольких словах</string>
+    <string name="feedback_description_field">Описание</string>
+    <string name="feedback_description_placeholder">Опишите ваше предложение подробно…</string>
+    <string name="feedback_send_button">Отправить отзыв</string>
+    <string name="feedback_sending">Отправка…</string>
+    <string name="feedback_success">Спасибо! Ваш отзыв отправлен.</string>
+    <string name="feedback_error_empty">Пожалуйста, заполните заголовок и описание.</string>
+    <string name="feedback_error_network">Ошибка соединения. Проверьте подключение к интернету.</string>
+    <string name="feedback_disclaimer_title">О конфиденциальности</string>
+    <string name="feedback_disclaimer_text">Не включайте личные данные (имя, email, телефон) в сообщение. Отзыв отправляется анонимно через Firebase.</string>
+
+    <!-- FEEDBACK – Data collected (Privacy) -->
+    <string name="privacy_data_feedback">Отзывы и предложения</string>
+
+    <!-- REAL ESTATE – Explanation separation vs. portfolio -->
+    <string name="realestate_why_separate">Недвижимость управляется отдельно, поскольку имеет собственные метрики: доходность от аренды, связанная ипотека и различные налоговые последствия.</string>
+
+    <!-- PREMIUM – Feature descriptions -->
+    <string name="premium_fiscal_report_desc">Создавайте ежегодный отчёт о прибыли и удержаниях</string>
+    <string name="premium_backup_desc">Сохраняйте и восстанавливайте локальные резервные копии всех данных</string>
+
+    <!-- COMMON - missing -->
+    <string name="common_total">Итого</string>
+    <string name="common_help_cd">Помощь</string>
+    <string name="common_understood">Понятно</string>
+    <string name="common_edit">Редактировать</string>
+    <string name="common_active_badge">Активен</string>
+    <string name="common_none">Нет</string>
+    <string name="common_dismiss">Закрыть</string>
+    <string name="common_completed_cd">Завершено</string>
+    <string name="common_note_placeholder">Заметка</string>
+    <string name="common_insufficient_data">Недостаточно данных</string>
+    <string name="common_amount_label">Сумма</string>
+    <string name="common_date_label">Дата</string>
+    <string name="common_category_label">Категория</string>
+    <string name="common_description_label">Описание</string>
+
+    <!-- ACCOUNT - missing -->
+    <string name="account_active_badge">Активен</string>
+    <string name="account_balance_short">Текущий баланс</string>
+    <string name="account_name_supporting_text">Название, которое вы будете видеть в приложении. Напр. Расчётный счёт, Наличные, Degiro...</string>
+    <string name="account_initial_balance_label">Начальный баланс</string>
+    <string name="account_initial_balance_valid_hint">Введите корректную сумму (может быть 0)</string>
+    <string name="account_initial_balance_desc">Деньги, которые уже есть на этом счёте сегодня. Укажите 0, если счёт пуст.</string>
+    <string name="account_delete_full_message">Удалить «%1$s»? Это также удалит все его операции, активы и связанные данные.</string>
+    <string name="account_set_balance_btn">Установить баланс</string>
+    <string name="account_set_balance_title">Начальный баланс</string>
+    <string name="account_set_balance_desc">Введите текущий баланс этого счёта.\nЭто необходимо перед регистрацией операций.</string>
+    <string name="account_set_balance_hint">Может быть 0, если счёт пуст.</string>
+
+    <!-- ANNUAL - missing -->
+    <string name="annual_investment_monthly_format">Ежемесячные инвестиции %1$s</string>
+    <string name="annual_no_investments">Нет инвестиций в этом году</string>
+    <string name="annual_income_by_source">Доходы по источникам</string>
+
+    <!-- TRANSACTION - missing -->
+    <string name="transaction_delete_title">Удалить операцию</string>
+    <string name="transaction_delete_message">Вы уверены, что хотите удалить эту операцию?\nЭто действие нельзя отменить.</string>
+    <string name="transaction_income_type_label">Тип дохода</string>
+    <string name="transaction_note_placeholder">Добавить заметку…</string>
+    <string name="transaction_mode_fiscal">Налоговый</string>
+    <string name="transaction_mode_net_only">Только нетто</string>
+    <string name="transaction_net_amount_label">Сумма нетто</string>
+    <string name="transaction_net_estimated">Расчётное нетто</string>
+    <string name="transaction_detail_account_label">Счёт</string>
+    <string name="transaction_detail_notes_label">Заметки</string>
+    <string name="transaction_detail_issuer_label">Эмитент</string>
+    <string name="transaction_detail_edit_cd">Редактировать</string>
+    <string name="transaction_detail_delete_cd">Удалить</string>
+
+    <!-- BUDGET - missing -->
+    <string name="budget_no_income">Нет доходов в этом году</string>
+    <string name="budget_remaining_format">%1$s осталось</string>
+    <string name="budget_limit_exceeded">Лимит превышен!</string>
+    <string name="budget_empty_title">Нет бюджетов</string>
+    <string name="budget_empty_subtitle">Установите лимиты расходов по категориям,\nчтобы лучше управлять финансами</string>
+    <string name="home_section_budgets">БЮДЖЕТЫ</string>
+
+    <!-- CATEGORY - missing -->
+    <string name="category_create_cd">Создать категорию</string>
+    <string name="category_help_title">КАК ОРГАНИЗОВЫВАТЬ КАТЕГОРИИ</string>
+    <string name="category_help_text">Группируйте расходы одного типа. Примеры:</string>
+    <string name="category_help_examples">• Дом → аренда, ипотека, коммунальные\n• Досуг → рестораны, кино, путешествия\n• Здоровье → аптека, врач, спортзал</string>
+    <string name="category_name_placeholder">Название категории</string>
+    <string name="category_remove_limit">Убрать лимит</string>
+
+    <!-- HELP - missing -->
+    <string name="help_account_title">Что такое счёт?</string>
+    <string name="help_tax_profile_title">Что такое налоговый профиль?</string>
+    <string name="help_tax_system_title">Налоговая система</string>
+    <string name="help_goals_title">Ежемесячные цели</string>
+    <string name="help_customize_months_title">Настройка месяцев</string>
+    <string name="help_asset_types_title">Типы активов</string>
+    <string name="help_asset_help_cd">Справка о типах активов</string>
+
+    <!-- PORTFOLIO - missing -->
+    <string name="portfolio_update_prices_hint">Обновите цены, чтобы увидеть динамику</string>
+    <string name="portfolio_asset_no_price_registered">Цена не зарегистрирована</string>
+    <string name="portfolio_asset_new_price_placeholder">Новая цена</string>
+    <string name="portfolio_update_bulk_title">Обновить цены</string>
+    <string name="portfolio_update_bulk_progress">%1$d из %2$d обновлено</string>
+    <string name="portfolio_distribution_subtitle">От текущей стоимости</string>
+    <string name="portfolio_closed_badge">Закрыто</string>
+    <string name="portfolio_no_portfolios_title">Нет портфелей</string>
+    <string name="portfolio_no_portfolios_subtitle">Создайте портфель через Настройки,\nчтобы начать организовывать инвестиции</string>
+    <string name="portfolio_no_positions_select">Нет позиций.\nВыберите портфель и используйте +,\nчтобы добавить первую инвестицию</string>
+    <string name="portfolio_no_positions_wallet">В этом портфеле ещё нет операций.\nНажмите +, чтобы добавить первую инвестицию</string>
+    <string name="portfolio_compound_no_effect">Сложный процент активируется, когда ваш портфель\nнаходится в плюсе. Продолжайте инвестировать!</string>
+    <string name="portfolio_compound_low_effect">Значительного эффекта сложного процента пока нет.\nИнвестируйте на долгосрочную перспективу.</string>
+
+    <!-- PRICE UPDATE - missing -->
+    <string name="price_update_bulk_title">Обновить цены</string>
+
+    <!-- BACKUP - missing -->
+    <string name="backup_reminder_dialog_title">Напоминание о резервной копии</string>
+    <string name="backup_reminder_dialog_message">Когда напомнить снова?</string>
+    <string name="backup_reminder_dialog_hint">Чтобы отключить напоминание, перейдите в Настройки › Напоминания.</string>
+
+    <!-- DEBT - missing -->
+    <string name="debt_person_placeholder">Имя или псевдоним</string>
+    <string name="debt_note_optional">Заметка (необязательно)</string>
+    <string name="debt_note_placeholder">Напр. Ужин в пятницу</string>
+    <string name="debt_mark_paid_confirm">Да, оплачено</string>
+    <string name="debt_empty_subtitle">Нажмите «Новый долг», чтобы\nзарегистрировать ожидающий долг</string>
+    <string name="debt_edit_label">Редактировать</string>
+
+    <!-- EXPENSE SETTINGS - missing -->
+    <string name="expense_categories_section">КАТЕГОРИИ</string>
+    <string name="expense_no_categories">Нет категорий расходов</string>
+
+    <!-- INCOME SETTINGS - missing -->
+    <string name="income_types_section">ТИПЫ ДОХОДОВ</string>
+    <string name="income_type_archive_title">Архивировать эмитента</string>
+    <string name="issuer_name_placeholder">Название эмитента</string>
+
+    <!-- GOAL SETTINGS - missing -->
+    <string name="goal_settings_title">Ежемесячные цели</string>
+    <string name="goal_savings_base_label">БАЗОВЫЕ ЕЖЕМЕСЯЧНЫЕ СБЕРЕЖЕНИЯ</string>
+    <string name="goal_savings_placeholder">Напр. 500</string>
+    <string name="goal_investment_base_label">БАЗОВЫЕ ЕЖЕМЕСЯЧНЫЕ ИНВЕСТИЦИИ</string>
+    <string name="goal_investment_placeholder">Напр. 300</string>
+    <string name="goal_base_placeholder">База</string>
+    <string name="goal_saved_message">Цели сохранены</string>
+    <string name="goal_onboarding_badge">ФИНАНСОВОЕ ПЛАНИРОВАНИЕ</string>
+    <string name="goal_onboarding_subtitle">Установите, сколько вы хотите откладывать и инвестировать каждый месяц. Установите годовую базу и корректируйте месяцы с исключительными доходами или расходами.</string>
+
+    <!-- EMERGENCY FUND SETTINGS - missing -->
+    <string name="ef_months_hint">Укажите, сколько месяцев расходов вы хотите покрыть резервным фондом.</string>
+    <string name="ef_months_placeholder">Напр. 6</string>
+    <string name="ef_estimated_expense_label">Расчётный расход</string>
+    <string name="ef_average_expense_label">Средние расходы</string>
+    <string name="ef_expense_placeholder">Напр. 1500</string>
+    <string name="ef_exclude_categories_hint">Выберите категории, которые нужно ИСКЛЮЧИТЬ из расчёта ежемесячных расходов.</string>
+    <string name="ef_no_categories">Нет доступных категорий расходов. Создайте их в Настройки › Расходы.</string>
+    <string name="ef_what_is_title">ЧТО ЭТО?</string>
+    <string name="ef_what_is_text">Денежная подушка на случай чрезвычайных ситуаций без долгов: потеря работы, медицинские расходы или срочный ремонт.</string>
+    <string name="ef_recommendation_title">РЕКОМЕНДУЕМАЯ СУММА</string>
+    <string name="ef_recommendation_text">• 3–6 месяцев при стабильной работе\n• 6–12 месяцев для самозанятых или с иждивенцами</string>
+    <string name="ef_onboarding_badge">ФИНАНСОВАЯ ЗАЩИТА</string>
+    <string name="ef_onboarding_title">Резервный фонд</string>
+    <string name="ef_onboarding_subtitle">Укажите, сколько месяцев покрытия вам нужно.</string>
+    <string name="ef_saved_message">Резервный фонд сохранён</string>
+
+    <!-- TAX PROFILE SETTINGS - missing -->
+    <string name="tax_profile_title">Налоговый профиль</string>
+    <string name="tax_profile_add_cd">Добавить профиль</string>
+    <string name="tax_profile_empty_title">Нет налоговых профилей</string>
+    <string name="tax_profile_empty_subtitle">Добавьте через кнопку +</string>
+    <string name="tax_profile_history_section">ИСТОРИЯ ПРОФИЛЕЙ</string>
+    <string name="tax_profile_history_hint">Самый последний профиль (по дате начала) применяется к текущим налоговым расчётам. У вас может быть один профиль для каждой использованной налоговой системы.</string>
+    <string name="tax_profile_delete_title">Удалить профиль</string>
+    <string name="tax_profile_new_title">Новый налоговый профиль</string>
+    <string name="tax_profile_country_label">Страна / налоговая система</string>
+    <string name="tax_profile_valid_from_label">Действует с</string>
+    <string name="tax_profile_delete_cd">Удалить</string>
+
+    <!-- ACCOUNT CONFIG SETTINGS - missing -->
+    <string name="settings_account_section_categories">Категории</string>
+    <string name="settings_expense_categories_label">Категории расходов</string>
+    <string name="settings_income_types_label">Типы доходов</string>
+    <string name="settings_account_section_fiscal">Налоги</string>
+    <string name="settings_tax_profile_label">Налоговый профиль</string>
+    <string name="settings_account_section_planning">Планирование</string>
+    <string name="settings_monthly_goals_label">Ежемесячные цели</string>
+    <string name="settings_account_section_maintenance">Обслуживание</string>
+    <string name="settings_edit_account_label">Редактировать счёт</string>
+    <string name="settings_delete_account_label">Удалить счёт</string>
+
+    <!-- ABOUT SCREEN - missing -->
+    <string name="about_title">О приложении</string>
+    <string name="about_section_app">Приложение</string>
+    <string name="about_version_label">Версия</string>
+    <string name="about_revenuecat_id_label">ID RevenueCat</string>
+    <string name="about_section_dev">Разработка</string>
+    <string name="about_developer_label">Разработчик</string>
+    <string name="about_developer_value">AviferDev</string>
+    <string name="about_license_label">Лицензия</string>
+    <string name="about_license_value">Проприетарная</string>
+    <string name="about_contact_label">Контакты</string>
+    <string name="about_section_rate">Нравится N3to?</string>
+    <string name="about_rate_app_label">Оценить приложение</string>
+    <string name="about_share_app_label">Поделиться приложением</string>
+    <string name="about_tagline">Управляйте личными финансами</string>
+    <string name="about_app_name">N3to</string>
+
+    <!-- NET WORTH - missing -->
+    <string name="networth_no_account_title">Нет настроенного счёта</string>
+    <string name="networth_no_account_subtitle">Создайте счёт через Настройки,\nчтобы увидеть свой капитал</string>
+    <string name="networth_valuables_label">Ценности</string>
+    <string name="networth_add_valuable_cd">Добавить ценность</string>
+    <string name="networth_no_valuables">Нет зарегистрированных ценностей</string>
+
+    <!-- VALUABLE - missing -->
+    <string name="valuable_list_title">Ценности</string>
+    <string name="valuable_empty_title">Нет ценностей</string>
+    <string name="valuable_empty_subtitle">Добавьте первую ценность, чтобы начать отслеживать её стоимость</string>
+    <string name="valuable_name_label">Название</string>
+    <string name="valuable_name_placeholder">Напр. Токарный станок ЧПУ</string>
+    <string name="valuable_description_label">Описание (необязательно)</string>
+    <string name="valuable_description_placeholder">Бренд, модель, год...</string>
+    <string name="valuable_purchase_price_label">Цена покупки</string>
+    <string name="valuable_estimated_value_label">Оценочная стоимость (необязательно)</string>
+    <string name="valuable_estimated_value_placeholder">Если не указана, используется цена покупки</string>
+    <string name="valuable_notes_label">Заметки (необязательно)</string>
+    <string name="valuable_purchase_expenses_title">Расходы на покупку</string>
+    <string name="valuable_add_purchase_expense">Добавить расход на покупку</string>
+    <string name="valuable_holding_expenses_title">Расходы на содержание</string>
+    <string name="valuable_add_holding_expense">Добавить расход на содержание</string>
+    <string name="valuable_purchase_date_label">Дата покупки</string>
+    <string name="valuable_expense_amount_label">Сумма</string>
+    <string name="valuable_expense_delete_cd">Удалить</string>
+    <string name="valuable_sell_title_format">Продажа: %1$s</string>
+    <string name="valuable_sell_price_label">Цена продажи</string>
+    <string name="valuable_sell_date_label">Дата продажи</string>
+    <string name="valuable_sell_expenses_title">Расходы на продажу</string>
+    <string name="valuable_add_sell_expense">Добавить расход на продажу</string>
+    <string name="valuable_confirm_sale">Подтвердить продажу</string>
+    <string name="valuable_purchase_format">Покупка: %1$s</string>
+    <string name="valuable_in_stock">В наличии</string>
+    <string name="valuable_delete_title">Удалить ценность</string>
+    <string name="valuable_delete_message">Вы уверены, что хотите удалить эту ценность? Все связанные операции также будут удалены.</string>
+    <string name="valuable_link_loan_title">Привязать кредит</string>
+    <string name="valuable_no_loans">Нет доступных кредитов</string>
+    <string name="valuable_update_value_title">Обновить стоимость</string>
+    <string name="valuable_new_value_label">Новая оценочная стоимость</string>
+    <string name="valuable_update_value_btn">Обновить стоимость</string>
+    <string name="valuable_balance_label">Баланс</string>
+    <string name="valuable_sell_cd">Продать</string>
+    <string name="valuable_back_cd">Назад</string>
+
+    <!-- REAL ESTATE - missing -->
+    <string name="realestate_profitability_label">Рентабельность</string>
+    <string name="realestate_cashflow_label">Чистый денежный поток</string>
+    <string name="realestate_total_return_label">Общая доходность</string>
+    <string name="realestate_linked_transactions">Связанные операции</string>
+    <string name="realestate_rental_history_label">История аренды</string>
+    <string name="realestate_expense_delete_cd">Удалить расход</string>
+    <string name="realestate_mortgage_amount_format">Ипотека: %1$s</string>
+    <string name="realestate_add_mortgage">Добавить ипотеку</string>
+    <string name="realestate_loan_only_mortgages">Только ипотеки</string>
+    <string name="realestate_sold_with_emoji">✅ Продано</string>
+    <string name="realestate_no_mortgage_short">🏠 Нет ипотеки</string>
+
+    <!-- LOAN - missing -->
+    <string name="loan_new_rate_label">Новая годовая ставка (%)</string>
+    <string name="loan_rate_placeholder">Напр. 3,25</string>
+    <string name="loan_apply_rate_change">Применить изменение</string>
+
+    <!-- SPLASH / BRANDING -->
+    <string name="app_name_cd">N3to</string>
+    <string name="app_tagline">Отслеживай каждое движение.</string>
+    <string name="app_name">N3to</string>
+
+    <!-- ONBOARDING - missing slide data -->
+    <string name="onboarding_example_label">ПРИМЕР</string>
+    <string name="onboarding_realestate_name">Мой дом</string>
+    <string name="onboarding_realestate_type">Недвижимость</string>
+    <string name="onboarding_realestate_value_label">ОЦЕНОЧНАЯ СТОИМОСТЬ</string>
+    <string name="onboarding_realestate_mortgage_label">ИПОТЕКА</string>
+    <string name="onboarding_realestate_contribution">Входит в ваш капитал</string>
+    <string name="onboarding_fiscal_base_label">НАЛОГООБЛАГАЕМАЯ БАЗА 2025</string>
+    <string name="onboarding_fiscal_rendimientos">ДОХОДЫ</string>
+    <string name="onboarding_fiscal_retenciones">УДЕРЖАНИЯ</string>
+    <string name="onboarding_fiscal_operations_label">ОТМЕЧЕННЫЕ ОПЕРАЦИИ</string>
+    <string name="onboarding_portfolio_label">📈 Портфель</string>
+    <string name="onboarding_hipoteca_label">🏠 Ипотека</string>
+    <string name="onboarding_portfolio_example_badge">ПРИМЕР</string>
+
+    <!-- PRIVACY - missing -->
+    <string name="privacy_section_premium">Trackfolio Premium</string>
+
+    <!-- COMMON - search category placeholder -->
+    <string name="common_search_category_placeholder">Поиск категории…</string>
+
+    <!-- LANGUAGE SELECTOR -->
+    <string name="settings_language">Язык</string>
+    <string name="language_system">Системный язык</string>
+    <string name="language_spanish">Испанский</string>
+    <string name="language_english">Английский</string>
+    <string name="language_french">Французский</string>
+    <string name="language_german">Немецкий</string>
+    <string name="language_chinese">Китайский</string>
+    <string name="language_russian">Русский</string>
+    <string name="language_japanese">Японский</string>
+    <string name="language_beta">Бета</string>
+    <string name="language_select_title">Выберите язык</string>
+</resources>

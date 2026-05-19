@@ -69,8 +69,16 @@ import n3to.composeapp.generated.resources.settings_reconciliation_reminder_titl
 import n3to.composeapp.generated.resources.settings_language
 import n3to.composeapp.generated.resources.settings_theme_disabled
 import n3to.composeapp.generated.resources.settings_theme_enabled
-import n3to.composeapp.generated.resources.language_spanish
+import n3to.composeapp.generated.resources.language_chinese
 import n3to.composeapp.generated.resources.language_english
+import n3to.composeapp.generated.resources.language_french
+import n3to.composeapp.generated.resources.language_german
+import n3to.composeapp.generated.resources.language_italian
+import n3to.composeapp.generated.resources.language_japanese
+import n3to.composeapp.generated.resources.language_korean
+import n3to.composeapp.generated.resources.language_portuguese
+import n3to.composeapp.generated.resources.language_russian
+import n3to.composeapp.generated.resources.language_spanish
 import n3to.composeapp.generated.resources.language_system
 import org.jetbrains.compose.resources.stringResource
 
@@ -155,7 +163,16 @@ internal fun SettingsLanguageRow(
     val subtitle = if (isSystemDefault) {
         stringResource(Res.string.language_system)
     } else when (currentLanguage) {
+        "es" -> stringResource(Res.string.language_spanish)
         "en" -> stringResource(Res.string.language_english)
+        "fr" -> stringResource(Res.string.language_french)
+        "de" -> stringResource(Res.string.language_german)
+        "pt" -> stringResource(Res.string.language_portuguese)
+        "it" -> stringResource(Res.string.language_italian)
+        "zh" -> stringResource(Res.string.language_chinese)
+        "ru" -> stringResource(Res.string.language_russian)
+        "ko" -> stringResource(Res.string.language_korean)
+        "ja" -> stringResource(Res.string.language_japanese)
         else -> stringResource(Res.string.language_spanish)
     }
 

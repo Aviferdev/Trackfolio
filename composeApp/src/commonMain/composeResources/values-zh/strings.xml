@@ -1,0 +1,1487 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- =====================================================================
+         COMMON – Buttons, actions and generic labels
+         ===================================================================== -->
+    <string name="common_cancel">取消</string>
+    <string name="common_accept">确认</string>
+    <string name="common_delete">删除</string>
+    <string name="common_save">保存</string>
+    <string name="common_close">关闭</string>
+    <string name="common_error">错误</string>
+    <string name="common_loading">加载中…</string>
+    <string name="common_update">更新</string>
+    <string name="common_archive">归档</string>
+    <string name="common_search_placeholder">搜索…</string>
+
+    <!-- Accessibility content descriptions -->
+    <string name="common_search_cd">搜索</string>
+    <string name="common_clear_search_cd">清除搜索</string>
+    <string name="common_back_cd">返回</string>
+    <string name="common_action_cd">操作</string>
+
+    <!-- Generic empty states -->
+    <string name="common_empty_title">无数据</string>
+    <string name="common_empty_subtitle">没有可显示的项目</string>
+
+    <!-- =====================================================================
+         NAVIGATION – Bottom bar
+         ===================================================================== -->
+    <string name="nav_home">首页</string>
+    <string name="nav_portfolio">投资组合</string>
+    <string name="nav_networth">净资产</string>
+
+    <!-- =====================================================================
+         DATES – Full months
+         ===================================================================== -->
+    <string name="date_month_full_01">1月</string>
+    <string name="date_month_full_02">2月</string>
+    <string name="date_month_full_03">3月</string>
+    <string name="date_month_full_04">4月</string>
+    <string name="date_month_full_05">5月</string>
+    <string name="date_month_full_06">6月</string>
+    <string name="date_month_full_07">7月</string>
+    <string name="date_month_full_08">8月</string>
+    <string name="date_month_full_09">9月</string>
+    <string name="date_month_full_10">10月</string>
+    <string name="date_month_full_11">11月</string>
+    <string name="date_month_full_12">12月</string>
+
+    <!-- DATES – Short months (3 letters) -->
+    <string name="date_month_short_01">1月</string>
+    <string name="date_month_short_02">2月</string>
+    <string name="date_month_short_03">3月</string>
+    <string name="date_month_short_04">4月</string>
+    <string name="date_month_short_05">5月</string>
+    <string name="date_month_short_06">6月</string>
+    <string name="date_month_short_07">7月</string>
+    <string name="date_month_short_08">8月</string>
+    <string name="date_month_short_09">9月</string>
+    <string name="date_month_short_10">10月</string>
+    <string name="date_month_short_11">11月</string>
+    <string name="date_month_short_12">12月</string>
+
+    <!-- DATES – Relative -->
+    <string name="date_today">今天</string>
+    <string name="date_yesterday">昨天</string>
+    <string name="date_just_now">刚刚</string>
+    <string name="date_one_minute_ago">1分钟前</string>
+    <string name="date_minutes_ago">%1$d分钟前</string>
+    <string name="date_one_hour_ago">1小时前</string>
+    <string name="date_hours_ago">%1$d小时前</string>
+    <string name="date_days_ago">%1$d天前</string>
+    <string name="date_one_month_ago">1个月前</string>
+    <string name="date_months_ago">%1$d个月前</string>
+    <string name="date_one_year_ago">1年前</string>
+    <string name="date_years_ago">%1$d年前</string>
+
+    <!-- DATES – Full date format (day of month of year) -->
+    <string name="date_format_dmy">%1$d %2$s %3$d</string>
+
+    <!-- DATES – Selector -->
+    <string name="common_select_date">选择日期</string>
+
+    <!-- =====================================================================
+         GREETINGS – By time of day
+         ===================================================================== -->
+    <string name="greeting_morning">早上好</string>
+    <string name="greeting_afternoon">下午好</string>
+    <string name="greeting_evening">晚上好</string>
+
+    <!-- =====================================================================
+         HOME – HeroCard, quick access, sections
+         ===================================================================== -->
+    <string name="home_hero_balance_label">账户余额</string>
+    <string name="home_hero_net_with_debts">债务后净资产</string>
+    <string name="home_show_balances">显示余额</string>
+    <string name="home_hide_balances">隐藏余额</string>
+    <string name="home_confirm_identity">确认身份</string>
+    <string name="home_section_goals">目标</string>
+    <string name="home_section_emergency_fund">应急基金</string>
+    <string name="home_section_recent">最近交易</string>
+    <string name="home_view_all">查看全部</string>
+    <string name="home_no_movements_title">无交易</string>
+    <string name="home_no_movements_subtitle">按 + 添加您的第一笔交易</string>
+    <string name="home_quick_resumen">概览</string>
+    <string name="home_quick_debts">债务</string>
+    <string name="home_quick_fiscal">税务</string>
+    <string name="home_settings_cd">设置</string>
+
+    <!-- HOME – Emergency fund -->
+    <string name="home_ef_configure_title">设置应急基金</string>
+    <string name="home_ef_configure_subtitle">保障余额安全 — 点击配置</string>
+    <string name="home_ef_covered">已覆盖 ✅</string>
+    <string name="home_ef_months">%1$d个月</string>
+    <string name="home_ef_current_balance">当前余额</string>
+    <string name="home_ef_target">目标</string>
+    <string name="home_ef_missing_format">还需要 %1$s 才能覆盖基金</string>
+    <string name="home_ef_monthly_avg_format">平均支出：%1$s/月</string>
+
+    <!-- HOME – Goals -->
+    <string name="home_goals_define_title">设定月度目标</string>
+    <string name="home_goals_define_subtitle">储蓄 &amp; 投资 — 点击配置</string>
+    <string name="home_goals_monthly">月度目标</string>
+    <string name="home_goals_savings">储蓄</string>
+    <string name="home_goals_investment">投资</string>
+    <string name="home_goals_projection_above">📈 预计：%1$s — 超出目标（+%2$s）</string>
+    <string name="home_goals_pace_needed">📊 当前进度：%1$s€/天 — 需要 %2$s€/天才能达成目标</string>
+    <string name="home_goals_no_movement">📊 本月尚无变动</string>
+
+    <!-- HOME – Banners -->
+    <string name="home_price_reminder_one">%1$d个资产未更新价格（&gt;7天）</string>
+    <string name="home_price_reminder_many">%1$d个资产未更新价格（&gt;7天）</string>
+    <string name="home_backup_never">您尚未进行过备份</string>
+    <string name="home_backup_days_format">距离上次备份已过去 %1$d 天</string>
+    <string name="home_backup_action">进行备份</string>
+    <string name="home_maturity_title">即将到期</string>
+    <string name="home_maturity_more_format">+%1$d 更多</string>
+
+    <!-- =====================================================================
+         TRANSACTION – Default labels
+         ===================================================================== -->
+    <string name="transaction_label_investment">投资</string>
+    <string name="transaction_label_balance_adjustment">余额调整</string>
+    <string name="transaction_label_income">收入</string>
+    <string name="transaction_label_expense">支出</string>
+
+    <!-- =====================================================================
+         SETTINGS – Section titles and options
+         ===================================================================== -->
+    <string name="settings_title">设置</string>
+    <string name="settings_section_accounts">账户</string>
+    <string name="settings_section_security">安全</string>
+    <string name="settings_section_reminders">提醒</string>
+    <string name="settings_section_appearance">外观</string>
+    <string name="settings_section_privacy">隐私</string>
+    <string name="settings_section_data">数据</string>
+    <string name="settings_section_info">信息</string>
+    <string name="settings_add_account">添加账户</string>
+    <string name="settings_add">添加</string>
+
+    <!-- Settings – Security -->
+    <string name="settings_biometric_lock">生物识别锁</string>
+    <string name="settings_biometric_enabled">已启用</string>
+    <string name="settings_biometric_disabled">已禁用</string>
+    <string name="settings_biometric_activate">启用生物识别</string>
+    <string name="settings_biometric_title">生物识别</string>
+    <string name="settings_biometric_unavailable">生物识别不可用。请在设备设置中设置指纹或PIN码。</string>
+
+    <!-- Settings – Appearance -->
+    <string name="settings_dark_theme">深色主题</string>
+    <string name="settings_theme_enabled">已启用</string>
+    <string name="settings_theme_disabled">已禁用</string>
+
+    <!-- Settings – Premium -->
+    <string name="settings_premium_title">Trackfolio Premium</string>
+    <string name="settings_premium_lifetime">终身</string>
+    <string name="settings_premium_active">已激活</string>
+    <string name="settings_premium_cta">获取 Premium</string>
+    <string name="settings_premium_limit_title">免费账户数量限制</string>
+    <string name="settings_premium_limit_message">您已达到免费计划的 %1$d 个账户上限。获取 Premium 可拥有无限账户。</string>
+
+    <!-- Settings – Privacy -->
+    <string name="settings_privacy_data">隐私 &amp; 数据</string>
+
+    <!-- Settings – Data -->
+    <string name="settings_backup">备份</string>
+    <string name="settings_backup_reminder_title">备份提醒</string>
+    <string name="settings_backup_reminder_off">已禁用</string>
+
+    <!-- Settings – Reminders -->
+    <string name="settings_interval_7d">7天</string>
+    <string name="settings_interval_15d">15天</string>
+    <string name="settings_interval_30d">30天</string>
+    <string name="settings_reconciliation_reminder_title">对账提醒</string>
+
+    <!-- Settings – Info -->
+    <string name="settings_about">关于</string>
+    <string name="settings_show_onboarding">显示引导介绍</string>
+
+    <!-- Settings – Dialogs -->
+    <string name="settings_delete_account_title">删除账户</string>
+    <string name="settings_delete_account_message">删除«%1$s»？此操作也将删除其所有交易记录。</string>
+    <string name="settings_not_now">暂不</string>
+    <string name="settings_configure_cd">配置</string>
+    <string name="settings_edit_cd">编辑</string>
+
+    <!-- =====================================================================
+         PORTFOLIO – Common portfolio strings
+         ===================================================================== -->
+    <string name="portfolio_title">投资组合</string>
+    <string name="portfolio_evolution_title">价值走势</string>
+    <string name="portfolio_monthly_value">月度投资组合价值</string>
+    <string name="portfolio_empty_title">暂无持仓</string>
+    <string name="portfolio_empty_subtitle">按 + 登记\n您的第一笔投资</string>
+    <string name="portfolio_new_purchase">新买入</string>
+    <string name="portfolio_new_bond">新债券/存款</string>
+    <string name="portfolio_settings_cd">投资组合设置</string>
+    <string name="portfolio_distribution_view_category">类别</string>
+    <string name="portfolio_distribution_view_composition">构成</string>
+    <string name="portfolio_distribution_view_region">地区</string>
+    <string name="portfolio_distribution_view_sector">行业</string>
+
+    <!-- PORTFOLIO – Summary -->
+    <string name="portfolio_summary_total_value">总价值</string>
+    <string name="portfolio_summary_invested">已投入</string>
+    <string name="portfolio_summary_total_pnl">总利润</string>
+    <string name="portfolio_summary_realized">已实现</string>
+    <string name="portfolio_summary_unrealized">未实现</string>
+    <string name="portfolio_summary_positions_one">%1$d个未平仓头寸</string>
+    <string name="portfolio_summary_positions_many">%1$d个未平仓头寸</string>
+
+    <!-- =====================================================================
+         PRIVACY – Privacy and data screen
+         ===================================================================== -->
+    <string name="privacy_restore_success">购买恢复成功</string>
+    <string name="privacy_restore_error">错误：%1$s</string>
+    <string name="privacy_back_cd">返回</string>
+    <string name="privacy_revoke_title">撤销所有同意？</string>
+    <string name="privacy_revoke_message">使用分析和错误报告将被禁用。此操作将立即生效。</string>
+    <string name="privacy_revoke_confirm">全部撤销</string>
+
+    <!-- Privacy – Consent -->
+    <string name="privacy_section_consent">同意</string>
+    <string name="privacy_analytics_title">帮助我们改进</string>
+    <string name="privacy_analytics_desc">匿名使用分析，用于改进应用。</string>
+    <string name="privacy_crash_title">出现问题时通知我</string>
+    <string name="privacy_crash_desc">匿名错误报告，用于修复Bug。</string>
+    <string name="privacy_consent_date_format">同意记录于 %1$s</string>
+
+    <!-- Privacy – Premium -->
+    <string name="privacy_premium_active_label">Premium 已激活</string>
+    <string name="privacy_premium_lifetime_value">终身访问</string>
+    <string name="privacy_premium_subscription_value">订阅已激活</string>
+    <string name="privacy_premium_valid_until">有效期至</string>
+    <string name="privacy_premium_manage">管理订阅</string>
+    <string name="privacy_premium_plan">当前方案</string>
+    <string name="privacy_premium_free">免费</string>
+    <string name="privacy_premium_no_ads_value">升级到 Premium 后</string>
+    <string name="privacy_premium_restore">恢复购买</string>
+
+    <!-- Privacy – Data collected -->
+    <string name="privacy_section_data_collected">已收集的数据</string>
+    <string name="privacy_data_screens">访问过的页面</string>
+    <string name="privacy_data_crash_reports">错误报告</string>
+    <string name="privacy_data_financial">财务数据</string>
+    <string name="privacy_data_personal">个人信息</string>
+    <string name="privacy_data_revenuecat">订阅管理（RevenueCat）</string>
+
+    <!-- Privacy – Actions -->
+    <string name="privacy_revoke_all_button">撤销所有同意</string>
+    <string name="privacy_revoke_all_hint">撤销后，所有跟踪数据将立即禁用。</string>
+    <string name="privacy_policy_link">隐私政策</string>
+
+    <!-- =====================================================================
+         PORTFOLIO – Settings
+         ===================================================================== -->
+    <string name="portfolio_settings_title">投资组合设置</string>
+    <string name="portfolio_settings_category_section">资产类别</string>
+    <string name="portfolio_settings_category_count_one">%1$d个资产</string>
+    <string name="portfolio_settings_category_count_many">%1$d个资产</string>
+    <string name="portfolio_settings_portfolio_section">投资组合</string>
+    <string name="portfolio_settings_no_portfolios">暂无投资组合。请在投资组合页面创建一个。</string>
+    <string name="portfolio_settings_edit_cd">编辑</string>
+    <string name="portfolio_settings_delete_cd">删除</string>
+    <string name="portfolio_settings_reminder_section">价格提醒</string>
+    <string name="portfolio_settings_reminder_title">提醒频率</string>
+    <string name="portfolio_settings_reminder_desc">我会定期提醒您更新资产价格。</string>
+    <string name="portfolio_settings_platform_section">平台</string>
+    <string name="portfolio_settings_platform_empty">暂无平台。添加券商、交易所或银行以关联您的交易。</string>
+    <string name="portfolio_settings_sector_section">行业</string>
+    <string name="portfolio_settings_sector_empty">按行业（科技、医疗、能源…）对资产进行分类，分析您的行业风险敞口。</string>
+    <string name="portfolio_settings_region_section">地区</string>
+    <string name="portfolio_settings_region_empty">按地区（美国、欧洲、亚洲…）定义地理分布，分析您的国际风险敞口。</string>
+    <string name="portfolio_settings_manage">管理</string>
+    <string name="portfolio_settings_add">添加</string>
+    <string name="portfolio_settings_delete_portfolio_title">删除投资组合</string>
+    <string name="portfolio_settings_delete_portfolio_message">删除«%1$s»？资产将被移至«无投资组合»。</string>
+
+    <!-- PORTFOLIO – Asset detail -->
+    <string name="portfolio_asset_detail_title">资产</string>
+    <string name="portfolio_asset_detail_platform_section">平台</string>
+    <string name="portfolio_asset_detail_platform_desc">选择持有该资产的平台（券商、银行、交易所）。</string>
+    <string name="portfolio_asset_detail_platform_empty">尚未创建平台。请先创建第一个平台以关联此资产。</string>
+    <string name="portfolio_asset_detail_platform_link_hint">要关联平台，请前往 设置 › 投资组合 › 平台。</string>
+    <string name="portfolio_asset_detail_linked_platforms">已关联的平台</string>
+    <string name="portfolio_asset_detail_unlink_cd">解除关联</string>
+
+    <!-- PORTFOLIO – Asset history -->
+    <string name="portfolio_asset_history_add">添加</string>
+    <string name="portfolio_asset_history_filter_all">全部</string>
+    <string name="portfolio_asset_history_filter_buy">买入</string>
+    <string name="portfolio_asset_history_filter_sell">卖出</string>
+    <string name="portfolio_asset_history_no_data">暂无历史数据</string>
+
+    <!-- PORTFOLIO – Compound effect card -->
+    <string name="portfolio_compound_effect_title">复利效应</string>
+    <string name="portfolio_compound_effect_projection">预计</string>
+    <string name="portfolio_compound_effect_estimated">您已赚取</string>
+
+    <!-- PORTFOLIO – Add/Edit asset sheet -->
+    <string name="portfolio_add_asset_title_create">创建资产</string>
+    <string name="portfolio_add_asset_title_edit">编辑资产</string>
+    <string name="portfolio_add_asset_name_label">资产名称</string>
+    <string name="portfolio_add_asset_ticker_label">代码</string>
+    <string name="portfolio_add_asset_category_label">类别</string>
+    <string name="portfolio_add_asset_price_label">单价</string>
+    <string name="portfolio_add_asset_price_placeholder">市场价格</string>
+    <string name="portfolio_add_asset_notes_label">备注</string>
+    <string name="portfolio_add_asset_platform_label">平台</string>
+    <string name="portfolio_add_asset_save">保存更改</string>
+    <string name="portfolio_add_asset_name_required">名称是必填项</string>
+    <string name="portfolio_add_asset_no_price">此资产尚未登记价格</string>
+    <string name="portfolio_add_asset_select_category">选择一个类别</string>
+    <string name="portfolio_add_asset_select_platform">选择您持有份额的平台</string>
+    <string name="portfolio_add_asset_no_platforms">无关联平台</string>
+
+    <!-- PORTFOLIO – Add transaction sheet -->
+    <string name="portfolio_add_tx_title">登记交易</string>
+    <string name="portfolio_add_tx_title_edit">编辑交易</string>
+    <string name="portfolio_add_tx_date">日期</string>
+    <string name="portfolio_add_tx_qty">数量</string>
+    <string name="portfolio_add_tx_price">单价</string>
+    <string name="portfolio_add_tx_gross">总额</string>
+    <string name="portfolio_add_tx_gross_placeholder">输入总额</string>
+    <string name="portfolio_add_tx_net">净额</string>
+    <string name="portfolio_add_tx_fee">总额</string>
+    <string name="portfolio_add_tx_fee_placeholder">例如 0.5%, 1.20 €</string>
+    <string name="portfolio_add_tx_platform">平台</string>
+    <string name="portfolio_add_tx_notes">备注</string>
+    <string name="portfolio_add_tx_select_asset">选择一个资产</string>
+    <string name="portfolio_add_tx_no_units">无份额</string>
+    <string name="portfolio_add_tx_name_required">名称是必填项</string>
+
+    <!-- PORTFOLIO – Dividend sheet -->
+    <string name="portfolio_dividend_title">登记股息</string>
+    <string name="portfolio_dividend_amount">总额</string>
+    <string name="portfolio_dividend_withholding">预扣税</string>
+    <string name="portfolio_dividend_date">日期</string>
+    <string name="portfolio_dividend_notes">备注</string>
+
+    <!-- PORTFOLIO – Transfer sheet -->
+    <string name="portfolio_transfer_title">资金转移</string>
+    <string name="portfolio_transfer_from">来源基金</string>
+    <string name="portfolio_transfer_to">目标基金</string>
+    <string name="portfolio_transfer_qty">转移份额</string>
+    <string name="portfolio_transfer_date">转移日期</string>
+    <string name="portfolio_transfer_confirm">确认转移</string>
+
+    <!-- PORTFOLIO – Update price sheet -->
+    <string name="portfolio_update_price_title">更新价格</string>
+    <string name="portfolio_update_price_save">保存价格</string>
+
+    <!-- PORTFOLIO – Management sheets -->
+    <string name="portfolio_new_sector_title">新行业</string>
+    <string name="portfolio_new_region_title">新地区</string>
+    <string name="portfolio_new_platform_title">新平台</string>
+    <string name="portfolio_edit_platform_title">编辑平台</string>
+    <string name="portfolio_link_platform_title">关联平台</string>
+    <string name="portfolio_platform_name">名称</string>
+    <string name="portfolio_platform_icon">图标</string>
+    <string name="portfolio_platform_notes">备注</string>
+
+    <!-- PORTFOLIO – Portfolio management -->
+    <string name="portfolio_new_portfolio_title">新投资组合</string>
+    <string name="portfolio_edit_portfolio_title">编辑投资组合</string>
+    <string name="portfolio_name_required">名称是必填项</string>
+    <string name="portfolio_without">无投资组合</string>
+
+    <!-- PORTFOLIO – Subcomponents -->
+    <string name="portfolio_category_group_assets">%1$d个资产</string>
+    <string name="portfolio_category_invested_format">已投入：%1$s €</string>
+    <string name="portfolio_category_current_format">当前：%1$s €</string>
+    <string name="portfolio_category_group_expand">展开</string>
+    <string name="portfolio_category_group_collapse">收起</string>
+    <string name="portfolio_closed_positions">已平仓头寸</string>
+    <string name="portfolio_closed_positions_count">%1$d个已平仓</string>
+    <string name="portfolio_fixed_income_section">固定收益</string>
+    <string name="portfolio_fixed_income_count">%1$d个头寸</string>
+
+    <!-- =====================================================================
+         TRANSACTION – Transaction screens
+         ===================================================================== -->
+    <string name="transaction_title">交易</string>
+    <string name="transaction_search_hint">搜索交易…</string>
+    <string name="transaction_no_results">没有与搜索匹配的交易</string>
+    <string name="transaction_no_movements">尚无登记的交易</string>
+    <string name="transaction_detail_title">交易详情</string>
+    <string name="transaction_detail_not_found">未找到交易</string>
+    <string name="transaction_type_income">收入</string>
+    <string name="transaction_type_expense">支出</string>
+    <string name="transaction_type_adjustment">调整</string>
+    <string name="transaction_type_transfer">转账</string>
+    <string name="transaction_filter_all">全部</string>
+    <string name="transaction_filter_income">收入</string>
+    <string name="transaction_filter_expense">支出</string>
+
+    <!-- =====================================================================
+         ACCOUNT – Account screens
+         ===================================================================== -->
+    <string name="account_list_title">我的账户</string>
+    <string name="account_add_title">添加账户</string>
+    <string name="account_edit_title">编辑账户</string>
+    <string name="account_name_label">名称或昵称</string>
+    <string name="account_name_placeholder">例如 BBVA 活期账户</string>
+    <string name="account_initial_balance">待定初始余额</string>
+    <string name="account_no_accounts">暂无账户</string>
+    <string name="account_empty_subtitle">从设置中创建您的第一个账户\n即可开始使用</string>
+    <string name="account_balance_label">当前余额</string>
+    <string name="account_computed_balance">计算余额</string>
+    <string name="account_delete_confirm_title">删除账户</string>
+    <string name="account_configure_cd">配置</string>
+    <string name="account_edit_cd">编辑</string>
+    <string name="account_delete_cd">删除</string>
+
+    <!-- =====================================================================
+         FIXED INCOME – Fixed income
+         ===================================================================== -->
+    <string name="fixedincome_title">固定收益</string>
+    <string name="fixedincome_detail_title">固定收益头寸</string>
+    <string name="fixedincome_not_found">未找到头寸</string>
+    <string name="fixedincome_create_title">新建固定收益头寸</string>
+    <string name="fixedincome_edit_title">编辑固定收益头寸</string>
+    <string name="fixedincome_name_label">名称</string>
+    <string name="fixedincome_ticker_label">代码</string>
+    <string name="fixedincome_type_label">产品类型</string>
+    <string name="fixedincome_principal_label">本金</string>
+    <string name="fixedincome_interest_label">年利率（%）</string>
+    <string name="fixedincome_frequency_label">付息频率</string>
+    <string name="fixedincome_start_date">开始日期</string>
+    <string name="fixedincome_maturity_date">到期日期</string>
+    <string name="fixedincome_auto_renew">到期自动续存</string>
+    <string name="fixedincome_save">保存更改</string>
+    <string name="fixedincome_cancel_title">提前终止</string>
+    <string name="fixedincome_close_confirm">确认结算</string>
+    <string name="fixedincome_register_coupon">登记利息/票息</string>
+    <string name="fixedincome_sell_secondary">在二级市场卖出</string>
+    <string name="fixedincome_value_label">当前价值</string>
+    <string name="fixedincome_invested_label">投入资本</string>
+    <string name="fixedincome_yield_gross">购入总收益率</string>
+    <string name="fixedincome_yield_current">当前价值总收益率</string>
+    <string name="fixedincome_net_maturity">到期预估净额</string>
+    <string name="fixedincome_coupon_calendar">付款计划</string>
+    <string name="fixedincome_coupons_received">已收票息</string>
+    <string name="fixedincome_maturity_simulation">到期模拟</string>
+
+    <!-- =====================================================================
+         LOAN – Loans
+         ===================================================================== -->
+    <string name="loan_detail_title">贷款详情</string>
+    <string name="loan_not_found">未找到贷款</string>
+    <string name="loan_add_title">添加贷款</string>
+    <string name="loan_edit_title">编辑贷款</string>
+    <string name="loan_name_label">贷款名称</string>
+    <string name="loan_type_label">类型</string>
+    <string name="loan_entity_label">机构</string>
+    <string name="loan_principal_label">初始本金</string>
+    <string name="loan_interest_label">利率</string>
+    <string name="loan_term_label">期限（月）</string>
+    <string name="loan_monthly_payment">月供</string>
+    <string name="loan_pending_capital">剩余本金</string>
+    <string name="loan_amortization_title">还款计划</string>
+    <string name="loan_amortization_type">还款方式</string>
+    <string name="loan_history_title">利率历史</string>
+    <string name="loan_archive_title">归档贷款</string>
+    <string name="loan_change_rate">更新利率</string>
+    <string name="loan_progress">进度</string>
+
+    <!-- =====================================================================
+         DEBT – Debts
+         ===================================================================== -->
+    <string name="debt_title">债务</string>
+    <string name="debt_add_title">新债务</string>
+    <string name="debt_edit_title">编辑债务</string>
+    <string name="debt_no_debts">暂无债务</string>
+    <string name="debt_type_label">债务类型</string>
+    <string name="debt_person_label">联系人</string>
+    <string name="debt_amount_label">金额</string>
+    <string name="debt_description_label">事由</string>
+    <string name="debt_i_owe">我欠</string>
+    <string name="debt_they_owe">欠我</string>
+    <string name="debt_mark_paid">标记为已还</string>
+    <string name="debt_paid">已还</string>
+    <string name="debt_pending">待还</string>
+
+    <!-- =====================================================================
+         REAL ESTATE – Real estate
+         ===================================================================== -->
+    <string name="realestate_detail_title">房产详情</string>
+    <string name="realestate_add_title">添加房产</string>
+    <string name="realestate_edit_title">编辑房产</string>
+    <string name="realestate_no_properties">无登记房产</string>
+    <string name="realestate_name_label">名称</string>
+    <string name="realestate_address_label">地址</string>
+    <string name="realestate_type_label">房产类型</string>
+    <string name="realestate_estimated_value">估算价值</string>
+    <string name="realestate_mortgage_label">抵押贷款</string>
+    <string name="realestate_rental_status">出租状态</string>
+    <string name="realestate_rental_income">租金收入</string>
+    <string name="realestate_expenses_label">支出</string>
+    <string name="realestate_sell_title">出售房产</string>
+    <string name="realestate_sell_price">售价</string>
+    <string name="realestate_sell_expenses">出售费用</string>
+    <string name="realestate_sell_confirm">确认出售</string>
+    <string name="realestate_archived_title">归档房产</string>
+    <string name="realestate_sold">已售出</string>
+    <string name="realestate_net_equity">净资产</string>
+
+    <!-- =====================================================================
+         NET WORTH – Net worth
+         ===================================================================== -->
+    <string name="networth_title">净资产</string>
+    <string name="networth_total_label">净资产</string>
+    <string name="networth_assets_label">总资产</string>
+    <string name="networth_liabilities_label">负债</string>
+    <string name="networth_evolution_title">净资产走势</string>
+    <string name="networth_no_data">本年无数据</string>
+    <string name="networth_monthly_title">月度净资产</string>
+    <string name="networth_cash_label">现金</string>
+    <string name="networth_investments_label">投资</string>
+    <string name="networth_realestate_label">房产</string>
+
+    <!-- =====================================================================
+         FISCAL – Fiscal report
+         ===================================================================== -->
+    <string name="fiscal_title">税务报告</string>
+    <string name="fiscal_generate_title">生成 &amp; 分享 PDF</string>
+    <string name="fiscal_ready">税务报告已就绪</string>
+    <string name="fiscal_taxable_base">应税基数 %1$s</string>
+    <string name="fiscal_income_title">收入</string>
+    <string name="fiscal_expenses_title">支出</string>
+    <string name="fiscal_capital_gains">资本利得</string>
+    <string name="fiscal_dividends_title">股息</string>
+    <string name="fiscal_withholdings_title">预扣税</string>
+    <string name="fiscal_total_income">总收入</string>
+    <string name="fiscal_total_expenses">总支出</string>
+    <string name="fiscal_net_result">净结果</string>
+    <string name="fiscal_no_data">添加交易以查看摘要</string>
+
+    <!-- =====================================================================
+         ANNUAL – Annual summary
+         ===================================================================== -->
+    <string name="annual_title">年度总结</string>
+    <string name="annual_tab_summary">概览</string>
+    <string name="annual_tab_expenses">支出</string>
+    <string name="annual_tab_income">收入</string>
+    <string name="annual_tab_investments">投资</string>
+    <string name="annual_goal_compliance">目标达标情况</string>
+    <string name="annual_goal_met">已达成</string>
+    <string name="annual_goal_not_met">未达成</string>
+    <string name="annual_no_goal">无目标</string>
+    <string name="annual_monthly_evolution">月度走势 %1$s</string>
+
+    <!-- =====================================================================
+         ONBOARDING – Introduction
+         ===================================================================== -->
+    <string name="onboarding_welcome_title">欢迎使用 N3to</string>
+    <string name="onboarding_welcome_subtitle">您的财务，由您掌控</string>
+    <string name="onboarding_skip">跳过</string>
+    <string name="onboarding_continue">继续</string>
+    <string name="onboarding_start">开始使用</string>
+    <string name="onboarding_slide_portfolio_title">投资组合</string>
+    <string name="onboarding_slide_movements_title">有意义的交易</string>
+    <string name="onboarding_slide_networth_title">您的净资产，清晰明了</string>
+    <string name="onboarding_slide_fiscal_title">税务报告</string>
+    <string name="onboarding_slide_realestate_title">不动产资产</string>
+
+    <!-- =====================================================================
+         RECONCILIATION – Reconciliation
+         ===================================================================== -->
+    <string name="reconciliation_banner_text">您已经有一段时间没有对账了</string>
+    <string name="reconciliation_title">对账</string>
+    <string name="reconciliation_balanced">余额已匹配</string>
+    <string name="reconciliation_adjust">调整余额</string>
+
+    <!-- =====================================================================
+         SECURITY – Lock
+         ===================================================================== -->
+    <string name="security_unlock_title">解锁 N3to</string>
+    <string name="security_unlock_hint">使用指纹、Face ID 或 PIN 码</string>
+    <string name="security_biometric_not_available">此设备不支持生物识别</string>
+
+    <!-- =====================================================================
+         PREMIUM – Premium screen
+         ===================================================================== -->
+    <string name="premium_title">Trackfolio Premium</string>
+    <string name="premium_already_premium">您已是 Premium 用户</string>
+    <string name="premium_unlock_features">解锁全部功能</string>
+    <string name="premium_unlimited_accounts">无限账户</string>
+    <string name="premium_themes">专属主题</string>
+    <string name="premium_ad_free">无广告打扰，畅享应用</string>
+    <string name="premium_manage_accounts">无限制管理所有账户</string>
+    <string name="premium_customize">使用浅色和深色主题自定义应用</string>
+    <string name="premium_subscribe">获取 Premium</string>
+    <string name="premium_restore">恢复购买</string>
+    <string name="premium_restore_success">购买恢复成功</string>
+    <string name="premium_restore_cancelled">恢复已取消</string>
+
+    <!-- =====================================================================
+         CONSENT – Consent
+         ===================================================================== -->
+    <string name="consent_title">开始之前</string>
+    <string name="consent_accept">接受并继续</string>
+    <string name="consent_decline">拒绝并继续</string>
+    <string name="consent_privacy_policy">查看隐私政策</string>
+    <string name="consent_data_description">您的账户、交易和余额存储在您设备的本地。只有在您许可的情况下，我们才会共享数据。</string>
+    <string name="consent_crash_description">如果应用崩溃，它会通知我们，以便我们快速修复。</string>
+    <string name="security_locked_message">应用已锁定。\n请验证身份以继续。</string>
+    <string name="security_unlock_button">解锁</string>
+    <string name="version_block_message">您需要更新 N3to 才能继续使用应用。</string>
+    <string name="version_block_version_info">最低版本：%1$s · 当前版本：%2$s</string>
+    <string name="reconciliation_real_balance">实际余额（€）</string>
+    <string name="reconciliation_diff_format">差额：%1$s%2$s €</string>
+    <string name="reconciliation_done">完成</string>
+    <string name="reconciliation_adjust_label">调整余额</string>
+    <string name="fixedincome_delete_event">删除事件</string>
+    <string name="fixedincome_distribution_title">分布</string>
+    <string name="fixedincome_no_region">未分配</string>
+    <string name="fixedincome_no_sector">未分配</string>
+    <string name="fixedincome_select_region">选择地区</string>
+    <string name="fixedincome_select_sector">选择行业</string>
+    <string name="fixedincome_status_active">活跃</string>
+    <string name="fixedincome_status_closed">已关闭</string>
+    <string name="fixedincome_change_region">更改</string>
+    <string name="fixedincome_change_sector">更改</string>
+    <string name="fixedincome_platform_label">平台</string>
+    <string name="fixedincome_liquidate_maturity">到期清算</string>
+    <string name="fixedincome_annual_coupon">年票息</string>
+    <string name="fixedincome_maturity_label">到期</string>
+    <string name="fixedincome_est_nir">预估净收益率</string>
+    <string name="fixedincome_register_settlement">登记结算</string>
+    <string name="fixedincome_event_history">事件历史</string>
+    <string name="fixedincome_no_events">无登记事件</string>
+    <string name="fixedincome_gross_interest">毛利息</string>
+    <string name="fixedincome_estimated_irpf">预估预扣税（%1$s%%）</string>
+    <string name="fixedincome_estimated_commissions">预估佣金</string>
+    <string name="fixedincome_net_profit_label">净利润总额</string>
+    <string name="fixedincome_region_label">地区</string>
+    <string name="fixedincome_sector_label">行业</string>
+    <string name="fixedincome_delete_event_confirm">删除事件 %1$s？</string>
+    <string name="fixedincome_header_label">固定收益 · %1$s</string>
+    <string name="fixedincome_nominal_label">本金</string>
+    <string name="fixedincome_coupon_paid">已收</string>
+    <string name="fixedincome_coupon_pending">待收</string>
+    <string name="fixedincome_retention_label">预扣税</string>
+    <string name="fixedincome_commission_label">佣金</string>
+    <string name="fixedincome_gross_label">毛额</string>
+    <string name="fixedincome_maturity_sim_irpf">预估预扣税（%1$s%%）</string>
+    <string name="fixedincome_yield_label">收益率</string>
+    <string name="fixedincome_capital_short">资本</string>
+
+    <!-- NET WORTH -->
+    <string name="networth_add_property_cd">添加房产</string>
+    <string name="networth_add_loan_cd">添加贷款</string>
+    <string name="networth_no_properties">无登记房产</string>
+    <string name="networth_no_liabilities">无登记负债</string>
+    <string name="networth_assets_label_alt">资产</string>
+    <string name="networth_liabilities_label_alt">负债</string>
+    <string name="networth_accounts_label">账户余额</string>
+    <string name="networth_portfolio_label">投资组合</string>
+    <string name="networth_fixedincome_label">固定收益</string>
+    <string name="networth_total_assets_label">总资产</string>
+    <string name="networth_debts_label">日常债务</string>
+    <string name="networth_installments_format">%1$d/%2$d 期</string>
+    <string name="networth_monthly_format">%1$s/月</string>
+    <string name="networth_of_format">占 %1$s</string>
+
+    <!-- FISCAL -->
+    <string name="fiscal_generating_pdf">正在生成 PDF…</string>
+    <string name="fiscal_net_only_warning">部分收入仅以净额登记。税务明细可能不完整。</string>
+    <string name="fiscal_no_data_year">%1$s 年无数据</string>
+    <string name="fiscal_year_title">%1$s 年 · 摘要</string>
+    <string name="fiscal_no_movements">尚无登记的交易。</string>
+    <string name="fiscal_income_label">总收入</string>
+    <string name="fiscal_withholding_label">税务预扣</string>
+    <string name="fiscal_capital_gains_card">资本利得</string>
+    <string name="fiscal_taxable_base_est">预估应税基数</string>
+    <string name="fiscal_tax_breakdown_title">税务明细 %1$s</string>
+    <string name="fiscal_gross_total">毛总额</string>
+    <string name="fiscal_irpf_total">预扣税款</string>
+    <string name="fiscal_net_total">净总额</string>
+    <string name="fiscal_social_security">社会保障</string>
+    <string name="fiscal_commissions_short">佣金</string>
+    <string name="fiscal_income_type_header">收入类型</string>
+    <string name="fiscal_gross_header">毛额</string>
+    <string name="fiscal_withholding_short">预扣</string>
+    <string name="fiscal_net_header">净额</string>
+    <string name="fiscal_percent_header">%%</string>
+    <string name="fiscal_incomes_with_tax_info">仅包含已填写税务信息的收入。</string>
+    <string name="fiscal_monthly_title">月度明细</string>
+    <string name="fiscal_no_movements_year">%1$s 年无交易记录。</string>
+    <string name="fiscal_month_header">月份</string>
+    <string name="fiscal_income_header">收入</string>
+    <string name="fiscal_expenses_header">支出</string>
+    <string name="fiscal_balance_header">余额</string>
+    <string name="fiscal_debts_title">活跃债务</string>
+    <string name="fiscal_i_owe">我欠</string>
+    <string name="fiscal_they_owe">欠我</string>
+    <string name="fiscal_portfolio_title">投资组合</string>
+    <string name="fiscal_invested_label">已投入</string>
+    <string name="fiscal_current_value_label">当前价值</string>
+    <string name="fiscal_realized_pnl_label">已实现盈亏</string>
+    <string name="fiscal_asset_header">资产</string>
+    <string name="fiscal_units_header">份额</string>
+    <string name="fiscal_avg_price_header">均价</string>
+    <string name="fiscal_pnl_total_header">总盈亏</string>
+    <string name="fiscal_no_category">无类别</string>
+    <string name="fiscal_year_activity">%1$s 年活动</string>
+    <string name="fiscal_buys_header">买入</string>
+    <string name="fiscal_sales_header">卖出</string>
+    <string name="fiscal_active_profile">当前税务档案：%1$s</string>
+    <string name="fiscal_profile_since">%1$s · 自 %2$s 起生效</string>
+    <string name="fiscal_pdf_password_title">保护报告</string>
+    <string name="fiscal_pdf_password_desc">输入密码保护 PDF。留空则不保护。</string>
+    <string name="fiscal_password_label">密码</string>
+    <string name="fiscal_password_optional">可选</string>
+    <string name="fiscal_confirm_password_label">确认密码</string>
+    <string name="fiscal_password_mismatch">密码不匹配</string>
+    <string name="fiscal_password_min_length">至少 4 个字符</string>
+    <string name="fiscal_generate_without_password">无密码生成</string>
+    <string name="fiscal_generate_with_password">带密码生成</string>
+    <string name="fiscal_cancel">取消</string>
+    <string name="fiscal_count_format">%1$d 笔收入%2$s</string>
+
+    <!-- REAL ESTATE -->
+    <string name="realestate_options_menu_cd">选项</string>
+    <string name="realestate_edit_label">编辑</string>
+    <string name="realestate_update_value">更新价值</string>
+    <string name="realestate_change_rental_status">更改出租状态</string>
+    <string name="realestate_sell_property">出售房产</string>
+    <string name="realestate_archive_label">归档</string>
+    <string name="realestate_value_label">价值</string>
+    <string name="realestate_update_label">更新</string>
+    <string name="realestate_estimated_value_label">估算价值</string>
+    <string name="realestate_purchase_value_label">购买价值</string>
+    <string name="realestate_ownership_percent_label">所有权占比 %%</string>
+    <string name="realestate_sale_price_label">售价</string>
+    <string name="realestate_capital_gain_label">已实现收益</string>
+    <string name="realestate_effective_value_label">有效价值</string>
+    <string name="realestate_sold_badge">已售</string>
+    <string name="realestate_rented_badge">已租</string>
+    <string name="realestate_vacant_badge">空置</string>
+    <string name="realestate_own_use_badge">自用</string>
+    <string name="realestate_sale_date_label">出售日期</string>
+    <string name="realestate_purchase_expenses">购买费用</string>
+    <string name="realestate_sale_expenses">出售费用</string>
+    <string name="realestate_expense_default">费用</string>
+    <string name="realestate_view_label">查看</string>
+    <string name="realestate_loan_label">贷款</string>
+    <string name="realestate_lender_label">机构</string>
+    <string name="realestate_pending_capital_label">剩余本金</string>
+    <string name="realestate_monthly_payment_label">月供</string>
+    <string name="realestate_no_mortgage">无关联抵押贷款</string>
+    <string name="realestate_mortgage_hint">关联抵押贷款以获得准确的净资产计算。</string>
+    <string name="realestate_archive_confirm_title">归档房产</string>
+    <string name="realestate_archive_confirm_msg">确定要归档此房产吗？\n它将从净资产页面中隐藏。</string>
+
+    <!-- ANNUAL -->
+    <string name="annual_no_data_title">本年无数据</string>
+    <string name="annual_no_data_subtitle">添加交易以查看摘要</string>
+    <string name="annual_income_label">收入</string>
+    <string name="annual_expenses_label">支出</string>
+    <string name="annual_savings_label">储蓄</string>
+    <string name="annual_expense_categories_title">支出类别</string>
+    <string name="annual_income_types_title">收入类型</string>
+    <string name="annual_no_data_text">无数据</string>
+    <string name="annual_no_movements">尚无登记的交易</string>
+    <string name="annual_new_badge">新</string>
+    <string name="annual_income_legend">收入</string>
+    <string name="annual_expense_legend">支出</string>
+
+    <!-- PORTFOLIO - Add/Edit Asset (missing) -->
+    <string name="portfolio_add_asset_desc">定义资产概况以及您进行交易的平台。</string>
+    <string name="portfolio_add_asset_portfolio_label">投资组合</string>
+    <string name="portfolio_add_asset_no_portfolio">无投资组合</string>
+    <string name="portfolio_add_asset_ticker_placeholder">例如 AAPL, BTC, IAG.MC</string>
+    <string name="portfolio_add_asset_ticker_required">必填</string>
+    <string name="portfolio_add_asset_name_placeholder">例如 Apple Inc., Bitcoin</string>
+    <string name="portfolio_add_asset_composition_label">固收/权益构成</string>
+    <string name="portfolio_add_asset_composition_hint">固收：%1$d%% 权益：</string>
+    <string name="portfolio_add_asset_market_price_label">市场价格</string>
+    <string name="portfolio_add_asset_fi_price_hint">固收资产不使用市场价格。请使用固定收益头寸系统登记此类资产。</string>
+    <string name="portfolio_add_asset_price_optional">当前价格（可选）</string>
+    <string name="portfolio_add_asset_price_placeholder_val">0.00</string>
+    <string name="portfolio_add_asset_price_desc">用于计算当前价值和增值。</string>
+    <string name="portfolio_add_asset_platforms_label">交易此资产的平台</string>
+    <string name="portfolio_add_asset_platforms_hint">选择您买入或卖出此资产的所有平台。</string>
+    <string name="portfolio_add_asset_no_platforms_hint">请先在资产设置中创建平台以进行关联。</string>
+    <string name="portfolio_add_asset_sectors_label">行业</string>
+    <string name="portfolio_add_asset_sectors_hint">将资产归入一个或多个行业。</string>
+    <string name="portfolio_add_asset_regions_label">地区分布</string>
+    <string name="portfolio_add_asset_regions_hint">按地区分配投资占比（可选）</string>
+    <string name="portfolio_add_asset_regions_total">总计：%1$d%%（必须 ≤ 100%%）</string>
+    <string name="portfolio_add_asset_maturity_date_label">到期日期</string>
+    <string name="portfolio_add_asset_maturity_hint">点击选择到期日期。</string>
+    <string name="portfolio_add_asset_notes_optional">备注（可选）</string>
+    <string name="portfolio_add_asset_save_changes">保存更改</string>
+    <string name="portfolio_add_asset_create">创建资产</string>
+    <string name="portfolio_add_asset_cancel">取消</string>
+
+    <!-- PORTFOLIO - Category Detail -->
+    <string name="portfolio_category_title">类别</string>
+    <string name="portfolio_category_assets_section">资产</string>
+    <string name="portfolio_category_new_asset">+ 新建</string>
+    <string name="portfolio_category_empty">此类别中无资产</string>
+    <string name="portfolio_category_fixed_income_section">固定收益</string>
+    <string name="portfolio_category_platforms_section">平台</string>
+    <string name="portfolio_category_no_platforms">无关联平台</string>
+    <string name="portfolio_category_add_platform">+ 添加平台</string>
+    <string name="portfolio_category_archived_section">已归档</string>
+    <string name="portfolio_category_archive_title">归档资产</string>
+    <string name="portfolio_category_archive_message">«%1$s（%2$s）»将被归档。其交易和盈亏历史将被保留。</string>
+    <string name="portfolio_category_archive_confirm">归档</string>
+    <string name="portfolio_category_restore">恢复</string>
+    <string name="portfolio_category_edit_cd">编辑</string>
+    <string name="portfolio_category_archive_cd">归档</string>
+
+    <!-- PORTFOLIO - Add Transaction -->
+    <string name="portfolio_add_tx_title_new">新交易</string>
+    <string name="portfolio_add_tx_new">登记交易</string>
+    <string name="portfolio_add_tx_save_changes">保存更改</string>
+    <string name="portfolio_add_tx_type_buy">买入</string>
+    <string name="portfolio_add_tx_type_sell">卖出</string>
+    <string name="portfolio_add_tx_category_filter">类别</string>
+    <string name="portfolio_add_tx_category_all">全部</string>
+    <string name="portfolio_add_tx_no_assets_category">此类别中无资产</string>
+    <string name="portfolio_add_tx_no_assets_hint">您还没有任何资产。请先在设置 › 投资组合 › 资产中创建。</string>
+    <string name="portfolio_add_tx_platform_label">平台</string>
+    <string name="portfolio_add_tx_platform_select_hint">选择您持有份额的平台</string>
+    <string name="portfolio_add_tx_no_platforms_hint">尚未创建平台。请前往设置 › 投资组合 › 平台创建一个。</string>
+    <string name="portfolio_add_tx_platform_not_assigned">此资产未分配平台。请从设置中关联一个。</string>
+    <string name="portfolio_add_tx_qty_label">数量</string>
+    <string name="portfolio_add_tx_price_label">单价</string>
+    <string name="portfolio_add_tx_available">可用：%1$s 份额%2$s 在该日期</string>
+    <string name="portfolio_add_tx_only_available">您在该日期只有 %1$s 份额可用%2$s</string>
+    <string name="portfolio_add_tx_date_label">日期</string>
+    <string name="portfolio_add_tx_fee_label">佣金（可选）</string>
+    <string name="portfolio_add_tx_fee_hint">参考信息。不计入盈亏计算。</string>
+    <string name="portfolio_add_tx_notes_label">备注（可选）</string>
+    <string name="portfolio_add_tx_platform_label_inline">在 %1$s</string>
+    <string name="portfolio_add_tx_units_label">份</string>
+    <string name="portfolio_add_tx_no_units_badge">无份额</string>
+    <string name="portfolio_add_tx_accept">确认</string>
+    <string name="portfolio_add_tx_cancel">取消</string>
+
+    <!-- PORTFOLIO - Transfer Fund -->
+    <string name="portfolio_transfer_desc">税务中性的转移。成本基础将转移至目标基金。</string>
+    <string name="portfolio_transfer_source_label">来源基金</string>
+    <string name="portfolio_transfer_dest_label">目标基金</string>
+    <string name="portfolio_transfer_no_destinations">此账户中无可转移的其他基金。请先在设置 › 投资组合中创建目标基金。</string>
+    <string name="portfolio_transfer_qty_label">转移份额</string>
+    <string name="portfolio_transfer_available">可用：%1$s 份额 在该日期</string>
+    <string name="portfolio_transfer_only_available">您在该日期只有 %1$s 份额可用</string>
+    <string name="portfolio_transfer_vl_label">目标基金净值（每份价格）</string>
+    <string name="portfolio_transfer_date_label">转移日期</string>
+    <string name="portfolio_transfer_source_platform">来源平台</string>
+    <string name="portfolio_transfer_dest_platform">目标平台</string>
+    <string name="portfolio_transfer_no_platforms">无可用平台。</string>
+    <string name="portfolio_transfer_confirm_btn">确认转移</string>
+
+    <!-- =====================================================================
+         VERSION – Update
+         ===================================================================== -->
+    <string name="version_update_available">版本 %1$s 可用</string>
+    <string name="version_block_title">需要更新</string>
+    <string name="version_update_now">立即更新</string>
+
+    <!-- FIXED INCOME - Create/Edit -->
+    <string name="fixedincome_create_position">创建头寸</string>
+    <string name="fixedincome_save_changes">保存更改</string>
+    <string name="fixedincome_duration_label">期限（月）</string>
+    <string name="fixedincome_duration_title">期限</string>
+    <string name="fixedincome_years_label">年</string>
+    <string name="fixedincome_months_label">月</string>
+    <string name="fixedincome_entity_financial_label">金融机构</string>
+    <string name="fixedincome_issuer_state_label">发行人（国家）</string>
+    <string name="fixedincome_issuer_entity_label">发行人（国家/企业）</string>
+    <string name="fixedincome_new_issuer">新发行人</string>
+    <string name="fixedincome_no_issuers_hint">无发行人。请新建一个。</string>
+    <string name="fixedincome_issuer_name_label">名称</string>
+    <string name="fixedincome_icon_label">图标</string>
+    <string name="fixedincome_create_issuer">创建</string>
+    <string name="fixedincome_capital_label">本金（€）</string>
+    <string name="fixedincome_capital_invested_label">投入资本（€）</string>
+    <string name="fixedincome_nominal_value_label">面值（€）</string>
+    <string name="fixedincome_nominal_hint">面值是债券的票面价值（利息和摊销计算的基础）</string>
+    <string name="fixedincome_fee_notes_label">佣金备注（可选）</string>
+    <string name="fixedincome_select_date_cd">选择日期</string>
+    <string name="fixedincome_auto_calculated">自动计算</string>
+    <string name="fixedincome_region_title">地区</string>
+    <string name="fixedincome_sector_title">行业</string>
+    <string name="fixedincome_start_date_label">开始日期</string>
+    <string name="fixedincome_maturity_date_label">到期日期</string>
+    <string name="fixedincome_auto_renew_label">到期自动续存</string>
+    <string name="fixedincome_duration_guide">%1$s 的通常期限：%2$d - %3$d 个月</string>
+
+    <!-- REAL ESTATE - AddEditProperty -->
+    <string name="realestate_name_placeholder">例如 我的房子</string>
+    <string name="realestate_address_placeholder">例如 马德里主街123号</string>
+    <string name="realestate_purchase_price_label">购买价格（€）</string>
+    <string name="realestate_current_value_label">当前价值（€）</string>
+    <string name="realestate_acquisition_date_label">购买日期</string>
+    <string name="realestate_ownership_label">所有权占比 %</string>
+    <string name="realestate_rental_status_label">出租状态</string>
+    <string name="realestate_monthly_rent_label">月租金（€）</string>
+    <string name="realestate_change_mortgage">更改抵押贷款</string>
+    <string name="realestate_link_mortgage">关联抵押贷款</string>
+    <string name="realestate_purchase_expenses_title">购买费用</string>
+    <string name="realestate_add_expense">添加</string>
+    <string name="realestate_no_expenses">无购买费用。点击"添加"以计入公证费、税费、评估费等。</string>
+    <string name="realestate_total_expenses_format">费用总计：%1$s</string>
+    <string name="realestate_save_changes">保存更改</string>
+    <string name="realestate_add_property">添加房产</string>
+    <string name="realestate_new_title">新房产</string>
+
+    <!-- REAL ESTATE - SellProperty -->
+    <string name="realestate_sale_price_hint">例如 275000</string>
+    <string name="realestate_sale_date_title">出售日期</string>
+    <string name="realestate_sale_expenses_title_alt">出售费用</string>
+    <string name="realestate_add_sale_expense">添加费用</string>
+    <string name="realestate_no_sale_expenses">您尚未添加任何出售费用（佣金、资本利得税、公证费…）</string>
+    <string name="realestate_sale_summary">摘要</string>
+    <string name="realestate_sale_price_short">售价</string>
+    <string name="realestate_sale_expenses_short">出售费用</string>
+    <string name="realestate_net_proceeds">净收益</string>
+    <string name="realestate_confirm_sale">确认出售</string>
+
+    <!-- LOAN -->
+    <string name="loan_new_title">新贷款</string>
+    <string name="loan_save">保存</string>
+    <string name="loan_name_placeholder">例如 我的房屋抵押贷款</string>
+    <string name="loan_lender_placeholder">例如 桑坦德银行</string>
+    <string name="loan_principal_placeholder">例如 150000</string>
+    <string name="loan_interest_placeholder">例如 3.5</string>
+    <string name="loan_term_placeholder">例如 360</string>
+    <string name="loan_interest_only">仅付利息</string>
+    <string name="loan_interest_only_hint">仅付利息：不摊销本金</string>
+
+    <!-- PREMIUM -->
+    <string name="premium_trackfolio_title">Trackfolio Premium</string>
+    <string name="premium_already_premium_subtitle">您已是 Premium 用户</string>
+    <string name="premium_features_title">Premium 功能</string>
+    <string name="premium_multiple_accounts">多账户</string>
+    <string name="premium_fiscal_report">税务报告</string>
+    <string name="premium_backup">备份</string>
+    <string name="premium_priority_support">优先支持</string>
+    <string name="premium_coming_soon">即将推出</string>
+    <string name="premium_already_purchased">您已购买 Premium。感谢您的支持！</string>
+    <string name="premium_purchase_error">处理购买时出错</string>
+    <string name="premium_restore_error">恢复购买时出错</string>
+    <string name="premium_restoring">正在恢复购买…</string>
+
+    <!-- PORTFOLIO - Dividends -->
+    <string name="portfolio_dividend_save">保存股息</string>
+
+    <!-- ONBOARDING -->
+    <string name="onboarding_welcome_title_alt">欢迎使用 N3to</string>
+    <string name="onboarding_welcome_desc">您的财务，尽在掌握</string>
+    <string name="onboarding_patrimonio_title">您的净资产，清晰明了</string>
+    <string name="onboarding_patrimonio_desc">实时查看您的净资产、资产和负债</string>
+    <string name="onboarding_portfolio_desc">股票、ETF、基金和固收，尽在一处</string>
+    <string name="onboarding_movements_desc">按类别组织的收入、支出和投资</string>
+    <string name="onboarding_fiscal_desc">自动税务报告，按收入类型细分</string>
+    <string name="onboarding_realestate_desc">管理房产、出租和抵押贷款</string>
+
+    <!-- FIXED INCOME - RegisterCoupon -->
+    <string name="fixedincome_coupon_amount_label">总额（€）</string>
+    <string name="fixedincome_irpf_percent_label">预扣税率（%）</string>
+    <string name="fixedincome_commission_field">佣金（€）</string>
+    <string name="fixedincome_register_coupon_btn">登记</string>
+
+    <!-- FIXED INCOME - Close -->
+    <string name="fixedincome_close_maturity">到期清算</string>
+    <string name="fixedincome_close_early">提前终止</string>
+    <string name="fixedincome_close_secondary">二级市场出售</string>
+    <string name="fixedincome_close_date">关闭日期</string>
+    <string name="fixedincome_close_notes">备注</string>
+    <string name="fixedincome_close_confirm_btn">确认关闭</string>
+
+    <!-- PORTFOLIO - Update price -->
+    <string name="portfolio_update_price_current">当前价格</string>
+    <string name="portfolio_update_price_date">日期</string>
+
+    <!-- COMMON add missing -->
+    <string name="common_add">添加</string>
+    <string name="common_create">创建</string>
+    <string name="common_name">名称</string>
+    <string name="common_save_changes">保存更改</string>
+    <string name="common_confirm">确认</string>
+    <string name="common_retry">重试</string>
+    <string name="common_restore">恢复</string>
+    <string name="common_no_data">无数据</string>
+
+    <!-- PREMIUM - missing -->
+    <string name="premium_multiple_accounts_desc">无限制管理所有账户</string>
+    <string name="premium_ad_free_desc">无广告打扰，畅享应用</string>
+    <string name="premium_themes_desc">使用浅色和深色主题自定义应用</string>
+    <string name="premium_welcome">欢迎使用 Trackfolio Premium！</string>
+    <string name="premium_error_format">错误：%1$s</string>
+    <string name="premium_restore_error_format">恢复错误：%1$s</string>
+    <string name="premium_restore_cd">恢复购买</string>
+    <string name="premium_best_value">最佳性价比</string>
+    <string name="premium_monthly_label">月度</string>
+    <string name="premium_annual_label">年度</string>
+    <string name="premium_lifetime_label">终身</string>
+    <string name="premium_lifetime_value">终身访问</string>
+    <string name="premium_back_cd">返回</string>
+
+    <!-- PORTFOLIO - Update price -->
+    <string name="portfolio_update_previous_price">此前价格：%1$s</string>
+    <string name="portfolio_update_no_price">此资产尚未登记价格</string>
+    <string name="portfolio_update_save_hint">将以当前日期和时间记录。</string>
+    <string name="portfolio_update_save">保存价格</string>
+    <string name="portfolio_update_cancel">取消</string>
+
+    <!-- FIXED INCOME - Coupon registration -->
+    <string name="fixedincome_coupon_register_title">登记利息/票息</string>
+    <string name="fixedincome_net_amount_est">预估净额</string>
+    <string name="fixedincome_register_coupon_btn_alt">登记付款</string>
+    <string name="fixedincome_close_title">清算头寸</string>
+    <string name="fixedincome_close_type_label">关闭类型</string>
+    <string name="fixedincome_close_maturity_type">到期</string>
+    <string name="fixedincome_close_secondary_type">二级市场出售</string>
+    <string name="fixedincome_close_early_type">提前终止</string>
+    <string name="fixedincome_gross_received_label">已收总额（€）</string>
+    <string name="fixedincome_irpf_label">预扣税率（%）</string>
+    <string name="fixedincome_commission_eur_label">佣金（€）</string>
+    <string name="fixedincome_net_amount_label">净额</string>
+    <string name="fixedincome_confirm_close">确认结算</string>
+
+    <!-- PORTFOLIO - Dividend -->
+    <string name="portfolio_dividend_title_alt">股息</string>
+    <string name="portfolio_dividend_asset_label">资产</string>
+    <string name="portfolio_dividend_gross_hint">输入总额</string>
+    <string name="portfolio_dividend_gross_label">总额</string>
+    <string name="portfolio_dividend_withholding_label">税务预扣</string>
+    <string name="portfolio_dividend_gross_short">毛额</string>
+    <string name="portfolio_dividend_withholding_short">预扣</string>
+    <string name="portfolio_dividend_net_short">净额</string>
+    <string name="portfolio_dividend_select_asset_error">请选择资产</string>
+    <string name="portfolio_dividend_valid_amount_error">请输入有效的总额</string>
+    <string name="portfolio_dividend_register">登记股息</string>
+
+    <!-- LOW PRIORITY - remaining strings -->
+    <string name="realestate_change_rental_title">更改出租状态</string>
+    <string name="realestate_change_rental_date">更改日期</string>
+    <string name="realestate_rent_amount">租金金额</string>
+    <string name="realestate_update_value_title">更新价值</string>
+    <string name="realestate_new_value">新估算价值</string>
+    <string name="portfolio_platform_create_title">新平台</string>
+    <string name="portfolio_platform_edit_title">编辑平台</string>
+    <string name="portfolio_platform_name_label">名称</string>
+    <string name="portfolio_platform_icon_label">图标</string>
+    <string name="portfolio_platform_notes_label">备注</string>
+    <string name="portfolio_platform_save">保存</string>
+    <string name="portfolio_platform_cancel">取消</string>
+    <string name="portfolio_sector_new">新行业</string>
+    <string name="portfolio_sector_name">行业名称</string>
+    <string name="portfolio_region_new">新地区</string>
+    <string name="portfolio_region_name">地区名称</string>
+    <string name="portfolio_asset_detail_title_alt">资产详情</string>
+    <string name="portfolio_asset_history_title">资产历史</string>
+    <string name="portfolio_edit_portfolio_title_alt">编辑投资组合</string>
+    <string name="portfolio_portfolio_name">名称</string>
+    <string name="portfolio_portfolio_desc">描述</string>
+    <string name="portfolio_save">保存</string>
+    <string name="portfolio_compound_effect_title_alt">复利效应</string>
+    <string name="version_block_title_alt">需要更新</string>
+    <string name="version_block_message_alt">您需要更新 N3to 才能继续使用</string>
+    <string name="version_update_btn">立即更新</string>
+    <string name="splash_loading">加载中…</string>
+    <string name="onboarding_efectivo_total">总现金</string>
+    <string name="onboarding_disponible_deudas">考虑债务后的可用资金</string>
+    <string name="onboarding_seccion_patrimonio">板块 · 净资产</string>
+
+    <!-- FASE 4 - Domain Enums resourceKey -->
+    <string name="income_type_salary">工资</string>
+    <string name="income_type_freelance">自由职业</string>
+    <string name="income_type_bank_interest">银行利息</string>
+    <string name="income_type_bond_deposit">债券或存款</string>
+    <string name="income_type_dividend">股息</string>
+    <string name="income_type_bonus_prize">工作奖金</string>
+    <string name="income_type_prize_lottery">奖金/彩票</string>
+    <string name="income_type_rental_income">租金收入</string>
+    <string name="income_type_exempt_income">免税收入</string>
+    <string name="loan_type_mortgage">抵押贷款</string>
+    <string name="loan_type_car">汽车贷款</string>
+    <string name="loan_type_student">学生贷款</string>
+    <string name="loan_type_personal">个人贷款</string>
+    <string name="loan_type_other">其他</string>
+    <string name="fixedincome_type_bill">国库券</string>
+    <string name="fixedincome_type_bond">政府债券</string>
+    <string name="fixedincome_type_government_obligation">政府债务</string>
+    <string name="fixedincome_type_corporate_bond">公司债券</string>
+    <string name="fixedincome_type_deposit">定期存款</string>
+    <string name="fixedincome_event_acquisition">购买</string>
+    <string name="fixedincome_event_coupon">票息/定期利息</string>
+    <string name="fixedincome_event_maturity_settlement">到期结算</string>
+    <string name="fixedincome_event_secondary_sale">二级市场出售</string>
+    <string name="fixedincome_event_early_cancellation">提前终止</string>
+    <string name="fixedincome_event_partial_amortization">部分摊销</string>
+    <string name="interest_frequency_at_maturity">到期付息</string>
+    <string name="interest_frequency_monthly">每月</string>
+    <string name="interest_frequency_quarterly">每季</string>
+    <string name="interest_frequency_semiannual">每半年</string>
+    <string name="interest_frequency_annual">每年</string>
+    <string name="property_type_primary_home">主要住所</string>
+    <string name="property_type_secondary_home">次要住所</string>
+    <string name="property_type_investment">投资</string>
+    <string name="rental_status_own_use">自用</string>
+    <string name="rental_status_rented">已出租</string>
+    <string name="rental_status_vacant">空置</string>
+    <string name="issuer_type_employer">公司/客户</string>
+    <string name="issuer_type_bank">银行机构</string>
+    <string name="issuer_type_bond_issuer">债券/存款发行人</string>
+    <string name="issuer_type_dividend_source">股票</string>
+    <string name="issuer_type_promotion_platform">平台/竞赛</string>
+    <string name="issuer_type_exempt_source">收入来源</string>
+    <string name="fixedincome_category_government">政府债务</string>
+    <string name="fixedincome_category_corporate">公司债务</string>
+    <string name="fixedincome_category_deposit">存款</string>
+
+    <!-- FASE 4 - ViewModel error messages -->
+    <string name="error_category_already_exists">同名类别已存在</string>
+    <string name="error_issuer_already_exists">同名发行人已存在</string>
+    <string name="error_platform_already_exists">同名平台已存在</string>
+    <string name="error_asset_not_found">未找到资产</string>
+    <string name="error_asset_ticker_required">代码和名称均为必填</string>
+    <string name="error_account_required">请先选择账户</string>
+    <string name="error_position_not_found">未找到头寸</string>
+    <string name="error_fi_no_buy_sell">固定收益资产不支持买入/卖出交易</string>
+    <string name="error_price_history_save">保存价格历史时出错：%1$s</string>
+    <string name="error_category_already_exists_alt">同名类别已存在</string>
+    <string name="error_asset_already_exists">代码为 %1$s 的资产已存在于该账户中</string>
+    <string name="error_cannot_archive_with_open_positions">无法归档«%1$s»，因其持有未平仓头寸。请先平仓或转移头寸。</string>
+    <string name="error_cannot_archive_with_open_positions_qty">无法归档«%1$s»，因其持有未平仓头寸（%2$s 份）。请先平仓或转移头寸。</string>
+    <string name="error_fi_create_position">创建固定收益头寸时出错</string>
+    <string name="error_coupon_register">登记票息时出错</string>
+    <string name="error_no_account_selected">未选择账户</string>
+    <string name="error_load_data">加载数据时出错</string>
+    <string name="error_cannot_archive_asset">无法归档«%1$s»，因其持有未平仓头寸。请先平仓或转移头寸。</string>
+    <string name="error_fiscal_load">加载数据时出错</string>
+    <string name="error_reconciliation">对账时出错</string>
+    <string name="error_goal_settings">保存目标设置时出错</string>
+    <string name="error_emergency_fund_settings">保存应急基金设置时出错</string>
+    <string name="error_transaction_detail">加载交易详情时出错</string>
+    <string name="error_networth_load">加载净资产时出错</string>
+    <string name="error_add_transaction">无法计算净额</string>
+
+    <!-- =====================================================================
+         FEEDBACK – Feedback form
+         ===================================================================== -->
+    <string name="settings_feedback">发送反馈</string>
+    <string name="feedback_title">发送反馈</string>
+    <string name="feedback_subtitle">您的想法帮助我们改进 N3to。此提交是匿名的。</string>
+    <string name="feedback_category_label">反馈类别</string>
+    <string name="feedback_category_new_feature">新功能</string>
+    <string name="feedback_category_improvement">改进建议</string>
+    <string name="feedback_category_bug">报告问题</string>
+    <string name="feedback_category_other">其他</string>
+    <string name="feedback_title_field">标题</string>
+    <string name="feedback_title_placeholder">用几句话概括您的想法</string>
+    <string name="feedback_description_field">描述</string>
+    <string name="feedback_description_placeholder">详细说明您的建议…</string>
+    <string name="feedback_send_button">发送反馈</string>
+    <string name="feedback_sending">发送中…</string>
+    <string name="feedback_success">感谢！您的反馈已成功发送。</string>
+    <string name="feedback_error_empty">请填写标题和描述。</string>
+    <string name="feedback_error_network">连接错误。请检查您的网络连接。</string>
+    <string name="feedback_disclaimer_title">关于隐私</string>
+    <string name="feedback_disclaimer_text">请不要在消息中包含个人数据（姓名、邮箱、电话）。反馈通过 Firebase 匿名发送。</string>
+
+    <!-- FEEDBACK – Data collected (Privacy) -->
+    <string name="privacy_data_feedback">反馈和建议</string>
+
+    <!-- REAL ESTATE – Explanation separation vs. portfolio -->
+    <string name="realestate_why_separate">不动产单独管理是因为其有独立的指标：租金收益率、关联抵押贷款以及不同的税务影响。</string>
+
+    <!-- PREMIUM – Feature descriptions -->
+    <string name="premium_fiscal_report_desc">生成年度资本利得和预扣税报告</string>
+    <string name="premium_backup_desc">保存和恢复所有数据的本地备份</string>
+
+    <!-- COMMON - missing -->
+    <string name="common_total">总计</string>
+    <string name="common_help_cd">帮助</string>
+    <string name="common_understood">知道了</string>
+    <string name="common_edit">编辑</string>
+    <string name="common_active_badge">活跃</string>
+    <string name="common_none">无</string>
+    <string name="common_dismiss">忽略</string>
+    <string name="common_completed_cd">已完成</string>
+    <string name="common_note_placeholder">备注</string>
+    <string name="common_insufficient_data">数据不足</string>
+    <string name="common_amount_label">金额</string>
+    <string name="common_date_label">日期</string>
+    <string name="common_category_label">类别</string>
+    <string name="common_description_label">描述</string>
+
+    <!-- ACCOUNT - missing -->
+    <string name="account_active_badge">活跃</string>
+    <string name="account_balance_short">当前余额</string>
+    <string name="account_name_supporting_text">应用中显示的名称。例如：活期账户、现金、Degiro…</string>
+    <string name="account_initial_balance_label">初始余额</string>
+    <string name="account_initial_balance_valid_hint">请输入有效金额（可以为0）</string>
+    <string name="account_initial_balance_desc">您今日在此账户中已有的资金。若无余额请设为0。</string>
+    <string name="account_delete_full_message">删除«%1$s»？此操作也将删除其所有交易、资产和相关数据。</string>
+    <string name="account_set_balance_btn">设置余额</string>
+    <string name="account_set_balance_title">初始余额</string>
+    <string name="account_set_balance_desc">请输入此账户的当前余额。\n这是登记交易前必须完成的步骤。</string>
+    <string name="account_set_balance_hint">账户为空时可设为0。</string>
+
+    <!-- ANNUAL - missing -->
+    <string name="annual_investment_monthly_format">月度投资 %1$s</string>
+    <string name="annual_no_investments">本年无投资</string>
+    <string name="annual_income_by_source">按来源的收入</string>
+
+    <!-- TRANSACTION - missing -->
+    <string name="transaction_delete_title">删除交易</string>
+    <string name="transaction_delete_message">确定要删除此交易吗？\n此操作不可撤销。</string>
+    <string name="transaction_income_type_label">收入类型</string>
+    <string name="transaction_note_placeholder">添加备注…</string>
+    <string name="transaction_mode_fiscal">税务模式</string>
+    <string name="transaction_mode_net_only">仅净额</string>
+    <string name="transaction_net_amount_label">净额</string>
+    <string name="transaction_net_estimated">预估净额</string>
+    <string name="transaction_detail_account_label">账户</string>
+    <string name="transaction_detail_notes_label">备注</string>
+    <string name="transaction_detail_issuer_label">发行人</string>
+    <string name="transaction_detail_edit_cd">编辑</string>
+    <string name="transaction_detail_delete_cd">删除</string>
+
+    <!-- BUDGET - missing -->
+    <string name="budget_no_income">本年无收入</string>
+    <string name="budget_remaining_format">剩余 %1$s</string>
+    <string name="budget_limit_exceeded">超出预算！</string>
+    <string name="budget_empty_title">无预算</string>
+    <string name="budget_empty_subtitle">按类别设定支出限额\n以更好地管理财务</string>
+    <string name="home_section_budgets">预算</string>
+
+    <!-- CATEGORY - missing -->
+    <string name="category_create_cd">创建类别</string>
+    <string name="category_help_title">如何组织类别</string>
+    <string name="category_help_text">将同类型支出分组。例如：</string>
+    <string name="category_help_examples">• 居家 → 房租、房贷、水电\n• 休闲 → 餐厅、电影、旅行\n• 健康 → 药品、医生、健身</string>
+    <string name="category_name_placeholder">类别名称</string>
+    <string name="category_remove_limit">移除限额</string>
+
+    <!-- HELP - missing -->
+    <string name="help_account_title">什么是账户？</string>
+    <string name="help_tax_profile_title">什么是税务档案？</string>
+    <string name="help_tax_system_title">税务系统</string>
+    <string name="help_goals_title">月度目标</string>
+    <string name="help_customize_months_title">自定义月份</string>
+    <string name="help_asset_types_title">资产类型</string>
+    <string name="help_asset_help_cd">资产类型帮助</string>
+
+    <!-- PORTFOLIO - missing -->
+    <string name="portfolio_update_prices_hint">更新价格以查看走势</string>
+    <string name="portfolio_asset_no_price_registered">未登记价格</string>
+    <string name="portfolio_asset_new_price_placeholder">新价格</string>
+    <string name="portfolio_update_bulk_title">更新价格</string>
+    <string name="portfolio_update_bulk_progress">已更新 %1$d/%2$d</string>
+    <string name="portfolio_distribution_subtitle">按当前价值</string>
+    <string name="portfolio_closed_badge">已关闭</string>
+    <string name="portfolio_no_portfolios_title">无投资组合</string>
+    <string name="portfolio_no_portfolios_subtitle">从设置中创建投资组合\n以开始组织您的投资</string>
+    <string name="portfolio_no_positions_select">暂无头寸。\n请选择投资组合并使用 +\n添加您的第一笔投资</string>
+    <string name="portfolio_no_positions_wallet">此投资组合尚无交易。\n按 + 添加您的第一笔投资</string>
+    <string name="portfolio_compound_no_effect">复利效应会在您的投资组合\n为正收益时激活。坚持投资！</string>
+    <string name="portfolio_compound_low_effect">尚无显著复利效应。\n请长期持有。</string>
+
+    <!-- PRICE UPDATE - missing -->
+    <string name="price_update_bulk_title">更新价格</string>
+
+    <!-- BACKUP - missing -->
+    <string name="backup_reminder_dialog_title">备份提醒</string>
+    <string name="backup_reminder_dialog_message">希望我们何时再次提醒您？</string>
+    <string name="backup_reminder_dialog_hint">要关闭此提醒，请前往设置 › 提醒。</string>
+
+    <!-- DEBT - missing -->
+    <string name="debt_person_placeholder">名称或昵称</string>
+    <string name="debt_note_optional">备注（可选）</string>
+    <string name="debt_note_placeholder">例如 周五晚餐</string>
+    <string name="debt_mark_paid_confirm">是的，已还</string>
+    <string name="debt_empty_subtitle">按"新债务"登记\n一笔待还债务</string>
+    <string name="debt_edit_label">编辑</string>
+
+    <!-- EXPENSE SETTINGS - missing -->
+    <string name="expense_categories_section">类别</string>
+    <string name="expense_no_categories">无支出类别</string>
+
+    <!-- INCOME SETTINGS - missing -->
+    <string name="income_types_section">收入类型</string>
+    <string name="income_type_archive_title">归档发行人</string>
+    <string name="issuer_name_placeholder">发行人名称</string>
+
+    <!-- GOAL SETTINGS - missing -->
+    <string name="goal_settings_title">月度目标</string>
+    <string name="goal_savings_base_label">基本月度储蓄</string>
+    <string name="goal_savings_placeholder">例如 500</string>
+    <string name="goal_investment_base_label">基本月度投资</string>
+    <string name="goal_investment_placeholder">例如 300</string>
+    <string name="goal_base_placeholder">基数</string>
+    <string name="goal_saved_message">目标已保存</string>
+    <string name="goal_onboarding_badge">财务规划</string>
+    <string name="goal_onboarding_subtitle">设定每月储蓄和投资目标。设定年度基数，并对有额外收支的月份进行调整。</string>
+
+    <!-- EMERGENCY FUND SETTINGS - missing -->
+    <string name="ef_months_hint">设定应急基金需要覆盖多少个月的支出。</string>
+    <string name="ef_months_placeholder">例如 6</string>
+    <string name="ef_estimated_expense_label">预估支出</string>
+    <string name="ef_average_expense_label">平均支出</string>
+    <string name="ef_expense_placeholder">例如 1500</string>
+    <string name="ef_exclude_categories_hint">选择要从月度支出计算中排除的类别。</string>
+    <string name="ef_no_categories">无可用支出类别。请在设置 › 支出中创建。</string>
+    <string name="ef_what_is_title">什么是应急基金？</string>
+    <string name="ef_what_is_text">应对紧急情况的现金储备，避免负债：失业、医疗支出或紧急维修。</string>
+    <string name="ef_recommendation_title">建议金额</string>
+    <string name="ef_recommendation_text">• 稳定工作：3–6个月\n• 自雇或有家属：6–12个月</string>
+    <string name="ef_onboarding_badge">财务保障</string>
+    <string name="ef_onboarding_title">应急基金</string>
+    <string name="ef_onboarding_subtitle">设定您需要的覆盖月数。</string>
+    <string name="ef_saved_message">应急基金已保存</string>
+
+    <!-- TAX PROFILE SETTINGS - missing -->
+    <string name="tax_profile_title">税务档案</string>
+    <string name="tax_profile_add_cd">添加档案</string>
+    <string name="tax_profile_empty_title">无税务档案</string>
+    <string name="tax_profile_empty_subtitle">使用 + 按钮添加一个</string>
+    <string name="tax_profile_history_section">档案历史</string>
+    <string name="tax_profile_history_hint">最新的档案（按起始日期）将应用于当前税务计算。每个使用的税务系统可有一个档案。</string>
+    <string name="tax_profile_delete_title">删除档案</string>
+    <string name="tax_profile_new_title">新税务档案</string>
+    <string name="tax_profile_country_label">国家/税务系统</string>
+    <string name="tax_profile_valid_from_label">生效日期</string>
+    <string name="tax_profile_delete_cd">删除</string>
+
+    <!-- ACCOUNT CONFIG SETTINGS - missing -->
+    <string name="settings_account_section_categories">类别</string>
+    <string name="settings_expense_categories_label">支出类别</string>
+    <string name="settings_income_types_label">收入类型</string>
+    <string name="settings_account_section_fiscal">税务</string>
+    <string name="settings_tax_profile_label">税务档案</string>
+    <string name="settings_account_section_planning">规划</string>
+    <string name="settings_monthly_goals_label">月度目标</string>
+    <string name="settings_account_section_maintenance">维护</string>
+    <string name="settings_edit_account_label">编辑账户</string>
+    <string name="settings_delete_account_label">删除账户</string>
+
+    <!-- ABOUT SCREEN - missing -->
+    <string name="about_title">关于</string>
+    <string name="about_section_app">应用</string>
+    <string name="about_version_label">版本</string>
+    <string name="about_revenuecat_id_label">RevenueCat ID</string>
+    <string name="about_section_dev">开发</string>
+    <string name="about_developer_label">开发者</string>
+    <string name="about_developer_value">AviferDev</string>
+    <string name="about_license_label">许可</string>
+    <string name="about_license_value">专有</string>
+    <string name="about_contact_label">联系方式</string>
+    <string name="about_section_rate">喜欢 N3to？</string>
+    <string name="about_rate_app_label">评分应用</string>
+    <string name="about_share_app_label">分享应用</string>
+    <string name="about_tagline">管理您的个人财务</string>
+    <string name="about_app_name">N3to</string>
+
+    <!-- NET WORTH - missing -->
+    <string name="networth_no_account_title">未配置账户</string>
+    <string name="networth_no_account_subtitle">从设置中创建账户\n即可查看您的净资产</string>
+    <string name="networth_valuables_label">贵重物品</string>
+    <string name="networth_add_valuable_cd">添加贵重物品</string>
+    <string name="networth_no_valuables">无登记贵重物品</string>
+
+    <!-- VALUABLE - missing -->
+    <string name="valuable_list_title">贵重物品</string>
+    <string name="valuable_empty_title">无贵重物品</string>
+    <string name="valuable_empty_subtitle">添加您的第一件贵重物品以开始追踪其价值</string>
+    <string name="valuable_name_label">名称</string>
+    <string name="valuable_name_placeholder">例如 CNC 车床</string>
+    <string name="valuable_description_label">描述（可选）</string>
+    <string name="valuable_description_placeholder">品牌、型号、年份…</string>
+    <string name="valuable_purchase_price_label">购买价格</string>
+    <string name="valuable_estimated_value_label">估算价值（可选）</string>
+    <string name="valuable_estimated_value_placeholder">如未提供，则使用购买价格</string>
+    <string name="valuable_notes_label">备注（可选）</string>
+    <string name="valuable_purchase_expenses_title">购买费用</string>
+    <string name="valuable_add_purchase_expense">添加购买费用</string>
+    <string name="valuable_holding_expenses_title">持有费用</string>
+    <string name="valuable_add_holding_expense">添加持有费用</string>
+    <string name="valuable_purchase_date_label">购买日期</string>
+    <string name="valuable_expense_amount_label">金额</string>
+    <string name="valuable_expense_delete_cd">删除</string>
+    <string name="valuable_sell_title_format">出售：%1$s</string>
+    <string name="valuable_sell_price_label">售价</string>
+    <string name="valuable_sell_date_label">出售日期</string>
+    <string name="valuable_sell_expenses_title">出售费用</string>
+    <string name="valuable_add_sell_expense">添加出售费用</string>
+    <string name="valuable_confirm_sale">确认出售</string>
+    <string name="valuable_purchase_format">购买：%1$s</string>
+    <string name="valuable_in_stock">在库</string>
+    <string name="valuable_delete_title">删除贵重物品</string>
+    <string name="valuable_delete_message">确定要删除此贵重物品吗？所有关联的交易也将被删除。</string>
+    <string name="valuable_link_loan_title">关联贷款</string>
+    <string name="valuable_no_loans">无可用贷款</string>
+    <string name="valuable_update_value_title">更新价值</string>
+    <string name="valuable_new_value_label">新估算价值</string>
+    <string name="valuable_update_value_btn">更新价值</string>
+    <string name="valuable_balance_label">余额</string>
+    <string name="valuable_sell_cd">出售</string>
+    <string name="valuable_back_cd">返回</string>
+
+    <!-- REAL ESTATE - missing -->
+    <string name="realestate_profitability_label">收益率</string>
+    <string name="realestate_cashflow_label">净现金流</string>
+    <string name="realestate_total_return_label">总回报</string>
+    <string name="realestate_linked_transactions">关联交易</string>
+    <string name="realestate_rental_history_label">出租历史</string>
+    <string name="realestate_expense_delete_cd">删除费用</string>
+    <string name="realestate_mortgage_amount_format">抵押贷款：%1$s</string>
+    <string name="realestate_add_mortgage">添加抵押贷款</string>
+    <string name="realestate_loan_only_mortgages">仅抵押贷款</string>
+    <string name="realestate_sold_with_emoji">✅ 已售</string>
+    <string name="realestate_no_mortgage_short">🏠 无抵押贷款</string>
+
+    <!-- LOAN - missing -->
+    <string name="loan_new_rate_label">新年利率（%）</string>
+    <string name="loan_rate_placeholder">例如 3.25</string>
+    <string name="loan_apply_rate_change">应用更改</string>
+
+    <!-- SPLASH / BRANDING -->
+    <string name="app_name_cd">N3to</string>
+    <string name="app_tagline">追踪每一笔。</string>
+    <string name="app_name">N3to</string>
+
+    <!-- ONBOARDING - missing slide data -->
+    <string name="onboarding_example_label">示例</string>
+    <string name="onboarding_realestate_name">我的家</string>
+    <string name="onboarding_realestate_type">不动产资产</string>
+    <string name="onboarding_realestate_value_label">估算价值</string>
+    <string name="onboarding_realestate_mortgage_label">抵押贷款</string>
+    <string name="onboarding_realestate_contribution">为您的净资产做出贡献</string>
+    <string name="onboarding_fiscal_base_label">2025年应税基数</string>
+    <string name="onboarding_fiscal_rendimientos">收益</string>
+    <string name="onboarding_fiscal_retenciones">预扣税</string>
+    <string name="onboarding_fiscal_operations_label">标记操作</string>
+    <string name="onboarding_portfolio_label">📈 投资组合</string>
+    <string name="onboarding_hipoteca_label">🏠 抵押贷款</string>
+    <string name="onboarding_portfolio_example_badge">示例</string>
+
+    <!-- PRIVACY - missing -->
+    <string name="privacy_section_premium">Trackfolio Premium</string>
+
+    <!-- COMMON - search category placeholder -->
+    <string name="common_search_category_placeholder">搜索类别…</string>
+
+    <!-- LANGUAGE SELECTOR -->
+    <string name="settings_language">语言</string>
+    <string name="language_system">系统语言</string>
+    <string name="language_spanish">西班牙语</string>
+    <string name="language_english">英语</string>
+    <string name="language_french">法语</string>
+    <string name="language_german">德语</string>
+    <string name="language_chinese">中文</string>
+    <string name="language_russian">俄语</string>
+    <string name="language_japanese">日语</string>
+    <string name="language_beta">Beta</string>
+    <string name="language_select_title">选择语言</string>
+</resources>

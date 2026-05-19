@@ -1,0 +1,1490 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- =====================================================================
+         COMMON – Buttons, actions and generic labels
+         ===================================================================== -->
+    <string name="common_cancel">취소</string>
+    <string name="common_accept">확인</string>
+    <string name="common_delete">삭제</string>
+    <string name="common_save">저장</string>
+    <string name="common_close">닫기</string>
+    <string name="common_error">오류</string>
+    <string name="common_loading">로딩 중…</string>
+    <string name="common_update">업데이트</string>
+    <string name="common_archive">보관</string>
+    <string name="common_search_placeholder">검색…</string>
+
+    <!-- Accessibility content descriptions -->
+    <string name="common_search_cd">검색</string>
+    <string name="common_clear_search_cd">검색 지우기</string>
+    <string name="common_back_cd">뒤로 가기</string>
+    <string name="common_action_cd">작업</string>
+
+    <!-- Generic empty states -->
+    <string name="common_empty_title">데이터 없음</string>
+    <string name="common_empty_subtitle">표시할 항목이 없습니다</string>
+
+    <!-- =====================================================================
+         NAVIGATION – Bottom bar
+         ===================================================================== -->
+    <string name="nav_home">홈</string>
+    <string name="nav_portfolio">포트폴리오</string>
+    <string name="nav_networth">순자산</string>
+
+    <!-- =====================================================================
+         DATES – Full months
+         ===================================================================== -->
+    <string name="date_month_full_01">1월</string>
+    <string name="date_month_full_02">2월</string>
+    <string name="date_month_full_03">3월</string>
+    <string name="date_month_full_04">4월</string>
+    <string name="date_month_full_05">5월</string>
+    <string name="date_month_full_06">6월</string>
+    <string name="date_month_full_07">7월</string>
+    <string name="date_month_full_08">8월</string>
+    <string name="date_month_full_09">9월</string>
+    <string name="date_month_full_10">10월</string>
+    <string name="date_month_full_11">11월</string>
+    <string name="date_month_full_12">12월</string>
+
+    <!-- DATES – Short months (3 letters) -->
+    <string name="date_month_short_01">1월</string>
+    <string name="date_month_short_02">2월</string>
+    <string name="date_month_short_03">3월</string>
+    <string name="date_month_short_04">4월</string>
+    <string name="date_month_short_05">5월</string>
+    <string name="date_month_short_06">6월</string>
+    <string name="date_month_short_07">7월</string>
+    <string name="date_month_short_08">8월</string>
+    <string name="date_month_short_09">9월</string>
+    <string name="date_month_short_10">10월</string>
+    <string name="date_month_short_11">11월</string>
+    <string name="date_month_short_12">12월</string>
+
+    <!-- DATES – Relative -->
+    <string name="date_today">오늘</string>
+    <string name="date_yesterday">어제</string>
+    <string name="date_just_now">방금 전</string>
+    <string name="date_one_minute_ago">1분 전</string>
+    <string name="date_minutes_ago">%1$d분 전</string>
+    <string name="date_one_hour_ago">1시간 전</string>
+    <string name="date_hours_ago">%1$d시간 전</string>
+    <string name="date_days_ago">%1$d일 전</string>
+    <string name="date_one_month_ago">1개월 전</string>
+    <string name="date_months_ago">%1$d개월 전</string>
+    <string name="date_one_year_ago">1년 전</string>
+    <string name="date_years_ago">%1$d년 전</string>
+
+    <!-- DATES – Full date format (day of month of year) -->
+    <string name="date_format_dmy">%1$d년 %2$s %3$d일</string>
+
+    <!-- DATES – Selector -->
+    <string name="common_select_date">날짜 선택</string>
+
+    <!-- =====================================================================
+         GREETINGS – By time of day
+         ===================================================================== -->
+    <string name="greeting_morning">좋은 아침입니다</string>
+    <string name="greeting_afternoon">안녕하세요</string>
+    <string name="greeting_evening">좋은 저녁입니다</string>
+
+    <!-- =====================================================================
+         HOME – HeroCard, quick access, sections
+         ===================================================================== -->
+    <string name="home_hero_balance_label">계좌 잔액</string>
+    <string name="home_hero_net_with_debts">부채 포함 순자산</string>
+    <string name="home_show_balances">잔액 표시</string>
+    <string name="home_hide_balances">잔액 숨기기</string>
+    <string name="home_confirm_identity">본인 확인</string>
+    <string name="home_section_goals">목표</string>
+    <string name="home_section_emergency_fund">비상금</string>
+    <string name="home_section_recent">최근 거래</string>
+    <string name="home_view_all">전체 보기</string>
+    <string name="home_no_movements_title">거래 없음</string>
+    <string name="home_no_movements_subtitle">+를 눌러 첫 거래를 추가하세요</string>
+    <string name="home_quick_resumen">요약</string>
+    <string name="home_quick_debts">부채</string>
+    <string name="home_quick_fiscal">세금</string>
+    <string name="home_settings_cd">설정</string>
+
+    <!-- HOME – Emergency fund -->
+    <string name="home_ef_configure_title">비상금 설정</string>
+    <string name="home_ef_configure_subtitle">안전하게 잔액을 보호하세요 — 탭하여 설정</string>
+    <string name="home_ef_covered">확보됨 ✅</string>
+    <string name="home_ef_months">%1$d개월</string>
+    <string name="home_ef_current_balance">현재 잔액</string>
+    <string name="home_ef_target">목표</string>
+    <string name="home_ef_missing_format">비상금을 채우려면 %1$s이(가) 더 필요합니다</string>
+    <string name="home_ef_monthly_avg_format">월평균 지출: %1$s</string>
+
+    <!-- HOME – Goals -->
+    <string name="home_goals_define_title">월별 목표 설정</string>
+    <string name="home_goals_define_subtitle">저축 &amp; 투자 — 탭하여 설정</string>
+    <string name="home_goals_monthly">이번 달 목표</string>
+    <string name="home_goals_savings">저축</string>
+    <string name="home_goals_investment">투자</string>
+    <string name="home_goals_projection_above">📈 예상: %1$s — 목표 초과 (+%2$s)</string>
+    <string name="home_goals_pace_needed">📊 현재 속도: %1$s€/일 — 목표 달성에 %2$s€/일 필요</string>
+    <string name="home_goals_no_movement">📊 이번 달 아직 움직임이 없습니다</string>
+
+    <!-- HOME – Banners -->
+    <string name="home_price_reminder_one">가격이 업데이트되지 않은 자산 %1$d개 (&gt;7일)</string>
+    <string name="home_price_reminder_many">가격이 업데이트되지 않은 자산 %1$d개 (&gt;7일)</string>
+    <string name="home_backup_never">아직 백업을 만들지 않았습니다</string>
+    <string name="home_backup_days_format">마지막 백업 후 %1$d일 경과</string>
+    <string name="home_backup_action">백업 만들기</string>
+    <string name="home_maturity_title">다가오는 만기</string>
+    <string name="home_maturity_more_format">+%1$d개 더</string>
+
+    <!-- =====================================================================
+         TRANSACTION – Default labels
+         ===================================================================== -->
+    <string name="transaction_label_investment">투자</string>
+    <string name="transaction_label_balance_adjustment">잔액 조정</string>
+    <string name="transaction_label_income">수입</string>
+    <string name="transaction_label_expense">지출</string>
+
+    <!-- =====================================================================
+         SETTINGS – Section titles and options
+         ===================================================================== -->
+    <string name="settings_title">설정</string>
+    <string name="settings_section_accounts">계좌</string>
+    <string name="settings_section_security">보안</string>
+    <string name="settings_section_reminders">알림</string>
+    <string name="settings_section_appearance">테마</string>
+    <string name="settings_section_privacy">개인정보</string>
+    <string name="settings_section_data">데이터</string>
+    <string name="settings_section_info">정보</string>
+    <string name="settings_add_account">계좌 추가</string>
+    <string name="settings_add">추가</string>
+
+    <!-- Settings – Security -->
+    <string name="settings_biometric_lock">생체인식 잠금</string>
+    <string name="settings_biometric_enabled">활성화</string>
+    <string name="settings_biometric_disabled">비활성화</string>
+    <string name="settings_biometric_activate">생체인식 활성화</string>
+    <string name="settings_biometric_title">생체인식</string>
+    <string name="settings_biometric_unavailable">생체인식을 사용할 수 없습니다. 기기 설정에서 지문 또는 PIN을 설정하세요.</string>
+
+    <!-- Settings – Appearance -->
+    <string name="settings_dark_theme">다크 테마</string>
+    <string name="settings_theme_enabled">활성화</string>
+    <string name="settings_theme_disabled">비활성화</string>
+
+    <!-- Settings – Premium -->
+    <string name="settings_premium_title">Trackfolio Premium</string>
+    <string name="settings_premium_lifetime">평생</string>
+    <string name="settings_premium_active">활성</string>
+    <string name="settings_premium_cta">Premium 이용하기</string>
+    <string name="settings_premium_limit_title">무료 계좌 제한</string>
+    <string name="settings_premium_limit_message">무료 요금제의 계좌 한도(%1$d개)에 도달했습니다. Premium을 이용하면 무제한 계좌를 사용할 수 있습니다.</string>
+
+    <!-- Settings – Privacy -->
+    <string name="settings_privacy_data">개인정보 &amp; 데이터</string>
+
+    <!-- Settings – Data -->
+    <string name="settings_backup">백업</string>
+    <string name="settings_backup_reminder_title">백업 알림</string>
+    <string name="settings_backup_reminder_off">비활성화</string>
+
+    <!-- Settings – Reminders -->
+    <string name="settings_interval_7d">7일</string>
+    <string name="settings_interval_15d">15일</string>
+    <string name="settings_interval_30d">30일</string>
+    <string name="settings_reconciliation_reminder_title">잔액 확인 알림</string>
+
+    <!-- Settings – Info -->
+    <string name="settings_about">정보</string>
+    <string name="settings_show_onboarding">소개 보기</string>
+
+    <!-- Settings – Dialogs -->
+    <string name="settings_delete_account_title">계좌 삭제</string>
+    <string name="settings_delete_account_message">«%1$s»을(를) 삭제할까요? 모든 거래 내역도 함께 삭제됩니다.</string>
+    <string name="settings_not_now">나중에</string>
+    <string name="settings_configure_cd">설정</string>
+    <string name="settings_edit_cd">편집</string>
+
+    <!-- =====================================================================
+         PORTFOLIO – Common portfolio strings
+         ===================================================================== -->
+    <string name="portfolio_title">포트폴리오</string>
+    <string name="portfolio_evolution_title">가치 변동</string>
+    <string name="portfolio_monthly_value">월별 포트폴리오 가치</string>
+    <string name="portfolio_empty_title">포지션 없음</string>
+    <string name="portfolio_empty_subtitle">+를 눌러 첫 투자를\n등록하세요</string>
+    <string name="portfolio_new_purchase">새 매수</string>
+    <string name="portfolio_new_bond">새 채권/예금</string>
+    <string name="portfolio_settings_cd">포트폴리오 설정</string>
+    <string name="portfolio_distribution_view_category">카테고리</string>
+    <string name="portfolio_distribution_view_composition">구성</string>
+    <string name="portfolio_distribution_view_region">지역</string>
+    <string name="portfolio_distribution_view_sector">섹터</string>
+
+    <!-- PORTFOLIO – Summary -->
+    <string name="portfolio_summary_total_value">총 가치</string>
+    <string name="portfolio_summary_invested">투자 금액</string>
+    <string name="portfolio_summary_total_pnl">총 손익</string>
+    <string name="portfolio_summary_realized">실현</string>
+    <string name="portfolio_summary_unrealized">미실현</string>
+    <string name="portfolio_summary_positions_one">%1$d개 포지션</string>
+    <string name="portfolio_summary_positions_many">%1$d개 포지션</string>
+
+    <!-- =====================================================================
+         PRIVACY – Privacy and data screen
+         ===================================================================== -->
+    <string name="privacy_restore_success">구매 내역이 성공적으로 복원되었습니다</string>
+    <string name="privacy_restore_error">오류: %1$s</string>
+    <string name="privacy_back_cd">뒤로</string>
+    <string name="privacy_revoke_title">모든 동의를 철회할까요?</string>
+    <string name="privacy_revoke_message">사용 분석 및 오류 보고가 비활성화됩니다. 이 작업은 즉시 적용됩니다.</string>
+    <string name="privacy_revoke_confirm">모두 철회</string>
+
+    <!-- Privacy – Consent -->
+    <string name="privacy_section_consent">동의</string>
+    <string name="privacy_analytics_title">앱 개선에 도움 주기</string>
+    <string name="privacy_analytics_desc">익명 사용 분석으로 앱 개선에 참여합니다.</string>
+    <string name="privacy_crash_title">문제 발생 시 알려주기</string>
+    <string name="privacy_crash_desc">버그 수정을 위한 익명 오류 보고서입니다.</string>
+    <string name="privacy_consent_date_format">%1$s에 동의함</string>
+
+    <!-- Privacy – Premium -->
+    <string name="privacy_premium_active_label">Premium 활성</string>
+    <string name="privacy_premium_lifetime_value">평생 이용권</string>
+    <string name="privacy_premium_subscription_value">구독 활성</string>
+    <string name="privacy_premium_valid_until">만료일</string>
+    <string name="privacy_premium_manage">구독 관리</string>
+    <string name="privacy_premium_plan">현재 요금제</string>
+    <string name="privacy_premium_free">무료</string>
+    <string name="privacy_premium_no_ads_value">Premium 이용 시</string>
+    <string name="privacy_premium_restore">구매 복원</string>
+
+    <!-- Privacy – Data collected -->
+    <string name="privacy_section_data_collected">수집된 데이터</string>
+    <string name="privacy_data_screens">방문한 화면</string>
+    <string name="privacy_data_crash_reports">오류 보고서</string>
+    <string name="privacy_data_financial">재무 데이터</string>
+    <string name="privacy_data_personal">개인 정보</string>
+    <string name="privacy_data_revenuecat">구독 관리 (RevenueCat)</string>
+
+    <!-- Privacy – Actions -->
+    <string name="privacy_revoke_all_button">모든 동의 철회</string>
+    <string name="privacy_revoke_all_hint">철회 시 모든 추적 데이터가 즉시 비활성화됩니다.</string>
+    <string name="privacy_policy_link">개인정보 처리방침</string>
+
+    <!-- =====================================================================
+         PORTFOLIO – Settings
+         ===================================================================== -->
+    <string name="portfolio_settings_title">포트폴리오 설정</string>
+    <string name="portfolio_settings_category_section">자산 카테고리</string>
+    <string name="portfolio_settings_category_count_one">%1$d개 자산</string>
+    <string name="portfolio_settings_category_count_many">%1$d개 자산</string>
+    <string name="portfolio_settings_portfolio_section">포트폴리오</string>
+    <string name="portfolio_settings_no_portfolios">포트폴리오가 없습니다. 포트폴리오 화면에서 생성하세요.</string>
+    <string name="portfolio_settings_edit_cd">편집</string>
+    <string name="portfolio_settings_delete_cd">삭제</string>
+    <string name="portfolio_settings_reminder_section">가격 알림</string>
+    <string name="portfolio_settings_reminder_title">알림 빈도</string>
+    <string name="portfolio_settings_reminder_desc">주기적으로 자산 가격 업데이트를 알려드립니다.</string>
+    <string name="portfolio_settings_platform_section">플랫폼</string>
+    <string name="portfolio_settings_platform_empty">플랫폼이 없습니다. 브로커, 거래소 또는 은행을 추가하여 거래와 연결하세요.</string>
+    <string name="portfolio_settings_sector_section">섹터</string>
+    <string name="portfolio_settings_sector_empty">섹터(기술, 의료, 에너지 등)별로 자산을 분류하여 업종별 익스포저를 분석하세요.</string>
+    <string name="portfolio_settings_region_section">지역</string>
+    <string name="portfolio_settings_region_empty">지역(미국, 유럽, 아시아 등)별 지리적 분포를 정의하여 국제 익스포저를 분석하세요.</string>
+    <string name="portfolio_settings_manage">관리</string>
+    <string name="portfolio_settings_add">추가</string>
+    <string name="portfolio_settings_delete_portfolio_title">포트폴리오 삭제</string>
+    <string name="portfolio_settings_delete_portfolio_message">«%1$s»을(를) 삭제할까요? 자산은 «포트폴리오 없음»으로 이동됩니다.</string>
+
+    <!-- PORTFOLIO – Asset detail -->
+    <string name="portfolio_asset_detail_title">자산</string>
+    <string name="portfolio_asset_detail_platform_section">플랫폼</string>
+    <string name="portfolio_asset_detail_platform_desc">이 자산을 보유한 플랫폼(브로커, 은행, 거래소)을 선택하세요.</string>
+    <string name="portfolio_asset_detail_platform_empty">생성된 플랫폼이 없습니다. 첫 번째 플랫폼을 생성하여 이 자산과 연결하세요.</string>
+    <string name="portfolio_asset_detail_platform_link_hint">플랫폼을 연결하려면 설정 › 포트폴리오 › 플랫폼으로 이동하세요.</string>
+    <string name="portfolio_asset_detail_linked_platforms">연결된 플랫폼</string>
+    <string name="portfolio_asset_detail_unlink_cd">연결 해제</string>
+
+    <!-- PORTFOLIO – Asset history -->
+    <string name="portfolio_asset_history_add">추가</string>
+    <string name="portfolio_asset_history_filter_all">전체</string>
+    <string name="portfolio_asset_history_filter_buy">매수</string>
+    <string name="portfolio_asset_history_filter_sell">매도</string>
+    <string name="portfolio_asset_history_no_data">기록 데이터 없음</string>
+
+    <!-- PORTFOLIO – Compound effect card -->
+    <string name="portfolio_compound_effect_title">복리 효과</string>
+    <string name="portfolio_compound_effect_projection">예상</string>
+    <string name="portfolio_compound_effect_estimated">수익 금액</string>
+
+    <!-- PORTFOLIO – Add/Edit asset sheet -->
+    <string name="portfolio_add_asset_title_create">자산 생성</string>
+    <string name="portfolio_add_asset_title_edit">자산 편집</string>
+    <string name="portfolio_add_asset_name_label">자산명</string>
+    <string name="portfolio_add_asset_ticker_label">티커</string>
+    <string name="portfolio_add_asset_category_label">카테고리</string>
+    <string name="portfolio_add_asset_price_label">단가</string>
+    <string name="portfolio_add_asset_price_placeholder">시장 가격</string>
+    <string name="portfolio_add_asset_notes_label">메모</string>
+    <string name="portfolio_add_asset_platform_label">플랫폼</string>
+    <string name="portfolio_add_asset_save">변경사항 저장</string>
+    <string name="portfolio_add_asset_name_required">이름은 필수입니다</string>
+    <string name="portfolio_add_asset_no_price">이 자산에 등록된 가격이 없습니다</string>
+    <string name="portfolio_add_asset_select_category">카테고리 선택</string>
+    <string name="portfolio_add_asset_select_platform">단위를 보유할 곳을 선택하세요</string>
+    <string name="portfolio_add_asset_no_platforms">연결된 플랫폼 없음</string>
+
+    <!-- PORTFOLIO – Add transaction sheet -->
+    <string name="portfolio_add_tx_title">거래 등록</string>
+    <string name="portfolio_add_tx_title_edit">거래 편집</string>
+    <string name="portfolio_add_tx_date">날짜</string>
+    <string name="portfolio_add_tx_qty">수량</string>
+    <string name="portfolio_add_tx_price">단가</string>
+    <string name="portfolio_add_tx_gross">총액</string>
+    <string name="portfolio_add_tx_gross_placeholder">총액 입력</string>
+    <string name="portfolio_add_tx_net">순액</string>
+    <string name="portfolio_add_tx_fee">총액</string>
+    <string name="portfolio_add_tx_fee_placeholder">예: 0.5%, 1.20 €</string>
+    <string name="portfolio_add_tx_platform">플랫폼</string>
+    <string name="portfolio_add_tx_notes">메모</string>
+    <string name="portfolio_add_tx_select_asset">자산 선택</string>
+    <string name="portfolio_add_tx_no_units">단위 없음</string>
+    <string name="portfolio_add_tx_name_required">이름은 필수입니다</string>
+
+    <!-- PORTFOLIO – Dividend sheet -->
+    <string name="portfolio_dividend_title">배당금 등록</string>
+    <string name="portfolio_dividend_amount">총액</string>
+    <string name="portfolio_dividend_withholding">원천징수</string>
+    <string name="portfolio_dividend_date">날짜</string>
+    <string name="portfolio_dividend_notes">메모</string>
+
+    <!-- PORTFOLIO – Transfer sheet -->
+    <string name="portfolio_transfer_title">자금 이체</string>
+    <string name="portfolio_transfer_from">출처 펀드</string>
+    <string name="portfolio_transfer_to">대상 펀드</string>
+    <string name="portfolio_transfer_qty">이체할 주식 수</string>
+    <string name="portfolio_transfer_date">이체 날짜</string>
+    <string name="portfolio_transfer_confirm">이체 확인</string>
+
+    <!-- PORTFOLIO – Update price sheet -->
+    <string name="portfolio_update_price_title">가격 업데이트</string>
+    <string name="portfolio_update_price_save">가격 저장</string>
+
+    <!-- PORTFOLIO – Management sheets -->
+    <string name="portfolio_new_sector_title">새 섹터</string>
+    <string name="portfolio_new_region_title">새 지역</string>
+    <string name="portfolio_new_platform_title">새 플랫폼</string>
+    <string name="portfolio_edit_platform_title">플랫폼 편집</string>
+    <string name="portfolio_link_platform_title">플랫폼 연결</string>
+    <string name="portfolio_platform_name">이름</string>
+    <string name="portfolio_platform_icon">아이콘</string>
+    <string name="portfolio_platform_notes">메모</string>
+
+    <!-- PORTFOLIO – Portfolio management -->
+    <string name="portfolio_new_portfolio_title">새 포트폴리오</string>
+    <string name="portfolio_edit_portfolio_title">포트폴리오 편집</string>
+    <string name="portfolio_name_required">이름은 필수입니다</string>
+    <string name="portfolio_without">포트폴리오 없음</string>
+
+    <!-- PORTFOLIO – Subcomponents -->
+    <string name="portfolio_category_group_assets">%1$d개 자산</string>
+    <string name="portfolio_category_invested_format">투자: %1$s €</string>
+    <string name="portfolio_category_current_format">현재: %1$s €</string>
+    <string name="portfolio_category_group_expand">펼치기</string>
+    <string name="portfolio_category_group_collapse">접기</string>
+    <string name="portfolio_closed_positions">종료된 포지션</string>
+    <string name="portfolio_closed_positions_count">%1$d개 종료</string>
+    <string name="portfolio_fixed_income_section">고정 수익</string>
+    <string name="portfolio_fixed_income_count">%1$d개 포지션</string>
+
+    <!-- =====================================================================
+         TRANSACTION – Transaction screens
+         ===================================================================== -->
+    <string name="transaction_title">거래</string>
+    <string name="transaction_search_hint">거래 검색…</string>
+    <string name="transaction_no_results">검색 결과와 일치하는 거래가 없습니다</string>
+    <string name="transaction_no_movements">등록된 거래가 없습니다</string>
+    <string name="transaction_detail_title">거래 상세</string>
+    <string name="transaction_detail_not_found">거래를 찾을 수 없습니다</string>
+    <string name="transaction_type_income">수입</string>
+    <string name="transaction_type_expense">지출</string>
+    <string name="transaction_type_adjustment">조정</string>
+    <string name="transaction_type_transfer">이체</string>
+    <string name="transaction_filter_all">전체</string>
+    <string name="transaction_filter_income">수입</string>
+    <string name="transaction_filter_expense">지출</string>
+
+    <!-- =====================================================================
+         ACCOUNT – Account screens
+         ===================================================================== -->
+    <string name="account_list_title">내 계좌</string>
+    <string name="account_add_title">계좌 추가</string>
+    <string name="account_edit_title">계좌 편집</string>
+    <string name="account_name_label">이름 또는 별칭</string>
+    <string name="account_name_placeholder">예: BBVA 당좌 예금</string>
+    <string name="account_initial_balance">초기 잔액 미설정</string>
+    <string name="account_no_accounts">아직 계좌가 없습니다</string>
+    <string name="account_empty_subtitle">설정에서 첫 계좌를 생성하여\n시작하세요</string>
+    <string name="account_balance_label">현재 잔액</string>
+    <string name="account_computed_balance">계산된 잔액</string>
+    <string name="account_delete_confirm_title">계좌 삭제</string>
+    <string name="account_configure_cd">설정</string>
+    <string name="account_edit_cd">편집</string>
+    <string name="account_delete_cd">삭제</string>
+
+    <!-- =====================================================================
+         FIXED INCOME – Fixed income
+         ===================================================================== -->
+    <string name="fixedincome_title">고정 수익</string>
+    <string name="fixedincome_detail_title">고정 수익 포지션</string>
+    <string name="fixedincome_not_found">포지션을 찾을 수 없습니다</string>
+    <string name="fixedincome_create_title">새 고정 수익 포지션</string>
+    <string name="fixedincome_edit_title">고정 수익 포지션 편집</string>
+    <string name="fixedincome_name_label">이름</string>
+    <string name="fixedincome_ticker_label">티커</string>
+    <string name="fixedincome_type_label">상품 유형</string>
+    <string name="fixedincome_principal_label">원금</string>
+    <string name="fixedincome_interest_label">APR (%)</string>
+    <string name="fixedincome_frequency_label">이자 지급 빈도</string>
+    <string name="fixedincome_start_date">시작일</string>
+    <string name="fixedincome_maturity_date">만기일</string>
+    <string name="fixedincome_auto_renew">만기 시 자동 갱신</string>
+    <string name="fixedincome_save">변경사항 저장</string>
+    <string name="fixedincome_cancel_title">중도 해지</string>
+    <string name="fixedincome_close_confirm">정산 확인</string>
+    <string name="fixedincome_register_coupon">쿠폰/이자 등록</string>
+    <string name="fixedincome_sell_secondary">유통시장 매도</string>
+    <string name="fixedincome_value_label">현재 가치</string>
+    <string name="fixedincome_invested_label">투자 원금</string>
+    <string name="fixedincome_yield_gross">매수 기준 총수익률</string>
+    <string name="fixedincome_yield_current">현재 가치 기준 총수익률</string>
+    <string name="fixedincome_net_maturity">만기 예상 순수익</string>
+    <string name="fixedincome_coupon_calendar">지급 일정</string>
+    <string name="fixedincome_coupons_received">받은 쿠폰</string>
+    <string name="fixedincome_maturity_simulation">만기 시뮬레이션</string>
+
+    <!-- =====================================================================
+         LOAN – Loans
+         ===================================================================== -->
+    <string name="loan_detail_title">대출 상세</string>
+    <string name="loan_not_found">대출을 찾을 수 없습니다</string>
+    <string name="loan_add_title">대출 추가</string>
+    <string name="loan_edit_title">대출 편집</string>
+    <string name="loan_name_label">대출명</string>
+    <string name="loan_type_label">유형</string>
+    <string name="loan_entity_label">기관</string>
+    <string name="loan_principal_label">초기 원금</string>
+    <string name="loan_interest_label">금리</string>
+    <string name="loan_term_label">기간 (개월)</string>
+    <string name="loan_monthly_payment">월 상환액</string>
+    <string name="loan_pending_capital">잔여 원금</string>
+    <string name="loan_amortization_title">상환 일정</string>
+    <string name="loan_amortization_type">상환 방식</string>
+    <string name="loan_history_title">금리 변동 내역</string>
+    <string name="loan_archive_title">대출 보관</string>
+    <string name="loan_change_rate">금리 업데이트</string>
+    <string name="loan_progress">진행률</string>
+
+    <!-- =====================================================================
+         DEBT – Debts
+         ===================================================================== -->
+    <string name="debt_title">부채</string>
+    <string name="debt_add_title">새 부채</string>
+    <string name="debt_edit_title">부채 편집</string>
+    <string name="debt_no_debts">부채 없음</string>
+    <string name="debt_type_label">부채 유형</string>
+    <string name="debt_person_label">대상</string>
+    <string name="debt_amount_label">금액</string>
+    <string name="debt_description_label">내용</string>
+    <string name="debt_i_owe">내가 빚진</string>
+    <string name="debt_they_owe">상대가 빚진</string>
+    <string name="debt_mark_paid">상환 완료 표시</string>
+    <string name="debt_paid">완료</string>
+    <string name="debt_pending">미완료</string>
+
+    <!-- =====================================================================
+         REAL ESTATE – Real estate
+         ===================================================================== -->
+    <string name="realestate_detail_title">부동산 상세</string>
+    <string name="realestate_add_title">부동산 추가</string>
+    <string name="realestate_edit_title">부동산 편집</string>
+    <string name="realestate_no_properties">등록된 부동산 없음</string>
+    <string name="realestate_name_label">이름</string>
+    <string name="realestate_address_label">주소</string>
+    <string name="realestate_type_label">부동산 유형</string>
+    <string name="realestate_estimated_value">예상 가치</string>
+    <string name="realestate_mortgage_label">담보 대출</string>
+    <string name="realestate_rental_status">임대 상태</string>
+    <string name="realestate_rental_income">임대 수입</string>
+    <string name="realestate_expenses_label">지출</string>
+    <string name="realestate_sell_title">부동산 매도</string>
+    <string name="realestate_sell_price">매도 가격</string>
+    <string name="realestate_sell_expenses">매도 비용</string>
+    <string name="realestate_sell_confirm">매도 확인</string>
+    <string name="realestate_archived_title">부동산 보관</string>
+    <string name="realestate_sold">매도 완료</string>
+    <string name="realestate_net_equity">순 자본</string>
+
+    <!-- =====================================================================
+         NET WORTH – Net worth
+         ===================================================================== -->
+    <string name="networth_title">순자산</string>
+    <string name="networth_total_label">순자산</string>
+    <string name="networth_assets_label">총 자산</string>
+    <string name="networth_liabilities_label">부채</string>
+    <string name="networth_evolution_title">순자산 변동</string>
+    <string name="networth_no_data">올해 데이터 없음</string>
+    <string name="networth_monthly_title">월별 순자산</string>
+    <string name="networth_cash_label">현금</string>
+    <string name="networth_investments_label">투자</string>
+    <string name="networth_realestate_label">부동산</string>
+
+    <!-- =====================================================================
+         FISCAL – Fiscal report
+         ===================================================================== -->
+    <string name="fiscal_title">세금 보고서</string>
+    <string name="fiscal_generate_title">PDF 생성 &amp; 공유</string>
+    <string name="fiscal_ready">세금 보고서 준비 완료</string>
+    <string name="fiscal_taxable_base">과세 표준 %1$s</string>
+    <string name="fiscal_income_title">수입</string>
+    <string name="fiscal_expenses_title">지출</string>
+    <string name="fiscal_capital_gains">양도소득</string>
+    <string name="fiscal_dividends_title">배당금</string>
+    <string name="fiscal_withholdings_title">원천징수</string>
+    <string name="fiscal_total_income">총 수입</string>
+    <string name="fiscal_total_expenses">총 지출</string>
+    <string name="fiscal_net_result">순 결과</string>
+    <string name="fiscal_no_data">거래를 추가하여 요약을 확인하세요</string>
+
+    <!-- =====================================================================
+         ANNUAL – Annual summary
+         ===================================================================== -->
+    <string name="annual_title">연간 요약</string>
+    <string name="annual_tab_summary">요약</string>
+    <string name="annual_tab_expenses">지출</string>
+    <string name="annual_tab_income">수입</string>
+    <string name="annual_tab_investments">투자</string>
+    <string name="annual_goal_compliance">목표 달성률</string>
+    <string name="annual_goal_met">달성</string>
+    <string name="annual_goal_not_met">미달성</string>
+    <string name="annual_no_goal">목표 없음</string>
+    <string name="annual_monthly_evolution">월별 변동 %1$s</string>
+
+    <!-- =====================================================================
+         ONBOARDING – Introduction
+         ===================================================================== -->
+    <string name="onboarding_welcome_title">N3to에 오신 것을 환영합니다</string>
+    <string name="onboarding_welcome_subtitle">당신의 재정은 당신의 것입니다</string>
+    <string name="onboarding_skip">건너뛰기</string>
+    <string name="onboarding_continue">계속</string>
+    <string name="onboarding_start">시작하기</string>
+    <string name="onboarding_slide_portfolio_title">투자 포트폴리오</string>
+    <string name="onboarding_slide_movements_title">의미 있는 거래</string>
+    <string name="onboarding_slide_networth_title">명확한 순자산</string>
+    <string name="onboarding_slide_fiscal_title">세금 보고서</string>
+    <string name="onboarding_slide_realestate_title">부동산 자산</string>
+
+    <!-- =====================================================================
+         RECONCILIATION – Reconciliation
+         ===================================================================== -->
+    <string name="reconciliation_banner_text">잔액을 확인한 지 오래되었습니다</string>
+    <string name="reconciliation_title">잔액 확인</string>
+    <string name="reconciliation_balanced">잔액이 이미 일치합니다</string>
+    <string name="reconciliation_adjust">잔액 조정</string>
+
+    <!-- =====================================================================
+         SECURITY – Lock
+         ===================================================================== -->
+    <string name="security_unlock_title">N3to 잠금 해제</string>
+    <string name="security_unlock_hint">지문, Face ID 또는 PIN을 사용하세요</string>
+    <string name="security_biometric_not_available">이 기기에서는 생체인식을 사용할 수 없습니다</string>
+
+    <!-- =====================================================================
+         PREMIUM – Premium screen
+         ===================================================================== -->
+    <string name="premium_title">Trackfolio Premium</string>
+    <string name="premium_already_premium">이미 Premium 이용 중입니다</string>
+    <string name="premium_unlock_features">모든 기능 잠금 해제</string>
+    <string name="premium_unlimited_accounts">무제한 계좌</string>
+    <string name="premium_themes">독점 테마</string>
+    <string name="premium_ad_free">방해 없이 앱을 즐기세요</string>
+    <string name="premium_manage_accounts">모든 계좌를 제한 없이 관리하세요</string>
+    <string name="premium_customize">라이트 및 다크 테마로 앱 커스터마이징</string>
+    <string name="premium_subscribe">Premium 이용하기</string>
+    <string name="premium_restore">구매 복원</string>
+    <string name="premium_restore_success">구매 내역이 성공적으로 복원되었습니다</string>
+    <string name="premium_restore_cancelled">복원이 취소되었습니다</string>
+
+    <!-- =====================================================================
+         CONSENT – Consent
+         ===================================================================== -->
+    <string name="consent_title">시작하기 전에</string>
+    <string name="consent_accept">동의하고 계속</string>
+    <string name="consent_decline">거절하고 계속</string>
+    <string name="consent_privacy_policy">개인정보 처리방침 보기</string>
+    <string name="consent_data_description">계좌, 거래 내역 및 잔액은 기기에 로컬로 저장됩니다. 권한을 부여한 경우에만 데이터를 공유합니다.</string>
+    <string name="consent_crash_description">앱이 충돌하면 신속히 수정할 수 있도록 알림이 전송됩니다.</string>
+    <string name="security_locked_message">앱이 잠겨 있습니다.\n계속하려면 인증하세요.</string>
+    <string name="security_unlock_button">잠금 해제</string>
+    <string name="version_block_message">계속 사용하려면 N3to를 업데이트해야 합니다.</string>
+    <string name="version_block_version_info">필수 버전: %1$s · 현재 버전: %2$s</string>
+    <string name="reconciliation_real_balance">실제 잔액 (€)</string>
+    <string name="reconciliation_diff_format">차이: %1$s%2$s €</string>
+    <string name="reconciliation_done">완료</string>
+    <string name="reconciliation_adjust_label">잔액 조정</string>
+    <string name="fixedincome_delete_event">이벤트 삭제</string>
+    <string name="fixedincome_distribution_title">분배</string>
+    <string name="fixedincome_no_region">미할당</string>
+    <string name="fixedincome_no_sector">미할당</string>
+    <string name="fixedincome_select_region">지역 선택</string>
+    <string name="fixedincome_select_sector">섹터 선택</string>
+    <string name="fixedincome_status_active">활성</string>
+    <string name="fixedincome_status_closed">종료</string>
+    <string name="fixedincome_change_region">변경</string>
+    <string name="fixedincome_change_sector">변경</string>
+    <string name="fixedincome_platform_label">플랫폼</string>
+    <string name="fixedincome_liquidate_maturity">만기 정산</string>
+    <string name="fixedincome_annual_coupon">연간 쿠폰</string>
+    <string name="fixedincome_maturity_label">만기</string>
+    <string name="fixedincome_est_nir">예상 순수익률</string>
+    <string name="fixedincome_register_settlement">정산 등록</string>
+    <string name="fixedincome_event_history">이벤트 내역</string>
+    <string name="fixedincome_no_events">등록된 이벤트 없음</string>
+    <string name="fixedincome_gross_interest">총 이자</string>
+    <string name="fixedincome_estimated_irpf">예상 원천징수 (%1$s%%)</string>
+    <string name="fixedincome_estimated_commissions">예상 수수료</string>
+    <string name="fixedincome_net_profit_label">총 순이익</string>
+    <string name="fixedincome_region_label">지역</string>
+    <string name="fixedincome_sector_label">섹터</string>
+    <string name="fixedincome_delete_event_confirm">%1$s 이벤트를 삭제할까요?</string>
+    <string name="fixedincome_header_label">고정 수익 · %1$s</string>
+    <string name="fixedincome_nominal_label">원금</string>
+    <string name="fixedincome_coupon_paid">수령 완료</string>
+    <string name="fixedincome_coupon_pending">대기 중</string>
+    <string name="fixedincome_retention_label">원천징수</string>
+    <string name="fixedincome_commission_label">수수료</string>
+    <string name="fixedincome_gross_label">총액</string>
+    <string name="fixedincome_maturity_sim_irpf">예상 원천징수 (%1$s%%)</string>
+    <string name="fixedincome_yield_label">수익률</string>
+    <string name="fixedincome_capital_short">원금</string>
+
+    <!-- NET WORTH -->
+    <string name="networth_add_property_cd">부동산 추가</string>
+    <string name="networth_add_loan_cd">대출 추가</string>
+    <string name="networth_no_properties">등록된 부동산 없음</string>
+    <string name="networth_no_liabilities">등록된 부채 없음</string>
+    <string name="networth_assets_label_alt">자산</string>
+    <string name="networth_liabilities_label_alt">부채</string>
+    <string name="networth_accounts_label">계좌 잔액</string>
+    <string name="networth_portfolio_label">투자 포트폴리오</string>
+    <string name="networth_fixedincome_label">고정 수익</string>
+    <string name="networth_total_assets_label">총 자산</string>
+    <string name="networth_debts_label">일상 부채</string>
+    <string name="networth_installments_format">%1$d/%2$d 회차</string>
+    <string name="networth_monthly_format">%1$s/월</string>
+    <string name="networth_of_format">%1$s 중</string>
+
+    <!-- FISCAL -->
+    <string name="fiscal_generating_pdf">PDF 생성 중…</string>
+    <string name="fiscal_net_only_warning">일부 수입이 순액으로만 등록되었습니다. 세금 분석이 불완전할 수 있습니다.</string>
+    <string name="fiscal_no_data_year">%1$s년 데이터 없음</string>
+    <string name="fiscal_year_title">%1$s년 · 요약</string>
+    <string name="fiscal_no_movements">등록된 거래가 없습니다.</string>
+    <string name="fiscal_income_label">총 수입</string>
+    <string name="fiscal_withholding_label">세금 원천징수</string>
+    <string name="fiscal_capital_gains_card">양도소득</string>
+    <string name="fiscal_taxable_base_est">예상 과세 표준</string>
+    <string name="fiscal_tax_breakdown_title">세금 내역 %1$s</string>
+    <string name="fiscal_gross_total">총액</string>
+    <string name="fiscal_irpf_total">세금 원천징수</string>
+    <string name="fiscal_net_total">순액 합계</string>
+    <string name="fiscal_social_security">사회보장</string>
+    <string name="fiscal_commissions_short">수수료</string>
+    <string name="fiscal_income_type_header">수입 유형</string>
+    <string name="fiscal_gross_header">총액</string>
+    <string name="fiscal_withholding_short">원천징수</string>
+    <string name="fiscal_net_header">순액</string>
+    <string name="fiscal_percent_header">%</string>
+    <string name="fiscal_incomes_with_tax_info">세금 정보가 입력된 수입만 포함됩니다.</string>
+    <string name="fiscal_monthly_title">월별 내역</string>
+    <string name="fiscal_no_movements_year">%1$s년에 거래가 없습니다.</string>
+    <string name="fiscal_month_header">월</string>
+    <string name="fiscal_income_header">수입</string>
+    <string name="fiscal_expenses_header">지출</string>
+    <string name="fiscal_balance_header">잔액</string>
+    <string name="fiscal_debts_title">활성 부채</string>
+    <string name="fiscal_i_owe">내가 빚진</string>
+    <string name="fiscal_they_owe">상대가 빚진</string>
+    <string name="fiscal_portfolio_title">투자 포트폴리오</string>
+    <string name="fiscal_invested_label">투자 금액</string>
+    <string name="fiscal_current_value_label">현재 가치</string>
+    <string name="fiscal_realized_pnl_label">실현 손익</string>
+    <string name="fiscal_asset_header">자산</string>
+    <string name="fiscal_units_header">단위</string>
+    <string name="fiscal_avg_price_header">평균 단가</string>
+    <string name="fiscal_pnl_total_header">총 손익</string>
+    <string name="fiscal_no_category">카테고리 없음</string>
+    <string name="fiscal_year_activity">%1$s년 활동</string>
+    <string name="fiscal_buys_header">매수</string>
+    <string name="fiscal_sales_header">매도</string>
+    <string name="fiscal_active_profile">활성 세금 프로필: %1$s</string>
+    <string name="fiscal_profile_since">%1$s · %2$s부터 적용</string>
+    <string name="fiscal_pdf_password_title">보고서 보호</string>
+    <string name="fiscal_pdf_password_desc">PDF를 보호할 비밀번호를 입력하세요. 보호를 원하지 않으면 비워두세요.</string>
+    <string name="fiscal_password_label">비밀번호</string>
+    <string name="fiscal_password_optional">선택 사항</string>
+    <string name="fiscal_confirm_password_label">비밀번호 확인</string>
+    <string name="fiscal_password_mismatch">비밀번호가 일치하지 않습니다</string>
+    <string name="fiscal_password_min_length">최소 4자 이상</string>
+    <string name="fiscal_generate_without_password">비밀번호 없이 생성</string>
+    <string name="fiscal_generate_with_password">비밀번호로 생성</string>
+    <string name="fiscal_cancel">취소</string>
+    <string name="fiscal_count_format">%1$d개 수입%2$s</string>
+
+    <!-- REAL ESTATE -->
+    <string name="realestate_options_menu_cd">옵션</string>
+    <string name="realestate_edit_label">편집</string>
+    <string name="realestate_update_value">가치 업데이트</string>
+    <string name="realestate_change_rental_status">임대 상태 변경</string>
+    <string name="realestate_sell_property">부동산 매도</string>
+    <string name="realestate_archive_label">보관</string>
+    <string name="realestate_value_label">가치</string>
+    <string name="realestate_update_label">업데이트</string>
+    <string name="realestate_estimated_value_label">예상 가치</string>
+    <string name="realestate_purchase_value_label">매입 가치</string>
+    <string name="realestate_ownership_percent_label">지분율</string>
+    <string name="realestate_sale_price_label">매도 가격</string>
+    <string name="realestate_capital_gain_label">실현 손익</string>
+    <string name="realestate_effective_value_label">실질 가치</string>
+    <string name="realestate_sold_badge">매도 완료</string>
+    <string name="realestate_rented_badge">임대 중</string>
+    <string name="realestate_vacant_badge">공실</string>
+    <string name="realestate_own_use_badge">자가 사용</string>
+    <string name="realestate_sale_date_label">매도일</string>
+    <string name="realestate_purchase_expenses">매입 비용</string>
+    <string name="realestate_sale_expenses">매도 비용</string>
+    <string name="realestate_expense_default">비용</string>
+    <string name="realestate_view_label">보기</string>
+    <string name="realestate_loan_label">대출</string>
+    <string name="realestate_lender_label">기관</string>
+    <string name="realestate_pending_capital_label">잔여 원금</string>
+    <string name="realestate_monthly_payment_label">월 상환액</string>
+    <string name="realestate_no_mortgage">연결된 담보 대출 없음</string>
+    <string name="realestate_mortgage_hint">정확한 순자산 계산을 위해 담보 대출을 연결하세요.</string>
+    <string name="realestate_archive_confirm_title">부동산 보관</string>
+    <string name="realestate_archive_confirm_msg">이 부동산을 보관하시겠습니까?\n순자산 화면에서 숨겨집니다.</string>
+
+    <!-- ANNUAL -->
+    <string name="annual_no_data_title">올해 데이터 없음</string>
+    <string name="annual_no_data_subtitle">거래를 추가하여 요약을 확인하세요</string>
+    <string name="annual_income_label">수입</string>
+    <string name="annual_expenses_label">지출</string>
+    <string name="annual_savings_label">저축</string>
+    <string name="annual_expense_categories_title">지출 카테고리</string>
+    <string name="annual_income_types_title">수입 유형</string>
+    <string name="annual_no_data_text">데이터 없음</string>
+    <string name="annual_no_movements">등록된 거래 없음</string>
+    <string name="annual_new_badge">신규</string>
+    <string name="annual_income_legend">수입</string>
+    <string name="annual_expense_legend">지출</string>
+
+    <!-- PORTFOLIO - Add/Edit Asset (missing) -->
+    <string name="portfolio_add_asset_desc">자산 프로필과 거래 플랫폼을 정의하세요.</string>
+    <string name="portfolio_add_asset_portfolio_label">포트폴리오</string>
+    <string name="portfolio_add_asset_no_portfolio">포트폴리오 없음</string>
+    <string name="portfolio_add_asset_ticker_placeholder">예: AAPL, BTC, IAG.MC</string>
+    <string name="portfolio_add_asset_ticker_required">필수</string>
+    <string name="portfolio_add_asset_name_placeholder">예: Apple Inc., Bitcoin</string>
+    <string name="portfolio_add_asset_composition_label">FI / EQ 구성</string>
+    <string name="portfolio_add_asset_composition_hint">FI: 고정 수익 (%1$d%% EQ: 주식)</string>
+    <string name="portfolio_add_asset_market_price_label">시장 가격</string>
+    <string name="portfolio_add_asset_fi_price_hint">고정 수익 자산은 시장 가격을 사용하지 않습니다. 고정 수익 포지션 시스템을 이용하여 등록하세요.</string>
+    <string name="portfolio_add_asset_price_optional">현재 가격 (선택 사항)</string>
+    <string name="portfolio_add_asset_price_placeholder_val">0.00</string>
+    <string name="portfolio_add_asset_price_desc">현재 가치 및 평가액 계산에 사용됩니다.</string>
+    <string name="portfolio_add_asset_platforms_label">이 자산을 거래하는 플랫폼</string>
+    <string name="portfolio_add_asset_platforms_hint">이 자산을 매수 또는 매도하는 모든 플랫폼을 선택하세요.</string>
+    <string name="portfolio_add_asset_no_platforms_hint">자산 설정에서 먼저 플랫폼을 생성하여 연결하세요.</string>
+    <string name="portfolio_add_asset_sectors_label">섹터</string>
+    <string name="portfolio_add_asset_sectors_hint">자산을 하나 이상의 섹터로 분류하세요.</string>
+    <string name="portfolio_add_asset_regions_label">지역 분포</string>
+    <string name="portfolio_add_asset_regions_hint">지역별 투자 비율을 할당하세요 (선택 사항)</string>
+    <string name="portfolio_add_asset_regions_total">합계: %1$d%% (≤ 100%%이어야 함)</string>
+    <string name="portfolio_add_asset_maturity_date_label">만기일</string>
+    <string name="portfolio_add_asset_maturity_hint">탭하여 만기일을 선택하세요.</string>
+    <string name="portfolio_add_asset_notes_optional">메모 (선택 사항)</string>
+    <string name="portfolio_add_asset_save_changes">변경사항 저장</string>
+    <string name="portfolio_add_asset_create">자산 생성</string>
+    <string name="portfolio_add_asset_cancel">취소</string>
+
+    <!-- PORTFOLIO - Category Detail -->
+    <string name="portfolio_category_title">카테고리</string>
+    <string name="portfolio_category_assets_section">자산</string>
+    <string name="portfolio_category_new_asset">+ 신규</string>
+    <string name="portfolio_category_empty">이 카테고리에 자산이 없습니다</string>
+    <string name="portfolio_category_fixed_income_section">고정 수익</string>
+    <string name="portfolio_category_platforms_section">플랫폼</string>
+    <string name="portfolio_category_no_platforms">연결된 플랫폼 없음</string>
+    <string name="portfolio_category_add_platform">+ 플랫폼 추가</string>
+    <string name="portfolio_category_archived_section">보관됨</string>
+    <string name="portfolio_category_archive_title">자산 보관</string>
+    <string name="portfolio_category_archive_message">«%1$s (%2$s)»이(가) 보관됩니다. 거래 내역과 손익 기록은 유지됩니다.</string>
+    <string name="portfolio_category_archive_confirm">보관</string>
+    <string name="portfolio_category_restore">복원</string>
+    <string name="portfolio_category_edit_cd">편집</string>
+    <string name="portfolio_category_archive_cd">보관</string>
+
+    <!-- PORTFOLIO - Add Transaction -->
+    <string name="portfolio_add_tx_title_new">새 거래</string>
+    <string name="portfolio_add_tx_new">거래 등록</string>
+    <string name="portfolio_add_tx_save_changes">변경사항 저장</string>
+    <string name="portfolio_add_tx_type_buy">매수</string>
+    <string name="portfolio_add_tx_type_sell">매도</string>
+    <string name="portfolio_add_tx_category_filter">카테고리</string>
+    <string name="portfolio_add_tx_category_all">전체</string>
+    <string name="portfolio_add_tx_no_assets_category">이 카테고리에 자산이 없습니다</string>
+    <string name="portfolio_add_tx_no_assets_hint">아직 자산이 없습니다. 설정 › 포트폴리오 › 자산에서 먼저 생성하세요.</string>
+    <string name="portfolio_add_tx_platform_label">플랫폼</string>
+    <string name="portfolio_add_tx_platform_select_hint">단위를 보유할 곳을 선택하세요</string>
+    <string name="portfolio_add_tx_no_platforms_hint">생성된 플랫폼이 없습니다. 설정 › 포트폴리오 › 플랫폼으로 이동하여 생성하세요.</string>
+    <string name="portfolio_add_tx_platform_not_assigned">이 자산에 할당된 플랫폼이 없습니다. 설정에서 연결하세요.</string>
+    <string name="portfolio_add_tx_qty_label">수량</string>
+    <string name="portfolio_add_tx_price_label">단가</string>
+    <string name="portfolio_add_tx_available">해당 날짜에 사용 가능: %1$s단위%2$s</string>
+    <string name="portfolio_add_tx_only_available">해당 날짜에 %1$s단위만 사용 가능합니다%2$s</string>
+    <string name="portfolio_add_tx_date_label">날짜</string>
+    <string name="portfolio_add_tx_fee_label">수수료 (선택 사항)</string>
+    <string name="portfolio_add_tx_fee_hint">참고 정보입니다. 손익 계산에 포함되지 않습니다.</string>
+    <string name="portfolio_add_tx_notes_label">메모 (선택 사항)</string>
+    <string name="portfolio_add_tx_platform_label_inline"> %1$s</string>
+    <string name="portfolio_add_tx_units_label">단위</string>
+    <string name="portfolio_add_tx_no_units_badge">단위 없음</string>
+    <string name="portfolio_add_tx_accept">확인</string>
+    <string name="portfolio_add_tx_cancel">취소</string>
+
+    <!-- PORTFOLIO - Transfer Fund -->
+    <string name="portfolio_transfer_desc">세금 중립 이체. 취득 원가는 대상 펀드로 이전됩니다.</string>
+    <string name="portfolio_transfer_source_label">출처 펀드</string>
+    <string name="portfolio_transfer_dest_label">대상 펀드</string>
+    <string name="portfolio_transfer_no_destinations">이 계좌에 다른 이체 가능 펀드가 없습니다. 설정 › 포트폴리오에서 대상 펀드를 먼저 생성하세요.</string>
+    <string name="portfolio_transfer_qty_label">이체할 주식 수</string>
+    <string name="portfolio_transfer_available">해당 날짜에 사용 가능: %1$s주</string>
+    <string name="portfolio_transfer_only_available">해당 날짜에 %1$s주만 사용 가능합니다</string>
+    <string name="portfolio_transfer_vl_label">대상 펀드 NAV (주당 가격)</string>
+    <string name="portfolio_transfer_date_label">이체 날짜</string>
+    <string name="portfolio_transfer_source_platform">출처 플랫폼</string>
+    <string name="portfolio_transfer_dest_platform">대상 플랫폼</string>
+    <string name="portfolio_transfer_no_platforms">사용 가능한 플랫폼이 없습니다.</string>
+    <string name="portfolio_transfer_confirm_btn">이체 확인</string>
+
+    <!-- =====================================================================
+         VERSION – Update
+         ===================================================================== -->
+    <string name="version_update_available">버전 %1$s 사용 가능</string>
+    <string name="version_block_title">업데이트 필요</string>
+    <string name="version_update_now">지금 업데이트</string>
+
+    <!-- FIXED INCOME - Create/Edit -->
+    <string name="fixedincome_create_position">포지션 생성</string>
+    <string name="fixedincome_save_changes">변경사항 저장</string>
+    <string name="fixedincome_duration_label">기간 (개월)</string>
+    <string name="fixedincome_duration_title">기간</string>
+    <string name="fixedincome_years_label">년</string>
+    <string name="fixedincome_months_label">개월</string>
+    <string name="fixedincome_entity_financial_label">금융 기관</string>
+    <string name="fixedincome_issuer_state_label">발행자 (국가)</string>
+    <string name="fixedincome_issuer_entity_label">발행자 (국가/기업)</string>
+    <string name="fixedincome_new_issuer">새 발행자</string>
+    <string name="fixedincome_no_issuers_hint">발행자가 없습니다. 새로 생성하세요.</string>
+    <string name="fixedincome_issuer_name_label">이름</string>
+    <string name="fixedincome_icon_label">아이콘</string>
+    <string name="fixedincome_create_issuer">생성</string>
+    <string name="fixedincome_capital_label">원금 (€)</string>
+    <string name="fixedincome_capital_invested_label">투자 원금 (€)</string>
+    <string name="fixedincome_nominal_value_label">액면가 (€)</string>
+    <string name="fixedincome_nominal_hint">액면가는 채권의 액면 금액입니다(이자 및 상환 계산 기준).</string>
+    <string name="fixedincome_fee_notes_label">수수료 메모 (선택 사항)</string>
+    <string name="fixedincome_select_date_cd">날짜 선택</string>
+    <string name="fixedincome_auto_calculated">자동 계산</string>
+    <string name="fixedincome_region_title">지역</string>
+    <string name="fixedincome_sector_title">섹터</string>
+    <string name="fixedincome_start_date_label">시작일</string>
+    <string name="fixedincome_maturity_date_label">만기일</string>
+    <string name="fixedincome_auto_renew_label">만기 시 자동 갱신</string>
+    <string name="fixedincome_duration_guide">%1$s의 일반 기간: %2$d - %3$d개월</string>
+
+    <!-- REAL ESTATE - AddEditProperty -->
+    <string name="realestate_name_placeholder">예: 우리 집</string>
+    <string name="realestate_address_placeholder">예: 마드리드 메인 스트리트 123</string>
+    <string name="realestate_purchase_price_label">매입가 (€)</string>
+    <string name="realestate_current_value_label">현재 가치 (€)</string>
+    <string name="realestate_acquisition_date_label">취득일</string>
+    <string name="realestate_ownership_label">지분율</string>
+    <string name="realestate_rental_status_label">임대 상태</string>
+    <string name="realestate_monthly_rent_label">월 임대료 (€)</string>
+    <string name="realestate_change_mortgage">담보 대출 변경</string>
+    <string name="realestate_link_mortgage">담보 대출 연결</string>
+    <string name="realestate_purchase_expenses_title">매입 비용</string>
+    <string name="realestate_add_expense">추가</string>
+    <string name="realestate_no_expenses">매입 비용이 없습니다. \"추가\"를 눌러 공증료, 세금, 감정평가비 등을 포함하세요.</string>
+    <string name="realestate_total_expenses_format">총 비용: %1$s</string>
+    <string name="realestate_save_changes">변경사항 저장</string>
+    <string name="realestate_add_property">부동산 추가</string>
+    <string name="realestate_new_title">새 부동산</string>
+
+    <!-- REAL ESTATE - SellProperty -->
+    <string name="realestate_sale_price_hint">예: 275000</string>
+    <string name="realestate_sale_date_title">매도일</string>
+    <string name="realestate_sale_expenses_title_alt">매도 비용</string>
+    <string name="realestate_add_sale_expense">비용 추가</string>
+    <string name="realestate_no_sale_expenses">매도 비용(수수료, 양도세, 공증료 등)을 추가하지 않았습니다.</string>
+    <string name="realestate_sale_summary">요약</string>
+    <string name="realestate_sale_price_short">매도 가격</string>
+    <string name="realestate_sale_expenses_short">매도 비용</string>
+    <string name="realestate_net_proceeds">순 수익</string>
+    <string name="realestate_confirm_sale">매도 확인</string>
+
+    <!-- LOAN -->
+    <string name="loan_new_title">새 대출</string>
+    <string name="loan_save">저장</string>
+    <string name="loan_name_placeholder">예: 주택 담보 대출</string>
+    <string name="loan_lender_placeholder">예: 산탄데르 은행</string>
+    <string name="loan_principal_placeholder">예: 150000</string>
+    <string name="loan_interest_placeholder">예: 3.5</string>
+    <string name="loan_term_placeholder">예: 360</string>
+    <string name="loan_interest_only">이자만</string>
+    <string name="loan_interest_only_hint">이자만: 원금이 상각되지 않습니다</string>
+
+    <!-- PREMIUM -->
+    <string name="premium_trackfolio_title">Trackfolio Premium</string>
+    <string name="premium_already_premium_subtitle">이미 Premium 이용 중입니다</string>
+    <string name="premium_features_title">Premium 기능</string>
+    <string name="premium_multiple_accounts">다중 계좌</string>
+    <string name="premium_fiscal_report">세금 보고서</string>
+    <string name="premium_backup">백업</string>
+    <string name="premium_priority_support">우선 지원</string>
+    <string name="premium_coming_soon">출시 예정</string>
+    <string name="premium_already_purchased">이미 Premium을 구매했습니다. 지원해 주셔서 감사합니다!</string>
+    <string name="premium_purchase_error">구매 처리 중 오류 발생</string>
+    <string name="premium_restore_error">구매 복원 중 오류 발생</string>
+    <string name="premium_restoring">구매 복원 중…</string>
+
+    <!-- PORTFOLIO - Dividends -->
+    <string name="portfolio_dividend_save">배당금 저장</string>
+
+    <!-- ONBOARDING -->
+    <string name="onboarding_welcome_title_alt">N3to에 오신 것을 환영합니다</string>
+    <string name="onboarding_welcome_desc">당신의 재정, 당신의 통제 하에</string>
+    <string name="onboarding_patrimonio_title">명확한 순자산</string>
+    <string name="onboarding_patrimonio_desc">순자산, 자산 및 부채를 실시간으로 확인하세요</string>
+    <string name="onboarding_portfolio_desc">주식, ETF, 펀드 및 고정 수익을 한곳에서</string>
+    <string name="onboarding_movements_desc">카테고리별로 정리된 수입, 지출 및 투자</string>
+    <string name="onboarding_fiscal_desc">수입 유형별로 분류된 자동 세금 보고서</string>
+    <string name="onboarding_realestate_desc">부동산, 임대 및 담보 대출 관리</string>
+
+    <!-- FIXED INCOME - RegisterCoupon -->
+    <string name="fixedincome_coupon_amount_label">총액 (€)</string>
+    <string name="fixedincome_irpf_percent_label">세금 원천징수 (%)</string>
+    <string name="fixedincome_commission_field">수수료 (€)</string>
+    <string name="fixedincome_register_coupon_btn">등록</string>
+
+    <!-- FIXED INCOME - Close -->
+    <string name="fixedincome_close_maturity">만기 정산</string>
+    <string name="fixedincome_close_early">중도 해지</string>
+    <string name="fixedincome_close_secondary">유통 매도</string>
+    <string name="fixedincome_close_date">종료일</string>
+    <string name="fixedincome_close_notes">메모</string>
+    <string name="fixedincome_close_confirm_btn">종료 확인</string>
+
+    <!-- PORTFOLIO - Update price -->
+    <string name="portfolio_update_price_current">현재 가격</string>
+    <string name="portfolio_update_price_date">날짜</string>
+
+    <!-- COMMON add missing -->
+    <string name="common_add">추가</string>
+    <string name="common_create">생성</string>
+    <string name="common_name">이름</string>
+    <string name="common_save_changes">변경사항 저장</string>
+    <string name="common_confirm">확인</string>
+    <string name="common_retry">재시도</string>
+    <string name="common_restore">복원</string>
+    <string name="common_no_data">데이터 없음</string>
+
+    <!-- PREMIUM - missing -->
+    <string name="premium_multiple_accounts_desc">모든 계좌를 제한 없이 관리하세요</string>
+    <string name="premium_ad_free_desc">방해 없이 앱을 즐기세요</string>
+    <string name="premium_themes_desc">라이트 및 다크 테마로 앱 커스터마이징</string>
+    <string name="premium_welcome">Trackfolio Premium에 오신 것을 환영합니다!</string>
+    <string name="premium_error_format">오류: %1$s</string>
+    <string name="premium_restore_error_format">복원 오류: %1$s</string>
+    <string name="premium_restore_cd">구매 복원</string>
+    <string name="premium_best_value">최고의 가치</string>
+    <string name="premium_monthly_label">월간</string>
+    <string name="premium_annual_label">연간</string>
+    <string name="premium_lifetime_label">평생</string>
+    <string name="premium_lifetime_value">평생 이용권</string>
+    <string name="premium_back_cd">뒤로</string>
+
+    <!-- PORTFOLIO - Update price -->
+    <string name="portfolio_update_previous_price">이전 가격: %1$s</string>
+    <string name="portfolio_update_no_price">이 자산에 등록된 가격이 아직 없습니다</string>
+    <string name="portfolio_update_save_hint">현재 날짜와 시간으로 기록됩니다.</string>
+    <string name="portfolio_update_save">가격 저장</string>
+    <string name="portfolio_update_cancel">취소</string>
+
+    <!-- FIXED INCOME - Coupon registration -->
+    <string name="fixedincome_coupon_register_title">쿠폰/이자 등록</string>
+    <string name="fixedincome_net_amount_est">예상 순액</string>
+    <string name="fixedincome_register_coupon_btn_alt">지급 등록</string>
+    <string name="fixedincome_close_title">포지션 정산</string>
+    <string name="fixedincome_close_type_label">종료 유형</string>
+    <string name="fixedincome_close_maturity_type">만기</string>
+    <string name="fixedincome_close_secondary_type">유통 매도</string>
+    <string name="fixedincome_close_early_type">중도 해지</string>
+    <string name="fixedincome_gross_received_label">수령 총액 (€)</string>
+    <string name="fixedincome_irpf_label">원천징수 (%)</string>
+    <string name="fixedincome_commission_eur_label">수수료 (€)</string>
+    <string name="fixedincome_net_amount_label">순액</string>
+    <string name="fixedincome_confirm_close">정산 확인</string>
+
+    <!-- PORTFOLIO - Dividend -->
+    <string name="portfolio_dividend_title_alt">배당금</string>
+    <string name="portfolio_dividend_asset_label">자산</string>
+    <string name="portfolio_dividend_gross_hint">총액 입력</string>
+    <string name="portfolio_dividend_gross_label">총액</string>
+    <string name="portfolio_dividend_withholding_label">세금 원천징수</string>
+    <string name="portfolio_dividend_gross_short">총액</string>
+    <string name="portfolio_dividend_withholding_short">원천징수</string>
+    <string name="portfolio_dividend_net_short">순액</string>
+    <string name="portfolio_dividend_select_asset_error">자산을 선택하세요</string>
+    <string name="portfolio_dividend_valid_amount_error">유효한 총액을 입력하세요</string>
+    <string name="portfolio_dividend_register">배당금 등록</string>
+
+    <!-- LOW PRIORITY - remaining strings -->
+    <string name="realestate_change_rental_title">임대 상태 변경</string>
+    <string name="realestate_change_rental_date">변경일</string>
+    <string name="realestate_rent_amount">임대료</string>
+    <string name="realestate_update_value_title">가치 업데이트</string>
+    <string name="realestate_new_value">새 예상 가치</string>
+    <string name="portfolio_platform_create_title">새 플랫폼</string>
+    <string name="portfolio_platform_edit_title">플랫폼 편집</string>
+    <string name="portfolio_platform_name_label">이름</string>
+    <string name="portfolio_platform_icon_label">아이콘</string>
+    <string name="portfolio_platform_notes_label">메모</string>
+    <string name="portfolio_platform_save">저장</string>
+    <string name="portfolio_platform_cancel">취소</string>
+    <string name="portfolio_sector_new">새 섹터</string>
+    <string name="portfolio_sector_name">섹터명</string>
+    <string name="portfolio_region_new">새 지역</string>
+    <string name="portfolio_region_name">지역명</string>
+    <string name="portfolio_asset_detail_title_alt">자산 상세</string>
+    <string name="portfolio_asset_history_title">자산 내역</string>
+    <string name="portfolio_edit_portfolio_title_alt">포트폴리오 편집</string>
+    <string name="portfolio_portfolio_name">이름</string>
+    <string name="portfolio_portfolio_desc">설명</string>
+    <string name="portfolio_save">저장</string>
+    <string name="portfolio_compound_effect_title_alt">복리 효과</string>
+    <string name="version_block_title_alt">업데이트 필요</string>
+    <string name="version_block_message_alt">계속 사용하려면 N3to를 업데이트해야 합니다</string>
+    <string name="version_update_btn">지금 업데이트</string>
+    <string name="splash_loading">로딩 중…</string>
+    <string name="onboarding_efectivo_total">총 현금</string>
+    <string name="onboarding_disponible_deudas">부채 포함 사용 가능</string>
+    <string name="onboarding_seccion_patrimonio">섹션 · 순자산</string>
+
+    <!-- FASE 4 - Domain Enums resourceKey -->
+    <string name="income_type_salary">급여</string>
+    <string name="income_type_freelance">프리랜서</string>
+    <string name="income_type_bank_interest">은행 이자</string>
+    <string name="income_type_bond_deposit">채권 또는 예금</string>
+    <string name="income_type_dividend">배당금</string>
+    <string name="income_type_bonus_prize">근로 보너스</string>
+    <string name="income_type_prize_lottery">상금 / 복권</string>
+    <string name="income_type_rental_income">임대 수입</string>
+    <string name="income_type_exempt_income">면세 수입</string>
+    <string name="loan_type_mortgage">담보 대출</string>
+    <string name="loan_type_car">자동차 대출</string>
+    <string name="loan_type_student">학자금 대출</string>
+    <string name="loan_type_personal">신용 대출</string>
+    <string name="loan_type_other">기타</string>
+    <string name="fixedincome_type_bill">국고채</string>
+    <string name="fixedincome_type_bond">국채</string>
+    <string name="fixedincome_type_government_obligation">정부 채무</string>
+    <string name="fixedincome_type_corporate_bond">회사채</string>
+    <string name="fixedincome_type_deposit">정기 예금</string>
+    <string name="fixedincome_event_acquisition">취득</string>
+    <string name="fixedincome_event_coupon">쿠폰 / 정기 이자</string>
+    <string name="fixedincome_event_maturity_settlement">만기 정산</string>
+    <string name="fixedincome_event_secondary_sale">유통 매도</string>
+    <string name="fixedincome_event_early_cancellation">중도 해지</string>
+    <string name="fixedincome_event_partial_amortization">부분 상환</string>
+    <string name="interest_frequency_at_maturity">만기 시</string>
+    <string name="interest_frequency_monthly">월간</string>
+    <string name="interest_frequency_quarterly">분기</string>
+    <string name="interest_frequency_semiannual">반기</string>
+    <string name="interest_frequency_annual">연간</string>
+    <string name="property_type_primary_home">주거용</string>
+    <string name="property_type_secondary_home">별장</string>
+    <string name="property_type_investment">투자용</string>
+    <string name="rental_status_own_use">자가 사용</string>
+    <string name="rental_status_rented">임대 중</string>
+    <string name="rental_status_vacant">공실</string>
+    <string name="issuer_type_employer">회사 / 고객</string>
+    <string name="issuer_type_bank">은행 기관</string>
+    <string name="issuer_type_bond_issuer">채권 / 예금 발행자</string>
+    <string name="issuer_type_dividend_source">주식</string>
+    <string name="issuer_type_promotion_platform">플랫폼 / 대회</string>
+    <string name="issuer_type_exempt_source">수입원</string>
+    <string name="fixedincome_category_government">정부 부채</string>
+    <string name="fixedincome_category_corporate">기업 부채</string>
+    <string name="fixedincome_category_deposit">예금</string>
+
+    <!-- FASE 4 - ViewModel error messages -->
+    <string name="error_category_already_exists">이미 같은 이름의 카테고리가 있습니다</string>
+    <string name="error_issuer_already_exists">이미 같은 이름의 발행자가 있습니다</string>
+    <string name="error_platform_already_exists">이미 같은 이름의 플랫폼이 있습니다</string>
+    <string name="error_asset_not_found">자산을 찾을 수 없습니다</string>
+    <string name="error_asset_ticker_required">티커와 이름은 필수입니다</string>
+    <string name="error_account_required">먼저 계좌를 선택하세요</string>
+    <string name="error_position_not_found">포지션을 찾을 수 없습니다</string>
+    <string name="error_fi_no_buy_sell">고정 수익 자산은 매수/매도를 지원하지 않습니다</string>
+    <string name="error_price_history_save">가격 내역 저장 오류: %1$s</string>
+    <string name="error_category_already_exists_alt">이미 같은 이름의 카테고리가 있습니다</string>
+    <string name="error_asset_already_exists">티커 %1$s의 자산이 이미 이 계좌에 있습니다</string>
+    <string name="error_cannot_archive_with_open_positions">열린 포지션이 있어 «%1$s»을(를) 보관할 수 없습니다. 포지션을 종료하거나 이체하세요.</string>
+    <string name="error_cannot_archive_with_open_positions_qty">열린 포지션(%2$s단위)이 있어 «%1$s»을(를) 보관할 수 없습니다. 포지션을 종료하거나 이체하세요.</string>
+    <string name="error_fi_create_position">고정 수익 포지션 생성 오류</string>
+    <string name="error_coupon_register">쿠폰 등록 오류</string>
+    <string name="error_no_account_selected">선택된 계좌가 없습니다</string>
+    <string name="error_load_data">데이터 로딩 오류</string>
+    <string name="error_cannot_archive_asset">열린 포지션이 있어 «%1$s»을(를) 보관할 수 없습니다. 포지션을 종료하거나 이체하세요.</string>
+    <string name="error_fiscal_load">데이터 로딩 오류</string>
+    <string name="error_reconciliation">잔액 확인 오류</string>
+    <string name="error_goal_settings">목표 설정 저장 오류</string>
+    <string name="error_emergency_fund_settings">비상금 설정 저장 오류</string>
+    <string name="error_transaction_detail">거래 상세 로딩 오류</string>
+    <string name="error_networth_load">순자산 로딩 오류</string>
+    <string name="error_add_transaction">순액을 계산할 수 없습니다</string>
+
+    <!-- =====================================================================
+         FEEDBACK – Feedback form
+         ===================================================================== -->
+    <string name="settings_feedback">의견 보내기</string>
+    <string name="feedback_title">의견 보내기</string>
+    <string name="feedback_subtitle">여러분의 아이디어가 N3to 개선에 도움이 됩니다. 이 제출은 익명으로 처리됩니다.</string>
+    <string name="feedback_category_label">의견 카테고리</string>
+    <string name="feedback_category_new_feature">새 기능</string>
+    <string name="feedback_category_improvement">개선 사항</string>
+    <string name="feedback_category_bug">버그 신고</string>
+    <string name="feedback_category_other">기타</string>
+    <string name="feedback_title_field">제목</string>
+    <string name="feedback_title_placeholder">아이디어를 몇 단어로 요약하세요</string>
+    <string name="feedback_description_field">설명</string>
+    <string name="feedback_description_placeholder">제안 사항을 자세히 설명해 주세요…</string>
+    <string name="feedback_send_button">의견 보내기</string>
+    <string name="feedback_sending">전송 중…</string>
+    <string name="feedback_success">감사합니다! 의견이 성공적으로 전송되었습니다.</string>
+    <string name="feedback_error_empty">제목과 설명을 입력해 주세요.</string>
+    <string name="feedback_error_network">연결 오류입니다. 인터넷 연결을 확인하세요.</string>
+    <string name="feedback_disclaimer_title">개인정보 정보</string>
+    <string name="feedback_disclaimer_text">메시지에 개인 정보(이름, 이메일, 전화번호)를 포함하지 마세요. 의견은 Firebase를 통해 익명으로 전송됩니다.</string>
+
+    <!-- FEEDBACK – Data collected (Privacy) -->
+    <string name="privacy_data_feedback">의견 및 제안</string>
+
+    <!-- REAL ESTATE – Explanation separation vs. portfolio -->
+    <string name="realestate_why_separate">부동산은 고유한 지표(임대 수익률, 연결된 담보 대출, 다른 세금 영향)가 있으므로 별도로 관리됩니다.</string>
+
+    <!-- PREMIUM – Feature descriptions -->
+    <string name="premium_fiscal_report_desc">연간 양도소득 및 원천징수 보고서 생성</string>
+    <string name="premium_backup_desc">모든 데이터의 로컬 백업 저장 및 복원</string>
+
+    <!-- COMMON - missing -->
+    <string name="common_total">합계</string>
+    <string name="common_help_cd">도움말</string>
+    <string name="common_understood">알겠습니다</string>
+    <string name="common_edit">편집</string>
+    <string name="common_active_badge">활성</string>
+    <string name="common_none">없음</string>
+    <string name="common_dismiss">닫기</string>
+    <string name="common_completed_cd">완료</string>
+    <string name="common_note_placeholder">메모</string>
+    <string name="common_insufficient_data">데이터 부족</string>
+    <string name="common_amount_label">금액</string>
+    <string name="common_date_label">날짜</string>
+    <string name="common_category_label">카테고리</string>
+    <string name="common_description_label">설명</string>
+
+    <!-- ACCOUNT - missing -->
+    <string name="account_active_badge">활성</string>
+    <string name="account_balance_short">현재 잔액</string>
+    <string name="account_name_supporting_text">앱 전체에서 표시될 이름입니다. 예: 당좌 예금, 현금, Degiro...</string>
+    <string name="account_initial_balance_label">초기 잔액</string>
+    <string name="account_initial_balance_valid_hint">유효한 금액을 입력하세요 (0 가능)</string>
+    <string name="account_initial_balance_desc">오늘 이 계좌에 이미 보유한 금액입니다. 비어 있으면 0을 설정하세요.</string>
+    <string name="account_delete_full_message">«%1$s»을(를) 삭제할까요? 모든 거래, 자산 및 관련 데이터도 함께 삭제됩니다.</string>
+    <string name="account_set_balance_btn">잔액 설정</string>
+    <string name="account_set_balance_title">초기 잔액</string>
+    <string name="account_set_balance_desc">이 계좌의 현재 잔액을 입력하세요.\n거래를 등록하려면 먼저 필요합니다.</string>
+    <string name="account_set_balance_hint">계좌가 비어 있으면 0이 될 수 있습니다.</string>
+
+    <!-- ANNUAL - missing -->
+    <string name="annual_investment_monthly_format">월별 투자 %1$s</string>
+    <string name="annual_no_investments">올해 투자 내역이 없습니다</string>
+    <string name="annual_income_by_source">수입원별</string>
+
+    <!-- TRANSACTION - missing -->
+    <string name="transaction_delete_title">거래 삭제</string>
+    <string name="transaction_delete_message">이 거래를 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.</string>
+    <string name="transaction_income_type_label">수입 유형</string>
+    <string name="transaction_note_placeholder">메모 추가…</string>
+    <string name="transaction_mode_fiscal">세금</string>
+    <string name="transaction_mode_net_only">순액만</string>
+    <string name="transaction_net_amount_label">순액</string>
+    <string name="transaction_net_estimated">예상 순액</string>
+    <string name="transaction_detail_account_label">계좌</string>
+    <string name="transaction_detail_notes_label">메모</string>
+    <string name="transaction_detail_issuer_label">발행자</string>
+    <string name="transaction_detail_edit_cd">편집</string>
+    <string name="transaction_detail_delete_cd">삭제</string>
+
+    <!-- BUDGET - missing -->
+    <string name="budget_no_income">올해 수입이 없습니다</string>
+    <string name="budget_remaining_format">%1$s 남음</string>
+    <string name="budget_limit_exceeded">한도 초과!</string>
+    <string name="budget_empty_title">예산 없음</string>
+    <string name="budget_empty_subtitle">카테고리별 지출 한도를 설정하여\n재정을 더 잘 관리하세요</string>
+    <string name="home_section_budgets">예산</string>
+
+    <!-- CATEGORY - missing -->
+    <string name="category_create_cd">카테고리 생성</string>
+    <string name="category_help_title">카테고리 구성 방법</string>
+    <string name="category_help_text">같은 유형의 지출을 그룹화하세요. 예:</string>
+    <string name="category_help_examples">• 주거 → 임대료, 관리비, 공과금\n• 여가 → 외식, 영화, 여행\n• 건강 → 약국, 병원, 헬스장</string>
+    <string name="category_name_placeholder">카테고리명</string>
+    <string name="category_remove_limit">한도 제거</string>
+
+    <!-- HELP - missing -->
+    <string name="help_account_title">계좌란 무엇인가요?</string>
+    <string name="help_tax_profile_title">세금 프로필이란 무엇인가요?</string>
+    <string name="help_tax_system_title">세금 제도</string>
+    <string name="help_goals_title">월별 목표</string>
+    <string name="help_customize_months_title">월별 설정</string>
+    <string name="help_asset_types_title">자산 유형</string>
+    <string name="help_asset_help_cd">자산 유형 도움말</string>
+
+    <!-- PORTFOLIO - missing -->
+    <string name="portfolio_update_prices_hint">변동을 확인하려면 가격을 업데이트하세요</string>
+    <string name="portfolio_asset_no_price_registered">등록된 가격 없음</string>
+    <string name="portfolio_asset_new_price_placeholder">새 가격</string>
+    <string name="portfolio_update_bulk_title">가격 업데이트</string>
+    <string name="portfolio_update_bulk_progress">%1$d / %2$d 업데이트됨</string>
+    <string name="portfolio_distribution_subtitle">현재 가치 기준</string>
+    <string name="portfolio_closed_badge">종료</string>
+    <string name="portfolio_no_portfolios_title">포트폴리오 없음</string>
+    <string name="portfolio_no_portfolios_subtitle">설정에서 포트폴리오를 생성하여\n투자 정리를 시작하세요</string>
+    <string name="portfolio_no_positions_select">포지션이 없습니다.\n포트폴리오를 선택하고 +를 사용하여\n첫 투자를 추가하세요</string>
+    <string name="portfolio_no_positions_wallet">이 포트폴리오에 아직 거래가 없습니다.\n+를 눌러 첫 투자를 추가하세요</string>
+    <string name="portfolio_compound_no_effect">포트폴리오가 플러스 수익일 때 복리 효과가\n발생합니다. 계속 투자하세요!</string>
+    <string name="portfolio_compound_low_effect">아직 큰 복리 효과가 없습니다.\n장기 투자를 유지하세요.</string>
+
+    <!-- PRICE UPDATE - missing -->
+    <string name="price_update_bulk_title">가격 업데이트</string>
+
+    <!-- BACKUP - missing -->
+    <string name="backup_reminder_dialog_title">백업 알림</string>
+    <string name="backup_reminder_dialog_message">언제 다시 알려드릴까요?</string>
+    <string name="backup_reminder_dialog_hint">알림을 비활성화하려면 설정 › 알림으로 이동하세요.</string>
+
+    <!-- DEBT - missing -->
+    <string name="debt_person_placeholder">이름 또는 별칭</string>
+    <string name="debt_note_optional">메모 (선택 사항)</string>
+    <string name="debt_note_placeholder">예: 금요일 저녁 식사</string>
+    <string name="debt_mark_paid_confirm">네, 지불했습니다</string>
+    <string name="debt_empty_subtitle">\"새 부채\"를 눌러 미결제 부채를\n등록하세요</string>
+    <string name="debt_edit_label">편집</string>
+
+    <!-- EXPENSE SETTINGS - missing -->
+    <string name="expense_categories_section">카테고리</string>
+    <string name="expense_no_categories">지출 카테고리 없음</string>
+
+    <!-- INCOME SETTINGS - missing -->
+    <string name="income_types_section">수입 유형</string>
+    <string name="income_type_archive_title">발행자 보관</string>
+    <string name="issuer_name_placeholder">발행자명</string>
+
+    <!-- GOAL SETTINGS - missing -->
+    <string name="goal_settings_title">월별 목표</string>
+    <string name="goal_savings_base_label">기본 월 저축액</string>
+    <string name="goal_savings_placeholder">예: 500</string>
+    <string name="goal_investment_base_label">기본 월 투자액</string>
+    <string name="goal_investment_placeholder">예: 300</string>
+    <string name="goal_base_placeholder">기본</string>
+    <string name="goal_saved_message">목표가 저장되었습니다</string>
+    <string name="goal_onboarding_badge">재정 계획</string>
+    <string name="goal_onboarding_subtitle">매월 저축하고 투자할 금액을 설정하세요. 연간 기준을 설정하고 특별 수입이나 지출이 있는 달을 조정하세요.</string>
+
+    <!-- EMERGENCY FUND SETTINGS - missing -->
+    <string name="ef_months_hint">비상금으로 커버할 월 생활비 개월 수를 설정하세요.</string>
+    <string name="ef_months_placeholder">예: 6</string>
+    <string name="ef_estimated_expense_label">예상 지출</string>
+    <string name="ef_average_expense_label">평균 지출</string>
+    <string name="ef_expense_placeholder">예: 1500</string>
+    <string name="ef_exclude_categories_hint">월 지출 계산에서 제외할 카테고리를 선택하세요.</string>
+    <string name="ef_no_categories">사용 가능한 지출 카테고리가 없습니다. 설정 › 지출에서 생성하세요.</string>
+    <string name="ef_what_is_title">무엇인가요?</string>
+    <string name="ef_what_is_text">빚을 지지 않고 비상 상황(실직, 의료비, 긴급 수리)에 대비하는 현금 완충 장치입니다.</string>
+    <string name="ef_recommendation_title">권장 금액</string>
+    <string name="ef_recommendation_text">• 안정적인 직업: 3~6개월\n• 자영업자 또는 부양가족: 6~12개월</string>
+    <string name="ef_onboarding_badge">재정 보호</string>
+    <string name="ef_onboarding_title">비상금</string>
+    <string name="ef_onboarding_subtitle">필요한 커버리지 개월 수를 설정하세요.</string>
+    <string name="ef_saved_message">비상금이 저장되었습니다</string>
+
+    <!-- TAX PROFILE SETTINGS - missing -->
+    <string name="tax_profile_title">세금 프로필</string>
+    <string name="tax_profile_add_cd">프로필 추가</string>
+    <string name="tax_profile_empty_title">세금 프로필 없음</string>
+    <string name="tax_profile_empty_subtitle">+ 버튼으로 추가하세요</string>
+    <string name="tax_profile_history_section">프로필 내역</string>
+    <string name="tax_profile_history_hint">가장 최근 프로필(시작일 기준)이 현재 세금 계산에 적용됩니다. 사용한 각 세금 제도에 대해 하나씩 가질 수 있습니다.</string>
+    <string name="tax_profile_delete_title">프로필 삭제</string>
+    <string name="tax_profile_new_title">새 세금 프로필</string>
+    <string name="tax_profile_country_label">국가 / 세금 제도</string>
+    <string name="tax_profile_valid_from_label">적용 시작일</string>
+    <string name="tax_profile_delete_cd">삭제</string>
+
+    <!-- ACCOUNT CONFIG SETTINGS - missing -->
+    <string name="settings_account_section_categories">카테고리</string>
+    <string name="settings_expense_categories_label">지출 카테고리</string>
+    <string name="settings_income_types_label">수입 유형</string>
+    <string name="settings_account_section_fiscal">세금</string>
+    <string name="settings_tax_profile_label">세금 프로필</string>
+    <string name="settings_account_section_planning">계획</string>
+    <string name="settings_monthly_goals_label">월별 목표</string>
+    <string name="settings_account_section_maintenance">유지 관리</string>
+    <string name="settings_edit_account_label">계좌 편집</string>
+    <string name="settings_delete_account_label">계좌 삭제</string>
+
+    <!-- ABOUT SCREEN - missing -->
+    <string name="about_title">정보</string>
+    <string name="about_section_app">앱</string>
+    <string name="about_version_label">버전</string>
+    <string name="about_revenuecat_id_label">RevenueCat ID</string>
+    <string name="about_section_dev">개발</string>
+    <string name="about_developer_label">개발자</string>
+    <string name="about_developer_value">AviferDev</string>
+    <string name="about_license_label">라이선스</string>
+    <string name="about_license_value">독점</string>
+    <string name="about_contact_label">연락처</string>
+    <string name="about_section_rate">N3to가 마음에 드시나요?</string>
+    <string name="about_rate_app_label">앱 평가하기</string>
+    <string name="about_share_app_label">앱 공유하기</string>
+    <string name="about_tagline">개인 재정 관리</string>
+    <string name="about_app_name">N3to</string>
+
+    <!-- NET WORTH - missing -->
+    <string name="networth_no_account_title">설정된 계좌 없음</string>
+    <string name="networth_no_account_subtitle">설정에서 계좌를 생성하여\n순자산을 확인하세요</string>
+    <string name="networth_valuables_label">귀중품</string>
+    <string name="networth_add_valuable_cd">귀중품 추가</string>
+    <string name="networth_no_valuables">등록된 귀중품 없음</string>
+
+    <!-- VALUABLE - missing -->
+    <string name="valuable_list_title">귀중품</string>
+    <string name="valuable_empty_title">귀중품 없음</string>
+    <string name="valuable_empty_subtitle">첫 귀중품을 추가하여 가치를 추적하세요</string>
+    <string name="valuable_name_label">이름</string>
+    <string name="valuable_name_placeholder">예: CNC 선반</string>
+    <string name="valuable_description_label">설명 (선택 사항)</string>
+    <string name="valuable_description_placeholder">브랜드, 모델, 연도...</string>
+    <string name="valuable_purchase_price_label">매입 가격</string>
+    <string name="valuable_estimated_value_label">예상 가치 (선택 사항)</string>
+    <string name="valuable_estimated_value_placeholder">입력하지 않으면 매입 가격이 사용됩니다</string>
+    <string name="valuable_notes_label">메모 (선택 사항)</string>
+    <string name="valuable_purchase_expenses_title">매입 비용</string>
+    <string name="valuable_add_purchase_expense">매입 비용 추가</string>
+    <string name="valuable_holding_expenses_title">보유 비용</string>
+    <string name="valuable_add_holding_expense">보유 비용 추가</string>
+    <string name="valuable_purchase_date_label">매입일</string>
+    <string name="valuable_expense_amount_label">금액</string>
+    <string name="valuable_expense_delete_cd">삭제</string>
+    <string name="valuable_sell_title_format">매도: %1$s</string>
+    <string name="valuable_sell_price_label">매도 가격</string>
+    <string name="valuable_sell_date_label">매도일</string>
+    <string name="valuable_sell_expenses_title">매도 비용</string>
+    <string name="valuable_add_sell_expense">매도 비용 추가</string>
+    <string name="valuable_confirm_sale">매도 확인</string>
+    <string name="valuable_purchase_format">매입: %1$s</string>
+    <string name="valuable_in_stock">보유 중</string>
+    <string name="valuable_delete_title">귀중품 삭제</string>
+    <string name="valuable_delete_message">이 귀중품을 삭제하시겠습니까? 연결된 모든 거래도 함께 삭제됩니다.</string>
+    <string name="valuable_link_loan_title">대출 연결</string>
+    <string name="valuable_no_loans">사용 가능한 대출 없음</string>
+    <string name="valuable_update_value_title">가치 업데이트</string>
+    <string name="valuable_new_value_label">새 예상 가치</string>
+    <string name="valuable_update_value_btn">가치 업데이트</string>
+    <string name="valuable_balance_label">잔액</string>
+    <string name="valuable_sell_cd">매도</string>
+    <string name="valuable_back_cd">뒤로</string>
+
+    <!-- REAL ESTATE - missing -->
+    <string name="realestate_profitability_label">수익성</string>
+    <string name="realestate_cashflow_label">순 현금 흐름</string>
+    <string name="realestate_total_return_label">총 수익</string>
+    <string name="realestate_linked_transactions">연결된 거래</string>
+    <string name="realestate_rental_history_label">임대 내역</string>
+    <string name="realestate_expense_delete_cd">비용 삭제</string>
+    <string name="realestate_mortgage_amount_format">담보 대출: %1$s</string>
+    <string name="realestate_add_mortgage">담보 대출 추가</string>
+    <string name="realestate_loan_only_mortgages">담보 대출만</string>
+    <string name="realestate_sold_with_emoji">✅ 매도 완료</string>
+    <string name="realestate_no_mortgage_short">🏠 담보 대출 없음</string>
+
+    <!-- LOAN - missing -->
+    <string name="loan_new_rate_label">새 연간 금리 (%)</string>
+    <string name="loan_rate_placeholder">예: 3.25</string>
+    <string name="loan_apply_rate_change">변경 적용</string>
+
+    <!-- SPLASH / BRANDING -->
+    <string name="app_name_cd">N3to</string>
+    <string name="app_tagline">모든 움직임을 추적하세요.</string>
+    <string name="app_name">N3to</string>
+
+    <!-- ONBOARDING - missing slide data -->
+    <string name="onboarding_example_label">예시</string>
+    <string name="onboarding_realestate_name">우리 집</string>
+    <string name="onboarding_realestate_type">부동산 자산</string>
+    <string name="onboarding_realestate_value_label">예상 가치</string>
+    <string name="onboarding_realestate_mortgage_label">담보 대출</string>
+    <string name="onboarding_realestate_contribution">순자산에 기여</string>
+    <string name="onboarding_fiscal_base_label">과세 표준 2025</string>
+    <string name="onboarding_fiscal_rendimientos">수익</string>
+    <string name="onboarding_fiscal_retenciones">원천징수</string>
+    <string name="onboarding_fiscal_operations_label">표시된 거래</string>
+    <string name="onboarding_portfolio_label">📈 포트폴리오</string>
+    <string name="onboarding_hipoteca_label">🏠 담보 대출</string>
+    <string name="onboarding_portfolio_example_badge">예시</string>
+
+    <!-- PRIVACY - missing -->
+    <string name="privacy_section_premium">Trackfolio Premium</string>
+
+    <!-- COMMON - search category placeholder -->
+    <string name="common_search_category_placeholder">카테고리 검색…</string>
+
+    <!-- LANGUAGE SELECTOR -->
+    <string name="settings_language">언어</string>
+    <string name="language_system">시스템 언어</string>
+    <string name="language_spanish">Spanish</string>
+    <string name="language_english">English</string>
+    <string name="language_french">Français</string>
+    <string name="language_german">Deutsch</string>
+    <string name="language_chinese">中文</string>
+    <string name="language_russian">Русский</string>
+    <string name="language_japanese">日本語</string>
+    <string name="language_portuguese">Português</string>
+    <string name="language_italian">Italiano</string>
+    <string name="language_korean">한국어</string>
+    <string name="language_beta">Beta</string>
+    <string name="language_select_title">언어 선택</string>
+</resources>

@@ -31,7 +31,15 @@ import es.aviferdev.n3to.ui.theme.appColors
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.common_cancel
 import n3to.composeapp.generated.resources.language_beta
+import n3to.composeapp.generated.resources.language_chinese
 import n3to.composeapp.generated.resources.language_english
+import n3to.composeapp.generated.resources.language_french
+import n3to.composeapp.generated.resources.language_german
+import n3to.composeapp.generated.resources.language_italian
+import n3to.composeapp.generated.resources.language_japanese
+import n3to.composeapp.generated.resources.language_korean
+import n3to.composeapp.generated.resources.language_portuguese
+import n3to.composeapp.generated.resources.language_russian
 import n3to.composeapp.generated.resources.language_select_title
 import n3to.composeapp.generated.resources.language_spanish
 import n3to.composeapp.generated.resources.language_system
@@ -98,6 +106,14 @@ fun LanguageSelectorDialog(
                                     "language_system" -> Res.string.language_system
                                     "language_spanish" -> Res.string.language_spanish
                                     "language_english" -> Res.string.language_english
+                                    "language_french" -> Res.string.language_french
+                                    "language_german" -> Res.string.language_german
+                                    "language_chinese" -> Res.string.language_chinese
+                                    "language_russian" -> Res.string.language_russian
+                                    "language_japanese" -> Res.string.language_japanese
+                                    "language_portuguese" -> Res.string.language_portuguese
+                                    "language_italian" -> Res.string.language_italian
+                                    "language_korean" -> Res.string.language_korean
                                     else -> Res.string.language_spanish
                                 }
                             ),
