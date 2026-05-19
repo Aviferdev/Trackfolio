@@ -115,7 +115,7 @@ fun SellValuableBottomSheet(
                     IconButton(onClick = {
                         saleExpenses = saleExpenses.toMutableList().apply { removeAt(index) }
                     }) {
-                        Icon(Icons.Outlined.Close, contentDescription = "Eliminar", tint = ExpenseRed)
+                        Icon(Icons.Outlined.Close, contentDescription = "Eliminar", tint = MaterialTheme.appColors.expense)
                     }
                 }
                 Spacer(Modifier.height(6.dp))
@@ -137,7 +137,7 @@ fun SellValuableBottomSheet(
                 },
                 modifier = Modifier.fillMaxWidth().height(48.dp),
                 shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = IncomeGreen)
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.appColors.income)
             ) {
                 Text("Confirmar venta", fontWeight = FontWeight.SemiBold)
             }
@@ -148,12 +148,12 @@ fun SellValuableBottomSheet(
 
 @Composable
 private fun textFieldColors() = OutlinedTextFieldDefaults.colors(
-    focusedBorderColor = BrandGreen,
+    focusedBorderColor = MaterialTheme.appColors.income,
     unfocusedBorderColor = MaterialTheme.appColors.border,
     focusedTextColor = MaterialTheme.appColors.textPrimary,
     unfocusedTextColor = MaterialTheme.appColors.textPrimary,
-    cursorColor = BrandGreen,
-    focusedLabelColor = BrandGreen,
+    cursorColor = MaterialTheme.appColors.income,
+    focusedLabelColor = MaterialTheme.appColors.income,
     unfocusedLabelColor = MaterialTheme.appColors.textSecondary
 )
 

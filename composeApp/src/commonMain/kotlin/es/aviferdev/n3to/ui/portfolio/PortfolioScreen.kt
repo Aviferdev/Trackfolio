@@ -62,7 +62,6 @@ import es.aviferdev.n3to.ui.fixedincome.FixedIncomePositionCard
 import es.aviferdev.n3to.ui.fixedincome.RegisterCouponBottomSheet
 
 import es.aviferdev.n3to.ui.theme.ExpenseRed
-import es.aviferdev.n3to.ui.theme.IncomeGreen
 import es.aviferdev.n3to.ui.theme.LocalBalanceHidden
 
 import es.aviferdev.n3to.ui.theme.PrimaryDark
@@ -380,7 +379,7 @@ fun PortfolioScreen(
             containerColor = MaterialTheme.appColors.surface,
             title = { Text(stringResource(Res.string.common_error), fontSize = 16.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.appColors.textPrimary) },
             text = { Text(errorMsg, fontSize = 13.sp, color = MaterialTheme.appColors.textSecondary) },
-            confirmButton = { TextButton(onClick = clearFn) { Text(stringResource(Res.string.common_accept), color = PrimaryDark) } },
+            confirmButton = { TextButton(onClick = clearFn) { Text(stringResource(Res.string.common_accept), color = MaterialTheme.appColors.primary) } },
             shape = RoundedCornerShape(16.dp)
         )
     }

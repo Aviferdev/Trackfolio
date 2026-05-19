@@ -17,7 +17,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
-import es.aviferdev.n3to.ui.theme.IncomeGreen
 import es.aviferdev.n3to.ui.theme.PrimaryDark
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import androidx.compose.ui.tooling.preview.Preview
@@ -29,7 +28,7 @@ import androidx.compose.ui.tooling.preview.Preview
  * Usage:
  * ```
  * ProgressBar(progress = 0.35f)                    // 35%
- * ProgressBar(progress = 0.72f, color = IncomeGreen, height = 4.dp)
+ * ProgressBar(progress = 0.72f, color = MaterialTheme.appColors.income, height = 4.dp)
  * ```
  *
  * @param progress Value between 0.0 and 1.0 (clamped internally to [0, 1]).
@@ -39,7 +38,7 @@ import androidx.compose.ui.tooling.preview.Preview
 @Composable
 fun ProgressBar(
     progress: Float,
-    color: Color = PrimaryDark,
+    color: Color = MaterialTheme.appColors.primary,
     height: Dp = 3.dp,
     modifier: Modifier = Modifier
 ) {
@@ -71,8 +70,8 @@ private fun ProgressBarPreview() {
             verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(12.dp)
         ) {
             ProgressBar(progress = 0.35f)
-            ProgressBar(progress = 0.72f, color = IncomeGreen, height = 4.dp)
-            ProgressBar(progress = 1f, color = PrimaryDark)
+            ProgressBar(progress = 0.72f, color = MaterialTheme.appColors.income, height = 4.dp)
+            ProgressBar(progress = 1f, color = MaterialTheme.appColors.primary)
         }
     }
 }

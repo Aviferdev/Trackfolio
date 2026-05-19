@@ -254,7 +254,7 @@ fun AddEditAssetBottomSheet(
                 }
                 if (selectedCategoryId == null) {
                     Spacer(Modifier.height(4.dp))
-                    Text(stringResource(Res.string.portfolio_add_asset_select_category), fontSize = 11.sp, color = ExpenseRed)
+                    Text(stringResource(Res.string.portfolio_add_asset_select_category), fontSize = 11.sp, color = MaterialTheme.appColors.expense)
                 }
                 Spacer(Modifier.height(16.dp))
             }
@@ -305,7 +305,7 @@ fun AddEditAssetBottomSheet(
                 shape         = RoundedCornerShape(10.dp),
                 keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Characters),
                 colors        = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor   = PrimaryDark,
+                    focusedBorderColor   = MaterialTheme.appColors.primary,
                     unfocusedBorderColor = MaterialTheme.appColors.border
                 )
             )
@@ -325,7 +325,7 @@ fun AddEditAssetBottomSheet(
                 singleLine    = true,
                 shape         = RoundedCornerShape(10.dp),
                 colors        = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor   = PrimaryDark,
+                    focusedBorderColor   = MaterialTheme.appColors.primary,
                     unfocusedBorderColor = MaterialTheme.appColors.border
                 )
             )
@@ -351,8 +351,8 @@ Spacer(Modifier.height(12.dp))
                         steps     = 3,
                         modifier  = Modifier.weight(1f),
                         colors    = SliderDefaults.colors(
-                            thumbColor   = PrimaryDark,
-                            activeTrackColor = PrimaryDark
+                            thumbColor   = MaterialTheme.appColors.primary,
+                            activeTrackColor = MaterialTheme.appColors.primary
                         )
                     )
                     Spacer(Modifier.width(12.dp))
@@ -360,7 +360,7 @@ Spacer(Modifier.height(12.dp))
                         text       = "${fixedIncomePercent}%",
                         fontSize   = 16.sp,
                         fontWeight = FontWeight.SemiBold,
-                        color      = PrimaryDark,
+                        color      = MaterialTheme.appColors.primary,
                         modifier   = Modifier.width(50.dp)
                     )
                 }
@@ -372,7 +372,7 @@ Spacer(Modifier.height(12.dp))
                         Text(
                             text     = "$pct%",
                             fontSize = 9.sp,
-                            color    = if (pct == fixedIncomePercent) PrimaryDark else MaterialTheme.appColors.textSecondary
+                            color    = if (pct == fixedIncomePercent) MaterialTheme.appColors.primary else MaterialTheme.appColors.textSecondary
                         )
                     }
                 }
@@ -424,7 +424,7 @@ Spacer(Modifier.height(12.dp))
                     shape         = RoundedCornerShape(10.dp),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                     colors        = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor   = PrimaryDark,
+                        focusedBorderColor   = MaterialTheme.appColors.primary,
                         unfocusedBorderColor = MaterialTheme.appColors.border
                     )
                 )
@@ -552,8 +552,8 @@ Spacer(Modifier.height(12.dp))
                             valueRange = 0f..100f,
                             modifier = Modifier.weight(1f),
                             colors = SliderDefaults.colors(
-                                thumbColor = PrimaryDark,
-                                activeTrackColor = PrimaryDark
+                                thumbColor = MaterialTheme.appColors.primary,
+                                activeTrackColor = MaterialTheme.appColors.primary
                             )
                         )
                         Text(
@@ -565,7 +565,7 @@ Spacer(Modifier.height(12.dp))
                     }
                 }
                 val totalPercent = regionPercents.values.sum()
-                val totalColor = if (totalPercent > 100) ExpenseRed else MaterialTheme.appColors.textSecondary
+                val totalColor = if (totalPercent > 100) MaterialTheme.appColors.expense else MaterialTheme.appColors.textSecondary
                 Text(
                     text = stringResource(Res.string.portfolio_add_asset_regions_total, totalPercent),
                     fontSize = 10.sp,
@@ -612,7 +612,7 @@ Spacer(Modifier.height(12.dp))
                 singleLine    = true,
                 shape         = RoundedCornerShape(10.dp),
                 colors        = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor   = PrimaryDark,
+                    focusedBorderColor   = MaterialTheme.appColors.primary,
                     unfocusedBorderColor = MaterialTheme.appColors.border
                 )
             )
@@ -646,8 +646,8 @@ Spacer(Modifier.height(12.dp))
                 modifier = Modifier.fillMaxWidth().height(52.dp),
                 shape    = RoundedCornerShape(10.dp),
                 colors   = ButtonDefaults.buttonColors(
-                    containerColor         = PrimaryDark,
-                    disabledContainerColor = PrimaryDark.copy(alpha = 0.38f)
+                    containerColor         = MaterialTheme.appColors.primary,
+                    disabledContainerColor = MaterialTheme.appColors.primary.copy(alpha = 0.38f)
                 )
             ) {
                 Text(
@@ -678,7 +678,7 @@ Spacer(Modifier.height(12.dp))
             },
             confirmButton = {
                 TextButton(onClick = { showCategoryHelp = false }) {
-                    Text("Entendido", color = PrimaryDark, fontWeight = FontWeight.SemiBold)
+                    Text("Entendido", color = MaterialTheme.appColors.primary, fontWeight = FontWeight.SemiBold)
                 }
             },
             shape = RoundedCornerShape(16.dp)
@@ -699,7 +699,7 @@ Spacer(Modifier.height(12.dp))
                         maturityDateMillis = selected
                     }
                     showMaturityDatePicker = false
-                }) { Text(stringResource(Res.string.common_accept), color = PrimaryDark) }
+                }) { Text(stringResource(Res.string.common_accept), color = MaterialTheme.appColors.primary) }
             },
             dismissButton = {
                 TextButton(onClick = { showMaturityDatePicker = false }) {
@@ -711,8 +711,8 @@ Spacer(Modifier.height(12.dp))
             DatePicker(
                 state = pickerState,
                 colors = DatePickerDefaults.colors(
-                    selectedDayContainerColor = PrimaryDark,
-                    todayDateBorderColor = PrimaryDark
+                    selectedDayContainerColor = MaterialTheme.appColors.primary,
+                    todayDateBorderColor = MaterialTheme.appColors.primary
                 )
             )
         }

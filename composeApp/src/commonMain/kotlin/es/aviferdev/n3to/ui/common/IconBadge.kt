@@ -11,6 +11,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AccountBalance
 import androidx.compose.material.icons.automirrored.outlined.ShowChart
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -20,11 +21,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import es.aviferdev.n3to.ui.theme.IncomeGreen
 import es.aviferdev.n3to.ui.theme.PrimaryDark
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import es.aviferdev.n3to.ui.theme.WarnAmber
 import androidx.compose.ui.tooling.preview.Preview
+import es.aviferdev.n3to.ui.theme.appColors
 
 /**
  * Icon inside a colored rounded badge.
@@ -32,13 +33,13 @@ import androidx.compose.ui.tooling.preview.Preview
  *
  * Usage:
  * ```
- * IconBadge(icon = Icons.Outlined.AccountBalance, color = IncomeGreen, size = 32.dp)
+ * IconBadge(icon = Icons.Outlined.AccountBalance, color = MaterialTheme.appColors.income, size = 32.dp)
  * ```
  */
 @Composable
 fun IconBadge(
     icon: ImageVector,
-    color: Color = PrimaryDark,
+    color: Color = MaterialTheme.appColors.primary,
     size: Dp = 38.dp,
     modifier: Modifier = Modifier
 ) {
@@ -66,9 +67,9 @@ private fun IconBadgePreview() {
             modifier = Modifier.padding(16.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            IconBadge(icon = Icons.Outlined.AccountBalance, color = IncomeGreen)
-            IconBadge(icon = Icons.Outlined.AccountBalance, color = WarnAmber)
-            IconBadge(icon = Icons.AutoMirrored.Outlined.ShowChart, color = PrimaryDark, size = 48.dp)
+            IconBadge(icon = Icons.Outlined.AccountBalance, color = MaterialTheme.appColors.income)
+            IconBadge(icon = Icons.Outlined.AccountBalance, color = MaterialTheme.appColors.warnAmber)
+            IconBadge(icon = Icons.AutoMirrored.Outlined.ShowChart, color = MaterialTheme.appColors.primary, size = 48.dp)
         }
     }
 }

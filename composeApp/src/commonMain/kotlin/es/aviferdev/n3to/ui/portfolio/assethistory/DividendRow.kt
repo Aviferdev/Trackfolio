@@ -32,7 +32,6 @@ import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.Transaction
 import es.aviferdev.n3to.ui.portfolio.formatShortDate
 import es.aviferdev.n3to.ui.theme.ExpenseRed
-import es.aviferdev.n3to.ui.theme.IncomeGreen
 
 import es.aviferdev.n3to.ui.theme.formatAmount
 import es.aviferdev.n3to.ui.theme.maskAmount
@@ -60,7 +59,7 @@ fun DividendRow(
         ) {
             Box(
                 modifier = Modifier.size(36.dp).clip(RoundedCornerShape(10.dp))
-                    .background(IncomeGreen.copy(.14f)),
+                    .background(MaterialTheme.appColors.income.copy(.14f)),
                 contentAlignment = Alignment.Center
             ) { Icon(Icons.AutoMirrored.Outlined.ShowChart, contentDescription = null, modifier = Modifier.size(18.dp), tint = Color.White) }
             Spacer(Modifier.width(10.dp))
@@ -68,7 +67,7 @@ fun DividendRow(
                 Text(
                     "Dividendo",
                     fontSize = 12.sp,
-                    color = IncomeGreen,
+                    color = MaterialTheme.appColors.income,
                     fontWeight = FontWeight.SemiBold
                 )
                 Text(formatShortDate(dividend.date), fontSize = 10.sp, color = MaterialTheme.appColors.textTertiary)
@@ -92,14 +91,14 @@ fun DividendRow(
             Column(horizontalAlignment = Alignment.End) {
                 Text(
                     "+ ${maskAmount(formatAmount(dividend.amount), balancesHidden)} €",
-                    fontSize = 12.sp, color = IncomeGreen, fontWeight = FontWeight.Bold
+                    fontSize = 12.sp, color = MaterialTheme.appColors.income, fontWeight = FontWeight.Bold
                 )
                 IconButton(onClick = onDelete, modifier = Modifier.size(26.dp)) {
                     Icon(
                         Icons.Default.Delete,
                         null,
                         modifier = Modifier.size(13.dp),
-                        tint = ExpenseRed
+                        tint = MaterialTheme.appColors.expense
                     )
                 }
             }

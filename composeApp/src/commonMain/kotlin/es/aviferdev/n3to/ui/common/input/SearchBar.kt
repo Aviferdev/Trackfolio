@@ -88,7 +88,7 @@ fun SearchBar(
                     color = MaterialTheme.appColors.textPrimary,
                     fontWeight = FontWeight.Normal
                 ),
-                cursorBrush = SolidColor(PrimaryDark)
+                cursorBrush = SolidColor(MaterialTheme.appColors.primary)
             )
         }
 

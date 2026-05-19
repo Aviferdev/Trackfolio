@@ -54,7 +54,7 @@ fun MaturityReminderBanner(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(12.dp))
-                .background(WarnAmber.copy(alpha = 0.10f))
+                .background(MaterialTheme.appColors.warnAmber.copy(alpha = 0.10f))
                 .padding(horizontal = 14.dp, vertical = 12.dp)
         ) {
             // Header row
@@ -68,14 +68,14 @@ fun MaturityReminderBanner(
                     text       = stringResource(Res.string.home_maturity_title),
                     fontSize   = 12.sp,
                     fontWeight = FontWeight.Bold,
-                    color      = WarnAmber,
+                    color      = MaterialTheme.appColors.warnAmber,
                     modifier   = Modifier.weight(1f)
                 )
                 TextButton(
                     onClick        = onDismiss,
                     contentPadding = PaddingValues(horizontal = 4.dp, vertical = 0.dp)
                 ) {
-                    Text("×", fontSize = 16.sp, color = WarnAmber.copy(alpha = 0.6f))
+                    Text("×", fontSize = 16.sp, color = MaterialTheme.appColors.warnAmber.copy(alpha = 0.6f))
                 }
             }
 
@@ -89,19 +89,19 @@ fun MaturityReminderBanner(
                         .clickable { onViewDetails(position.id) },
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(position.type.toMaterialIcon(), contentDescription = null, modifier = Modifier.size(16.dp), tint = WarnAmber)
+                    Icon(position.type.toMaterialIcon(), contentDescription = null, modifier = Modifier.size(16.dp), tint = MaterialTheme.appColors.warnAmber)
                     Spacer(Modifier.width(8.dp))
                     Text(
                         text       = position.name,
                         fontSize   = 12.sp,
                         fontWeight = FontWeight.Medium,
-                        color      = WarnAmber,
+                        color      = MaterialTheme.appColors.warnAmber,
                         modifier   = Modifier.weight(1f)
                     )
                     Text(
                         text     = "${position.remainingDays}d",
                         fontSize = 11.sp,
-                        color    = WarnAmber.copy(alpha = 0.7f)
+                        color    = MaterialTheme.appColors.warnAmber.copy(alpha = 0.7f)
                     )
                 }
             }
@@ -111,7 +111,7 @@ fun MaturityReminderBanner(
                 Text(
                     text     = stringResource(Res.string.home_maturity_more_format, positions.size - 3),
                     fontSize = 11.sp,
-                    color    = WarnAmber.copy(alpha = 0.55f),
+                    color    = MaterialTheme.appColors.warnAmber.copy(alpha = 0.55f),
                     modifier = Modifier.padding(start = 22.dp)
                 )
             }

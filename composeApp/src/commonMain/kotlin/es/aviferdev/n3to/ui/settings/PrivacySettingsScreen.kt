@@ -61,7 +61,6 @@ import es.aviferdev.n3to.core.browser.rememberUrlOpener
 import es.aviferdev.n3to.ui.common.navigation.TopBarApp
 
 import es.aviferdev.n3to.ui.theme.ExpenseRed
-import es.aviferdev.n3to.ui.theme.IncomeGreen
 
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
@@ -132,7 +131,7 @@ fun PrivacySettingsScreen(
             },
             confirmButton = {
                 TextButton(onClick = viewModel::confirmRevokeAll) {
-                    Text("Revocar todo", color = ExpenseRed, fontWeight = FontWeight.SemiBold)
+                    Text("Revocar todo", color = MaterialTheme.appColors.expense, fontWeight = FontWeight.SemiBold)
                 }
             },
             dismissButton = {
@@ -299,8 +298,8 @@ fun PrivacySettingsScreen(
                         modifier = Modifier.fillMaxWidth().height(48.dp),
                         shape = RoundedCornerShape(11.dp),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = ExpenseRed.copy(alpha = 0.12f),
-                            contentColor = ExpenseRed
+                            containerColor = MaterialTheme.appColors.expense.copy(alpha = 0.12f),
+                            contentColor = MaterialTheme.appColors.expense
                         )
                     ) {
                         Text(
@@ -450,8 +449,8 @@ private fun PrivacyDataRow(
 ) {
     val iconTint = when {
         isInfo -> MaterialTheme.appColors.cyanAccent
-        active -> IncomeGreen
-        else   -> ExpenseRed
+        active -> MaterialTheme.appColors.income
+        else   -> MaterialTheme.appColors.expense
     }
     Row(
         modifier = Modifier

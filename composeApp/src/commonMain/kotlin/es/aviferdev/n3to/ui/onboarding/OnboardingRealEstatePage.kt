@@ -42,7 +42,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 import es.aviferdev.n3to.ui.theme.ExpenseRed
-import es.aviferdev.n3to.ui.theme.IncomeGreen
 import es.aviferdev.n3to.ui.theme.N3toTheme
 
 import n3to.composeapp.generated.resources.Res
@@ -212,7 +211,7 @@ private fun ViviendaMockCard() {
                 Column(Modifier.weight(1f)) {
                     Text(text = "HIPOTECA", fontSize = 9.sp, fontWeight = FontWeight.Bold, letterSpacing = 0.5.sp, color = MaterialTheme.appColors.textTertiary)
                     Spacer(Modifier.height(3.dp))
-                    Text(text = "−142.300 €", fontSize = 16.sp, fontWeight = FontWeight.ExtraBold, letterSpacing = (-0.4).sp, color = ExpenseRed)
+                    Text(text = "−142.300 €", fontSize = 16.sp, fontWeight = FontWeight.ExtraBold, letterSpacing = (-0.4).sp, color = MaterialTheme.appColors.expense)
                 }
             }
 
@@ -222,7 +221,7 @@ private fun ViviendaMockCard() {
 
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.Bottom) {
                 Text(text = "Aporta a tu patrimonio", fontSize = 11.sp, fontWeight = FontWeight.SemiBold, color = MaterialTheme.appColors.textSecondary)
-                Text(text = "+142.700 €", fontSize = 18.sp, fontWeight = FontWeight.ExtraBold, letterSpacing = (-0.5).sp, color = IncomeGreen)
+                Text(text = "+142.700 €", fontSize = 18.sp, fontWeight = FontWeight.ExtraBold, letterSpacing = (-0.5).sp, color = MaterialTheme.appColors.income)
             }
         }
     }

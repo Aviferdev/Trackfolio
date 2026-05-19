@@ -146,7 +146,7 @@ fun AddEditLoanBottomSheet(
                 if (isEditing) stringResource(Res.string.loan_edit_title) else stringResource(Res.string.loan_new_title),
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
-                color = PrimaryDark
+                color = MaterialTheme.appColors.primary
             )
 
             Spacer(Modifier.height(20.dp))
@@ -160,14 +160,14 @@ fun AddEditLoanBottomSheet(
                     Box(
                         modifier = Modifier
                             .clip(RoundedCornerShape(20.dp))
-                            .background(if (selected) PrimaryDark else MaterialTheme.appColors.surfaceElevated)
+                            .background(if (selected) MaterialTheme.appColors.primary else MaterialTheme.appColors.surfaceElevated)
                             .clickable { selectedType = type }
                             .padding(horizontal = 14.dp, vertical = 8.dp)
                     ) {
                         Text(
                             "${type.emoji} ${type.label}",
                             fontSize = 13.sp,
-                            color = if (selected) Color.White else PrimaryDark
+                            color = if (selected) Color.White else MaterialTheme.appColors.primary
                         )
                     }
                 }
@@ -184,8 +184,8 @@ fun AddEditLoanBottomSheet(
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = PrimaryDark,
-                    focusedLabelColor = PrimaryDark
+                    focusedBorderColor = MaterialTheme.appColors.primary,
+                    focusedLabelColor = MaterialTheme.appColors.primary
                 )
             )
 
@@ -201,8 +201,8 @@ fun AddEditLoanBottomSheet(
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = PrimaryDark,
-                    focusedLabelColor = PrimaryDark
+                    focusedBorderColor = MaterialTheme.appColors.primary,
+                    focusedLabelColor = MaterialTheme.appColors.primary
                 )
             )
 
@@ -219,8 +219,8 @@ fun AddEditLoanBottomSheet(
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = PrimaryDark,
-                        focusedLabelColor = PrimaryDark
+                        focusedBorderColor = MaterialTheme.appColors.primary,
+                        focusedLabelColor = MaterialTheme.appColors.primary
                     )
                 )
                 OutlinedTextField(
@@ -232,8 +232,8 @@ fun AddEditLoanBottomSheet(
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = PrimaryDark,
-                        focusedLabelColor = PrimaryDark
+                        focusedBorderColor = MaterialTheme.appColors.primary,
+                        focusedLabelColor = MaterialTheme.appColors.primary
                     )
                 )
             }
@@ -255,7 +255,7 @@ fun AddEditLoanBottomSheet(
                             "${formatAmount(previewPayment)} €/mes",
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Medium,
-                            color = PrimaryDark
+                            color = MaterialTheme.appColors.primary
                         )
                     }
                 }
@@ -291,8 +291,8 @@ fun AddEditLoanBottomSheet(
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = PrimaryDark,
-                    focusedLabelColor = PrimaryDark
+                    focusedBorderColor = MaterialTheme.appColors.primary,
+                    focusedLabelColor = MaterialTheme.appColors.primary
                 )
             )
 
@@ -306,8 +306,8 @@ fun AddEditLoanBottomSheet(
                 modifier = Modifier.fillMaxWidth(),
                 minLines = 2,
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = PrimaryDark,
-                    focusedLabelColor = PrimaryDark
+                    focusedBorderColor = MaterialTheme.appColors.primary,
+                    focusedLabelColor = MaterialTheme.appColors.primary
                 )
             )
 
@@ -396,7 +396,7 @@ fun AddEditLoanBottomSheet(
                 modifier = Modifier.fillMaxWidth().height(50.dp),
                 enabled = isValid && !isLoading,
                 shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = PrimaryDark)
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.appColors.primary)
             ) {
                 if (isLoading) {
                     CircularProgressIndicator(
@@ -427,7 +427,7 @@ fun AddEditLoanBottomSheet(
                         startDateMillis = selected
                     }
                     showStartDatePicker = false
-                }) { Text("Aceptar", color = PrimaryDark) }
+                }) { Text("Aceptar", color = MaterialTheme.appColors.primary) }
             },
             dismissButton = {
                 TextButton(onClick = { showStartDatePicker = false }) {
@@ -439,8 +439,8 @@ fun AddEditLoanBottomSheet(
             DatePicker(
                 state = pickerState,
                 colors = DatePickerDefaults.colors(
-                    selectedDayContainerColor = PrimaryDark,
-                    todayDateBorderColor      = PrimaryDark
+                    selectedDayContainerColor = MaterialTheme.appColors.primary,
+                    todayDateBorderColor      = MaterialTheme.appColors.primary
                 )
             )
         }

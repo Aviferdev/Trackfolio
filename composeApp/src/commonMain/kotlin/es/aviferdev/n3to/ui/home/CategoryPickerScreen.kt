@@ -114,7 +114,7 @@ fun CategoryPickerScreen(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
             ) {
-                CircularProgressIndicator(color = PrimaryDark)
+                CircularProgressIndicator(color = MaterialTheme.appColors.primary)
             }
         } else {
             CategoryPickerContent(
@@ -289,7 +289,7 @@ private fun FrequentChip(
             Icon(
                 imageVector = icon,
                 contentDescription = null,
-                tint    = PrimaryDark,
+                tint    = MaterialTheme.appColors.primary,
                 modifier = Modifier.size(22.dp)
             )
             Spacer(Modifier.height(2.dp))
@@ -339,9 +339,9 @@ private fun SearchField(
             shape         = RoundedCornerShape(10.dp),
             textStyle     = LocalTextStyle.current.copy(fontSize = 13.sp, color = MaterialTheme.appColors.textPrimary),
             colors        = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor   = PrimaryDark,
+                focusedBorderColor   = MaterialTheme.appColors.primary,
                 unfocusedBorderColor = MaterialTheme.appColors.border,
-                cursorColor          = PrimaryDark
+                cursorColor          = MaterialTheme.appColors.primary
             )
         )
     }
@@ -456,7 +456,7 @@ private fun CreateCategoryButton(onClick: () -> Unit) {
         Icon(
             Icons.Outlined.Add,
             contentDescription = "Crear categoría",
-            tint    = PrimaryDark,
+            tint    = MaterialTheme.appColors.primary,
             modifier = Modifier.size(18.dp)
         )
         Spacer(Modifier.width(6.dp))
@@ -464,7 +464,7 @@ private fun CreateCategoryButton(onClick: () -> Unit) {
             "Crear nueva categoría",
             fontSize   = 13.sp,
             fontWeight = FontWeight.Medium,
-            color      = PrimaryDark
+            color      = MaterialTheme.appColors.primary
         )
     }
 }
@@ -476,8 +476,8 @@ private fun CategoryHintCard() {
             .fillMaxWidth()
             .padding(vertical = 16.dp)
             .clip(RoundedCornerShape(12.dp))
-            .background(PrimaryDark.copy(alpha = 0.07f))
-            .border(0.5.dp, PrimaryDark.copy(alpha = 0.2f), RoundedCornerShape(12.dp))
+            .background(MaterialTheme.appColors.primary.copy(alpha = 0.07f))
+            .border(0.5.dp, MaterialTheme.appColors.primary.copy(alpha = 0.2f), RoundedCornerShape(12.dp))
             .padding(horizontal = 14.dp, vertical = 12.dp),
         verticalArrangement = Arrangement.spacedBy(6.dp)
     ) {
@@ -488,7 +488,7 @@ private fun CategoryHintCard() {
             Icon(
                 imageVector = Icons.Outlined.Lightbulb,
                 contentDescription = null,
-                tint = PrimaryDark,
+                tint = MaterialTheme.appColors.primary,
                 modifier = Modifier.size(15.dp)
             )
             Text(
@@ -496,7 +496,7 @@ private fun CategoryHintCard() {
                 fontSize = 10.sp,
                 fontWeight = FontWeight.Bold,
                 letterSpacing = 0.6.sp,
-                color = PrimaryDark
+                color = MaterialTheme.appColors.primary
             )
         }
         Text(

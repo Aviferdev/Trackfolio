@@ -23,7 +23,6 @@ import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.portfolio.FifoSaleMatch
 import es.aviferdev.n3to.ui.portfolio.formatShortDate
 import es.aviferdev.n3to.ui.theme.ExpenseRed
-import es.aviferdev.n3to.ui.theme.IncomeGreen
 
 import es.aviferdev.n3to.ui.theme.formatAmount
 import es.aviferdev.n3to.ui.theme.formatQty
@@ -33,8 +32,8 @@ import kotlin.math.abs
 @Composable
 fun FifoSaleMatchBlock(sale: FifoSaleMatch, masked: Boolean) {
     val pnlColor = when {
-        sale.realizedPnL > 0 -> IncomeGreen
-        sale.realizedPnL < 0 -> ExpenseRed
+        sale.realizedPnL > 0 -> MaterialTheme.appColors.income
+        sale.realizedPnL < 0 -> MaterialTheme.appColors.expense
         else -> MaterialTheme.appColors.textSecondary
     }
     Column(
@@ -47,7 +46,7 @@ fun FifoSaleMatchBlock(sale: FifoSaleMatch, masked: Boolean) {
         Row(Modifier.fillMaxWidth(), Arrangement.SpaceBetween, Alignment.CenterVertically) {
             Column(modifier = Modifier.weight(1f)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text("↘", fontSize = 13.sp, color = ExpenseRed, fontWeight = FontWeight.Bold)
+                    Text("↘", fontSize = 13.sp, color = MaterialTheme.appColors.expense, fontWeight = FontWeight.Bold)
                     Spacer(Modifier.width(5.dp))
                     Text(
                         "Venta de ${formatQty(sale.saleQuantity)} u.",
@@ -82,7 +81,7 @@ fun FifoSaleMatchBlock(sale: FifoSaleMatch, masked: Boolean) {
             Spacer(Modifier.height(6.dp))
             sale.consumed.forEach { c ->
                 val cColor = when {
-                    c.pnl > 0 -> IncomeGreen; c.pnl < 0 -> ExpenseRed; else -> MaterialTheme.appColors.textSecondary
+                    c.pnl > 0 -> MaterialTheme.appColors.income; c.pnl < 0 -> MaterialTheme.appColors.expense; else -> MaterialTheme.appColors.textSecondary
                 }
                 Row(
                     Modifier.fillMaxWidth().padding(start = 14.dp, top = 2.dp, bottom = 2.dp),

@@ -55,7 +55,6 @@ import es.aviferdev.n3to.ui.common.row.SwipeRowApp
 import es.aviferdev.n3to.ui.common.separator.SpacerVerticalApp
 
 import es.aviferdev.n3to.ui.theme.ExpenseRed
-import es.aviferdev.n3to.ui.theme.IncomeGreen
 import es.aviferdev.n3to.ui.theme.LocalBalanceHidden
 import es.aviferdev.n3to.ui.theme.PrimaryDark
 
@@ -131,13 +130,13 @@ fun DebtListScreen(viewModel: DebtViewModel = koinViewModel()) {
             confirmButton = {
                 TextButton(onClick = {
                     viewModel.deleteDebt(it.id); debtToDelete = null
-                }) { Text("Eliminar", color = ExpenseRed) }
+                }) { Text("Eliminar", color = MaterialTheme.appColors.expense) }
             },
             dismissButton = {
                 TextButton(onClick = { debtToDelete = null }) {
                     Text(
                         "Cancelar",
-                        color = PrimaryDark
+                        color = MaterialTheme.appColors.primary
                     )
                 }
             },
@@ -165,13 +164,13 @@ fun DebtListScreen(viewModel: DebtViewModel = koinViewModel()) {
             confirmButton = {
                 TextButton(onClick = {
                     viewModel.markAsPaid(it.id); debtToMarkPaid = null
-                }) { Text("Sí, pagado", color = IncomeGreen) }
+                }) { Text("Sí, pagado", color = MaterialTheme.appColors.income) }
             },
             dismissButton = {
                 TextButton(onClick = { debtToMarkPaid = null }) {
                     Text(
                         "Cancelar",
-                        color = PrimaryDark
+                        color = MaterialTheme.appColors.primary
                     )
                 }
             },
@@ -202,7 +201,7 @@ fun DebtListContent(
         if (uiState.isLoading) {
             CircularProgressIndicator(
                 modifier = Modifier.align(Alignment.Center),
-                color = PrimaryDark
+                color = MaterialTheme.appColors.primary
             )
         } else {
             LazyColumn(
@@ -232,14 +231,14 @@ fun DebtListContent(
                         DebtSectionHeader(
                             title = stringResource(Res.string.debt_they_owe) + " ↑",
                             total = uiState.totalTheyOwe,
-                            color = IncomeGreen,
+                            color = MaterialTheme.appColors.income,
                             hidden = balancesHidden
                         )
                     }
                     items(uiState.debtsTheyOwe, key = { it.id }) { debt ->
                         SwipeRowApp(
                             titleSwipe = stringResource(Res.string.common_delete),
-                            colorSwipe = ExpenseRed,
+                            colorSwipe = MaterialTheme.appColors.expense,
                             onDelete = { onDeleteDebt(debt) },
                             content = {
                                 DebtCard(
@@ -258,14 +257,14 @@ fun DebtListContent(
                         DebtSectionHeader(
                             title = stringResource(Res.string.debt_i_owe) + " ↓",
                             total = uiState.totalIOwe,
-                            color = ExpenseRed,
+                            color = MaterialTheme.appColors.expense,
                             hidden = balancesHidden
                         )
                     }
                     items(uiState.debtsIOwe, key = { it.id }) { debt ->
                         SwipeRowApp(
                             titleSwipe = stringResource(Res.string.common_delete),
-                            colorSwipe = ExpenseRed,
+                            colorSwipe = MaterialTheme.appColors.expense,
                             onDelete = { onDeleteDebt(debt) },
                             content = {
                                 DebtCard(
@@ -373,19 +372,19 @@ private fun HeaderDebtListScreen(totalTheyOwe: Double, totalIOwe: Double, hidden
                 DebtSummaryCell(
                     label = "Me deben",
                     amount = totalTheyOwe,
-                    color = IncomeGreen,
+                    color = MaterialTheme.appColors.income,
                     hidden = hidden,
                     modifier = Modifier.weight(1f),
                 )
                 Box(
                     Modifier.width(1.dp).height(44.dp)
-                        .background(Color.White.copy(alpha = 0.18f))
+                        .background(MaterialTheme.appColors.border)
                         .align(Alignment.CenterVertically)
                 )
                 DebtSummaryCell(
                     label = "Debo yo",
                     amount = totalIOwe,
-                    color = ExpenseRed,
+                    color = MaterialTheme.appColors.expense,
                     hidden = hidden,
                     modifier = Modifier.weight(1f),
                 )
@@ -408,7 +407,7 @@ private fun DebtSummaryCell(
     ) {
         N3toLabel(
             text = label,
-            color = Color.White.copy(alpha = 0.6f),
+            color = MaterialTheme.appColors.textSecondary,
             modifier = Modifier.padding(bottom = 4.dp)
         )
         Text(
@@ -450,7 +449,7 @@ private fun DebtCard(debt: Debt, hidden: Boolean, onMarkPaid: () -> Unit, onEdit
         Row(modifier = Modifier.fillMaxWidth().padding(12.dp), verticalAlignment = Alignment.Top) {
             InitialsAvatar(
                 text = debt.personName.firstOrNull()?.uppercase() ?: "?",
-                bgColor = if (debt.direction == DebtDirection.THEY_OWE) IncomeGreen else ExpenseRed,
+                bgColor = if (debt.direction == DebtDirection.THEY_OWE) MaterialTheme.appColors.income else MaterialTheme.appColors.expense,
                 size = 38.dp,
                 textSize = 15
             )
@@ -476,15 +475,15 @@ private fun DebtCard(debt: Debt, hidden: Boolean, onMarkPaid: () -> Unit, onEdit
                     "${maskAmount(formatAmount(debt.amount), hidden)} €",
                     fontSize = 13.sp,
                     fontWeight = FontWeight.Bold,
-                    color = if (debt.direction == DebtDirection.THEY_OWE) IncomeGreen else ExpenseRed
+                    color = if (debt.direction == DebtDirection.THEY_OWE) MaterialTheme.appColors.income else MaterialTheme.appColors.expense
                 )
                 Spacer(Modifier.height(4.dp))
                 Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                     Button(
                         onClick = onMarkPaid,
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = IncomeGreen.copy(alpha = 0.15f),
-                            contentColor = IncomeGreen
+                            containerColor = MaterialTheme.appColors.income.copy(alpha = 0.15f),
+                            contentColor = MaterialTheme.appColors.income
                         ),
                         contentPadding = PaddingValues(horizontal = 7.dp, vertical = 3.dp),
                         modifier = Modifier.height(24.dp)

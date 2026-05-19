@@ -5,6 +5,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -18,6 +19,7 @@ import es.aviferdev.n3to.ui.theme.ExpenseRed
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import es.aviferdev.n3to.ui.theme.WarnAmber
 import androidx.compose.ui.tooling.preview.Preview
+import es.aviferdev.n3to.ui.theme.appColors
 
 /**
  * Contextual alert banner with icon, label, optional action button, and dismiss.
@@ -31,7 +33,7 @@ import androidx.compose.ui.tooling.preview.Preview
  *     actionLabel = "Actualizar",
  *     onAction  = { updatePrices() },
  *     onDismiss = { dismiss() },
- *     color     = WarnAmber
+ *     color     = MaterialTheme.appColors.warnAmber
  * )
  * ```
  */
@@ -42,7 +44,7 @@ fun AlertBanner(
     actionLabel: String? = null,
     onAction: (() -> Unit)? = null,
     onDismiss: (() -> Unit)? = null,
-    color: Color = WarnAmber,
+    color: Color = MaterialTheme.appColors.warnAmber,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -106,12 +108,12 @@ private fun AlertBannerPreview() {
                 actionLabel = "Actualizar",
                 onAction = {},
                 onDismiss = {},
-                color = WarnAmber
+                color = MaterialTheme.appColors.warnAmber
             )
             AlertBanner(
                 icon = "⚠️",
                 label = "Error de conexión",
-                color = ExpenseRed
+                color = MaterialTheme.appColors.expense
             )
         }
     }

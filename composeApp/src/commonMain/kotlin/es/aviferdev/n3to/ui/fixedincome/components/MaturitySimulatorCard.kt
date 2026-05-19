@@ -51,7 +51,7 @@ internal fun MaturitySimulatorCard(
                 text = stringResource(Res.string.fixedincome_maturity_simulation),
                 fontSize = 15.sp,
                 fontWeight = FontWeight.SemiBold,
-                color = Color.White
+                color = MaterialTheme.appColors.textPrimary
             )
 
             Spacer(Modifier.height(12.dp))
@@ -68,7 +68,7 @@ internal fun MaturitySimulatorCard(
             SimulatorRow(
                 label = stringResource(Res.string.fixedincome_coupons_received),
                 value = "- ${maskAmount(formatAmount(simulation.collectedCoupons), balancesHidden)}",
-                valueColor = Color.White.copy(alpha = 0.5f)
+                valueColor = MaterialTheme.appColors.textSecondary
             )
             SimulatorRow(
                 label = stringResource(Res.string.fixedincome_estimated_irpf, "19"),
@@ -93,7 +93,7 @@ internal fun MaturitySimulatorCard(
                     text = stringResource(Res.string.fixedincome_net_maturity),
                     fontSize = 14.sp,
                     fontWeight = FontWeight.SemiBold,
-                    color = Color.White
+                    color = MaterialTheme.appColors.textPrimary
                 )
                 Text(
                     text = "${maskAmount(formatAmount(simulation.netAtMaturity), balancesHidden)} €",
@@ -120,7 +120,7 @@ internal fun MaturitySimulatorCard(
 internal fun SimulatorRow(
     label: String,
     value: String,
-    valueColor: Color = Color.White.copy(alpha = 0.85f)
+    valueColor: Color = MaterialTheme.appColors.textPrimary
 ) {
     Row(
         modifier = Modifier
@@ -128,7 +128,7 @@ internal fun SimulatorRow(
             .padding(vertical = 4.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Text(text = label, fontSize = 13.sp, color = Color.White.copy(alpha = 0.55f))
+        Text(text = label, fontSize = 13.sp, color = MaterialTheme.appColors.textTertiary)
         Text(text = "$value €", fontSize = 13.sp, fontWeight = FontWeight.Medium, color = valueColor)
     }
 }

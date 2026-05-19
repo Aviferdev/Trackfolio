@@ -44,7 +44,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-import es.aviferdev.n3to.ui.theme.IncomeGreen
 import es.aviferdev.n3to.ui.theme.N3toTheme
 
 import kotlinx.coroutines.delay
@@ -140,7 +139,7 @@ fun SlidePortfolio(modifier: Modifier = Modifier) {
                         color = appCTextTertiary,
                         letterSpacing = 0.7.sp
                     )
-                    Text(text = "+5,6%", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = IncomeGreen)
+                    Text(text = "+5,6%", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.appColors.income)
                 }
 
                 Spacer(Modifier.height(10.dp))
@@ -230,7 +229,7 @@ fun SlidePortfolio(modifier: Modifier = Modifier) {
                             Text(text = stock.ticker, fontSize = 8.sp, fontWeight = FontWeight.Black, color = stock.badgeColor)
                         }
                         Spacer(Modifier.height(6.dp))
-                        Text(text = stock.returnPct, fontSize = 10.sp, fontWeight = FontWeight.Bold, color = IncomeGreen, textAlign = TextAlign.Center)
+                        Text(text = stock.returnPct, fontSize = 10.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.appColors.income, textAlign = TextAlign.Center)
                     }
                 }
             }

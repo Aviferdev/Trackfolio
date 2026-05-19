@@ -62,7 +62,7 @@ fun PropertyExpenseRow(
                         onClick = { showCategoryMenu = true },
                         shape = RoundedCornerShape(8.dp),
                         colors = ButtonDefaults.outlinedButtonColors(
-                            contentColor = if (selectedCategory != null) PrimaryDark else MaterialTheme.appColors.textTertiary
+                            contentColor = if (selectedCategory != null) MaterialTheme.appColors.primary else MaterialTheme.appColors.textTertiary
                         ),
                         contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp),
                         modifier = Modifier.height(36.dp)
@@ -106,7 +106,7 @@ fun PropertyExpenseRow(
                     Icon(
                         Icons.Outlined.Close,
                         contentDescription = "Eliminar gasto",
-                        tint = ExpenseRed,
+                        tint = MaterialTheme.appColors.expense,
                         modifier = Modifier.size(18.dp)
                     )
                 }
@@ -137,7 +137,7 @@ fun PropertyExpenseRow(
                     textStyle = LocalTextStyle.current.copy(fontSize = 13.sp, color = MaterialTheme.appColors.textPrimary),
                     shape = RoundedCornerShape(8.dp),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = PrimaryDark,
+                        focusedBorderColor = MaterialTheme.appColors.primary,
                         unfocusedBorderColor = MaterialTheme.appColors.border
                     )
                 )
@@ -154,7 +154,7 @@ fun PropertyExpenseRow(
                     textStyle = LocalTextStyle.current.copy(fontSize = 12.sp, color = MaterialTheme.appColors.textPrimary),
                     shape = RoundedCornerShape(8.dp),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = PrimaryDark,
+                        focusedBorderColor = MaterialTheme.appColors.primary,
                         unfocusedBorderColor = MaterialTheme.appColors.border
                     )
                 )

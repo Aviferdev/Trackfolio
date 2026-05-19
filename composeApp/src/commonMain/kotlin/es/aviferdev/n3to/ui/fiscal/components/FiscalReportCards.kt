@@ -82,13 +82,13 @@ internal fun AnnualSummaryCard(report: FiscalReportData) {
                 FiscalMetricCell(
                     stringResource(Res.string.fiscal_income_label),
                     s.totalIncome,
-                    IncomeGreen,
+                    MaterialTheme.appColors.income,
                     Modifier.weight(1f)
                 )
                 FiscalMetricCell(
                     stringResource(Res.string.fiscal_withholding_label),
                     report.incomeTaxBreakdown.sumOf { it.irpfTotal },
-                    ExpenseRed,
+                    MaterialTheme.appColors.expense,
                     Modifier.weight(1f)
                 )
             }
@@ -97,7 +97,7 @@ internal fun AnnualSummaryCard(report: FiscalReportData) {
                 FiscalMetricCell(
                     stringResource(Res.string.fiscal_capital_gains_card),
                     capitalGains,
-                    if (capitalGains >= 0.0) IncomeGreen else ExpenseRed,
+                    if (capitalGains >= 0.0) MaterialTheme.appColors.income else MaterialTheme.appColors.expense,
                     Modifier.weight(1f)
                 )
                 val baseImponible = s.totalIncome + capitalGains
@@ -124,14 +124,14 @@ internal fun IncomeTaxBreakdownCard(report: FiscalReportData) {
     ReportCard(stringResource(Res.string.fiscal_tax_breakdown_title, report.year)) {
         Row(Modifier.fillMaxWidth(), Arrangement.spacedBy(8.dp)) {
             MetricCell(stringResource(Res.string.fiscal_gross_total), totalGross, MaterialTheme.appColors.textPrimary,  Modifier.weight(1f))
-            MetricCell(stringResource(Res.string.fiscal_irpf_total),  totalIrpf,  ExpenseRed,   Modifier.weight(1f))
-            MetricCell(stringResource(Res.string.fiscal_net_total),   totalNet,   IncomeGreen,  Modifier.weight(1f))
+            MetricCell(stringResource(Res.string.fiscal_irpf_total),  totalIrpf,  MaterialTheme.appColors.expense,   Modifier.weight(1f))
+            MetricCell(stringResource(Res.string.fiscal_net_total),   totalNet,   MaterialTheme.appColors.income,  Modifier.weight(1f))
         }
         if (totalSS > 0 || totalComm > 0) {
             Spacer(Modifier.height(8.dp))
             Row(Modifier.fillMaxWidth(), Arrangement.spacedBy(8.dp)) {
-                if (totalSS   > 0) MetricCell(stringResource(Res.string.fiscal_social_security),  totalSS,   WarnAmber, Modifier.weight(1f))
-                if (totalComm > 0) MetricCell(stringResource(Res.string.fiscal_commissions_short), totalComm, WarnAmber, Modifier.weight(1f))
+                if (totalSS   > 0) MetricCell(stringResource(Res.string.fiscal_social_security),  totalSS,   MaterialTheme.appColors.warnAmber, Modifier.weight(1f))
+                if (totalComm > 0) MetricCell(stringResource(Res.string.fiscal_commissions_short), totalComm, MaterialTheme.appColors.warnAmber, Modifier.weight(1f))
                 if (totalSS > 0 && totalComm == 0.0)  Spacer(Modifier.weight(1f))
                 if (totalSS == 0.0 && totalComm > 0)  Spacer(Modifier.weight(1f))
             }
@@ -172,8 +172,8 @@ private fun TaxBreakdownRow(item: FiscalIncomeTaxBreakdown) {
             }
         }
         Text(formatAmt(item.grossTotal),    fontSize = 11.sp, color = MaterialTheme.appColors.textPrimary,   modifier = Modifier.weight(2f), textAlign = TextAlign.End)
-        Text(formatAmt(item.irpfTotal),     fontSize = 11.sp, color = ExpenseRed,    fontWeight = FontWeight.Medium, modifier = Modifier.weight(2f), textAlign = TextAlign.End)
-        Text(formatAmt(item.netTotal),      fontSize = 11.sp, color = IncomeGreen,   fontWeight = FontWeight.Medium, modifier = Modifier.weight(2f), textAlign = TextAlign.End)
+        Text(formatAmt(item.irpfTotal),     fontSize = 11.sp, color = MaterialTheme.appColors.expense,    fontWeight = FontWeight.Medium, modifier = Modifier.weight(2f), textAlign = TextAlign.End)
+        Text(formatAmt(item.netTotal),      fontSize = 11.sp, color = MaterialTheme.appColors.income,   fontWeight = FontWeight.Medium, modifier = Modifier.weight(2f), textAlign = TextAlign.End)
         Text(formatPct(item.avgIrpfPercent), fontSize = 11.sp, color = MaterialTheme.appColors.textSecondary, modifier = Modifier.weight(1f), textAlign = TextAlign.End)
     }
 }
@@ -208,12 +208,12 @@ private fun MonthlyRow(month: Int, data: MonthlyTotals) {
     val balance = data.balance
     Row(Modifier.fillMaxWidth().padding(vertical = 6.dp), verticalAlignment = Alignment.CenterVertically) {
         Text(monthName(month), fontSize = 12.sp, color = MaterialTheme.appColors.textPrimary, modifier = Modifier.weight(2f))
-        Text(formatAmt(data.totalIncome),  fontSize = 11.sp, color = IncomeGreen, modifier = Modifier.weight(2f), textAlign = TextAlign.End)
-        Text(formatAmt(data.totalExpense), fontSize = 11.sp, color = ExpenseRed,  modifier = Modifier.weight(2f), textAlign = TextAlign.End)
+        Text(formatAmt(data.totalIncome),  fontSize = 11.sp, color = MaterialTheme.appColors.income, modifier = Modifier.weight(2f), textAlign = TextAlign.End)
+        Text(formatAmt(data.totalExpense), fontSize = 11.sp, color = MaterialTheme.appColors.expense,  modifier = Modifier.weight(2f), textAlign = TextAlign.End)
         Text(
             "${if (balance >= 0) "+" else ""}${formatAmt(balance)}",
             fontSize = 11.sp,
-            color = if (balance >= 0) IncomeGreen else ExpenseRed,
+            color = if (balance >= 0) MaterialTheme.appColors.income else MaterialTheme.appColors.expense,
             fontWeight = FontWeight.SemiBold,
             modifier = Modifier.weight(2f),
             textAlign = TextAlign.End
@@ -227,7 +227,7 @@ internal fun DebtsCard(report: FiscalReportData) {
         report.activeDebts.forEachIndexed { i, debt ->
             if (i > 0) HorizontalDivider(color = MaterialTheme.appColors.navyBorder, thickness = .3.dp)
             val isIOwe = debt.direction == DebtDirection.I_OWE
-            val color  = if (isIOwe) ExpenseRed else IncomeGreen
+            val color  = if (isIOwe) MaterialTheme.appColors.expense else MaterialTheme.appColors.income
             Row(Modifier.fillMaxWidth().padding(vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
                 Column(modifier = Modifier.weight(1f)) {
                     Text(debt.personName, fontSize = 13.sp, color = MaterialTheme.appColors.textPrimary, fontWeight = FontWeight.SemiBold)
@@ -250,8 +250,8 @@ internal fun PortfolioCard(report: FiscalReportData) {
     ReportCard(stringResource(Res.string.fiscal_portfolio_title)) {
         Row(Modifier.fillMaxWidth().padding(bottom = 10.dp), Arrangement.spacedBy(8.dp)) {
             MetricCell(stringResource(Res.string.fiscal_invested_label),      totalInvested, MaterialTheme.appColors.textPrimary,  Modifier.weight(1f))
-            MetricCell(stringResource(Res.string.fiscal_current_value_label), totalValue,    if (totalValue >= totalInvested) IncomeGreen else ExpenseRed, Modifier.weight(1f))
-            MetricCell(stringResource(Res.string.fiscal_realized_pnl_label),  totalRealized, if (totalRealized >= 0) IncomeGreen else ExpenseRed, Modifier.weight(1f))
+            MetricCell(stringResource(Res.string.fiscal_current_value_label), totalValue,    if (totalValue >= totalInvested) MaterialTheme.appColors.income else MaterialTheme.appColors.expense, Modifier.weight(1f))
+            MetricCell(stringResource(Res.string.fiscal_realized_pnl_label),  totalRealized, if (totalRealized >= 0) MaterialTheme.appColors.income else MaterialTheme.appColors.expense, Modifier.weight(1f))
         }
         HorizontalDivider(color = MaterialTheme.appColors.navyBorder, thickness = .5.dp)
         Spacer(Modifier.height(8.dp))
@@ -275,7 +275,7 @@ internal fun PortfolioCard(report: FiscalReportData) {
                 Text(
                     formatAmt(totalPnl),
                     fontSize = 11.sp,
-                    color = if (totalPnl >= 0) IncomeGreen else ExpenseRed,
+                    color = if (totalPnl >= 0) MaterialTheme.appColors.income else MaterialTheme.appColors.expense,
                     fontWeight = FontWeight.SemiBold,
                     modifier = Modifier.weight(1.5f),
                     textAlign = TextAlign.End
@@ -305,12 +305,12 @@ internal fun PortfolioCard(report: FiscalReportData) {
                 if (i > 0) HorizontalDivider(color = MaterialTheme.appColors.navyBorder, thickness = .3.dp)
                 Row(Modifier.fillMaxWidth().padding(vertical = 5.dp), verticalAlignment = Alignment.CenterVertically) {
                     Text(pos.ticker,              fontSize = 12.sp, color = MaterialTheme.appColors.textPrimary,  fontWeight = FontWeight.SemiBold, modifier = Modifier.weight(2f))
-                    Text(formatAmt(pos.totalBought), fontSize = 11.sp, color = IncomeGreen, modifier = Modifier.weight(1.5f), textAlign = TextAlign.End)
-                    Text(formatAmt(pos.totalSold),   fontSize = 11.sp, color = ExpenseRed,  modifier = Modifier.weight(1.5f), textAlign = TextAlign.End)
+                    Text(formatAmt(pos.totalBought), fontSize = 11.sp, color = MaterialTheme.appColors.income, modifier = Modifier.weight(1.5f), textAlign = TextAlign.End)
+                    Text(formatAmt(pos.totalSold),   fontSize = 11.sp, color = MaterialTheme.appColors.expense,  modifier = Modifier.weight(1.5f), textAlign = TextAlign.End)
                     Text(
                         formatAmt(pos.realizedPnl),
                         fontSize = 11.sp,
-                        color = if (pos.realizedPnl >= 0) IncomeGreen else ExpenseRed,
+                        color = if (pos.realizedPnl >= 0) MaterialTheme.appColors.income else MaterialTheme.appColors.expense,
                         fontWeight = FontWeight.SemiBold,
                         modifier = Modifier.weight(1.5f),
                         textAlign = TextAlign.End

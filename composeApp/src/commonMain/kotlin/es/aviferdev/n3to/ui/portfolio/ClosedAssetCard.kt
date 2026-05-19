@@ -24,7 +24,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.ui.theme.ExpenseRed
-import es.aviferdev.n3to.ui.theme.IncomeGreen
 
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import es.aviferdev.n3to.ui.theme.formatAmount
@@ -42,8 +41,8 @@ fun ClosedAssetCard(
     val asset = row.asset
     val pos = row.position
     val pnlColor = when {
-        pos.realizedPnL > 0 -> IncomeGreen
-        pos.realizedPnL < 0 -> ExpenseRed
+        pos.realizedPnL > 0 -> MaterialTheme.appColors.income
+        pos.realizedPnL < 0 -> MaterialTheme.appColors.expense
         else -> MaterialTheme.appColors.textSecondary
     }
     Card(

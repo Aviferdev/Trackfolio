@@ -83,7 +83,7 @@ internal fun DistributionSection(
                     )
                 }
                 TextButton(onClick = { showRegionDialog = true }) {
-                    Text(stringResource(Res.string.fixedincome_change_region), fontSize = 12.sp, color = PrimaryDark)
+                    Text(stringResource(Res.string.fixedincome_change_region), fontSize = 12.sp, color = MaterialTheme.appColors.primary)
                 }
             }
 
@@ -104,7 +104,7 @@ internal fun DistributionSection(
                     )
                 }
                 TextButton(onClick = { showSectorDialog = true }) {
-                    Text(stringResource(Res.string.fixedincome_change_sector), fontSize = 12.sp, color = PrimaryDark)
+                    Text(stringResource(Res.string.fixedincome_change_sector), fontSize = 12.sp, color = MaterialTheme.appColors.primary)
                 }
             }
         }
@@ -133,7 +133,7 @@ internal fun DistributionSection(
                         ) {
                             Text(
                                 text = region,
-                                color = if (position?.region == region) PrimaryDark else MaterialTheme.appColors.textPrimary,
+                                color = if (position?.region == region) MaterialTheme.appColors.primary else MaterialTheme.appColors.textPrimary,
                                 fontWeight = if (position?.region == region) FontWeight.Bold else FontWeight.Normal
                             )
                         }
@@ -171,7 +171,7 @@ internal fun DistributionSection(
                         ) {
                             Text(
                                 text = sector,
-                                color = if (position?.sector == sector) PrimaryDark else MaterialTheme.appColors.textPrimary,
+                                color = if (position?.sector == sector) MaterialTheme.appColors.primary else MaterialTheme.appColors.textPrimary,
                                 fontWeight = if (position?.sector == sector) FontWeight.Bold else FontWeight.Normal
                             )
                         }

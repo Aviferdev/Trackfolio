@@ -36,7 +36,7 @@ fun MortgageReminderBanner(
                 modifier = Modifier.fillMaxWidth().padding(16.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(Icons.Outlined.HomeWork, null, tint = es.aviferdev.n3to.ui.theme.PrimaryDark, modifier = Modifier.size(24.dp))
+                Icon(Icons.Outlined.HomeWork, null, tint = MaterialTheme.appColors.primary, modifier = Modifier.size(24.dp))
                 Spacer(Modifier.width(12.dp))
                 Column(Modifier.weight(1f)) {
                     Text(
@@ -57,7 +57,7 @@ fun MortgageReminderBanner(
                             onClick = onAddMortgage,
                             shape = RoundedCornerShape(8.dp),
                             contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = es.aviferdev.n3to.ui.theme.PrimaryDark)
+                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.appColors.primary)
                         ) { Text("Añadir hipoteca", fontSize = 11.sp) }
                         TextButton(onClick = {
                             dismissed = true

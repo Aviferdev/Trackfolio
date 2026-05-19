@@ -63,7 +63,6 @@ import es.aviferdev.n3to.domain.model.Transaction
 import es.aviferdev.n3to.ui.common.N3toLabel
 
 import es.aviferdev.n3to.ui.theme.ExpenseRed
-import es.aviferdev.n3to.ui.theme.IncomeGreen
 import es.aviferdev.n3to.ui.theme.PrimaryAlpha
 import es.aviferdev.n3to.ui.theme.PrimaryDark
 
@@ -146,18 +145,18 @@ internal fun TotalsRow(totalIncome: Double, totalExpense: Double, balancesHidden
             verticalAlignment = Alignment.CenterVertically
         ) {
             TotalCell(
-                label = stringResource(Res.string.transaction_filter_income), amount = totalIncome, color = IncomeGreen,
+                label = stringResource(Res.string.transaction_filter_income), amount = totalIncome, color = MaterialTheme.appColors.income,
                 prefix = "+", balancesHidden = balancesHidden, modifier = Modifier.weight(1f)
             )
             Box(Modifier.width(1.dp).height(40.dp).background(MaterialTheme.appColors.border))
             TotalCell(
-                label = stringResource(Res.string.transaction_filter_expense), amount = totalExpense, color = ExpenseRed,
+                label = stringResource(Res.string.transaction_filter_expense), amount = totalExpense, color = MaterialTheme.appColors.expense,
                 prefix = "−", balancesHidden = balancesHidden, modifier = Modifier.weight(1f)
             )
             Box(Modifier.width(1.dp).height(40.dp).background(MaterialTheme.appColors.border))
             TotalCell(
                 label = "Balance", amount = kotlin.math.abs(balance),
-                color = if (balance >= 0) PrimaryDark else ExpenseRed,
+                color = if (balance >= 0) MaterialTheme.appColors.primary else MaterialTheme.appColors.expense,
                 prefix = if (balance >= 0) "+" else "−",
                 balancesHidden = balancesHidden, modifier = Modifier.weight(1f)
             )
@@ -199,8 +198,8 @@ internal fun TransactionCard(
     val isLinkedProperty = transaction.linkedPropertyId != null
     val isLinked = isLinkedAsset || isLinkedProperty
     val avatarBg = when {
-        isAdjustment -> PrimaryDark; isLinked -> PrimaryDark
-        isIncome -> IncomeGreen; else -> ExpenseRed
+        isAdjustment -> MaterialTheme.appColors.primary; isLinked -> MaterialTheme.appColors.primary
+        isIncome -> MaterialTheme.appColors.income; else -> MaterialTheme.appColors.expense
     }
     val avatarIcon = when {
         isAdjustment -> Icons.Outlined.SwapHoriz
@@ -221,7 +220,7 @@ internal fun TransactionCard(
         isAdjustment -> "−"; isIncome -> "+"; else -> "−"
     }
     val amountColor = when {
-        isAdjustment -> PrimaryDark; isIncome -> IncomeGreen; else -> ExpenseRed
+        isAdjustment -> MaterialTheme.appColors.primary; isIncome -> MaterialTheme.appColors.income; else -> MaterialTheme.appColors.expense
     }
     val displayAmount =
         if (isAdjustment) kotlin.math.abs(transaction.amount) else transaction.amount
@@ -318,7 +317,7 @@ internal fun TransactionCard(
                 )
             }
             if (isLinked) {
-                Text("Portfolio", fontSize = 9.sp, color = PrimaryDark.copy(alpha = 0.6f))
+                Text("Portfolio", fontSize = 9.sp, color = MaterialTheme.appColors.primary.copy(alpha = 0.6f))
             }
         }
         Spacer(Modifier.width(12.dp))
@@ -358,14 +357,14 @@ internal fun IncomeBadge(transaction: Transaction) {
         Icon(
             imageVector = incomeTypeIcon(incType),
             contentDescription = incType.label,
-            tint = PrimaryDark,
+            tint = MaterialTheme.appColors.primary,
             modifier = Modifier.size(11.dp)
         )
         val text = buildString {
             append(incType.label)
             if (pct != null && pct > 0) append(" · ${pct.toLong()}% retención")
         }
-        Text(text, fontSize = 8.sp, color = PrimaryDark, fontWeight = FontWeight.Medium)
+        Text(text, fontSize = 8.sp, color = MaterialTheme.appColors.primary, fontWeight = FontWeight.Medium)
     }
 }
 
@@ -386,7 +385,7 @@ internal fun SwipeToDeleteContainer(onDelete: () -> Unit, content: @Composable (
         backgroundContent = {
             val bg by animateColorAsState(
                 targetValue = if (state.dismissDirection == SwipeToDismissBoxValue.EndToStart)
-                    ExpenseRed else Color.Transparent,
+                    MaterialTheme.appColors.expense else Color.Transparent,
                 label = "swipe_bg"
             )
             Box(

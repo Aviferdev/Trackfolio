@@ -52,14 +52,14 @@ fun PriceReminderBanner(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(12.dp))
-                .background(WarnAmber.copy(alpha = 0.10f))
+                .background(MaterialTheme.appColors.warnAmber.copy(alpha = 0.10f))
                 .padding(horizontal = 14.dp, vertical = 11.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
                 imageVector        = Icons.AutoMirrored.Outlined.ShowChart,
                 contentDescription = null,
-                tint               = WarnAmber,
+                tint               = MaterialTheme.appColors.warnAmber,
                 modifier           = Modifier.size(18.dp)
             )
             Spacer(Modifier.width(10.dp))
@@ -67,21 +67,21 @@ fun PriceReminderBanner(
                 text     = if (outdatedCount == 1) stringResource(Res.string.home_price_reminder_one, outdatedCount)
                           else stringResource(Res.string.home_price_reminder_many, outdatedCount),
                 fontSize = 12.sp,
-                color    = WarnAmber,
+                color    = MaterialTheme.appColors.warnAmber,
                 fontWeight = FontWeight.Medium,
                 modifier = Modifier.weight(1f)
             )
             Box(
                 modifier = Modifier
                     .clip(RoundedCornerShape(8.dp))
-                    .background(WarnAmber.copy(alpha = 0.15f))
+                    .background(MaterialTheme.appColors.warnAmber.copy(alpha = 0.15f))
                     .clickable { onUpdateNow() }
                     .padding(horizontal = 12.dp, vertical = 4.dp)
             ) {
                 Text(
                     text       = stringResource(Res.string.common_update),
                     fontSize   = 11.sp,
-                    color      = WarnAmber,
+                    color      = MaterialTheme.appColors.warnAmber,
                     fontWeight = FontWeight.Bold
                 )
             }
@@ -93,7 +93,7 @@ fun PriceReminderBanner(
                     .size(24.dp),
                 contentAlignment = Alignment.Center
             ) {
-                Text("×", fontSize = 16.sp, color = WarnAmber.copy(alpha = 0.6f))
+                Text("×", fontSize = 16.sp, color = MaterialTheme.appColors.warnAmber.copy(alpha = 0.6f))
             }
         }
     }

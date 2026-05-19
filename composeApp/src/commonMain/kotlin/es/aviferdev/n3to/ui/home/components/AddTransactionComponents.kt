@@ -50,7 +50,6 @@ import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.Issuer
 import es.aviferdev.n3to.ui.home.IrpfInputMode
 
-import es.aviferdev.n3to.ui.theme.IncomeGreen
 import es.aviferdev.n3to.ui.theme.PrimaryAlpha
 import es.aviferdev.n3to.ui.theme.PrimaryDark
 
@@ -95,10 +94,10 @@ internal fun ModeChip(
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(10.dp))
-            .background(if (selected) PrimaryDark.copy(alpha = 0.15f) else Color.Transparent)
+            .background(if (selected) MaterialTheme.appColors.primary.copy(alpha = 0.15f) else Color.Transparent)
             .border(
                 width = if (selected) 1.5.dp else 0.5.dp,
-                color = if (selected) PrimaryDark else MaterialTheme.appColors.border,
+                color = if (selected) MaterialTheme.appColors.primary else MaterialTheme.appColors.border,
                 shape = RoundedCornerShape(10.dp)
             )
             .clickable { onClick() }
@@ -136,7 +135,7 @@ internal fun DarkTappableRow(
             Icon(
                 imageVector = icon,
                 contentDescription = null,
-                tint = PrimaryDark,
+                tint = MaterialTheme.appColors.primary,
                 modifier = Modifier.size(18.dp)
             )
         }
@@ -275,7 +274,7 @@ internal fun DateRow(
                     }
                     showPicker = false
                 }) {
-                    Text("Aceptar", color = PrimaryDark, fontWeight = FontWeight.Medium)
+                    Text("Aceptar", color = MaterialTheme.appColors.primary, fontWeight = FontWeight.Medium)
                 }
             },
             dismissButton = {
@@ -288,8 +287,8 @@ internal fun DateRow(
             DatePicker(
                 state = pickerState,
                 colors = DatePickerDefaults.colors(
-                    selectedDayContainerColor = PrimaryDark,
-                    todayDateBorderColor = PrimaryDark
+                    selectedDayContainerColor = MaterialTheme.appColors.primary,
+                    todayDateBorderColor = MaterialTheme.appColors.primary
                 )
             )
         }
@@ -449,10 +448,10 @@ private fun IrpfModeChip(
     Box(
         modifier = Modifier
             .clip(RoundedCornerShape(8.dp))
-            .background(if (selected) PrimaryDark.copy(alpha = 0.15f) else Color.Transparent)
+            .background(if (selected) MaterialTheme.appColors.primary.copy(alpha = 0.15f) else Color.Transparent)
             .border(
                 width = if (selected) 1.5.dp else 0.5.dp,
-                color = if (selected) PrimaryDark else MaterialTheme.appColors.border,
+                color = if (selected) MaterialTheme.appColors.primary else MaterialTheme.appColors.border,
                 shape = RoundedCornerShape(8.dp)
             )
             .clickable { onClick() }
@@ -463,7 +462,7 @@ private fun IrpfModeChip(
             text = label,
             fontSize = 13.sp,
             fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal,
-            color = if (selected) PrimaryDark else MaterialTheme.appColors.textSecondary
+            color = if (selected) MaterialTheme.appColors.primary else MaterialTheme.appColors.textSecondary
         )
     }
 }
@@ -474,15 +473,15 @@ internal fun CalculatedNetRow(net: Double) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(10.dp),
-        color = IncomeGreen.copy(alpha = 0.1f)
+        color = MaterialTheme.appColors.income.copy(alpha = 0.1f)
     ) {
         Row(
             modifier = Modifier.fillMaxWidth().padding(horizontal = 14.dp, vertical = 10.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text("Neto estimado", fontSize = 12.sp, fontWeight = FontWeight.Medium, color = IncomeGreen)
-            Text("$formatted €", fontSize = 14.sp, fontWeight = FontWeight.Bold, color = IncomeGreen)
+            Text("Neto estimado", fontSize = 12.sp, fontWeight = FontWeight.Medium, color = MaterialTheme.appColors.income)
+            Text("$formatted €", fontSize = 14.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.appColors.income)
         }
     }
 }
@@ -533,7 +532,7 @@ private fun IssuerChip(name: String, icon: String, selected: Boolean, onClick: (
             .background(if (selected) MaterialTheme.appColors.surface else Color.Transparent)
             .border(
                 if (selected) 1.5.dp else 0.5.dp,
-                if (selected) PrimaryDark else MaterialTheme.appColors.border,
+                if (selected) MaterialTheme.appColors.primary else MaterialTheme.appColors.border,
                 RoundedCornerShape(50.dp)
             )
             .clickable { onClick() }

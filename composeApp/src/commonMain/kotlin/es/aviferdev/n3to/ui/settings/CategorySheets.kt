@@ -90,11 +90,11 @@ fun AddCategorySheet(
                 placeholder = { Text("Nombre de la categoría", color = MaterialTheme.appColors.textTertiary) },
                 singleLine = true,
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = PrimaryDark,
+                    focusedBorderColor = MaterialTheme.appColors.primary,
                     unfocusedBorderColor = MaterialTheme.appColors.border,
                     focusedTextColor = MaterialTheme.appColors.textPrimary,
                     unfocusedTextColor = MaterialTheme.appColors.textPrimary,
-                    cursorColor = PrimaryDark
+                    cursorColor = MaterialTheme.appColors.primary
                 ),
                 shape = RoundedCornerShape(10.dp)
             )
@@ -111,8 +111,8 @@ fun AddCategorySheet(
                 modifier = Modifier.fillMaxWidth().height(48.dp),
                 shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = PrimaryDark,
-                    disabledContainerColor = PrimaryDark.copy(alpha = 0.3f)
+                    containerColor = MaterialTheme.appColors.primary,
+                    disabledContainerColor = MaterialTheme.appColors.primary.copy(alpha = 0.3f)
                 )
             ) {
                 Text("Guardar", fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = Color.White)
@@ -196,11 +196,11 @@ fun EditCategorySheet(
                 placeholder = { Text("Nombre de la categoría", color = MaterialTheme.appColors.textTertiary) },
                 singleLine = true,
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = PrimaryDark,
+                    focusedBorderColor = MaterialTheme.appColors.primary,
                     unfocusedBorderColor = MaterialTheme.appColors.border,
                     focusedTextColor = MaterialTheme.appColors.textPrimary,
                     unfocusedTextColor = MaterialTheme.appColors.textPrimary,
-                    cursorColor = PrimaryDark
+                    cursorColor = MaterialTheme.appColors.primary
                 ),
                 shape = RoundedCornerShape(10.dp)
             )
@@ -232,7 +232,7 @@ fun EditCategorySheet(
                     label = LimitType.FIXED.label,
                     selected = limitType == LimitType.FIXED,
                     onClick = { limitType = LimitType.FIXED },
-                    accentColor = PrimaryDark,
+                    accentColor = MaterialTheme.appColors.primary,
                     selectedBgColor = chipSelectedBg,
                     borderColorUnselected = chipBorderColor,
                     textColorUnselected = chipTextColor,
@@ -242,7 +242,7 @@ fun EditCategorySheet(
                     label = LimitType.PERCENTAGE.label,
                     selected = limitType == LimitType.PERCENTAGE,
                     onClick = { limitType = LimitType.PERCENTAGE },
-                    accentColor = PrimaryDark,
+                    accentColor = MaterialTheme.appColors.primary,
                     selectedBgColor = chipSelectedBg,
                     borderColorUnselected = chipBorderColor,
                     textColorUnselected = chipTextColor,
@@ -280,8 +280,8 @@ fun EditCategorySheet(
                 modifier = Modifier.fillMaxWidth().height(48.dp),
                 shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = PrimaryDark,
-                    disabledContainerColor = PrimaryDark.copy(alpha = 0.3f)
+                    containerColor = MaterialTheme.appColors.primary,
+                    disabledContainerColor = MaterialTheme.appColors.primary.copy(alpha = 0.3f)
                 )
             ) {
                 Text("Guardar", fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = Color.White)
@@ -294,7 +294,7 @@ fun EditCategorySheet(
                 TextButton(onClick = {
                     onSave(name.trim(), 0.0, LimitType.FIXED)
                 }) {
-                    Text("Quitar límite", color = ExpenseRed, fontSize = 14.sp)
+                    Text("Quitar límite", color = MaterialTheme.appColors.expense, fontSize = 14.sp)
                 }
             }
 

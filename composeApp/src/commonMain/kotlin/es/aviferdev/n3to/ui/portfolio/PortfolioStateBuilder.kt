@@ -1,5 +1,6 @@
 package es.aviferdev.n3to.ui.portfolio
 
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.graphics.Color
 import es.aviferdev.n3to.domain.model.Account
 import es.aviferdev.n3to.domain.model.Asset
@@ -25,6 +26,7 @@ import es.aviferdev.n3to.ui.theme.CategoryPalette
 import es.aviferdev.n3to.ui.theme.PositiveGreen
 import es.aviferdev.n3to.ui.theme.UncategorizedColor
 import es.aviferdev.n3to.ui.theme.WarnAmber
+import es.aviferdev.n3to.ui.theme.appColors
 
 data class PortfolioStateInput(
     val portfolioId: String?,

@@ -126,7 +126,7 @@ fun SectorManagementSheet(
                     Icon(
                         newIcon.toMaterialIcon(),
                         contentDescription = null,
-                        tint = PrimaryDark,
+                        tint = MaterialTheme.appColors.primary,
                         modifier = Modifier.size(22.dp)
                     )
                 }
@@ -139,7 +139,7 @@ fun SectorManagementSheet(
                     singleLine = true,
                     shape = RoundedCornerShape(10.dp),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = PrimaryDark,
+                        focusedBorderColor = MaterialTheme.appColors.primary,
                         unfocusedBorderColor = MaterialTheme.appColors.border
                     )
                 )
@@ -155,7 +155,7 @@ fun SectorManagementSheet(
                     },
                     enabled = newName.isNotBlank(),
                     shape = RoundedCornerShape(10.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = PrimaryDark)
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.appColors.primary)
                 ) {
                     Text("+", fontSize = 18.sp)
                 }
@@ -173,10 +173,10 @@ fun SectorManagementSheet(
                         modifier = Modifier
                             .size(36.dp)
                             .clip(RoundedCornerShape(8.dp))
-                            .background(if (newIcon == icon) PrimaryDark.copy(alpha = 0.1f) else MaterialTheme.appColors.surfaceElevated)
+                            .background(if (newIcon == icon) MaterialTheme.appColors.primary.copy(alpha = 0.1f) else MaterialTheme.appColors.surfaceElevated)
                             .border(
                                 if (newIcon == icon) 1.5.dp else 0.5.dp,
-                                if (newIcon == icon) PrimaryDark else MaterialTheme.appColors.border,
+                                if (newIcon == icon) MaterialTheme.appColors.primary else MaterialTheme.appColors.border,
                                 RoundedCornerShape(8.dp)
                             )
                             .clickable { newIcon = icon },
@@ -185,7 +185,7 @@ fun SectorManagementSheet(
                         Icon(
                             icon.toMaterialIcon(),
                             contentDescription = null,
-                            tint = if (newIcon == icon) PrimaryDark else MaterialTheme.appColors.textSecondary,
+                            tint = if (newIcon == icon) MaterialTheme.appColors.primary else MaterialTheme.appColors.textSecondary,
                             modifier = Modifier.size(20.dp)
                         )
                     }
@@ -195,7 +195,7 @@ fun SectorManagementSheet(
             Spacer(Modifier.height(16.dp))
 
             errorMsg?.let { msg ->
-                Text(msg, fontSize = 12.sp, color = ExpenseRed, modifier = Modifier.padding(bottom = 8.dp))
+                Text(msg, fontSize = 12.sp, color = MaterialTheme.appColors.expense, modifier = Modifier.padding(bottom = 8.dp))
             }
 
             if (isLoading) {
@@ -203,7 +203,7 @@ fun SectorManagementSheet(
                     modifier = Modifier.fillMaxWidth().height(100.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    CircularProgressIndicator(color = PrimaryDark)
+                    CircularProgressIndicator(color = MaterialTheme.appColors.primary)
                 }
             } else {
                 LazyColumn(
@@ -257,7 +257,7 @@ private fun SectorItem(
             Icon(
                 Icons.Default.Delete,
                 stringResource(Res.string.common_delete),
-                tint = ExpenseRed.copy(alpha = 0.7f),
+                tint = MaterialTheme.appColors.expense.copy(alpha = 0.7f),
                 modifier = Modifier.size(20.dp)
             )
         }

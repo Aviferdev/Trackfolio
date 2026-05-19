@@ -141,7 +141,7 @@ fun PortfolioSettingsScreen(
             text  = { Text(errorText, fontSize = 14.sp, color = MaterialTheme.appColors.textSecondary) },
             confirmButton = {
                 TextButton(onClick = { platformViewModel.clearError() }) {
-                    Text(stringResource(Res.string.common_accept), color = PrimaryDark, fontWeight = FontWeight.Medium)
+                    Text(stringResource(Res.string.common_accept), color = MaterialTheme.appColors.primary, fontWeight = FontWeight.Medium)
                 }
             },
             shape = RoundedCornerShape(16.dp)
@@ -184,10 +184,10 @@ fun PortfolioSettingsScreen(
                             deletePortfolio(deletingPortfolio!!.id)
                         }
                         deletingPortfolio = null
-                    }) { Text(stringResource(Res.string.common_delete), color = ExpenseRed, fontWeight = FontWeight.SemiBold) }
+                    }) { Text(stringResource(Res.string.common_delete), color = MaterialTheme.appColors.expense, fontWeight = FontWeight.SemiBold) }
             },
             dismissButton = {
-                TextButton(onClick = { deletingPortfolio = null }) { Text(stringResource(Res.string.common_cancel), color = PrimaryDark) }
+                TextButton(onClick = { deletingPortfolio = null }) { Text(stringResource(Res.string.common_cancel), color = MaterialTheme.appColors.primary) }
             },
             shape = RoundedCornerShape(16.dp)
         )
@@ -309,7 +309,7 @@ fun PortfolioSettingsContent(
                                     Icon(Icons.Default.Edit, contentDescription = stringResource(Res.string.portfolio_settings_edit_cd), tint = MaterialTheme.appColors.textSecondary, modifier = Modifier.size(16.dp))
                                 }
                                 IconButton(onClick = { onDeletePortfolio(portfolio) }, modifier = Modifier.size(32.dp)) {
-                                    Icon(Icons.Default.Delete, contentDescription = stringResource(Res.string.portfolio_settings_delete_cd), tint = ExpenseRed, modifier = Modifier.size(16.dp))
+                                    Icon(Icons.Default.Delete, contentDescription = stringResource(Res.string.portfolio_settings_delete_cd), tint = MaterialTheme.appColors.expense, modifier = Modifier.size(16.dp))
                                 }
                             }
                             if (index < portfolios.lastIndex) {
@@ -359,12 +359,12 @@ fun PortfolioSettingsContent(
                                     onClick = { onIntervalChange(days) },
                                     shape   = RoundedCornerShape(8.dp),
                                     colors  = ButtonDefaults.outlinedButtonColors(
-                                        containerColor = if (isSelected) PrimaryDark else Color.Transparent,
+                                        containerColor = if (isSelected) MaterialTheme.appColors.primary else Color.Transparent,
                                         contentColor   = if (isSelected) Color.White else MaterialTheme.appColors.textPrimary
                                     ),
                                     border = BorderStroke(
                                         width = 1.dp,
-                                        color = if (isSelected) PrimaryDark else MaterialTheme.appColors.border
+                                        color = if (isSelected) MaterialTheme.appColors.primary else MaterialTheme.appColors.border
                                     ),
                                     modifier = Modifier.weight(1f)
                                 ) {

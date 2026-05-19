@@ -90,7 +90,7 @@ fun ReconcileBalanceBottomSheetContent(
         Icon(
             imageVector        = Icons.Outlined.Balance,
             contentDescription = null,
-            tint               = PrimaryDark,
+            tint               = MaterialTheme.appColors.primary,
             modifier           = Modifier.height(32.dp)
         )
 
@@ -137,9 +137,9 @@ fun ReconcileBalanceBottomSheetContent(
                 }
             ),
             colors   = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor   = PrimaryDark,
-                focusedLabelColor    = PrimaryDark,
-                cursorColor          = PrimaryDark
+                focusedBorderColor   = MaterialTheme.appColors.primary,
+                focusedLabelColor    = MaterialTheme.appColors.primary,
+                cursorColor          = MaterialTheme.appColors.primary
             ),
             modifier = Modifier.fillMaxWidth()
         )
@@ -168,7 +168,7 @@ fun ReconcileBalanceBottomSheetContent(
         Spacer(Modifier.height(16.dp))
 
         state.resultMessage?.let { msg ->
-            val color = if (state.isSuccess) PrimaryDark else MaterialTheme.colorScheme.error
+            val color = if (state.isSuccess) MaterialTheme.appColors.primary else MaterialTheme.colorScheme.error
             Text(
                 text      = msg,
                 fontSize  = 13.sp,
@@ -184,7 +184,7 @@ fun ReconcileBalanceBottomSheetContent(
             enabled  = !state.isProcessing && state.realBalanceInput.isNotBlank(),
             modifier = Modifier.fillMaxWidth(),
             shape    = RoundedCornerShape(10.dp),
-            colors   = ButtonDefaults.buttonColors(containerColor = PrimaryDark)
+            colors   = ButtonDefaults.buttonColors(containerColor = MaterialTheme.appColors.primary)
         ) {
             if (state.isProcessing) {
                 CircularProgressIndicator(

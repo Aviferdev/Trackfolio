@@ -97,19 +97,19 @@ fun FixedIncomeDetailScreen(
                     stringResource(Res.string.fixedincome_delete_event),
                     fontSize = 17.sp,
                     fontWeight = FontWeight.SemiBold,
-                    color = Color.White
+                    color = MaterialTheme.appColors.textPrimary
                 )
             },
             text = {
                 Text(
                     stringResource(Res.string.fixedincome_delete_event_confirm, state.selectedEventForDelete!!.type.label),
                     fontSize = 14.sp,
-                    color = Color.White.copy(alpha = 0.65f)
+                    color = MaterialTheme.appColors.textSecondary
                 )
             },
             confirmButton = {
                 TextButton(onClick = { viewModel.deleteEvent(state.selectedEventForDelete!!) }) {
-                    Text(stringResource(Res.string.common_delete), color = NegativeRed)
+                    Text(stringResource(Res.string.common_delete), color = MaterialTheme.appColors.expense)
                 }
             },
             dismissButton = {
@@ -171,7 +171,7 @@ fun FixedIncomeDetailContent(
                 }
             } else if (state.row == null) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text(stringResource(Res.string.fixedincome_not_found), color = Color.White.copy(alpha = 0.5f))
+                    Text(stringResource(Res.string.fixedincome_not_found), color = MaterialTheme.appColors.textTertiary)
                 }
             } else {
                 val row = state.row
@@ -232,10 +232,10 @@ fun FixedIncomeDetailContent(
                                         modifier = Modifier.fillMaxWidth(),
                                         shape = RoundedCornerShape(12.dp),
                                         colors = ButtonDefaults.buttonColors(
-                                            containerColor = ExpenseRed.copy(alpha = 0.15f),
-                                            contentColor = ExpenseRed
+                                            containerColor = MaterialTheme.appColors.expense.copy(alpha = 0.15f),
+                                            contentColor = MaterialTheme.appColors.expense
                                         ),
-                                        border = BorderStroke(1.dp, ExpenseRed.copy(alpha = 0.4f))
+                                        border = BorderStroke(1.dp, MaterialTheme.appColors.expense.copy(alpha = 0.4f))
                                     ) {
                                         Text(
                                             text = stringResource(Res.string.fixedincome_register_settlement),
@@ -252,10 +252,10 @@ fun FixedIncomeDetailContent(
                                                 modifier = Modifier.fillMaxWidth(),
                                                 shape = RoundedCornerShape(12.dp),
                                                 colors = ButtonDefaults.buttonColors(
-                                                    containerColor = ExpenseRed.copy(alpha = 0.15f),
-                                                    contentColor = ExpenseRed
+                                                    containerColor = MaterialTheme.appColors.expense.copy(alpha = 0.15f),
+                                                    contentColor = MaterialTheme.appColors.expense
                                                 ),
-                                                border = BorderStroke(1.dp, ExpenseRed.copy(alpha = 0.4f))
+                                                border = BorderStroke(1.dp, MaterialTheme.appColors.expense.copy(alpha = 0.4f))
                                             ) {
                                                 Text(
                                                     text = stringResource(Res.string.fixedincome_cancel_title),
@@ -284,10 +284,10 @@ fun FixedIncomeDetailContent(
                                                 modifier = Modifier.fillMaxWidth(),
                                                 shape = RoundedCornerShape(12.dp),
                                                 colors = ButtonDefaults.buttonColors(
-                                                    containerColor = ExpenseRed.copy(alpha = 0.15f),
-                                                    contentColor = ExpenseRed
+                                                    containerColor = MaterialTheme.appColors.expense.copy(alpha = 0.15f),
+                                                    contentColor = MaterialTheme.appColors.expense
                                                 ),
-                                                border = BorderStroke(1.dp, ExpenseRed.copy(alpha = 0.4f))
+                                                border = BorderStroke(1.dp, MaterialTheme.appColors.expense.copy(alpha = 0.4f))
                                             ) {
                                                 Text(
                                                     text = stringResource(Res.string.fixedincome_sell_secondary),

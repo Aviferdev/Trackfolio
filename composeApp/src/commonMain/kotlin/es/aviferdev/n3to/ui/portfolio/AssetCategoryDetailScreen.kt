@@ -135,7 +135,7 @@ fun AssetCategoryDetailScreen(
         AlertDialog(
             onDismissRequest = { viewModel.cancelArchive() },
             containerColor = MaterialTheme.appColors.surface,
-            icon = { Icon(Icons.Outlined.Archive, contentDescription = null, modifier = Modifier.size(28.dp), tint = PrimaryDark) },
+            icon = { Icon(Icons.Outlined.Archive, contentDescription = null, modifier = Modifier.size(28.dp), tint = MaterialTheme.appColors.primary) },
             title = {
                 Text(
                     stringResource(Res.string.portfolio_category_archive_title),
@@ -153,12 +153,12 @@ fun AssetCategoryDetailScreen(
             },
             confirmButton = {
                 TextButton(onClick = { viewModel.confirmArchive() }) {
-                    Text(stringResource(Res.string.portfolio_category_archive_confirm), color = ExpenseRed, fontWeight = FontWeight.Medium)
+                    Text(stringResource(Res.string.portfolio_category_archive_confirm), color = MaterialTheme.appColors.expense, fontWeight = FontWeight.Medium)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { viewModel.cancelArchive() }) {
-                    Text(stringResource(Res.string.common_cancel), color = PrimaryDark, fontWeight = FontWeight.Medium)
+                    Text(stringResource(Res.string.common_cancel), color = MaterialTheme.appColors.primary, fontWeight = FontWeight.Medium)
                 }
             },
             shape = RoundedCornerShape(16.dp)
@@ -180,7 +180,7 @@ fun AssetCategoryDetailScreen(
             text = { Text(msg, fontSize = 14.sp, color = MaterialTheme.appColors.textSecondary) },
             confirmButton = {
                 TextButton(onClick = { viewModel.clearError() }) {
-                    Text(stringResource(Res.string.common_accept), color = PrimaryDark, fontWeight = FontWeight.Medium)
+                    Text(stringResource(Res.string.common_accept), color = MaterialTheme.appColors.primary, fontWeight = FontWeight.Medium)
                 }
             },
             shape = RoundedCornerShape(16.dp)
@@ -332,7 +332,7 @@ fun AssetCategoryDetailContent(
                                         Text(
                                             stringResource(Res.string.portfolio_category_add_platform),
                                             fontSize = 13.sp,
-                                            color = PrimaryDark,
+                                            color = MaterialTheme.appColors.primary,
                                             fontWeight = FontWeight.Medium
                                         )
                                     }
@@ -466,7 +466,7 @@ private fun AssetRow(
             modifier = Modifier
                 .size(34.dp)
                 .clip(RoundedCornerShape(8.dp))
-                .background(PrimaryDark),
+                .background(MaterialTheme.appColors.primary),
             contentAlignment = Alignment.Center
         ) {
             Text(
@@ -522,7 +522,7 @@ private fun ArchivedAssetRow(
             Text(asset.ticker, fontSize = 11.sp, color = MaterialTheme.appColors.textSecondary.copy(alpha = 0.7f))
         }
         TextButton(onClick = onRestore) {
-            Text(stringResource(Res.string.portfolio_category_restore), fontSize = 12.sp, color = PrimaryDark, fontWeight = FontWeight.Medium)
+            Text(stringResource(Res.string.portfolio_category_restore), fontSize = 12.sp, color = MaterialTheme.appColors.primary, fontWeight = FontWeight.Medium)
         }
     }
 }

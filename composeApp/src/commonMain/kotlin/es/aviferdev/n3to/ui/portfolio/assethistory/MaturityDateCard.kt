@@ -31,7 +31,7 @@ fun MaturityDateCard(maturityDate: Long, modifier: Modifier = Modifier) {
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(13.dp),
         colors = CardDefaults.cardColors(
-            containerColor = if (isExpired) ExpenseRed.copy(.08f) else MaterialTheme.appColors.surface
+            containerColor = if (isExpired) MaterialTheme.appColors.expense.copy(.08f) else MaterialTheme.appColors.surface
         ),
         elevation = CardDefaults.cardElevation(0.dp)
     ) {
@@ -48,12 +48,12 @@ fun MaturityDateCard(maturityDate: Long, modifier: Modifier = Modifier) {
                     formatFullDate(maturityDate),
                     fontSize = 14.sp,
                     fontWeight = FontWeight.SemiBold,
-                    color = if (isExpired) ExpenseRed else MaterialTheme.appColors.textPrimary
+                    color = if (isExpired) MaterialTheme.appColors.expense else MaterialTheme.appColors.textPrimary
                 )
                 if (isExpired) Text(
                     "Vencido",
                     fontSize = 11.sp,
-                    color = ExpenseRed,
+                    color = MaterialTheme.appColors.expense,
                     fontWeight = FontWeight.Medium
                 )
             }

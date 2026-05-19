@@ -54,7 +54,7 @@ fun PropertyTransactionsSection(
                         Text(
                             "${if (tx.isIncome) "+" else "-"}${formatAmountEuro(kotlin.math.abs(tx.amount))}",
                             fontWeight = FontWeight.SemiBold, fontSize = 13.sp,
-                            color = if (tx.isIncome) IncomeGreen else ExpenseRed
+                            color = if (tx.isIncome) MaterialTheme.appColors.income else MaterialTheme.appColors.expense
                         )
                         tx.notes?.let { Text(it, fontSize = 10.sp, color = MaterialTheme.appColors.textTertiary) }
                     }

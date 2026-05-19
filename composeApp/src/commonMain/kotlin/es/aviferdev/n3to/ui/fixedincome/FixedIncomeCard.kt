@@ -72,13 +72,13 @@ fun FixedIncomeSection(
                             text = "Renta Fija",
                             fontSize = 16.sp,
                             fontWeight = FontWeight.SemiBold,
-                            color = Color.White
+                            color = MaterialTheme.appColors.textPrimary
                         )
                     }
                     if (summary.nearMaturityCount > 0) {
                         Badge(
                             count = summary.nearMaturityCount,
-                            color = WarnAmber
+                            color = MaterialTheme.appColors.warnAmber
                         )
                     }
                 }
@@ -90,21 +90,21 @@ fun FixedIncomeSection(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Column {
-                        Text("Capital", fontSize = 11.sp, color = Color.White.copy(alpha = 0.45f))
+                        Text("Capital", fontSize = 11.sp, color = MaterialTheme.appColors.textTertiary)
                         Text(
                             text = "${maskAmount(formatAmount(summary.totalPrincipal), balancesHidden)} €",
                             fontSize = 14.sp,
                             fontWeight = FontWeight.SemiBold,
-                            color = Color.White
+                            color = MaterialTheme.appColors.textPrimary
                         )
                     }
                     Column(horizontalAlignment = Alignment.End) {
-                        Text("Valor actual", fontSize = 11.sp, color = Color.White.copy(alpha = 0.45f))
+                        Text("Valor actual", fontSize = 11.sp, color = MaterialTheme.appColors.textTertiary)
                         Text(
                             text = "${maskAmount(formatAmount(summary.totalCurrentValue), balancesHidden)} €",
                             fontSize = 14.sp,
                             fontWeight = FontWeight.SemiBold,
-                            color = Color.White
+                            color = MaterialTheme.appColors.textPrimary
                         )
                     }
                 }
@@ -117,16 +117,16 @@ fun FixedIncomeSection(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Column {
-                        Text("Cobrado", fontSize = 11.sp, color = Color.White.copy(alpha = 0.45f))
+                        Text("Cobrado", fontSize = 11.sp, color = MaterialTheme.appColors.textTertiary)
                         Text(
                             text = "+${maskAmount(formatAmount(summary.totalCollectedInterest), balancesHidden)} €",
                             fontSize = 14.sp,
                             fontWeight = FontWeight.SemiBold,
-                            color = if (summary.totalCollectedInterest >= 0) MaterialTheme.appColors.pnlPositive else Color.White.copy(alpha = 0.55f)
+                            color = if (summary.totalCollectedInterest >= 0) MaterialTheme.appColors.pnlPositive else MaterialTheme.appColors.textSecondary
                         )
                     }
                     Column(horizontalAlignment = Alignment.End) {
-                        Text("Rendimiento", fontSize = 11.sp, color = Color.White.copy(alpha = 0.45f))
+                        Text("Rendimiento", fontSize = 11.sp, color = MaterialTheme.appColors.textTertiary)
                         val sign = if (summary.totalNetProfit >= 0) "+" else ""
                         Text(
                             text = "$sign${maskAmount(formatAmount(summary.totalNetProfit), balancesHidden)} € (${formatPercent(summary.totalNetProfitPercent)}%)",
@@ -135,7 +135,7 @@ fun FixedIncomeSection(
                             color = when {
                                 summary.totalNetProfit > 0 -> MaterialTheme.appColors.pnlPositive
                                 summary.totalNetProfit < 0 -> MaterialTheme.appColors.pnlNegative
-                                else -> Color.White
+                                else -> MaterialTheme.appColors.textPrimary
                             }
                         )
                     }
@@ -205,7 +205,7 @@ fun FixedIncomePositionCard(
                     text = position.name,
                     fontSize = 13.sp,
                     fontWeight = FontWeight.SemiBold,
-                    color = Color.White,
+                    color = MaterialTheme.appColors.textPrimary,
                     maxLines = 1
                 )
                 val frequencyLabel = if (position.hasPeriodicCoupons) {
@@ -216,14 +216,14 @@ fun FixedIncomePositionCard(
                 Text(
                     text = "Vence ${formatDateShort(position.maturityDate)} · $frequencyLabel · ${maskAmount(formatAmount(position.principal), balancesHidden)} €",
                     fontSize = 10.sp,
-                    color = Color.White.copy(alpha = 0.4f)
+                    color = MaterialTheme.appColors.textTertiary
                 )
             }
 
             Column(horizontalAlignment = Alignment.End) {
                 StatusTag(
                     label = if (position.isOpen) "ACTIVO" else "CERRADO",
-                    color = if (position.isOpen) MaterialTheme.appColors.pnlPositive else Color.White.copy(alpha = 0.3f)
+                    color = if (position.isOpen) MaterialTheme.appColors.pnlPositive else MaterialTheme.appColors.textDisabled
                 )
                 if (position.isOpen) {
                     val interestToShow = if (row.collectedInterest > 0) row.collectedInterest else position.accruedInterestToDate
@@ -283,8 +283,8 @@ fun NearMaturityBadge(
     remainingDays: Int,
     isMatured: Boolean
 ) {
-    val bgColor = if (isMatured) ExpenseRed.copy(alpha = 0.15f) else WarnAmber.copy(alpha = 0.15f)
-    val textColor = if (isMatured) ExpenseRed else WarnAmber
+    val bgColor = if (isMatured) MaterialTheme.appColors.expense.copy(alpha = 0.15f) else MaterialTheme.appColors.warnAmber.copy(alpha = 0.15f)
+    val textColor = if (isMatured) MaterialTheme.appColors.expense else MaterialTheme.appColors.warnAmber
     val label = if (isMatured) "Vencido" else "$remainingDays días"
 
     Surface(

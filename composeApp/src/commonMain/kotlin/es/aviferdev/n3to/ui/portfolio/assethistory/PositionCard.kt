@@ -48,7 +48,7 @@ fun PositionCard(
     Card(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(14.dp),
-        colors = CardDefaults.cardColors(containerColor = PrimaryDark),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.primary),
         elevation = CardDefaults.cardElevation(0.dp)
     ) {
         Column(modifier = Modifier.fillMaxWidth().padding(18.dp)) {

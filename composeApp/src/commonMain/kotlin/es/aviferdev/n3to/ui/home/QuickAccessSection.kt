@@ -102,7 +102,7 @@ fun QuickCard(
         ) {
             BadgedBox(
                 badge = {
-                    if (showBadge) Badge(containerColor = ExpenseRed)
+                    if (showBadge) Badge(containerColor = MaterialTheme.appColors.expense)
                 }
             ) {
                 Icon(icon, contentDescription = null, tint = MaterialTheme.appColors.cyanAccent, modifier = Modifier.size(22.dp))
@@ -110,7 +110,7 @@ fun QuickCard(
             Text(
                 text = label,
                 fontSize = 10.sp,
-                color = Color.White.copy(alpha = 0.85f),
+                color = MaterialTheme.appColors.textPrimary,
                 textAlign = TextAlign.Center,
                 fontWeight = FontWeight.SemiBold
             )

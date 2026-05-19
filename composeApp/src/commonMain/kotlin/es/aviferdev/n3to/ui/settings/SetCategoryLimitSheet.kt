@@ -101,7 +101,7 @@ fun SetCategoryLimitSheet(
                     label = LimitType.FIXED.label,
                     selected = limitType == LimitType.FIXED,
                     onClick = { limitType = LimitType.FIXED },
-                    accentColor = PrimaryDark,
+                    accentColor = MaterialTheme.appColors.primary,
                     selectedBgColor = PrimaryAlpha,
                     borderColorUnselected = MaterialTheme.appColors.border2,
                     textColorUnselected = MaterialTheme.appColors.textTertiary,
@@ -111,7 +111,7 @@ fun SetCategoryLimitSheet(
                     label = LimitType.PERCENTAGE.label,
                     selected = limitType == LimitType.PERCENTAGE,
                     onClick = { limitType = LimitType.PERCENTAGE },
-                    accentColor = PrimaryDark,
+                    accentColor = MaterialTheme.appColors.primary,
                     selectedBgColor = PrimaryAlpha,
                     borderColorUnselected = MaterialTheme.appColors.border2,
                     textColorUnselected = MaterialTheme.appColors.textTertiary,
@@ -146,8 +146,8 @@ fun SetCategoryLimitSheet(
                 modifier = Modifier.fillMaxWidth().height(48.dp),
                 shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = PrimaryDark,
-                    disabledContainerColor = PrimaryDark.copy(alpha = 0.3f)
+                    containerColor = MaterialTheme.appColors.primary,
+                    disabledContainerColor = MaterialTheme.appColors.primary.copy(alpha = 0.3f)
                 )
             ) {
                 Text("Guardar", fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = Color.White)
@@ -157,7 +157,7 @@ fun SetCategoryLimitSheet(
             if (currentLimit > 0.0) {
                 Spacer(Modifier.height(8.dp))
                 TextButton(onClick = { onSave(0.0, LimitType.FIXED) }) {
-                    Text("Quitar límite", color = ExpenseRed, fontSize = 14.sp)
+                    Text("Quitar límite", color = MaterialTheme.appColors.expense, fontSize = 14.sp)
                 }
             }
 

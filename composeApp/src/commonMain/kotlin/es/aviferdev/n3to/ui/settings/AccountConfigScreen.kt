@@ -148,7 +148,7 @@ fun AccountConfigScreen(
                             icon = Icons.Outlined.Delete,
                             label = "Eliminar cuenta",
                             onClick = { viewModel.requestDelete() },
-                            color = ExpenseRed
+                            color = MaterialTheme.appColors.expense
                         )
                     }
                 }

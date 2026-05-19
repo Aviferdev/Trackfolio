@@ -117,7 +117,7 @@ fun PortfolioTabContent(
                             .height(200.dp),
                         contentAlignment = Alignment.Center
                     ) {
-                        CircularProgressIndicator(color = PrimaryDark)
+                        CircularProgressIndicator(color = MaterialTheme.appColors.primary)
                     }
                 }
                 return@LazyColumn

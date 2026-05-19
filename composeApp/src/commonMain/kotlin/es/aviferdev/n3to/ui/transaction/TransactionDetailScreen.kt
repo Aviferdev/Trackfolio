@@ -75,7 +75,7 @@ fun TransactionDetailScreen(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
-                    CircularProgressIndicator(color = PrimaryDark)
+                    CircularProgressIndicator(color = MaterialTheme.appColors.primary)
                 }
             }
 
@@ -87,7 +87,7 @@ fun TransactionDetailScreen(
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text(
                             text = state.message,
-                            color = ExpenseRed,
+                            color = MaterialTheme.appColors.expense,
                             fontSize = 14.sp,
                             textAlign = TextAlign.Center,
                             modifier = Modifier.padding(horizontal = 32.dp)
@@ -95,7 +95,7 @@ fun TransactionDetailScreen(
                         Spacer(Modifier.height(16.dp))
                         Button(
                             onClick = { viewModel.refresh() },
-                            colors = ButtonDefaults.buttonColors(containerColor = PrimaryDark)
+                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.appColors.primary)
                         ) {
                             Text("Reintentar")
                         }
@@ -147,12 +147,12 @@ fun TransactionDetailScreen(
                     showDeleteDialog = false
                     viewModel.deleteTransaction()
                 }) {
-                    Text(stringResource(Res.string.common_delete), color = ExpenseRed, fontWeight = FontWeight.SemiBold)
+                    Text(stringResource(Res.string.common_delete), color = MaterialTheme.appColors.expense, fontWeight = FontWeight.SemiBold)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showDeleteDialog = false }) {
-                    Text(stringResource(Res.string.common_cancel), color = PrimaryDark, fontWeight = FontWeight.Medium)
+                    Text(stringResource(Res.string.common_cancel), color = MaterialTheme.appColors.primary, fontWeight = FontWeight.Medium)
                 }
             },
             shape = RoundedCornerShape(16.dp)
@@ -184,11 +184,11 @@ private fun TransactionDetailContent(
         // ── Card superior con tipo, importe y categoría ────────────────────
         val isPropertyTransaction = transaction.linkedPropertyId != null
         val (typeLabel, typeColor) = when {
-            transaction.isAdjustment -> "AJUSTE" to PrimaryDark
-            transaction.isLinkedToAsset -> "INVERSIÓN" to PrimaryDark
-            isPropertyTransaction   -> "INMUEBLE" to IncomeGreen
-            transaction.isIncome  -> "INGRESO" to IncomeGreen
-            else                  -> "GASTO" to ExpenseRed
+            transaction.isAdjustment -> "AJUSTE" to MaterialTheme.appColors.primary
+            transaction.isLinkedToAsset -> "INVERSIÓN" to MaterialTheme.appColors.primary
+            isPropertyTransaction   -> "INMUEBLE" to MaterialTheme.appColors.income
+            transaction.isIncome  -> "INGRESO" to MaterialTheme.appColors.income
+            else                  -> "GASTO" to MaterialTheme.appColors.expense
         }
         val isLinkedToProperty = transaction.linkedPropertyId != null
     val isNegativeAmount = when {
@@ -371,10 +371,10 @@ private fun TransactionDetailContent(
                     modifier = Modifier.weight(1f).height(50.dp),
                     shape = RoundedCornerShape(12.dp),
                     colors = ButtonDefaults.outlinedButtonColors(
-                        contentColor = PrimaryDark
+                        contentColor = MaterialTheme.appColors.primary
                     ),
                     border = ButtonDefaults.outlinedButtonBorder(enabled = true).copy(
-                        brush = androidx.compose.ui.graphics.SolidColor(PrimaryDark)
+                        brush = androidx.compose.ui.graphics.SolidColor(MaterialTheme.appColors.primary)
                     )
                 ) {
                     Icon(
@@ -399,7 +399,7 @@ private fun TransactionDetailContent(
                     modifier = Modifier.weight(1f).height(50.dp),
                     shape = RoundedCornerShape(12.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = ExpenseRed,
+                        containerColor = MaterialTheme.appColors.expense,
                         contentColor = Color.White
                     )
                 ) {
@@ -425,14 +425,14 @@ private fun TransactionDetailContent(
                 Surface(
                     modifier = Modifier.fillMaxWidth().height(50.dp),
                     shape = RoundedCornerShape(12.dp),
-                    color = PrimaryDark.copy(alpha = 0.1f)
+                    color = MaterialTheme.appColors.primary.copy(alpha = 0.1f)
                 ) {
                     Box(contentAlignment = Alignment.Center) {
                         Text(
                             linkedLabel,
                             fontSize = 13.sp,
                             fontWeight = FontWeight.Medium,
-                            color = PrimaryDark
+                            color = MaterialTheme.appColors.primary
                         )
                     }
                 }

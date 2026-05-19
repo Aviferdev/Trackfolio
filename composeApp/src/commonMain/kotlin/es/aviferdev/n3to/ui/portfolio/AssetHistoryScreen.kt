@@ -76,7 +76,6 @@ import es.aviferdev.n3to.ui.common.navigation.TopBarApp
 import es.aviferdev.n3to.ui.portfolio.assethistory.AssetHistoryContent
 
 import es.aviferdev.n3to.ui.theme.ExpenseRed
-import es.aviferdev.n3to.ui.theme.IncomeGreen
 import es.aviferdev.n3to.ui.theme.LocalBalanceHidden
 import es.aviferdev.n3to.ui.theme.PrimaryDark
 
@@ -168,14 +167,14 @@ fun AssetHistoryScreen(
             },
             confirmButton = {
                 TextButton(onClick = { viewModel.confirmDelete() }) {
-                    Text("Eliminar", color = ExpenseRed, fontWeight = FontWeight.SemiBold)
+                    Text("Eliminar", color = MaterialTheme.appColors.expense, fontWeight = FontWeight.SemiBold)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { viewModel.cancelDelete() }) {
                     Text(
                         "Cancelar",
-                        color = PrimaryDark
+                        color = MaterialTheme.appColors.primary
                     )
                 }
             },
@@ -204,7 +203,7 @@ fun AssetHistoryScreen(
                 TextButton(onClick = { viewModel.clearError() }) {
                     Text(
                         stringResource(Res.string.common_accept),
-                        color = PrimaryDark
+                        color = MaterialTheme.appColors.primary
                     )
                 }
             },

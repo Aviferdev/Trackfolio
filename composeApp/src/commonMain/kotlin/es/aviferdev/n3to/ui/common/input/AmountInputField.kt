@@ -70,7 +70,7 @@ fun AmountInputField(
                     color = MaterialTheme.appColors.textPrimary,
                     textAlign = TextAlign.Center
                 ),
-                cursorBrush = SolidColor(PrimaryDark),
+                cursorBrush = SolidColor(MaterialTheme.appColors.primary),
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true
             )

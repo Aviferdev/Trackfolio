@@ -68,7 +68,6 @@ import es.aviferdev.n3to.ui.common.navigation.TimeStepperHeader
 import es.aviferdev.n3to.ui.common.navigation.TopBarApp
 
 import es.aviferdev.n3to.ui.theme.ExpenseRed
-import es.aviferdev.n3to.ui.theme.IncomeGreen
 
 import kotlinx.coroutines.delay
 import org.koin.compose.viewmodel.koinViewModel
@@ -149,11 +148,11 @@ fun GoalSettingsScreen(
                                     Icon(
                                         Icons.Outlined.Savings,
                                         contentDescription = null,
-                                        tint = IncomeGreen,
+                                        tint = MaterialTheme.appColors.income,
                                         modifier = Modifier.size(18.dp)
                                     )
                                 },
-                                iconBackground = IncomeGreen.copy(alpha = 0.12f),
+                                iconBackground = MaterialTheme.appColors.income.copy(alpha = 0.12f),
                                 label = "AHORRO MENSUAL BASE",
                                 description = "Lo que reservas cada mes como ahorro líquido o en cuenta de ahorro."
                             )
@@ -172,9 +171,9 @@ fun GoalSettingsScreen(
                                 },
                                 singleLine = true,
                                 colors = OutlinedTextFieldDefaults.colors(
-                                    focusedBorderColor = IncomeGreen,
+                                    focusedBorderColor = MaterialTheme.appColors.income,
                                     unfocusedBorderColor = MaterialTheme.appColors.navyBorder,
-                                    cursorColor = IncomeGreen,
+                                    cursorColor = MaterialTheme.appColors.income,
                                     focusedTextColor = MaterialTheme.appColors.textPrimary,
                                     unfocusedTextColor = MaterialTheme.appColors.textPrimary,
                                     focusedContainerColor = MaterialTheme.appColors.navyDeep,
@@ -323,7 +322,7 @@ fun GoalSettingsScreen(
                                                     Text(
                                                         "Restablecer",
                                                         fontSize = 11.sp,
-                                                        color = ExpenseRed.copy(alpha = 0.8f),
+                                                        color = MaterialTheme.appColors.expense.copy(alpha = 0.8f),
                                                         modifier = Modifier
                                                             .clickable {
                                                                 viewModel.resetMonth(month.month)
@@ -363,7 +362,7 @@ fun GoalSettingsScreen(
                                                 suffix = "€",
                                                 singleLine = true,
                                                 containerColor = MaterialTheme.appColors.navySurfaceLight,
-                                                cursorColor = IncomeGreen,
+                                                cursorColor = MaterialTheme.appColors.income,
                                                 modifier = Modifier.weight(1f)
                                             )
                                             InlineAmountField(
@@ -431,7 +430,7 @@ fun GoalSettingsScreen(
                             Text(
                                 text = msg,
                                 fontSize = 12.sp,
-                                color = if (msg.startsWith("Error")) ExpenseRed else IncomeGreen,
+                                color = if (msg.startsWith("Error")) MaterialTheme.appColors.expense else MaterialTheme.appColors.income,
                                 fontWeight = FontWeight.Medium,
                                 textAlign = TextAlign.Center,
                                 modifier = Modifier.fillMaxWidth()

@@ -221,7 +221,7 @@ internal fun EverydayDebtsRow(amount: Double, balancesHidden: Boolean) {
                 "−${maskAmount(formatCurrency(amount), balancesHidden)}",
                 fontSize   = 13.sp,
                 fontWeight = FontWeight.Bold,
-                color      = ExpenseRed
+                color      = MaterialTheme.appColors.expense
             )
         }
     }
@@ -263,7 +263,7 @@ internal fun LoanCard(loan: Loan, onClick: () -> Unit) {
                         "−${formatCurrency(loan.outstandingPrincipal)}",
                         fontWeight = FontWeight.Bold,
                         fontSize   = 13.sp,
-                        color      = ExpenseRed
+                        color      = MaterialTheme.appColors.expense
                     )
                     Text(stringResource(Res.string.networth_of_format, formatCurrency(loan.totalAmount)), fontSize = 10.sp, color = appCTextTertiary)
                 }

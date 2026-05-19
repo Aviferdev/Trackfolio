@@ -610,8 +610,8 @@ private fun PremiumErrorCard(
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
             .clip(RoundedCornerShape(16.dp))
-            .border(0.5.dp, ExpenseRed.copy(alpha = 0.30f), RoundedCornerShape(16.dp))
-            .background(ExpenseRed.copy(alpha = 0.05f))
+            .border(0.5.dp, MaterialTheme.appColors.expense.copy(alpha = 0.30f), RoundedCornerShape(16.dp))
+            .background(MaterialTheme.appColors.expense.copy(alpha = 0.05f))
             .padding(horizontal = 24.dp, vertical = 24.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {

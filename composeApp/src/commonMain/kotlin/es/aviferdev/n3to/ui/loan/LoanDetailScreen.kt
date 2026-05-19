@@ -90,12 +90,12 @@ fun LoanDetailScreen(
             },
             confirmButton = {
                 TextButton(onClick = { viewModel.archive(); showArchiveConfirm = false; onBack() }) {
-                    Text(stringResource(Res.string.loan_archive_title), color = ExpenseRed, fontWeight = FontWeight.SemiBold)
+                    Text(stringResource(Res.string.loan_archive_title), color = MaterialTheme.appColors.expense, fontWeight = FontWeight.SemiBold)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showArchiveConfirm = false }) {
-                    Text(stringResource(Res.string.common_cancel), color = PrimaryDark)
+                    Text(stringResource(Res.string.common_cancel), color = MaterialTheme.appColors.primary)
                 }
             },
             shape = RoundedCornerShape(16.dp)
@@ -131,14 +131,14 @@ fun LoanDetailContent(
                 IconButton(onClick = onEditClick) {
                     Icon(Icons.Outlined.Edit, stringResource(Res.string.settings_edit_cd), tint = MaterialTheme.appColors.textSecondary)
                     Icon(Icons.Outlined.Edit, stringResource(Res.string.loan_change_rate), tint = MaterialTheme.appColors.textSecondary)
-                    Icon(Icons.Outlined.Delete, stringResource(Res.string.loan_archive_title), tint = ExpenseRed)
+                    Icon(Icons.Outlined.Delete, stringResource(Res.string.loan_archive_title), tint = MaterialTheme.appColors.expense)
                 }
             }
         )
 
         if (uiState.isLoading) {
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator(color = PrimaryDark)
+                CircularProgressIndicator(color = MaterialTheme.appColors.primary)
             }
         } else if (uiState.loan == null) {
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -220,7 +220,7 @@ private fun LoanHeroCard(loan: Loan) {
     Card(
         modifier  = Modifier.fillMaxWidth(),
         shape     = RoundedCornerShape(16.dp),
-        colors    = CardDefaults.cardColors(containerColor = PrimaryDark),
+        colors    = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.primary),
         elevation = CardDefaults.cardElevation(0.dp)
     ) {
         Column(modifier = Modifier.fillMaxWidth().padding(20.dp)) {
@@ -343,13 +343,13 @@ private fun RateChangeRow(change: LoanRateChange) {
                     "Δ ${if (change.newRate > change.previousRate) "+" else ""}${
                         formatPercent(change.newRate - change.previousRate)}%",
                     fontSize = 10.sp,
-                    color    = if (change.newRate > change.previousRate) ExpenseRed else IncomeGreen
+                    color    = if (change.newRate > change.previousRate) MaterialTheme.appColors.expense else MaterialTheme.appColors.income
                 )
             }
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                 Text("${formatPercent(change.previousRate)}%", fontSize = 13.sp, color = MaterialTheme.appColors.textSecondary)
                 Text("→", fontSize = 13.sp, color = MaterialTheme.appColors.textTertiary)
-                Text("${formatPercent(change.newRate)}%", fontSize = 13.sp, color = PrimaryDark, fontWeight = FontWeight.Bold)
+                Text("${formatPercent(change.newRate)}%", fontSize = 13.sp, color = MaterialTheme.appColors.primary, fontWeight = FontWeight.Bold)
             }
         }
     }
@@ -394,9 +394,9 @@ private fun AmortizationRow(entry: AmortizationEntry, paidInstallments: Int) {
         Text(entry.installmentNumber.toString(), fontSize = 10.sp, color = txtColor, modifier = Modifier.weight(.4f))
         Text(formatDateShort(entry.date),        fontSize = 10.sp, color = txtColor, modifier = Modifier.weight(1.4f))
         Text(formatCurrencyShort(entry.monthlyPayment),  fontSize = 10.sp, color = txtColor,    textAlign = TextAlign.End, modifier = Modifier.weight(1.2f))
-        Text(formatCurrencyShort(entry.interestPortion), fontSize = 10.sp, color = ExpenseRed.copy(if (isPaid) 1f else .5f), textAlign = TextAlign.End, modifier = Modifier.weight(1.2f))
-        Text(formatCurrencyShort(entry.principalPortion),fontSize = 10.sp, color = IncomeGreen.copy(if (isPaid) 1f else .5f),textAlign = TextAlign.End, modifier = Modifier.weight(1.2f))
-        Text(formatCurrencyShort(entry.outstandingBalance), fontSize = 10.sp, color = if (isPaid) PrimaryDark else MaterialTheme.appColors.textTertiary, fontWeight = if (isPaid) FontWeight.SemiBold else FontWeight.Normal, textAlign = TextAlign.End, modifier = Modifier.weight(1.4f))
+        Text(formatCurrencyShort(entry.interestPortion), fontSize = 10.sp, color = MaterialTheme.appColors.expense.copy(if (isPaid) 1f else .5f), textAlign = TextAlign.End, modifier = Modifier.weight(1.2f))
+        Text(formatCurrencyShort(entry.principalPortion),fontSize = 10.sp, color = MaterialTheme.appColors.income.copy(if (isPaid) 1f else .5f),textAlign = TextAlign.End, modifier = Modifier.weight(1.2f))
+        Text(formatCurrencyShort(entry.outstandingBalance), fontSize = 10.sp, color = if (isPaid) MaterialTheme.appColors.primary else MaterialTheme.appColors.textTertiary, fontWeight = if (isPaid) FontWeight.SemiBold else FontWeight.Normal, textAlign = TextAlign.End, modifier = Modifier.weight(1.4f))
     }
     HorizontalDivider(color = MaterialTheme.appColors.border, thickness = .3.dp)
 }

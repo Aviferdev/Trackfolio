@@ -190,7 +190,7 @@ fun SettingsScreen(
         AlertDialog(onDismissRequest = { accountViewModel.cancelDelete() }, containerColor = MaterialTheme.appColors.navySurface,
             title = { Text(stringResource(Res.string.settings_delete_account_title), fontSize = 16.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.appColors.textPrimary) },
             text  = { Text(stringResource(Res.string.settings_delete_account_message, accountState.accountToDelete!!.name), fontSize = 13.sp, color = MaterialTheme.appColors.textSecondary) },
-            confirmButton = { TextButton(onClick = { accountViewModel.confirmDelete() }) { Text(stringResource(Res.string.common_delete), color = ExpenseRed, fontWeight = FontWeight.SemiBold) } },
+            confirmButton = { TextButton(onClick = { accountViewModel.confirmDelete() }) { Text(stringResource(Res.string.common_delete), color = MaterialTheme.appColors.expense, fontWeight = FontWeight.SemiBold) } },
             dismissButton = { TextButton(onClick = { accountViewModel.cancelDelete() }) { Text(stringResource(Res.string.common_cancel), color = MaterialTheme.appColors.cyanAccent) } },
             shape = RoundedCornerShape(16.dp)
         )

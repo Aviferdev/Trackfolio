@@ -47,7 +47,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.Asset
 
-import es.aviferdev.n3to.ui.theme.IncomeGreen
 import es.aviferdev.n3to.ui.theme.PrimaryDark
 
 import es.aviferdev.n3to.ui.theme.N3toTheme
@@ -119,7 +118,7 @@ fun PriceUpdateBottomSheet(
                         .fillMaxWidth(fraction)
                         .height(4.dp)
                         .clip(RoundedCornerShape(2.dp))
-                        .background(IncomeGreen)
+                        .background(MaterialTheme.appColors.income)
                 )
             }
 
@@ -182,7 +181,7 @@ private fun AssetPriceUpdateRow(
                     modifier = Modifier
                         .size(36.dp)
                         .clip(RoundedCornerShape(8.dp))
-                        .background(if (isCompleted) IncomeGreen else PrimaryDark),
+                        .background(if (isCompleted) MaterialTheme.appColors.income else MaterialTheme.appColors.primary),
                     contentAlignment = Alignment.Center
                 ) {
                     if (isCompleted) {
@@ -257,7 +256,7 @@ private fun AssetPriceUpdateRow(
                         shape           = RoundedCornerShape(8.dp),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                         colors          = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor   = PrimaryDark,
+                            focusedBorderColor   = MaterialTheme.appColors.primary,
                             unfocusedBorderColor = MaterialTheme.appColors.border
                         ),
                         singleLine = true
@@ -267,9 +266,9 @@ private fun AssetPriceUpdateRow(
                         onClick  = onConfirm,
                         enabled  = priceInput.replace(',', '.').toDoubleOrNull()?.let { it >= 0 } == true,
                         colors   = IconButtonDefaults.iconButtonColors(
-                            containerColor         = PrimaryDark,
+                            containerColor         = MaterialTheme.appColors.primary,
                             contentColor           = Color.White,
-                            disabledContainerColor = PrimaryDark.copy(alpha = 0.38f),
+                            disabledContainerColor = MaterialTheme.appColors.primary.copy(alpha = 0.38f),
                             disabledContentColor   = Color.White.copy(alpha = 0.5f)
                         ),
                         modifier = Modifier.size(48.dp)

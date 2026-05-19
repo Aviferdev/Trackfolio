@@ -93,7 +93,7 @@ fun PortfolioDistributionCard(
                         text       = "RF: ${fixedIncomePercent.toInt()}%",
                         fontSize   = 12.sp,
                         fontWeight = FontWeight.Bold,
-                        color      = WarnAmber
+                        color      = MaterialTheme.appColors.warnAmber
                     )
                 }
             }

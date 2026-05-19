@@ -199,7 +199,7 @@ fun AssetDetailContent(
                                             Icons.Default.Delete,
                                             "Desvincular",
                                             modifier = Modifier.size(14.dp),
-                                            tint = ExpenseRed
+                                            tint = MaterialTheme.appColors.expense
                                         )
                                     }
                                 }

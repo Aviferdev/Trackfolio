@@ -71,7 +71,7 @@ fun AnnualSummaryScreen(
 
         if (uiState.isLoading) {
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator(color = PrimaryDark)
+                CircularProgressIndicator(color = MaterialTheme.appColors.primary)
             }
         } else {
             when (selectedTab) {

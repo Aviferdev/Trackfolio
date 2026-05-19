@@ -53,7 +53,7 @@ fun ClosedFixedIncomeCard(
     val pnlColor = when {
         row.totalProfit > 0 -> MaterialTheme.appColors.pnlPositive
         row.totalProfit < 0 -> MaterialTheme.appColors.pnlNegative
-        else -> Color.White.copy(alpha = 0.4f)
+        else -> MaterialTheme.appColors.textTertiary
     }
 
     Card(
@@ -90,20 +90,20 @@ fun ClosedFixedIncomeCard(
                     position.name,
                     fontSize = 12.sp,
                     fontWeight = FontWeight.SemiBold,
-                    color = Color.White.copy(alpha = 0.65f),
+                    color = MaterialTheme.appColors.textSecondary,
                     maxLines = 1
                 )
                 Text(
                     "Cerrada",
                     fontSize = 10.sp,
-                    color = Color.White.copy(alpha = 0.35f)
+                    color = MaterialTheme.appColors.textDisabled
                 )
             }
             Column(horizontalAlignment = Alignment.End) {
                 Text(
                     "Realizado",
                     fontSize = 10.sp,
-                    color = Color.White.copy(alpha = 0.35f)
+                    color = MaterialTheme.appColors.textDisabled
                 )
                 Text(
                     if (row.totalProfit == 0.0) "—"

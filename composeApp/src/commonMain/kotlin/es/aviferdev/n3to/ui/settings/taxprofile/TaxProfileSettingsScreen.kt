@@ -74,7 +74,7 @@ fun TaxProfileSettingsScreen(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = { viewModel.openAddSheet() },
-                containerColor = PrimaryDark,
+                containerColor = MaterialTheme.appColors.primary,
                 contentColor = Color.White
             ) {
                 Icon(Icons.Default.Add, contentDescription = "Añadir perfil")
@@ -115,7 +115,7 @@ fun TaxProfileSettingsScreen(
                     AlertBanner(
                         icon = "ℹ️",
                         label = "El perfil más reciente (por fecha de inicio) es el que se aplica a los cálculos fiscales actuales. Puedes tener uno por cada sistema fiscal que hayas usado.",
-                        color = PrimaryDark
+                        color = MaterialTheme.appColors.primary
                     )
                 }
                 items(state.snapshots, key = { it.id }) { snapshot ->
@@ -158,12 +158,12 @@ fun TaxProfileSettingsScreen(
             },
             confirmButton = {
                 TextButton(onClick = { viewModel.confirmDelete() }) {
-                    Text("Eliminar", color = ExpenseRed, fontWeight = FontWeight.SemiBold)
+                    Text("Eliminar", color = MaterialTheme.appColors.expense, fontWeight = FontWeight.SemiBold)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { viewModel.cancelDelete() }) {
-                    Text("Cancelar", color = PrimaryDark)
+                    Text("Cancelar", color = MaterialTheme.appColors.primary)
                 }
             },
             shape = RoundedCornerShape(16.dp)
@@ -179,7 +179,7 @@ fun TaxProfileSettingsScreen(
             text = { Text(msg, fontSize = 13.sp, color = MaterialTheme.appColors.textSecondary) },
             confirmButton = {
                 TextButton(onClick = { viewModel.clearError() }) {
-                    Text("Aceptar", color = PrimaryDark, fontWeight = FontWeight.SemiBold)
+                    Text("Aceptar", color = MaterialTheme.appColors.primary, fontWeight = FontWeight.SemiBold)
                 }
             },
             shape = RoundedCornerShape(16.dp)
@@ -225,7 +225,7 @@ private fun TaxProfileSnapshotRow(
                 )
             }
             IconButton(onClick = onDelete) {
-                Icon(Icons.Default.Delete, contentDescription = "Eliminar", tint = ExpenseRed, modifier = Modifier.size(20.dp))
+                Icon(Icons.Default.Delete, contentDescription = "Eliminar", tint = MaterialTheme.appColors.expense, modifier = Modifier.size(20.dp))
             }
         }
     }
@@ -315,7 +315,7 @@ private fun AddTaxProfileSheet(
                 enabled = isValid && !isSaving,
                 modifier = Modifier.fillMaxWidth().height(48.dp),
                 shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = PrimaryDark)
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.appColors.primary)
             ) {
                 if (isSaving) {
                     CircularProgressIndicator(modifier = Modifier.size(20.dp), color = Color.White, strokeWidth = 2.dp)

@@ -68,7 +68,7 @@ fun ValuableCard(
                         text = formatAmountEuro(valuable.salePrice ?: 0.0),
                         fontWeight = FontWeight.Bold,
                         fontSize = 13.sp,
-                        color = IncomeGreen
+                        color = MaterialTheme.appColors.income
                     )
                     valuable.grossProfitPercent?.let { pct ->
                         DeltaIndicator(

@@ -31,7 +31,6 @@ import es.aviferdev.n3to.domain.model.EmergencyFundMethod
 import es.aviferdev.n3to.domain.model.EmergencyFundStatus
 import es.aviferdev.n3to.ui.common.ProgressBar
 import es.aviferdev.n3to.ui.theme.ExpenseRed
-import es.aviferdev.n3to.ui.theme.IncomeGreen
 
 import es.aviferdev.n3to.ui.theme.WarnAmber
 
@@ -116,7 +115,7 @@ fun EmergencyFundCard(
                     Icon(
                         Icons.Outlined.Shield,
                         contentDescription = null,
-                        tint = if (status.isCovered) IncomeGreen else MaterialTheme.appColors.textSecondary,
+                        tint = if (status.isCovered) MaterialTheme.appColors.income else MaterialTheme.appColors.textSecondary,
                         modifier = Modifier.size(18.dp)
                     )
                     Spacer(Modifier.width(6.dp))
@@ -130,7 +129,7 @@ fun EmergencyFundCard(
                 Text(
                     text = if (status.isCovered) stringResource(Res.string.home_ef_covered) else stringResource(Res.string.home_ef_months, status.targetMonths),
                     fontSize = 11.sp,
-                    color = if (status.isCovered) IncomeGreen else MaterialTheme.appColors.textTertiary
+                    color = if (status.isCovered) MaterialTheme.appColors.income else MaterialTheme.appColors.textTertiary
                 )
             }
 
@@ -138,9 +137,9 @@ fun EmergencyFundCard(
 
             // Barra de progreso
             val progressColor = when {
-                status.isCovered -> IncomeGreen
-                status.coveragePercentage >= 0.5f -> WarnAmber
-                else -> ExpenseRed
+                status.isCovered -> MaterialTheme.appColors.income
+                status.coveragePercentage >= 0.5f -> MaterialTheme.appColors.warnAmber
+                else -> MaterialTheme.appColors.expense
             }
 
             ProgressBar(
@@ -191,7 +190,7 @@ fun EmergencyFundCard(
                 Text(
                     text = stringResource(Res.string.home_ef_missing_format, formatAmountEuro(status.missingAmount)),
                     fontSize = 11.sp,
-                    color = ExpenseRed,
+                    color = MaterialTheme.appColors.expense,
                     fontWeight = FontWeight.Medium
                 )
             }
@@ -212,7 +211,7 @@ fun EmergencyFundCard(
                 Text(
                     text = msg,
                     fontSize = 10.sp,
-                    color = ExpenseRed
+                    color = MaterialTheme.appColors.expense
                 )
             }
         }

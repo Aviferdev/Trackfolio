@@ -73,7 +73,7 @@ fun SetInitialBalanceBottomSheet(
                 Text(
                     text     = accountName,
                     fontSize = 14.sp,
-                    color    = PrimaryDark,
+                    color    = MaterialTheme.appColors.primary,
                     fontWeight = FontWeight.Medium
                 )
             }
@@ -110,7 +110,7 @@ fun SetInitialBalanceBottomSheet(
                 shape           = RoundedCornerShape(12.dp),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                 colors          = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor   = PrimaryDark,
+                    focusedBorderColor   = MaterialTheme.appColors.primary,
                     unfocusedBorderColor = MaterialTheme.appColors.border
                 ),
                 singleLine = true
@@ -134,8 +134,8 @@ fun SetInitialBalanceBottomSheet(
                 modifier = Modifier.fillMaxWidth().height(52.dp),
                 shape    = RoundedCornerShape(10.dp),
                 colors   = ButtonDefaults.buttonColors(
-                    containerColor         = PrimaryDark,
-                    disabledContainerColor = PrimaryDark.copy(alpha = 0.38f)
+                    containerColor         = MaterialTheme.appColors.primary,
+                    disabledContainerColor = MaterialTheme.appColors.primary.copy(alpha = 0.38f)
                 )
             ) {
                 Text("Establecer saldo", fontSize = 16.sp, fontWeight = FontWeight.Medium)

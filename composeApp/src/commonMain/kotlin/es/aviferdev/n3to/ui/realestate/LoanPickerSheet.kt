@@ -83,7 +83,7 @@ fun LoanPickerSheet(
                 Checkbox(
                     checked = filterMortgageOnly,
                     onCheckedChange = { filterMortgageOnly = it },
-                    colors = CheckboxDefaults.colors(checkedColor = PrimaryDark)
+                    colors = CheckboxDefaults.colors(checkedColor = MaterialTheme.appColors.primary)
                 )
                 Spacer(Modifier.width(4.dp))
                 Text("Solo hipotecas", fontSize = 13.sp, color = MaterialTheme.appColors.textSecondary)
@@ -103,7 +103,7 @@ fun LoanPickerSheet(
                 RadioButton(
                     selected = selectedLoanId == null,
                     onClick  = { onLoanSelected(null) },
-                    colors   = RadioButtonDefaults.colors(selectedColor = PrimaryDark)
+                    colors   = RadioButtonDefaults.colors(selectedColor = MaterialTheme.appColors.primary)
                 )
                 Spacer(Modifier.width(8.dp))
                 Text("Ninguno", fontSize = 14.sp, color = MaterialTheme.appColors.textSecondary)
@@ -144,13 +144,13 @@ private fun LoanPickerItem(
         RadioButton(
             selected = isSelected,
             onClick  = onClick,
-            colors   = RadioButtonDefaults.colors(selectedColor = PrimaryDark)
+            colors   = RadioButtonDefaults.colors(selectedColor = MaterialTheme.appColors.primary)
         )
         Spacer(Modifier.width(8.dp))
         Icon(
             imageVector = loan.type.toMaterialIcon(),
             contentDescription = null,
-            tint        = PrimaryDark,
+            tint        = MaterialTheme.appColors.primary,
             modifier    = Modifier.size(22.dp)
         )
         Spacer(Modifier.width(10.dp))
@@ -165,7 +165,7 @@ private fun LoanPickerItem(
                 formatAmountEuro(loan.outstandingPrincipal),
                 fontWeight = FontWeight.SemiBold,
                 fontSize   = 12.sp,
-                color      = ExpenseRed
+                color      = MaterialTheme.appColors.expense
             )
             Text(
                 "${formatAmountEuro(loan.monthlyPayment)}/mes",

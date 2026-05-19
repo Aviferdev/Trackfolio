@@ -111,7 +111,7 @@ fun RegionManagementSheet(
                     singleLine = true,
                     shape = RoundedCornerShape(10.dp),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = PrimaryDark,
+                        focusedBorderColor = MaterialTheme.appColors.primary,
                         unfocusedBorderColor = MaterialTheme.appColors.border
                     )
                 )
@@ -127,7 +127,7 @@ fun RegionManagementSheet(
                     },
                     enabled = newName.isNotBlank(),
                     shape = RoundedCornerShape(10.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = PrimaryDark)
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.appColors.primary)
                 ) {
                     Text("+", fontSize = 18.sp)
                 }
@@ -136,7 +136,7 @@ fun RegionManagementSheet(
             Spacer(Modifier.height(16.dp))
 
             errorMsg?.let { msg ->
-                Text(msg, fontSize = 12.sp, color = ExpenseRed, modifier = Modifier.padding(bottom = 8.dp))
+                Text(msg, fontSize = 12.sp, color = MaterialTheme.appColors.expense, modifier = Modifier.padding(bottom = 8.dp))
             }
 
             if (isLoading) {
@@ -144,7 +144,7 @@ fun RegionManagementSheet(
                     modifier = Modifier.fillMaxWidth().height(100.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    CircularProgressIndicator(color = PrimaryDark)
+                    CircularProgressIndicator(color = MaterialTheme.appColors.primary)
                 }
             } else {
                 LazyColumn(
@@ -191,7 +191,7 @@ private fun RegionItem(
             Icon(
                 Icons.Default.Delete,
                 stringResource(Res.string.common_delete),
-                tint = ExpenseRed.copy(alpha = 0.7f),
+                tint = MaterialTheme.appColors.expense.copy(alpha = 0.7f),
                 modifier = Modifier.size(20.dp)
             )
         }

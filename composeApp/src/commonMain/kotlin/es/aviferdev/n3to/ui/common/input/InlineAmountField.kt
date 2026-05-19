@@ -52,7 +52,7 @@ fun InlineAmountField(
     suffix: String? = null,
     singleLine: Boolean = false,
     containerColor: Color = MaterialTheme.appColors.surfaceElevated,
-    cursorColor: Color = PrimaryDark,
+    cursorColor: Color = MaterialTheme.appColors.primary,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier.fillMaxWidth()) {

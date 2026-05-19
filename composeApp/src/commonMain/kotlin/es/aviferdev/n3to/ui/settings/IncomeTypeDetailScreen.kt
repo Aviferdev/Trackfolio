@@ -94,7 +94,7 @@ fun IncomeTypeDetailScreen(
             },
             confirmButton = {
                 TextButton(onClick = { issuerViewModel.confirmDelete() }) {
-                    Text("Archivar", color = ExpenseRed, fontWeight = FontWeight.Medium)
+                    Text("Archivar", color = MaterialTheme.appColors.expense, fontWeight = FontWeight.Medium)
                 }
             },
             dismissButton = {
@@ -198,7 +198,7 @@ fun IncomeTypeDetailContent(
                                     onClick = { onDelete(issuer) },
                                     modifier = Modifier.size(28.dp)
                                 ) {
-                                    Icon(Icons.Default.Delete, "Eliminar", modifier = Modifier.size(14.dp), tint = ExpenseRed)
+                                    Icon(Icons.Default.Delete, "Eliminar", modifier = Modifier.size(14.dp), tint = MaterialTheme.appColors.expense)
                                 }
                             }
                             if (index < issuers.lastIndex) {

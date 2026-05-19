@@ -54,7 +54,7 @@ fun UpdateLoanRateSheet(
                 "Actualizar tipo de interés",
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
-                color = PrimaryDark
+                color = MaterialTheme.appColors.primary
             )
 
             Spacer(Modifier.height(8.dp))
@@ -76,8 +76,8 @@ fun UpdateLoanRateSheet(
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = PrimaryDark,
-                    focusedLabelColor = PrimaryDark
+                    focusedBorderColor = MaterialTheme.appColors.primary,
+                    focusedLabelColor = MaterialTheme.appColors.primary
                 )
             )
 
@@ -100,7 +100,7 @@ fun UpdateLoanRateSheet(
                 modifier = Modifier.fillMaxWidth().height(50.dp),
                 enabled = isValid,
                 shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = PrimaryDark)
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.appColors.primary)
             ) {
                 Text("Aplicar cambio", fontSize = 16.sp)
             }

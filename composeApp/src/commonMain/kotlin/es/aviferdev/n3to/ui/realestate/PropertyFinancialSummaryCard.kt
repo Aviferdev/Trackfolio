@@ -60,14 +60,14 @@ fun PropertyFinancialSummaryCard(
                 Text(
                     if (summary.netCashflow >= 0) formatAmountEuro(summary.netCashflow) else "-${formatAmountEuro(-summary.netCashflow)}",
                     fontWeight = FontWeight.Bold, fontSize = 13.sp,
-                    color = if (summary.netCashflow >= 0) IncomeGreen else ExpenseRed
+                    color = if (summary.netCashflow >= 0) MaterialTheme.appColors.income else MaterialTheme.appColors.expense
                 )
             }
 
             // Retorno total (solo si vendida)
             if (summary.totalReturn != null) {
                 Spacer(Modifier.height(8.dp))
-                HorizontalDivider(color = PrimaryDark.copy(alpha = 0.3f), thickness = 0.5.dp)
+                HorizontalDivider(color = MaterialTheme.appColors.primary.copy(alpha = 0.3f), thickness = 0.5.dp)
                 Spacer(Modifier.height(8.dp))
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                     Text("Retorno total", fontWeight = FontWeight.Bold, fontSize = 14.sp, color = MaterialTheme.appColors.textPrimary)
@@ -75,13 +75,13 @@ fun PropertyFinancialSummaryCard(
                         Text(
                             if (summary.totalReturn >= 0) "+${formatAmountEuro(summary.totalReturn)}" else "-${formatAmountEuro(-summary.totalReturn)}",
                             fontWeight = FontWeight.Bold, fontSize = 14.sp,
-                            color = if (summary.totalReturn >= 0) IncomeGreen else ExpenseRed
+                            color = if (summary.totalReturn >= 0) MaterialTheme.appColors.income else MaterialTheme.appColors.expense
                         )
                         if (summary.totalReturnPercent != null) {
                             Text(
                                 "${if (summary.totalReturnPercent >= 0) "+" else ""}${formatPercent(summary.totalReturnPercent)}%",
                                 fontSize = 11.sp,
-                                color = if (summary.totalReturnPercent >= 0) IncomeGreen else ExpenseRed
+                                color = if (summary.totalReturnPercent >= 0) MaterialTheme.appColors.income else MaterialTheme.appColors.expense
                             )
                         }
                     }

@@ -110,7 +110,7 @@ fun ExpenseSettingsScreen(
             },
             confirmButton = {
                 TextButton(onClick = { categoryViewModel.confirmDelete() }) {
-                    Text("Eliminar", color = ExpenseRed, fontWeight = FontWeight.Medium)
+                    Text("Eliminar", color = MaterialTheme.appColors.expense, fontWeight = FontWeight.Medium)
                 }
             },
             dismissButton = {
@@ -194,7 +194,7 @@ fun ExpenseSettingsContent(
                                 Box(
                                     modifier = Modifier.size(8.dp)
                                         .clip(CircleShape)
-                                        .background(ExpenseRed)
+                                        .background(MaterialTheme.appColors.expense)
                                 )
                                 Spacer(Modifier.width(12.dp))
                                 Text(
@@ -225,7 +225,7 @@ fun ExpenseSettingsContent(
                                     onClick = { onDelete(cat) },
                                     modifier = Modifier.size(28.dp)
                                 ) {
-                                    Icon(Icons.Default.Delete, "Eliminar", modifier = Modifier.size(14.dp), tint = ExpenseRed)
+                                    Icon(Icons.Default.Delete, "Eliminar", modifier = Modifier.size(14.dp), tint = MaterialTheme.appColors.expense)
                                 }
                             }
                             if (index < expenseCategories.lastIndex) {

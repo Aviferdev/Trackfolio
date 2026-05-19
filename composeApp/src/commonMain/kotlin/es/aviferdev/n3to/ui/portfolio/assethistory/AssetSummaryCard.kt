@@ -26,7 +26,6 @@ import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.portfolio.AssetPosition
 
 import es.aviferdev.n3to.ui.theme.ExpenseRed
-import es.aviferdev.n3to.ui.theme.IncomeGreen
 
 import es.aviferdev.n3to.ui.theme.formatAmount
 import es.aviferdev.n3to.ui.theme.formatPercent
@@ -68,8 +67,8 @@ fun AssetSummaryCard(
                     )
                     Spacer(Modifier.height(4.dp))
                     val pnlColor = when {
-                        (position?.totalPnL ?: 0.0) > 0 -> IncomeGreen
-                        (position?.totalPnL ?: 0.0) < 0 -> ExpenseRed
+                        (position?.totalPnL ?: 0.0) > 0 -> MaterialTheme.appColors.income
+                        (position?.totalPnL ?: 0.0) < 0 -> MaterialTheme.appColors.expense
                         else -> MaterialTheme.appColors.textPrimary
                     }
                     Text(
@@ -162,7 +161,7 @@ fun AssetSummaryCard(
                             "${if (isPositive) "+" else "−"}${formatPercent(abs(pctChange))}%",
                             fontSize = 11.sp,
                             fontWeight = FontWeight.Bold,
-                            color = if (isPositive) IncomeGreen else ExpenseRed
+                            color = if (isPositive) MaterialTheme.appColors.income else MaterialTheme.appColors.expense
                         )
                     }
                 }

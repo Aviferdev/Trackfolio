@@ -141,7 +141,7 @@ fun AddEditPropertyBottomSheet(
     if (showDatePicker) {
         DatePickerDialog(
             onDismissRequest = { showDatePicker = false },
-            confirmButton = { TextButton(onClick = { datePickerState.selectedDateMillis?.let { acquisitionDateMillis = it }; showDatePicker = false }) { Text(stringResource(Res.string.common_accept), color = PrimaryDark) } },
+            confirmButton = { TextButton(onClick = { datePickerState.selectedDateMillis?.let { acquisitionDateMillis = it }; showDatePicker = false }) { Text(stringResource(Res.string.common_accept), color = MaterialTheme.appColors.primary) } },
             dismissButton = { TextButton(onClick = { showDatePicker = false }) { Text(stringResource(Res.string.common_cancel), color = MaterialTheme.appColors.textTertiary) } }
         ) { DatePicker(state = datePickerState, colors = DatePickerDefaults.colors(containerColor = MaterialTheme.appColors.surface)) }
     }
@@ -299,9 +299,9 @@ fun AddEditPropertyBottomSheet(
                 onClick = { showLoanPicker = true },
                 modifier = Modifier.fillMaxWidth().height(44.dp),
                 shape = RoundedCornerShape(10.dp),
-                colors = ButtonDefaults.outlinedButtonColors(contentColor = PrimaryDark),
+                colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.appColors.primary),
                 border = ButtonDefaults.outlinedButtonBorder(enabled = true).copy(
-                    brush = androidx.compose.ui.graphics.SolidColor(PrimaryDark)
+                    brush = androidx.compose.ui.graphics.SolidColor(MaterialTheme.appColors.primary)
                 )
             ) {
                 Icon(Icons.Outlined.Search, null, modifier = Modifier.size(18.dp))
@@ -345,9 +345,9 @@ fun AddEditPropertyBottomSheet(
                             purchaseExpenses = purchaseExpenses + PropertyExpense(categoryId = firstCat, amount = 0.0)
                         }
                     ) {
-                        Icon(Icons.Outlined.Add, null, modifier = Modifier.size(16.dp), tint = PrimaryDark)
+                        Icon(Icons.Outlined.Add, null, modifier = Modifier.size(16.dp), tint = MaterialTheme.appColors.primary)
                         Spacer(Modifier.width(4.dp))
-                        Text(stringResource(Res.string.realestate_add_expense), fontSize = 12.sp, color = PrimaryDark)
+                        Text(stringResource(Res.string.realestate_add_expense), fontSize = 12.sp, color = MaterialTheme.appColors.primary)
                     }
                 }
             }
@@ -428,8 +428,8 @@ fun AddEditPropertyBottomSheet(
                 modifier = Modifier.fillMaxWidth().height(50.dp),
                 shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = PrimaryDark,
-                    disabledContainerColor = PrimaryDark.copy(alpha = 0.38f)
+                    containerColor = MaterialTheme.appColors.primary,
+                    disabledContainerColor = MaterialTheme.appColors.primary.copy(alpha = 0.38f)
                 )
             ) {
                 if (isLoading) {
@@ -453,10 +453,10 @@ private fun SectionLabel(text: String) {
 
 @Composable
 private fun fieldColors() = OutlinedTextFieldDefaults.colors(
-    focusedBorderColor = PrimaryDark,
+    focusedBorderColor = MaterialTheme.appColors.primary,
     unfocusedBorderColor = MaterialTheme.appColors.border,
-    cursorColor = PrimaryDark,
-    focusedLabelColor = PrimaryDark,
+    cursorColor = MaterialTheme.appColors.primary,
+    focusedLabelColor = MaterialTheme.appColors.primary,
     unfocusedLabelColor = MaterialTheme.appColors.textTertiary,
     focusedTextColor = MaterialTheme.appColors.textPrimary,
     unfocusedTextColor = MaterialTheme.appColors.textPrimary

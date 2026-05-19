@@ -122,7 +122,7 @@ fun DatePickerRow(
                     }
                     showPicker = false
                 }) {
-                    Text(stringResource(Res.string.common_accept), color = PrimaryDark)
+                    Text(stringResource(Res.string.common_accept), color = MaterialTheme.appColors.primary)
                 }
             },
             dismissButton = {

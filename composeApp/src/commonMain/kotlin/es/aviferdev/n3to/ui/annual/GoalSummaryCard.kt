@@ -30,7 +30,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.MonthlyGoalProgress
 import es.aviferdev.n3to.ui.theme.ExpenseRed
-import es.aviferdev.n3to.ui.theme.IncomeGreen
 import es.aviferdev.n3to.ui.theme.PrimaryDark
 
 /**
@@ -69,7 +68,7 @@ fun GoalSummaryCard(
                 Icon(
                     Icons.Outlined.GpsFixed,
                     contentDescription = null,
-                    tint = PrimaryDark,
+                    tint = MaterialTheme.appColors.primary,
                     modifier = Modifier.size(20.dp)
                 )
                 Spacer(Modifier.width(8.dp))
@@ -88,8 +87,8 @@ fun GoalSummaryCard(
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                GoalLegendItem(color = IncomeGreen, label = "Cumplido")
-                GoalLegendItem(color = ExpenseRed, label = "No cumplido")
+                GoalLegendItem(color = MaterialTheme.appColors.income, label = "Cumplido")
+                GoalLegendItem(color = MaterialTheme.appColors.expense, label = "No cumplido")
                 GoalLegendItem(color = MaterialTheme.appColors.textTertiary, label = "Sin objetivo")
             }
 
@@ -168,7 +167,7 @@ private fun GoalTypeSummaryRow(
             text = "$achieved / $total meses",
             fontSize = 11.sp,
             fontWeight = FontWeight.SemiBold,
-            color = if (achieved == total && total > 0) IncomeGreen else MaterialTheme.appColors.textSecondary
+            color = if (achieved == total && total > 0) MaterialTheme.appColors.income else MaterialTheme.appColors.textSecondary
         )
     }
 }
@@ -194,8 +193,8 @@ private fun MonthIndicatorRow(
             }
 
             val color = when (status) {
-                GoalStatus.ACHIEVED -> IncomeGreen
-                GoalStatus.FAILED -> ExpenseRed
+                GoalStatus.ACHIEVED -> MaterialTheme.appColors.income
+                GoalStatus.FAILED -> MaterialTheme.appColors.expense
                 GoalStatus.NO_GOAL -> MaterialTheme.appColors.textTertiary
             }
             val symbol = when (status) {

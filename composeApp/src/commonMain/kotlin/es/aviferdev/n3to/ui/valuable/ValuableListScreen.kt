@@ -51,7 +51,7 @@ fun ValuableListScreen(
             if (uiState.isLoading) {
                 CircularProgressIndicator(
                     modifier = Modifier.align(Alignment.Center),
-                    color = BrandGreen
+                    color = MaterialTheme.appColors.income
                 )
             } else if (uiState.valuables.isEmpty()) {
                 EmptyStateView(

@@ -157,10 +157,10 @@ private fun PlatformLinkRow(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(10.dp))
-            .background(if (isLinked) PrimaryDark.copy(alpha = 0.06f) else MaterialTheme.appColors.surfaceElevated)
+            .background(if (isLinked) MaterialTheme.appColors.primary.copy(alpha = 0.06f) else MaterialTheme.appColors.surfaceElevated)
             .border(
                 0.5.dp,
-                if (isLinked) PrimaryDark.copy(alpha = 0.3f) else MaterialTheme.appColors.border,
+                if (isLinked) MaterialTheme.appColors.primary.copy(alpha = 0.3f) else MaterialTheme.appColors.border,
                 RoundedCornerShape(10.dp)
             )
             .clickable(onClick = onToggle)
@@ -177,7 +177,7 @@ private fun PlatformLinkRow(
             modifier = Modifier.weight(1f)
         )
         if (isLinked) {
-            Text("✓", fontSize = 16.sp, color = PrimaryDark, fontWeight = FontWeight.Bold)
+            Text("✓", fontSize = 16.sp, color = MaterialTheme.appColors.primary, fontWeight = FontWeight.Bold)
         } else {
             Text("+", fontSize = 18.sp, color = MaterialTheme.appColors.textSecondary, fontWeight = FontWeight.Light)
         }

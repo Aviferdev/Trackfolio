@@ -147,7 +147,7 @@ private fun CompactHeader(
                         ),
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,
-                        color = WarnAmber
+                        color = MaterialTheme.appColors.warnAmber
                     )
                     Text(
                         "extra por interés compuesto",
@@ -250,7 +250,7 @@ private fun MainMetric(
         ),
         fontSize = 36.sp,
         fontWeight = FontWeight.Bold,
-        color = WarnAmber,
+        color = MaterialTheme.appColors.warnAmber,
         letterSpacing = (-1).sp
     )
     Text(
@@ -307,7 +307,7 @@ private fun ProjectionSection(
         ),
         fontSize = 36.sp,
         fontWeight = FontWeight.Bold,
-        color = WarnAmber,
+        color = MaterialTheme.appColors.warnAmber,
         letterSpacing = (-1).sp
     )
     Text(

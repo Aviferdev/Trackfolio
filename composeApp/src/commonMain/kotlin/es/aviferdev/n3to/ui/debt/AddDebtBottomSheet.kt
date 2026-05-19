@@ -139,13 +139,13 @@ fun AddDebtBottomSheetContent(
             DirectionChip(
                 label         = "Me deben",
                 selected      = direction == DebtDirection.THEY_OWE,
-                selectedColor = IncomeGreen,
+                selectedColor = MaterialTheme.appColors.income,
                 onClick       = { onDirectionChange(DebtDirection.THEY_OWE) }
             )
             DirectionChip(
                 label         = "Debo yo",
                 selected      = direction == DebtDirection.I_OWE,
-                selectedColor = ExpenseRed,
+                selectedColor = MaterialTheme.appColors.expense,
                 onClick       = { onDirectionChange(DebtDirection.I_OWE) }
             )
         }
@@ -162,7 +162,7 @@ fun AddDebtBottomSheetContent(
             shape         = RoundedCornerShape(8.dp),
             keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words),
             colors        = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor   = PrimaryDark,
+                focusedBorderColor   = MaterialTheme.appColors.primary,
                 unfocusedBorderColor = MaterialTheme.appColors.border
             ),
             singleLine = true
@@ -183,7 +183,7 @@ fun AddDebtBottomSheetContent(
                 Text("€", fontSize = 16.sp, color = MaterialTheme.appColors.textSecondary, modifier = Modifier.padding(end = 12.dp))
             },
             colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor   = PrimaryDark,
+                focusedBorderColor   = MaterialTheme.appColors.primary,
                 unfocusedBorderColor = MaterialTheme.appColors.border
             ),
             singleLine = true
@@ -200,7 +200,7 @@ fun AddDebtBottomSheetContent(
             modifier      = Modifier.fillMaxWidth(),
             shape         = RoundedCornerShape(8.dp),
             colors        = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor   = PrimaryDark,
+                focusedBorderColor   = MaterialTheme.appColors.primary,
                 unfocusedBorderColor = MaterialTheme.appColors.border
             ),
             singleLine = true
@@ -214,8 +214,8 @@ fun AddDebtBottomSheetContent(
             modifier = Modifier.fillMaxWidth().height(52.dp),
             shape    = RoundedCornerShape(10.dp),
             colors   = ButtonDefaults.buttonColors(
-                containerColor         = PrimaryDark,
-                disabledContainerColor = PrimaryDark.copy(alpha = 0.38f)
+                containerColor         = MaterialTheme.appColors.primary,
+                disabledContainerColor = MaterialTheme.appColors.primary.copy(alpha = 0.38f)
             )
         ) {
             Text(

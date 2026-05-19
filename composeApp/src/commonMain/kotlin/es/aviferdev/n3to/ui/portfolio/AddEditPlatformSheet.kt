@@ -128,7 +128,7 @@ fun AddEditPlatformSheet(
                             .background(if (isSel) MaterialTheme.appColors.surfaceElevated else MaterialTheme.appColors.surface)
                             .border(
                                 width = if (isSel) 1.5.dp else 0.5.dp,
-                                color = if (isSel) PrimaryDark else MaterialTheme.appColors.border,
+                                color = if (isSel) MaterialTheme.appColors.primary else MaterialTheme.appColors.border,
                                 shape = RoundedCornerShape(10.dp)
                             )
                             .clickable { icon = ic },
@@ -137,7 +137,7 @@ fun AddEditPlatformSheet(
                         Icon(
                             imageVector = ic.toMaterialIcon(),
                             contentDescription = null,
-                            tint = if (isSel) PrimaryDark else MaterialTheme.appColors.textSecondary,
+                            tint = if (isSel) MaterialTheme.appColors.primary else MaterialTheme.appColors.textSecondary,
                             modifier = Modifier.size(22.dp)
                         )
                     }
@@ -161,7 +161,7 @@ fun AddEditPlatformSheet(
                     imeAction      = ImeAction.Done
                 ),
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor   = PrimaryDark,
+                    focusedBorderColor   = MaterialTheme.appColors.primary,
                     unfocusedBorderColor = MaterialTheme.appColors.border
                 )
             )
@@ -183,7 +183,7 @@ fun AddEditPlatformSheet(
                     imeAction      = ImeAction.Done
                 ),
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor   = PrimaryDark,
+                    focusedBorderColor   = MaterialTheme.appColors.primary,
                     unfocusedBorderColor = MaterialTheme.appColors.border
                 )
             )
@@ -198,7 +198,7 @@ fun AddEditPlatformSheet(
                 },
                 modifier = Modifier.fillMaxWidth().height(52.dp),
                 shape    = RoundedCornerShape(10.dp),
-                colors   = ButtonDefaults.buttonColors(containerColor = PrimaryDark)
+                colors   = ButtonDefaults.buttonColors(containerColor = MaterialTheme.appColors.primary)
             ) {
                 Text(
                     text       = if (isEditing) stringResource(Res.string.common_save_changes) else stringResource(Res.string.portfolio_platform_save),

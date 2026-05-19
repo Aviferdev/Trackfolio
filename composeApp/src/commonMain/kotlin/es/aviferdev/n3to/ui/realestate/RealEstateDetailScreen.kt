@@ -179,16 +179,16 @@ fun RealEstateDetailScreen(
                         if (!property.isSold) {
                             HorizontalDivider(color = MaterialTheme.appColors.border)
                             DropdownMenuItem(
-                                text = { Text(stringResource(Res.string.realestate_sell_property), color = IncomeGreen) },
+                                text = { Text(stringResource(Res.string.realestate_sell_property), color = MaterialTheme.appColors.income) },
                                 onClick = { showMenu = false; viewModel.showSellSheet() },
-                                leadingIcon = { Icon(Icons.Outlined.AttachMoney, null, tint = IncomeGreen) }
+                                leadingIcon = { Icon(Icons.Outlined.AttachMoney, null, tint = MaterialTheme.appColors.income) }
                             )
                         }
                         HorizontalDivider(color = MaterialTheme.appColors.border)
                         DropdownMenuItem(
-                            text = { Text(stringResource(Res.string.realestate_archive_label), color = ExpenseRed) },
+                            text = { Text(stringResource(Res.string.realestate_archive_label), color = MaterialTheme.appColors.expense) },
                             onClick = { showMenu = false; viewModel.showArchiveDialog() },
-                            leadingIcon = { Icon(Icons.Outlined.Archive, null, tint = ExpenseRed) }
+                            leadingIcon = { Icon(Icons.Outlined.Archive, null, tint = MaterialTheme.appColors.expense) }
                         )
                     }
                 }
@@ -197,7 +197,7 @@ fun RealEstateDetailScreen(
 
         if (state.isLoading || property == null) {
             Box(Modifier.fillMaxSize().weight(1f), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator(color = PrimaryDark)
+                CircularProgressIndicator(color = MaterialTheme.appColors.primary)
             }
         } else {
             Column(
@@ -272,14 +272,14 @@ private fun WhySeparateInfoBanner() {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(PrimaryDark.copy(alpha = 0.08f), RoundedCornerShape(10.dp))
+            .background(MaterialTheme.appColors.primary.copy(alpha = 0.08f), RoundedCornerShape(10.dp))
             .padding(horizontal = 14.dp, vertical = 10.dp),
         verticalAlignment = Alignment.Top
     ) {
         Icon(
             Icons.Outlined.Info,
             contentDescription = null,
-            tint = PrimaryDark,
+            tint = MaterialTheme.appColors.primary,
             modifier = Modifier.size(16.dp)
         )
         Spacer(Modifier.width(8.dp))
@@ -316,9 +316,9 @@ private fun HeaderSection(property: RealEstateProperty) {
                         else -> "\uD83C\uDFE0 ${stringResource(Res.string.realestate_own_use_badge)}"
                     },
                     color = when {
-                        property.isSold -> IncomeGreen
-                        property.rentalStatus == RentalStatus.RENTED -> IncomeGreen
-                        property.rentalStatus == RentalStatus.VACANT -> WarnAmber
+                        property.isSold -> MaterialTheme.appColors.income
+                        property.rentalStatus == RentalStatus.RENTED -> MaterialTheme.appColors.income
+                        property.rentalStatus == RentalStatus.VACANT -> MaterialTheme.appColors.warnAmber
                         else -> MaterialTheme.appColors.textTertiary
                     }
                 )
@@ -339,7 +339,7 @@ private fun ValueSection(property: RealEstateProperty, onUpdateValue: () -> Unit
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
                 Text(stringResource(Res.string.realestate_value_label), fontWeight = FontWeight.SemiBold, fontSize = 14.sp, color = MaterialTheme.appColors.textPrimary)
                 if (!property.isSold) {
-                    TextButton(onClick = onUpdateValue) { Text(stringResource(Res.string.realestate_update_label), color = PrimaryDark, fontSize = 12.sp) }
+                    TextButton(onClick = onUpdateValue) { Text(stringResource(Res.string.realestate_update_label), color = MaterialTheme.appColors.primary, fontSize = 12.sp) }
                 }
             }
             Spacer(Modifier.height(4.dp))
@@ -368,7 +368,7 @@ private fun ValueSection(property: RealEstateProperty, onUpdateValue: () -> Unit
 private fun SaleInfoSection(property: RealEstateProperty) {
     Card(
         shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = IncomeGreen.copy(alpha = 0.08f)),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.income.copy(alpha = 0.08f)),
         elevation = CardDefaults.cardElevation(0.dp),
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -376,7 +376,7 @@ private fun SaleInfoSection(property: RealEstateProperty) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text("\u2705", fontSize = 20.sp)
                 Spacer(Modifier.width(8.dp))
-                Text(stringResource(Res.string.realestate_sold), fontWeight = FontWeight.Bold, fontSize = 15.sp, color = IncomeGreen)
+                Text(stringResource(Res.string.realestate_sold), fontWeight = FontWeight.Bold, fontSize = 15.sp, color = MaterialTheme.appColors.income)
             }
             Spacer(Modifier.height(8.dp))
             val saleDateStr = property.saleDate?.let { formatDetailDate(it) } ?: ""
@@ -407,7 +407,7 @@ private fun PurchaseExpensesCard(expenses: List<es.aviferdev.n3to.domain.model.T
                     )
                     Text(
                         "-${formatAmountEuro(kotlin.math.abs(tx.amount))}",
-                        fontSize = 12.sp, color = ExpenseRed, fontWeight = FontWeight.Medium
+                        fontSize = 12.sp, color = MaterialTheme.appColors.expense, fontWeight = FontWeight.Medium
                     )
                 }
                 tx.notes?.let { note ->
@@ -440,7 +440,7 @@ private fun SaleExpensesCard(expenses: List<es.aviferdev.n3to.domain.model.Trans
                     )
                     Text(
                         "-${formatAmountEuro(kotlin.math.abs(tx.amount))}",
-                        fontSize = 12.sp, color = ExpenseRed, fontWeight = FontWeight.Medium
+                        fontSize = 12.sp, color = MaterialTheme.appColors.expense, fontWeight = FontWeight.Medium
                     )
                 }
                 tx.notes?.let { note ->
@@ -463,7 +463,7 @@ private fun MortgageSection(linkedLoan: es.aviferdev.n3to.domain.model.Loan?, on
             if (linkedLoan != null) {
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
                     Text(stringResource(Res.string.realestate_mortgage_label), fontWeight = FontWeight.SemiBold, fontSize = 14.sp, color = MaterialTheme.appColors.textPrimary)
-                    TextButton(onClick = { onNavigateToLoan(linkedLoan.id) }) { Text(stringResource(Res.string.realestate_view_label), color = PrimaryDark, fontSize = 12.sp) }
+                    TextButton(onClick = { onNavigateToLoan(linkedLoan.id) }) { Text(stringResource(Res.string.realestate_view_label), color = MaterialTheme.appColors.primary, fontSize = 12.sp) }
                 }
                 Spacer(Modifier.height(4.dp))
                 DataRow(stringResource(Res.string.realestate_loan_label), linkedLoan.name)

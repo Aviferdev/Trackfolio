@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -14,9 +15,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.ui.theme.ExpenseRed
-import es.aviferdev.n3to.ui.theme.IncomeGreen
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import androidx.compose.ui.tooling.preview.Preview
+import es.aviferdev.n3to.ui.theme.appColors
 
 /**
  * Delta indicator — arrow + formatted value, green for positive, red for negative.
@@ -34,7 +35,7 @@ fun DeltaIndicator(
     isPositive: Boolean,
     modifier: Modifier = Modifier
 ) {
-    val color = if (isPositive) IncomeGreen else ExpenseRed
+    val color = if (isPositive) MaterialTheme.appColors.income else MaterialTheme.appColors.expense
     val arrow = if (isPositive) "↑" else "↓"
 
     Row(

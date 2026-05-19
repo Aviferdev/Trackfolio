@@ -98,7 +98,7 @@ fun AssetHistoryContent(
                 state.isLoading -> Box(
                     Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
-                ) { CircularProgressIndicator(color = PrimaryDark) }
+                ) { CircularProgressIndicator(color = MaterialTheme.appColors.primary) }
 
                 state.asset == null -> Box(
                     Modifier.fillMaxSize().padding(40.dp),
@@ -211,7 +211,7 @@ fun AssetHistoryContent(
                     onClick = onFabClick,
                     modifier = Modifier.size(52.dp),
                     shape = RoundedCornerShape(16.dp),
-                    containerColor = PrimaryDark,
+                    containerColor = MaterialTheme.appColors.primary,
                     contentColor = Color.White,
                     elevation = FloatingActionButtonDefaults.elevation(4.dp)
                 ) {

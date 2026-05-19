@@ -48,6 +48,7 @@ fun HeroCard(
     val heroEnd = MaterialTheme.appColors.heroCardEnd
     val cyanGlowColor = MaterialTheme.appColors.cyanGlow
     val cyanSubtleColor = MaterialTheme.appColors.cyanSubtle
+    val incomeGlowColor = MaterialTheme.appColors.income
 
     Column(
         modifier = modifier
@@ -79,7 +80,7 @@ fun HeroCard(
                 val gy = size.height - 18.dp.toPx()
                 drawCircle(
                     brush = Brush.radialGradient(
-                        colors = listOf(BrandGreen.copy(alpha = 0.10f), Color.Transparent),
+                        colors = listOf(incomeGlowColor.copy(alpha = 0.10f), Color.Transparent),
                         center = Offset(gx, gy),
                         radius = orbGreen
                     ),

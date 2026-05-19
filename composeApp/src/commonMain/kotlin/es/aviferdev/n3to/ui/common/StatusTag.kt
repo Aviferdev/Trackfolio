@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -13,10 +14,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.ui.theme.ExpenseRed
-import es.aviferdev.n3to.ui.theme.IncomeGreen
 import es.aviferdev.n3to.ui.theme.PrimaryDark
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import androidx.compose.ui.tooling.preview.Preview
+import es.aviferdev.n3to.ui.theme.appColors
 
 /**
  * Status badge with semi-transparent background.
@@ -24,8 +25,8 @@ import androidx.compose.ui.tooling.preview.Preview
  *
  * Usage:
  * ```
- * StatusTag("ACTIVO", color = IncomeGreen)
- * StatusTag("BUY", color = PrimaryDark)
+ * StatusTag("ACTIVO", color = MaterialTheme.appColors.income)
+ * StatusTag("BUY", color = MaterialTheme.appColors.primary)
  * ```
  */
 @Composable
@@ -55,9 +56,9 @@ private fun StatusTagPreview() {
             modifier = Modifier.padding(16.dp),
             horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(8.dp)
         ) {
-            StatusTag("ACTIVO", color = IncomeGreen)
-            StatusTag("BUY", color = PrimaryDark)
-            StatusTag("VENDIDO", color = ExpenseRed)
+            StatusTag("ACTIVO", color = MaterialTheme.appColors.income)
+            StatusTag("BUY", color = MaterialTheme.appColors.primary)
+            StatusTag("VENDIDO", color = MaterialTheme.appColors.expense)
         }
     }
 }

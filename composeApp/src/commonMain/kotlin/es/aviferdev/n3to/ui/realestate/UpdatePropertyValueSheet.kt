@@ -70,7 +70,7 @@ fun UpdatePropertyValueSheet(
                 value = newValueText, onValueChange = { newValueText = it },
                 label = { Text(stringResource(Res.string.realestate_new_value)) },
                 singleLine = true, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = PrimaryDark, unfocusedBorderColor = MaterialTheme.appColors.border, cursorColor = PrimaryDark, focusedLabelColor = PrimaryDark, unfocusedLabelColor = MaterialTheme.appColors.textTertiary, focusedTextColor = MaterialTheme.appColors.textPrimary, unfocusedTextColor = MaterialTheme.appColors.textPrimary),
+                colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = MaterialTheme.appColors.primary, unfocusedBorderColor = MaterialTheme.appColors.border, cursorColor = MaterialTheme.appColors.primary, focusedLabelColor = MaterialTheme.appColors.primary, unfocusedLabelColor = MaterialTheme.appColors.textTertiary, focusedTextColor = MaterialTheme.appColors.textPrimary, unfocusedTextColor = MaterialTheme.appColors.textPrimary),
                 modifier = Modifier.fillMaxWidth()
             )
 
@@ -85,7 +85,7 @@ fun UpdatePropertyValueSheet(
             Spacer(Modifier.height(16.dp))
             Button(onClick = { onUpdate(newValue) }, enabled = isValid,
                 modifier = Modifier.fillMaxWidth().height(48.dp), shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = PrimaryDark)
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.appColors.primary)
             ) { Text(stringResource(Res.string.realestate_update_value_title), fontWeight = FontWeight.Bold) }
         }
     }

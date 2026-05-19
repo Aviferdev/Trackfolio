@@ -63,7 +63,6 @@ import es.aviferdev.n3to.ui.common.help.HelpTooltipIcon
 import es.aviferdev.n3to.ui.common.navigation.TopBarApp
 
 import es.aviferdev.n3to.ui.theme.ExpenseRed
-import es.aviferdev.n3to.ui.theme.IncomeGreen
 
 import kotlinx.coroutines.delay
 import org.koin.compose.viewmodel.koinViewModel
@@ -307,9 +306,9 @@ fun EmergencyFundSettingsScreen(
                         item {
                             OutlinedButton(
                                 onClick = viewModel::delete,
-                                colors = ButtonDefaults.outlinedButtonColors(contentColor = ExpenseRed),
+                                colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.appColors.expense),
                                 border = ButtonDefaults.outlinedButtonBorder(enabled = true).copy(
-                                    brush = androidx.compose.ui.graphics.SolidColor(ExpenseRed.copy(alpha = 0.5f))
+                                    brush = androidx.compose.ui.graphics.SolidColor(MaterialTheme.appColors.expense.copy(alpha = 0.5f))
                                 ),
                                 shape = RoundedCornerShape(14.dp),
                                 modifier = Modifier.fillMaxWidth().height(50.dp)
@@ -335,7 +334,7 @@ fun EmergencyFundSettingsScreen(
                             Text(
                                 text = msg,
                                 fontSize = 12.sp,
-                                color = if (msg.startsWith("Error")) ExpenseRed else IncomeGreen,
+                                color = if (msg.startsWith("Error")) MaterialTheme.appColors.expense else MaterialTheme.appColors.income,
                                 fontWeight = FontWeight.Medium,
                                 textAlign = TextAlign.Center,
                                 modifier = Modifier.fillMaxWidth()
@@ -540,7 +539,7 @@ private fun CategoryExclusionRow(
         Icon(
             imageVector = if (isExcluded) Icons.Outlined.RemoveCircle else Icons.Outlined.CheckCircle,
             contentDescription = null,
-            tint = if (isExcluded) ExpenseRed.copy(alpha = 0.8f) else MaterialTheme.appColors.cyanAccent.copy(alpha = 0.7f),
+            tint = if (isExcluded) MaterialTheme.appColors.expense.copy(alpha = 0.8f) else MaterialTheme.appColors.cyanAccent.copy(alpha = 0.7f),
             modifier = Modifier.size(18.dp)
         )
 
@@ -557,7 +556,7 @@ private fun CategoryExclusionRow(
             text = if (isExcluded) "Excluida" else "Incluida",
             fontSize = 11.sp,
             fontWeight = FontWeight.Medium,
-            color = if (isExcluded) ExpenseRed.copy(alpha = 0.8f) else MaterialTheme.appColors.cyanAccent.copy(alpha = 0.7f)
+            color = if (isExcluded) MaterialTheme.appColors.expense.copy(alpha = 0.8f) else MaterialTheme.appColors.cyanAccent.copy(alpha = 0.7f)
         )
     }
 }

@@ -30,7 +30,6 @@ import es.aviferdev.n3to.domain.model.MonthlyGoalProgress
 import es.aviferdev.n3to.ui.common.ProgressBar
 
 import es.aviferdev.n3to.ui.theme.ExpenseRed
-import es.aviferdev.n3to.ui.theme.IncomeGreen
 
 import es.aviferdev.n3to.ui.theme.WarnAmber
 import es.aviferdev.n3to.ui.theme.formatAmount
@@ -188,16 +187,16 @@ private fun GoalProgressRow(
                 }",
                 fontSize = 11.sp,
                 fontWeight = FontWeight.Medium,
-                color = if (achieved) IncomeGreen else MaterialTheme.appColors.textTertiary
+                color = if (achieved) MaterialTheme.appColors.income else MaterialTheme.appColors.textTertiary
             )
         }
 
         Spacer(Modifier.height(6.dp))
 
         val progressColor = when {
-            achieved -> IncomeGreen
-            progress >= 0.5f -> WarnAmber
-            else -> ExpenseRed
+            achieved -> MaterialTheme.appColors.income
+            progress >= 0.5f -> MaterialTheme.appColors.warnAmber
+            else -> MaterialTheme.appColors.expense
         }
 
         ProgressBar(

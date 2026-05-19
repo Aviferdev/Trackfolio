@@ -178,7 +178,7 @@ fun TransferFundBottomSheet(
                     modifier         = Modifier
                         .size(36.dp)
                         .clip(RoundedCornerShape(8.dp))
-                        .background(PrimaryDark),
+                        .background(MaterialTheme.appColors.primary),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
@@ -193,7 +193,7 @@ fun TransferFundBottomSheet(
                     Text(sourceAsset.name, fontSize = 14.sp, color = MaterialTheme.appColors.textPrimary, fontWeight = FontWeight.Medium)
                     Text(sourceAsset.ticker, fontSize = 11.sp, color = MaterialTheme.appColors.textSecondary)
                 }
-                Text("↗", fontSize = 20.sp, color = ExpenseRed)
+                Text("↗", fontSize = 20.sp, color = MaterialTheme.appColors.expense)
             }
             Spacer(Modifier.height(16.dp))
 
@@ -246,8 +246,8 @@ fun TransferFundBottomSheet(
                 shape         = RoundedCornerShape(10.dp),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                 colors        = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor   = if (transferExceeds) ExpenseRed else PrimaryDark,
-                    unfocusedBorderColor = if (transferExceeds) ExpenseRed else MaterialTheme.appColors.border
+                    focusedBorderColor   = if (transferExceeds) MaterialTheme.appColors.expense else MaterialTheme.appColors.primary,
+                    unfocusedBorderColor = if (transferExceeds) MaterialTheme.appColors.expense else MaterialTheme.appColors.border
                 )
             )
             Spacer(Modifier.height(6.dp))
@@ -257,7 +257,7 @@ fun TransferFundBottomSheet(
                 else
                     stringResource(Res.string.portfolio_transfer_available, formatQty(availableForTransfer)),
                 fontSize = 11.sp,
-                color    = if (transferExceeds) ExpenseRed else MaterialTheme.appColors.textSecondary
+                color    = if (transferExceeds) MaterialTheme.appColors.expense else MaterialTheme.appColors.textSecondary
             )
             Spacer(Modifier.height(12.dp))
 
@@ -273,7 +273,7 @@ fun TransferFundBottomSheet(
                 shape         = RoundedCornerShape(10.dp),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                 colors        = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor   = PrimaryDark,
+                    focusedBorderColor   = MaterialTheme.appColors.primary,
                     unfocusedBorderColor = MaterialTheme.appColors.border
                 )
             )
@@ -369,8 +369,8 @@ fun TransferFundBottomSheet(
                 modifier = Modifier.fillMaxWidth().height(52.dp),
                 shape    = RoundedCornerShape(10.dp),
                 colors   = ButtonDefaults.buttonColors(
-                    containerColor         = PrimaryDark,
-                    disabledContainerColor = PrimaryDark.copy(alpha = 0.38f)
+                    containerColor         = MaterialTheme.appColors.primary,
+                    disabledContainerColor = MaterialTheme.appColors.primary.copy(alpha = 0.38f)
                 )
             ) {
                 Text(
@@ -396,7 +396,7 @@ fun TransferFundBottomSheet(
                         dateMillis = selected
                     }
                     showDatePicker = false
-                }) { Text(stringResource(Res.string.common_accept), color = PrimaryDark) }
+                }) { Text(stringResource(Res.string.common_accept), color = MaterialTheme.appColors.primary) }
             },
             dismissButton = {
                 TextButton(onClick = { showDatePicker = false }) {
@@ -408,8 +408,8 @@ fun TransferFundBottomSheet(
             DatePicker(
                 state = pickerState,
                 colors = DatePickerDefaults.colors(
-                    selectedDayContainerColor = PrimaryDark,
-                    todayDateBorderColor      = PrimaryDark
+                    selectedDayContainerColor = MaterialTheme.appColors.primary,
+                    todayDateBorderColor      = MaterialTheme.appColors.primary
                 )
             )
         }
@@ -425,8 +425,8 @@ private fun DestinationChip(
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
-    val bg     = if (isSelected) PrimaryDark    else MaterialTheme.appColors.surfaceElevated
-    val border = if (isSelected) PrimaryDark    else MaterialTheme.appColors.border
+    val bg     = if (isSelected) MaterialTheme.appColors.primary    else MaterialTheme.appColors.surfaceElevated
+    val border = if (isSelected) MaterialTheme.appColors.primary    else MaterialTheme.appColors.border
     val text   = if (isSelected) Color.White    else MaterialTheme.appColors.textPrimary
 
     Row(
@@ -460,8 +460,8 @@ private fun TransferPlatformChip(
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
-    val bg     = if (isSelected) PrimaryDark    else MaterialTheme.appColors.surfaceElevated
-    val border = if (isSelected) PrimaryDark    else MaterialTheme.appColors.border
+    val bg     = if (isSelected) MaterialTheme.appColors.primary    else MaterialTheme.appColors.surfaceElevated
+    val border = if (isSelected) MaterialTheme.appColors.primary    else MaterialTheme.appColors.border
     val text   = if (isSelected) Color.White    else MaterialTheme.appColors.textPrimary
 
     Row(

@@ -35,13 +35,13 @@ fun PnLChip(
         } €"
     }
     val color = when {
-        unavailable -> Color.White.copy(.45f)
+        unavailable -> MaterialTheme.appColors.textTertiary
         amount > 0 -> MaterialTheme.appColors.pnlPositive
         amount < 0 -> MaterialTheme.appColors.pnlNegative
-        else -> Color.White.copy(.55f)
+        else -> MaterialTheme.appColors.textSecondary
     }
     Column {
-        Text(label, fontSize = 9.sp, color = Color.White.copy(.45f))
+        Text(label, fontSize = 9.sp, color = MaterialTheme.appColors.textTertiary)
         Spacer(Modifier.height(2.dp))
         Text(text, fontSize = 11.sp, color = color, fontWeight = FontWeight.Medium)
     }

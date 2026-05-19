@@ -45,7 +45,6 @@ import es.aviferdev.n3to.ui.annual.GoalSummaryCard
 import es.aviferdev.n3to.ui.common.ProgressBar
 
 import es.aviferdev.n3to.ui.theme.ExpenseRed
-import es.aviferdev.n3to.ui.theme.IncomeGreen
 import es.aviferdev.n3to.ui.theme.MONTH_LABELS
 import es.aviferdev.n3to.ui.theme.PrimaryDark
 
@@ -183,7 +182,7 @@ internal fun AnnualTabs(
                     Text(
                         text    = tab.displayName(),
                         fontSize = 13.sp,
-                        color   = if (isSelected) PrimaryDark else MaterialTheme.appColors.textSecondary,
+                        color   = if (isSelected) MaterialTheme.appColors.primary else MaterialTheme.appColors.textSecondary,
                         fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal
                     )
                     Spacer(Modifier.height(4.dp))
@@ -192,7 +191,7 @@ internal fun AnnualTabs(
                             .height(2.dp)
                             .width(24.dp)
                             .clip(RoundedCornerShape(1.dp))
-                            .background(if (isSelected) PrimaryDark else Color.Transparent)
+                            .background(if (isSelected) MaterialTheme.appColors.primary else Color.Transparent)
                     )
                 }
             }
@@ -234,7 +233,7 @@ internal fun YearTotalsCard(summary: AnnualSummary, balancesHidden: Boolean) {
                     "+${maskAmount(formatAmount(summary.totalIncome), balancesHidden)} €",
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Bold,
-                    color = IncomeGreen
+                    color = MaterialTheme.appColors.income
                 )
             }
 
@@ -252,7 +251,7 @@ internal fun YearTotalsCard(summary: AnnualSummary, balancesHidden: Boolean) {
                     "−${maskAmount(formatAmount(summary.totalExpense), balancesHidden)} €",
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Bold,
-                    color = ExpenseRed
+                    color = MaterialTheme.appColors.expense
                 )
             }
 
@@ -270,7 +269,7 @@ internal fun YearTotalsCard(summary: AnnualSummary, balancesHidden: Boolean) {
                     "${maskAmount(formatAmount(savings), balancesHidden)} €",
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Bold,
-                    color = PrimaryDark
+                    color = MaterialTheme.appColors.primary
                 )
             }
         }
@@ -296,7 +295,7 @@ internal fun CategoryExpenseList(
                 modifier = Modifier.fillMaxWidth().padding(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Icon(Icons.Outlined.BarChart, contentDescription = null, modifier = Modifier.size(32.dp), tint = PrimaryDark)
+                Icon(Icons.Outlined.BarChart, contentDescription = null, modifier = Modifier.size(32.dp), tint = MaterialTheme.appColors.primary)
                 Spacer(Modifier.height(8.dp))
                 Text(
                     stringResource(Res.string.annual_no_data_text),
@@ -375,7 +374,7 @@ internal fun VariationBadge(
     if (changePercent != null) {
         val isPositive = changePercent >= 0
         val isGood = if (isExpense) !isPositive else isPositive
-        val varColor = if (isGood) IncomeGreen else ExpenseRed
+        val varColor = if (isGood) MaterialTheme.appColors.income else MaterialTheme.appColors.expense
         val arrow = if (isPositive) "▲" else "▼"
         val sign = if (isPositive && changePercent > 0) "+" else ""
 
@@ -433,10 +432,10 @@ internal fun MonthlyBarChart(
 
             Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                 if (showIncome) {
-                    LegendItem(color = IncomeGreen, label = stringResource(Res.string.annual_income_legend))
+                    LegendItem(color = MaterialTheme.appColors.income, label = stringResource(Res.string.annual_income_legend))
                 }
                 if (showExpense) {
-                    LegendItem(color = ExpenseRed, label = stringResource(Res.string.annual_expense_legend))
+                    LegendItem(color = MaterialTheme.appColors.expense, label = stringResource(Res.string.annual_expense_legend))
                 }
             }
 
@@ -496,7 +495,7 @@ internal fun MonthBarGroup(
                         .width(4.dp)
                         .fillMaxHeight(incomeRatio)
                         .clip(RoundedCornerShape(topStart = 2.dp, topEnd = 2.dp))
-                        .background(IncomeGreen)
+                        .background(MaterialTheme.appColors.income)
                 )
             }
             if (showExpense) {
@@ -505,7 +504,7 @@ internal fun MonthBarGroup(
                         .width(4.dp)
                         .fillMaxHeight(expenseRatio)
                         .clip(RoundedCornerShape(topStart = 2.dp, topEnd = 2.dp))
-                        .background(ExpenseRed)
+                        .background(MaterialTheme.appColors.expense)
                 )
             }
         }

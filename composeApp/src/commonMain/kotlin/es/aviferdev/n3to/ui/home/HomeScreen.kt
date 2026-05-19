@@ -277,7 +277,7 @@ fun HomeScreen(
                 Text(
                     text = state.message,
                     modifier = Modifier.align(Alignment.Center),
-                    color = ExpenseRed
+                    color = MaterialTheme.appColors.expense
                 )
             }
         }

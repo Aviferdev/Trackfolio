@@ -20,7 +20,6 @@ import es.aviferdev.n3to.ui.theme.PrimaryDark
 
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import es.aviferdev.n3to.ui.theme.ExpenseRed
-import es.aviferdev.n3to.ui.theme.IncomeGreen
 import androidx.compose.ui.tooling.preview.Preview
 
 /**
@@ -37,7 +36,7 @@ import androidx.compose.ui.tooling.preview.Preview
 fun SelectablePill(
     label: String,
     selected: Boolean,
-    selectedColor: Color = PrimaryDark,
+    selectedColor: Color = MaterialTheme.appColors.primary,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -65,13 +64,13 @@ private fun SelectablePillRowPreview() {
             SelectablePill(
                 label = "Gasto",
                 selected = true,
-                selectedColor = ExpenseRed,
+                selectedColor = MaterialTheme.appColors.expense,
                 onClick = {}
             )
             SelectablePill(
                 label = "Ingreso",
                 selected = false,
-                selectedColor = IncomeGreen,
+                selectedColor = MaterialTheme.appColors.income,
                 onClick = {}
             )
         }

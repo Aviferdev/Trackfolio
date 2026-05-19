@@ -33,7 +33,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.ui.theme.CategoryOrange
 import es.aviferdev.n3to.ui.theme.ExpenseRed
-import es.aviferdev.n3to.ui.theme.IncomeGreen
 import es.aviferdev.n3to.ui.theme.N3toTheme
 
 import es.aviferdev.n3to.ui.theme.SecondaryTeal
@@ -58,11 +57,11 @@ fun SlideMovimientos(modifier: Modifier = Modifier) {
     )
 
     val transactions = listOf(
-        TxRow("🏠", "Alquiler",   "Hogar",              "−850,00 €",  ExpenseRed,  CategoryOrange.copy(alpha = 0.15f)),
-        TxRow("💼", "Nómina",    "Trabajo · 15% IRPF", "+2.800,00 €", IncomeGreen, IncomeGreen.copy(alpha = 0.15f)),
-        TxRow("🚗", "Gasolina",  "Transporte",          "−65,40 €",   ExpenseRed,  SecondaryTeal.copy(alpha = 0.15f)),
-        TxRow("🛒", "Mercadona", "Alimentación",        "−112,30 €",  ExpenseRed,  IncomeGreen.copy(alpha = 0.15f)),
-        TxRow("🎬", "Netflix",   "Ocio",                "−15,99 €",   ExpenseRed,  WarnAmber.copy(alpha = 0.15f))
+        TxRow("🏠", "Alquiler",   "Hogar",              "−850,00 €",  MaterialTheme.appColors.expense,  CategoryOrange.copy(alpha = 0.15f)),
+        TxRow("💼", "Nómina",    "Trabajo · 15% IRPF", "+2.800,00 €", MaterialTheme.appColors.income, MaterialTheme.appColors.income.copy(alpha = 0.15f)),
+        TxRow("🚗", "Gasolina",  "Transporte",          "−65,40 €",   MaterialTheme.appColors.expense,  SecondaryTeal.copy(alpha = 0.15f)),
+        TxRow("🛒", "Mercadona", "Alimentación",        "−112,30 €",  MaterialTheme.appColors.expense,  MaterialTheme.appColors.income.copy(alpha = 0.15f)),
+        TxRow("🎬", "Netflix",   "Ocio",                "−15,99 €",   MaterialTheme.appColors.expense,  MaterialTheme.appColors.warnAmber.copy(alpha = 0.15f))
     )
 
     val rowVisible = remember {

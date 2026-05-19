@@ -68,8 +68,8 @@ internal fun CategoryFilterChip(
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
-    val bg     = if (isSelected) PrimaryDark   else MaterialTheme.appColors.surfaceElevated
-    val border = if (isSelected) PrimaryDark   else MaterialTheme.appColors.border
+    val bg     = if (isSelected) MaterialTheme.appColors.primary   else MaterialTheme.appColors.surfaceElevated
+    val border = if (isSelected) MaterialTheme.appColors.primary   else MaterialTheme.appColors.border
     val text   = if (isSelected) Color.White   else MaterialTheme.appColors.textPrimary
 
     Row(
@@ -101,8 +101,8 @@ internal fun AssetChip(
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
-    val bg     = if (isSelected) PrimaryDark   else MaterialTheme.appColors.surfaceElevated
-    val border = if (isSelected) PrimaryDark   else MaterialTheme.appColors.border
+    val bg     = if (isSelected) MaterialTheme.appColors.primary   else MaterialTheme.appColors.surfaceElevated
+    val border = if (isSelected) MaterialTheme.appColors.primary   else MaterialTheme.appColors.border
     val text   = if (isSelected) Color.White   else MaterialTheme.appColors.textPrimary
 
     Row(
@@ -131,12 +131,12 @@ internal fun PlatformChip(
 ) {
     val bg = when {
         !enabled   -> MaterialTheme.appColors.surfaceElevated.copy(alpha = 0.5f)
-        isSelected -> PrimaryDark
+        isSelected -> MaterialTheme.appColors.primary
         else       -> MaterialTheme.appColors.surfaceElevated
     }
     val border = when {
         !enabled   -> MaterialTheme.appColors.border.copy(alpha = 0.3f)
-        isSelected -> PrimaryDark
+        isSelected -> MaterialTheme.appColors.primary
         else       -> MaterialTheme.appColors.border
     }
     val text = when {
@@ -168,7 +168,7 @@ internal fun PlatformChip(
             Text(
                 text       = badge,
                 fontSize   = 10.sp,
-                color      = if (isSelected) PrimaryDark else MaterialTheme.appColors.textSecondary,
+                color      = if (isSelected) MaterialTheme.appColors.primary else MaterialTheme.appColors.textSecondary,
                 fontWeight = FontWeight.Medium,
                 modifier   = Modifier.padding(top = 2.dp)
             )

@@ -51,7 +51,7 @@ internal fun CouponTimelineSection(
                 text = stringResource(Res.string.fixedincome_coupon_calendar),
                 fontSize = 15.sp,
                 fontWeight = FontWeight.SemiBold,
-                color = Color.White
+                color = MaterialTheme.appColors.textPrimary
             )
 
             Spacer(Modifier.height(12.dp))
@@ -69,20 +69,20 @@ internal fun CouponTimelineSection(
                             modifier = Modifier
                                 .size(8.dp)
                                 .background(
-                                    if (coupon.isPaid) PositiveGreen else MaterialTheme.appColors.cyanAccent,
+                                    if (coupon.isPaid) MaterialTheme.appColors.income else MaterialTheme.appColors.cyanAccent,
                                     RoundedCornerShape(4.dp)
                                 )
                         )
                         Spacer(Modifier.width(12.dp))
                         Column {
-                            Text(text = formatDate(coupon.date), fontSize = 13.sp, color = Color.White)
+                            Text(text = formatDate(coupon.date), fontSize = 13.sp, color = MaterialTheme.appColors.textPrimary)
                             Text(
                                 text = if (coupon.isPaid)
                                     "✅ ${stringResource(Res.string.fixedincome_coupon_paid)}"
                                 else
                                     "🔵 ${stringResource(Res.string.fixedincome_coupon_pending)}",
                                 fontSize = 11.sp,
-                                color = if (coupon.isPaid) PositiveGreen.copy(alpha = 0.8f) else MaterialTheme.appColors.cyanAccent.copy(alpha = 0.7f)
+                                color = if (coupon.isPaid) MaterialTheme.appColors.income.copy(alpha = 0.8f) else MaterialTheme.appColors.cyanAccent.copy(alpha = 0.7f)
                             )
                         }
                     }
@@ -90,7 +90,7 @@ internal fun CouponTimelineSection(
                         text = "${maskAmount(formatAmount(coupon.grossAmount), balancesHidden)} €",
                         fontSize = 13.sp,
                         fontWeight = FontWeight.SemiBold,
-                        color = Color.White
+                        color = MaterialTheme.appColors.textPrimary
                     )
                 }
 

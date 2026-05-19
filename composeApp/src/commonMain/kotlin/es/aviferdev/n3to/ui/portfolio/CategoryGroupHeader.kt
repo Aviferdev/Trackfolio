@@ -19,7 +19,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.ui.common.DeltaIndicator
 import es.aviferdev.n3to.ui.theme.ExpenseRed
-import es.aviferdev.n3to.ui.theme.IncomeGreen
 
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import es.aviferdev.n3to.ui.theme.formatAmount
@@ -38,8 +37,8 @@ fun CategoryGroupHeader(
     balancesHidden: Boolean
 ) {
     val pnlColor = when {
-        group.totalPnL > 0 -> IncomeGreen
-        group.totalPnL < 0 -> ExpenseRed
+        group.totalPnL > 0 -> MaterialTheme.appColors.income
+        group.totalPnL < 0 -> MaterialTheme.appColors.expense
         else -> MaterialTheme.appColors.textSecondary
     }
     Column(

@@ -129,7 +129,7 @@ fun UpdateCurrentPriceSheet(
                 shape           = RoundedCornerShape(12.dp),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                 colors          = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor   = PrimaryDark,
+                    focusedBorderColor   = MaterialTheme.appColors.primary,
                     unfocusedBorderColor = MaterialTheme.appColors.border
                 ),
                 singleLine = true
@@ -153,8 +153,8 @@ fun UpdateCurrentPriceSheet(
                 modifier = Modifier.fillMaxWidth().height(52.dp),
                 shape    = RoundedCornerShape(10.dp),
                 colors   = ButtonDefaults.buttonColors(
-                    containerColor         = PrimaryDark,
-                    disabledContainerColor = PrimaryDark.copy(alpha = 0.38f)
+                    containerColor         = MaterialTheme.appColors.primary,
+                    disabledContainerColor = MaterialTheme.appColors.primary.copy(alpha = 0.38f)
                 )
             ) {
                 Text(stringResource(Res.string.portfolio_update_save), fontSize = 16.sp, fontWeight = FontWeight.Medium)

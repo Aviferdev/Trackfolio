@@ -130,6 +130,11 @@ data class AppColors(
     val pnlNegative: Color,
     val pnlPositiveSoft: Color,
     val pnlNegativeSoft: Color,
+    // Semantic brand/semantic colors (adaptive for light-mode contrast)
+    val primary: Color,
+    val income: Color,
+    val expense: Color,
+    val warnAmber: Color,
 )
 
 private fun darkAppColors() = AppColors(
@@ -159,6 +164,10 @@ private fun darkAppColors() = AppColors(
     pnlNegative = PnLNegative,
     pnlPositiveSoft = PnLPositiveSoft,
     pnlNegativeSoft = PnLNegativeSoft,
+    primary = PrimaryDark,
+    income = IncomeGreen,
+    expense = ExpenseRed,
+    warnAmber = WarnAmber,
 )
 
 private fun lightAppColors() = AppColors(
@@ -188,6 +197,10 @@ private fun lightAppColors() = AppColors(
     pnlNegative = Color(0xFFDC2626),     // red-600
     pnlPositiveSoft = Color(0xFFDCFCE7), // green-100 bg
     pnlNegativeSoft = Color(0xFFFEE2E2), // red-100 bg
+    primary = PrimaryDark,               // purple — funciona en ambos modos (4.98:1 sobre blanco)
+    income = Color(0xFF16A34A),          // green-600 — 4.54:1 sobre blanco (WCAG AA)
+    expense = Color(0xFFDC2626),         // red-600 — 5.48:1 sobre blanco (WCAG AA)
+    warnAmber = Color(0xFFB45309),       // amber-700 — ~5.1:1 sobre blanco (WCAG AA)
 )
 
 val LocalAppColors = staticCompositionLocalOf { darkAppColors() }

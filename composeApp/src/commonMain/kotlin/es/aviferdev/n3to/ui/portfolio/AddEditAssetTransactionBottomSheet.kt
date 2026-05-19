@@ -306,14 +306,14 @@ fun AddEditAssetTransactionBottomSheet(
                     TypeToggle(
                         label    = stringResource(Res.string.portfolio_add_tx_type_buy),
                         isSel    = type == AssetTransactionType.BUY,
-                        selColor = IncomeGreen,
+                        selColor = MaterialTheme.appColors.income,
                         modifier = Modifier.weight(1f),
                         onClick  = { type = AssetTransactionType.BUY }
                     )
                     TypeToggle(
                         label    = stringResource(Res.string.portfolio_add_tx_type_sell),
                         isSel    = type == AssetTransactionType.SELL,
-                        selColor = ExpenseRed,
+                        selColor = MaterialTheme.appColors.expense,
                         modifier = Modifier.weight(1f),
                         onClick  = { type = AssetTransactionType.SELL }
                     )
@@ -397,7 +397,7 @@ fun AddEditAssetTransactionBottomSheet(
                         modifier         = Modifier
                             .size(36.dp)
                             .clip(RoundedCornerShape(8.dp))
-                            .background(PrimaryDark),
+                            .background(MaterialTheme.appColors.primary),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
@@ -422,7 +422,7 @@ fun AddEditAssetTransactionBottomSheet(
                 Text(
                     text     = stringResource(Res.string.portfolio_add_tx_platform_select_hint),
                     fontSize = 11.sp,
-                    color    = ExpenseRed.copy(alpha = 0.8f)
+                    color    = MaterialTheme.appColors.expense.copy(alpha = 0.8f)
                 )
             }
             Spacer(Modifier.height(8.dp))
@@ -478,8 +478,8 @@ fun AddEditAssetTransactionBottomSheet(
                     shape         = RoundedCornerShape(10.dp),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                     colors        = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor   = if (sellExceeds) ExpenseRed else PrimaryDark,
-                        unfocusedBorderColor = if (sellExceeds) ExpenseRed else MaterialTheme.appColors.border
+                        focusedBorderColor   = if (sellExceeds) MaterialTheme.appColors.expense else MaterialTheme.appColors.primary,
+                        unfocusedBorderColor = if (sellExceeds) MaterialTheme.appColors.expense else MaterialTheme.appColors.border
                     )
                 )
                 OutlinedTextField(
@@ -493,7 +493,7 @@ fun AddEditAssetTransactionBottomSheet(
                     shape         = RoundedCornerShape(10.dp),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                     colors        = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor   = PrimaryDark,
+                        focusedBorderColor   = MaterialTheme.appColors.primary,
                         unfocusedBorderColor = MaterialTheme.appColors.border
                     )
                 )
@@ -514,7 +514,7 @@ fun AddEditAssetTransactionBottomSheet(
                     else
                         stringResource(Res.string.portfolio_add_tx_available, formatQty(displayAvailable), platformLabel),
                     fontSize = 11.sp,
-                    color    = if (sellExceeds) ExpenseRed else MaterialTheme.appColors.textSecondary
+                    color    = if (sellExceeds) MaterialTheme.appColors.expense else MaterialTheme.appColors.textSecondary
                 )
             }
             Spacer(Modifier.height(12.dp))
@@ -555,7 +555,7 @@ fun AddEditAssetTransactionBottomSheet(
                 singleLine    = true,
                 shape         = RoundedCornerShape(10.dp),
                 colors        = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor   = PrimaryDark,
+                    focusedBorderColor   = MaterialTheme.appColors.primary,
                     unfocusedBorderColor = MaterialTheme.appColors.border
                 )
             )
@@ -570,7 +570,7 @@ fun AddEditAssetTransactionBottomSheet(
                 singleLine    = true,
                 shape         = RoundedCornerShape(10.dp),
                 colors        = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor   = PrimaryDark,
+                    focusedBorderColor   = MaterialTheme.appColors.primary,
                     unfocusedBorderColor = MaterialTheme.appColors.border
                 )
             )
@@ -599,8 +599,8 @@ fun AddEditAssetTransactionBottomSheet(
                 modifier = Modifier.fillMaxWidth().height(52.dp),
                 shape    = RoundedCornerShape(10.dp),
                 colors   = ButtonDefaults.buttonColors(
-                    containerColor         = PrimaryDark,
-                    disabledContainerColor = PrimaryDark.copy(alpha = 0.38f)
+                    containerColor         = MaterialTheme.appColors.primary,
+                    disabledContainerColor = MaterialTheme.appColors.primary.copy(alpha = 0.38f)
                 )
             ) {
                 Text(
@@ -626,7 +626,7 @@ fun AddEditAssetTransactionBottomSheet(
                         dateMillis = selected
                     }
                     showDatePicker = false
-                }) { Text(stringResource(Res.string.portfolio_add_tx_accept), color = PrimaryDark) }
+                }) { Text(stringResource(Res.string.portfolio_add_tx_accept), color = MaterialTheme.appColors.primary) }
             },
             dismissButton = {
                 TextButton(onClick = { showDatePicker = false }) {
@@ -638,8 +638,8 @@ fun AddEditAssetTransactionBottomSheet(
             DatePicker(
                 state = pickerState,
                 colors = DatePickerDefaults.colors(
-                    selectedDayContainerColor = PrimaryDark,
-                    todayDateBorderColor      = PrimaryDark
+                    selectedDayContainerColor = MaterialTheme.appColors.primary,
+                    todayDateBorderColor      = MaterialTheme.appColors.primary
                 )
             )
         }

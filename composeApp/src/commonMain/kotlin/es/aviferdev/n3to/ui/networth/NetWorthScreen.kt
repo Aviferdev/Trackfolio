@@ -130,7 +130,7 @@ fun NetWorthScreen(
         is NetWorthUiState.Error -> Box(
             Modifier.fillMaxSize().background(MaterialTheme.appColors.navyDeep),
             contentAlignment = Alignment.Center
-        ) { Text(state.message, color = ExpenseRed) }
+        ) { Text(state.message, color = MaterialTheme.appColors.expense) }
 
         is NetWorthUiState.Success -> NetWorthContent(
             data               = state.data,

@@ -64,7 +64,7 @@ fun HelpTooltipIcon(
             },
             confirmButton = {
                 TextButton(onClick = { showDialog = false }) {
-                    Text("Entendido", color = PrimaryDark, fontWeight = FontWeight.SemiBold)
+                    Text("Entendido", color = MaterialTheme.appColors.primary, fontWeight = FontWeight.SemiBold)
                 }
             },
             shape = RoundedCornerShape(16.dp)

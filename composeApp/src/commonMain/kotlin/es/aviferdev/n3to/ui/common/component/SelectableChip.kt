@@ -41,7 +41,7 @@ fun SelectableChip(
     label: String,
     selected: Boolean,
     onClick: () -> Unit,
-    accentColor: Color = PrimaryDark,
+    accentColor: Color = MaterialTheme.appColors.primary,
     selectedBgColor: Color = PrimaryAlpha,
     borderColorUnselected: Color = MaterialTheme.appColors.border2,
     textColorUnselected: Color = MaterialTheme.appColors.textTertiary,

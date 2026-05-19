@@ -76,7 +76,7 @@ fun NavyTab(
                 text = label,
                 fontSize = 12.sp,
                 fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal,
-                color = if (selected) Color.White else Color.White.copy(alpha = 0.40f)
+                color = if (selected) MaterialTheme.appColors.textPrimary else MaterialTheme.appColors.textSecondary
             )
         }
 

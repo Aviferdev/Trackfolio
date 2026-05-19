@@ -20,7 +20,7 @@ import androidx.compose.ui.tooling.preview.Preview
  * Usage:
  * ```
  * N3toLabel("Últimos movimientos")
- * N3toLabel("Activos", color = PrimaryDark, modifier = Modifier.padding(start = 4.dp))
+ * N3toLabel("Activos", color = MaterialTheme.appColors.primary, modifier = Modifier.padding(start = 4.dp))
  * ```
  */
 @Composable
@@ -51,6 +51,6 @@ private fun N3toLabelPreview() {
 @Composable
 private fun N3toLabelCustomColorPreview() {
     N3toTheme {
-        N3toLabel("Activos", color = PrimaryDark)
+        N3toLabel("Activos", color = MaterialTheme.appColors.primary)
     }
 }

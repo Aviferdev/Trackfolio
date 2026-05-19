@@ -32,7 +32,6 @@ import es.aviferdev.n3to.domain.portfolio.AssetPosition
 import es.aviferdev.n3to.ui.common.component.IconActionButton
 
 import es.aviferdev.n3to.ui.theme.ExpenseRed
-import es.aviferdev.n3to.ui.theme.IncomeGreen
 
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import es.aviferdev.n3to.ui.theme.formatAmount
@@ -52,8 +51,8 @@ fun AssetCard(
     val asset = row.asset
     val pos = row.position
     val pnlColor = when {
-        pos.totalPnL > 0 -> IncomeGreen
-        pos.totalPnL < 0 -> ExpenseRed
+        pos.totalPnL > 0 -> MaterialTheme.appColors.income
+        pos.totalPnL < 0 -> MaterialTheme.appColors.expense
         else -> MaterialTheme.appColors.textSecondary
     }
 

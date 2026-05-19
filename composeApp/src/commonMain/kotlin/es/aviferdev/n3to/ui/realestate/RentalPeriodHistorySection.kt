@@ -46,7 +46,7 @@ fun RentalPeriodHistorySection(
                             Text("${period.monthlyRent.toInt()} €/mes", fontWeight = FontWeight.SemiBold, fontSize = 13.sp, color = MaterialTheme.appColors.textPrimary)
                             Spacer(Modifier.width(6.dp))
                             if (period.isActive) {
-                                StatusTag(label = "Activo", color = IncomeGreen)
+                                StatusTag(label = "Activo", color = MaterialTheme.appColors.income)
                             }
                         }
                         Spacer(Modifier.height(2.dp))

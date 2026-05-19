@@ -52,13 +52,13 @@ fun PropertyCard(
                 }
                 Column(horizontalAlignment = Alignment.End) {
                     if (property.isSold) {
-                        Text(formatAmountEuro(property.saleValue ?: 0.0), fontWeight = FontWeight.Bold, fontSize = 13.sp, color = IncomeGreen)
+                        Text(formatAmountEuro(property.saleValue ?: 0.0), fontWeight = FontWeight.Bold, fontSize = 13.sp, color = MaterialTheme.appColors.income)
                         DeltaIndicator(
                             value = formatPercentSigned(property.realizedGainPercent ?: 0.0),
                             isPositive = (property.realizedGain ?: 0.0) >= 0
                         )
                     } else {
-                        Text(formatAmountEuro(property.effectiveValue), fontWeight = FontWeight.Bold, fontSize = 13.sp, color = IncomeGreen)
+                        Text(formatAmountEuro(property.effectiveValue), fontWeight = FontWeight.Bold, fontSize = 13.sp, color = MaterialTheme.appColors.income)
                         DeltaIndicator(value = formatPercentSigned(property.unrealizedGainPercent), isPositive = property.unrealizedGain >= 0)
                     }
                 }
@@ -66,7 +66,7 @@ fun PropertyCard(
             Spacer(Modifier.height(8.dp))
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(6.dp), verticalAlignment = Alignment.CenterVertically) {
                 if (property.isSold) {
-                    StatusTag(label = "\u2705 Vendida", color = IncomeGreen)
+                    StatusTag(label = "\u2705 Vendida", color = MaterialTheme.appColors.income)
                 } else {
                     StatusTag(
                         label = when (property.rentalStatus) {
@@ -75,12 +75,12 @@ fun PropertyCard(
                             RentalStatus.OWN_USE -> "\uD83C\uDFE0 Uso propio"
                         },
                         color = when (property.rentalStatus) {
-                            RentalStatus.RENTED -> IncomeGreen; RentalStatus.VACANT -> WarnAmber; RentalStatus.OWN_USE -> MaterialTheme.appColors.textTertiary
+                            RentalStatus.RENTED -> MaterialTheme.appColors.income; RentalStatus.VACANT -> MaterialTheme.appColors.warnAmber; RentalStatus.OWN_USE -> MaterialTheme.appColors.textTertiary
                         }
                     )
                 }
                 if (showMortgageReminder) {
-                    StatusTag(label = "\uD83C\uDFE0 Sin hipoteca", color = WarnAmber)
+                    StatusTag(label = "\uD83C\uDFE0 Sin hipoteca", color = MaterialTheme.appColors.warnAmber)
                 }
             }
             if (linkedLoan != null) {
@@ -90,7 +90,7 @@ fun PropertyCard(
                     Text("${linkedLoan.paidInstallments}/${linkedLoan.totalInstallments}", fontSize = 10.sp, color = MaterialTheme.appColors.textTertiary)
                 }
                 Spacer(Modifier.height(4.dp))
-                ProgressBar(progress = linkedLoan.progressPercent, color = ExpenseRed, height = 3.dp)
+                ProgressBar(progress = linkedLoan.progressPercent, color = MaterialTheme.appColors.expense, height = 3.dp)
             }
         }
     }

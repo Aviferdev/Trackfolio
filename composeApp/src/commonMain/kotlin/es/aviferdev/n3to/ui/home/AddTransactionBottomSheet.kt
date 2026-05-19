@@ -61,7 +61,6 @@ import es.aviferdev.n3to.domain.model.TransactionType
 import es.aviferdev.n3to.ui.home.components.*
 
 import es.aviferdev.n3to.ui.theme.ExpenseRed
-import es.aviferdev.n3to.ui.theme.IncomeGreen
 import es.aviferdev.n3to.ui.theme.PrimaryDark
 
 import es.aviferdev.n3to.ui.theme.WarnAmber
@@ -239,14 +238,14 @@ private fun AddTransactionSheetContent(
             TypePill(
                 label = "Ingreso",
                 selected = type == TransactionType.INCOME,
-                selectedColor = IncomeGreen,
+                selectedColor = MaterialTheme.appColors.income,
                 onClick = { onTypeChange(TransactionType.INCOME) },
                 modifier = Modifier.weight(1f)
             )
             TypePill(
                 label = "Gasto",
                 selected = type == TransactionType.EXPENSE,
-                selectedColor = ExpenseRed,
+                selectedColor = MaterialTheme.appColors.expense,
                 onClick = { onTypeChange(TransactionType.EXPENSE) },
                 modifier = Modifier.weight(1f)
             )
@@ -255,7 +254,7 @@ private fun AddTransactionSheetContent(
         Spacer(Modifier.height(20.dp))
 
         if (type == TransactionType.EXPENSE) {
-            DarkAmountInput(value = amount, onValueChange = onAmountChange, label = "Importe", color = ExpenseRed)
+            DarkAmountInput(value = amount, onValueChange = onAmountChange, label = "Importe", color = MaterialTheme.appColors.expense)
             Spacer(Modifier.height(16.dp))
         }
 
@@ -313,7 +312,7 @@ private fun AddTransactionSheetContent(
                     value = grossAmount,
                     onValueChange = onGrossAmountChange,
                     label = "Importe",
-                    color = IncomeGreen
+                    color = MaterialTheme.appColors.income
                 )
                 Spacer(Modifier.height(16.dp))
                 IssuerSelector(
@@ -357,18 +356,18 @@ private fun AddTransactionSheetContent(
                     Surface(
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(10.dp),
-                        color = WarnAmber.copy(alpha = 0.12f)
+                        color = MaterialTheme.appColors.warnAmber.copy(alpha = 0.12f)
                     ) {
                         Row(
                             modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Icon(Icons.Outlined.Warning, contentDescription = null, tint = WarnAmber, modifier = Modifier.size(16.dp))
+                            Icon(Icons.Outlined.Warning, contentDescription = null, tint = MaterialTheme.appColors.warnAmber, modifier = Modifier.size(16.dp))
                             Spacer(Modifier.width(8.dp))
                             Text(
                                 "Sin detalle fiscal: este ingreso no aparecerá desglosado en el informe",
                                 fontSize = 11.sp,
-                                color = WarnAmber,
+                                color = MaterialTheme.appColors.warnAmber,
                                 lineHeight = 14.sp
                             )
                         }
@@ -376,7 +375,7 @@ private fun AddTransactionSheetContent(
 
                     Spacer(Modifier.height(14.dp))
 
-                    DarkAmountInput(value = netAmount, onValueChange = onNetAmountChange, label = "Importe neto", color = IncomeGreen)
+                    DarkAmountInput(value = netAmount, onValueChange = onNetAmountChange, label = "Importe neto", color = MaterialTheme.appColors.income)
                     Spacer(Modifier.height(16.dp))
                     IssuerSelector(
                         issuers = issuers,
@@ -453,7 +452,7 @@ private fun AddTransactionSheetContent(
             Spacer(Modifier.height(8.dp))
             Text(
                 text = uiState.message,
-                color = ExpenseRed,
+                color = MaterialTheme.appColors.expense,
                 fontSize = 13.sp,
                 modifier = Modifier.padding(bottom = 8.dp)
             )
@@ -467,8 +466,8 @@ private fun AddTransactionSheetContent(
             modifier = Modifier.fillMaxWidth().height(52.dp),
             shape = RoundedCornerShape(12.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = PrimaryDark,
-                disabledContainerColor = PrimaryDark.copy(alpha = 0.38f)
+                containerColor = MaterialTheme.appColors.primary,
+                disabledContainerColor = MaterialTheme.appColors.primary.copy(alpha = 0.38f)
             )
         ) {
             if (uiState is AddTransactionUiState.Loading) {

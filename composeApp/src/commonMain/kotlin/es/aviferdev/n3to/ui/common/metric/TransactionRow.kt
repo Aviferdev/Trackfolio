@@ -35,7 +35,6 @@ import es.aviferdev.n3to.domain.model.Transaction
 import es.aviferdev.n3to.domain.model.TransactionType
 import es.aviferdev.n3to.ui.common.toMaterialIcon
 import es.aviferdev.n3to.ui.theme.ExpenseRed
-import es.aviferdev.n3to.ui.theme.IncomeGreen
 import es.aviferdev.n3to.ui.theme.PrimaryDark
 
 import es.aviferdev.n3to.ui.theme.N3toTheme
@@ -71,10 +70,10 @@ fun TransactionRow(
 
     // Avatar
     val avatarBg = when {
-        isAdjustment -> PrimaryDark
-        isLinked -> PrimaryDark
-        isIncome -> IncomeGreen
-        else -> ExpenseRed
+        isAdjustment -> MaterialTheme.appColors.primary
+        isLinked -> MaterialTheme.appColors.primary
+        isIncome -> MaterialTheme.appColors.income
+        else -> MaterialTheme.appColors.expense
     }
     val avatarIcon = when {
         isAdjustment -> Icons.Outlined.Balance
@@ -102,9 +101,9 @@ fun TransactionRow(
         else -> "−"
     }
     val amountColor = when {
-        isAdjustment -> PrimaryDark
-        isIncome -> IncomeGreen
-        else -> ExpenseRed
+        isAdjustment -> MaterialTheme.appColors.primary
+        isIncome -> MaterialTheme.appColors.income
+        else -> MaterialTheme.appColors.expense
     }
     val displayAmount = if (isAdjustment) abs(transaction.amount) else transaction.amount
 
@@ -216,7 +215,7 @@ fun TransactionRow(
                 )
             }
             if (!compact && isLinked) {
-                Text("Portfolio", fontSize = 9.sp, color = PrimaryDark.copy(alpha = 0.6f))
+                Text("Portfolio", fontSize = 9.sp, color = MaterialTheme.appColors.primary.copy(alpha = 0.6f))
             }
         }
 

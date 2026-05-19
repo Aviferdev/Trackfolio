@@ -90,11 +90,11 @@ fun AddEditIssuerSheet(
                 placeholder = { Text("Nombre del emisor", color = MaterialTheme.appColors.textTertiary) },
                 singleLine = true,
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = PrimaryDark,
+                    focusedBorderColor = MaterialTheme.appColors.primary,
                     unfocusedBorderColor = MaterialTheme.appColors.border,
                     focusedTextColor = MaterialTheme.appColors.textPrimary,
                     unfocusedTextColor = MaterialTheme.appColors.textPrimary,
-                    cursorColor = PrimaryDark
+                    cursorColor = MaterialTheme.appColors.primary
                 ),
                 shape = RoundedCornerShape(10.dp)
             )
@@ -111,8 +111,8 @@ fun AddEditIssuerSheet(
                 modifier = Modifier.fillMaxWidth().height(48.dp),
                 shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = PrimaryDark,
-                    disabledContainerColor = PrimaryDark.copy(alpha = 0.3f)
+                    containerColor = MaterialTheme.appColors.primary,
+                    disabledContainerColor = MaterialTheme.appColors.primary.copy(alpha = 0.3f)
                 )
             ) {
                 Text("Guardar", fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = Color.White)

@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -19,10 +20,10 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.ui.theme.ExpenseRed
-import es.aviferdev.n3to.ui.theme.IncomeGreen
 import es.aviferdev.n3to.ui.theme.PrimaryDark
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import androidx.compose.ui.tooling.preview.Preview
+import es.aviferdev.n3to.ui.theme.appColors
 
 /**
  * Rounded-square avatar with centered initials/emoji.
@@ -30,14 +31,14 @@ import androidx.compose.ui.tooling.preview.Preview
  *
  * Usage:
  * ```
- * InitialsAvatar("A", bgColor = ExpenseRed, size = 40.dp, textSize = 15.sp)
- * InitialsAvatar("📈", bgColor = PrimaryDark)
+ * InitialsAvatar("A", bgColor = MaterialTheme.appColors.expense, size = 40.dp, textSize = 15.sp)
+ * InitialsAvatar("📈", bgColor = MaterialTheme.appColors.primary)
  * ```
  */
 @Composable
 fun InitialsAvatar(
     text: String,
-    bgColor: Color = PrimaryDark,
+    bgColor: Color = MaterialTheme.appColors.primary,
     size: Dp = 40.dp,
     textSize: Int = 11,
     modifier: Modifier = Modifier
@@ -68,9 +69,9 @@ private fun InitialsAvatarPreview() {
             modifier = Modifier.padding(16.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            InitialsAvatar("A", bgColor = PrimaryDark)
-            InitialsAvatar("📈", bgColor = IncomeGreen)
-            InitialsAvatar("JD", bgColor = ExpenseRed, size = 48.dp, textSize = 14)
+            InitialsAvatar("A", bgColor = MaterialTheme.appColors.primary)
+            InitialsAvatar("📈", bgColor = MaterialTheme.appColors.income)
+            InitialsAvatar("JD", bgColor = MaterialTheme.appColors.expense, size = 48.dp, textSize = 14)
         }
     }
 }

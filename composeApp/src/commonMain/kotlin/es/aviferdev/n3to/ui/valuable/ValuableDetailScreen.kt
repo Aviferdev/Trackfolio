@@ -125,7 +125,7 @@ fun ValuableDetailScreen(
                     label = { Text("Nuevo valor estimado") },
                     singleLine = true,
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = BrandGreen,
+                        focusedBorderColor = MaterialTheme.appColors.income,
                         unfocusedBorderColor = MaterialTheme.appColors.border,
                         focusedTextColor = MaterialTheme.appColors.textPrimary,
                         unfocusedTextColor = MaterialTheme.appColors.textPrimary
@@ -136,7 +136,7 @@ fun ValuableDetailScreen(
                 TextButton(onClick = {
                     valueText.toDoubleOrNull()?.let { viewModel.updateEstimatedValue(it) }
                     viewModel.hideValueDialog()
-                }) { Text("Actualizar", color = BrandGreen) }
+                }) { Text("Actualizar", color = MaterialTheme.appColors.income) }
             },
             dismissButton = {
                 TextButton(onClick = { viewModel.hideValueDialog() }) { Text("Cancelar", color = MaterialTheme.appColors.textTertiary) }
@@ -175,7 +175,7 @@ fun ValuableDetailScreen(
     ) { padding ->
         if (summary == null) {
             Box(Modifier.fillMaxSize().padding(padding), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator(color = BrandGreen)
+                CircularProgressIndicator(color = MaterialTheme.appColors.income)
             }
         } else {
             val valuable = summary.valuable
@@ -206,7 +206,7 @@ fun ValuableDetailScreen(
                                     text = if (profit != null) formatAmountEuro(profit) else "-",
                                     fontWeight = FontWeight.Bold,
                                     fontSize = 18.sp,
-                                    color = if (profit != null && profit >= 0) IncomeGreen else ExpenseRed
+                                    color = if (profit != null && profit >= 0) MaterialTheme.appColors.income else MaterialTheme.appColors.expense
                                 )
                             } else {
                                 Text(
@@ -282,7 +282,7 @@ fun ValuableDetailScreen(
                                     onClick = { viewModel.showValueDialog() },
                                     modifier = Modifier.weight(1f),
                                     shape = RoundedCornerShape(8.dp),
-                                    colors = ButtonDefaults.outlinedButtonColors(contentColor = PrimaryDark)
+                                    colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.appColors.primary)
                                 ) {
                                     Text("Actualizar valor", fontSize = 11.sp)
                                 }
@@ -290,7 +290,7 @@ fun ValuableDetailScreen(
                                     onClick = { viewModel.showLoanPicker() },
                                     modifier = Modifier.weight(1f),
                                     shape = RoundedCornerShape(8.dp),
-                                    colors = ButtonDefaults.outlinedButtonColors(contentColor = PrimaryDark)
+                                    colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.appColors.primary)
                                 ) {
                                     Text(
                                         if (valuable.linkedLoanId != null) "Cambiar préstamo" else "Vincular préstamo",

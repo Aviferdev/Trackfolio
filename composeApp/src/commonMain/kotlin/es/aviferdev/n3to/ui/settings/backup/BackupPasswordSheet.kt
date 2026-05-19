@@ -182,7 +182,7 @@ fun BackupPasswordSheet(
                 // Error de validación de contraseña
                 state.passwordError?.let { err ->
                     Spacer(Modifier.height(6.dp))
-                    Text(err, fontSize = 12.sp, color = ExpenseRed)
+                    Text(err, fontSize = 12.sp, color = MaterialTheme.appColors.expense)
                 }
 
                 // Error devuelto por la operación de backup (no validación)
@@ -192,14 +192,14 @@ fun BackupPasswordSheet(
                         modifier = Modifier
                             .fillMaxWidth()
                             .clip(RoundedCornerShape(11.dp))
-                            .border(0.5.dp, ExpenseRed.copy(alpha = 0.4f), RoundedCornerShape(11.dp))
-                            .background(ExpenseRed.copy(alpha = 0.10f))
+                            .border(0.5.dp, MaterialTheme.appColors.expense.copy(alpha = 0.4f), RoundedCornerShape(11.dp))
+                            .background(MaterialTheme.appColors.expense.copy(alpha = 0.10f))
                             .padding(12.dp)
                     ) {
                         Text(
                             text     = "⚠️  ${err.message}",
                             fontSize = 13.sp,
-                            color    = ExpenseRed
+                            color    = MaterialTheme.appColors.expense
                         )
                     }
                 }
@@ -214,8 +214,8 @@ fun BackupPasswordSheet(
                         modifier = Modifier
                             .fillMaxWidth()
                             .clip(RoundedCornerShape(11.dp))
-                            .border(0.5.dp, IncomeGreen.copy(alpha = 0.4f), RoundedCornerShape(11.dp))
-                            .background(IncomeGreen.copy(alpha = 0.10f))
+                            .border(0.5.dp, MaterialTheme.appColors.income.copy(alpha = 0.4f), RoundedCornerShape(11.dp))
+                            .background(MaterialTheme.appColors.income.copy(alpha = 0.10f))
                             .padding(16.dp),
                         contentAlignment = Alignment.Center
                     ) {
@@ -223,7 +223,7 @@ fun BackupPasswordSheet(
                             "✅  Backup exportado correctamente",
                             fontSize   = 14.sp,
                             fontWeight = FontWeight.Medium,
-                            color      = IncomeGreen
+                            color      = MaterialTheme.appColors.income
                         )
                     }
                     Spacer(Modifier.height(12.dp))
@@ -246,8 +246,8 @@ fun BackupPasswordSheet(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clip(RoundedCornerShape(11.dp))
-                                .border(0.5.dp, IncomeGreen.copy(alpha = 0.4f), RoundedCornerShape(11.dp))
-                                .background(IncomeGreen.copy(alpha = 0.10f))
+                                .border(0.5.dp, MaterialTheme.appColors.income.copy(alpha = 0.4f), RoundedCornerShape(11.dp))
+                                .background(MaterialTheme.appColors.income.copy(alpha = 0.10f))
                                 .padding(16.dp),
                             contentAlignment = Alignment.Center
                         ) {
@@ -256,7 +256,7 @@ fun BackupPasswordSheet(
                                     "✅  Backup descifrado correctamente",
                                     fontSize   = 14.sp,
                                     fontWeight = FontWeight.Medium,
-                                    color      = IncomeGreen,
+                                    color      = MaterialTheme.appColors.income,
                                     textAlign  = TextAlign.Center
                                 )
                                 Spacer(Modifier.height(8.dp))

@@ -96,7 +96,7 @@ internal fun FixedIncomeDetailHeader(
                         stringResource(Res.string.fixedincome_header_label, statusLabel),
                         fontSize = 10.sp,
                         fontWeight = FontWeight.Medium,
-                        color = WarnAmber
+                        color = MaterialTheme.appColors.warnAmber
                     )
                     Spacer(Modifier.height(4.dp))
                     Text(
@@ -113,7 +113,7 @@ internal fun FixedIncomeDetailHeader(
                         modifier = Modifier.padding(top = 3.dp)
                     )
                 }
-                StatusTag(label = position.type.label.uppercase(), color = WarnAmber)
+                StatusTag(label = position.type.label.uppercase(), color = MaterialTheme.appColors.warnAmber)
             }
 
             Spacer(Modifier.height(16.dp))
@@ -172,6 +172,6 @@ internal fun DetailCell(label: String, value: String, modifier: Modifier = Modif
         val appCCyanAccent = MaterialTheme.appColors.cyanAccent
         Text(label, fontSize = 10.sp, color = appCCyanAccent.copy(alpha = 0.7f))
         Spacer(Modifier.height(2.dp))
-        Text(value, fontSize = 12.sp, fontWeight = FontWeight.SemiBold, color = Color.White)
+        Text(value, fontSize = 12.sp, fontWeight = FontWeight.SemiBold, color = MaterialTheme.appColors.textPrimary)
     }
 }

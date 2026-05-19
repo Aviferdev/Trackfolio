@@ -212,7 +212,7 @@ private fun AccountCard(
     onDelete: () -> Unit
 ) {
     val borderColor by animateColorAsState(
-        targetValue = if (isSelected) PrimaryDark.copy(alpha = 0.6f) else MaterialTheme.appColors.border,
+        targetValue = if (isSelected) MaterialTheme.appColors.primary.copy(alpha = 0.6f) else MaterialTheme.appColors.border,
         label       = "borderColor"
     )
     val containerColor by animateColorAsState(
@@ -239,7 +239,7 @@ private fun AccountCard(
                         modifier        = Modifier
                             .size(44.dp)
                             .clip(CircleShape)
-                            .background(if (isSelected) PrimaryDark else MaterialTheme.appColors.background),
+                            .background(if (isSelected) MaterialTheme.appColors.primary else MaterialTheme.appColors.background),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
@@ -266,7 +266,7 @@ private fun AccountCard(
                         Text(
                             text  = if (account.needsInitialBalance) "Saldo inicial pendiente" else "€",
                             fontSize = 12.sp,
-                            color = if (account.needsInitialBalance) ExpenseRed else MaterialTheme.appColors.textSecondary
+                            color = if (account.needsInitialBalance) MaterialTheme.appColors.expense else MaterialTheme.appColors.textSecondary
                         )
                     }
                 }
@@ -275,7 +275,7 @@ private fun AccountCard(
                         Icon(Icons.Default.Edit, contentDescription = "Editar", modifier = Modifier.size(18.dp), tint = MaterialTheme.appColors.textSecondary)
                     }
                     IconButton(onClick = onDelete, modifier = Modifier.size(36.dp)) {
-                        Icon(Icons.Default.Delete, contentDescription = "Eliminar", modifier = Modifier.size(18.dp), tint = ExpenseRed)
+                        Icon(Icons.Default.Delete, contentDescription = "Eliminar", modifier = Modifier.size(18.dp), tint = MaterialTheme.appColors.expense)
                     }
                 }
             }
@@ -295,14 +295,14 @@ private fun AccountCard(
                             text       = "${maskAmount(formatAmount(account.computedBalance), balancesHidden)} €",
                             fontSize   = 20.sp,
                             fontWeight = FontWeight.Bold,
-                            color      = if (account.computedBalance >= 0) PrimaryDark else ExpenseRed
+                            color      = if (account.computedBalance >= 0) MaterialTheme.appColors.primary else MaterialTheme.appColors.expense
                         )
                     }
                     if (isSelected) {
                         Box(
                             modifier = Modifier
                                 .clip(RoundedCornerShape(50))
-                                .background(PrimaryDark)
+                                .background(MaterialTheme.appColors.primary)
                                 .padding(horizontal = 10.dp, vertical = 4.dp)
                         ) {
                             Text("Activa", fontSize = 11.sp, color = Color.White, fontWeight = FontWeight.Medium)

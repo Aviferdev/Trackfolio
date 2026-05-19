@@ -142,7 +142,7 @@ internal fun PdfPasswordSheet(onConfirm: (String) -> Unit, onDismiss: () -> Unit
                 )
             }
 
-            error?.let { Text(it, fontSize = 11.sp, color = ExpenseRed, modifier = Modifier.padding(top = 4.dp)) }
+            error?.let { Text(it, fontSize = 11.sp, color = MaterialTheme.appColors.expense, modifier = Modifier.padding(top = 4.dp)) }
             Spacer(Modifier.height(20.dp))
 
             val passwordMismatchText  = stringResource(Res.string.fiscal_password_mismatch)

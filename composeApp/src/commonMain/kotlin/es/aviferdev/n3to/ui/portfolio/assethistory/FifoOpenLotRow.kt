@@ -22,7 +22,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.portfolio.FifoOpenLot
 import es.aviferdev.n3to.ui.portfolio.formatShortDate
-import es.aviferdev.n3to.ui.theme.IncomeGreen
 
 import es.aviferdev.n3to.ui.theme.formatAmount
 import es.aviferdev.n3to.ui.theme.formatQty
@@ -37,10 +36,10 @@ fun FifoOpenLotRow(index: Int, lot: FifoOpenLot, masked: Boolean) {
     ) {
         Box(
             modifier = Modifier.size(26.dp).clip(RoundedCornerShape(7.dp))
-                .background(IncomeGreen.copy(.14f)),
+                .background(MaterialTheme.appColors.income.copy(.14f)),
             contentAlignment = Alignment.Center
         ) {
-            Text("#$index", fontSize = 9.sp, fontWeight = FontWeight.Bold, color = IncomeGreen)
+            Text("#$index", fontSize = 9.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.appColors.income)
         }
         Spacer(Modifier.width(8.dp))
         Column(modifier = Modifier.weight(1f)) {

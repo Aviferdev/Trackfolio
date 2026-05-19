@@ -51,7 +51,7 @@ internal fun EventsHistorySection(
                 text = stringResource(Res.string.fixedincome_event_history),
                 fontSize = 15.sp,
                 fontWeight = FontWeight.SemiBold,
-                color = Color.White
+                color = MaterialTheme.appColors.textPrimary
             )
 
             Spacer(Modifier.height(12.dp))
@@ -60,7 +60,7 @@ internal fun EventsHistorySection(
                 Text(
                     text = stringResource(Res.string.fixedincome_no_events),
                     fontSize = 13.sp,
-                    color = Color.White.copy(alpha = 0.4f)
+                    color = MaterialTheme.appColors.textTertiary
                 )
             } else {
                 events.forEach { event ->
@@ -98,12 +98,12 @@ private fun EventItem(
                     text = event.type.label,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Medium,
-                    color = Color.White
+                    color = MaterialTheme.appColors.textPrimary
                 )
                 Text(
                     text = formatDate(event.date),
                     fontSize = 11.sp,
-                    color = Color.White.copy(alpha = 0.45f)
+                    color = MaterialTheme.appColors.textTertiary
                 )
             }
             Column(horizontalAlignment = Alignment.End) {
@@ -118,7 +118,7 @@ private fun EventItem(
                     Text(
                         text = "$eventGrossText: ${maskAmount(formatAmount(event.grossAmount), balancesHidden)}",
                         fontSize = 10.sp,
-                        color = Color.White.copy(alpha = 0.4f)
+                        color = MaterialTheme.appColors.textTertiary
                     )
                 }
             }
@@ -139,7 +139,7 @@ private fun EventItem(
                     Text(
                         text = "${stringResource(Res.string.fixedincome_commission_label)}: ${maskAmount(formatAmount(event.commissionAmount), balancesHidden)}",
                         fontSize = 10.sp,
-                        color = Color.White.copy(alpha = 0.45f)
+                        color = MaterialTheme.appColors.textTertiary
                     )
                 }
             }

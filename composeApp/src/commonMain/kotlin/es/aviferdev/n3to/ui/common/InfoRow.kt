@@ -20,7 +20,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 import es.aviferdev.n3to.ui.theme.ExpenseRed
-import es.aviferdev.n3to.ui.theme.IncomeGreen
 
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import androidx.compose.ui.tooling.preview.Preview
@@ -33,7 +32,7 @@ import androidx.compose.ui.tooling.preview.Preview
  * Usage:
  * ```
  * InfoRow(
- *     left    = { InitialsAvatar("A", IncomeGreen) },
+ *     left    = { InitialsAvatar("A", MaterialTheme.appColors.income) },
  *     mid     = { Column { Text("Label"); Text("Subtitle") } },
  *     right   = { Text("+123 €") },
  *     isLast  = false,
@@ -80,26 +79,26 @@ private fun InfoRowPreview() {
     N3toTheme {
         Column {
             InfoRow(
-                left = { InitialsAvatar("A", bgColor = IncomeGreen) },
+                left = { InitialsAvatar("A", bgColor = MaterialTheme.appColors.income) },
                 mid = {
                     Column {
                         Text("Apple Inc.", fontSize = 14.sp, fontWeight = FontWeight.Medium, color = MaterialTheme.appColors.textPrimary)
                         Text("10 acciones", fontSize = 11.sp, color = MaterialTheme.appColors.textSecondary)
                     }
                 },
-                right = { Text("+1.234,56 €", fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = IncomeGreen) },
+                right = { Text("+1.234,56 €", fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = MaterialTheme.appColors.income) },
                 isLast = false,
                 onClick = {}
             )
             InfoRow(
-                left = { InitialsAvatar("G", bgColor = ExpenseRed) },
+                left = { InitialsAvatar("G", bgColor = MaterialTheme.appColors.expense) },
                 mid = {
                     Column {
                         Text("Gas Natural", fontSize = 14.sp, fontWeight = FontWeight.Medium, color = MaterialTheme.appColors.textPrimary)
                         Text("5 acciones", fontSize = 11.sp, color = MaterialTheme.appColors.textSecondary)
                     }
                 },
-                right = { Text("-456,78 €", fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = ExpenseRed) },
+                right = { Text("-456,78 €", fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = MaterialTheme.appColors.expense) },
                 isLast = true,
                 onClick = {}
             )

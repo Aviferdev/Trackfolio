@@ -97,16 +97,16 @@ fun FiscalReportContent(
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp, vertical = 8.dp)
                     .clip(RoundedCornerShape(10.dp))
-                    .background(WarnAmber.copy(alpha = 0.10f))
-                    .border(0.5.dp, WarnAmber.copy(alpha = 0.30f), RoundedCornerShape(10.dp))
+                    .background(MaterialTheme.appColors.warnAmber.copy(alpha = 0.10f))
+                    .border(0.5.dp, MaterialTheme.appColors.warnAmber.copy(alpha = 0.30f), RoundedCornerShape(10.dp))
             ) {
                 Row(
                     modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(Icons.Outlined.Warning, contentDescription = null, tint = WarnAmber, modifier = Modifier.size(16.dp))
+                    Icon(Icons.Outlined.Warning, contentDescription = null, tint = MaterialTheme.appColors.warnAmber, modifier = Modifier.size(16.dp))
                     Spacer(Modifier.width(8.dp))
-                    Text(stringResource(Res.string.fiscal_net_only_warning), fontSize = 11.sp, color = WarnAmber, lineHeight = 14.sp)
+                    Text(stringResource(Res.string.fiscal_net_only_warning), fontSize = 11.sp, color = MaterialTheme.appColors.warnAmber, lineHeight = 14.sp)
                 }
             }
         }
@@ -166,7 +166,7 @@ fun FiscalReportContent(
                     ) {
                         HorizontalDivider(color = MaterialTheme.appColors.navyBorder, thickness = .5.dp, modifier = Modifier.padding(bottom = 8.dp))
                         state.errorMessage?.let { err ->
-                            Text(err, fontSize = 11.sp, color = ExpenseRed, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
+                            Text(err, fontSize = 11.sp, color = MaterialTheme.appColors.expense, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
                         }
                         Button(
                             onClick = onGeneratePdf,

@@ -122,10 +122,10 @@ fun AddDividendBottomSheet(
                             Box(
                                 modifier = Modifier
                                     .clip(RoundedCornerShape(10.dp))
-                                    .background(if (isSel) PrimaryDark.copy(alpha = 0.1f) else Color.Transparent)
+                                    .background(if (isSel) MaterialTheme.appColors.primary.copy(alpha = 0.1f) else Color.Transparent)
                                     .border(
                                         if (isSel) 1.5.dp else 0.5.dp,
-                                        if (isSel) PrimaryDark else MaterialTheme.appColors.border,
+                                        if (isSel) MaterialTheme.appColors.primary else MaterialTheme.appColors.border,
                                         RoundedCornerShape(10.dp)
                                     )
                                     .clickable { selectedAssetId = asset.id }
@@ -136,7 +136,7 @@ fun AddDividendBottomSheet(
                                     text       = asset.ticker,
                                     fontSize   = 12.sp,
                                     fontWeight = if (isSel) FontWeight.SemiBold else FontWeight.Normal,
-                                    color      = if (isSel) PrimaryDark else MaterialTheme.appColors.textSecondary
+                                    color      = if (isSel) MaterialTheme.appColors.primary else MaterialTheme.appColors.textSecondary
                                 )
                             }
                         }
@@ -150,7 +150,7 @@ fun AddDividendBottomSheet(
                 Text(
                     text       = "+ ${formatAmount(netAmount)} €",
                     fontSize   = 28.sp,
-                    color      = IncomeGreen,
+                    color      = MaterialTheme.appColors.income,
                     fontWeight = FontWeight.Bold
                 )
             } else {
@@ -178,7 +178,7 @@ fun AddDividendBottomSheet(
                     singleLine      = true,
                     modifier        = Modifier.fillMaxWidth(),
                     shape           = RoundedCornerShape(8.dp),
-                    colors          = OutlinedTextFieldDefaults.colors(focusedBorderColor = PrimaryDark, unfocusedBorderColor = MaterialTheme.appColors.border),
+                    colors          = OutlinedTextFieldDefaults.colors(focusedBorderColor = MaterialTheme.appColors.primary, unfocusedBorderColor = MaterialTheme.appColors.border),
                     textStyle       = TextStyle(fontSize = 14.sp, color = MaterialTheme.appColors.textPrimary)
                 )
             }
@@ -198,7 +198,7 @@ fun AddDividendBottomSheet(
                     singleLine      = true,
                     modifier        = Modifier.fillMaxWidth(),
                     shape           = RoundedCornerShape(8.dp),
-                    colors          = OutlinedTextFieldDefaults.colors(focusedBorderColor = PrimaryDark, unfocusedBorderColor = MaterialTheme.appColors.border),
+                    colors          = OutlinedTextFieldDefaults.colors(focusedBorderColor = MaterialTheme.appColors.primary, unfocusedBorderColor = MaterialTheme.appColors.border),
                     textStyle       = TextStyle(fontSize = 14.sp, color = MaterialTheme.appColors.textPrimary)
                 )
             }
@@ -209,7 +209,7 @@ fun AddDividendBottomSheet(
                 val irpfAmount = grossAmount * irpfPercent / 100.0
                 Surface(
                     shape  = RoundedCornerShape(10.dp),
-                    color  = IncomeGreen.copy(alpha = 0.07f),
+                    color  = MaterialTheme.appColors.income.copy(alpha = 0.07f),
                     border = CardDefaults.outlinedCardBorder()
                 ) {
                     Row(
@@ -217,8 +217,8 @@ fun AddDividendBottomSheet(
                         horizontalArrangement = Arrangement.SpaceEvenly
                     ) {
                         SummaryItem(stringResource(Res.string.portfolio_dividend_gross_short), grossAmount, MaterialTheme.appColors.textPrimary)
-                        if (irpfAmount > 0) SummaryItem(stringResource(Res.string.portfolio_dividend_withholding_short), irpfAmount, ExpenseRed)
-                        SummaryItem(stringResource(Res.string.portfolio_dividend_net_short), netAmount ?: 0.0, IncomeGreen)
+                        if (irpfAmount > 0) SummaryItem(stringResource(Res.string.portfolio_dividend_withholding_short), irpfAmount, MaterialTheme.appColors.expense)
+                        SummaryItem(stringResource(Res.string.portfolio_dividend_net_short), netAmount ?: 0.0, MaterialTheme.appColors.income)
                     }
                 }
             }
@@ -226,7 +226,7 @@ fun AddDividendBottomSheet(
             // \u2500\u2500 Error \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
             error?.let {
                 Spacer(Modifier.height(8.dp))
-                Text(it, color = ExpenseRed, fontSize = 13.sp)
+                Text(it, color = MaterialTheme.appColors.expense, fontSize = 13.sp)
             }
 
             Spacer(Modifier.height(24.dp))
@@ -252,8 +252,8 @@ fun AddDividendBottomSheet(
                 modifier = Modifier.fillMaxWidth().height(52.dp),
                 shape    = RoundedCornerShape(10.dp),
                 colors   = ButtonDefaults.buttonColors(
-                    containerColor         = PrimaryDark,
-                    disabledContainerColor = PrimaryDark.copy(alpha = 0.38f)
+                    containerColor         = MaterialTheme.appColors.primary,
+                    disabledContainerColor = MaterialTheme.appColors.primary.copy(alpha = 0.38f)
                 )
             ) {
                 Text(stringResource(Res.string.portfolio_dividend_register), fontSize = 16.sp, fontWeight = FontWeight.Medium)

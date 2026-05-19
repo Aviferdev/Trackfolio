@@ -44,7 +44,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 import es.aviferdev.n3to.ui.theme.ExpenseRed
-import es.aviferdev.n3to.ui.theme.IncomeGreen
 import es.aviferdev.n3to.ui.theme.N3toTheme
 
 import n3to.composeapp.generated.resources.Res
@@ -174,7 +173,7 @@ fun SlidePatrimonio(modifier: Modifier = Modifier) {
             Column {
                 Text(text = "📈 Portfolio", fontSize = 14.sp, color = Color.Unspecified)
                 Spacer(Modifier.height(4.dp))
-                Text(text = "+2.209 €", fontSize = 14.sp, fontWeight = FontWeight.ExtraBold, color = IncomeGreen)
+                Text(text = "+2.209 €", fontSize = 14.sp, fontWeight = FontWeight.ExtraBold, color = MaterialTheme.appColors.income)
             }
         }
 
@@ -191,7 +190,7 @@ fun SlidePatrimonio(modifier: Modifier = Modifier) {
             Column {
                 Text(text = "🏠 Hipoteca", fontSize = 14.sp, color = Color.Unspecified)
                 Spacer(Modifier.height(4.dp))
-                Text(text = "−142.300 €", fontSize = 14.sp, fontWeight = FontWeight.ExtraBold, color = ExpenseRed)
+                Text(text = "−142.300 €", fontSize = 14.sp, fontWeight = FontWeight.ExtraBold, color = MaterialTheme.appColors.expense)
             }
         }
     }

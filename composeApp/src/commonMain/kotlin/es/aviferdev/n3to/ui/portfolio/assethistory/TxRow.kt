@@ -32,7 +32,6 @@ import es.aviferdev.n3to.domain.model.AssetTransactionType
 import es.aviferdev.n3to.domain.model.Platform
 import es.aviferdev.n3to.ui.portfolio.formatShortDate
 import es.aviferdev.n3to.ui.theme.ExpenseRed
-import es.aviferdev.n3to.ui.theme.IncomeGreen
 
 import es.aviferdev.n3to.ui.theme.formatAmount
 import es.aviferdev.n3to.ui.theme.formatQty
@@ -48,7 +47,7 @@ fun TxRow(
     modifier: Modifier = Modifier
 ) {
     val isBuy = tx.type == AssetTransactionType.BUY || tx.type == AssetTransactionType.TRANSFER_IN
-    val sideColor = if (isBuy) IncomeGreen else ExpenseRed
+    val sideColor = if (isBuy) MaterialTheme.appColors.income else MaterialTheme.appColors.expense
     val sideLabel = when (tx.type) {
         AssetTransactionType.BUY -> "Compra"
         AssetTransactionType.SELL -> "Venta"
@@ -146,7 +145,7 @@ fun TxRow(
                             Icons.Default.Delete,
                             null,
                             modifier = Modifier.size(13.dp),
-                            tint = ExpenseRed
+                            tint = MaterialTheme.appColors.expense
                         )
                     }
                 }

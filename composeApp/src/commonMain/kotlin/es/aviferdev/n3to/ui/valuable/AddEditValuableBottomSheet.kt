@@ -216,7 +216,7 @@ fun AddEditValuableBottomSheet(
                 },
                 modifier = Modifier.fillMaxWidth().height(48.dp),
                 shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = BrandGreen)
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.appColors.income)
             ) {
                 Text("Guardar", fontWeight = FontWeight.SemiBold)
             }
@@ -278,18 +278,18 @@ private fun ExpenseRow(
             colors = textFieldColors()
         )
         IconButton(onClick = onRemove) {
-            Icon(Icons.Outlined.Close, contentDescription = "Eliminar", tint = ExpenseRed)
+            Icon(Icons.Outlined.Close, contentDescription = "Eliminar", tint = MaterialTheme.appColors.expense)
         }
     }
 }
 
 @Composable
 private fun textFieldColors() = OutlinedTextFieldDefaults.colors(
-    focusedBorderColor = BrandGreen,
+    focusedBorderColor = MaterialTheme.appColors.income,
     unfocusedBorderColor = MaterialTheme.appColors.border,
     focusedTextColor = MaterialTheme.appColors.textPrimary,
     unfocusedTextColor = MaterialTheme.appColors.textPrimary,
-    cursorColor = BrandGreen,
-    focusedLabelColor = BrandGreen,
+    cursorColor = MaterialTheme.appColors.income,
+    focusedLabelColor = MaterialTheme.appColors.income,
     unfocusedLabelColor = MaterialTheme.appColors.textSecondary
 )

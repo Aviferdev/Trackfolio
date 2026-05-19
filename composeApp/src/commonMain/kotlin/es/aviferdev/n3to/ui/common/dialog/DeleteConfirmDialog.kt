@@ -60,12 +60,12 @@ fun DeleteConfirmDialog(
         },
         confirmButton = {
             TextButton(onClick = onConfirm) {
-                Text(confirmLabel, color = ExpenseRed)
+                Text(confirmLabel, color = MaterialTheme.appColors.expense)
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text(dismissLabel, color = PrimaryDark)
+                Text(dismissLabel, color = MaterialTheme.appColors.primary)
             }
         },
         shape = RoundedCornerShape(16.dp)

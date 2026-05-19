@@ -82,9 +82,9 @@ private fun BudgetRow(
     modifier: Modifier = Modifier
 ) {
     val barColor = when {
-        status.isOverBudget -> ExpenseRed
-        status.isNearLimit -> WarnAmber
-        else -> IncomeGreen
+        status.isOverBudget -> MaterialTheme.appColors.expense
+        status.isNearLimit -> MaterialTheme.appColors.warnAmber
+        else -> MaterialTheme.appColors.income
     }
 
     val noIncome = status.limitType == LimitType.PERCENTAGE && status.totalIncome <= 0.0
@@ -156,7 +156,7 @@ private fun BudgetRow(
                 Text(
                     text = "Restan ${formatAmount(status.remaining)}",
                     fontSize = 11.sp,
-                    color = if (status.isOverBudget) ExpenseRed else MaterialTheme.appColors.textTertiary
+                    color = if (status.isOverBudget) MaterialTheme.appColors.expense else MaterialTheme.appColors.textTertiary
                 )
             }
         }
@@ -168,7 +168,7 @@ private fun BudgetRow(
                 text = "¡Límite excedido!",
                 fontSize = 11.sp,
                 fontWeight = FontWeight.SemiBold,
-                color = ExpenseRed
+                color = MaterialTheme.appColors.expense
             )
         }
     }

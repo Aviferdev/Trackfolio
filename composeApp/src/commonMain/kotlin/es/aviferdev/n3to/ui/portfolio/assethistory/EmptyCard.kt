@@ -34,7 +34,7 @@ fun EmptyCard(modifier: Modifier = Modifier) {
         contentAlignment = Alignment.Center
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Icon(Icons.AutoMirrored.Outlined.Assignment, contentDescription = null, modifier = Modifier.size(30.dp), tint = PrimaryDark)
+            Icon(Icons.AutoMirrored.Outlined.Assignment, contentDescription = null, modifier = Modifier.size(30.dp), tint = MaterialTheme.appColors.primary)
             Spacer(Modifier.height(8.dp))
             Text(
                 "Sin movimientos",

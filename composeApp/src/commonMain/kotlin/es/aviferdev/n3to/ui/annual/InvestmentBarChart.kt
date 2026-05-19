@@ -82,7 +82,7 @@ fun InvestmentBarChart(
             Text(
                 text     = "Total invertido: ${maskAmount(formatAmountEuro(totalInvested), balancesHidden)}",
                 fontSize = 12.sp,
-                color    = PrimaryDark,
+                color    = MaterialTheme.appColors.primary,
                 fontWeight = FontWeight.Medium
             )
 
@@ -138,7 +138,7 @@ private fun InvestmentBar(
                 modifier = Modifier
                     .fillMaxWidth()
                     .fillMaxHeight(ratio)
-                    .background(PrimaryDark)
+                    .background(MaterialTheme.appColors.primary)
             )
         }
         Spacer(Modifier.height(4.dp))
@@ -173,7 +173,7 @@ private fun EmptyInvestmentState(year: String) {
                 color      = MaterialTheme.appColors.textPrimary
             )
             Spacer(Modifier.height(16.dp))
-            Icon(Icons.AutoMirrored.Outlined.ShowChart, contentDescription = null, modifier = Modifier.size(32.dp), tint = PrimaryDark)
+            Icon(Icons.AutoMirrored.Outlined.ShowChart, contentDescription = null, modifier = Modifier.size(32.dp), tint = MaterialTheme.appColors.primary)
             Spacer(Modifier.height(8.dp))
             Text(
                 text     = "Sin inversiones este año",
