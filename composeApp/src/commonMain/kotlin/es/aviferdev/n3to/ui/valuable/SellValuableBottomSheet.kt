@@ -21,6 +21,16 @@ import es.aviferdev.n3to.domain.model.ValuableExpense
 import es.aviferdev.n3to.domain.model.ValuableExpenseCategories
 import es.aviferdev.n3to.ui.common.input.DatePickerRow
 import es.aviferdev.n3to.ui.theme.*
+import org.jetbrains.compose.resources.stringResource
+import trackfolio.composeapp.generated.resources.Res
+import trackfolio.composeapp.generated.resources.valuable_add_sell_expense
+import trackfolio.composeapp.generated.resources.valuable_confirm_sale
+import trackfolio.composeapp.generated.resources.valuable_expense_amount_label
+import trackfolio.composeapp.generated.resources.valuable_expense_delete_cd
+import trackfolio.composeapp.generated.resources.valuable_sell_date_label
+import trackfolio.composeapp.generated.resources.valuable_sell_expenses_title
+import trackfolio.composeapp.generated.resources.valuable_sell_price_label
+import trackfolio.composeapp.generated.resources.valuable_sell_title_format
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -42,12 +52,12 @@ fun SellValuableBottomSheet(
                 .padding(horizontal = 20.dp, vertical = 8.dp)
                 .verticalScroll(rememberScrollState())
         ) {
-            Text("Vender: $valuableName", fontWeight = FontWeight.Bold, fontSize = 20.sp, color = MaterialTheme.appColors.textPrimary)
+            Text(stringResource(Res.string.valuable_sell_title_format, valuableName), fontWeight = FontWeight.Bold, fontSize = 20.sp, color = MaterialTheme.appColors.textPrimary)
             Spacer(Modifier.height(20.dp))
 
             OutlinedTextField(
                 value = salePriceText, onValueChange = { salePriceText = it },
-                label = { Text("Precio de venta") },
+                label = { Text(stringResource(Res.string.valuable_sell_price_label)) },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
                 colors = textFieldColors()
@@ -55,14 +65,14 @@ fun SellValuableBottomSheet(
             Spacer(Modifier.height(12.dp))
 
             DatePickerRow(
-                label = "Fecha de venta",
+                label = stringResource(Res.string.valuable_sell_date_label),
                 dateMillis = saleDateMillis,
                 onDateSelected = { saleDateMillis = it }
             )
             Spacer(Modifier.height(16.dp))
 
             // Gastos de venta
-            Text("Gastos de venta", fontWeight = FontWeight.SemiBold, fontSize = 14.sp, color = MaterialTheme.appColors.textPrimary)
+            Text(stringResource(Res.string.valuable_sell_expenses_title), fontWeight = FontWeight.SemiBold, fontSize = 14.sp, color = MaterialTheme.appColors.textPrimary)
             Spacer(Modifier.height(8.dp))
             saleExpenses.forEachIndexed { index, expense ->
                 Row(
@@ -107,7 +117,7 @@ fun SellValuableBottomSheet(
                                 set(index, expense.copy(amount = amt))
                             }
                         },
-                        label = { Text("Importe") },
+                        label = { Text(stringResource(Res.string.valuable_expense_amount_label)) },
                         singleLine = true,
                         modifier = Modifier.weight(0.7f),
                         colors = textFieldColors()
@@ -115,7 +125,7 @@ fun SellValuableBottomSheet(
                     IconButton(onClick = {
                         saleExpenses = saleExpenses.toMutableList().apply { removeAt(index) }
                     }) {
-                        Icon(Icons.Outlined.Close, contentDescription = "Eliminar", tint = MaterialTheme.appColors.expense)
+                        Icon(Icons.Outlined.Close, contentDescription = stringResource(Res.string.valuable_expense_delete_cd), tint = MaterialTheme.appColors.expense)
                     }
                 }
                 Spacer(Modifier.height(6.dp))
@@ -125,7 +135,7 @@ fun SellValuableBottomSheet(
             }) {
                 Icon(Icons.Outlined.Add, contentDescription = null, modifier = Modifier.size(18.dp))
                 Spacer(Modifier.width(4.dp))
-                Text("Añadir gasto de venta")
+                Text(stringResource(Res.string.valuable_add_sell_expense))
             }
 
             Spacer(Modifier.height(24.dp))
@@ -139,7 +149,7 @@ fun SellValuableBottomSheet(
                 shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.appColors.income)
             ) {
-                Text("Confirmar venta", fontWeight = FontWeight.SemiBold)
+                Text(stringResource(Res.string.valuable_confirm_sale), fontWeight = FontWeight.SemiBold)
             }
             Spacer(Modifier.height(32.dp))
         }
@@ -156,4 +166,3 @@ private fun textFieldColors() = OutlinedTextFieldDefaults.colors(
     focusedLabelColor = MaterialTheme.appColors.income,
     unfocusedLabelColor = MaterialTheme.appColors.textSecondary
 )
-

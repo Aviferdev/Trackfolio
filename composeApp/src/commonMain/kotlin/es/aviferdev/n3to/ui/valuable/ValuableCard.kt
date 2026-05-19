@@ -18,6 +18,10 @@ import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.Valuable
 import es.aviferdev.n3to.ui.common.DeltaIndicator
 import es.aviferdev.n3to.ui.theme.*
+import org.jetbrains.compose.resources.stringResource
+import trackfolio.composeapp.generated.resources.Res
+import trackfolio.composeapp.generated.resources.valuable_in_stock
+import trackfolio.composeapp.generated.resources.valuable_purchase_format
 
 @Composable
 fun ValuableCard(
@@ -56,7 +60,7 @@ fun ValuableCard(
                 }
                 Spacer(Modifier.height(4.dp))
                 Text(
-                    text = "Compra: ${formatAmountEuro(valuable.purchasePrice)}",
+                    text = stringResource(Res.string.valuable_purchase_format, formatAmountEuro(valuable.purchasePrice)),
                     fontSize = 11.sp,
                     color = MaterialTheme.appColors.textSecondary
                 )
@@ -84,7 +88,7 @@ fun ValuableCard(
                         color = MaterialTheme.appColors.textPrimary
                     )
                     Text(
-                        text = "En stock",
+                        text = stringResource(Res.string.valuable_in_stock),
                         fontSize = 11.sp,
                         color = SecondaryTeal
                     )
