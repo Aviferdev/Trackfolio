@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Refresh
@@ -133,7 +134,7 @@ fun SavingsRatesScreen(
                             .padding(horizontal = 16.dp)
                     ) {
                         item { Spacer(Modifier.height(4.dp)) }
-                        items(rates, key = { "${it.entity}_${it.interestRate}" }) { rate ->
+                        itemsIndexed(rates, key = { index, _ -> index }) { _, rate ->
                             SavingsRateCard(rate = rate)
                         }
                         item { Spacer(Modifier.height(100.dp)) }
