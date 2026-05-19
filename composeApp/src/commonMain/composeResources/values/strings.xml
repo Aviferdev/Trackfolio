@@ -1473,4 +1473,12 @@
 
     <!-- COMMON - search category placeholder -->
     <string name="common_search_category_placeholder">Buscar categoría…</string>
+
+    <!-- LANGUAGE SELECTOR -->
+    <string name="settings_language">Idioma</string>
+    <string name="language_system">Idioma del sistema</string>
+    <string name="language_spanish">Español</string>
+    <string name="language_english">English</string>
+    <string name="language_beta">Beta</string>
+    <string name="language_select_title">Seleccionar idioma</string>
 </resources>

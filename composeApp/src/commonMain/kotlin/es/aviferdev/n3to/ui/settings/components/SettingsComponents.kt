@@ -24,6 +24,7 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.outlined.AccountBalance
 import androidx.compose.material.icons.outlined.Fingerprint
+import androidx.compose.material.icons.outlined.Language
 import androidx.compose.material.icons.outlined.Lightbulb
 import androidx.compose.material.icons.outlined.SaveAlt
 import androidx.compose.material.icons.outlined.Sync
@@ -65,8 +66,12 @@ import n3to.composeapp.generated.resources.settings_interval_15d
 import n3to.composeapp.generated.resources.settings_interval_30d
 import n3to.composeapp.generated.resources.settings_interval_7d
 import n3to.composeapp.generated.resources.settings_reconciliation_reminder_title
+import n3to.composeapp.generated.resources.settings_language
 import n3to.composeapp.generated.resources.settings_theme_disabled
 import n3to.composeapp.generated.resources.settings_theme_enabled
+import n3to.composeapp.generated.resources.language_spanish
+import n3to.composeapp.generated.resources.language_english
+import n3to.composeapp.generated.resources.language_system
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -138,6 +143,39 @@ internal fun SettingsThemeRow(isDark: Boolean, onToggle: (Boolean) -> Unit) {
             Text(if (isDark) stringResource(Res.string.settings_theme_enabled) else stringResource(Res.string.settings_theme_disabled), fontSize = 11.sp, color = MaterialTheme.appColors.textTertiary)
         }
         Switch(checked = isDark, onCheckedChange = onToggle, colors = SwitchDefaults.colors(checkedThumbColor = Color.White, checkedTrackColor = MaterialTheme.appColors.cyanAccent, uncheckedThumbColor = Color.White, uncheckedTrackColor = MaterialTheme.appColors.navySurface))
+    }
+}
+
+@Composable
+internal fun SettingsLanguageRow(
+    currentLanguage: String,
+    isSystemDefault: Boolean,
+    onClick: () -> Unit
+) {
+    val subtitle = if (isSystemDefault) {
+        stringResource(Res.string.language_system)
+    } else when (currentLanguage) {
+        "en" -> stringResource(Res.string.language_english)
+        else -> stringResource(Res.string.language_spanish)
+    }
+
+    Row(
+        modifier = Modifier.fillMaxWidth().clickable(onClick = onClick)
+            .padding(horizontal = 16.dp, vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(Icons.Outlined.Language, contentDescription = null,
+            tint = MaterialTheme.appColors.cyanAccent, modifier = Modifier.size(20.dp))
+        Spacer(Modifier.width(14.dp))
+        Column(modifier = Modifier.weight(1f)) {
+            Text(stringResource(Res.string.settings_language),
+                fontSize = 13.sp, fontWeight = FontWeight.Medium,
+                color = MaterialTheme.appColors.textPrimary)
+            Text(subtitle,
+                fontSize = 11.sp, color = MaterialTheme.appColors.textTertiary)
+        }
+        Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null,
+            tint = MaterialTheme.appColors.textTertiary, modifier = Modifier.size(18.dp))
     }
 }
 

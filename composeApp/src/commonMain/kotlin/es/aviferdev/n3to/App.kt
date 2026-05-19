@@ -11,6 +11,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -25,7 +26,10 @@ import es.aviferdev.n3to.core.VersionManager
 import es.aviferdev.n3to.core.premium.PremiumManager
 import es.aviferdev.n3to.core.security.AppLockManager
 import es.aviferdev.n3to.core.security.BalanceVisibilityManager
+import es.aviferdev.n3to.core.security.LanguageManager
 import es.aviferdev.n3to.core.security.ThemeManager
+import es.aviferdev.n3to.core.security.getSystemLanguage
+import es.aviferdev.n3to.core.security.setPlatformLanguage
 import es.aviferdev.n3to.data.database.DatabaseInitializer
 import es.aviferdev.n3to.domain.usecase.consent.GetConsentUseCase
 import es.aviferdev.n3to.domain.usecase.consent.HasUserDecidedUseCase
@@ -85,6 +89,14 @@ fun App() {
     val themeManager = koinInject<ThemeManager>()
     val isDarkTheme by themeManager.isDark.collectAsState()
 
+    val languageManager = koinInject<LanguageManager>()
+    val languageCode by languageManager.languageCode.collectAsState()
+
+    // Sincronizar el locale de la plataforma con la preferencia del usuario
+    LaunchedEffect(languageCode) {
+        setPlatformLanguage(languageCode)
+    }
+
     // Inicializar base de datos, estado de consentimiento y estado de onboarding
     LaunchedEffect(Unit) {
         withContext(Dispatchers.Default) {
@@ -128,73 +140,78 @@ fun App() {
         onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
     }
 
-    N3toTheme(darkTheme = isDarkTheme) {
-        CompositionLocalProvider(LocalBalanceHidden provides balancesHidden) {
-            when {
-                // Paso 0: Splash screen con el icono de la app
-                !splashFinished -> {
-                    SplashScreen(
-                        onSplashFinished = { splashFinished = true }
-                    )
-                }
-
-                // Paso 1: Chequeo de versión (antes de cualquier contenido)
-                versionStatus is VersionManager.Status.Checking -> {
-                    Box(
-                        modifier = Modifier.fillMaxSize().background(MaterialTheme.appColors.background),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator(color = PrimaryDark)
+    // key(languageCode) fuerza la recreación completa del árbol de composición
+    // al cambiar de idioma, haciendo que todos los stringResource() se reevalúen
+    // con el nuevo locale activo.
+    key(languageCode) {
+        N3toTheme(darkTheme = isDarkTheme) {
+            CompositionLocalProvider(LocalBalanceHidden provides balancesHidden) {
+                when {
+                    // Paso 0: Splash screen con el icono de la app
+                    !splashFinished -> {
+                        SplashScreen(
+                            onSplashFinished = { splashFinished = true }
+                        )
                     }
-                }
 
-                // Paso 2: Bloqueo por versión obsoleta (hard block)
-                versionStatus is VersionManager.Status.UpdateRequired -> {
-                    val info = (versionStatus as VersionManager.Status.UpdateRequired).info
-                    VersionBlockScreen(
-                        title = info.blockTitle,
-                        message = info.blockMessage,
-                        buttonText = info.blockButtonText,
-                        currentVersion = currentVersion,
-                        minVersion = info.minVersion,
-                        onOpenStore = openStore
-                    )
-                }
-
-                // Paso 3: Bloqueo de seguridad biométrica
-                isLocked -> {
-                    LockScreen(
-                        onUnlocked = {
-                            appLockManager.onUnlocked()
-                            isLocked = false
+                    // Paso 1: Chequeo de versión (antes de cualquier contenido)
+                    versionStatus is VersionManager.Status.Checking -> {
+                        Box(
+                            modifier = Modifier.fillMaxSize().background(MaterialTheme.appColors.background),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator(color = PrimaryDark)
                         }
-                    )
-                }
+                    }
 
-                // Paso 4: Onboarding (primera vez o tras reset desde Ajustes)
-                needsOnboarding -> {
-                    OnboardingScreen(
-                        onComplete = { needsOnboarding = false }
-                    )
-                }
+                    // Paso 2: Bloqueo por versión obsoleta (hard block)
+                    versionStatus is VersionManager.Status.UpdateRequired -> {
+                        val info = (versionStatus as VersionManager.Status.UpdateRequired).info
+                        VersionBlockScreen(
+                            title = info.blockTitle,
+                            message = info.blockMessage,
+                            buttonText = info.blockButtonText,
+                            currentVersion = currentVersion,
+                            minVersion = info.minVersion,
+                            onOpenStore = openStore
+                        )
+                    }
 
-                // Paso 5: Consentimiento GDPR (tras ver valor de la app)
-                needsConsent == true -> {
-                    ConsentScreen(
-                        onConsentSaved = { needsConsent = false }
-                    )
-                }
-
-                // Paso 6: App principal
-                else -> {
-                    N3toNavHost(
-                        onResetOnboarding = {
-                            scope.launch {
-                                resetOnboarding()
-                                needsOnboarding = true
+                    // Paso 3: Bloqueo de seguridad biométrica
+                    isLocked -> {
+                        LockScreen(
+                            onUnlocked = {
+                                appLockManager.onUnlocked()
+                                isLocked = false
                             }
-                        }
-                    )
+                        )
+                    }
+
+                    // Paso 4: Onboarding (primera vez o tras reset desde Ajustes)
+                    needsOnboarding -> {
+                        OnboardingScreen(
+                            onComplete = { needsOnboarding = false }
+                        )
+                    }
+
+                    // Paso 5: Consentimiento GDPR (tras ver valor de la app)
+                    needsConsent == true -> {
+                        ConsentScreen(
+                            onConsentSaved = { needsConsent = false }
+                        )
+                    }
+
+                    // Paso 6: App principal
+                    else -> {
+                        N3toNavHost(
+                            onResetOnboarding = {
+                                scope.launch {
+                                    resetOnboarding()
+                                    needsOnboarding = true
+                                }
+                            }
+                        )
+                    }
                 }
             }
         }

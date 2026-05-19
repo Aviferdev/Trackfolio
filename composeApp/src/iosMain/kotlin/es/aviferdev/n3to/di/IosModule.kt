@@ -3,6 +3,7 @@ package es.aviferdev.n3to.di
 import es.aviferdev.n3to.core.security.AppLockManager
 import es.aviferdev.n3to.core.security.AppSettings
 import es.aviferdev.n3to.core.security.BalanceVisibilityManager
+import es.aviferdev.n3to.core.security.LanguageManager
 import es.aviferdev.n3to.core.security.ThemeManager
 import es.aviferdev.n3to.core.security.BiometricAuthenticator
 import es.aviferdev.n3to.core.security.DatabaseBackupManager
@@ -30,6 +31,7 @@ val iosModule = module {
     single { AppLockManager(get()) }
     single { BalanceVisibilityManager(get(), get(), get()) }
     single { ThemeManager(get()) }
+    single { LanguageManager(get()) }
     single { DatabaseBackupManager() }
     single { PdfReportGenerator() }
     single { AnalyticsTracker() }

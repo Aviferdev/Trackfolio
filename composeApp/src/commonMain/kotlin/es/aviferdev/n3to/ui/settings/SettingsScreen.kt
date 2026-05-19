@@ -43,8 +43,11 @@ import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.core.premium.PremiumManager
 import es.aviferdev.n3to.core.premium.PremiumStatus
 import es.aviferdev.n3to.core.security.AppLockManager
+import es.aviferdev.n3to.core.security.LanguageManager
 import es.aviferdev.n3to.core.security.ThemeManager
 import es.aviferdev.n3to.core.security.BiometricAuthenticator
+import es.aviferdev.n3to.core.security.getSystemLanguage
+import es.aviferdev.n3to.core.security.setPlatformLanguage
 import es.aviferdev.n3to.core.security.BiometricResult
 import es.aviferdev.n3to.domain.model.Account
 import es.aviferdev.n3to.domain.model.PremiumConstants
@@ -128,6 +131,10 @@ fun SettingsScreen(
     val biometricActivateText = stringResource(Res.string.settings_biometric_activate)
     val confirmIdentityText = stringResource(Res.string.home_confirm_identity)
 
+    val languageManager: LanguageManager = koinInject()
+    val currentLanguage by languageManager.languageCode.collectAsState()
+    var showLanguageDialog by remember { mutableStateOf(false) }
+
     val backupIntervalUseCase = koinInject<GetBackupReminderIntervalUseCase>()
     var backupInterval by remember { mutableStateOf(backupIntervalUseCase.get()) }
 
@@ -176,7 +183,10 @@ fun SettingsScreen(
         onResetOnboarding = handleResetOnboarding,
         premiumStatus = premiumStatus,
         isDarkTheme = isDarkTheme,
-        onToggleTheme = { themeManager.set(!isDarkTheme) }
+        onToggleTheme = { themeManager.set(!isDarkTheme) },
+        currentLanguage = currentLanguage,
+        isSystemDefault = languageManager.isSystemDefault,
+        onLanguageClick = { showLanguageDialog = true }
     )
 
     // ── Sheets ───────────────────────────────────────────────────────────────
@@ -245,6 +255,21 @@ fun SettingsScreen(
         )
     }
 
+    // ── Language selector ──────────────────────────────────────────────────
+    if (showLanguageDialog) {
+        LanguageSelectorDialog(
+            currentLanguage = currentLanguage,
+            isSystemDefault = languageManager.isSystemDefault,
+            onLanguageSelected = { code ->
+                val effectiveCode = code.ifEmpty { getSystemLanguage() }
+                setPlatformLanguage(effectiveCode)
+                languageManager.setLanguage(code)
+                showLanguageDialog = false
+            },
+            onDismiss = { showLanguageDialog = false }
+        )
+    }
+
     // ── Backup sheet ─────────────────────────────────────────────────────────
     if (backupState.action != es.aviferdev.n3to.ui.settings.backup.BackupAction.NONE) {
         BackupPasswordSheet(
@@ -290,6 +315,9 @@ fun SettingsContent(
     premiumStatus: PremiumStatus = PremiumStatus(),
     isDarkTheme: Boolean = true,
     onToggleTheme: (Boolean) -> Unit = {},
+    currentLanguage: String = "es",
+    isSystemDefault: Boolean = true,
+    onLanguageClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     var contentVisible by remember { mutableStateOf(false) }
@@ -340,6 +368,12 @@ fun SettingsContent(
                     SettingsSectionHeader(label = stringResource(Res.string.settings_section_appearance))
                     SettingsGroupCard {
                         SettingsThemeRow(isDark = isDarkTheme, onToggle = onToggleTheme)
+                        SettingsRowDivider()
+                        SettingsLanguageRow(
+                            currentLanguage = currentLanguage,
+                            isSystemDefault = isSystemDefault,
+                            onClick = onLanguageClick
+                        )
                     }
                 }
 
