@@ -159,3 +159,93 @@ Por defecto, la compilación iOS usa el entorno **sandbox**. Para compilar en
 ```bash
 ./gradlew :composeApp:compileKotlinIosArm64
 ```
+
+## Verificación de traducciones
+
+El proyecto tiene **10 idiomas soportados** (definidos en una lista canónica)
+y actualmente **15 claves de string pendientes de traducción** en 5 locales
+(de, fr, ja, ru, zh). Una tarea de Gradle verifica automáticamente que:
+
+1. Todos los idiomas de la lista tengan su fichero `strings.xml`
+2. Todos contengan las mismas claves que el fichero base (`values/strings.xml`)
+
+Si se añade un nuevo locale a la lista pero se olvida crear el directorio
+`values-XX/strings.xml`, la tarea lo reportará como **locale faltante**.
+
+### Uso
+
+```bash
+# Ejecutar bajo demanda (muestra el reporte en consola)
+./gradlew :composeApp:verifyTranslations
+
+# Se ejecuta automáticamente como parte del lifecycle check
+./gradlew :composeApp:check
+```
+
+La tarea **no bloquea la compilación**; emite un warning con el detalle de
+las incidencias. El reporte completo se escribe en:
+
+```
+composeApp/build/reports/translations/missing-keys.txt
+```
+
+### Cobertura actual
+
+```
+   Locale   Name           Keys    Missing    Coverage
+   ------   ----           ----    -------    -------
+   es       Español        1208    —          100.0% ★
+   en       English        1208    0          100.0% ✅
+   de       Deutsch        1205    3          99.8%  ⚠️
+   fr       Français       1205    3          99.8%  ⚠️
+   it       Italiano       1208    0          100.0% ✅
+   ja       日本語            1205    3          99.8%  ⚠️
+   ko       한국어            1208    0          100.0% ✅
+   pt       Português      1208    0          100.0% ✅
+   ru       Русский        1205    3          99.8%  ⚠️
+   zh       中文             1205    3          99.8%  ⚠️
+```
+
+| Icono | Significado |
+|-------|-------------|
+| ★ | Locale base |
+| ✅ | Traducción completa |
+| ⚠️ | Faltan claves |
+| ❌ | No existe el fichero `strings.xml` |
+
+### Cómo añadir un nuevo idioma
+
+Edita el mapa `supportedLocales` dentro del `doLast` de la tarea en
+`gradle/translation-verification.gradle.kts`:
+
+```kotlin
+val supportedLocales = linkedMapOf(
+    "es" to "Español",    // ← siempre el primero (base)
+    "en" to "English",
+    // ...
+    "cs" to "Čeština",    // ← nuevo locale
+)
+```
+
+Después crea el directorio `composeResources/values-cs/` con su
+`strings.xml`. La tarea verificará que contenga todas las claves del base.
+
+### Cómo marcar una clave como «no traducible»
+
+Si una clave no necesita traducción (ej: una versión o un nombre propio),
+añade el atributo `translatable="false"` en el fichero base:
+
+```xml
+<string name="app_version" translatable="false">v1.0.0</string>
+```
+
+La tarea ignorará esa clave en sus comprobaciones.
+
+### Implementación
+
+La lógica está en `gradle/translation-verification.gradle.kts` y se aplica
+desde `composeApp/build.gradle.kts` mediante:
+
+```kotlin
+apply(from = rootProject.file("gradle/translation-verification.gradle.kts"))
+```

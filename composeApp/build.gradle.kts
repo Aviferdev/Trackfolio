@@ -258,3 +258,9 @@ afterEvaluate {
         .configureEach { enabled = false }
 }
 
+apply(from = rootProject.file("gradle/translation-verification.gradle.kts"))
+
+tasks.named("check") {
+    dependsOn("verifyTranslations")
+}
+
