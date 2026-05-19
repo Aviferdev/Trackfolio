@@ -78,6 +78,8 @@ import es.aviferdev.n3to.domain.usecase.debt.GetActiveDebtsUseCase
 import es.aviferdev.n3to.domain.usecase.debt.MarkDebtAsPaidUseCase
 import es.aviferdev.n3to.domain.usecase.debt.SaveDebtUseCase
 import es.aviferdev.n3to.domain.usecase.debt.UpdateDebtUseCase
+import es.aviferdev.n3to.domain.usecase.fiscal.CalculateIrpfUseCase
+import es.aviferdev.n3to.domain.usecase.fiscal.CalculateNetIncomeUseCase
 import es.aviferdev.n3to.domain.usecase.fiscal.GetFiscalReportDataUseCase
 import es.aviferdev.n3to.domain.usecase.fixedincome.ArchiveFixedIncomePositionUseCase
 import es.aviferdev.n3to.domain.usecase.fixedincome.GetFixedIncomeRowsByCategoryUseCase
@@ -349,6 +351,8 @@ val useCaseModule = module {
     factory { DeleteFixedIncomeEventUseCase(get(), get()) }
     // ── Fiscal ────────────────────────────────────────────────────────────────
     factory { GetFiscalReportDataUseCase(get(), get(), get(), get(), get(), get()) }
+    factory { CalculateIrpfUseCase() }
+    factory { CalculateNetIncomeUseCase(get()) }
 
     // ── Loan ─────────────────────────────────────────────────────────────────────
     factory { SaveLoanUseCase(get()) }
@@ -444,6 +448,8 @@ val useCaseModule = module {
             getCategoriesByType  = get(),
             getIssuers           = get(),
             getActiveTaxProfile  = get(),
+            calculateIrpf        = get(),
+            calculateNetIncome   = get(),
             session              = get()
         )
     }

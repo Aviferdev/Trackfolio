@@ -17,6 +17,8 @@ import es.aviferdev.n3to.domain.model.TaxRole
 import es.aviferdev.n3to.domain.model.Transaction
 import es.aviferdev.n3to.domain.model.TransactionType
 import es.aviferdev.n3to.domain.usecase.category.GetCategoriesByTypeUseCase
+import es.aviferdev.n3to.domain.usecase.fiscal.CalculateIrpfUseCase
+import es.aviferdev.n3to.domain.usecase.fiscal.CalculateNetIncomeUseCase
 import es.aviferdev.n3to.domain.usecase.issuer.GetIssuersUseCase
 import es.aviferdev.n3to.domain.usecase.taxprofile.GetActiveTaxProfileSnapshotUseCase
 import es.aviferdev.n3to.domain.usecase.transaction.SaveTransactionUseCase
@@ -43,6 +45,8 @@ class AddTransactionViewModel(
     private val getCategoriesByType: GetCategoriesByTypeUseCase,
     private val getIssuers: GetIssuersUseCase,
     private val getActiveTaxProfile: GetActiveTaxProfileSnapshotUseCase,
+    private val calculateIrpf: CalculateIrpfUseCase,
+    private val calculateNetIncome: CalculateNetIncomeUseCase,
     private val session: AccountSession
 ) : ViewModel() {
 
@@ -148,58 +152,16 @@ class AddTransactionViewModel(
 
     // ── Cálculos ──────────────────────────────────────────────────────────────
 
-    /** Calcula la retención IRPF según el modo de entrada (porcentual o fijo). */
-    fun resolveIrpf(gross: Double, ssDeduction: Double = 0.0): Double {
-        return when (irpfInputMode) {
-            IrpfInputMode.PERCENT -> {
-                val pct = irpfPercent.replace(',', '.').toDoubleOrNull() ?: 0.0
-                val base = gross - ssDeduction
-                base * pct / 100.0
-            }
-            IrpfInputMode.AMOUNT -> {
-                irpfFixedAmount.replace(',', '.').toDoubleOrNull() ?: 0.0
-            }
-        }
-    }
-
-    /** Porcentaje efectivo de IRPF (para persistir siempre como %). */
-    fun resolveIrpfPercent(gross: Double, ssDeduction: Double = 0.0): Double {
-        return when (irpfInputMode) {
-            IrpfInputMode.PERCENT -> irpfPercent.replace(',', '.').toDoubleOrNull() ?: 0.0
-            IrpfInputMode.AMOUNT -> {
-                val base = gross - ssDeduction
-                val fixed = irpfFixedAmount.replace(',', '.').toDoubleOrNull() ?: 0.0
-                if (base > 0) (fixed / base) * 100.0 else 0.0
-            }
-        }
-    }
-
     /** Neto calculado según el tipo de ingreso seleccionado. */
     val calculatedNet: Double?
         get() {
-            val it = selectedIncomeType ?: return null
+            val incType = selectedIncomeType ?: return null
             val gross = grossAmount.replace(',', '.').toDoubleOrNull() ?: return null
             if (gross <= 0) return null
-
-            return when {
-                it.hasSocialContribution && it != IncomeType.BOND_DEPOSIT -> {
-                    // SALARY, BONUS_PRIZE, FREELANCE: bruto - SS - IRPF
-                    val ss   = socialSecurityAmount.replace(',', '.').toDoubleOrNull() ?: 0.0
-                    val irpf = resolveIrpf(gross, ssDeduction = ss)
-                    gross - ss - irpf
-                }
-                it == IncomeType.BOND_DEPOSIT -> {
-                    val comm = commissionAmount.replace(',', '.').toDoubleOrNull() ?: 0.0
-                    val irpf = resolveIrpf(gross)
-                    gross - irpf - comm
-                }
-                it == IncomeType.EXEMPT_INCOME -> gross
-                else -> {
-                    // BANK_INTEREST, DIVIDEND, PRIZE_LOTTERY, RENTAL_INCOME: bruto - IRPF
-                    val irpf = resolveIrpf(gross)
-                    gross - irpf
-                }
-            }
+            val ss = socialSecurityAmount.replace(',', '.').toDoubleOrNull() ?: 0.0
+            val comm = commissionAmount.replace(',', '.').toDoubleOrNull() ?: 0.0
+            val isPercentMode = irpfInputMode == IrpfInputMode.PERCENT
+            return calculateNetIncome.calculate(incType, gross, ss, comm, isPercentMode, irpfPercent, irpfFixedAmount)
         }
 
     // ── Validación ────────────────────────────────────────────────────────────
@@ -442,7 +404,7 @@ class AddTransactionViewModel(
         val builtTaxLines = buildList {
             if (incType.hasWithholdingTax && gross != null) {
                 val ssVal = if (incType.hasSocialContribution) socialSecurityAmount.replace(',', '.').toDoubleOrNull() ?: 0.0 else 0.0
-                val pct = resolveIrpfPercent(gross, ssVal)
+                val pct = calculateIrpf.resolvePercent(gross, ssVal, irpfInputMode == IrpfInputMode.PERCENT, irpfPercent, irpfFixedAmount)
                 add(TaxLine(name = "Retención", role = TaxRole.INCOME_TAX, percent = pct, amount = gross * pct / 100.0))
             }
             if (incType.hasSocialContribution) {
