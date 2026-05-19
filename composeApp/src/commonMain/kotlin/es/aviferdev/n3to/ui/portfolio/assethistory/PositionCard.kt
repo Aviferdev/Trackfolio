@@ -21,12 +21,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.portfolio.AssetPosition
-import es.aviferdev.n3to.ui.portfolio.formatQty
 import es.aviferdev.n3to.ui.theme.PnLNegative
 import es.aviferdev.n3to.ui.theme.PnLPositive
 import es.aviferdev.n3to.ui.theme.PrimaryDark
 import es.aviferdev.n3to.ui.theme.formatAmount
 import es.aviferdev.n3to.ui.theme.formatPercent
+import es.aviferdev.n3to.ui.theme.formatQty
 import es.aviferdev.n3to.ui.theme.maskAmount
 import kotlin.math.abs
 

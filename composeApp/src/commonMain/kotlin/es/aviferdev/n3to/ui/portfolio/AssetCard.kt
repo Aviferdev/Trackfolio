@@ -41,6 +41,7 @@ import es.aviferdev.n3to.ui.theme.N3toTheme
 import es.aviferdev.n3to.ui.theme.formatAmount
 import es.aviferdev.n3to.ui.theme.maskAmount
 import androidx.compose.ui.tooling.preview.Preview
+import es.aviferdev.n3to.ui.theme.formatQty
 import kotlin.math.abs
 
 @Composable

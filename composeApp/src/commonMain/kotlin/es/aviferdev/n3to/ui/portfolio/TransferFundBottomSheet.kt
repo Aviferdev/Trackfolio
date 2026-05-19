@@ -45,6 +45,7 @@ import n3to.composeapp.generated.resources.portfolio_transfer_title
 import n3to.composeapp.generated.resources.portfolio_transfer_vl_label
 import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import es.aviferdev.n3to.ui.portfolio.components.formatFullDate
 
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate

@@ -25,7 +25,6 @@ import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.TextButton
@@ -56,7 +55,6 @@ import es.aviferdev.n3to.domain.model.AssetCategoryType
 import es.aviferdev.n3to.domain.model.Platform
 import es.aviferdev.n3to.domain.model.Portfolio
 import es.aviferdev.n3to.ui.theme.BorderGray
-import es.aviferdev.n3to.ui.theme.PrimaryAlpha
 import es.aviferdev.n3to.ui.theme.ExpenseRed
 import es.aviferdev.n3to.ui.theme.PrimaryDark
 import es.aviferdev.n3to.ui.theme.SurfaceWhite
@@ -65,8 +63,8 @@ import es.aviferdev.n3to.ui.theme.TextPrimary
 import es.aviferdev.n3to.ui.theme.TextSecondary
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import n3to.composeapp.generated.resources.Res
+import es.aviferdev.n3to.ui.portfolio.components.*
 import n3to.composeapp.generated.resources.common_accept
-import n3to.composeapp.generated.resources.common_cancel
 import n3to.composeapp.generated.resources.portfolio_add_asset_cancel
 import n3to.composeapp.generated.resources.portfolio_add_asset_category_label
 import n3to.composeapp.generated.resources.portfolio_add_asset_composition_hint
@@ -103,10 +101,6 @@ import n3to.composeapp.generated.resources.portfolio_add_asset_title_edit
 import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 
-import kotlinx.datetime.Instant
-import kotlinx.datetime.LocalDate
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -681,116 +675,6 @@ Spacer(Modifier.height(12.dp))
     }
 }
 
-// ── Helpers ──────────────────────────────────────────────────────────────────
-
-fun formatFullDate(epochMillis: Long): String {
-    val months = listOf("enero","febrero","marzo","abril","mayo","junio",
-        "julio","agosto","septiembre","octubre","noviembre","diciembre")
-    val instant = Instant.fromEpochMilliseconds(epochMillis)
-    val ld: LocalDate = instant.toLocalDateTime(TimeZone.currentSystemDefault()).date
-    return "${ld.dayOfMonth} de ${months[ld.monthNumber - 1]} de ${ld.year}"
-}
-
-@Composable
-private fun CategoryChip(
-    icon: String,
-    label: String,
-    isSelected: Boolean,
-    onClick: () -> Unit
-) {
-    val bg     = if (isSelected) PrimaryDark              else SurfaceElevated
-    val border = if (isSelected) PrimaryDark              else BorderGray
-    val text   = if (isSelected) MaterialTheme.colorScheme.onPrimary else TextPrimary
-
-    Row(
-        modifier = Modifier
-            .clip(RoundedCornerShape(20.dp))
-            .background(bg)
-            .border(0.5.dp, border, RoundedCornerShape(20.dp))
-            .clickable(onClick = onClick)
-            .padding(horizontal = 12.dp, vertical = 8.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(icon, fontSize = 14.sp)
-        Spacer(Modifier.width(6.dp))
-        Text(
-            text       = label,
-            fontSize   = 13.sp,
-            color      = text,
-            fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal
-        )
-    }
-}
-
-@Composable
-private fun PlatformToggleChip(
-    icon: String,
-    label: String,
-    isSelected: Boolean,
-    onClick: () -> Unit
-) {
-    val bg     = if (isSelected) PrimaryDark.copy(alpha = 0.12f) else SurfaceElevated
-    val border = if (isSelected) PrimaryDark                      else BorderGray
-    val text   = if (isSelected) PrimaryDark                      else TextPrimary
-
-    Row(
-        modifier = Modifier
-            .clip(RoundedCornerShape(20.dp))
-            .background(bg)
-            .border(if (isSelected) 1.5.dp else 0.5.dp, border, RoundedCornerShape(20.dp))
-            .clickable(onClick = onClick)
-            .padding(horizontal = 12.dp, vertical = 8.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(icon, fontSize = 14.sp)
-        Spacer(Modifier.width(6.dp))
-        Text(
-            text       = label,
-            fontSize   = 13.sp,
-            color      = text,
-            fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal
-        )
-        if (isSelected) {
-            Spacer(Modifier.width(4.dp))
-            Text("✓", fontSize = 12.sp, color = PrimaryDark, fontWeight = FontWeight.Bold)
-        }
-    }
-}
-
-@Composable
-private fun SectorToggleChip(
-    icon: String,
-    label: String,
-    isSelected: Boolean,
-    onClick: () -> Unit
-) {
-    val bg     = if (isSelected) PrimaryDark.copy(alpha = 0.12f) else SurfaceElevated
-    val border = if (isSelected) PrimaryDark                      else BorderGray
-    val text   = if (isSelected) PrimaryDark                      else TextPrimary
-
-    Row(
-        modifier = Modifier
-            .clip(RoundedCornerShape(20.dp))
-            .background(bg)
-            .border(if (isSelected) 1.5.dp else 0.5.dp, border, RoundedCornerShape(20.dp))
-            .clickable(onClick = onClick)
-            .padding(horizontal = 12.dp, vertical = 8.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(icon, fontSize = 14.sp)
-        Spacer(Modifier.width(6.dp))
-        Text(
-            text       = label,
-            fontSize   = 13.sp,
-            color      = text,
-            fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal
-        )
-        if (isSelected) {
-            Spacer(Modifier.width(4.dp))
-            Text("✓", fontSize = 12.sp, color = PrimaryDark, fontWeight = FontWeight.Bold)
-        }
-    }
-}
 
 @Preview
 @Composable
@@ -826,29 +710,3 @@ private fun AddEditAssetBottomSheetPreview() {
     }
 }
 
-@Composable
-private fun PortfolioChipSimple(
-    label: String,
-    isSelected: Boolean,
-    onClick: () -> Unit
-) {
-    val bg = if (isSelected) PrimaryAlpha else androidx.compose.ui.graphics.Color.Transparent
-    val border = if (isSelected) PrimaryDark else BorderGray
-    val textColor = if (isSelected) PrimaryDark else TextSecondary
-
-    Box(
-        modifier = Modifier
-            .clip(RoundedCornerShape(20.dp))
-            .background(bg)
-            .border(1.dp, border, RoundedCornerShape(20.dp))
-            .clickable { onClick() }
-            .padding(horizontal = 14.dp, vertical = 6.dp)
-    ) {
-        Text(
-            text = label,
-            fontSize = 12.sp,
-            fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
-            color = textColor
-        )
-    }
-}

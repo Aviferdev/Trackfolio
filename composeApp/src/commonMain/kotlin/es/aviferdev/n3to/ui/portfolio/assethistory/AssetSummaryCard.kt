@@ -22,7 +22,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.portfolio.AssetPosition
-import es.aviferdev.n3to.ui.portfolio.formatQty
 import es.aviferdev.n3to.ui.theme.BorderGray
 import es.aviferdev.n3to.ui.theme.ExpenseRed
 import es.aviferdev.n3to.ui.theme.IncomeGreen
@@ -32,6 +31,7 @@ import es.aviferdev.n3to.ui.theme.TextSecondary
 import es.aviferdev.n3to.ui.theme.TextTertiary
 import es.aviferdev.n3to.ui.theme.formatAmount
 import es.aviferdev.n3to.ui.theme.formatPercent
+import es.aviferdev.n3to.ui.theme.formatQty
 import kotlin.math.abs
 
 

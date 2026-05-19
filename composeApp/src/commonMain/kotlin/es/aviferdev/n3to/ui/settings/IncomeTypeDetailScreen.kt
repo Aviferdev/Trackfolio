@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import es.aviferdev.n3to.ui.settings.components.*
 import es.aviferdev.n3to.domain.model.IncomeType
 import es.aviferdev.n3to.domain.model.Issuer
 import es.aviferdev.n3to.domain.model.IssuerType

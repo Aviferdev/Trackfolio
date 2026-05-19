@@ -20,6 +20,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import es.aviferdev.n3to.ui.settings.components.*
 import es.aviferdev.n3to.domain.model.Account
 import es.aviferdev.n3to.ui.account.AddEditAccountBottomSheet
 import es.aviferdev.n3to.ui.account.AccountViewModel

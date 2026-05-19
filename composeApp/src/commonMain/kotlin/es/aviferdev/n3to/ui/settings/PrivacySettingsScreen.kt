@@ -54,6 +54,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import es.aviferdev.n3to.ui.settings.components.*
 import es.aviferdev.n3to.core.browser.rememberUrlOpener
 import es.aviferdev.n3to.ui.common.navigation.TopBarApp
 import es.aviferdev.n3to.ui.theme.CyanAccent
