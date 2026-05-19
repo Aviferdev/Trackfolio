@@ -21,6 +21,10 @@ CREATE TABLE AssetEntity (
     currentPriceUpdatedAt  INTEGER,
     archived               INTEGER NOT NULL DEFAULT 0,
     maturityDate           INTEGER,
+    isin                   TEXT,
+    priceSource            TEXT    NOT NULL DEFAULT 'MANUAL',
+    isinValidatedAt        INTEGER,
+    isinValidationError    TEXT,
     FOREIGN KEY (accountId)       REFERENCES AccountEntity(id) ON DELETE CASCADE,
     FOREIGN KEY (assetCategoryId) REFERENCES AssetCategoryEntity(id) ON DELETE SET NULL,
     FOREIGN KEY (portfolioId)     REFERENCES PortfolioEntity(id) ON DELETE SET NULL
@@ -68,15 +72,17 @@ WHERE accountId = :accountId AND portfolioId IS NULL AND archived = 0
 ORDER BY createdAt DESC;
 
 insert:
-INSERT INTO AssetEntity(id, accountId, portfolioId, ticker, name, notes, createdAt, assetCategoryId, currentPrice, currentPriceUpdatedAt, archived, maturityDate)
-VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, ?);
+INSERT INTO AssetEntity(id, accountId, portfolioId, ticker, name, notes, createdAt, assetCategoryId, currentPrice, currentPriceUpdatedAt, archived, maturityDate, isin, priceSource, isinValidatedAt, isinValidationError)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, ?, ?, 'MANUAL', ?, ?);
 
 update:
 UPDATE AssetEntity
 SET ticker = :ticker, name = :name, notes = :notes,
     assetCategoryId = :assetCategoryId,
     currentPrice = :currentPrice, currentPriceUpdatedAt = :currentPriceUpdatedAt,
-    maturityDate = :maturityDate
+    maturityDate = :maturityDate,
+    isin = :isin, priceSource = :priceSource,
+    isinValidatedAt = :isinValidatedAt, isinValidationError = :isinValidationError
 WHERE id = :id;
 
 updateCurrentPrice:
@@ -111,3 +117,32 @@ WHERE a.accountId = :accountId
   ) > 0
   AND (a.currentPriceUpdatedAt IS NULL OR a.currentPriceUpdatedAt < :thresholdDate)
 ORDER BY a.name ASC;
+
+-- ─── Nuevas queries para ISIN y auto-precio ────────────────────────────────
+
+updateIsin:
+UPDATE AssetEntity SET isin = :isin, isinValidatedAt = :validatedAt WHERE id = :id;
+
+updatePriceSource:
+UPDATE AssetEntity SET priceSource = :priceSource WHERE id = :id;
+
+markIsinValidationError:
+UPDATE AssetEntity SET isinValidationError = :error WHERE id = :id;
+
+selectQuotableByAccount:
+SELECT * FROM AssetEntity
+WHERE accountId = :accountId
+  AND archived = 0
+  AND isin IS NOT NULL
+  AND isin != ''
+  AND assetCategoryId IN ('fixed_cat_stocks', 'fixed_cat_etfs', 'fixed_cat_funds', 'fixed_cat_crypto', 'fixed_cat_commodities')
+ORDER BY name ASC;
+
+selectAssetsWithBrokenIsin:
+SELECT * FROM AssetEntity
+WHERE accountId = :accountId
+  AND archived = 0
+  AND isin IS NOT NULL
+  AND isin != ''
+  AND isinValidationError IS NOT NULL
+ORDER BY name ASC;

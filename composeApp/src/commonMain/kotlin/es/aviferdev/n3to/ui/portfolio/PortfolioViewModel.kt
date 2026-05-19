@@ -29,6 +29,7 @@ import es.aviferdev.n3to.domain.model.PortfolioValuePoint
 import es.aviferdev.n3to.ui.account.AccountSession
 import es.aviferdev.n3to.domain.usecase.account.GetAccountByIdUseCase
 import es.aviferdev.n3to.domain.usecase.asset.ArchiveAssetUseCase
+import es.aviferdev.n3to.domain.usecase.asset.DetectPriceAnomalyUseCase
 import es.aviferdev.n3to.domain.usecase.asset.GetAssetsByAccountUseCase
 import es.aviferdev.n3to.domain.usecase.asset.SaveAssetUseCase
 import es.aviferdev.n3to.domain.usecase.asset.UpdateAssetCurrentPriceUseCase
@@ -172,6 +173,7 @@ class PortfolioViewModel(
     private val updateAsset: UpdateAssetUseCase,
     private val updateAssetCurrentPrice: UpdateAssetCurrentPriceUseCase,
     private val archiveAsset: ArchiveAssetUseCase,
+    private val detectAnomaly: DetectPriceAnomalyUseCase,
     private val getAssetCategoriesIncludingArchived: GetAllAssetCategoriesIncludingArchivedUseCase,
     private val getAccountById: GetAccountByIdUseCase,
     private val getTransactionsByAccount: GetTransactionsByAccountUseCase,
@@ -485,6 +487,9 @@ class PortfolioViewModel(
     }
 
     fun clearError() { _sheetState.value = _sheetState.value.copy(error = null) }
+
+    /** Acceso al detector de anomalías para el sheet de actualización de precio. */
+    val priceAnomalyDetector: DetectPriceAnomalyUseCase get() = detectAnomaly
 
     // ── Dividendos ────────────────────────────────────────────────────────────
     fun openDividendSheet()  { _sheetState.value = _sheetState.value.copy(showDividendSheet = true, dividendAssetId = null) }

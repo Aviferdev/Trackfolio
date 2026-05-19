@@ -7,6 +7,7 @@ import es.aviferdev.n3to.data.database.N3toDatabase
 import es.aviferdev.n3to.data.database.mapper.toDomain
 import es.aviferdev.n3to.data.database.mapper.toEntity
 import es.aviferdev.n3to.domain.model.Asset
+import es.aviferdev.n3to.domain.model.PriceSource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
@@ -64,7 +65,10 @@ class AssetLocalDataSourceImpl(
                     assetCategoryId       = e.assetCategoryId,
                     currentPrice          = e.currentPrice,
                     currentPriceUpdatedAt = e.currentPriceUpdatedAt,
-                    maturityDate          = e.maturityDate
+                    maturityDate          = e.maturityDate,
+                    isin                  = e.isin,
+                    isinValidatedAt       = e.isinValidatedAt,
+                    isinValidationError   = e.isinValidationError
                 )
             }
         }
@@ -81,6 +85,10 @@ class AssetLocalDataSourceImpl(
                     currentPrice          = e.currentPrice,
                     currentPriceUpdatedAt = e.currentPriceUpdatedAt,
                     maturityDate          = e.maturityDate,
+                    isin                  = e.isin,
+                    priceSource           = e.priceSource,
+                    isinValidatedAt       = e.isinValidatedAt,
+                    isinValidationError   = e.isinValidationError,
                     id                    = e.id
                 )
             }
@@ -117,4 +125,39 @@ class AssetLocalDataSourceImpl(
             .asFlow()
             .mapToList(Dispatchers.IO)
             .map { list -> list.map { it.toDomain() } }
+
+    // ── Nuevos métodos para auto-precio e ISIN ──
+
+    override suspend fun updateIsin(id: String, isin: String?, validatedAt: Long?): Result<Unit> =
+        runCatching {
+            withContext(Dispatchers.IO) {
+                queries.updateIsin(isin = isin, validatedAt = validatedAt, id = id)
+            }
+        }
+
+    override suspend fun updatePriceSource(id: String, priceSource: PriceSource): Result<Unit> =
+        runCatching {
+            withContext(Dispatchers.IO) {
+                queries.updatePriceSource(priceSource = priceSource.name, id = id)
+            }
+        }
+
+    override suspend fun markIsinValidationError(id: String, error: String?): Result<Unit> =
+        runCatching {
+            withContext(Dispatchers.IO) {
+                queries.markIsinValidationError(error = error, id = id)
+            }
+        }
+
+    override fun getQuotableByAccount(accountId: String): Flow<List<Asset>> =
+        queries.selectQuotableByAccount(accountId)
+            .asFlow()
+            .mapToList(Dispatchers.IO)
+            .map { list -> list.map { entity -> entity.toDomain() } }
+
+    override fun getAssetsWithBrokenIsin(accountId: String): Flow<List<Asset>> =
+        queries.selectAssetsWithBrokenIsin(accountId)
+            .asFlow()
+            .mapToList(Dispatchers.IO)
+            .map { list -> list.map { entity -> entity.toDomain() } }
 }

@@ -6,7 +6,9 @@ import androidx.lifecycle.viewModelScope
 import es.aviferdev.n3to.domain.model.Asset
 import es.aviferdev.n3to.domain.model.AssetCategory
 import es.aviferdev.n3to.domain.model.FixedIncomeRow
+import es.aviferdev.n3to.domain.model.PriceSource
 import es.aviferdev.n3to.domain.model.Platform
+import es.aviferdev.n3to.domain.model.PriceQuote
 import es.aviferdev.n3to.domain.usecase.asset.ArchiveAssetUseCase
 import es.aviferdev.n3to.domain.usecase.asset.CheckAssetArchivableUseCase
 import es.aviferdev.n3to.domain.usecase.asset.GetAllAssetsIncludingArchivedUseCase
@@ -14,6 +16,7 @@ import es.aviferdev.n3to.domain.usecase.asset.GetAssetEditMetadataUseCase
 import es.aviferdev.n3to.domain.usecase.asset.SaveAssetWithMetadataUseCase
 import es.aviferdev.n3to.domain.usecase.asset.UnarchiveAssetUseCase
 import es.aviferdev.n3to.domain.usecase.asset.UpdateAssetWithMetadataUseCase
+import es.aviferdev.n3to.domain.usecase.asset.ValidateAssetIdentifierUseCase
 import es.aviferdev.n3to.domain.usecase.assetcategory.GetAllAssetCategoriesIncludingArchivedUseCase
 import es.aviferdev.n3to.domain.usecase.fixedincome.GetFixedIncomeRowsByCategoryUseCase
 import es.aviferdev.n3to.domain.usecase.platform.CreateAndLinkPlatformUseCase
@@ -78,7 +81,8 @@ class AssetCategoryDetailViewModel(
     private val linkPlatformToCategory: LinkPlatformToCategoryUseCase,
     private val unlinkPlatformFromCategory: UnlinkPlatformFromCategoryUseCase,
     private val createAndLinkPlatform: CreateAndLinkPlatformUseCase,
-    private val session: AccountSession
+    private val session: AccountSession,
+    private val validateAssetIdentifier: ValidateAssetIdentifierUseCase? = null
 ) : ViewModel() {
 
     private val _showAddSheet           = MutableStateFlow(false)
@@ -216,6 +220,7 @@ class AssetCategoryDetailViewModel(
         name: String,
         notes: String?,
         currentPrice: Double?,
+        isin: String? = null,
         platformIds: Set<String> = emptySet(),
         maturityDate: Long? = null,
         fixedIncomePercent: Int = 0,
@@ -246,7 +251,11 @@ class AssetCategoryDetailViewModel(
                 assetCategoryId       = categoryId,
                 currentPrice          = currentPrice,
                 currentPriceUpdatedAt = if (currentPrice != null) now else null,
-                maturityDate          = maturityDate
+                maturityDate          = maturityDate,
+                isin                  = isin,
+                priceSource           = PriceSource.MANUAL,
+                isinValidatedAt       = if (isin != null) now else null,
+                isinValidationError   = null
             )
             saveAssetWithMetadata(asset, fixedIncomePercent, sectorIds, regionPercents, platformIds)
                 .onFailure { _error.value = CategoryDetailError.Unknown(it.message) }
@@ -261,6 +270,7 @@ class AssetCategoryDetailViewModel(
         notes: String?,
         assetCategoryId: String?,
         currentPrice: Double?,
+        isin: String? = null,
         platformIds: Set<String> = emptySet(),
         maturityDate: Long? = null,
         fixedIncomePercent: Int = 0,
@@ -288,7 +298,11 @@ class AssetCategoryDetailViewModel(
                 currentPrice          = currentPrice,
                 currentPriceUpdatedAt = updatedAt,
                 maturityDate          = maturityDate,
-                portfolioId           = portfolioId
+                portfolioId           = portfolioId,
+                isin                  = isin,
+                priceSource           = PriceSource.MANUAL,
+                isinValidatedAt       = if (isin != null) nowMillis() else null,
+                isinValidationError   = null
             )
             updateAssetWithMetadata(updatedAsset, fixedIncomePercent, sectorIds, regionPercents, platformIds)
                 .onFailure { _error.value = CategoryDetailError.Unknown(it.message) }
@@ -298,6 +312,16 @@ class AssetCategoryDetailViewModel(
     }
 
     fun clearError() { _error.value = null }
+
+    /**
+     * Valida un ISIN/ticker contra la API de cotizaciones.
+     */
+    suspend fun validateIsin(identifier: String, categoryId: String?): Result<PriceQuote> {
+        if (validateAssetIdentifier == null) {
+            return Result.failure(Exception("Validación no disponible"))
+        }
+        return validateAssetIdentifier(identifier, categoryId ?: this.categoryId)
+    }
 
     // ── Plataformas de la categoría ───────────────────────────────────────────
     fun openLinkPlatformSheet()  { _showLinkPlatformSheet.value = true }

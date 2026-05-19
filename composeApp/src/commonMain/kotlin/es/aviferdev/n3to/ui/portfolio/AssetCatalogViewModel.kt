@@ -5,15 +5,18 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import es.aviferdev.n3to.domain.model.Asset
 import es.aviferdev.n3to.domain.model.AssetCategory
+import es.aviferdev.n3to.domain.model.PriceSource
 import es.aviferdev.n3to.domain.repository.AssetMetadataRepository
 import es.aviferdev.n3to.domain.repository.AssetPlatformRepository
 import es.aviferdev.n3to.domain.repository.AssetTransactionRepository
 import es.aviferdev.n3to.domain.portfolio.PortfolioCalculator
+import es.aviferdev.n3to.domain.model.PriceQuote
 import es.aviferdev.n3to.domain.usecase.asset.ArchiveAssetUseCase
 import es.aviferdev.n3to.domain.usecase.asset.UnarchiveAssetUseCase
 import es.aviferdev.n3to.domain.usecase.asset.GetAssetsByAccountUseCase
 import es.aviferdev.n3to.domain.usecase.asset.SaveAssetUseCase
 import es.aviferdev.n3to.domain.usecase.asset.UpdateAssetUseCase
+import es.aviferdev.n3to.domain.usecase.asset.ValidateAssetIdentifierUseCase
 import es.aviferdev.n3to.domain.usecase.assetcategory.GetAllAssetCategoriesIncludingArchivedUseCase
 import es.aviferdev.n3to.ui.account.AccountSession
 import es.aviferdev.n3to.ui.theme.formatQty
@@ -64,7 +67,8 @@ class AssetCatalogViewModel(
     private val getAssetCategoriesIncludingArchived: GetAllAssetCategoriesIncludingArchivedUseCase,
     private val assetPlatformRepository: AssetPlatformRepository,
     private val assetMetadataRepository: AssetMetadataRepository,
-    private val session: AccountSession
+    private val session: AccountSession,
+    private val validateAssetIdentifier: ValidateAssetIdentifierUseCase? = null
 ) : ViewModel() {
 
     private val _showAddSheet      = MutableStateFlow(false)
@@ -185,6 +189,7 @@ class AssetCatalogViewModel(
         notes: String?,
         assetCategoryId: String?,
         currentPrice: Double?,
+        isin: String? = null,
         platformIds: Set<String> = emptySet(),
         fixedIncomePercent: Int = 0,
         sectorIds: Set<String> = emptySet(),
@@ -219,7 +224,11 @@ class AssetCatalogViewModel(
                 createdAt       = now,
                 assetCategoryId = assetCategoryId,
                 currentPrice    = currentPrice,
-                currentPriceUpdatedAt = if (currentPrice != null) now else null
+                currentPriceUpdatedAt = if (currentPrice != null) now else null,
+                isin            = isin,
+                priceSource     = PriceSource.MANUAL,
+                isinValidatedAt = if (isin != null) now else null,
+                isinValidationError = null
             )
             saveAsset(asset)
                 .onSuccess {
@@ -272,6 +281,7 @@ class AssetCatalogViewModel(
         notes: String?,
         assetCategoryId: String?,
         currentPrice: Double?,
+        isin: String? = null,
         platformIds: Set<String> = emptySet(),
         fixedIncomePercent: Int = 0,
         sectorIds: Set<String> = emptySet(),
@@ -298,7 +308,11 @@ class AssetCatalogViewModel(
                     assetCategoryId       = assetCategoryId,
                     currentPrice          = currentPrice,
                     currentPriceUpdatedAt = updatedAt,
-                    portfolioId           = portfolioId
+                    portfolioId           = portfolioId,
+                    isin                  = isin,
+                    priceSource           = PriceSource.MANUAL,
+                    isinValidatedAt       = if (isin != null) nowMillis() else null,
+                    isinValidationError   = null
                 )
             ).onSuccess {
                 // Guardar composición RF/RV
@@ -362,6 +376,19 @@ class AssetCatalogViewModel(
     }
 
     fun clearError() { _error.value = null }
+
+    /**
+     * Valida un ISIN/ticker contra la API de cotizaciones.
+     * @param identifier ISIN, ticker o símbolo crypto.
+     * @param categoryId ID de la categoría del activo.
+     * @return Result.success(PriceQuote) si el identificador es válido.
+     */
+    suspend fun validateIsin(identifier: String, categoryId: String?): Result<PriceQuote> {
+        if (validateAssetIdentifier == null || categoryId == null) {
+            return Result.failure(Exception("Validación no disponible"))
+        }
+        return validateAssetIdentifier(identifier, categoryId)
+    }
 
     private data class SheetPart1(
         val show: Boolean,

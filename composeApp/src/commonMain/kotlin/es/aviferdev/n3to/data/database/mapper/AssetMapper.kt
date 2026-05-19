@@ -3,6 +3,8 @@ package es.aviferdev.n3to.data.database.mapper
 import es.aviferdev.n3to.data.database.AssetCategoryEntity
 import es.aviferdev.n3to.data.database.AssetCompositionEntity
 import es.aviferdev.n3to.data.database.AssetEntity
+import es.aviferdev.n3to.data.database.SelectAssetsWithBrokenIsin
+import es.aviferdev.n3to.data.database.SelectQuotableByAccount
 import es.aviferdev.n3to.data.database.AssetRegionDistributionEntity
 import es.aviferdev.n3to.data.database.AssetRegionEntity
 import es.aviferdev.n3to.data.database.AssetSectorEntity
@@ -12,6 +14,7 @@ import es.aviferdev.n3to.data.database.AssetTransactionEntity
 import es.aviferdev.n3to.data.database.PlatformEntity
 import es.aviferdev.n3to.domain.model.Asset
 import es.aviferdev.n3to.domain.model.AssetCategory
+import es.aviferdev.n3to.domain.model.PriceSource
 import es.aviferdev.n3to.domain.model.AssetComposition
 import es.aviferdev.n3to.domain.model.AssetRegion
 import es.aviferdev.n3to.domain.model.AssetRegionDistribution
@@ -34,7 +37,11 @@ fun AssetEntity.toDomain(): Asset = Asset(
     currentPrice          = currentPrice,
     currentPriceUpdatedAt = currentPriceUpdatedAt,
     archived              = archived != 0L,
-    maturityDate          = maturityDate
+    maturityDate          = maturityDate,
+    isin                  = isin,
+    priceSource           = try { PriceSource.valueOf(priceSource) } catch (_: Exception) { PriceSource.MANUAL },
+    isinValidatedAt       = isinValidatedAt,
+    isinValidationError   = isinValidationError
 )
 
 fun Asset.toEntity(): AssetEntity = AssetEntity(
@@ -49,7 +56,11 @@ fun Asset.toEntity(): AssetEntity = AssetEntity(
     currentPrice          = currentPrice,
     currentPriceUpdatedAt = currentPriceUpdatedAt,
     archived              = if (archived) 1L else 0L,
-    maturityDate          = maturityDate
+    maturityDate          = maturityDate,
+    isin                  = isin,
+    priceSource           = priceSource.name,
+    isinValidatedAt       = isinValidatedAt,
+    isinValidationError   = isinValidationError
 )
 
 fun AssetCategoryEntity.toDomain(): AssetCategory = AssetCategory(
@@ -158,6 +169,46 @@ fun AssetSector.toEntity(): AssetSectorEntity = AssetSectorEntity(
     name = name,
     icon = icon,
     createdAt = createdAt
+)
+
+// ── Conversión desde tipos de query específicos ───────────────────────────
+
+fun SelectQuotableByAccount.toDomain(): Asset = Asset(
+    id                    = id,
+    accountId             = accountId,
+    portfolioId           = portfolioId,
+    ticker                = ticker,
+    name                  = name,
+    notes                 = notes,
+    createdAt             = createdAt,
+    assetCategoryId       = assetCategoryId,
+    currentPrice          = currentPrice,
+    currentPriceUpdatedAt = currentPriceUpdatedAt,
+    archived              = archived != 0L,
+    maturityDate          = maturityDate,
+    isin                  = isin,
+    priceSource           = try { PriceSource.valueOf(priceSource) } catch (_: Exception) { PriceSource.MANUAL },
+    isinValidatedAt       = isinValidatedAt,
+    isinValidationError   = isinValidationError
+)
+
+fun SelectAssetsWithBrokenIsin.toDomain(): Asset = Asset(
+    id                    = id,
+    accountId             = accountId,
+    portfolioId           = portfolioId,
+    ticker                = ticker,
+    name                  = name,
+    notes                 = notes,
+    createdAt             = createdAt,
+    assetCategoryId       = assetCategoryId,
+    currentPrice          = currentPrice,
+    currentPriceUpdatedAt = currentPriceUpdatedAt,
+    archived              = archived != 0L,
+    maturityDate          = maturityDate,
+    isin                  = isin,
+    priceSource           = try { PriceSource.valueOf(priceSource) } catch (_: Exception) { PriceSource.MANUAL },
+    isinValidatedAt       = isinValidatedAt,
+    isinValidationError   = isinValidationError
 )
 
 fun AssetSectorRelationEntity.toDomain(): AssetSectorRelation = AssetSectorRelation(

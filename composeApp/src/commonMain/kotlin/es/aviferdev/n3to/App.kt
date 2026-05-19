@@ -3,8 +3,14 @@ package es.aviferdev.n3to
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.ui.unit.dp
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
@@ -38,6 +44,10 @@ import es.aviferdev.n3to.domain.usecase.onboarding.ResetOnboardingUseCase
 import es.aviferdev.n3to.platform.AnalyticsTracker
 import es.aviferdev.n3to.platform.CrashlyticsTracker
 import es.aviferdev.n3to.ui.consent.ConsentScreen
+import es.aviferdev.n3to.domain.model.PriceRefreshResult
+import es.aviferdev.n3to.domain.usecase.asset.AppStartupRefreshUseCase
+import es.aviferdev.n3to.domain.usecase.asset.ShouldRefreshTodayUseCase
+import es.aviferdev.n3to.ui.account.AccountSession
 import es.aviferdev.n3to.ui.navigation.N3toNavHost
 import es.aviferdev.n3to.ui.onboarding.OnboardingScreen
 import es.aviferdev.n3to.ui.security.LockScreen
@@ -46,6 +56,7 @@ import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.ui.theme.LocalBalanceHidden
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import es.aviferdev.n3to.ui.theme.PrimaryDark
+import es.aviferdev.n3to.ui.theme.formatAmountEuro
 import es.aviferdev.n3to.ui.version.VersionBlockScreen
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -119,6 +130,33 @@ fun App() {
     LaunchedEffect(appReady) {
         if (appReady) {
             premiumManager.initialize(AppConfig.revenueCatApiKey)
+        }
+    }
+
+    // ── Refresco diario de precios al abrir la app ─────────────────────────
+    val priceRefreshUseCase = koinInject<AppStartupRefreshUseCase>()
+    val accountSession = koinInject<AccountSession>()
+    val shouldRefreshToday = koinInject<ShouldRefreshTodayUseCase>()
+    var refreshMessage by remember { mutableStateOf<String?>(null) }
+    var refreshDone by remember { mutableStateOf(false) }
+
+    LaunchedEffect(appReady, refreshDone) {
+        if (appReady && !refreshDone) {
+            val accountId = accountSession.selectedAccountId.value
+            if (accountId == null) {
+                println("[PriceRefresh] ⏭️ Sin cuenta seleccionada, se omite refresco")
+            } else if (!shouldRefreshToday()) {
+                println("[PriceRefresh] ⏭️ Ya se refrescó hoy, se omite")
+            } else {
+                println("[PriceRefresh] 🚀 Lanzando refresco diario...")
+                withContext(Dispatchers.Default) {
+                    val (_, priceResult) = priceRefreshUseCase(accountId)
+                    if (priceResult.hasUpdates || priceResult.hasNotFound || priceResult.hasFailures) {
+                        refreshMessage = priceResult.summary
+                    }
+                }
+            }
+            refreshDone = true
         }
     }
 
@@ -203,14 +241,39 @@ fun App() {
 
                     // Paso 6: App principal
                     else -> {
-                        N3toNavHost(
-                            onResetOnboarding = {
-                                scope.launch {
-                                    resetOnboarding()
-                                    needsOnboarding = true
+                        val snackbarHostState = remember { SnackbarHostState() }
+
+                        // Mostrar resultado del refresco de precios
+                        LaunchedEffect(refreshMessage) {
+                            refreshMessage?.let { msg ->
+                                snackbarHostState.showSnackbar(msg)
+                                refreshMessage = null
+                            }
+                        }
+
+                        Box {
+                            N3toNavHost(
+                                onResetOnboarding = {
+                                    scope.launch {
+                                        resetOnboarding()
+                                        needsOnboarding = true
+                                    }
+                                }
+                            )
+                            // Snackbar flotante para el resultado del refresco
+                            Box(modifier = Modifier
+                                .fillMaxSize()
+                                .padding(16.dp)
+                                .align(Alignment.TopCenter)) {
+                                SnackbarHost(hostState = snackbarHostState) { data ->
+                                    Snackbar(
+                                        snackbarData = data,
+                                        containerColor = MaterialTheme.appColors.navySurface,
+                                        contentColor = MaterialTheme.appColors.textPrimary
+                                    )
                                 }
                             }
-                        )
+                        }
                     }
                 }
             }

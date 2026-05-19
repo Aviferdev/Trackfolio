@@ -47,7 +47,9 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import kotlinx.coroutines.launch
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -61,6 +63,7 @@ import es.aviferdev.n3to.domain.model.AssetCategory
 import es.aviferdev.n3to.domain.model.AssetCategoryType
 import es.aviferdev.n3to.domain.model.Platform
 import es.aviferdev.n3to.domain.model.Portfolio
+import es.aviferdev.n3to.domain.model.PriceQuote
 
 import es.aviferdev.n3to.ui.theme.ExpenseRed
 import es.aviferdev.n3to.ui.theme.PrimaryDark
@@ -105,6 +108,22 @@ import n3to.composeapp.generated.resources.portfolio_add_asset_title_edit
 import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 
+/**
+ * Estado de la validación del ISIN contra la API de cotizaciones.
+ */
+private sealed class IsinValidationState {
+    data object Idle : IsinValidationState()
+    data object Validating : IsinValidationState()
+    data class Valid(
+        val name: String?,
+        val price: Double,
+        val currency: String,
+        val exchange: String?
+    ) : IsinValidationState()
+    data class NotFound(val message: String) : IsinValidationState()
+    data class Error(val message: String) : IsinValidationState()
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddEditAssetBottomSheet(
@@ -120,12 +139,14 @@ fun AddEditAssetBottomSheet(
     linkedFixedIncomePercent: Int = 0,
     portfolios: List<Portfolio> = emptyList(),
     selectedPortfolioId: String? = null,
+    onValidateIsin: (suspend (String, String?) -> Result<PriceQuote>)? = null,
     onSave: (
         ticker: String,
         name: String,
         notes: String?,
         assetCategoryId: String?,
         currentPrice: Double?,
+        isin: String?,
         platformIds: Set<String>,
         maturityDate: Long?,
         fixedIncomePercent: Int,
@@ -141,10 +162,10 @@ fun AddEditAssetBottomSheet(
     var name          by remember { mutableStateOf(asset?.name ?: "") }
     var currentPrice  by remember { mutableStateOf(asset?.currentPrice?.toString() ?: "") }
     var notes         by remember { mutableStateOf(asset?.notes ?: "") }
+    var isin          by remember { mutableStateOf(asset?.isin ?: "") }
     var selectedCategoryId by remember {
         mutableStateOf(asset?.assetCategoryId ?: preselectedCategoryId)
     }
-
     var selectedPlatformIds by remember(linkedPlatformIds) { mutableStateOf(linkedPlatformIds) }
     var fixedIncomePercent by remember(linkedFixedIncomePercent) { mutableStateOf(linkedFixedIncomePercent) }
     var currentPortfolioId by remember { mutableStateOf(selectedPortfolioId ?: asset?.portfolioId) }
@@ -156,12 +177,14 @@ fun AddEditAssetBottomSheet(
             else allRegions.associate { it.id to 0 }
         )
     }
+    // Estado de la validación del ISIN contra la API
+    var isinValidationState by remember { mutableStateOf<IsinValidationState>(IsinValidationState.Idle) }
+    val coroutineScope = rememberCoroutineScope()
 
     // Estado para fecha de vencimiento (solo para Renta Fija)
     var maturityDateMillis by remember {
         mutableStateOf(
-            asset?.maturityDate
-                ?: (nowMillis() + 365L * 24 * 60 * 60 * 1000)
+            asset?.maturityDate ?: (nowMillis() + 365L * 24 * 60 * 60 * 1000)
         )
     }
     var showMaturityDatePicker by remember { mutableStateOf(false) }
@@ -330,6 +353,146 @@ fun AddEditAssetBottomSheet(
                 )
             )
 Spacer(Modifier.height(12.dp))
+
+            // ── ISIN (Código internacional del activo) ───────────────────────
+            if (!isFixedIncome) {
+                OutlinedTextField(
+                    value         = isin,
+                    onValueChange = { isin = it.uppercase().filter { c -> c.isLetterOrDigit() || c == '-' || c == '.' }; isinValidationState = IsinValidationState.Idle },
+                    label         = { Text("ISIN (opcional)") },
+                    placeholder   = { Text("ES0173516115") },
+                    supportingText = if (AssetCategoryType.isQuotable(selectedCategoryId)) {
+                        { Text("Código ISIN para obtener precio automático", fontSize = 11.sp, color = MaterialTheme.appColors.textSecondary) }
+                    } else {
+                        null
+                    },
+                    trailingIcon = if (onValidateIsin != null && AssetCategoryType.isQuotable(selectedCategoryId) && isin.isNotBlank()) {
+                        {
+                            TextButton(
+                                onClick = {
+                                    val isinTrimmed = isin.trim().uppercase().replace("-", "").replace(".", "")
+                                    if (isinTrimmed.isNotBlank()) {
+                                        isinValidationState = IsinValidationState.Validating
+                                        coroutineScope.launch {
+                                            onValidateIsin?.let { validate ->
+                                                validate(isinTrimmed, selectedCategoryId)
+                                                    .onSuccess { quote ->
+                                                        isinValidationState = IsinValidationState.Valid(
+                                                            name = quote.name,
+                                                            price = quote.price,
+                                                            currency = quote.currency,
+                                                            exchange = quote.exchange
+                                                        )
+                                                    }
+                                                    .onFailure { error ->
+                                                        val msg = error.message ?: ""
+                                                        if (msg.contains("Not Found", ignoreCase = true) || msg.contains("404", ignoreCase = true)) {
+                                                            isinValidationState = IsinValidationState.NotFound("ISIN no encontrado en el mercado")
+                                                        } else {
+                                                            isinValidationState = IsinValidationState.Error(msg)
+                                                        }
+                                                    }
+                                            }
+                                        }
+                                    }
+                                },
+                                enabled = isinValidationState !is IsinValidationState.Validating
+                            ) {
+                                Text(
+                                    text = when (isinValidationState) {
+                                        is IsinValidationState.Validating -> "Validando..."
+                                        is IsinValidationState.Valid -> "✓ Validado"
+                                        else -> "Validar"
+                                    },
+                                    fontSize = 12.sp,
+                                    color = when (isinValidationState) {
+                                        is IsinValidationState.Valid -> MaterialTheme.appColors.income
+                                        is IsinValidationState.NotFound -> MaterialTheme.appColors.expense
+                                        is IsinValidationState.Error -> MaterialTheme.appColors.expense
+                                        else -> MaterialTheme.appColors.primary
+                                    },
+                                    fontWeight = FontWeight.Medium
+                                )
+                            }
+                        }
+                    } else {
+                        null
+                    },
+                    modifier      = Modifier.fillMaxWidth(),
+                    singleLine    = true,
+                    shape         = RoundedCornerShape(10.dp),
+                    keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Characters),
+                    colors        = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor   = MaterialTheme.appColors.primary,
+                        unfocusedBorderColor = MaterialTheme.appColors.border
+                    )
+                )
+
+                // ── Tarjeta de resultado de validación ────────────────────────
+                when (val state = isinValidationState) {
+                    is IsinValidationState.Valid -> {
+                        Spacer(Modifier.height(8.dp))
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clip(RoundedCornerShape(10.dp))
+                                .background(MaterialTheme.appColors.income.copy(alpha = 0.08f))
+                                .border(0.5.dp, MaterialTheme.appColors.income.copy(alpha = 0.3f), RoundedCornerShape(10.dp))
+                                .padding(12.dp)
+                        ) {
+                            Column {
+                                Text("✅ ISIN validado", fontSize = 12.sp, fontWeight = FontWeight.SemiBold, color = MaterialTheme.appColors.income)
+                                Spacer(Modifier.height(4.dp))
+                                Row {
+                                    Text("📊 ", fontSize = 12.sp)
+                                    Text(state.name ?: "", fontSize = 12.sp, fontWeight = FontWeight.Medium, color = MaterialTheme.appColors.textPrimary)
+                                }
+                                Row {
+                                    Text("💰 ", fontSize = 12.sp)
+                                    Text("${state.price} ${state.currency}", fontSize = 12.sp, color = MaterialTheme.appColors.textPrimary)
+                                    if (state.exchange != null) {
+                                        Text(" · ${state.exchange}", fontSize = 11.sp, color = MaterialTheme.appColors.textSecondary)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    is IsinValidationState.NotFound -> {
+                        Spacer(Modifier.height(8.dp))
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clip(RoundedCornerShape(10.dp))
+                                .background(MaterialTheme.appColors.expense.copy(alpha = 0.08f))
+                                .border(0.5.dp, MaterialTheme.appColors.expense.copy(alpha = 0.3f), RoundedCornerShape(10.dp))
+                                .padding(12.dp)
+                        ) {
+                            Column {
+                                Text("⚠️ ISIN no encontrado", fontSize = 12.sp, fontWeight = FontWeight.SemiBold, color = MaterialTheme.appColors.expense)
+                                Text("El identificador no se ha localizado en el mercado. Puedes guardarlo sin validar.", fontSize = 11.sp, color = MaterialTheme.appColors.textSecondary)
+                            }
+                        }
+                    }
+                    is IsinValidationState.Error -> {
+                        Spacer(Modifier.height(8.dp))
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clip(RoundedCornerShape(10.dp))
+                                .background(MaterialTheme.appColors.expense.copy(alpha = 0.08f))
+                                .border(0.5.dp, MaterialTheme.appColors.expense.copy(alpha = 0.3f), RoundedCornerShape(10.dp))
+                                .padding(12.dp)
+                        ) {
+                            Column {
+                                Text("❌ Error de validación", fontSize = 12.sp, fontWeight = FontWeight.SemiBold, color = MaterialTheme.appColors.expense)
+                                Text(state.message, fontSize = 11.sp, color = MaterialTheme.appColors.textSecondary)
+                            }
+                        }
+                    }
+                    else -> {} // Idle o Validating
+                }
+                Spacer(Modifier.height(12.dp))
+            }
 
             // ── Composición RF / RV (solo para Acciones, ETFs, Fondos) ───────
             if (isAnalyzable) {
@@ -628,12 +791,16 @@ Spacer(Modifier.height(12.dp))
                     val sectorsToSave = if (isAnalyzable) selectedSectorIds else emptySet()
                     val compositionToSave = if (isAnalyzable) fixedIncomePercent else 0
                     val maturityToSave = if (isFixedIncome) maturityDateMillis else null
+                    val isinTrimmed = isin.trim().let { v ->
+                        if (v.isBlank()) null else v.uppercase().replace("-", "").replace(".", "")
+                    }
                     onSave(
                         ticker.trim(),
                         name.trim(),
                         notes.ifBlank { null },
                         selectedCategoryId,
                         curr,
+                        isinTrimmed,
                         selectedPlatformIds,
                         maturityToSave,
                         compositionToSave,
@@ -758,7 +925,8 @@ private fun AddEditAssetBottomSheetPreview() {
             allRegions = emptyList(),
             linkedRegionPercents = emptyMap(),
             linkedFixedIncomePercent = 0,
-            onSave = { _, _, _, _, _, _, _, _, _, _, _ -> },
+            onSave = { _, _, _, _, _, _, _, _, _, _, _, _ -> },
+            onValidateIsin = null,
             onDismiss = {}
         )
     }

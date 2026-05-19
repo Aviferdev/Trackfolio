@@ -19,6 +19,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.Asset
+import es.aviferdev.n3to.domain.usecase.asset.DetectPriceAnomalyUseCase
+import es.aviferdev.n3to.ui.common.dialog.PriceAnomalyDialog
 import es.aviferdev.n3to.ui.theme.*
 import es.aviferdev.n3to.ui.theme.formatAmountEuro
 
@@ -44,13 +46,58 @@ import androidx.compose.ui.tooling.preview.Preview
 fun UpdateCurrentPriceSheet(
     asset: Asset,
     onConfirm: (newPrice: Double) -> Unit,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
+    detectAnomaly: DetectPriceAnomalyUseCase? = null
 ) {
 
     var price by remember(asset.id) {
         mutableStateOf(asset.currentPrice?.toString() ?: "")
     }
+    var showAnomalyDialog by remember { mutableStateOf(false) }
+    var pendingPrice by remember { mutableStateOf(0.0) }
+    var anomalyResult by remember { mutableStateOf<DetectPriceAnomalyUseCase.Result?>(null) }
+
     val isValid = price.replace(',', '.').toDoubleOrNull()?.let { it >= 0 } == true
+
+    // ── Diálogo de anomalía ──────────────────────────────────────────────
+    if (showAnomalyDialog && anomalyResult != null) {
+        val result = anomalyResult as? DetectPriceAnomalyUseCase.Result.Suspicious
+            ?: anomalyResult as? DetectPriceAnomalyUseCase.Result.Warning
+        if (result != null) {
+            PriceAnomalyDialog(
+                previousPrice = when (result) {
+                    is DetectPriceAnomalyUseCase.Result.Warning -> result.previousPrice
+                    is DetectPriceAnomalyUseCase.Result.Suspicious -> result.previousPrice
+                    else -> asset.currentPrice ?: 0.0
+                },
+                newPrice = pendingPrice,
+                percentChange = when (result) {
+                    is DetectPriceAnomalyUseCase.Result.Warning -> result.percentChange
+                    is DetectPriceAnomalyUseCase.Result.Suspicious -> result.percentChange
+                    else -> 0.0
+                },
+                likelyCause = when (result) {
+                    is DetectPriceAnomalyUseCase.Result.Suspicious -> result.likelyCause
+                    else -> null
+                },
+                isBlocking = result is DetectPriceAnomalyUseCase.Result.Suspicious,
+                onCorrect = { correctedPrice ->
+                    showAnomalyDialog = false
+                    anomalyResult = null
+                    onConfirm(correctedPrice)
+                },
+                onForceSave = {
+                    showAnomalyDialog = false
+                    anomalyResult = null
+                    onConfirm(pendingPrice)
+                },
+                onDismiss = {
+                    showAnomalyDialog = false
+                    anomalyResult = null
+                }
+            )
+        }
+    }
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
@@ -147,7 +194,21 @@ fun UpdateCurrentPriceSheet(
             Button(
                 onClick = {
                     val value = price.replace(',', '.').toDoubleOrNull() ?: return@Button
-                    onConfirm(value)
+                    // Verificar anomalía de precio antes de confirmar
+                    if (detectAnomaly != null && asset.currentPrice != null) {
+                        val result = detectAnomaly(asset.currentPrice, value, isManualEntry = true)
+                        when (result) {
+                            is DetectPriceAnomalyUseCase.Result.Suspicious,
+                            is DetectPriceAnomalyUseCase.Result.Warning -> {
+                                pendingPrice = value
+                                anomalyResult = result
+                                showAnomalyDialog = true
+                            }
+                            else -> onConfirm(value)
+                        }
+                    } else {
+                        onConfirm(value)
+                    }
                 },
                 enabled  = isValid,
                 modifier = Modifier.fillMaxWidth().height(52.dp),

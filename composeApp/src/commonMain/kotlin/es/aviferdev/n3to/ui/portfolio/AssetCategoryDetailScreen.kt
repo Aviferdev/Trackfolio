@@ -106,8 +106,9 @@ fun AssetCategoryDetailScreen(
             linkedSectorIds = emptySet(),
             allRegions = state.allRegions,
             linkedRegionPercents = emptyMap(),
-            onSave = { ticker, name, notes, _, currentPrice, platformIds, maturityDate, fixedPct, sectorIds, regionPercents, portfolioId ->
-                viewModel.addAsset(ticker, name, notes, currentPrice, platformIds, maturityDate, fixedPct, sectorIds, regionPercents, portfolioId)
+            onValidateIsin = { identifier, catId -> viewModel.validateIsin(identifier, catId) },
+            onSave = { ticker, name, notes, _, currentPrice, isin, platformIds, maturityDate, fixedPct, sectorIds, regionPercents, portfolioId ->
+                viewModel.addAsset(ticker, name, notes, currentPrice, isin, platformIds, maturityDate, fixedPct, sectorIds, regionPercents, portfolioId)
             },
             onDismiss = { viewModel.closeAddSheet() }
         )
@@ -124,8 +125,9 @@ fun AssetCategoryDetailScreen(
             allRegions = state.allRegions,
             linkedRegionPercents = state.editingRegionPercents,
             linkedFixedIncomePercent = state.editingFixedIncomePercent,
-            onSave = { ticker, name, notes, catId, currentPrice, platformIds, maturityDate, fixedPct, sectorIds, regionPercents, portfolioId ->
-                viewModel.editAsset(editing, ticker, name, notes, catId, currentPrice, platformIds, maturityDate, fixedPct, sectorIds, regionPercents, portfolioId)
+            onValidateIsin = { identifier, catId -> viewModel.validateIsin(identifier, catId) },
+            onSave = { ticker, name, notes, catId, currentPrice, isin, platformIds, maturityDate, fixedPct, sectorIds, regionPercents, portfolioId ->
+                viewModel.editAsset(editing, ticker, name, notes, catId, currentPrice, isin, platformIds, maturityDate, fixedPct, sectorIds, regionPercents, portfolioId)
             },
             onDismiss = { viewModel.closeEditSheet() }
         )

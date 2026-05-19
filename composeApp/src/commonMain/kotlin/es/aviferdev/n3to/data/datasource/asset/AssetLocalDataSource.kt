@@ -1,6 +1,7 @@
 package es.aviferdev.n3to.data.datasource.asset
 
 import es.aviferdev.n3to.domain.model.Asset
+import es.aviferdev.n3to.domain.model.PriceSource
 import kotlinx.coroutines.flow.Flow
 
 interface AssetLocalDataSource {
@@ -16,4 +17,11 @@ interface AssetLocalDataSource {
     suspend fun unarchive(id: String): Result<Unit>
     suspend fun delete(id: String): Result<Unit>
     fun getOutdatedByAccount(accountId: String, thresholdDate: Long): Flow<List<Asset>>
+
+    // ── Nuevos métodos para auto-precio e ISIN ──
+    suspend fun updateIsin(id: String, isin: String?, validatedAt: Long?): Result<Unit>
+    suspend fun updatePriceSource(id: String, priceSource: PriceSource): Result<Unit>
+    suspend fun markIsinValidationError(id: String, error: String?): Result<Unit>
+    fun getQuotableByAccount(accountId: String): Flow<List<Asset>>
+    fun getAssetsWithBrokenIsin(accountId: String): Flow<List<Asset>>
 }

@@ -2,6 +2,7 @@ package es.aviferdev.n3to.data.repository.asset
 
 import es.aviferdev.n3to.data.datasource.asset.AssetLocalDataSource
 import es.aviferdev.n3to.domain.model.Asset
+import es.aviferdev.n3to.domain.model.PriceSource
 import es.aviferdev.n3to.domain.repository.AssetRepository
 import kotlinx.coroutines.flow.Flow
 
@@ -44,4 +45,21 @@ class AssetRepositoryImpl(
 
     override fun getOutdatedAssets(accountId: String, thresholdDate: Long): Flow<List<Asset>> =
         dataSource.getOutdatedByAccount(accountId, thresholdDate)
+
+    // ── Nuevos métodos para auto-precio e ISIN ──
+
+    override suspend fun updateIsin(id: String, isin: String?, validatedAt: Long?): Result<Unit> =
+        dataSource.updateIsin(id, isin, validatedAt)
+
+    override suspend fun updatePriceSource(id: String, priceSource: PriceSource): Result<Unit> =
+        dataSource.updatePriceSource(id, priceSource)
+
+    override suspend fun markIsinValidationError(id: String, error: String?): Result<Unit> =
+        dataSource.markIsinValidationError(id, error)
+
+    override fun getQuotableAssets(accountId: String): Flow<List<Asset>> =
+        dataSource.getQuotableByAccount(accountId)
+
+    override fun getAssetsWithBrokenIsin(accountId: String): Flow<List<Asset>> =
+        dataSource.getAssetsWithBrokenIsin(accountId)
 }

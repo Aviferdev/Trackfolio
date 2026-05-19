@@ -26,6 +26,13 @@ import es.aviferdev.n3to.domain.usecase.portfolio.UpdatePortfolioUseCase
 import es.aviferdev.n3to.domain.usecase.asset.UnarchiveAssetUseCase
 import es.aviferdev.n3to.domain.usecase.asset.UpdateAssetCurrentPriceUseCase
 import es.aviferdev.n3to.domain.usecase.asset.UpdateAssetUseCase
+import es.aviferdev.n3to.domain.usecase.asset.ShouldRefreshTodayUseCase
+import es.aviferdev.n3to.domain.usecase.asset.ConvertPriceToEurUseCase
+import es.aviferdev.n3to.domain.usecase.asset.DetectPriceAnomalyUseCase
+import es.aviferdev.n3to.domain.usecase.asset.ValidateAssetIdentifierUseCase
+import es.aviferdev.n3to.domain.usecase.asset.RefreshExchangeRateUseCase
+import es.aviferdev.n3to.domain.usecase.asset.RefreshPortfolioPricesUseCase
+import es.aviferdev.n3to.domain.usecase.asset.AppStartupRefreshUseCase
 import es.aviferdev.n3to.domain.usecase.assetcategory.ArchiveAssetCategoryUseCase
 import es.aviferdev.n3to.domain.usecase.assetcategory.GetAllAssetCategoriesIncludingArchivedUseCase
 import es.aviferdev.n3to.domain.usecase.assetcategory.GetAssetCategoriesUseCase
@@ -263,6 +270,15 @@ val useCaseModule = module {
     factory { ShouldShowPriceReminderUseCase(get()) }
     factory { SavePriceReminderShownUseCase(get()) }
     factory { GetPriceReminderIntervalUseCase(get()) }
+
+    // ── Precios automáticos e ISIN ────────────────────────────────────────────
+    factory { ShouldRefreshTodayUseCase(get()) }
+    factory { ConvertPriceToEurUseCase(get()) }
+    factory { DetectPriceAnomalyUseCase() }
+    factory { ValidateAssetIdentifierUseCase(get()) }
+    factory { RefreshExchangeRateUseCase(get(), get()) }
+    factory { RefreshPortfolioPricesUseCase(get(), get(), get(), get(), get(), get()) }
+    factory { AppStartupRefreshUseCase(get(), get()) }
     // ── Portfolio ────────────────────────────────────────────────────────────────
     factory { GetPortfoliosByAccountUseCase(get()) }
     factory { SavePortfolioUseCase(get()) }
@@ -494,6 +510,7 @@ val useCaseModule = module {
             updateAsset                         = get(),
             updateAssetCurrentPrice             = get(),
             archiveAsset                        = get(),
+            detectAnomaly                       = get(),
             getAssetCategoriesIncludingArchived = get(),
             getAccountById                      = get(),
             getTransactionsByAccount            = get(),
@@ -529,7 +546,8 @@ val useCaseModule = module {
             getAssetCategoriesIncludingArchived = get(),
             assetPlatformRepository             = get(),
             assetMetadataRepository            = get(),
-            session                             = get()
+            session                             = get(),
+            validateAssetIdentifier             = get()
         )
     }
     viewModel {
@@ -586,7 +604,8 @@ val useCaseModule = module {
             linkPlatformToCategory              = get(),
             unlinkPlatformFromCategory          = get(),
             createAndLinkPlatform               = get(),
-            session                             = get()
+            session                             = get(),
+            validateAssetIdentifier             = get()
         )
     }
     viewModel { (assetId: String) ->

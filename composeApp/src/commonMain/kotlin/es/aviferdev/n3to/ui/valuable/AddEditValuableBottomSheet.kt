@@ -26,6 +26,26 @@ import kotlinx.datetime.toLocalDateTime
 import es.aviferdev.n3to.domain.model.ValuableExpenseCategories
 import es.aviferdev.n3to.ui.common.input.DatePickerRow
 import es.aviferdev.n3to.ui.theme.*
+import org.jetbrains.compose.resources.stringResource
+import trackfolio.composeapp.generated.resources.Res
+import trackfolio.composeapp.generated.resources.common_save
+import trackfolio.composeapp.generated.resources.valuable_add_holding_expense
+import trackfolio.composeapp.generated.resources.valuable_add_purchase_expense
+import trackfolio.composeapp.generated.resources.valuable_description_label
+import trackfolio.composeapp.generated.resources.valuable_description_placeholder
+import trackfolio.composeapp.generated.resources.valuable_estimated_value_label
+import trackfolio.composeapp.generated.resources.valuable_estimated_value_placeholder
+import trackfolio.composeapp.generated.resources.valuable_expense_amount_label
+import trackfolio.composeapp.generated.resources.valuable_expense_delete_cd
+import trackfolio.composeapp.generated.resources.valuable_holding_expenses_title
+import trackfolio.composeapp.generated.resources.valuable_name_label
+import trackfolio.composeapp.generated.resources.valuable_name_placeholder
+import trackfolio.composeapp.generated.resources.valuable_notes_label
+import trackfolio.composeapp.generated.resources.valuable_purchase_date_label
+import trackfolio.composeapp.generated.resources.valuable_purchase_expenses_title
+import trackfolio.composeapp.generated.resources.valuable_purchase_price_label
+import trackfolio.composeapp.generated.resources.portfolio_add_asset_title_edit
+import trackfolio.composeapp.generated.resources.valuable_list_title
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -60,7 +80,7 @@ fun AddEditValuableBottomSheet(
                 .verticalScroll(rememberScrollState())
         ) {
             Text(
-                text = if (isEditing) "Editar bien" else "Nuevo bien",
+                text = if (isEditing) stringResource(Res.string.portfolio_add_asset_title_edit) else stringResource(Res.string.valuable_list_title),
                 fontWeight = FontWeight.Bold,
                 fontSize = 20.sp,
                 color = MaterialTheme.appColors.textPrimary
@@ -70,8 +90,8 @@ fun AddEditValuableBottomSheet(
             // Nombre
             OutlinedTextField(
                 value = name, onValueChange = { name = it },
-                label = { Text("Nombre") },
-                placeholder = { Text("Ej: Torno CNC") },
+                label = { Text(stringResource(Res.string.valuable_name_label)) },
+                placeholder = { Text(stringResource(Res.string.valuable_name_placeholder)) },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
                 colors = textFieldColors()
@@ -81,8 +101,8 @@ fun AddEditValuableBottomSheet(
             // Descripción
             OutlinedTextField(
                 value = description, onValueChange = { description = it },
-                label = { Text("Descripción (opcional)") },
-                placeholder = { Text("Marca, modelo, año...") },
+                label = { Text(stringResource(Res.string.valuable_description_label)) },
+                placeholder = { Text(stringResource(Res.string.valuable_description_placeholder)) },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
                 colors = textFieldColors()
@@ -92,7 +112,7 @@ fun AddEditValuableBottomSheet(
             // Precio compra
             OutlinedTextField(
                 value = purchasePriceText, onValueChange = { purchasePriceText = it },
-                label = { Text("Precio de compra") },
+                label = { Text(stringResource(Res.string.valuable_purchase_price_label)) },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
                 colors = textFieldColors()
@@ -101,7 +121,7 @@ fun AddEditValuableBottomSheet(
 
             // Fecha compra
             DatePickerRow(
-                label = "Fecha de compra",
+                label = stringResource(Res.string.valuable_purchase_date_label),
                 dateMillis = purchaseDateMillis,
                 onDateSelected = { purchaseDateMillis = it }
             )
@@ -110,8 +130,8 @@ fun AddEditValuableBottomSheet(
             // Valor estimado
             OutlinedTextField(
                 value = estimatedValueText, onValueChange = { estimatedValueText = it },
-                label = { Text("Valor estimado (opcional)") },
-                placeholder = { Text("Si no se indica, se usa el precio de compra") },
+                label = { Text(stringResource(Res.string.valuable_estimated_value_label)) },
+                placeholder = { Text(stringResource(Res.string.valuable_estimated_value_placeholder)) },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
                 colors = textFieldColors()
@@ -121,7 +141,7 @@ fun AddEditValuableBottomSheet(
             // Notas
             OutlinedTextField(
                 value = notes, onValueChange = { notes = it },
-                label = { Text("Notas (opcional)") },
+                label = { Text(stringResource(Res.string.valuable_notes_label)) },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
                 colors = textFieldColors()
@@ -129,7 +149,7 @@ fun AddEditValuableBottomSheet(
             Spacer(Modifier.height(16.dp))
 
             // ── Gastos de compra ──────────────────────────────────────────
-            Text("Gastos de compra", fontWeight = FontWeight.SemiBold, fontSize = 14.sp, color = MaterialTheme.appColors.textPrimary)
+            Text(stringResource(Res.string.valuable_purchase_expenses_title), fontWeight = FontWeight.SemiBold, fontSize = 14.sp, color = MaterialTheme.appColors.textPrimary)
             Spacer(Modifier.height(8.dp))
             purchaseExpenses.forEachIndexed { index, expense ->
                 ExpenseRow(
@@ -156,12 +176,12 @@ fun AddEditValuableBottomSheet(
             }) {
                 Icon(Icons.Outlined.Add, contentDescription = null, modifier = Modifier.size(18.dp))
                 Spacer(Modifier.width(4.dp))
-                Text("Añadir gasto de compra")
+                Text(stringResource(Res.string.valuable_add_purchase_expense))
             }
             Spacer(Modifier.height(12.dp))
 
             // ── Gastos de tenencia ────────────────────────────────────────
-            Text("Gastos de tenencia", fontWeight = FontWeight.SemiBold, fontSize = 14.sp, color = MaterialTheme.appColors.textPrimary)
+            Text(stringResource(Res.string.valuable_holding_expenses_title), fontWeight = FontWeight.SemiBold, fontSize = 14.sp, color = MaterialTheme.appColors.textPrimary)
             Spacer(Modifier.height(8.dp))
             holdingExpenses.forEachIndexed { index, expense ->
                 ExpenseRow(
@@ -188,7 +208,7 @@ fun AddEditValuableBottomSheet(
             }) {
                 Icon(Icons.Outlined.Add, contentDescription = null, modifier = Modifier.size(18.dp))
                 Spacer(Modifier.width(4.dp))
-                Text("Añadir gasto de tenencia")
+                Text(stringResource(Res.string.valuable_add_holding_expense))
             }
 
             Spacer(Modifier.height(24.dp))
@@ -218,7 +238,7 @@ fun AddEditValuableBottomSheet(
                 shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.appColors.income)
             ) {
-                Text("Guardar", fontWeight = FontWeight.SemiBold)
+                Text(stringResource(Res.string.common_save), fontWeight = FontWeight.SemiBold)
             }
 
             Spacer(Modifier.height(32.dp))
@@ -272,13 +292,13 @@ private fun ExpenseRow(
                 val amt = text.toDoubleOrNull() ?: 0.0
                 onExpenseChange(expense.copy(amount = amt))
             },
-            label = { Text("Importe") },
+            label = { Text(stringResource(Res.string.valuable_expense_amount_label)) },
             singleLine = true,
             modifier = Modifier.weight(0.7f),
             colors = textFieldColors()
         )
         IconButton(onClick = onRemove) {
-            Icon(Icons.Outlined.Close, contentDescription = "Eliminar", tint = MaterialTheme.appColors.expense)
+            Icon(Icons.Outlined.Close, contentDescription = stringResource(Res.string.valuable_expense_delete_cd), tint = MaterialTheme.appColors.expense)
         }
     }
 }

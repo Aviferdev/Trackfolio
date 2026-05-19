@@ -288,7 +288,8 @@ fun PortfolioScreen(
         UpdateCurrentPriceSheet(
             asset = state.pricingAsset!!, 
             onConfirm = { newPrice -> viewModel.refreshCurrentPrice(state.pricingAsset!!, newPrice) },
-            onDismiss = { viewModel.closeUpdatePriceSheet() }
+            onDismiss = { viewModel.closeUpdatePriceSheet() },
+            detectAnomaly = viewModel.priceAnomalyDetector
         )
     }
     if (catalogState.showAddSheet) {
@@ -302,8 +303,9 @@ fun PortfolioScreen(
             allRegions = state.allRegions,
             linkedRegionPercents = emptyMap(),
             portfolios = portfolios,
-            onSave = { ticker, name, notes, categoryId, currentPrice, platformIds, _, fixedPct, sectorIds, regionPercents, portfolioId ->
-                catalogViewModel.addAsset(ticker, name, notes, categoryId, currentPrice, platformIds, fixedPct, sectorIds, regionPercents, portfolioId)
+            onValidateIsin = { identifier, categoryId -> catalogViewModel.validateIsin(identifier, categoryId) },
+            onSave = { ticker, name, notes, categoryId, currentPrice, isin, platformIds, _, fixedPct, sectorIds, regionPercents, portfolioId ->
+                catalogViewModel.addAsset(ticker, name, notes, categoryId, currentPrice, isin, platformIds, fixedPct, sectorIds, regionPercents, portfolioId)
             },
             onDismiss = { catalogViewModel.closeAddSheet() }
         )
@@ -322,8 +324,9 @@ fun PortfolioScreen(
             linkedFixedIncomePercent = catalogState.editingFixedIncomePercent,
             portfolios = portfolios,
             selectedPortfolioId = editing.portfolioId,
-            onSave = { ticker, name, notes, categoryId, currentPrice, platformIds, _, fixedPct, sectorIds, regionPercents, portfolioId ->
-                catalogViewModel.editAsset(editing, ticker, name, notes, categoryId, currentPrice, platformIds, fixedPct, sectorIds, regionPercents, portfolioId)
+            onValidateIsin = { identifier, categoryId -> catalogViewModel.validateIsin(identifier, categoryId) },
+            onSave = { ticker, name, notes, categoryId, currentPrice, isin, platformIds, _, fixedPct, sectorIds, regionPercents, portfolioId ->
+                catalogViewModel.editAsset(editing, ticker, name, notes, categoryId, currentPrice, isin, platformIds, fixedPct, sectorIds, regionPercents, portfolioId)
             },
             onDismiss = { catalogViewModel.closeEditSheet() }
         )

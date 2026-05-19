@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.Asset
 import es.aviferdev.n3to.domain.portfolio.AssetPosition
 import es.aviferdev.n3to.ui.common.component.IconActionButton
+import es.aviferdev.n3to.ui.common.component.PriceSourceBadge
 
 import es.aviferdev.n3to.ui.theme.ExpenseRed
 
@@ -107,12 +108,21 @@ fun AssetCard(
             }
             Spacer(Modifier.width(8.dp))
             Column(horizontalAlignment = Alignment.End) {
-                Text(
-                    if (pos.hasCurrentPrice) "${maskAmount(formatAmount(pos.currentValue), balancesHidden)} €" else "—",
-                    fontSize = 13.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.appColors.textPrimary
-                )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        if (pos.hasCurrentPrice) "${maskAmount(formatAmount(pos.currentValue), balancesHidden)} €" else "—",
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.appColors.textPrimary
+                    )
+                    if (pos.hasCurrentPrice) {
+                        Spacer(Modifier.width(3.dp))
+                        PriceSourceBadge(
+                            priceSource = asset.priceSource,
+                            isinValidationError = asset.isinValidationError
+                        )
+                    }
+                }
                 if (pos.hasCurrentPrice) {
                     Text(
                         "${if (pos.totalPnL >= 0) "+" else "−"} ${maskAmount(formatAmount(abs(pos.totalPnL)), balancesHidden)} €",

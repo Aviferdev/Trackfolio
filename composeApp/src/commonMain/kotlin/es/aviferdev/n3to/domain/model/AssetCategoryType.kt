@@ -10,6 +10,7 @@ package es.aviferdev.n3to.domain.model
  * - [isInvestment]: Activos con precio de mercado (soportan currentPrice, priceHistory, buy/sell)
  * - [isAnalyzable]: Activos analizables (soportan sectores, regiones, composición RF/RV, dividendos)
  * - [isFixedIncome]: Activos de renta fija (soportan maturityDate, NO priceHistory ni buy/sell)
+ * - [isQuotable]: Activos que pueden obtener precio automático vía API externa
  *
  * Se usa el ID fijo de [es.aviferdev.n3to.data.database.DatabaseInitializer]
  * para evitar una migración de base de datos.
@@ -52,6 +53,24 @@ object AssetCategoryType {
     )
 
     /**
+     * Categorías que pueden obtener precio automático vía API externa.
+     * Incluye activos cotizados en mercados públicos con identificadores
+     * estándar (ISIN, ticker, símbolo crypto).
+     *
+     * Excluye:
+     * - Planes de pensiones (no cotizan públicamente)
+     * - Crowdlending (mercado privado)
+     * - Renta fija (usa sistema FixedIncomePosition)
+     */
+    private val QUOTABLE_IDS = setOf(
+        "fixed_cat_stocks",       // Acciones → ISIN
+        "fixed_cat_etfs",         // ETFs → ISIN
+        "fixed_cat_funds",        // Fondos de inversión → ISIN
+        "fixed_cat_crypto",       // Criptomonedas → símbolo
+        "fixed_cat_commodities"   // Materias primas → ticker
+    )
+
+    /**
      * True si la categoría admite precio de mercado, historial de precios y transacciones.
      * False para renta fija (que usa el sistema FixedIncomePosition).
      */
@@ -71,4 +90,26 @@ object AssetCategoryType {
      */
     fun isFixedIncome(categoryId: String?): Boolean =
         categoryId in FIXED_INCOME_IDS
+
+    /**
+     * True si la categoría puede obtener precio automático vía API externa.
+     * El activo debe tener un ISIN, ticker o símbolo válido para ser consultable.
+     */
+    fun isQuotable(categoryId: String?): Boolean =
+        categoryId in QUOTABLE_IDS
+
+    /**
+     * Determina el tipo de identificador necesario para consultar el precio
+     * de un activo según su categoría.
+     *
+     * - Acciones, ETFs, Fondos → [IdentifierType.ISIN]
+     * - Criptomonedas → [IdentifierType.CRYPTO_SYMBOL]
+     * - Materias primas → [IdentifierType.TICKER]
+     * - Otras categorías → [IdentifierType.ISIN] (por defecto)
+     */
+    fun identifierTypeFor(categoryId: String): IdentifierType = when (categoryId) {
+        "fixed_cat_crypto" -> IdentifierType.CRYPTO_SYMBOL
+        "fixed_cat_commodities" -> IdentifierType.TICKER
+        else -> IdentifierType.ISIN
+    }
 }

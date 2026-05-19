@@ -8,6 +8,7 @@ plugins {
     alias(libs.plugins.sqldelight)
     alias(libs.plugins.google.services)
     alias(libs.plugins.firebase.crashlytics)
+    alias(libs.plugins.kotlinSerialization)
 }
 
 kotlin {
@@ -15,9 +16,11 @@ kotlin {
 
     androidTarget {
         compilations.all {
-            kotlinOptions {
-                jvmTarget = "11"
-                freeCompilerArgs += "-Xexpect-actual-classes"
+            compileTaskProvider.configure {
+                compilerOptions {
+                    jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11)
+                    freeCompilerArgs.add("-Xexpect-actual-classes")
+                }
             }
         }
     }
@@ -46,9 +49,11 @@ kotlin {
             implementation(libs.firebase.crashlytics.ktx)
             implementation(libs.firebase.config.ktx)
             implementation(libs.firebase.firestore.ktx)
+            implementation(libs.ktor.client.okhttp)
         }
         iosMain.dependencies {
             implementation(libs.sqldelight.native.driver)
+            implementation(libs.ktor.client.darwin)
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -70,6 +75,10 @@ kotlin {
             implementation(libs.kotlinx.datetime)
             implementation(libs.navigation.compose)
             implementation(libs.revenuecat.purchases.kmp)
+            implementation(libs.ktor.client.core)
+            implementation(libs.ktor.client.content.negotiation)
+            implementation(libs.ktor.serialization.kotlinx.json)
+            implementation(libs.kotlinx.serialization.json)
         }
     }
 }

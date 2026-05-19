@@ -20,6 +20,7 @@ fun initKoin(
             platformModule,
             consentModule,
             databaseModule,
+            networkModule,
             repositoryModule,
             useCaseModule,
             uiModule,
