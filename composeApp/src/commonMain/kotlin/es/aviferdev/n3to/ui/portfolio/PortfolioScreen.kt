@@ -23,13 +23,10 @@ import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.SecondaryScrollableTabRow
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -54,7 +51,7 @@ import es.aviferdev.n3to.ui.common.toMaterialIcon
 import es.aviferdev.n3to.ui.common.LineChartWithTimeRange
 import es.aviferdev.n3to.ui.common.component.EmptyStateView
 import es.aviferdev.n3to.ui.common.component.IconActionButton
-import es.aviferdev.n3to.ui.common.component.NavyTab
+import es.aviferdev.n3to.ui.common.component.NavyTabRow
 import es.aviferdev.n3to.ui.fixedincome.EditFixedIncomeBottomSheet
 import es.aviferdev.n3to.ui.common.button.IconButtonApp
 import es.aviferdev.n3to.ui.common.navigation.TopBarApp
@@ -111,7 +108,6 @@ import n3to.composeapp.generated.resources.portfolio_title
 import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PortfolioScreen(
     onAssetClick: (String) -> Unit = {},
@@ -182,43 +178,20 @@ fun PortfolioScreen(
                 }
             )
 
-            // ScrollableTabRow
             if (tabTitles.isNotEmpty()) {
-                SecondaryScrollableTabRow(
-                    selectedTabIndex = tabIndex,
-                    edgePadding = 16.dp,
-                    containerColor = NavyDeep,
-                    contentColor = TextPrimary,
-                    divider = {}
-                ) {
-                    Tab(
-                        selected = tabIndex == 0,
-                        onClick = { coroutineScope.launch { pagerState.animateScrollToPage(0) } },
-                        text = {
-                            Text(
-                                text = "Todas",
-                                fontWeight = if (tabIndex == 0) FontWeight.Bold else FontWeight.Normal,
-                                fontSize = 13.sp,
-                                color = if (tabIndex == 0) CyanAccent else TextSecondary
-                            )
-                        }
-                    )
-                    portfolios.forEachIndexed { index, portfolio ->
-                        val pageIndex = index + 1
-                        Tab(
-                            selected = tabIndex == pageIndex,
-                            onClick = { coroutineScope.launch { pagerState.animateScrollToPage(pageIndex) } },
-                            text = {
-                                Text(
-                                    text = portfolio.name,
-                                    fontWeight = if (tabIndex == pageIndex) FontWeight.Bold else FontWeight.Normal,
-                                    fontSize = 13.sp,
-                                    color = if (tabIndex == pageIndex) CyanAccent else TextSecondary
-                                )
-                            }
-                        )
-                    }
-                }
+                NavyTabRow(
+                    items = tabTitles,
+                    selected = tabTitles[tabIndex],
+                    onSelect = { portfolioId ->
+                        val page = tabTitles.indexOf(portfolioId)
+                        coroutineScope.launch { pagerState.animateScrollToPage(page) }
+                    },
+                    label = { portfolioId ->
+                        if (portfolioId == null) "Todas"
+                        else portfolios.find { it.id == portfolioId }?.name ?: ""
+                    },
+                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                )
             }
 
             // HorizontalPager con contenido por tab

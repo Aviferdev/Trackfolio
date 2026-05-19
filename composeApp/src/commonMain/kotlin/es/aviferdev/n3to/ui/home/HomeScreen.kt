@@ -485,8 +485,7 @@ fun HomeContent(
             AccountSelectorBar(
                 accounts = accounts,
                 selectedAccountId = selectedAccountId,
-                onAccountSelected = onAccountSelected,
-                onNavigateToAccountConfig = onNavigateToAccountConfig
+                onAccountSelected = onAccountSelected
             )
         }
 
