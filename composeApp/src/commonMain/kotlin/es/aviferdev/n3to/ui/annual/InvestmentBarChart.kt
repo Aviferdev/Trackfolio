@@ -39,6 +39,10 @@ import es.aviferdev.n3to.ui.theme.N3toTheme
 import es.aviferdev.n3to.ui.theme.formatAmountEuro
 import es.aviferdev.n3to.ui.theme.maskAmount
 import androidx.compose.ui.tooling.preview.Preview
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.annual_investment_monthly_format
+import n3to.composeapp.generated.resources.annual_no_investments
+import org.jetbrains.compose.resources.stringResource
 
 private val MONTH_LABELS = listOf("E", "F", "M", "A", "M", "J", "J", "A", "S", "O", "N", "D")
 
@@ -71,7 +75,7 @@ fun InvestmentBarChart(
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
-                text       = "Inversión mensual $year",
+                text       = stringResource(Res.string.annual_investment_monthly_format, year),
                 fontSize   = 14.sp,
                 fontWeight = FontWeight.SemiBold,
                 color      = MaterialTheme.appColors.textPrimary
@@ -167,7 +171,7 @@ private fun EmptyInvestmentState(year: String) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text       = "Inversión mensual $year",
+                text       = stringResource(Res.string.annual_investment_monthly_format, year),
                 fontSize   = 14.sp,
                 fontWeight = FontWeight.SemiBold,
                 color      = MaterialTheme.appColors.textPrimary
@@ -176,7 +180,7 @@ private fun EmptyInvestmentState(year: String) {
             Icon(Icons.AutoMirrored.Outlined.ShowChart, contentDescription = null, modifier = Modifier.size(32.dp), tint = MaterialTheme.appColors.primary)
             Spacer(Modifier.height(8.dp))
             Text(
-                text     = "Sin inversiones este año",
+                text     = stringResource(Res.string.annual_no_investments),
                 fontSize = 13.sp,
                 color    = MaterialTheme.appColors.textSecondary,
                 textAlign = TextAlign.Center

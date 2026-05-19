@@ -48,6 +48,7 @@ import es.aviferdev.n3to.ui.theme.PrimaryDark
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.error_asset_not_found
+import n3to.composeapp.generated.resources.portfolio_update_price_title
 import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 
@@ -86,7 +87,7 @@ fun AssetHistoryContent(
                         IconButton(onClick = onRefreshClick) {
                             Icon(
                                 Icons.Outlined.Refresh,
-                                contentDescription = "Actualizar precio",
+                                contentDescription = stringResource(Res.string.portfolio_update_price_title),
                                 tint = MaterialTheme.appColors.textSecondary
                             )
                         }

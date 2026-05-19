@@ -66,6 +66,9 @@ import es.aviferdev.n3to.ui.settings.goal.GoalSettingsScreen
 import es.aviferdev.n3to.ui.settings.taxprofile.TaxProfileSettingsScreen
 import es.aviferdev.n3to.ui.transaction.TransactionDetailScreen
 import es.aviferdev.n3to.ui.transaction.TransactionListScreen
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.common_understood
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -690,7 +693,7 @@ private fun WelcomeTabsDialog(onDismiss: () -> Unit) {
         },
         confirmButton = {
             TextButton(onClick = onDismiss) {
-                Text("Entendido", color = MaterialTheme.appColors.cyanAccent, fontWeight = FontWeight.SemiBold)
+                Text(stringResource(Res.string.common_understood), color = MaterialTheme.appColors.cyanAccent, fontWeight = FontWeight.SemiBold)
             }
         },
         shape = RoundedCornerShape(20.dp)

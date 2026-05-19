@@ -42,6 +42,10 @@ import es.aviferdev.n3to.ui.theme.WarnAmber
 import es.aviferdev.n3to.ui.theme.formatAmountEuro
 import es.aviferdev.n3to.ui.theme.maskAmount
 import androidx.compose.ui.tooling.preview.Preview
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.common_total
+import n3to.composeapp.generated.resources.portfolio_distribution_subtitle
+import org.jetbrains.compose.resources.stringResource
 
 /**
  * Donut chart con leyenda. Muestra el reparto del valor actual del portfolio
@@ -99,7 +103,7 @@ fun PortfolioDistributionCard(
             }
             Spacer(Modifier.height(2.dp))
             Text(
-                text     = "Sobre el valor actual",
+                text     = stringResource(Res.string.portfolio_distribution_subtitle),
                 fontSize = 11.sp,
                 color    = MaterialTheme.appColors.textSecondary
             )
@@ -125,7 +129,7 @@ fun PortfolioDistributionCard(
                     // Total al centro
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text(
-                            text     = "Total",
+                            text     = stringResource(Res.string.common_total),
                             fontSize = 10.sp,
                             color    = MaterialTheme.appColors.textSecondary
                         )

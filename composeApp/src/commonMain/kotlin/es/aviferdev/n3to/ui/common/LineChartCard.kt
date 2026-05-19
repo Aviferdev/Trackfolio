@@ -30,6 +30,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.ui.theme.*
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.common_insufficient_data
+import n3to.composeapp.generated.resources.portfolio_update_prices_hint
+import org.jetbrains.compose.resources.stringResource
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
@@ -289,13 +293,13 @@ private fun EmptyLineChartState() {
             Icon(Icons.AutoMirrored.Outlined.ShowChart, contentDescription = null, modifier = Modifier.size(32.dp), tint = MaterialTheme.appColors.primary)
             Spacer(Modifier.height(8.dp))
             Text(
-                text = "Sin datos suficientes",
+                text = stringResource(Res.string.common_insufficient_data),
                 fontSize = 13.sp,
                 color = MaterialTheme.appColors.textSecondary,
                 textAlign = TextAlign.Center
             )
             Text(
-                text = "Actualiza precios para ver la evolución",
+                text = stringResource(Res.string.portfolio_update_prices_hint),
                 fontSize = 11.sp,
                 color = MaterialTheme.appColors.textSecondary.copy(alpha = 0.7f),
                 textAlign = TextAlign.Center

@@ -21,6 +21,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.ui.theme.PrimaryDark
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.common_help_cd
+import n3to.composeapp.generated.resources.common_understood
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun HelpTooltipIcon(
@@ -36,7 +40,7 @@ fun HelpTooltipIcon(
     ) {
         Icon(
             imageVector = Icons.AutoMirrored.Outlined.HelpOutline,
-            contentDescription = "Ayuda",
+            contentDescription = stringResource(Res.string.common_help_cd),
             tint = MaterialTheme.appColors.textTertiary,
             modifier = Modifier.size(16.dp)
         )
@@ -64,7 +68,7 @@ fun HelpTooltipIcon(
             },
             confirmButton = {
                 TextButton(onClick = { showDialog = false }) {
-                    Text("Entendido", color = MaterialTheme.appColors.primary, fontWeight = FontWeight.SemiBold)
+                    Text(stringResource(Res.string.common_understood), color = MaterialTheme.appColors.primary, fontWeight = FontWeight.SemiBold)
                 }
             },
             shape = RoundedCornerShape(16.dp)

@@ -64,6 +64,21 @@ import es.aviferdev.n3to.ui.theme.ExpenseRed
 import es.aviferdev.n3to.ui.theme.PrimaryDark
 
 import es.aviferdev.n3to.ui.theme.WarnAmber
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.common_amount_label
+import n3to.composeapp.generated.resources.common_category_label
+import n3to.composeapp.generated.resources.common_close
+import n3to.composeapp.generated.resources.common_description_label
+import n3to.composeapp.generated.resources.fiscal_commissions_short
+import n3to.composeapp.generated.resources.portfolio_add_tx_gross
+import n3to.composeapp.generated.resources.transaction_income_type_label
+import n3to.composeapp.generated.resources.transaction_mode_fiscal
+import n3to.composeapp.generated.resources.transaction_mode_net_only
+import n3to.composeapp.generated.resources.transaction_net_amount_label
+import n3to.composeapp.generated.resources.transaction_note_placeholder
+import n3to.composeapp.generated.resources.transaction_type_expense
+import n3to.composeapp.generated.resources.transaction_type_income
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -225,7 +240,7 @@ private fun AddTransactionSheetContent(
             IconButton(onClick = onDismiss, modifier = Modifier.size(32.dp)) {
                 Icon(
                     imageVector = Icons.Outlined.Close,
-                    contentDescription = "Cerrar",
+                    contentDescription = stringResource(Res.string.common_close),
                     tint = MaterialTheme.appColors.textSecondary,
                     modifier = Modifier.size(20.dp)
                 )
@@ -236,14 +251,14 @@ private fun AddTransactionSheetContent(
 
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             TypePill(
-                label = "Ingreso",
+                label = stringResource(Res.string.transaction_type_income),
                 selected = type == TransactionType.INCOME,
                 selectedColor = MaterialTheme.appColors.income,
                 onClick = { onTypeChange(TransactionType.INCOME) },
                 modifier = Modifier.weight(1f)
             )
             TypePill(
-                label = "Gasto",
+                label = stringResource(Res.string.transaction_type_expense),
                 selected = type == TransactionType.EXPENSE,
                 selectedColor = MaterialTheme.appColors.expense,
                 onClick = { onTypeChange(TransactionType.EXPENSE) },
@@ -254,7 +269,7 @@ private fun AddTransactionSheetContent(
         Spacer(Modifier.height(20.dp))
 
         if (type == TransactionType.EXPENSE) {
-            DarkAmountInput(value = amount, onValueChange = onAmountChange, label = "Importe", color = MaterialTheme.appColors.expense)
+            DarkAmountInput(value = amount, onValueChange = onAmountChange, label = stringResource(Res.string.common_amount_label), color = MaterialTheme.appColors.expense)
             Spacer(Modifier.height(16.dp))
         }
 
@@ -262,14 +277,14 @@ private fun AddTransactionSheetContent(
             val categoryName = categories.find { it.id == selectedCategoryId }?.name ?: ""
             DarkTappableRow(
                 icon = Icons.Outlined.Folder,
-                label = "Categoría",
+                label = stringResource(Res.string.common_category_label),
                 value = if (categoryName.isNotEmpty()) categoryName else "Seleccionar categoría…",
                 onClick = { onRequestCategoryPicker?.invoke(TransactionType.EXPENSE) }
             )
         } else {
             DarkTappableRow(
                 icon = Icons.Outlined.AccountBalance,
-                label = "Tipo de ingreso",
+                label = stringResource(Res.string.transaction_income_type_label),
                 value = selectedIncomeType?.label ?: "Seleccionar tipo…",
                 onClick = onIncomeTypeTap
             )
@@ -281,8 +296,8 @@ private fun AddTransactionSheetContent(
         Column {
             DarkTappableRow(
                 icon = Icons.Outlined.Description,
-                label = "Descripción",
-                value = if (notes.isNotEmpty()) notes else "Añadir nota…",
+                label = stringResource(Res.string.common_description_label),
+                value = if (notes.isNotEmpty()) notes else stringResource(Res.string.transaction_note_placeholder),
                 onClick = { showNotes = !showNotes }
             )
             AnimatedVisibility(
@@ -291,7 +306,7 @@ private fun AddTransactionSheetContent(
                 exit = shrinkVertically() + fadeOut()
             ) {
                 Column(modifier = Modifier.fillMaxWidth().padding(top = 8.dp)) {
-                    DarkTextField(value = notes, onValueChange = onNotesChange, placeholder = "Añadir nota…")
+                    DarkTextField(value = notes, onValueChange = onNotesChange, placeholder = stringResource(Res.string.transaction_note_placeholder))
                 }
             }
         }
@@ -333,7 +348,7 @@ private fun AddTransactionSheetContent(
                         label = {
                             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                                 Icon(Icons.AutoMirrored.Outlined.Assignment, contentDescription = null, modifier = Modifier.size(16.dp))
-                                Text("Fiscal")
+                                Text(stringResource(Res.string.transaction_mode_fiscal))
                             }
                         }
                     )
@@ -344,7 +359,7 @@ private fun AddTransactionSheetContent(
                         label = {
                             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                                 Icon(Icons.Outlined.EditNote, contentDescription = null, modifier = Modifier.size(16.dp))
-                                Text("Solo neto")
+                                Text(stringResource(Res.string.transaction_mode_net_only))
                             }
                         }
                     )
@@ -375,7 +390,7 @@ private fun AddTransactionSheetContent(
 
                     Spacer(Modifier.height(14.dp))
 
-                    DarkAmountInput(value = netAmount, onValueChange = onNetAmountChange, label = "Importe neto", color = MaterialTheme.appColors.income)
+                    DarkAmountInput(value = netAmount, onValueChange = onNetAmountChange, label = stringResource(Res.string.transaction_net_amount_label), color = MaterialTheme.appColors.income)
                     Spacer(Modifier.height(16.dp))
                     IssuerSelector(
                         issuers = issuers,
@@ -389,7 +404,7 @@ private fun AddTransactionSheetContent(
                         horizontalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
                         DarkInlineField(
-                            label = "Importe bruto",
+                            label = stringResource(Res.string.portfolio_add_tx_gross),
                             value = grossAmount,
                             onValueChange = onGrossAmountChange,
                             placeholder = "0,00",
@@ -424,7 +439,7 @@ private fun AddTransactionSheetContent(
                     if (incType.hasCommission) {
                         Spacer(Modifier.height(10.dp))
                         DarkInlineField(
-                            label = "Comisiones",
+                            label = stringResource(Res.string.fiscal_commissions_short),
                             value = commissionAmount,
                             onValueChange = onCommissionChange,
                             placeholder = "0,00",

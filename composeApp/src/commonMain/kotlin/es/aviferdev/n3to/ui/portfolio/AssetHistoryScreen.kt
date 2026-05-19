@@ -88,6 +88,8 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.common_accept
+import n3to.composeapp.generated.resources.common_cancel
+import n3to.composeapp.generated.resources.common_delete
 import n3to.composeapp.generated.resources.common_error
 import n3to.composeapp.generated.resources.error_asset_not_found
 import org.jetbrains.compose.resources.stringResource
@@ -167,13 +169,13 @@ fun AssetHistoryScreen(
             },
             confirmButton = {
                 TextButton(onClick = { viewModel.confirmDelete() }) {
-                    Text("Eliminar", color = MaterialTheme.appColors.expense, fontWeight = FontWeight.SemiBold)
+                    Text(stringResource(Res.string.common_delete), color = MaterialTheme.appColors.expense, fontWeight = FontWeight.SemiBold)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { viewModel.cancelDelete() }) {
                     Text(
-                        "Cancelar",
+                        stringResource(Res.string.common_cancel),
                         color = MaterialTheme.appColors.primary
                     )
                 }

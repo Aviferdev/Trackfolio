@@ -25,6 +25,13 @@ import es.aviferdev.n3to.ui.common.ProgressBar
 import es.aviferdev.n3to.ui.theme.*
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import androidx.compose.ui.tooling.preview.Preview
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.budget_empty_subtitle
+import n3to.composeapp.generated.resources.budget_empty_title
+import n3to.composeapp.generated.resources.budget_limit_exceeded
+import n3to.composeapp.generated.resources.budget_no_income
+import n3to.composeapp.generated.resources.budget_remaining_format
+import org.jetbrains.compose.resources.stringResource
 
 /**
  * Sección de presupuestos para mostrar en Home.
@@ -133,7 +140,7 @@ private fun BudgetRow(
             )
         } else if (noIncome) {
             Text(
-                text = "Sin ingresos este año",
+                text = stringResource(Res.string.budget_no_income),
                 fontSize = 11.sp,
                 color = MaterialTheme.appColors.textTertiary,
                 modifier = Modifier.padding(vertical = 2.dp)
@@ -154,7 +161,7 @@ private fun BudgetRow(
                     color = MaterialTheme.appColors.textSecondary
                 )
                 Text(
-                    text = "Restan ${formatAmount(status.remaining)}",
+                    text = stringResource(Res.string.budget_remaining_format, formatAmount(status.remaining)),
                     fontSize = 11.sp,
                     color = if (status.isOverBudget) MaterialTheme.appColors.expense else MaterialTheme.appColors.textTertiary
                 )
@@ -165,7 +172,7 @@ private fun BudgetRow(
         if (status.isOverBudget) {
             Spacer(Modifier.height(6.dp))
             Text(
-                text = "¡Límite excedido!",
+                text = stringResource(Res.string.budget_limit_exceeded),
                 fontSize = 11.sp,
                 fontWeight = FontWeight.SemiBold,
                 color = MaterialTheme.appColors.expense
@@ -190,14 +197,14 @@ private fun EmptyBudgetCard(
         )
         Spacer(Modifier.height(8.dp))
         Text(
-            text = "Sin presupuestos",
+            text = stringResource(Res.string.budget_empty_title),
             fontSize = 15.sp,
             fontWeight = FontWeight.SemiBold,
             color = MaterialTheme.appColors.textPrimary
         )
         Spacer(Modifier.height(4.dp))
         Text(
-            text = "Configura límites de gasto por categoría\npara controlar mejor tus finanzas",
+            text = stringResource(Res.string.budget_empty_subtitle),
             fontSize = 12.sp,
             color = MaterialTheme.appColors.textSecondary,
             textAlign = TextAlign.Center

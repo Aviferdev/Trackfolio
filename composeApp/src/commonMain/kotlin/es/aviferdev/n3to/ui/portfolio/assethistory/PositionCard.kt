@@ -29,6 +29,9 @@ import es.aviferdev.n3to.ui.theme.formatAmount
 import es.aviferdev.n3to.ui.theme.formatPercent
 import es.aviferdev.n3to.ui.theme.formatQty
 import es.aviferdev.n3to.ui.theme.maskAmount
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.portfolio_summary_total_pnl
+import org.jetbrains.compose.resources.stringResource
 import kotlin.math.abs
 
 // ─── Position card ────────────────────────────────────────────────────────────
@@ -105,7 +108,7 @@ fun PositionCard(
             HorizontalDivider(color = Color.White.copy(.12f), thickness = .5.dp)
             Spacer(Modifier.height(12.dp))
 
-            Text("Beneficio total", fontSize = 10.sp, color = Color.White.copy(.5f))
+            Text(stringResource(Res.string.portfolio_summary_total_pnl), fontSize = 10.sp, color = Color.White.copy(.5f))
             Spacer(Modifier.height(4.dp))
             Row(verticalAlignment = Alignment.Bottom) {
                 Text(

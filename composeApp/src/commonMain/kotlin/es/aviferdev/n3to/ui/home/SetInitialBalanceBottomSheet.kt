@@ -19,7 +19,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.ui.theme.*
-
+import n3to.composeapp.generated.resources.Res
+//import n3to.composeapp.generated.resources.account_initial_balance_set_btn    //TODO
+//import n3to.composeapp.generated.resources.account_initial_balance_zero_hint
+//import n3to.composeapp.generated.resources.account_set_initial_balance_desc
+//import n3to.composeapp.generated.resources.account_set_initial_balance_title
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 
 /**
@@ -62,7 +67,7 @@ fun SetInitialBalanceBottomSheet(
             Spacer(Modifier.height(4.dp))
 
             Text(
-                text       = "Saldo inicial",
+                text       = "stringResource(Res.string.account_set_initial_balance_title)",    //TODO
                 fontSize   = 18.sp,
                 fontWeight = FontWeight.SemiBold,
                 color      = MaterialTheme.appColors.textPrimary
@@ -80,7 +85,7 @@ fun SetInitialBalanceBottomSheet(
 
             Spacer(Modifier.height(8.dp))
             Text(
-                text      = "Introduce el saldo actual de esta cuenta.\nEsto es obligatorio antes de poder registrar movimientos.",
+                text      = "stringResource(Res.string.account_set_initial_balance_desc)",    //TODO
                 fontSize  = 13.sp,
                 color     = MaterialTheme.appColors.textSecondary,
                 textAlign = TextAlign.Center
@@ -118,7 +123,7 @@ fun SetInitialBalanceBottomSheet(
 
             Spacer(Modifier.height(8.dp))
             Text(
-                text     = "Puede ser 0 si la cuenta está vacía.",
+                text     = "stringResource(Res.string.account_initial_balance_zero_hint)",    //TODO
                 fontSize = 11.sp,
                 color    = MaterialTheme.appColors.textSecondary
             )
@@ -138,7 +143,7 @@ fun SetInitialBalanceBottomSheet(
                     disabledContainerColor = MaterialTheme.appColors.primary.copy(alpha = 0.38f)
                 )
             ) {
-                Text("Establecer saldo", fontSize = 16.sp, fontWeight = FontWeight.Medium)
+                Text("stringResource(Res.string.account_initial_balance_set_btn)", fontSize = 16.sp, fontWeight = FontWeight.Medium)    //TODO
             }
         }
     }

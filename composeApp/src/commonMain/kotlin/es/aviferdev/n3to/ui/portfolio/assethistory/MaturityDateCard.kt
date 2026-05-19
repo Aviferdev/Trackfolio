@@ -22,6 +22,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.ui.portfolio.components.formatFullDate
 import es.aviferdev.n3to.ui.theme.ExpenseRed
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.fixedincome_maturity_label
+import org.jetbrains.compose.resources.stringResource
 
 // ─── Maturity date card ───────────────────────────────────────────────────────
 @Composable
@@ -42,7 +45,7 @@ fun MaturityDateCard(maturityDate: Long, modifier: Modifier = Modifier) {
             Text(if (isExpired) "⏰" else "📅", fontSize = 22.sp)
             Spacer(Modifier.width(12.dp))
             Column(modifier = Modifier.weight(1f)) {
-                Text("Vencimiento", fontSize = 10.sp, color = MaterialTheme.appColors.textTertiary)
+                Text(stringResource(Res.string.fixedincome_maturity_label), fontSize = 10.sp, color = MaterialTheme.appColors.textTertiary)
                 Spacer(Modifier.height(2.dp))
                 Text(
                     formatFullDate(maturityDate),

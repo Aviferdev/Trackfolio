@@ -16,6 +16,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.ui.theme.*
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.backup_reminder_dialog_hint
+import n3to.composeapp.generated.resources.backup_reminder_dialog_message
+import n3to.composeapp.generated.resources.backup_reminder_dialog_title
+import n3to.composeapp.generated.resources.common_accept
+import n3to.composeapp.generated.resources.common_cancel
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 
 /**
@@ -54,7 +61,7 @@ fun BackupReminderIntervalDialog(
         shape = RoundedCornerShape(20.dp),
         title = {
             Text(
-                text = "Recordatorio de backup",
+                text = stringResource(Res.string.backup_reminder_dialog_title),
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.appColors.textPrimary,
@@ -65,7 +72,7 @@ fun BackupReminderIntervalDialog(
         text = {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(
-                    text = "¿Cuándo quieres que te lo recordemos de nuevo?",
+                    text = stringResource(Res.string.backup_reminder_dialog_message),
                     fontSize = 13.sp,
                     color = MaterialTheme.appColors.textSecondary,
                     textAlign = TextAlign.Center,
@@ -107,7 +114,7 @@ fun BackupReminderIntervalDialog(
                 // Mensaje informativo: desactivar solo desde Ajustes
                 Spacer(Modifier.height(12.dp))
                 Text(
-                    text = "Si quieres desactivar este recordatorio, ve a Ajustes → Recordatorios.",
+                    text = stringResource(Res.string.backup_reminder_dialog_hint),
                     fontSize = 11.sp,
                     color = MaterialTheme.appColors.textTertiary,
                     textAlign = TextAlign.Center,
@@ -120,7 +127,7 @@ fun BackupReminderIntervalDialog(
                 onClick = { onIntervalSelected(selectedOption) }
             ) {
                 Text(
-                    "Aceptar",
+                    stringResource(Res.string.common_accept),
                     color = MaterialTheme.appColors.cyanAccent,
                     fontWeight = FontWeight.SemiBold
                 )
@@ -129,7 +136,7 @@ fun BackupReminderIntervalDialog(
         dismissButton = {
             TextButton(onClick = onDismiss) {
                 Text(
-                    "Cancelar",
+                    stringResource(Res.string.common_cancel),
                     color = MaterialTheme.appColors.textSecondary
                 )
             }

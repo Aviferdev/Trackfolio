@@ -29,6 +29,10 @@ import es.aviferdev.n3to.ui.theme.N3toTheme
 import es.aviferdev.n3to.ui.theme.formatAmount
 import es.aviferdev.n3to.ui.theme.maskAmount
 import androidx.compose.ui.tooling.preview.Preview
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.portfolio_closed_badge
+import n3to.composeapp.generated.resources.portfolio_summary_realized
+import org.jetbrains.compose.resources.stringResource
 import kotlin.math.abs
 
 @Composable
@@ -82,10 +86,10 @@ fun ClosedAssetCard(
                     color = MaterialTheme.appColors.textSecondary,
                     maxLines = 1
                 )
-                Text("Cerrada", fontSize = 10.sp, color = MaterialTheme.appColors.textTertiary)
+                Text(stringResource(Res.string.portfolio_closed_badge), fontSize = 10.sp, color = MaterialTheme.appColors.textTertiary)
             }
             Column(horizontalAlignment = Alignment.End) {
-                Text("Realizado", fontSize = 10.sp, color = MaterialTheme.appColors.textTertiary)
+                Text(stringResource(Res.string.portfolio_summary_realized), fontSize = 10.sp, color = MaterialTheme.appColors.textTertiary)
                 Text(
                     if (pos.realizedPnL == 0.0) "—"
                     else "${if (pos.realizedPnL >= 0) "+" else "−"} ${maskAmount(formatAmount(abs(pos.realizedPnL)), balancesHidden)} €",

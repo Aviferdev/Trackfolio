@@ -52,7 +52,15 @@ import es.aviferdev.n3to.ui.theme.PrimaryDark
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import es.aviferdev.n3to.ui.theme.formatAmount
 import es.aviferdev.n3to.ui.theme.formatDate
-
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.common_close
+//import n3to.composeapp.generated.resources.portfolio_update_price_completed_format
+//import n3to.composeapp.generated.resources.portfolio_update_price_confirm_cd
+//import n3to.composeapp.generated.resources.portfolio_update_price_last_format    //TODO
+//import n3to.composeapp.generated.resources.portfolio_update_price_new_placeholder
+//import n3to.composeapp.generated.resources.portfolio_update_price_no_price
+import n3to.composeapp.generated.resources.portfolio_update_price_title
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -91,14 +99,14 @@ fun PriceUpdateBottomSheet(
         ) {
             // Header
             Text(
-                text       = "Actualizar precios",
+                text       = stringResource(Res.string.portfolio_update_price_title),
                 fontSize   = 18.sp,
                 fontWeight = FontWeight.SemiBold,
                 color      = MaterialTheme.appColors.textPrimary,
                 modifier   = Modifier.padding(bottom = 4.dp)
             )
             Text(
-                text     = "$completedCount de $totalCount actualizados",
+                text     = "stringResource(Res.string.portfolio_update_price_completed_format, completedCount, totalCount)",    //TODO
                 fontSize = 13.sp,
                 color    = MaterialTheme.appColors.textSecondary
             )
@@ -152,7 +160,7 @@ fun PriceUpdateBottomSheet(
                 onClick  = onDismiss,
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             ) {
-                Text("Cerrar", fontSize = 14.sp, color = MaterialTheme.appColors.textSecondary)
+                Text(stringResource(Res.string.common_close), fontSize = 14.sp, color = MaterialTheme.appColors.textSecondary)
             }
         }
     }
@@ -187,7 +195,7 @@ private fun AssetPriceUpdateRow(
                     if (isCompleted) {
                         Icon(
                             Icons.Default.Check,
-                            contentDescription = "Completado",
+                            contentDescription = "stringResource(Res.string.portfolio_update_price_confirm_cd)",    //TODO
                             tint     = Color.White,
                             modifier = Modifier.size(20.dp)
                         )
@@ -225,13 +233,13 @@ private fun AssetPriceUpdateRow(
                     }
                     if (asset.currentPriceUpdatedAt != null) {
                         Text(
-                            text     = "Última: ${formatDate(asset.currentPriceUpdatedAt)}",
+                            text     = "stringResource(Res.string.portfolio_update_price_last_format, formatDate(asset.currentPriceUpdatedAt))",    //TODO
                             fontSize = 10.sp,
                             color    = MaterialTheme.appColors.textSecondary.copy(alpha = 0.7f)
                         )
                     } else {
                         Text(
-                            text     = "Sin precio registrado",
+                            text     = "stringResource(Res.string.portfolio_update_price_no_price)",    //TODO
                             fontSize = 10.sp,
                             color    = MaterialTheme.appColors.textSecondary.copy(alpha = 0.7f)
                         )
@@ -250,7 +258,7 @@ private fun AssetPriceUpdateRow(
                         onValueChange = { new ->
                             onPriceInputChange(new.filter { c -> c.isDigit() || c == ',' || c == '.' })
                         },
-                        placeholder     = { Text("Nuevo precio", fontSize = 14.sp, color = MaterialTheme.appColors.textSecondary.copy(alpha = 0.5f)) },
+                        placeholder     = { Text("stringResource(Res.string.portfolio_update_price_new_placeholder)", fontSize = 14.sp, color = MaterialTheme.appColors.textSecondary.copy(alpha = 0.5f)) },    //TODO
                         textStyle       = TextStyle(fontSize = 14.sp, color = MaterialTheme.appColors.textPrimary),
                         modifier        = Modifier.weight(1f).height(48.dp),
                         shape           = RoundedCornerShape(8.dp),
@@ -273,7 +281,7 @@ private fun AssetPriceUpdateRow(
                         ),
                         modifier = Modifier.size(48.dp)
                     ) {
-                        Icon(Icons.Default.Check, "Confirmar", modifier = Modifier.size(20.dp))
+                        Icon(Icons.Default.Check, "stringResource(Res.string.portfolio_update_price_confirm_cd)", modifier = Modifier.size(20.dp))    //TODO
                     }
                 }
             }

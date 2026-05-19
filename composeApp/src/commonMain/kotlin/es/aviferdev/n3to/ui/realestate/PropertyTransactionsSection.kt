@@ -17,6 +17,9 @@ import es.aviferdev.n3to.domain.model.Transaction
 import es.aviferdev.n3to.ui.common.SectionHeader
 import es.aviferdev.n3to.ui.theme.*
 import androidx.compose.ui.tooling.preview.Preview
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.realestate_linked_transactions
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun PropertyTransactionsSection(
@@ -32,7 +35,7 @@ fun PropertyTransactionsSection(
         elevation = CardDefaults.cardElevation(0.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            SectionHeader(label = "Movimientos vinculados")
+            SectionHeader(label = stringResource(Res.string.realestate_linked_transactions))
             Spacer(Modifier.height(8.dp))
 
             transactions.forEachIndexed { index, tx ->

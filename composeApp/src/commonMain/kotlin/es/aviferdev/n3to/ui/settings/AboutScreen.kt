@@ -61,6 +61,23 @@ import es.aviferdev.n3to.ui.theme.N3toTheme
 
 import kotlinx.coroutines.delay
 import androidx.compose.ui.tooling.preview.Preview
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.about_app_name
+import n3to.composeapp.generated.resources.about_contact_label
+import n3to.composeapp.generated.resources.about_developer_label
+import n3to.composeapp.generated.resources.about_developer_value
+import n3to.composeapp.generated.resources.about_license_label
+import n3to.composeapp.generated.resources.about_license_value
+import n3to.composeapp.generated.resources.about_rate_app_label
+import n3to.composeapp.generated.resources.about_revenuecat_id_label
+import n3to.composeapp.generated.resources.about_section_app
+import n3to.composeapp.generated.resources.about_section_dev
+import n3to.composeapp.generated.resources.about_section_rate
+import n3to.composeapp.generated.resources.about_share_app_label
+import n3to.composeapp.generated.resources.about_tagline
+import n3to.composeapp.generated.resources.about_title
+import n3to.composeapp.generated.resources.about_version_label
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import org.koin.core.qualifier.named
 
@@ -123,7 +140,7 @@ fun AboutContent(
     }
 
     Column(modifier = modifier.fillMaxSize().background(appCNavyDeep)) {
-        TopBarApp(title = "Acerca de", navigateBack = onBack)
+        TopBarApp(title = stringResource(Res.string.about_title), navigateBack = onBack)
 
         LazyColumn(
             contentPadding = PaddingValues(horizontal = 16.dp, vertical = 14.dp),
@@ -136,11 +153,11 @@ fun AboutContent(
 
             // ── Información de la aplicación ──────────────────────────────────
             item {
-                N3toLabel(text = "Aplicación")
+                N3toLabel(text = stringResource(Res.string.about_section_app))
                 Spacer(Modifier.height(8.dp))
                 AboutGroupCard {
                     AboutClickableInfoRow(
-                        label = "Versión",
+                        label = stringResource(Res.string.about_version_label),
                         value = appVersion,
                         onClick = {
                             tapCount++
@@ -165,7 +182,7 @@ fun AboutContent(
                             ) {
                                 Column(modifier = Modifier.weight(1f)) {
                                     Text(
-                                        text = "ID RevenueCat",
+                                        text = stringResource(Res.string.about_revenuecat_id_label),
                                         fontSize = 13.sp,
                                         fontWeight = FontWeight.Medium,
                                         color = appCTextPrimary
@@ -186,15 +203,15 @@ fun AboutContent(
 
             // ── Información de desarrollo ─────────────────────────────────────
             item {
-                N3toLabel(text = "Desarrollo")
+                N3toLabel(text = stringResource(Res.string.about_section_dev))
                 Spacer(Modifier.height(8.dp))
                 AboutGroupCard {
-                    AboutInfoRow(label = "Desarrollador", value = "AviferDev")
+                    AboutInfoRow(label = stringResource(Res.string.about_developer_label), value = stringResource(Res.string.about_developer_value))
                     AboutRowDivider()
-                    AboutInfoRow(label = "Licencia", value = "Propietaria")
+                    AboutInfoRow(label = stringResource(Res.string.about_license_label), value = stringResource(Res.string.about_license_value))
                     AboutRowDivider()
                     AboutClickableInfoRow(
-                        label = "Contacto",
+                        label = stringResource(Res.string.about_contact_label),
                         value = if (copiedEmail) "Copiado" else "apps@avifer.dev",
                         onClick = {
                             clipboardManager.setText(AnnotatedString("apps@avifer.dev"))
@@ -206,18 +223,18 @@ fun AboutContent(
 
             // ── Valorar y compartir la app ─────────────────────────────────────
             item {
-                N3toLabel(text = "¿Te gusta N3to?")
+                N3toLabel(text = stringResource(Res.string.about_section_rate))
                 Spacer(Modifier.height(8.dp))
                 AboutGroupCard {
                     AboutNavigableRow(
                         icon = Icons.Outlined.Star,
-                        label = "Valorar la app",
+                        label = stringResource(Res.string.about_rate_app_label),
                         onClick = onOpenStore
                     )
                     AboutRowDivider()
                     AboutNavigableRow(
                         icon = Icons.Outlined.Share,
-                        label = "Compartir la app",
+                        label = stringResource(Res.string.about_share_app_label),
                         onClick = onShareApp
                     )
                 }
@@ -273,7 +290,7 @@ private fun AboutHeaderSection() {
         )
         Spacer(Modifier.height(12.dp))
         Text(
-            text = "N3to",
+            text = stringResource(Res.string.about_app_name),
             fontSize = 24.sp,
             fontWeight = FontWeight.ExtraBold,
             color = appCTextPrimary,
@@ -281,7 +298,7 @@ private fun AboutHeaderSection() {
         )
         Spacer(Modifier.height(4.dp))
         Text(
-            text = "Controla tus finanzas personales",
+            text = stringResource(Res.string.about_tagline),
             fontSize = 13.sp,
             color = appCTextTertiary
         )

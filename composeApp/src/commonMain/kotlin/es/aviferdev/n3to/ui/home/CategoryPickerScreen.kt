@@ -44,6 +44,14 @@ import es.aviferdev.n3to.domain.model.IncomeType
 import es.aviferdev.n3to.domain.model.TransactionType
 import es.aviferdev.n3to.ui.common.navigation.TopBarApp
 import es.aviferdev.n3to.ui.theme.*
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.category_create_cd
+import n3to.composeapp.generated.resources.category_help_examples
+import n3to.composeapp.generated.resources.category_help_text
+import n3to.composeapp.generated.resources.category_help_title
+import n3to.composeapp.generated.resources.common_search_cd
+import n3to.composeapp.generated.resources.common_search_category_placeholder
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -318,7 +326,7 @@ private fun SearchField(
             onValueChange = onChange,
             placeholder   = {
                 Text(
-                    "Buscar categoría…",
+                    stringResource(Res.string.common_search_category_placeholder),
                     color    = MaterialTheme.appColors.textSecondary.copy(alpha = 0.5f),
                     fontSize = 13.sp
                 )
@@ -326,7 +334,7 @@ private fun SearchField(
             leadingIcon = {
                 Icon(
                     Icons.Outlined.Search,
-                    contentDescription = "Buscar",
+                    contentDescription = stringResource(Res.string.common_search_cd),
                     modifier           = Modifier.size(18.dp),
                     tint               = MaterialTheme.appColors.textSecondary
                 )
@@ -455,7 +463,7 @@ private fun CreateCategoryButton(onClick: () -> Unit) {
     ) {
         Icon(
             Icons.Outlined.Add,
-            contentDescription = "Crear categoría",
+            contentDescription = stringResource(Res.string.category_create_cd),
             tint    = MaterialTheme.appColors.primary,
             modifier = Modifier.size(18.dp)
         )
@@ -492,7 +500,7 @@ private fun CategoryHintCard() {
                 modifier = Modifier.size(15.dp)
             )
             Text(
-                text = "CÓMO ORGANIZAR CATEGORÍAS",
+                text = stringResource(Res.string.category_help_title),
                 fontSize = 10.sp,
                 fontWeight = FontWeight.Bold,
                 letterSpacing = 0.6.sp,
@@ -500,14 +508,12 @@ private fun CategoryHintCard() {
             )
         }
         Text(
-            text = "Agrupa gastos del mismo tipo. Ejemplos:",
+            text = stringResource(Res.string.category_help_text),
             fontSize = 12.sp,
             color = MaterialTheme.appColors.textSecondary
         )
         Text(
-            text = "• Hogar → alquiler, hipoteca, suministros\n" +
-                   "• Alimentación → supermercado, restaurantes\n" +
-                   "• Transporte → gasolina, transporte público",
+            text = stringResource(Res.string.category_help_examples),
             fontSize = 12.sp,
             color = MaterialTheme.appColors.textSecondary,
             lineHeight = 18.sp

@@ -42,6 +42,12 @@ import es.aviferdev.n3to.ui.theme.formatAmount
 import es.aviferdev.n3to.ui.theme.formatPercent
 import es.aviferdev.n3to.ui.theme.maskAmount
 import androidx.compose.ui.tooling.preview.Preview
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.portfolio_compound_effect_estimated
+import n3to.composeapp.generated.resources.portfolio_compound_effect_title
+import n3to.composeapp.generated.resources.portfolio_compound_low_effect
+import n3to.composeapp.generated.resources.portfolio_compound_no_effect
+import org.jetbrains.compose.resources.stringResource
 import kotlin.math.pow
 
 private const val PROJECTION_YEARS = 30
@@ -157,7 +163,7 @@ private fun CompactHeader(
                 }
             } else {
                 Text(
-                    "Efecto compuesto",
+                    stringResource(Res.string.portfolio_compound_effect_title),
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Medium,
                     color = Color.White.copy(alpha = 0.55f)
@@ -191,12 +197,12 @@ private fun ExpandedContent(
         when {
             compoundEffect.totalReturn <= 0.0 -> {
                 EmptyState(
-                    message = "El efecto compuesto se activa cuando tu cartera\nestá en positivo. ¡Sigue invirtiendo!"
+                    message = stringResource(Res.string.portfolio_compound_no_effect)
                 )
             }
             compoundEffect.compoundEffect <= 0.0 -> {
                 EmptyState(
-                    message = "Aún no hay efecto compuesto significativo.\nMantén tus inversiones a largo plazo."
+                    message = stringResource(Res.string.portfolio_compound_low_effect)
                 )
             }
             else -> {
@@ -238,7 +244,7 @@ private fun MainMetric(
     balancesHidden: Boolean
 ) {
     Text(
-        "Has ganado",
+        stringResource(Res.string.portfolio_compound_effect_estimated),
         fontSize = 13.sp,
         color = Color.White.copy(alpha = 0.55f)
     )

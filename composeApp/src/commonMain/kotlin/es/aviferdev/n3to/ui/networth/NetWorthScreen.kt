@@ -47,8 +47,11 @@ import n3to.composeapp.generated.resources.networth_liabilities_label_alt
 import n3to.composeapp.generated.resources.networth_monthly_title
 import n3to.composeapp.generated.resources.networth_no_liabilities
 import n3to.composeapp.generated.resources.networth_no_properties
+import n3to.composeapp.generated.resources.networth_no_valuables
 import n3to.composeapp.generated.resources.networth_realestate_label
 import n3to.composeapp.generated.resources.networth_title
+import n3to.composeapp.generated.resources.networth_valuables_label
+import n3to.composeapp.generated.resources.networth_add_valuable_cd
 import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
@@ -327,7 +330,7 @@ fun NetWorthContent(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment     = Alignment.CenterVertically
                     ) {
-                        N3toLabel(text = "Bienes")
+                        N3toLabel(text = stringResource(Res.string.networth_valuables_label))
                         IconButton(
                             onClick  = onAddValuable,
                             modifier = Modifier
@@ -337,7 +340,7 @@ fun NetWorthContent(
                         ) {
                             Icon(
                                 imageVector = Icons.Outlined.Add,
-                                contentDescription = "Añadir bien",
+                                contentDescription = stringResource(Res.string.networth_add_valuable_cd),
                                 tint        = MaterialTheme.appColors.cyanAccent,
                                 modifier    = Modifier.size(15.dp)
                             )
@@ -360,7 +363,7 @@ fun NetWorthContent(
                                 .padding(24.dp),
                             contentAlignment = Alignment.Center
                         ) {
-                            Text("No hay bienes registrados", color = MaterialTheme.appColors.textTertiary, fontSize = 13.sp)
+                            Text(stringResource(Res.string.networth_no_valuables), color = MaterialTheme.appColors.textTertiary, fontSize = 13.sp)
                         }
                     }
                 }

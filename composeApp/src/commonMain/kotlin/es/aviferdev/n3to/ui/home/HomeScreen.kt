@@ -86,8 +86,10 @@ import n3to.composeapp.generated.resources.home_confirm_identity
 import n3to.composeapp.generated.resources.home_hide_balances
 import n3to.composeapp.generated.resources.home_show_balances
 import n3to.composeapp.generated.resources.home_section_emergency_fund
+import n3to.composeapp.generated.resources.home_section_budgets
 import n3to.composeapp.generated.resources.home_section_goals
 import n3to.composeapp.generated.resources.home_settings_cd
+import n3to.composeapp.generated.resources.app_name
 import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import org.koin.compose.koinInject
@@ -453,7 +455,7 @@ fun HomeContent(
                     fontWeight = FontWeight.Normal
                 )
                 Text(
-                    text = "N3to",
+                    text = stringResource(Res.string.app_name),
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.appColors.textPrimary,
@@ -576,7 +578,7 @@ fun HomeContent(
         // ── Presupuestos ──────────────────────────────────────────────────────
         Spacer(Modifier.height(24.dp))
         SectionHeader(
-            label = "PRESUPUESTOS",
+            label = stringResource(Res.string.home_section_budgets),
             actionLabel = if (budgetStatus.isNotEmpty()) "Editar" else null,
             onAction = if (budgetStatus.isNotEmpty()) onNavigateToExpenseSettings else null,
             modifier = Modifier.padding(horizontal = 16.dp)

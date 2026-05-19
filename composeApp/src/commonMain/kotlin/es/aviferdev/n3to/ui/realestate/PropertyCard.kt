@@ -25,6 +25,11 @@ import es.aviferdev.n3to.ui.common.ProgressBar
 import es.aviferdev.n3to.ui.common.StatusTag
 import es.aviferdev.n3to.ui.theme.*
 import androidx.compose.ui.tooling.preview.Preview
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.realestate_mortgage_amount_format
+import n3to.composeapp.generated.resources.realestate_no_mortgage_short
+import n3to.composeapp.generated.resources.realestate_sold_with_emoji
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun PropertyCard(
@@ -66,7 +71,7 @@ fun PropertyCard(
             Spacer(Modifier.height(8.dp))
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(6.dp), verticalAlignment = Alignment.CenterVertically) {
                 if (property.isSold) {
-                    StatusTag(label = "\u2705 Vendida", color = MaterialTheme.appColors.income)
+                    StatusTag(label = stringResource(Res.string.realestate_sold_with_emoji), color = MaterialTheme.appColors.income)
                 } else {
                     StatusTag(
                         label = when (property.rentalStatus) {
@@ -80,13 +85,13 @@ fun PropertyCard(
                     )
                 }
                 if (showMortgageReminder) {
-                    StatusTag(label = "\uD83C\uDFE0 Sin hipoteca", color = MaterialTheme.appColors.warnAmber)
+                    StatusTag(label = stringResource(Res.string.realestate_no_mortgage_short), color = MaterialTheme.appColors.warnAmber)
                 }
             }
             if (linkedLoan != null) {
                 Spacer(Modifier.height(8.dp))
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                    Text("Hipoteca: ${formatAmountEuro(linkedLoan.outstandingPrincipal)}", fontSize = 10.sp, color = MaterialTheme.appColors.textTertiary)
+                    Text(stringResource(Res.string.realestate_mortgage_amount_format, formatAmountEuro(linkedLoan.outstandingPrincipal)), fontSize = 10.sp, color = MaterialTheme.appColors.textTertiary)
                     Text("${linkedLoan.paidInstallments}/${linkedLoan.totalInstallments}", fontSize = 10.sp, color = MaterialTheme.appColors.textTertiary)
                 }
                 Spacer(Modifier.height(4.dp))

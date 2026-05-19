@@ -23,7 +23,11 @@ import es.aviferdev.n3to.ui.theme.*
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.account_add_title
 import n3to.composeapp.generated.resources.account_edit_title
+import n3to.composeapp.generated.resources.account_initial_balance_desc
+import n3to.composeapp.generated.resources.account_initial_balance_label
+import n3to.composeapp.generated.resources.account_initial_balance_valid_hint
 import n3to.composeapp.generated.resources.account_name_placeholder
+import n3to.composeapp.generated.resources.account_name_supporting_text
 import n3to.composeapp.generated.resources.common_cancel
 import n3to.composeapp.generated.resources.portfolio_add_asset_save
 import n3to.composeapp.generated.resources.portfolio_name_required
@@ -97,7 +101,7 @@ fun AddEditAccountBottomSheet(
                 supportingText = if (nameError) {
                     { Text(stringResource(Res.string.portfolio_name_required)) }
                 } else {
-                    { Text("Nombre que verás en toda la app. Ej: Cuenta corriente, Efectivo, Degiro...") }
+                    { Text(stringResource(Res.string.account_name_supporting_text)) }
                 },
                 modifier        = Modifier.fillMaxWidth(),
                 singleLine      = true,
@@ -129,7 +133,7 @@ fun AddEditAccountBottomSheet(
                         balanceText  = it.filter { c -> c.isDigit() || c == ',' || c == '.' }
                         balanceError = false
                     },
-                    label         = { Text("Saldo inicial") },
+                    label         = { Text(stringResource(Res.string.account_initial_balance_label)) },
                     placeholder   = { Text("0,00") },
                     trailingIcon  = {
                         Text(
@@ -141,9 +145,9 @@ fun AddEditAccountBottomSheet(
                     },
                     isError        = balanceError,
                     supportingText = if (balanceError) {
-                        { Text("Introduce un importe válido (puede ser 0)") }
+                        { Text(stringResource(Res.string.account_initial_balance_valid_hint)) }
                     } else {
-                        { Text("Dinero que ya tienes en esta cuenta hoy. Pon 0 si está vacía.") }
+                        { Text(stringResource(Res.string.account_initial_balance_desc)) }
                     },
                     modifier        = Modifier.fillMaxWidth(),
                     singleLine      = true,

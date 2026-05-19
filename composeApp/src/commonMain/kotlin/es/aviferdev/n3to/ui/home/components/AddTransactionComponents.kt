@@ -53,6 +53,12 @@ import es.aviferdev.n3to.ui.home.IrpfInputMode
 import es.aviferdev.n3to.ui.theme.PrimaryAlpha
 import es.aviferdev.n3to.ui.theme.PrimaryDark
 
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.common_accept
+import n3to.composeapp.generated.resources.common_cancel
+import n3to.composeapp.generated.resources.common_date_label
+import n3to.composeapp.generated.resources.transaction_net_estimated
+import org.jetbrains.compose.resources.stringResource
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
@@ -255,7 +261,7 @@ internal fun DateRow(
 
     DarkTappableRow(
         icon = Icons.Outlined.CalendarMonth,
-        label = "Fecha",
+        label = stringResource(Res.string.common_date_label),
         value = dateText,
         onClick = { showPicker = true }
     )
@@ -274,12 +280,12 @@ internal fun DateRow(
                     }
                     showPicker = false
                 }) {
-                    Text("Aceptar", color = MaterialTheme.appColors.primary, fontWeight = FontWeight.Medium)
+                    Text(stringResource(Res.string.common_accept), color = MaterialTheme.appColors.primary, fontWeight = FontWeight.Medium)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showPicker = false }) {
-                    Text("Cancelar", color = MaterialTheme.appColors.textSecondary)
+                    Text(stringResource(Res.string.common_cancel), color = MaterialTheme.appColors.textSecondary)
                 }
             },
             colors = DatePickerDefaults.colors(containerColor = MaterialTheme.appColors.surface)
@@ -480,7 +486,7 @@ internal fun CalculatedNetRow(net: Double) {
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text("Neto estimado", fontSize = 12.sp, fontWeight = FontWeight.Medium, color = MaterialTheme.appColors.income)
+            Text(stringResource(Res.string.transaction_net_estimated), fontSize = 12.sp, fontWeight = FontWeight.Medium, color = MaterialTheme.appColors.income)
             Text("$formatted €", fontSize = 14.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.appColors.income)
         }
     }

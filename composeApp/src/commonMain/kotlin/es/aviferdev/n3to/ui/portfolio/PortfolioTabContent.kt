@@ -47,6 +47,10 @@ import n3to.composeapp.generated.resources.portfolio_empty_subtitle
 import n3to.composeapp.generated.resources.portfolio_empty_title
 import n3to.composeapp.generated.resources.portfolio_evolution_title
 import n3to.composeapp.generated.resources.portfolio_monthly_value
+import n3to.composeapp.generated.resources.portfolio_no_portfolios_subtitle
+import n3to.composeapp.generated.resources.portfolio_no_portfolios_title
+import n3to.composeapp.generated.resources.portfolio_no_positions_select
+import n3to.composeapp.generated.resources.portfolio_no_positions_wallet
 import n3to.composeapp.generated.resources.portfolio_settings_cd
 import n3to.composeapp.generated.resources.portfolio_title
 import org.jetbrains.compose.resources.stringResource
@@ -99,8 +103,8 @@ fun PortfolioTabContent(
                 item {
                     EmptyStateView(
                         icon = "📂",
-                        title = "Sin carteras",
-                        subtitle = "Crea una cartera desde Ajustes\npara empezar a organizar tus inversiones",
+                        title = stringResource(Res.string.portfolio_no_portfolios_title),
+                        subtitle = stringResource(Res.string.portfolio_no_portfolios_subtitle),
                         actionLabel = "Ir a ajustes",
                         onAction = onNavigateToSettings
                     )
@@ -130,13 +134,13 @@ fun PortfolioTabContent(
                         EmptyStateView(
                             icon = "📈",
                             title = stringResource(Res.string.portfolio_empty_title),
-                            subtitle = "Sin posiciones.\nSelecciona una cartera y usa +\npara añadir tu primera inversión"
+                            subtitle = stringResource(Res.string.portfolio_no_positions_select)
                         )
                     } else {
                         EmptyStateView(
                             icon = "📈",
-                            title = "Sin posiciones",
-                            subtitle = "Esta cartera no tiene movimientos aún.\nPulsa + para añadir tu primera inversión"
+                            title = stringResource(Res.string.portfolio_empty_title),
+                            subtitle = stringResource(Res.string.portfolio_no_positions_wallet)
                         )
                     }
                 }

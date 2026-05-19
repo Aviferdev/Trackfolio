@@ -45,6 +45,10 @@ import es.aviferdev.n3to.ui.theme.formatAmountEuro
 import es.aviferdev.n3to.ui.theme.maskAmount
 import androidx.compose.ui.tooling.preview.Preview
 import kotlin.math.abs
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.common_total
+import n3to.composeapp.generated.resources.networth_no_data
+import org.jetbrains.compose.resources.stringResource
 
 /**
  * Componente de gráfico donut reutilizable.
@@ -101,7 +105,7 @@ fun DonutChartCard(
                     // Total al centro
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text(
-                            text     = "Total",
+                            text     = stringResource(Res.string.common_total),
                             fontSize = 10.sp,
                             color    = MaterialTheme.appColors.textSecondary
                         )
@@ -244,7 +248,7 @@ private fun EmptyDonutState(title: String, subtitle: String) {
             )
             Spacer(Modifier.height(8.dp))
             Text(
-                text     = "Sin datos para este año",
+                text     = stringResource(Res.string.networth_no_data),
                 fontSize = 13.sp,
                 color    = MaterialTheme.appColors.textSecondary,
                 textAlign = TextAlign.Center

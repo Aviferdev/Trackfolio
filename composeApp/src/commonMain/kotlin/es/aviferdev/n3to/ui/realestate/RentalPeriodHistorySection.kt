@@ -18,6 +18,10 @@ import es.aviferdev.n3to.ui.common.SectionHeader
 import es.aviferdev.n3to.ui.common.StatusTag
 import es.aviferdev.n3to.ui.theme.*
 import androidx.compose.ui.tooling.preview.Preview
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.common_active_badge
+import n3to.composeapp.generated.resources.realestate_rental_history_label
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun RentalPeriodHistorySection(
@@ -33,7 +37,7 @@ fun RentalPeriodHistorySection(
         elevation = CardDefaults.cardElevation(0.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            SectionHeader(label = "Historial de alquiler")
+            SectionHeader(label = stringResource(Res.string.realestate_rental_history_label))
             Spacer(Modifier.height(8.dp))
 
             periods.forEachIndexed { index, period ->
@@ -46,7 +50,7 @@ fun RentalPeriodHistorySection(
                             Text("${period.monthlyRent.toInt()} €/mes", fontWeight = FontWeight.SemiBold, fontSize = 13.sp, color = MaterialTheme.appColors.textPrimary)
                             Spacer(Modifier.width(6.dp))
                             if (period.isActive) {
-                                StatusTag(label = "Activo", color = MaterialTheme.appColors.income)
+                                StatusTag(label = stringResource(Res.string.common_active_badge), color = MaterialTheme.appColors.income)
                             }
                         }
                         Spacer(Modifier.height(2.dp))

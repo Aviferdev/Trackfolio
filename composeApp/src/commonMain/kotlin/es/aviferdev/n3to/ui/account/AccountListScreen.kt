@@ -38,13 +38,17 @@ import es.aviferdev.n3to.ui.theme.PrimaryDark
 
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.account_active_badge
 import n3to.composeapp.generated.resources.account_add_title
+import n3to.composeapp.generated.resources.account_balance_short
 import n3to.composeapp.generated.resources.account_delete_confirm_title
+import n3to.composeapp.generated.resources.account_delete_full_message
+import n3to.composeapp.generated.resources.account_empty_subtitle
 import n3to.composeapp.generated.resources.account_list_title
 import n3to.composeapp.generated.resources.account_no_accounts
 import n3to.composeapp.generated.resources.common_cancel
 import n3to.composeapp.generated.resources.common_delete
-import n3to.composeapp.generated.resources.account_empty_subtitle
+import n3to.composeapp.generated.resources.common_edit
 import org.jetbrains.compose.resources.stringResource
 import es.aviferdev.n3to.ui.theme.formatAmount
 import es.aviferdev.n3to.ui.theme.maskAmount
@@ -101,7 +105,7 @@ fun AccountListScreen(
     if (uiState.showDeleteConfirm && uiState.accountToDelete != null) {
         DeleteConfirmDialog(
             title = stringResource(Res.string.account_delete_confirm_title),
-            message = "Se eliminará «${uiState.accountToDelete!!.name}» junto con todos sus movimientos y deudas. Esta acción no se puede deshacer.",
+            message = stringResource(Res.string.account_delete_full_message, uiState.accountToDelete!!.name),
             onConfirm = { viewModel.confirmDelete() },
             onDismiss = { viewModel.cancelDelete() }
         )
@@ -272,10 +276,10 @@ private fun AccountCard(
                 }
                 Row {
                     IconButton(onClick = onEdit, modifier = Modifier.size(36.dp)) {
-                        Icon(Icons.Default.Edit, contentDescription = "Editar", modifier = Modifier.size(18.dp), tint = MaterialTheme.appColors.textSecondary)
+                        Icon(Icons.Default.Edit, contentDescription = stringResource(Res.string.common_edit), modifier = Modifier.size(18.dp), tint = MaterialTheme.appColors.textSecondary)
                     }
                     IconButton(onClick = onDelete, modifier = Modifier.size(36.dp)) {
-                        Icon(Icons.Default.Delete, contentDescription = "Eliminar", modifier = Modifier.size(18.dp), tint = MaterialTheme.appColors.expense)
+                        Icon(Icons.Default.Delete, contentDescription = stringResource(Res.string.common_delete), modifier = Modifier.size(18.dp), tint = MaterialTheme.appColors.expense)
                     }
                 }
             }
@@ -290,7 +294,7 @@ private fun AccountCard(
                     verticalAlignment     = Alignment.Bottom
                 ) {
                     Column {
-                        Text("Saldo actual", fontSize = 11.sp, color = MaterialTheme.appColors.textSecondary)
+                        Text(stringResource(Res.string.account_balance_short), fontSize = 11.sp, color = MaterialTheme.appColors.textSecondary)
                         Text(
                             text       = "${maskAmount(formatAmount(account.computedBalance), balancesHidden)} €",
                             fontSize   = 20.sp,
@@ -305,7 +309,7 @@ private fun AccountCard(
                                 .background(MaterialTheme.appColors.primary)
                                 .padding(horizontal = 10.dp, vertical = 4.dp)
                         ) {
-                            Text("Activa", fontSize = 11.sp, color = Color.White, fontWeight = FontWeight.Medium)
+                            Text(stringResource(Res.string.account_active_badge), fontSize = 11.sp, color = Color.White, fontWeight = FontWeight.Medium)
                         }
                     }
                 }

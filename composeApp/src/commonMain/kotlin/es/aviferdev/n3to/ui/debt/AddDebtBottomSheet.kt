@@ -22,7 +22,16 @@ import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.Debt
 import es.aviferdev.n3to.domain.model.DebtDirection
 import es.aviferdev.n3to.ui.theme.*
-
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.debt_amount_label
+import n3to.composeapp.generated.resources.debt_i_owe
+import n3to.composeapp.generated.resources.debt_note_optional
+import n3to.composeapp.generated.resources.debt_note_placeholder
+import n3to.composeapp.generated.resources.debt_person_label
+import n3to.composeapp.generated.resources.debt_person_placeholder
+import n3to.composeapp.generated.resources.debt_they_owe
+import n3to.composeapp.generated.resources.debt_type_label
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -133,17 +142,17 @@ fun AddDebtBottomSheetContent(
 
         Spacer(Modifier.height(20.dp))
 
-        Text(text = "Tipo de deuda", fontSize = 13.sp, color = MaterialTheme.appColors.textSecondary)
+        Text(text = stringResource(Res.string.debt_type_label), fontSize = 13.sp, color = MaterialTheme.appColors.textSecondary)
         Spacer(Modifier.height(8.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             DirectionChip(
-                label         = "Me deben",
+                label         = stringResource(Res.string.debt_they_owe),
                 selected      = direction == DebtDirection.THEY_OWE,
                 selectedColor = MaterialTheme.appColors.income,
                 onClick       = { onDirectionChange(DebtDirection.THEY_OWE) }
             )
             DirectionChip(
-                label         = "Debo yo",
+                label         = stringResource(Res.string.debt_i_owe),
                 selected      = direction == DebtDirection.I_OWE,
                 selectedColor = MaterialTheme.appColors.expense,
                 onClick       = { onDirectionChange(DebtDirection.I_OWE) }
@@ -152,12 +161,12 @@ fun AddDebtBottomSheetContent(
 
         Spacer(Modifier.height(20.dp))
 
-        Text(text = "Persona", fontSize = 13.sp, color = MaterialTheme.appColors.textSecondary)
+        Text(text = stringResource(Res.string.debt_person_label), fontSize = 13.sp, color = MaterialTheme.appColors.textSecondary)
         Spacer(Modifier.height(8.dp))
         OutlinedTextField(
             value         = personName,
             onValueChange = onPersonNameChange,
-            placeholder   = { Text("Nombre o apodo", color = MaterialTheme.appColors.textSecondary.copy(alpha = 0.6f), fontSize = 14.sp) },
+            placeholder   = { Text(stringResource(Res.string.debt_person_placeholder), color = MaterialTheme.appColors.textSecondary.copy(alpha = 0.6f), fontSize = 14.sp) },
             modifier      = Modifier.fillMaxWidth(),
             shape         = RoundedCornerShape(8.dp),
             keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words),
@@ -170,7 +179,7 @@ fun AddDebtBottomSheetContent(
 
         Spacer(Modifier.height(16.dp))
 
-        Text(text = "Importe", fontSize = 13.sp, color = MaterialTheme.appColors.textSecondary)
+        Text(text = stringResource(Res.string.debt_amount_label), fontSize = 13.sp, color = MaterialTheme.appColors.textSecondary)
         Spacer(Modifier.height(8.dp))
         OutlinedTextField(
             value         = amount,
@@ -191,12 +200,12 @@ fun AddDebtBottomSheetContent(
 
         Spacer(Modifier.height(16.dp))
 
-        Text(text = "Nota (opcional)", fontSize = 13.sp, color = MaterialTheme.appColors.textSecondary)
+        Text(text = stringResource(Res.string.debt_note_optional), fontSize = 13.sp, color = MaterialTheme.appColors.textSecondary)
         Spacer(Modifier.height(8.dp))
         OutlinedTextField(
             value         = notes,
             onValueChange = onNotesChange,
-            placeholder   = { Text("Ej. Cena del viernes", color = MaterialTheme.appColors.textSecondary.copy(alpha = 0.6f), fontSize = 14.sp) },
+            placeholder   = { Text(stringResource(Res.string.debt_note_placeholder), color = MaterialTheme.appColors.textSecondary.copy(alpha = 0.6f), fontSize = 14.sp) },
             modifier      = Modifier.fillMaxWidth(),
             shape         = RoundedCornerShape(8.dp),
             colors        = OutlinedTextFieldDefaults.colors(

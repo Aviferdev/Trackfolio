@@ -31,6 +31,14 @@ import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.MonthlyGoalProgress
 import es.aviferdev.n3to.ui.theme.ExpenseRed
 import es.aviferdev.n3to.ui.theme.PrimaryDark
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.annual_goal_compliance
+import n3to.composeapp.generated.resources.annual_goal_met
+import n3to.composeapp.generated.resources.annual_goal_not_met
+import n3to.composeapp.generated.resources.annual_no_goal
+import n3to.composeapp.generated.resources.home_goals_investment
+import n3to.composeapp.generated.resources.home_goals_savings
+import org.jetbrains.compose.resources.stringResource
 
 /**
  * Tarjeta de resumen anual de cumplimiento de objetivos.
@@ -73,7 +81,7 @@ fun GoalSummaryCard(
                 )
                 Spacer(Modifier.width(8.dp))
                 Text(
-                    text = "Cumplimiento de objetivos",
+                    text = stringResource(Res.string.annual_goal_compliance),
                     fontSize = 14.sp,
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.appColors.textPrimary
@@ -87,9 +95,9 @@ fun GoalSummaryCard(
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                GoalLegendItem(color = MaterialTheme.appColors.income, label = "Cumplido")
-                GoalLegendItem(color = MaterialTheme.appColors.expense, label = "No cumplido")
-                GoalLegendItem(color = MaterialTheme.appColors.textTertiary, label = "Sin objetivo")
+                GoalLegendItem(color = MaterialTheme.appColors.income, label = stringResource(Res.string.annual_goal_met))
+                GoalLegendItem(color = MaterialTheme.appColors.expense, label = stringResource(Res.string.annual_goal_not_met))
+                GoalLegendItem(color = MaterialTheme.appColors.textTertiary, label = stringResource(Res.string.annual_no_goal))
             }
 
             Spacer(Modifier.height(12.dp))
@@ -98,7 +106,7 @@ fun GoalSummaryCard(
             if (savingsTotal > 0) {
                 GoalTypeSummaryRow(
                     icon = Icons.Outlined.GpsFixed,
-                    label = "Ahorro",
+                    label = stringResource(Res.string.home_goals_savings),
                     achieved = savingsAchieved,
                     total = if (allMonthsHaveSavingsGoal) 12 else savingsTotal
                 )
@@ -114,7 +122,7 @@ fun GoalSummaryCard(
             if (investmentTotal > 0) {
                 GoalTypeSummaryRow(
                     icon = Icons.AutoMirrored.Outlined.ShowChart,
-                    label = "Inversión",
+                    label = stringResource(Res.string.home_goals_investment),
                     achieved = investmentAchieved,
                     total = if (allMonthsHaveInvestmentGoal) 12 else investmentTotal
                 )

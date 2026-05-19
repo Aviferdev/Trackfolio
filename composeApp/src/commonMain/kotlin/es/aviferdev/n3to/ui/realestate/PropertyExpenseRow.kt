@@ -18,6 +18,10 @@ import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.Category
 import es.aviferdev.n3to.domain.model.PropertyExpense
 import es.aviferdev.n3to.ui.theme.*
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.common_note_placeholder
+import n3to.composeapp.generated.resources.realestate_expense_delete_cd
+import org.jetbrains.compose.resources.stringResource
 
 /**
  * Fila reusable para añadir/editar un gasto de propiedad.
@@ -105,7 +109,7 @@ fun PropertyExpenseRow(
                 ) {
                     Icon(
                         Icons.Outlined.Close,
-                        contentDescription = "Eliminar gasto",
+                        contentDescription = stringResource(Res.string.realestate_expense_delete_cd),
                         tint = MaterialTheme.appColors.expense,
                         modifier = Modifier.size(18.dp)
                     )
@@ -148,7 +152,7 @@ fun PropertyExpenseRow(
                         notesText = it
                         onExpenseChange(expense.copy(notes = it.ifBlank { null }))
                     },
-                    placeholder = { Text("Nota", fontSize = 12.sp, color = MaterialTheme.appColors.textTertiary) },
+                    placeholder = { Text(stringResource(Res.string.common_note_placeholder), fontSize = 12.sp, color = MaterialTheme.appColors.textTertiary) },
                     modifier = Modifier.weight(1f),
                     singleLine = true,
                     textStyle = LocalTextStyle.current.copy(fontSize = 12.sp, color = MaterialTheme.appColors.textPrimary),

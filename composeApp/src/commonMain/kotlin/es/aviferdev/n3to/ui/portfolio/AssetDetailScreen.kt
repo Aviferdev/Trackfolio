@@ -29,6 +29,10 @@ import es.aviferdev.n3to.domain.model.Asset
 import es.aviferdev.n3to.domain.model.Platform
 import es.aviferdev.n3to.ui.common.navigation.TopBarApp
 import es.aviferdev.n3to.ui.theme.*
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.common_accept
+import n3to.composeapp.generated.resources.portfolio_update_price_current
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 import androidx.compose.ui.tooling.preview.Preview
@@ -75,7 +79,7 @@ fun AssetDetailScreen(
             text = { Text(msg, fontSize = 14.sp, color = appCTextSecondary) },
             confirmButton = {
                 TextButton(onClick = { viewModel.clearError() }) {
-                    Text("Aceptar", color = appCCyanAccent, fontWeight = FontWeight.Medium)
+                    Text(stringResource(Res.string.common_accept), color = appCCyanAccent, fontWeight = FontWeight.Medium)
                 }
             },
             shape = RoundedCornerShape(16.dp)
@@ -292,7 +296,7 @@ private fun AssetHeroCard(asset: Asset, modifier: Modifier = Modifier) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Precio actual",
+                    text = stringResource(Res.string.portfolio_update_price_current),
                     fontSize = 11.sp,
                     color = Color.White.copy(alpha = 0.45f)
                 )

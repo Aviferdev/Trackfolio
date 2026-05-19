@@ -34,6 +34,14 @@ import es.aviferdev.n3to.ui.theme.formatPercent
 import es.aviferdev.n3to.ui.theme.maskAmount
 import androidx.compose.ui.tooling.preview.Preview
 import kotlin.math.abs
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.fixedincome_capital_short
+import n3to.composeapp.generated.resources.fixedincome_coupon_paid
+import n3to.composeapp.generated.resources.fixedincome_register_coupon_btn
+import n3to.composeapp.generated.resources.fixedincome_title
+import n3to.composeapp.generated.resources.fixedincome_yield_label
+import n3to.composeapp.generated.resources.portfolio_update_price_current
+import org.jetbrains.compose.resources.stringResource
 
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
@@ -69,7 +77,7 @@ fun FixedIncomeSection(
                         )
                         Spacer(Modifier.width(8.dp))
                         Text(
-                            text = "Renta Fija",
+                            text = stringResource(Res.string.fixedincome_title),
                             fontSize = 16.sp,
                             fontWeight = FontWeight.SemiBold,
                             color = MaterialTheme.appColors.textPrimary
@@ -90,7 +98,7 @@ fun FixedIncomeSection(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Column {
-                        Text("Capital", fontSize = 11.sp, color = MaterialTheme.appColors.textTertiary)
+                        Text(stringResource(Res.string.fixedincome_capital_short), fontSize = 11.sp, color = MaterialTheme.appColors.textTertiary)
                         Text(
                             text = "${maskAmount(formatAmount(summary.totalPrincipal), balancesHidden)} €",
                             fontSize = 14.sp,
@@ -99,7 +107,7 @@ fun FixedIncomeSection(
                         )
                     }
                     Column(horizontalAlignment = Alignment.End) {
-                        Text("Valor actual", fontSize = 11.sp, color = MaterialTheme.appColors.textTertiary)
+                        Text(stringResource(Res.string.portfolio_update_price_current), fontSize = 11.sp, color = MaterialTheme.appColors.textTertiary)
                         Text(
                             text = "${maskAmount(formatAmount(summary.totalCurrentValue), balancesHidden)} €",
                             fontSize = 14.sp,
@@ -117,7 +125,7 @@ fun FixedIncomeSection(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Column {
-                        Text("Cobrado", fontSize = 11.sp, color = MaterialTheme.appColors.textTertiary)
+                        Text(stringResource(Res.string.fixedincome_coupon_paid), fontSize = 11.sp, color = MaterialTheme.appColors.textTertiary)
                         Text(
                             text = "+${maskAmount(formatAmount(summary.totalCollectedInterest), balancesHidden)} €",
                             fontSize = 14.sp,
@@ -126,7 +134,7 @@ fun FixedIncomeSection(
                         )
                     }
                     Column(horizontalAlignment = Alignment.End) {
-                        Text("Rendimiento", fontSize = 11.sp, color = MaterialTheme.appColors.textTertiary)
+                        Text(stringResource(Res.string.fixedincome_yield_label), fontSize = 11.sp, color = MaterialTheme.appColors.textTertiary)
                         val sign = if (summary.totalNetProfit >= 0) "+" else ""
                         Text(
                             text = "$sign${maskAmount(formatAmount(summary.totalNetProfit), balancesHidden)} € (${formatPercent(summary.totalNetProfitPercent)}%)",
@@ -244,7 +252,7 @@ fun FixedIncomePositionCard(
                             contentPadding = PaddingValues(0.dp)
                         ) {
                             Text(
-                                text = "Registrar",
+                                text = stringResource(Res.string.fixedincome_register_coupon_btn),
                                 fontSize = 10.sp,
                                 color = MaterialTheme.appColors.cyanAccent
                             )

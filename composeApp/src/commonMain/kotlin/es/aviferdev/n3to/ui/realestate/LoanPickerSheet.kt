@@ -21,7 +21,10 @@ import es.aviferdev.n3to.domain.model.Loan
 import es.aviferdev.n3to.domain.model.LoanType
 import es.aviferdev.n3to.ui.common.toMaterialIcon
 import es.aviferdev.n3to.ui.theme.*
-
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.common_none
+import n3to.composeapp.generated.resources.realestate_loan_only_mortgages
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -86,7 +89,7 @@ fun LoanPickerSheet(
                     colors = CheckboxDefaults.colors(checkedColor = MaterialTheme.appColors.primary)
                 )
                 Spacer(Modifier.width(4.dp))
-                Text("Solo hipotecas", fontSize = 13.sp, color = MaterialTheme.appColors.textSecondary)
+                Text(stringResource(Res.string.realestate_loan_only_mortgages), fontSize = 13.sp, color = MaterialTheme.appColors.textSecondary)
             }
 
             Spacer(Modifier.height(8.dp))
@@ -106,7 +109,7 @@ fun LoanPickerSheet(
                     colors   = RadioButtonDefaults.colors(selectedColor = MaterialTheme.appColors.primary)
                 )
                 Spacer(Modifier.width(8.dp))
-                Text("Ninguno", fontSize = 14.sp, color = MaterialTheme.appColors.textSecondary)
+                Text(stringResource(Res.string.common_none), fontSize = 14.sp, color = MaterialTheme.appColors.textSecondary)
             }
 
             Spacer(Modifier.height(4.dp))

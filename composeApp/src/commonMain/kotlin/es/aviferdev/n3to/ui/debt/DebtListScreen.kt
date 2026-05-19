@@ -65,9 +65,12 @@ import es.aviferdev.n3to.ui.theme.maskAmount
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.common_cancel
 import n3to.composeapp.generated.resources.common_delete
+import n3to.composeapp.generated.resources.common_edit
 import n3to.composeapp.generated.resources.debt_add_title
+import n3to.composeapp.generated.resources.debt_empty_subtitle
 import n3to.composeapp.generated.resources.debt_i_owe
 import n3to.composeapp.generated.resources.debt_mark_paid
+import n3to.composeapp.generated.resources.debt_mark_paid_confirm
 import n3to.composeapp.generated.resources.debt_no_debts
 import n3to.composeapp.generated.resources.debt_paid
 import n3to.composeapp.generated.resources.debt_they_owe
@@ -130,12 +133,12 @@ fun DebtListScreen(viewModel: DebtViewModel = koinViewModel()) {
             confirmButton = {
                 TextButton(onClick = {
                     viewModel.deleteDebt(it.id); debtToDelete = null
-                }) { Text("Eliminar", color = MaterialTheme.appColors.expense) }
+                }) { Text(stringResource(Res.string.common_delete), color = MaterialTheme.appColors.expense) }
             },
             dismissButton = {
                 TextButton(onClick = { debtToDelete = null }) {
                     Text(
-                        "Cancelar",
+                        stringResource(Res.string.common_cancel),
                         color = MaterialTheme.appColors.primary
                     )
                 }
@@ -164,12 +167,12 @@ fun DebtListScreen(viewModel: DebtViewModel = koinViewModel()) {
             confirmButton = {
                 TextButton(onClick = {
                     viewModel.markAsPaid(it.id); debtToMarkPaid = null
-                }) { Text("Sí, pagado", color = MaterialTheme.appColors.income) }
+                }) { Text(stringResource(Res.string.debt_mark_paid_confirm), color = MaterialTheme.appColors.income) }
             },
             dismissButton = {
                 TextButton(onClick = { debtToMarkPaid = null }) {
                     Text(
-                        "Cancelar",
+                        stringResource(Res.string.common_cancel),
                         color = MaterialTheme.appColors.primary
                     )
                 }
@@ -282,7 +285,7 @@ fun DebtListContent(
                         EmptyStateView(
                             icon = Icons.Outlined.Handshake,
                             title = stringResource(Res.string.debt_no_debts),
-                            subtitle = "Pulsa \"Nueva deuda\" para registrar\nuna deuda pendiente"
+                            subtitle = stringResource(Res.string.debt_empty_subtitle)
                         )
                     }
                 }
@@ -370,7 +373,7 @@ private fun HeaderDebtListScreen(totalTheyOwe: Double, totalIOwe: Double, hidden
                 modifier = Modifier.fillMaxWidth().padding(all = 12.dp)
             ) {
                 DebtSummaryCell(
-                    label = "Me deben",
+                    label = stringResource(Res.string.debt_they_owe),
                     amount = totalTheyOwe,
                     color = MaterialTheme.appColors.income,
                     hidden = hidden,
@@ -382,7 +385,7 @@ private fun HeaderDebtListScreen(totalTheyOwe: Double, totalIOwe: Double, hidden
                         .align(Alignment.CenterVertically)
                 )
                 DebtSummaryCell(
-                    label = "Debo yo",
+                    label = stringResource(Res.string.debt_i_owe),
                     amount = totalIOwe,
                     color = MaterialTheme.appColors.expense,
                     hidden = hidden,
@@ -488,7 +491,7 @@ private fun DebtCard(debt: Debt, hidden: Boolean, onMarkPaid: () -> Unit, onEdit
                         contentPadding = PaddingValues(horizontal = 7.dp, vertical = 3.dp),
                         modifier = Modifier.height(24.dp)
                     ) {
-                        Text("Pagado", fontSize = 9.sp, fontWeight = FontWeight.Bold)
+                        Text(stringResource(Res.string.debt_paid), fontSize = 9.sp, fontWeight = FontWeight.Bold)
                     }
                     TextButton(
                         onClick = onEdit,
@@ -499,7 +502,7 @@ private fun DebtCard(debt: Debt, hidden: Boolean, onMarkPaid: () -> Unit, onEdit
                         contentPadding = PaddingValues(horizontal = 7.dp, vertical = 3.dp),
                         modifier = Modifier.height(24.dp)
                     ) {
-                        Text("Editar", fontSize = 9.sp)
+                        Text(stringResource(Res.string.common_edit), fontSize = 9.sp)
                     }
                 }
             }

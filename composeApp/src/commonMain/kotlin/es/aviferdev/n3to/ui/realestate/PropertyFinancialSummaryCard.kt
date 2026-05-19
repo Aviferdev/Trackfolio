@@ -17,6 +17,11 @@ import es.aviferdev.n3to.domain.usecase.realestate.PropertyFinancialSummary
 import es.aviferdev.n3to.ui.common.SectionHeader
 import es.aviferdev.n3to.ui.theme.*
 import androidx.compose.ui.tooling.preview.Preview
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.realestate_cashflow_label
+import n3to.composeapp.generated.resources.realestate_profitability_label
+import n3to.composeapp.generated.resources.realestate_total_return_label
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun PropertyFinancialSummaryCard(
@@ -30,7 +35,7 @@ fun PropertyFinancialSummaryCard(
         elevation = CardDefaults.cardElevation(0.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            SectionHeader(label = "Rentabilidad")
+            SectionHeader(label = stringResource(Res.string.realestate_profitability_label))
             Spacer(Modifier.height(8.dp))
 
             if (summary.grossYieldOnPurchase > 0 || summary.grossYieldOnCurrent > 0) {
@@ -56,7 +61,7 @@ fun PropertyFinancialSummaryCard(
 
             // Cashflow neto
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                Text("Cashflow neto", fontWeight = FontWeight.SemiBold, fontSize = 13.sp, color = MaterialTheme.appColors.textPrimary)
+                Text(stringResource(Res.string.realestate_cashflow_label), fontWeight = FontWeight.SemiBold, fontSize = 13.sp, color = MaterialTheme.appColors.textPrimary)
                 Text(
                     if (summary.netCashflow >= 0) formatAmountEuro(summary.netCashflow) else "-${formatAmountEuro(-summary.netCashflow)}",
                     fontWeight = FontWeight.Bold, fontSize = 13.sp,
@@ -70,7 +75,7 @@ fun PropertyFinancialSummaryCard(
                 HorizontalDivider(color = MaterialTheme.appColors.primary.copy(alpha = 0.3f), thickness = 0.5.dp)
                 Spacer(Modifier.height(8.dp))
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                    Text("Retorno total", fontWeight = FontWeight.Bold, fontSize = 14.sp, color = MaterialTheme.appColors.textPrimary)
+                    Text(stringResource(Res.string.realestate_total_return_label), fontWeight = FontWeight.Bold, fontSize = 14.sp, color = MaterialTheme.appColors.textPrimary)
                     Column(horizontalAlignment = androidx.compose.ui.Alignment.End) {
                         Text(
                             if (summary.totalReturn >= 0) "+${formatAmountEuro(summary.totalReturn)}" else "-${formatAmountEuro(-summary.totalReturn)}",

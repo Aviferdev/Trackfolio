@@ -16,6 +16,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.common_dismiss
+import n3to.composeapp.generated.resources.realestate_add_mortgage
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun MortgageReminderBanner(
@@ -58,11 +62,11 @@ fun MortgageReminderBanner(
                             shape = RoundedCornerShape(8.dp),
                             contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp),
                             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.appColors.primary)
-                        ) { Text("Añadir hipoteca", fontSize = 11.sp) }
+                        ) { Text(stringResource(Res.string.realestate_add_mortgage), fontSize = 11.sp) }
                         TextButton(onClick = {
                             dismissed = true
                             onDismiss()
-                        }) { Text("Descartar", color = MaterialTheme.appColors.textTertiary, fontSize = 11.sp) }
+                        }) { Text(stringResource(Res.string.common_dismiss), color = MaterialTheme.appColors.textTertiary, fontSize = 11.sp) }
                     }
                 }
             }
