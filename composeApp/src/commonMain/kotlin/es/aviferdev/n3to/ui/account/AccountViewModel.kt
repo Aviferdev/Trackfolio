@@ -122,7 +122,7 @@ class AccountViewModel(
         _uiState.value = _uiState.value.copy(showDeleteConfirm = false, accountToDelete = null)
     }
 
-    fun addAccount(name: String) {
+    fun addAccount(name: String, initialBalance: Double) {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true)
             val newAccount = Account(
@@ -135,10 +135,11 @@ class AccountViewModel(
             saveAccount(newAccount)
                 .onSuccess {
                     seedCategories(newAccount.id)
+                    setInitialBalance(newAccount.id, initialBalance)
+                    session.selectAccount(newAccount.id)
                     _uiState.value = _uiState.value.copy(
                         isLoading    = false,
-                        showAddSheet = false,
-                        pendingInitialBalanceAccount = newAccount
+                        showAddSheet = false
                     )
                 }
                 .onFailure { e ->

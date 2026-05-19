@@ -1,15 +1,32 @@
 package es.aviferdev.n3to.ui.navigation
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import es.aviferdev.n3to.core.security.AppSettings
+import es.aviferdev.n3to.ui.theme.CyanAccent
+import es.aviferdev.n3to.ui.theme.NavySurface
+import es.aviferdev.n3to.ui.theme.TextPrimary
+import es.aviferdev.n3to.ui.theme.TextSecondary
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -71,6 +88,9 @@ fun N3toNavHost(
     val loadingManager = koinInject<GlobalLoadingManager>()
     val isLoading by loadingManager.isLoading.collectAsState()
     val loadingMessage by loadingManager.loadingMessage.collectAsState()
+
+    val settings = koinInject<AppSettings>()
+    var showTabsIntro by remember { mutableStateOf(!settings.getBool("has_seen_tabs_intro")) }
 
     Box(Modifier.fillMaxSize()) {
         Scaffold(
@@ -625,6 +645,61 @@ fun N3toNavHost(
             isLoading = isLoading,
             message = loadingMessage
         )
+
+        if (showTabsIntro) {
+            WelcomeTabsDialog(
+                onDismiss = {
+                    settings.putBool("has_seen_tabs_intro", true)
+                    showTabsIntro = false
+                }
+            )
+        }
+    }
+}
+
+@Composable
+private fun WelcomeTabsDialog(onDismiss: () -> Unit) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        containerColor = NavySurface,
+        title = {
+            Text(
+                "Tus 3 secciones principales",
+                fontSize = 17.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = TextPrimary
+            )
+        },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                WelcomeTabRow(
+                    label = "Home",
+                    description = "Registra gastos e ingresos, consulta tu balance mensual y controla el fondo de emergencia."
+                )
+                WelcomeTabRow(
+                    label = "Portfolio",
+                    description = "Gestiona tus inversiones: acciones, ETFs, fondos, renta fija y otros activos."
+                )
+                WelcomeTabRow(
+                    label = "Patrimonio Neto",
+                    description = "Tu riqueza total: cuentas e inversiones más activos reales (vivienda, vehículos…) menos deudas."
+                )
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Entendido", color = CyanAccent, fontWeight = FontWeight.SemiBold)
+            }
+        },
+        shape = RoundedCornerShape(20.dp)
+    )
+}
+
+@Composable
+private fun WelcomeTabRow(label: String, description: String) {
+    Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+        Text(label, fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = CyanAccent)
+        Text(description, fontSize = 13.sp, color = TextSecondary, lineHeight = 18.sp)
     }
 }
 

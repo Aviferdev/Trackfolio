@@ -25,6 +25,9 @@ import es.aviferdev.n3to.domain.model.Account
 import es.aviferdev.n3to.ui.account.AddEditAccountBottomSheet
 import es.aviferdev.n3to.ui.account.AccountViewModel
 import es.aviferdev.n3to.ui.common.dialog.DeleteConfirmDialog
+import es.aviferdev.n3to.ui.common.help.FirstTimeHelpBanner
+import es.aviferdev.n3to.ui.common.help.HelpContent
+import es.aviferdev.n3to.ui.common.help.HelpKeys
 import es.aviferdev.n3to.ui.common.navigation.TopBarApp
 import es.aviferdev.n3to.ui.theme.*
 import kotlinx.coroutines.delay
@@ -65,6 +68,15 @@ fun AccountConfigScreen(
                 contentPadding = PaddingValues(horizontal = 16.dp, vertical = 14.dp),
                 verticalArrangement = Arrangement.spacedBy(18.dp)
             ) {
+                // — Ayuda contextual —
+                item {
+                    FirstTimeHelpBanner(
+                        key   = HelpKeys.ACCOUNT_CONFIG,
+                        icon  = "ℹ️",
+                        label = HelpContent.texts[HelpKeys.ACCOUNT_CONFIG]?.body ?: ""
+                    )
+                }
+
                 // — Categorías —
                 item {
                     SettingsSectionHeader(label = "Categorías")
@@ -146,7 +158,7 @@ fun AccountConfigScreen(
     if (viewModel.showEditSheet.collectAsState().value && account != null) {
         AddEditAccountBottomSheet(
             account = account,
-            onSave = { newName ->
+            onSave = { newName, _ ->
                 accountVM.editAccount(account, newName)
                 viewModel.closeEditSheet()
             },

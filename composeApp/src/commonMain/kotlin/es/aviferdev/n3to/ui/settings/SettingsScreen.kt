@@ -183,10 +183,10 @@ fun SettingsScreen(
 
     // ── Sheets ───────────────────────────────────────────────────────────────
     if (accountState.showAddSheet) {
-        AddEditAccountBottomSheet(account = null, onSave = { name -> accountViewModel.addAccount(name) }, onDismiss = { accountViewModel.closeAddSheet() })
+        AddEditAccountBottomSheet(account = null, onSave = { name, balance -> accountViewModel.addAccount(name, balance) }, onDismiss = { accountViewModel.closeAddSheet() })
     }
     if (accountState.showEditSheet && accountState.editingAccount != null) {
-        AddEditAccountBottomSheet(account = accountState.editingAccount, onSave = { name -> accountViewModel.editAccount(accountState.editingAccount!!, name) }, onDismiss = { accountViewModel.closeEditSheet() })
+        AddEditAccountBottomSheet(account = accountState.editingAccount, onSave = { name, _ -> accountViewModel.editAccount(accountState.editingAccount!!, name) }, onDismiss = { accountViewModel.closeEditSheet() })
     }
     if (accountState.showDeleteConfirm && accountState.accountToDelete != null) {
         AlertDialog(onDismissRequest = { accountViewModel.cancelDelete() }, containerColor = NavySurface,

@@ -1189,4 +1189,11 @@
 
     <!-- FEEDBACK – Datos recopilados (Privacy) -->
     <string name="privacy_data_feedback">Sugerencias y feedback</string>
+
+    <!-- REAL ESTATE – Explicación separación vs. portfolio -->
+    <string name="realestate_why_separate">Los inmuebles se gestionan por separado porque tienen métricas propias: rentabilidad por alquiler, hipoteca vinculada e implicaciones fiscales distintas a las de los activos financieros.</string>
+
+    <!-- PREMIUM – Descripciones de funcionalidades adicionales -->
+    <string name="premium_fiscal_report_desc">Genera el informe anual de plusvalías y retenciones del capital mobiliario</string>
+    <string name="premium_backup_desc">Guarda y restaura copias de seguridad locales de todos tus datos</string>
 </resources>

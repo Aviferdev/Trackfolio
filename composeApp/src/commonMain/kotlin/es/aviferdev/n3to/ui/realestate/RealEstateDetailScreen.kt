@@ -68,6 +68,7 @@ import n3to.composeapp.generated.resources.realestate_update_value
 import n3to.composeapp.generated.resources.realestate_vacant_badge
 import n3to.composeapp.generated.resources.realestate_value_label
 import n3to.composeapp.generated.resources.realestate_view_label
+import n3to.composeapp.generated.resources.realestate_why_separate
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
@@ -204,6 +205,9 @@ fun RealEstateDetailScreen(
                 // 1. Header
                 HeaderSection(property = property)
 
+                // Info: por qué los inmuebles están separados del portfolio
+                WhySeparateInfoBanner()
+
                 // 2. Valor
                 ValueSection(property = property, onUpdateValue = { viewModel.showValueSheet() })
 
@@ -260,6 +264,31 @@ fun RealEstateDetailScreen(
 }
 
 // ── Secciones existentes ──────────────────────────────────────────────────────
+
+@Composable
+private fun WhySeparateInfoBanner() {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(PrimaryDark.copy(alpha = 0.08f), RoundedCornerShape(10.dp))
+            .padding(horizontal = 14.dp, vertical = 10.dp),
+        verticalAlignment = Alignment.Top
+    ) {
+        Icon(
+            Icons.Outlined.Info,
+            contentDescription = null,
+            tint = PrimaryDark,
+            modifier = Modifier.size(16.dp)
+        )
+        Spacer(Modifier.width(8.dp))
+        Text(
+            stringResource(Res.string.realestate_why_separate),
+            fontSize = 12.sp,
+            color = TextSecondary,
+            lineHeight = 17.sp
+        )
+    }
+}
 
 @Composable
 private fun HeaderSection(property: RealEstateProperty) {

@@ -45,8 +45,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.TaxProfile
 import es.aviferdev.n3to.domain.model.TaxProfileSnapshot
+import es.aviferdev.n3to.ui.common.AlertBanner
 import es.aviferdev.n3to.ui.common.SectionHeader
 import es.aviferdev.n3to.ui.common.component.SelectableChip
+import es.aviferdev.n3to.ui.common.help.HelpContent
+import es.aviferdev.n3to.ui.common.help.HelpKeys
+import es.aviferdev.n3to.ui.common.help.HelpTooltipIcon
 import es.aviferdev.n3to.ui.common.input.DatePickerRow
 import es.aviferdev.n3to.ui.common.navigation.TopBarApp
 import es.aviferdev.n3to.ui.theme.BackgroundGray
@@ -90,6 +94,13 @@ fun TaxProfileSettingsScreen(
                     Text("Sin perfiles fiscales", fontSize = 15.sp, fontWeight = FontWeight.Medium, color = TextSecondary)
                     Spacer(Modifier.height(4.dp))
                     Text("Añade uno con el botón +", fontSize = 13.sp, color = TextTertiary)
+                    Spacer(Modifier.height(16.dp))
+                    Text(
+                        "El perfil fiscal define los tramos IRPF y tipos de rendimiento que se aplican en el informe fiscal. Sin él, los cálculos no serán precisos.",
+                        fontSize = 12.sp,
+                        color = TextTertiary,
+                        modifier = Modifier.padding(horizontal = 40.dp)
+                    )
                 }
             }
         } else {
@@ -102,6 +113,13 @@ fun TaxProfileSettingsScreen(
                 verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
                 item { SectionHeader(label = "HISTORIAL DE PERFILES") }
+                item {
+                    AlertBanner(
+                        icon = "ℹ️",
+                        label = "El perfil más reciente (por fecha de inicio) es el que se aplica a los cálculos fiscales actuales. Puedes tener uno por cada sistema fiscal que hayas usado.",
+                        color = PrimaryDark
+                    )
+                }
                 items(state.snapshots, key = { it.id }) { snapshot ->
                     TaxProfileSnapshotRow(
                         snapshot = snapshot,
@@ -259,7 +277,17 @@ private fun AddTaxProfileSheet(
 
             // ── País ─────────────────────────────────────────────────────────
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Text("País / sistema fiscal", fontSize = 13.sp, fontWeight = FontWeight.Medium, color = TextTertiary)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text("País / sistema fiscal", fontSize = 13.sp, fontWeight = FontWeight.Medium, color = TextTertiary)
+                    HelpTooltipIcon(
+                        title = HelpContent.texts[HelpKeys.IRPF_SYSTEM]?.title ?: "",
+                        body  = HelpContent.texts[HelpKeys.IRPF_SYSTEM]?.body  ?: ""
+                    )
+                }
                 TaxProfile.ALL.forEach { profile ->
                     val isSelected = profile.countryCode == selectedProfile.countryCode
                     SelectableChip(
@@ -276,6 +304,11 @@ private fun AddTaxProfileSheet(
                 label = "Vigente desde",
                 dateMillis = effectiveDateMillis,
                 onDateSelected = onDateChange
+            )
+            Text(
+                "Si cambias de sistema fiscal (p. ej. al mudarte de país), añade un nuevo perfil con la fecha en que comenzó el cambio.",
+                fontSize = 11.sp,
+                color = TextTertiary
             )
 
             // ── Guardar ───────────────────────────────────────────────────────

@@ -62,6 +62,10 @@ import n3to.composeapp.generated.resources.premium_multiple_accounts_desc
 import n3to.composeapp.generated.resources.premium_restore
 import n3to.composeapp.generated.resources.premium_restore_cd
 import n3to.composeapp.generated.resources.premium_themes_desc
+import n3to.composeapp.generated.resources.premium_fiscal_report
+import n3to.composeapp.generated.resources.premium_fiscal_report_desc
+import n3to.composeapp.generated.resources.premium_backup
+import n3to.composeapp.generated.resources.premium_backup_desc
 import n3to.composeapp.generated.resources.premium_unlock_features
 import n3to.composeapp.generated.resources.premium_welcome
 import n3to.composeapp.generated.resources.premium_error_format
@@ -176,6 +180,14 @@ fun PremiumScreen(
             PremiumFeatureRow(
                 title = stringResource(Res.string.premium_themes),
                 description = stringResource(Res.string.premium_themes_desc)
+            )
+            PremiumFeatureRow(
+                title = stringResource(Res.string.premium_fiscal_report),
+                description = stringResource(Res.string.premium_fiscal_report_desc)
+            )
+            PremiumFeatureRow(
+                title = stringResource(Res.string.premium_backup),
+                description = stringResource(Res.string.premium_backup_desc)
             )
 
             Spacer(Modifier.height(36.dp))

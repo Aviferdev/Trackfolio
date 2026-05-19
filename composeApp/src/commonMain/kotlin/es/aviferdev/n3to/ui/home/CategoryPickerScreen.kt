@@ -24,6 +24,7 @@ import androidx.compose.material.icons.automirrored.filled.ReceiptLong
 import androidx.compose.material.icons.automirrored.filled.ShowChart
 import androidx.compose.material.icons.filled.Work
 import androidx.compose.material.icons.outlined.Add
+import androidx.compose.material.icons.outlined.Lightbulb
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -178,18 +179,8 @@ private fun CategoryPickerContent(
             Spacer(Modifier.height(8.dp))
 
             if (uiState.allCategories.isEmpty() && !uiState.isLoading) {
-                // Sin categorías de gasto — mostrar mensaje
-                Box(
-                    modifier = Modifier.fillMaxWidth().padding(vertical = 32.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        "No hay categorías de gasto",
-                        fontSize = 13.sp,
-                        color = TextSecondary,
-                        textAlign = TextAlign.Center
-                    )
-                }
+                // Sin categorías de gasto — mostrar hint + botón crear
+                CategoryHintCard()
                 Spacer(Modifier.weight(1f))
                 CreateCategoryButton(onClick = onCreateCategory)
                 Spacer(Modifier.height(16.dp))
@@ -472,6 +463,52 @@ private fun CreateCategoryButton(onClick: () -> Unit) {
             fontSize   = 13.sp,
             fontWeight = FontWeight.Medium,
             color      = PrimaryDark
+        )
+    }
+}
+
+@Composable
+private fun CategoryHintCard() {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 16.dp)
+            .clip(RoundedCornerShape(12.dp))
+            .background(PrimaryDark.copy(alpha = 0.07f))
+            .border(0.5.dp, PrimaryDark.copy(alpha = 0.2f), RoundedCornerShape(12.dp))
+            .padding(horizontal = 14.dp, vertical = 12.dp),
+        verticalArrangement = Arrangement.spacedBy(6.dp)
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(6.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Outlined.Lightbulb,
+                contentDescription = null,
+                tint = PrimaryDark,
+                modifier = Modifier.size(15.dp)
+            )
+            Text(
+                text = "CÓMO ORGANIZAR CATEGORÍAS",
+                fontSize = 10.sp,
+                fontWeight = FontWeight.Bold,
+                letterSpacing = 0.6.sp,
+                color = PrimaryDark
+            )
+        }
+        Text(
+            text = "Agrupa gastos del mismo tipo. Ejemplos:",
+            fontSize = 12.sp,
+            color = TextSecondary
+        )
+        Text(
+            text = "• Hogar → alquiler, hipoteca, suministros\n" +
+                   "• Alimentación → supermercado, restaurantes\n" +
+                   "• Transporte → gasolina, transporte público",
+            fontSize = 12.sp,
+            color = TextSecondary,
+            lineHeight = 18.sp
         )
     }
 }

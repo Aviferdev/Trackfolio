@@ -80,7 +80,7 @@ fun AccountListScreen(
     if (uiState.showAddSheet) {
         AddEditAccountBottomSheet(
             account   = null,
-            onSave    = { name -> viewModel.addAccount(name) },
+            onSave    = { name, balance -> viewModel.addAccount(name, balance) },
             onDismiss = { viewModel.closeAddSheet() }
         )
     }
@@ -93,7 +93,7 @@ fun AccountListScreen(
     if (uiState.showEditSheet && uiState.editingAccount != null) {
         AddEditAccountBottomSheet(
             account   = uiState.editingAccount,
-            onSave    = { name ->
+            onSave    = { name, _ ->
                 viewModel.editAccount(uiState.editingAccount!!, name)
             },
             onDismiss = { viewModel.closeEditSheet() }

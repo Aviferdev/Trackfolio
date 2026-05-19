@@ -25,6 +25,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.RemoveCircle
 import androidx.compose.material.icons.outlined.Save
 import androidx.compose.material.icons.outlined.Shield
@@ -54,6 +55,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.EmergencyFundMethod
+import es.aviferdev.n3to.ui.common.help.HelpContent
+import es.aviferdev.n3to.ui.common.help.HelpKeys
+import es.aviferdev.n3to.ui.common.help.HelpTooltipIcon
 import es.aviferdev.n3to.ui.common.navigation.TopBarApp
 import es.aviferdev.n3to.ui.theme.CyanAccent
 import es.aviferdev.n3to.ui.theme.CyanGlow
@@ -127,6 +131,11 @@ fun EmergencyFundSettingsScreen(
                         )
                     }
 
+                    // ── Info explicativa ──
+                    item {
+                        EmergencyFundInfoCard()
+                    }
+
                     // ── Meses a cubrir ──
                     item {
                         NavySectionCard {
@@ -155,7 +164,17 @@ fun EmergencyFundSettingsScreen(
                     // ── Método de cálculo ──
                     item {
                         NavySectionCard {
-                            SectionLabel("Método de cálculo")
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                SectionLabel("Método de cálculo")
+                                HelpTooltipIcon(
+                                    title = HelpContent.texts[HelpKeys.EMERGENCY_FUND]?.title ?: "",
+                                    body  = HelpContent.texts[HelpKeys.EMERGENCY_FUND]?.body  ?: ""
+                                )
+                            }
                             Spacer(Modifier.height(10.dp))
                             Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                                 MethodChip(
@@ -334,6 +353,55 @@ fun EmergencyFundSettingsScreen(
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun EmergencyFundInfoCard() {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(14.dp))
+            .background(CyanAccent.copy(alpha = 0.06f))
+            .border(0.5.dp, CyanAccent.copy(alpha = 0.25f), RoundedCornerShape(14.dp))
+            .padding(horizontal = 14.dp, vertical = 12.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Icon(
+                imageVector = Icons.Outlined.Info,
+                contentDescription = null,
+                tint = CyanAccent,
+                modifier = Modifier.size(16.dp)
+            )
+            Text(
+                text = "¿QUÉ ES?",
+                fontSize = 10.sp,
+                fontWeight = FontWeight.SemiBold,
+                letterSpacing = 0.8.sp,
+                color = CyanAccent
+            )
+        }
+        Text(
+            text = "Un colchón de dinero líquido para cubrir imprevistos sin endeudarte: pérdida de empleo, gastos médicos o reparaciones urgentes.",
+            fontSize = 12.sp,
+            color = TextSecondary,
+            lineHeight = 17.sp
+        )
+        HorizontalDivider(color = CyanAccent.copy(alpha = 0.15f), thickness = 0.5.dp)
+        Text(
+            text = "CUÁNTO SE RECOMIENDA",
+            fontSize = 10.sp,
+            fontWeight = FontWeight.SemiBold,
+            letterSpacing = 0.8.sp,
+            color = TextTertiary
+        )
+        Text(
+            text = "• 3–6 meses con empleo estable\n• 6–12 meses si eres autónomo o tienes cargas familiares",
+            fontSize = 12.sp,
+            color = TextSecondary,
+            lineHeight = 18.sp
+        )
     }
 }
 

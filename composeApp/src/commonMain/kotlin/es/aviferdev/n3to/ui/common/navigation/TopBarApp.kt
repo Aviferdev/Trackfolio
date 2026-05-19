@@ -27,8 +27,10 @@ import org.jetbrains.compose.resources.stringResource
 import es.aviferdev.n3to.ui.common.separator.SpacerHorizontalApp
 import androidx.compose.ui.graphics.Color
 import es.aviferdev.n3to.ui.theme.NavyBorder
+import es.aviferdev.n3to.ui.theme.NavySelected
 import es.aviferdev.n3to.ui.theme.NavySurface
 import es.aviferdev.n3to.ui.theme.TextPrimary
+import es.aviferdev.n3to.ui.theme.TextSecondary
 import es.aviferdev.n3to.ui.theme.TextTertiary
 import androidx.compose.ui.tooling.preview.Preview
 
@@ -55,7 +57,9 @@ fun TopBarApp(
                 IconButtonApp(
                     clickButton = navigateBack,
                     icon = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = stringResource(Res.string.common_back_cd)
+                    contentDescription = stringResource(Res.string.common_back_cd),
+                    backgroundColor = NavySelected,
+                    iconTint = TextSecondary
                 )
                 SpacerHorizontalApp(8.dp)
             } else {

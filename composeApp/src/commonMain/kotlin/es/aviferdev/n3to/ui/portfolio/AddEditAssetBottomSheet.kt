@@ -14,17 +14,22 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.HelpOutline
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.TextButton
@@ -176,6 +181,7 @@ fun AddEditAssetBottomSheet(
 
     var tickerError by remember { mutableStateOf(false) }
     var nameError   by remember { mutableStateOf(false) }
+    var showCategoryHelp by remember { mutableStateOf(false) }
 
     val isValid = ticker.isNotBlank() && name.isNotBlank()
 
@@ -212,12 +218,26 @@ fun AddEditAssetBottomSheet(
 
             // ── Selector de categoría (solo si no viene prefijada) ──────────
             if (preselectedCategoryId == null) {
-                Text(
-                    text       = stringResource(Res.string.portfolio_add_asset_category_label),
-                    fontSize   = 12.sp,
-                    color      = TextSecondary,
-                    fontWeight = FontWeight.Medium
-                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text       = stringResource(Res.string.portfolio_add_asset_category_label),
+                        fontSize   = 12.sp,
+                        color      = TextSecondary,
+                        fontWeight = FontWeight.Medium,
+                        modifier   = Modifier.weight(1f)
+                    )
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Outlined.HelpOutline,
+                        contentDescription = "Ayuda sobre tipos de activo",
+                        tint = TextSecondary,
+                        modifier = Modifier
+                            .size(16.dp)
+                            .clickable { showCategoryHelp = true }
+                    )
+                }
                 Spacer(Modifier.height(8.dp))
                 Row(
                     modifier = Modifier
@@ -641,6 +661,32 @@ Spacer(Modifier.height(12.dp))
         }
     }
 
+    // ── Ayuda: taxonomía de tipos de activo ──────────────────────────────
+    if (showCategoryHelp) {
+        AlertDialog(
+            onDismissRequest = { showCategoryHelp = false },
+            containerColor = SurfaceWhite,
+            title = {
+                Text("Tipos de activo", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = TextPrimary)
+            },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    AssetTypeHelpRow("📈", "Acciones / ETFs / Fondos", "Cotizados con precio de mercado. Admiten análisis por sectores y regiones geográficas.")
+                    AssetTypeHelpRow("💶", "Renta fija", "Bonos y depósitos con rendimiento acordado. Requieren fecha de vencimiento; sin precio de mercado automático.")
+                    AssetTypeHelpRow("₿", "Cripto / Materias primas / Crowdlending", "Activos alternativos con precio de mercado pero sin análisis sectorial.")
+                    AssetTypeHelpRow("🏠", "Inmuebles", "Propiedades físicas valoradas manualmente; sin precio de mercado automático.")
+                    AssetTypeHelpRow("💎", "Valiosos", "Arte, coleccionables u otros activos tangibles no financieros.")
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = { showCategoryHelp = false }) {
+                    Text("Entendido", color = PrimaryDark, fontWeight = FontWeight.SemiBold)
+                }
+            },
+            shape = RoundedCornerShape(16.dp)
+        )
+    }
+
     // ── DatePicker para fecha de vencimiento ─────────────────────────────
     if (showMaturityDatePicker) {
         val pickerState = rememberDatePickerState(
@@ -675,6 +721,17 @@ Spacer(Modifier.height(12.dp))
     }
 }
 
+
+@Composable
+private fun AssetTypeHelpRow(icon: String, title: String, description: String) {
+    Row(verticalAlignment = Alignment.Top) {
+        Text(icon, fontSize = 16.sp, modifier = Modifier.width(28.dp))
+        Column {
+            Text(title, fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary)
+            Text(description, fontSize = 11.sp, color = TextSecondary)
+        }
+    }
+}
 
 @Preview
 @Composable
