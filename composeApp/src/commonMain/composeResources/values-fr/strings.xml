@@ -295,6 +295,8 @@
     <string name="portfolio_settings_add">Ajouter</string>
     <string name="portfolio_settings_delete_portfolio_title">Supprimer le portefeuille</string>
     <string name="portfolio_settings_delete_portfolio_message">Supprimer «%1$s» ? Les actifs seront déplacés vers «Aucun portefeuille».</string>
+    <string name="portfolio_error_no_account_title">Aucun compte sélectionné</string>
+    <string name="portfolio_error_no_account_message">Vous devez créer ou sélectionner un compte avant d'ajouter des portefeuilles. Allez dans Paramètres &gt; Comptes pour en créer un.</string>
 
     <!-- PORTFOLIO – Asset detail -->
     <string name="portfolio_asset_detail_title">Actif</string>

@@ -295,6 +295,8 @@
     <string name="portfolio_settings_add">추가</string>
     <string name="portfolio_settings_delete_portfolio_title">포트폴리오 삭제</string>
     <string name="portfolio_settings_delete_portfolio_message">«%1$s»을(를) 삭제할까요? 자산은 «포트폴리오 없음»으로 이동됩니다.</string>
+    <string name="portfolio_error_no_account_title">계정이 선택되지 않음</string>
+    <string name="portfolio_error_no_account_message">포트폴리오를 추가하려면 먼저 계정을 생성하거나 선택해야 합니다. 설정 &gt; 계정으로 이동하여 생성하세요.</string>
 
     <!-- PORTFOLIO – Asset detail -->
     <string name="portfolio_asset_detail_title">자산</string>

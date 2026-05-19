@@ -295,6 +295,8 @@
     <string name="portfolio_settings_add">添加</string>
     <string name="portfolio_settings_delete_portfolio_title">删除投资组合</string>
     <string name="portfolio_settings_delete_portfolio_message">删除«%1$s»？资产将被移至«无投资组合»。</string>
+    <string name="portfolio_error_no_account_title">未选择账户</string>
+    <string name="portfolio_error_no_account_message">在添加投资组合之前，您需要创建或选择一个账户。前往设置 &gt; 账户创建一个。</string>
 
     <!-- PORTFOLIO – Asset detail -->
     <string name="portfolio_asset_detail_title">资产</string>

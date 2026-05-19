@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
@@ -20,6 +21,7 @@ import es.aviferdev.n3to.domain.model.Platform
 import es.aviferdev.n3to.domain.model.Portfolio
 import es.aviferdev.n3to.domain.usecase.asset.GetPriceReminderIntervalUseCase
 import es.aviferdev.n3to.domain.usecase.portfolio.DeletePortfolioUseCase
+import es.aviferdev.n3to.domain.usecase.portfolio.SavePortfolioUseCase
 import es.aviferdev.n3to.domain.usecase.portfolio.UpdatePortfolioUseCase
 import es.aviferdev.n3to.ui.account.AccountSession
 import es.aviferdev.n3to.ui.common.SectionHeader
@@ -51,6 +53,8 @@ import n3to.composeapp.generated.resources.portfolio_settings_delete_cd
 import n3to.composeapp.generated.resources.portfolio_settings_delete_portfolio_message
 import n3to.composeapp.generated.resources.portfolio_settings_delete_portfolio_title
 import n3to.composeapp.generated.resources.portfolio_settings_edit_cd
+import n3to.composeapp.generated.resources.portfolio_error_no_account_message
+import n3to.composeapp.generated.resources.portfolio_error_no_account_title
 import n3to.composeapp.generated.resources.portfolio_settings_no_portfolios
 import n3to.composeapp.generated.resources.portfolio_settings_platform_empty
 import n3to.composeapp.generated.resources.portfolio_settings_platform_section
@@ -87,6 +91,7 @@ fun PortfolioSettingsScreen(
     // ── Portfolio management ────────────────────────────────────────────────
     val session = koinInject<AccountSession>()
     val portfolioVM = koinInject<PortfolioViewModel>()
+    val savePortfolio = koinInject<SavePortfolioUseCase>()
     val updatePortfolio = koinInject<UpdatePortfolioUseCase>()
     val deletePortfolio = koinInject<DeletePortfolioUseCase>()
 
@@ -94,6 +99,8 @@ fun PortfolioSettingsScreen(
     val portfolios by portfolioVM.portfolios.collectAsState()
     var editingPortfolio by remember { mutableStateOf<Portfolio?>(null) }
     var deletingPortfolio by remember { mutableStateOf<Portfolio?>(null) }
+    var showAddPortfolioSheet by remember { mutableStateOf(false) }
+    var noAccountError by remember { mutableStateOf(false) }
 
     PortfolioSettingsContent(
         assetCatalogState = assetCatalogState,
@@ -112,7 +119,8 @@ fun PortfolioSettingsScreen(
         onOpenRegionSheet = { showRegionSheet = true },
         portfolios = portfolios,
         onEditPortfolio = { editingPortfolio = it },
-        onDeletePortfolio = { deletingPortfolio = it }
+        onDeletePortfolio = { deletingPortfolio = it },
+        onAddPortfolio = { showAddPortfolioSheet = true }
     )
 
     if (platformState.showAddSheet) {
@@ -160,6 +168,24 @@ fun PortfolioSettingsScreen(
     }
 
     // ── Portfolio sheets ─────────────────────────────────────────────────────
+    if (showAddPortfolioSheet) {
+        AddEditPortfolioBottomSheet(
+            existing = null,
+            onSave = { name, desc ->
+                val accountId = session.selectedAccountId.value
+                if (accountId == null) {
+                    showAddPortfolioSheet = false
+                    noAccountError = true
+                } else {
+                    portCoroutine.launch {
+                        savePortfolio(accountId, name, desc)
+                        showAddPortfolioSheet = false
+                    }
+                }
+            },
+            onDismiss = { showAddPortfolioSheet = false }
+        )
+    }
     if (editingPortfolio != null) {
         AddEditPortfolioBottomSheet(
             existing = editingPortfolio,
@@ -192,6 +218,38 @@ fun PortfolioSettingsScreen(
             shape = RoundedCornerShape(16.dp)
         )
     }
+
+    if (noAccountError) {
+        AlertDialog(
+            onDismissRequest = { noAccountError = false },
+            containerColor = MaterialTheme.appColors.surface,
+            title = {
+                Text(
+                    stringResource(Res.string.portfolio_error_no_account_title),
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.appColors.textPrimary
+                )
+            },
+            text = {
+                Text(
+                    stringResource(Res.string.portfolio_error_no_account_message),
+                    fontSize = 13.sp,
+                    color = MaterialTheme.appColors.textSecondary
+                )
+            },
+            confirmButton = {
+                TextButton(onClick = { noAccountError = false }) {
+                    Text(
+                        stringResource(Res.string.common_accept),
+                        color = MaterialTheme.appColors.primary,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
+            },
+            shape = RoundedCornerShape(16.dp)
+        )
+    }
 }
 
 @Composable
@@ -210,7 +268,8 @@ fun PortfolioSettingsContent(
     modifier: Modifier = Modifier,
     portfolios: List<Portfolio> = emptyList(),
     onEditPortfolio: (Portfolio) -> Unit = {},
-    onDeletePortfolio: (Portfolio) -> Unit = {}
+    onDeletePortfolio: (Portfolio) -> Unit = {},
+    onAddPortfolio: () -> Unit = {}
 ) {
     val categories = assetCatalogState.categories
     val assetsByCategory = remember(assetCatalogState.assets) {
@@ -226,6 +285,69 @@ fun PortfolioSettingsContent(
             contentPadding = PaddingValues(horizontal = 20.dp, vertical = 20.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
+            // ── Carteras ──────────────────────────────────────────────────────
+            item {
+                SectionHeader(
+                    label = stringResource(Res.string.portfolio_settings_portfolio_section),
+                    actionLabel = stringResource(Res.string.portfolio_settings_add),
+                    onAction = onAddPortfolio
+                )
+            }
+            item {
+                SettingsGroupCard {
+                    if (portfolios.isEmpty()) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth()
+                                .clickable { onAddPortfolio() }
+                                .padding(16.dp),
+                            horizontalArrangement = Arrangement.Center,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                Icons.Default.Add,
+                                contentDescription = stringResource(Res.string.portfolio_settings_add),
+                                tint = MaterialTheme.appColors.primary,
+                                modifier = Modifier.size(20.dp)
+                            )
+                            Spacer(Modifier.width(8.dp))
+                            Text(
+                                stringResource(Res.string.portfolio_settings_add),
+                                fontSize = 13.sp,
+                                fontWeight = FontWeight.Medium,
+                                color = MaterialTheme.appColors.primary
+                            )
+                        }
+                    } else {
+                        portfolios.forEachIndexed { index, portfolio ->
+                            Row(
+                                modifier = Modifier.fillMaxWidth()
+                                    .padding(horizontal = 16.dp, vertical = 10.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Column(modifier = Modifier.weight(1f)) {
+                                    Text(portfolio.name, fontSize = 14.sp, fontWeight = FontWeight.Medium, color = MaterialTheme.appColors.textPrimary)
+                                    if (portfolio.description != null) {
+                                        Text(portfolio.description, fontSize = 11.sp, color = MaterialTheme.appColors.textSecondary)
+                                    }
+                                }
+                                Spacer(Modifier.width(8.dp))
+                                IconButton(onClick = { onEditPortfolio(portfolio) }, modifier = Modifier.size(32.dp)) {
+                                    Icon(Icons.Default.Edit, contentDescription = stringResource(Res.string.portfolio_settings_edit_cd), tint = MaterialTheme.appColors.textSecondary, modifier = Modifier.size(16.dp))
+                                }
+                                IconButton(onClick = { onDeletePortfolio(portfolio) }, modifier = Modifier.size(32.dp)) {
+                                    Icon(Icons.Default.Delete, contentDescription = stringResource(Res.string.portfolio_settings_delete_cd), tint = MaterialTheme.appColors.expense, modifier = Modifier.size(16.dp))
+                                }
+                            }
+                            if (index < portfolios.lastIndex) {
+                                HorizontalDivider(color = MaterialTheme.appColors.border, thickness = 0.5.dp, modifier = Modifier.padding(start = 52.dp))
+                            }
+                        }
+                    }
+                }
+            }
+
+            // ── Categorías de activo ──────────────────────────────────────────
+            item { Spacer(Modifier.height(8.dp)) }
             item {
                 Text(
                     stringResource(Res.string.portfolio_settings_category_section),
@@ -267,54 +389,6 @@ fun PortfolioSettingsContent(
                                 thickness = 0.5.dp,
                                 modifier = Modifier.padding(start = 52.dp)
                             )
-                        }
-                    }
-                }
-            }
-
-            // ── Carteras ──────────────────────────────────────────────────────
-            item { Spacer(Modifier.height(8.dp)) }
-            item {
-                Text(
-                    stringResource(Res.string.portfolio_settings_portfolio_section),
-                    fontSize   = 11.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    color      = MaterialTheme.appColors.textSecondary
-                )
-            }
-            item {
-                SettingsGroupCard {
-                    if (portfolios.isEmpty()) {
-                        Text(
-                            stringResource(Res.string.portfolio_settings_no_portfolios),
-                            fontSize = 13.sp,
-                            color = MaterialTheme.appColors.textSecondary,
-                            modifier = Modifier.padding(16.dp)
-                        )
-                    } else {
-                        portfolios.forEachIndexed { index, portfolio ->
-                            Row(
-                                modifier = Modifier.fillMaxWidth()
-                                    .padding(horizontal = 16.dp, vertical = 10.dp),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Column(modifier = Modifier.weight(1f)) {
-                                    Text(portfolio.name, fontSize = 14.sp, fontWeight = FontWeight.Medium, color = MaterialTheme.appColors.textPrimary)
-                                    if (portfolio.description != null) {
-                                        Text(portfolio.description, fontSize = 11.sp, color = MaterialTheme.appColors.textSecondary)
-                                    }
-                                }
-                                Spacer(Modifier.width(8.dp))
-                                IconButton(onClick = { onEditPortfolio(portfolio) }, modifier = Modifier.size(32.dp)) {
-                                    Icon(Icons.Default.Edit, contentDescription = stringResource(Res.string.portfolio_settings_edit_cd), tint = MaterialTheme.appColors.textSecondary, modifier = Modifier.size(16.dp))
-                                }
-                                IconButton(onClick = { onDeletePortfolio(portfolio) }, modifier = Modifier.size(32.dp)) {
-                                    Icon(Icons.Default.Delete, contentDescription = stringResource(Res.string.portfolio_settings_delete_cd), tint = MaterialTheme.appColors.expense, modifier = Modifier.size(16.dp))
-                                }
-                            }
-                            if (index < portfolios.lastIndex) {
-                                HorizontalDivider(color = MaterialTheme.appColors.border, thickness = 0.5.dp, modifier = Modifier.padding(start = 52.dp))
-                            }
                         }
                     }
                 }

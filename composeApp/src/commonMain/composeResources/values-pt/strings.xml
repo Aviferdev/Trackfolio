@@ -295,6 +295,8 @@
     <string name="portfolio_settings_add">Adicionar</string>
     <string name="portfolio_settings_delete_portfolio_title">Excluir carteira</string>
     <string name="portfolio_settings_delete_portfolio_message">Excluir «%1$s»? Os ativos serão movidos para «Sem carteira».</string>
+    <string name="portfolio_error_no_account_title">Nenhuma conta selecionada</string>
+    <string name="portfolio_error_no_account_message">Você precisa criar ou selecionar uma conta antes de adicionar carteiras. Vá em Ajustes &gt; Contas para criar uma.</string>
 
     <!-- PORTFOLIO – Asset detail -->
     <string name="portfolio_asset_detail_title">Ativo</string>

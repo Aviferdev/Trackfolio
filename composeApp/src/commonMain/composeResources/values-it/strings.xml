@@ -295,6 +295,8 @@
     <string name="portfolio_settings_add">Aggiungi</string>
     <string name="portfolio_settings_delete_portfolio_title">Elimina portafoglio</string>
     <string name="portfolio_settings_delete_portfolio_message">Eliminare «%1$s»? Gli asset verranno spostati in «Nessun portafoglio».</string>
+    <string name="portfolio_error_no_account_title">Nessun conto selezionato</string>
+    <string name="portfolio_error_no_account_message">Devi creare o selezionare un conto prima di aggiungere portafogli. Vai su Impostazioni &gt; Conti per crearne uno.</string>
 
     <!-- PORTFOLIO – Asset detail -->
     <string name="portfolio_asset_detail_title">Asset</string>
