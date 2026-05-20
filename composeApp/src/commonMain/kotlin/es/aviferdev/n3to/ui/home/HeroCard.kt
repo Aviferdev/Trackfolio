@@ -43,7 +43,6 @@ fun HeroCard(
     modifier: Modifier = Modifier
 ) {
     val netWithDebts = balance.selectedAccountBalance + balance.totalOwed - balance.totalOwing
-    // Capture before DrawScope — appColors is not accessible inside drawBehind
     val heroStart = MaterialTheme.appColors.heroCardStart
     val heroEnd = MaterialTheme.appColors.heroCardEnd
     val cyanGlowColor = MaterialTheme.appColors.cyanGlow
@@ -125,22 +124,5 @@ fun HeroCard(
                 color = cyanSubtleColor
             )
         }
-    }
-}
-
-@Preview
-@Composable
-private fun HeroCardPreview() {
-    N3toTheme {
-        HeroCard(
-            balance = HomeBalance(
-                selectedAccount = null,
-                selectedAccountBalance = 3500.0,
-                totalOwed = 500.0,
-                totalOwing = 200.0,
-                recentTransactions = emptyList()
-            ),
-            balancesHidden = false
-        )
     }
 }

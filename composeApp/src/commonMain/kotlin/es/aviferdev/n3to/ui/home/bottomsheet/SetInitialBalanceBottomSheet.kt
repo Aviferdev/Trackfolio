@@ -1,4 +1,4 @@
-package es.aviferdev.n3to.ui.home
+package es.aviferdev.n3to.ui.home.bottomsheet
 
 import androidx.compose.material3.MaterialTheme
 import es.aviferdev.n3to.ui.theme.appColors
@@ -11,7 +11,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType

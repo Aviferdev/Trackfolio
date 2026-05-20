@@ -1,4 +1,4 @@
-package es.aviferdev.n3to.ui.home
+package es.aviferdev.n3to.ui.home.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -7,7 +7,6 @@ import es.aviferdev.n3to.domain.model.IncomeType
 import es.aviferdev.n3to.domain.model.TransactionType
 import es.aviferdev.n3to.domain.usecase.category.GetCategoriesByTypeUseCase
 import es.aviferdev.n3to.ui.account.AccountSession
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 

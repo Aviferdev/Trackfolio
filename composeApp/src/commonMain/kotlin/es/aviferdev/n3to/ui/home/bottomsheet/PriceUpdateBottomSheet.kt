@@ -1,4 +1,4 @@
-package es.aviferdev.n3to.ui.home
+package es.aviferdev.n3to.ui.home.bottomsheet
 
 import androidx.compose.material3.MaterialTheme
 import es.aviferdev.n3to.ui.theme.appColors
@@ -46,8 +46,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.Asset
-
-import es.aviferdev.n3to.ui.theme.PrimaryDark
 
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import es.aviferdev.n3to.ui.theme.formatAmount

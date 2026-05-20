@@ -1,4 +1,4 @@
-package es.aviferdev.n3to.ui.home
+package es.aviferdev.n3to.ui.home.banner
 
 import androidx.compose.material3.MaterialTheme
 import es.aviferdev.n3to.ui.theme.appColors
@@ -8,13 +8,12 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.SaveAlt
+import androidx.compose.material.icons.automirrored.outlined.ShowChart
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -24,32 +23,21 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import es.aviferdev.n3to.ui.theme.PrimaryDark
+
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import n3to.composeapp.generated.resources.Res
-import n3to.composeapp.generated.resources.home_backup_action
-import n3to.composeapp.generated.resources.home_backup_days_format
-import n3to.composeapp.generated.resources.home_backup_never
+import n3to.composeapp.generated.resources.common_update
+import n3to.composeapp.generated.resources.home_price_reminder_many
+import n3to.composeapp.generated.resources.home_price_reminder_one
 import org.jetbrains.compose.resources.stringResource
-import es.aviferdev.n3to.ui.theme.*
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
-/**
- * Banner que recuerda al usuario hacer una copia de seguridad.
- *
- * @param visible Controla la visibilidad con animación.
- * @param neverBackup Si es true, el usuario nunca ha hecho un backup.
- * @param daysSinceLastBackup Días transcurridos desde el último backup (usado cuando neverBackup = false).
- * @param onBackupClick Acción al pulsar "Hacer backup".
- * @param onDismiss Acción al pulsar la X (abre el diálogo de intervalo).
- */
 @Composable
-fun BackupReminderBanner(
+fun PriceReminderBanner(
+    outdatedCount: Int,
     visible: Boolean,
-    neverBackup: Boolean,
-    daysSinceLastBackup: Int = 0,
-    onBackupClick: () -> Unit,
-    onDismiss: () -> Unit,
+    onUpdateNow: () -> Unit,
+    onRemindLater: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     AnimatedVisibility(
@@ -62,37 +50,36 @@ fun BackupReminderBanner(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(12.dp))
-                .border(0.5.dp, MaterialTheme.appColors.navyBorder, RoundedCornerShape(12.dp))
-                .background(MaterialTheme.appColors.navySurface)
+                .background(MaterialTheme.appColors.warnAmber.copy(alpha = 0.10f))
                 .padding(horizontal = 14.dp, vertical = 11.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
-                imageVector        = Icons.Outlined.SaveAlt,
+                imageVector        = Icons.AutoMirrored.Outlined.ShowChart,
                 contentDescription = null,
-                tint               = MaterialTheme.appColors.cyanAccent,
+                tint               = MaterialTheme.appColors.warnAmber,
                 modifier           = Modifier.size(18.dp)
             )
             Spacer(Modifier.width(10.dp))
             Text(
-                text = if (neverBackup) stringResource(Res.string.home_backup_never)
-                       else stringResource(Res.string.home_backup_days_format, daysSinceLastBackup),
-                fontSize   = 12.sp,
-                color      = MaterialTheme.appColors.textSecondary,
+                text     = if (outdatedCount == 1) stringResource(Res.string.home_price_reminder_one, outdatedCount)
+                          else stringResource(Res.string.home_price_reminder_many, outdatedCount),
+                fontSize = 12.sp,
+                color    = MaterialTheme.appColors.warnAmber,
                 fontWeight = FontWeight.Medium,
-                modifier   = Modifier.weight(1f)
+                modifier = Modifier.weight(1f)
             )
             Box(
                 modifier = Modifier
                     .clip(RoundedCornerShape(8.dp))
-                    .background(MaterialTheme.appColors.cyanAccent)
-                    .clickable { onBackupClick() }
+                    .background(MaterialTheme.appColors.warnAmber.copy(alpha = 0.15f))
+                    .clickable { onUpdateNow() }
                     .padding(horizontal = 12.dp, vertical = 4.dp)
             ) {
                 Text(
-                    text       = stringResource(Res.string.home_backup_action),
+                    text       = stringResource(Res.string.common_update),
                     fontSize   = 11.sp,
-                    color      = MaterialTheme.appColors.navyDeep,
+                    color      = MaterialTheme.appColors.warnAmber,
                     fontWeight = FontWeight.Bold
                 )
             }
@@ -100,11 +87,11 @@ fun BackupReminderBanner(
             Box(
                 modifier = Modifier
                     .clip(CircleShape)
-                    .clickable { onDismiss() }
+                    .clickable { onRemindLater() }
                     .size(24.dp),
                 contentAlignment = Alignment.Center
             ) {
-                Text("×", fontSize = 16.sp, color = MaterialTheme.appColors.textTertiary)
+                Text("×", fontSize = 16.sp, color = MaterialTheme.appColors.warnAmber.copy(alpha = 0.6f))
             }
         }
     }
@@ -112,40 +99,26 @@ fun BackupReminderBanner(
 
 @Preview
 @Composable
-private fun BackupReminderBannerNeverBackupPreview() {
+private fun PriceReminderBannerVisiblePreview() {
     N3toTheme {
-        BackupReminderBanner(
+        PriceReminderBanner(
+            outdatedCount = 3,
             visible = true,
-            neverBackup = true,
-            onBackupClick = {},
-            onDismiss = {}
+            onUpdateNow = {},
+            onRemindLater = {}
         )
     }
 }
 
 @Preview
 @Composable
-private fun BackupReminderBannerDaysPreview() {
+private fun PriceReminderBannerHiddenPreview() {
     N3toTheme {
-        BackupReminderBanner(
-            visible = true,
-            neverBackup = false,
-            daysSinceLastBackup = 45,
-            onBackupClick = {},
-            onDismiss = {}
-        )
-    }
-}
-
-@Preview
-@Composable
-private fun BackupReminderBannerHiddenPreview() {
-    N3toTheme {
-        BackupReminderBanner(
+        PriceReminderBanner(
+            outdatedCount = 0,
             visible = false,
-            neverBackup = false,
-            onBackupClick = {},
-            onDismiss = {}
+            onUpdateNow = {},
+            onRemindLater = {}
         )
     }
 }

@@ -1,4 +1,4 @@
-package es.aviferdev.n3to.ui.home
+package es.aviferdev.n3to.ui.home.bottomsheet
 
 import androidx.compose.material3.MaterialTheme
 import es.aviferdev.n3to.ui.theme.appColors
@@ -55,15 +55,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import es.aviferdev.n3to.domain.model.Category
 import es.aviferdev.n3to.domain.model.IncomeType
 import es.aviferdev.n3to.domain.model.Issuer
 import es.aviferdev.n3to.domain.model.TransactionType
+import es.aviferdev.n3to.ui.home.viewmodel.AddTransactionUiState
+import es.aviferdev.n3to.ui.home.viewmodel.AddTransactionViewModel
+import es.aviferdev.n3to.ui.home.viewmodel.IncomeInputMode
+import es.aviferdev.n3to.ui.home.viewmodel.IrpfInputMode
 import es.aviferdev.n3to.ui.home.components.*
 
-import es.aviferdev.n3to.ui.theme.ExpenseRed
-import es.aviferdev.n3to.ui.theme.PrimaryDark
-
-import es.aviferdev.n3to.ui.theme.WarnAmber
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.common_amount_label
 import n3to.composeapp.generated.resources.common_category_label
@@ -177,7 +178,7 @@ private fun AddTransactionSheetContent(
     onTypeChange: (TransactionType) -> Unit,
     amount: String,
     onAmountChange: (String) -> Unit,
-    categories: List<es.aviferdev.n3to.domain.model.Category>,
+    categories: List<Category>,
     selectedCategoryId: String,
     onCategoryChange: (String) -> Unit,
     selectedIncomeType: IncomeType?,

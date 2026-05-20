@@ -3,7 +3,6 @@ package es.aviferdev.n3to.ui.home
 import androidx.compose.material3.MaterialTheme
 import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.platform.nowHour
-import es.aviferdev.n3to.platform.nowMillis
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -38,7 +37,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -55,15 +53,23 @@ import es.aviferdev.n3to.domain.model.LimitType
 import es.aviferdev.n3to.domain.model.MonthlyGoalProgress
 import es.aviferdev.n3to.domain.model.Transaction
 import es.aviferdev.n3to.domain.model.TransactionType
-import es.aviferdev.n3to.domain.usecase.backup.GetBackupReminderIntervalUseCase
-import es.aviferdev.n3to.domain.usecase.backup.GetLastBackupDateUseCase
-import es.aviferdev.n3to.domain.usecase.backup.SaveBackupReminderDismissedUseCase
-import es.aviferdev.n3to.domain.usecase.backup.SaveBackupReminderIntervalUseCase
-import es.aviferdev.n3to.domain.usecase.backup.ShouldShowBackupReminderUseCase
 import es.aviferdev.n3to.ui.account.AccountSelectorBar
 import es.aviferdev.n3to.ui.account.AccountViewModel
 import es.aviferdev.n3to.ui.common.SectionHeader
 import es.aviferdev.n3to.ui.common.component.IconActionButton
+import es.aviferdev.n3to.ui.home.banner.BackupReminderBanner
+import es.aviferdev.n3to.ui.home.banner.MaturityReminderBanner
+import es.aviferdev.n3to.ui.home.banner.PriceReminderBanner
+import es.aviferdev.n3to.ui.home.bottomsheet.AddTransactionBottomSheet
+import es.aviferdev.n3to.ui.home.bottomsheet.PriceUpdateBottomSheet
+import es.aviferdev.n3to.ui.home.bottomsheet.SetInitialBalanceBottomSheet
+import es.aviferdev.n3to.ui.home.dialog.BackupReminderIntervalDialog
+import es.aviferdev.n3to.ui.home.viewmodel.AddTransactionViewModel
+import es.aviferdev.n3to.ui.home.viewmodel.GoalProgressState
+import es.aviferdev.n3to.ui.home.viewmodel.HomeUiState
+import es.aviferdev.n3to.ui.home.viewmodel.HomeViewModel
+import es.aviferdev.n3to.ui.home.viewmodel.NearMaturityState
+import es.aviferdev.n3to.ui.home.viewmodel.PriceReminderState
 import es.aviferdev.n3to.ui.reconciliation.ReconcileBalanceBottomSheet
 import es.aviferdev.n3to.ui.reconciliation.ReconciliationReminderBanner
 import es.aviferdev.n3to.ui.reconciliation.ReconciliationViewModel
@@ -71,17 +77,11 @@ import es.aviferdev.n3to.ui.settings.SetCategoryLimitSheet
 import es.aviferdev.n3to.ui.settings.backup.BackupPasswordSheet
 import es.aviferdev.n3to.ui.settings.backup.BackupViewModel
 
-import es.aviferdev.n3to.ui.theme.ExpenseRed
 import es.aviferdev.n3to.ui.theme.LocalBalanceHidden
 import es.aviferdev.n3to.ui.theme.N3toTheme
 
 import es.aviferdev.n3to.ui.version.VersionUpdateBanner
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
 import n3to.composeapp.generated.resources.Res
-import n3to.composeapp.generated.resources.greeting_afternoon
-import n3to.composeapp.generated.resources.greeting_evening
-import n3to.composeapp.generated.resources.greeting_morning
 import n3to.composeapp.generated.resources.home_confirm_identity
 import n3to.composeapp.generated.resources.home_hide_balances
 import n3to.composeapp.generated.resources.home_show_balances
@@ -94,7 +94,6 @@ import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
-import org.koin.core.qualifier.named
 
 // ─────────────────────────────────────────────────────────────────────────────
 //  HomeScreen — entry point (sin cambios de lógica/VM)
@@ -108,6 +107,7 @@ fun HomeScreen(
     onNavigateToSettings: () -> Unit = {},
     onNavigateToExpenseSettings: () -> Unit = {},
     onNavigateToEmergencyFundSettings: () -> Unit = {},
+    onOpenStore: () -> Unit = {},
     onNavigateToFixedIncomeDetail: (String) -> Unit = {},
     onNavigateToCategoryPicker: ((TransactionType) -> Unit)? = null,
     onNavigateToAccountConfig: (String) -> Unit = {},
@@ -129,43 +129,13 @@ fun HomeScreen(
     val selectedId by accountViewModel.selectedAccountId.collectAsState()
     val reconciliationState by reconciliationViewModel.uiState.collectAsState()
     val backupSheetState by backupViewModel.state.collectAsState()
+    val backupReminderState by backupViewModel.reminderState.collectAsState()
     val versionStatus by viewModel.versionStatus.collectAsState()
-    val openStore: () -> Unit = koinInject(named("openStore"))
     val balanceVisibility = koinInject<BalanceVisibilityManager>()
     val authenticator: BiometricAuthenticator = koinInject()
     val balancesHidden = LocalBalanceHidden.current
     val showBalancesText = stringResource(Res.string.home_show_balances)
     val confirmIdentityText = stringResource(Res.string.home_confirm_identity)
-
-    // ── Backup reminder state ────────────────────────────────────────────────
-    val shouldShowBackupReminder = koinInject<ShouldShowBackupReminderUseCase>()
-    val getLastBackupDate = koinInject<GetLastBackupDateUseCase>()
-    val getBackupReminderInterval = koinInject<GetBackupReminderIntervalUseCase>()
-    val saveBackupReminderInterval = koinInject<SaveBackupReminderIntervalUseCase>()
-    val saveBackupReminderDismissed = koinInject<SaveBackupReminderDismissedUseCase>()
-
-    var showBackupBanner by remember { mutableStateOf(false) }
-    var neverBackup by remember { mutableStateOf(false) }
-    var daysSinceLastBackup by remember { mutableStateOf(0) }
-    var showBackupIntervalDialog by remember { mutableStateOf(false) }
-
-    // Comprobar si debe mostrarse el banner de backup al iniciar
-    LaunchedEffect(Unit) {
-        val shouldShow = shouldShowBackupReminder()
-        if (shouldShow) {
-            val lastBackupMillis = getLastBackupDate()
-            if (lastBackupMillis == 0L) {
-                neverBackup = true
-                daysSinceLastBackup = 0
-            } else {
-                neverBackup = false
-                val now = nowMillis()
-                val diffDays = ((now - lastBackupMillis) / (24 * 60 * 60 * 1000)).toInt()
-                daysSinceLastBackup = maxOf(diffDays, 1)
-            }
-            showBackupBanner = true
-        }
-    }
 
     var showAddTransaction by remember { mutableStateOf(false) }
     var showInitialBalance by remember { mutableStateOf(false) }
@@ -252,14 +222,14 @@ fun HomeScreen(
                     showReconciliationBanner = reconciliationState.showBanner,
                     onReconcileNow = { reconciliationViewModel.openBottomSheet(state.balance.selectedAccountBalance) },
                     onReconcileRemindLater = { reconciliationViewModel.dismissBanner() },
-                    showBackupBanner = showBackupBanner,
-                    neverBackup = neverBackup,
-                    daysSinceLastBackup = daysSinceLastBackup,
+                    showBackupBanner = backupReminderState.showBanner,
+                    neverBackup = backupReminderState.neverBackup,
+                    daysSinceLastBackup = backupReminderState.daysSinceLastBackup,
                     onBackupNow = { backupViewModel.openExport() },
-                    onBackupRemindLater = { showBackupIntervalDialog = true },
+                    onBackupRemindLater = { backupViewModel.openIntervalDialog() },
                     showVersionBanner = showVersionBanner,
                     versionLatestVersion = versionInfo?.latestVersion,
-                    onVersionUpdateNow = openStore,
+                    onVersionUpdateNow = onOpenStore,
                     onDismissVersionBanner = { versionInfo?.let { viewModel.dismissVersionBanner(it.latestVersion) } },
                     goalProgressState = goalProgress,
                     emergencyFundStatus = emergencyFund,
@@ -340,16 +310,11 @@ fun HomeScreen(
     }
 
     // ── Backup sheets ────────────────────────────────────────────────────────
-    if (showBackupIntervalDialog) {
+    if (backupReminderState.showIntervalDialog) {
         BackupReminderIntervalDialog(
-            currentInterval = getBackupReminderInterval.get(),
-            onIntervalSelected = { days ->
-                saveBackupReminderInterval(days)
-                saveBackupReminderDismissed()
-                showBackupIntervalDialog = false
-                showBackupBanner = false
-            },
-            onDismiss = { showBackupIntervalDialog = false }
+            currentInterval = backupReminderState.currentInterval,
+            onIntervalSelected = { days -> backupViewModel.saveReminderInterval(days) },
+            onDismiss = { backupViewModel.dismissIntervalDialog() }
         )
     }
 
@@ -447,13 +412,6 @@ fun HomeContent(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column {
-                val greeting = getGreeting()
-                Text(
-                    text = greeting,
-                    fontSize = 12.sp,
-                    color = MaterialTheme.appColors.textTertiary,
-                    fontWeight = FontWeight.Normal
-                )
                 Text(
                     text = stringResource(Res.string.app_name),
                     fontSize = 18.sp,
@@ -536,14 +494,11 @@ fun HomeContent(
         )
         if (nearMaturityState.showBanner) Spacer(Modifier.height(8.dp))
 
-        // ── Hero card ─────────────────────────────────────────────────────────
         HeroCard(
             balance = balance,
             balancesHidden = balancesHidden,
             modifier = Modifier.padding(horizontal = 16.dp)
         )
-
-        // ── Progreso de objetivos ─────────────────────────────────────────────
         Spacer(Modifier.height(24.dp))
         SectionHeader(
             label = stringResource(Res.string.home_section_goals),
@@ -562,7 +517,6 @@ fun HomeContent(
             modifier = Modifier.padding(horizontal = 16.dp)
         )
 
-        // ── Fondo de emergencia ───────────────────────────────────────────────
         Spacer(Modifier.height(24.dp))
         SectionHeader(
             label = stringResource(Res.string.home_section_emergency_fund),
@@ -575,7 +529,6 @@ fun HomeContent(
             modifier = Modifier.padding(horizontal = 16.dp)
         )
 
-        // ── Presupuestos ──────────────────────────────────────────────────────
         Spacer(Modifier.height(24.dp))
         SectionHeader(
             label = stringResource(Res.string.home_section_budgets),
@@ -591,7 +544,6 @@ fun HomeContent(
             modifier = Modifier.padding(horizontal = 16.dp)
         )
 
-        // ── Acceso rápido ─────────────────────────────────────────────────────
         Spacer(Modifier.height(24.dp))
         QuickAccessSection(
             onNavigateToCharts = onNavigateToCharts,
@@ -601,7 +553,6 @@ fun HomeContent(
             modifier = Modifier.padding(horizontal = 16.dp)
         )
 
-        // ── Últimos movimientos ───────────────────────────────────────────────
         Spacer(Modifier.height(24.dp))
         RecentTransactionsSection(
             transactions = balance.recentTransactions,
@@ -610,93 +561,5 @@ fun HomeContent(
             onVerTodos = onNavigateToTransactions,
             modifier = Modifier.padding(horizontal = 16.dp)
         )
-    }
-}
-
-// HeroCard, QuickAccessSection y RecentTransactionsSection
-// extraídos a archivos propios (HeroCard.kt, QuickAccessSection.kt, RecentTransactionsSection.kt)
-
-@Preview
-@Composable
-private fun HomeContentPreview() {
-    val fakeAccount = Account(
-        id = "1",
-        name = "Cuenta Corriente",
-        initialBalance = 1000.0,
-        computedBalance = 3500.0,
-        createdAt = 0L
-    )
-    val fakeTransactions = listOf(
-        Transaction(
-            id = "1",
-            accountId = "1",
-            amount = 2500.0,
-            type = TransactionType.INCOME,
-            categoryId = null,
-            date = 1715500800000L,
-            notes = null,
-            createdAt = 1715500800000L,
-            incomeType = IncomeType.SALARY,
-            grossAmount = 3000.0,
-            issuerName = "Empresa S.L."
-        ),
-        Transaction(
-            id = "2",
-            accountId = "1",
-            amount = 85.50,
-            type = TransactionType.EXPENSE,
-            categoryId = "food",
-            date = 1715414400000L,
-            notes = null,
-            createdAt = 1715414400000L
-        ),
-        Transaction(
-            id = "3",
-            accountId = "1",
-            amount = 150.0,
-            type = TransactionType.EXPENSE,
-            categoryId = "transport",
-            date = 1715328000000L,
-            notes = null,
-            createdAt = 1715328000000L
-        )
-    )
-    val fakeBalance = HomeBalance(
-        selectedAccount = fakeAccount,
-        selectedAccountBalance = 3500.0,
-        totalOwed = 500.0,
-        totalOwing = 200.0,
-        recentTransactions = fakeTransactions
-    )
-    val fakeCategoryNames = mapOf(
-        "food" to "Alimentación",
-        "transport" to "Transporte"
-    )
-
-    N3toTheme {
-        HomeContent(
-            balance = fakeBalance,
-            categoryNames = fakeCategoryNames,
-            accounts = listOf(fakeAccount),
-            selectedAccountId = "1",
-            balancesHidden = false,
-            onToggleBalances = {},
-            onAccountSelected = {},
-            onNavigateToTransactions = {},
-            onNavigateToCharts = {},
-            onNavigateToDebts = {},
-            onNavigateToFiscalReport = {},
-            onNavigateToSettings = {}
-        )
-    }
-}
-
-/** Saludo según la hora del día. */
-private fun getGreeting(): String {
-    val hour = nowHour()
-    return when {
-        hour in 6..11  -> "Buenos días"
-        hour in 12..19 -> "Buenas tardes"
-        else           -> "Buenas noches"
     }
 }

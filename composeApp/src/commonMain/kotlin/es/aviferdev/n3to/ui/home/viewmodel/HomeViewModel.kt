@@ -1,4 +1,4 @@
-package es.aviferdev.n3to.ui.home
+package es.aviferdev.n3to.ui.home.viewmodel
 
 import es.aviferdev.n3to.platform.nowMillis
 import androidx.lifecycle.ViewModel

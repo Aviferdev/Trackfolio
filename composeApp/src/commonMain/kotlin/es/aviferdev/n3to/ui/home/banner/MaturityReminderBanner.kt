@@ -1,4 +1,4 @@
-package es.aviferdev.n3to.ui.home
+package es.aviferdev.n3to.ui.home.banner
 
 import androidx.compose.material3.MaterialTheme
 import es.aviferdev.n3to.ui.theme.appColors
@@ -28,7 +28,6 @@ import es.aviferdev.n3to.domain.model.InterestFrequency
 import es.aviferdev.n3to.ui.common.toMaterialIcon
 
 import es.aviferdev.n3to.ui.theme.N3toTheme
-import es.aviferdev.n3to.ui.theme.WarnAmber
 
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.home_maturity_more_format

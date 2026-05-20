@@ -1,17 +1,13 @@
 package es.aviferdev.n3to.ui.portfolio
 
-import es.aviferdev.n3to.platform.nowMillis
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import es.aviferdev.n3to.domain.model.Account
 import es.aviferdev.n3to.domain.model.Asset
 import es.aviferdev.n3to.domain.model.AssetCategory
+import es.aviferdev.n3to.domain.model.AssetCategoryType
 import es.aviferdev.n3to.domain.model.AssetTransaction
-import es.aviferdev.n3to.domain.model.Portfolio
-import es.aviferdev.n3to.domain.usecase.portfolio.GetPortfoliosByAccountUseCase
-import es.aviferdev.n3to.domain.usecase.portfolio.SavePortfolioUseCase
-import es.aviferdev.n3to.domain.usecase.portfolio.DeletePortfolioUseCase
 import es.aviferdev.n3to.domain.model.AssetTransactionType
 import es.aviferdev.n3to.domain.model.FixedIncomeEvent
 import es.aviferdev.n3to.domain.model.FixedIncomePosition
@@ -20,13 +16,13 @@ import es.aviferdev.n3to.domain.model.FixedIncomeSummary
 import es.aviferdev.n3to.domain.model.Issuer
 import es.aviferdev.n3to.domain.model.IssuerType
 import es.aviferdev.n3to.domain.model.Platform
-import es.aviferdev.n3to.domain.repository.AssetMetadataRepository
-import es.aviferdev.n3to.domain.repository.AssetPlatformRepository
-import es.aviferdev.n3to.domain.portfolio.CompoundEffect
+import es.aviferdev.n3to.domain.model.Portfolio
+import es.aviferdev.n3to.domain.model.PortfolioValuePoint
 import es.aviferdev.n3to.domain.model.Transaction
 import es.aviferdev.n3to.domain.portfolio.AssetPosition
-import es.aviferdev.n3to.domain.model.PortfolioValuePoint
-import es.aviferdev.n3to.ui.account.AccountSession
+import es.aviferdev.n3to.domain.portfolio.CompoundEffect
+import es.aviferdev.n3to.domain.repository.AssetMetadataRepository
+import es.aviferdev.n3to.domain.repository.AssetPlatformRepository
 import es.aviferdev.n3to.domain.usecase.account.GetAccountByIdUseCase
 import es.aviferdev.n3to.domain.usecase.asset.ArchiveAssetUseCase
 import es.aviferdev.n3to.domain.usecase.asset.DetectPriceAnomalyUseCase
@@ -35,24 +31,27 @@ import es.aviferdev.n3to.domain.usecase.asset.SaveAssetUseCase
 import es.aviferdev.n3to.domain.usecase.asset.UpdateAssetCurrentPriceUseCase
 import es.aviferdev.n3to.domain.usecase.asset.UpdateAssetUseCase
 import es.aviferdev.n3to.domain.usecase.assetcategory.GetAllAssetCategoriesIncludingArchivedUseCase
+import es.aviferdev.n3to.domain.usecase.assetpricehistory.SaveAssetPriceHistoryUseCase
 import es.aviferdev.n3to.domain.usecase.assettransaction.GetTransactionsByAccountUseCase
 import es.aviferdev.n3to.domain.usecase.assettransaction.SaveAssetTransactionUseCase
 import es.aviferdev.n3to.domain.usecase.assettransaction.SyncAssetTransactionToLedgerUseCase
-import es.aviferdev.n3to.domain.usecase.assetpricehistory.SaveAssetPriceHistoryUseCase
 import es.aviferdev.n3to.domain.usecase.fixedincome.CreateFixedIncomePositionUseCase
 import es.aviferdev.n3to.domain.usecase.fixedincome.GetFixedIncomeSummaryUseCase
 import es.aviferdev.n3to.domain.usecase.issuer.CreateIssuerUseCase
 import es.aviferdev.n3to.domain.usecase.issuer.GetIssuersUseCase
 import es.aviferdev.n3to.domain.usecase.platform.GetPlatformsUseCase
+import es.aviferdev.n3to.domain.usecase.portfolio.DeletePortfolioUseCase
 import es.aviferdev.n3to.domain.usecase.portfolio.GetPortfolioValueHistoryUseCase
+import es.aviferdev.n3to.domain.usecase.portfolio.GetPortfoliosByAccountUseCase
+import es.aviferdev.n3to.domain.usecase.portfolio.SavePortfolioUseCase
 import es.aviferdev.n3to.domain.usecase.transaction.GetDividendsByAssetIdsUseCase
-import es.aviferdev.n3to.domain.model.AssetCategoryType
+import es.aviferdev.n3to.platform.nowMillis
+import es.aviferdev.n3to.ui.account.AccountSession
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
@@ -81,8 +80,8 @@ data class CategoryGroup(
 ) {
     val displayName: String get() = customName ?: category?.name ?: "Sin categoría"
     val displayIcon: String get() = category?.icon ?: "❔"
-    val sortKey: Int        get() = category?.sortOrder ?: Int.MAX_VALUE
-    val rowCount: Int       get() = rows.size + fixedIncomeRows.size
+    val sortKey: Int get() = category?.sortOrder ?: Int.MAX_VALUE
+    val rowCount: Int get() = rows.size + fixedIncomeRows.size
 }
 
 data class CategorySlice(
@@ -102,10 +101,10 @@ enum class DistributionView {
 
     val displayName: String
         get() = when (this) {
-            CATEGORY    -> "Categoría"
+            CATEGORY -> "Categoría"
             COMPOSITION -> "Composición"
-            REGION      -> "Región"
-            SECTOR      -> "Sector"
+            REGION -> "Región"
+            SECTOR -> "Sector"
         }
 }
 
@@ -120,50 +119,50 @@ sealed class PortfolioSheetError {
 }
 
 data class PortfolioUiState(
-    val groups: List<CategoryGroup>                          = emptyList(),
-    val regionGroups: List<CategoryGroup>                   = emptyList(),
-    val sectorGroups: List<CategoryGroup>                   = emptyList(),
-    val closedPositions: List<AssetRow>                     = emptyList(),
-    val closedFixedIncomePositions: List<FixedIncomeRow>    = emptyList(),
-    val distribution: List<CategorySlice>                   = emptyList(),
-    val compositionDistribution: List<CategorySlice>        = emptyList(),
-    val regionDistribution: List<CategorySlice>             = emptyList(),
-    val sectorDistribution: List<CategorySlice>             = emptyList(),
-    val selectedDistributionView: DistributionView          = DistributionView.CATEGORY,
-    val totalInvested: Double                               = 0.0,
-    val totalCurrentValue: Double                           = 0.0,
-    val totalRealizedPnL: Double                            = 0.0,
-    val totalUnrealizedPnL: Double                          = 0.0,
-    val totalPnL: Double                                    = 0.0,
-    val totalPnLPercent: Double                             = 0.0,
-    val openPositionsCount: Int                             = 0,
-    val fixedIncomeSummary: FixedIncomeSummary?             = null,
-    val nearMaturityPositions: List<FixedIncomePosition>    = emptyList(),
-    val combinedInvested: Double                            = 0.0,
-    val combinedCurrentValue: Double                        = 0.0,
-    val combinedPnL: Double                                 = 0.0,
-    val combinedPnLPercent: Double                          = 0.0,
-    val combinedRealizedPnL: Double                         = 0.0,
-    val combinedUnrealizedPnL: Double                       = 0.0,
-    val allAssets: List<Asset>                              = emptyList(),
-    val platforms: List<Platform>                           = emptyList(),
-    val platformsByAsset: Map<String, List<Platform>>       = emptyMap(),
-    val bondIssuers: List<Issuer>                           = emptyList(),
-    val bankIssuers: List<Issuer>                           = emptyList(),
-    val isLoading: Boolean                                  = true,
-    val error: PortfolioSheetError?                         = null,
-    val showUpdatePriceSheet: Boolean                       = false,
-    val pricingAsset: Asset?                                = null,
-    val showAddTxSheet: Boolean                             = false,
-    val showDividendSheet: Boolean                          = false,
-    val dividendAssetId: String?                            = null,
-    val showCreateFixedIncomeSheet: Boolean                 = false,
-    val currentAccountId: String?                           = null,
-    val showRegisterCouponSheet: Boolean                    = false,
-    val selectedPositionForCoupon: FixedIncomePosition?     = null,
+    val groups: List<CategoryGroup> = emptyList(),
+    val regionGroups: List<CategoryGroup> = emptyList(),
+    val sectorGroups: List<CategoryGroup> = emptyList(),
+    val closedPositions: List<AssetRow> = emptyList(),
+    val closedFixedIncomePositions: List<FixedIncomeRow> = emptyList(),
+    val distribution: List<CategorySlice> = emptyList(),
+    val compositionDistribution: List<CategorySlice> = emptyList(),
+    val regionDistribution: List<CategorySlice> = emptyList(),
+    val sectorDistribution: List<CategorySlice> = emptyList(),
+    val selectedDistributionView: DistributionView = DistributionView.CATEGORY,
+    val totalInvested: Double = 0.0,
+    val totalCurrentValue: Double = 0.0,
+    val totalRealizedPnL: Double = 0.0,
+    val totalUnrealizedPnL: Double = 0.0,
+    val totalPnL: Double = 0.0,
+    val totalPnLPercent: Double = 0.0,
+    val openPositionsCount: Int = 0,
+    val fixedIncomeSummary: FixedIncomeSummary? = null,
+    val nearMaturityPositions: List<FixedIncomePosition> = emptyList(),
+    val combinedInvested: Double = 0.0,
+    val combinedCurrentValue: Double = 0.0,
+    val combinedPnL: Double = 0.0,
+    val combinedPnLPercent: Double = 0.0,
+    val combinedRealizedPnL: Double = 0.0,
+    val combinedUnrealizedPnL: Double = 0.0,
+    val allAssets: List<Asset> = emptyList(),
+    val platforms: List<Platform> = emptyList(),
+    val platformsByAsset: Map<String, List<Platform>> = emptyMap(),
+    val bondIssuers: List<Issuer> = emptyList(),
+    val bankIssuers: List<Issuer> = emptyList(),
+    val isLoading: Boolean = true,
+    val error: PortfolioSheetError? = null,
+    val showUpdatePriceSheet: Boolean = false,
+    val pricingAsset: Asset? = null,
+    val showAddTxSheet: Boolean = false,
+    val showDividendSheet: Boolean = false,
+    val dividendAssetId: String? = null,
+    val showCreateFixedIncomeSheet: Boolean = false,
+    val currentAccountId: String? = null,
+    val showRegisterCouponSheet: Boolean = false,
+    val selectedPositionForCoupon: FixedIncomePosition? = null,
     val allSectors: List<es.aviferdev.n3to.domain.model.AssetSector> = emptyList(),
     val allRegions: List<es.aviferdev.n3to.domain.model.AssetRegion> = emptyList(),
-    val compoundEffect: CompoundEffect?                     = null
+    val compoundEffect: CompoundEffect? = null
 )
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -227,9 +226,17 @@ class PortfolioViewModel(
         }
     }
 
-    fun selectPortfolio(id: String?) { _selectedPortfolioId.value = id }
-    fun openAddPortfolioSheet()  { _showAddPortfolioSheet.value = true }
-    fun closeAddPortfolioSheet() { _showAddPortfolioSheet.value = false }
+    fun selectPortfolio(id: String?) {
+        _selectedPortfolioId.value = id
+    }
+
+    fun openAddPortfolioSheet() {
+        _showAddPortfolioSheet.value = true
+    }
+
+    fun closeAddPortfolioSheet() {
+        _showAddPortfolioSheet.value = false
+    }
 
     fun addPortfolio(name: String, description: String?) {
         val accountId = session.selectedAccountId.value ?: return
@@ -241,9 +248,9 @@ class PortfolioViewModel(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val portfolioValueHistory: StateFlow<List<PortfolioValuePoint>> = combine(
-            session.selectedAccountId,
-            _selectedPortfolioId
-        ) { accountId, portfolioId -> accountId to portfolioId }
+        session.selectedAccountId,
+        _selectedPortfolioId
+    ) { accountId, portfolioId -> accountId to portfolioId }
         .flatMapLatest { (accountId, portfolioId) ->
             if (accountId == null) flowOf(emptyList())
             else getPortfolioValueHistory(accountId, portfolioId)
@@ -259,15 +266,15 @@ class PortfolioViewModel(
             .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     private data class SheetState(
-        val showUpdatePriceSheet: Boolean             = false,
-        val pricingAsset: Asset?                      = null,
-        val showAddTxSheet: Boolean                   = false,
-        val showDividendSheet: Boolean                = false,
-        val dividendAssetId: String?                  = null,
-        val showCreateFixedIncomeSheet: Boolean       = false,
-        val showRegisterCouponSheet: Boolean          = false,
+        val showUpdatePriceSheet: Boolean = false,
+        val pricingAsset: Asset? = null,
+        val showAddTxSheet: Boolean = false,
+        val showDividendSheet: Boolean = false,
+        val dividendAssetId: String? = null,
+        val showCreateFixedIncomeSheet: Boolean = false,
+        val showRegisterCouponSheet: Boolean = false,
         val selectedPositionForCoupon: FixedIncomePosition? = null,
-        val error: PortfolioSheetError?               = null
+        val error: PortfolioSheetError? = null
     )
 
     private data class BasicPortfolioData(
@@ -298,16 +305,17 @@ class PortfolioViewModel(
     )
 
     val portfolioState: StateFlow<PortfolioUiState> = combine(
-            session.selectedAccountId,
-            _selectedPortfolioId
-        ) { accountId, portfolioId -> accountId to portfolioId }
+        session.selectedAccountId,
+        _selectedPortfolioId
+    ) { accountId, portfolioId -> accountId to portfolioId }
         .flatMapLatest { (accountId, portfolioId) ->
             if (accountId == null) {
                 flowOf(PortfolioUiState(isLoading = false))
             } else {
-                val nearMaturityFlow = getNearMaturityPositions?.invoke(accountId) ?: flowOf(emptyList())
-                val bondIssuersFlow  = getBondIssuers(accountId, IssuerType.BOND_ISSUER)
-                val bankIssuersFlow  = getBondIssuers(accountId, IssuerType.BANK)
+                val nearMaturityFlow =
+                    getNearMaturityPositions?.invoke(accountId) ?: flowOf(emptyList())
+                val bondIssuersFlow = getBondIssuers(accountId, IssuerType.BOND_ISSUER)
+                val bankIssuersFlow = getBondIssuers(accountId, IssuerType.BANK)
 
                 val baseDataFlow = combine(
                     getAssetsByAccount(accountId),
@@ -319,22 +327,41 @@ class PortfolioViewModel(
                     BasicPortfolioData(assets, categories, account, txs, platforms)
                 }
 
-                combine(baseDataFlow, getFixedIncomeSummary(accountId), nearMaturityFlow, bondIssuersFlow, bankIssuersFlow) { baseData, fiSummary, nearMaturity, bondIssuers, bankIssuers ->
+                combine(
+                    baseDataFlow,
+                    getFixedIncomeSummary(accountId),
+                    nearMaturityFlow,
+                    bondIssuersFlow,
+                    bankIssuersFlow
+                ) { baseData, fiSummary, nearMaturity, bondIssuers, bankIssuers ->
                     BasicPortfolioDataWithFI(
-                        assets                = baseData.assets,
-                        categories            = baseData.categories,
-                        account               = baseData.account,
-                        transactions          = baseData.transactions,
-                        platforms             = baseData.platforms,
-                        fiSummary             = fiSummary,
+                        assets = baseData.assets,
+                        categories = baseData.categories,
+                        account = baseData.account,
+                        transactions = baseData.transactions,
+                        platforms = baseData.platforms,
+                        fiSummary = fiSummary,
                         nearMaturityPositions = nearMaturity,
-                        bondIssuers           = bondIssuers,
-                        bankIssuers           = bankIssuers
+                        bondIssuers = bondIssuers,
+                        bankIssuers = bankIssuers
                     )
                 }.flatMapLatest { basicData ->
                     val assetIds = basicData.assets.map { it.id }
                     if (assetIds.isEmpty()) {
-                        flowOf(buildPortfolioState(portfolioId, basicData, BasePortfolioData(emptyMap(), emptyList(), emptyList(), emptyList()), emptyMap(), accountId))
+                        flowOf(
+                            buildPortfolioState(
+                                portfolioId,
+                                basicData,
+                                BasePortfolioData(
+                                    emptyMap(),
+                                    emptyList(),
+                                    emptyList(),
+                                    emptyList()
+                                ),
+                                emptyMap(),
+                                accountId
+                            )
+                        )
                     } else {
                         val metaFlow = combine(
                             assetPlatformRepository.getPlatformsByAssets(assetIds),
@@ -342,7 +369,12 @@ class PortfolioViewModel(
                             assetMetadataRepository.getSectorsByAssetIds(assetIds),
                             assetMetadataRepository.getRegionDistributionsByAssetIds(assetIds)
                         ) { platformsByAsset, compositions, sectorRelations, regionDistributions ->
-                            BasePortfolioData(platformsByAsset, compositions, sectorRelations, regionDistributions)
+                            BasePortfolioData(
+                                platformsByAsset,
+                                compositions,
+                                sectorRelations,
+                                regionDistributions
+                            )
                         }
                         combine(metaFlow, getDividendsByAssetIds(assetIds)) { meta, dividends ->
                             buildPortfolioState(portfolioId, basicData, meta, dividends, accountId)
@@ -353,15 +385,15 @@ class PortfolioViewModel(
         }
         .combine(_sheetState) { state, sheets ->
             state.copy(
-                showUpdatePriceSheet       = sheets.showUpdatePriceSheet,
-                pricingAsset               = sheets.pricingAsset,
-                showAddTxSheet             = sheets.showAddTxSheet,
-                showDividendSheet          = sheets.showDividendSheet,
-                dividendAssetId            = sheets.dividendAssetId,
+                showUpdatePriceSheet = sheets.showUpdatePriceSheet,
+                pricingAsset = sheets.pricingAsset,
+                showAddTxSheet = sheets.showAddTxSheet,
+                showDividendSheet = sheets.showDividendSheet,
+                dividendAssetId = sheets.dividendAssetId,
                 showCreateFixedIncomeSheet = sheets.showCreateFixedIncomeSheet,
-                showRegisterCouponSheet    = sheets.showRegisterCouponSheet,
-                selectedPositionForCoupon  = sheets.selectedPositionForCoupon,
-                error                      = sheets.error
+                showRegisterCouponSheet = sheets.showRegisterCouponSheet,
+                selectedPositionForCoupon = sheets.selectedPositionForCoupon,
+                error = sheets.error
             )
         }
         .combine(_selectedDistributionView) { state, view -> state.copy(selectedDistributionView = view) }
@@ -379,35 +411,37 @@ class PortfolioViewModel(
         accountId: String?
     ): PortfolioUiState = stateBuilder.build(
         PortfolioStateInput(
-            portfolioId          = portfolioId,
-            assets               = basicData.assets,
-            categories           = basicData.categories,
-            account              = basicData.account,
-            transactions         = basicData.transactions,
-            platforms            = basicData.platforms,
-            platformsByAsset     = meta.platformsByAsset,
-            fiSummary            = basicData.fiSummary,
+            portfolioId = portfolioId,
+            assets = basicData.assets,
+            categories = basicData.categories,
+            account = basicData.account,
+            transactions = basicData.transactions,
+            platforms = basicData.platforms,
+            platformsByAsset = meta.platformsByAsset,
+            fiSummary = basicData.fiSummary,
             nearMaturityPositions = basicData.nearMaturityPositions,
-            accountId            = accountId,
-            compositions         = meta.compositions,
-            sectorRelations      = meta.sectorRelations,
-            regionDistributions  = meta.regionDistributions,
-            bondIssuers          = basicData.bondIssuers,
-            bankIssuers          = basicData.bankIssuers,
-            dividendsByAsset     = dividendsByAsset,
-            allSectors           = allSectors.value,
-            allRegions           = allRegions.value,
+            accountId = accountId,
+            compositions = meta.compositions,
+            sectorRelations = meta.sectorRelations,
+            regionDistributions = meta.regionDistributions,
+            bondIssuers = basicData.bondIssuers,
+            bankIssuers = basicData.bankIssuers,
+            dividendsByAsset = dividendsByAsset,
+            allSectors = allSectors.value,
+            allRegions = allRegions.value,
             selectedDistributionView = _selectedDistributionView.value
         )
     )
 
     // ── Sheet de actualización de precio ──────────────────────────────────────
     fun openUpdatePriceSheet(asset: Asset) {
-        _sheetState.value = _sheetState.value.copy(showUpdatePriceSheet = true, pricingAsset = asset)
+        _sheetState.value =
+            _sheetState.value.copy(showUpdatePriceSheet = true, pricingAsset = asset)
     }
 
     fun closeUpdatePriceSheet() {
-        _sheetState.value = _sheetState.value.copy(showUpdatePriceSheet = false, pricingAsset = null)
+        _sheetState.value =
+            _sheetState.value.copy(showUpdatePriceSheet = false, pricingAsset = null)
     }
 
     fun selectDistributionView(view: DistributionView) {
@@ -422,13 +456,21 @@ class PortfolioViewModel(
                     getPortfolioValueHistory.triggerRefresh()
                     closeUpdatePriceSheet()
                 }
-                .onFailure { _sheetState.value = _sheetState.value.copy(error = PortfolioSheetError.Unknown(it.message)) }
+                .onFailure {
+                    _sheetState.value =
+                        _sheetState.value.copy(error = PortfolioSheetError.Unknown(it.message))
+                }
         }
     }
 
     // ── Sheet de "Nuevo movimiento" ───────────────────────────────────────────
-    fun openAddTransactionSheet()  { _sheetState.value = _sheetState.value.copy(showAddTxSheet = true) }
-    fun closeAddTransactionSheet() { _sheetState.value = _sheetState.value.copy(showAddTxSheet = false) }
+    fun openAddTransactionSheet() {
+        _sheetState.value = _sheetState.value.copy(showAddTxSheet = true)
+    }
+
+    fun closeAddTransactionSheet() {
+        _sheetState.value = _sheetState.value.copy(showAddTxSheet = false)
+    }
 
     fun addTransaction(
         assetId: String,
@@ -450,16 +492,16 @@ class PortfolioViewModel(
 
             val now = nowMillis()
             val tx = AssetTransaction(
-                id           = "tx_${now}_${(0..9999).random()}",
-                assetId      = assetId,
-                type         = type,
-                quantity     = quantity,
+                id = "tx_${now}_${(0..9999).random()}",
+                assetId = assetId,
+                type = type,
+                quantity = quantity,
                 pricePerUnit = pricePerUnit,
-                date         = date,
-                platformId   = platformId,
-                feeNote      = feeNote?.ifBlank { null },
-                notes        = notes?.ifBlank { null },
-                createdAt    = now
+                date = date,
+                platformId = platformId,
+                feeNote = feeNote?.ifBlank { null },
+                notes = notes?.ifBlank { null },
+                createdAt = now
             )
             saveAssetTransaction(tx)
                 .onSuccess {
@@ -469,31 +511,46 @@ class PortfolioViewModel(
                             updateAsset(currentAsset.copy(portfolioId = portfolioId))
                         }
                         syncToLedger.sync(
-                            assetTx   = tx,
+                            assetTx = tx,
                             accountId = currentAsset.accountId,
                             assetName = currentAsset.name
                         )
                         if (type == AssetTransactionType.BUY) {
                             saveAssetPriceHistory(assetId, pricePerUnit, date)
                                 .onFailure { err ->
-                                    _sheetState.value = _sheetState.value.copy(error = PortfolioSheetError.PriceHistorySave(err.message ?: ""))
+                                    _sheetState.value = _sheetState.value.copy(
+                                        error = PortfolioSheetError.PriceHistorySave(
+                                            err.message ?: ""
+                                        )
+                                    )
                                 }
                         }
                     }
                     closeAddTransactionSheet()
                 }
-                .onFailure { _sheetState.value = _sheetState.value.copy(error = PortfolioSheetError.Unknown(it.message)) }
+                .onFailure {
+                    _sheetState.value =
+                        _sheetState.value.copy(error = PortfolioSheetError.Unknown(it.message))
+                }
         }
     }
 
-    fun clearError() { _sheetState.value = _sheetState.value.copy(error = null) }
+    fun clearError() {
+        _sheetState.value = _sheetState.value.copy(error = null)
+    }
 
     /** Acceso al detector de anomalías para el sheet de actualización de precio. */
     val priceAnomalyDetector: DetectPriceAnomalyUseCase get() = detectAnomaly
 
     // ── Dividendos ────────────────────────────────────────────────────────────
-    fun openDividendSheet()  { _sheetState.value = _sheetState.value.copy(showDividendSheet = true, dividendAssetId = null) }
-    fun closeDividendSheet() { _sheetState.value = _sheetState.value.copy(showDividendSheet = false, dividendAssetId = null) }
+    fun openDividendSheet() {
+        _sheetState.value = _sheetState.value.copy(showDividendSheet = true, dividendAssetId = null)
+    }
+
+    fun closeDividendSheet() {
+        _sheetState.value =
+            _sheetState.value.copy(showDividendSheet = false, dividendAssetId = null)
+    }
 
     fun saveDividend(
         assetId: String,
@@ -504,57 +561,84 @@ class PortfolioViewModel(
         viewModelScope.launch {
             val asset = portfolioState.value.allAssets.find { it.id == assetId }
             if (asset == null) {
-                _sheetState.value = _sheetState.value.copy(error = PortfolioSheetError.AssetNotFound)
+                _sheetState.value =
+                    _sheetState.value.copy(error = PortfolioSheetError.AssetNotFound)
                 return@launch
             }
             val dividendId = "div_${nowMillis()}_${(0..9999).random()}"
             syncToLedger.syncDividend(
-                dividendId         = dividendId,
-                accountId          = asset.accountId,
-                assetName          = asset.name,
-                grossAmount        = grossAmount,
+                dividendId = dividendId,
+                accountId = asset.accountId,
+                assetName = asset.name,
+                grossAmount = grossAmount,
                 withholdingPercent = irpfPercent,
-                date               = date
+                date = date
             )
                 .onSuccess { closeDividendSheet() }
-                .onFailure { _sheetState.value = _sheetState.value.copy(error = PortfolioSheetError.Unknown(it.message)) }
+                .onFailure {
+                    _sheetState.value =
+                        _sheetState.value.copy(error = PortfolioSheetError.Unknown(it.message))
+                }
         }
     }
 
     // ── Renta fija: nueva posición ────────────────────────────────────────────
-    fun openCreateFixedIncomeSheet()  { _sheetState.value = _sheetState.value.copy(showCreateFixedIncomeSheet = true) }
-    fun closeCreateFixedIncomeSheet() { _sheetState.value = _sheetState.value.copy(showCreateFixedIncomeSheet = false) }
+    fun openCreateFixedIncomeSheet() {
+        _sheetState.value = _sheetState.value.copy(showCreateFixedIncomeSheet = true)
+    }
+
+    fun closeCreateFixedIncomeSheet() {
+        _sheetState.value = _sheetState.value.copy(showCreateFixedIncomeSheet = false)
+    }
 
     fun saveFixedIncomePosition(position: FixedIncomePosition, event: FixedIncomeEvent) {
         viewModelScope.launch {
-            val portfolioId   = _selectedPortfolioId.value
+            val portfolioId = _selectedPortfolioId.value
             val finalPosition = if (portfolioId != null && position.portfolioId == null) {
                 position.copy(portfolioId = portfolioId)
             } else position
             createFixedIncomePosition?.invoke(finalPosition, event)
                 ?.onSuccess { closeCreateFixedIncomeSheet() }
-                ?.onFailure { _sheetState.value = _sheetState.value.copy(error = PortfolioSheetError.Unknown(it.message)) }
-                ?: run { _sheetState.value = _sheetState.value.copy(error = PortfolioSheetError.FiCreatePosition) }
+                ?.onFailure {
+                    _sheetState.value =
+                        _sheetState.value.copy(error = PortfolioSheetError.Unknown(it.message))
+                }
+                ?: run {
+                    _sheetState.value =
+                        _sheetState.value.copy(error = PortfolioSheetError.FiCreatePosition)
+                }
         }
     }
 
     // ── Renta fija: registrar cupón ───────────────────────────────────────────
     fun showRegisterCouponSheet(position: FixedIncomePosition) {
-        _sheetState.value = _sheetState.value.copy(showRegisterCouponSheet = true, selectedPositionForCoupon = position)
+        _sheetState.value = _sheetState.value.copy(
+            showRegisterCouponSheet = true,
+            selectedPositionForCoupon = position
+        )
     }
 
     fun hideRegisterCouponSheet() {
-        _sheetState.value = _sheetState.value.copy(showRegisterCouponSheet = false, selectedPositionForCoupon = null)
+        _sheetState.value = _sheetState.value.copy(
+            showRegisterCouponSheet = false,
+            selectedPositionForCoupon = null
+        )
     }
 
     fun registerCoupon(event: FixedIncomeEvent) {
-        val position  = _sheetState.value.selectedPositionForCoupon ?: return
+        val position = _sheetState.value.selectedPositionForCoupon ?: return
         val accountId = session.selectedAccountId.value ?: return
         viewModelScope.launch {
             registerCoupon?.invoke(event, accountId)
                 ?.onSuccess { hideRegisterCouponSheet() }
-                ?.onFailure { _sheetState.value = _sheetState.value.copy(error = PortfolioSheetError.Unknown(it.message)) }
-                ?: run { _sheetState.value = _sheetState.value.copy(error = PortfolioSheetError.CouponRegister) }
+                ?.onFailure {
+                    _sheetState.value =
+                        _sheetState.value.copy(error = PortfolioSheetError.Unknown(it.message))
+                }
+                ?: run {
+                    _sheetState.value =
+                        _sheetState.value.copy(error = PortfolioSheetError.CouponRegister)
+                }
         }
     }
 
@@ -562,11 +646,15 @@ class PortfolioViewModel(
         viewModelScope.launch {
             val accountId = session.selectedAccountId.value
             if (accountId == null) {
-                _sheetState.value = _sheetState.value.copy(error = PortfolioSheetError.NoAccountSelected)
+                _sheetState.value =
+                    _sheetState.value.copy(error = PortfolioSheetError.NoAccountSelected)
                 return@launch
             }
             createIssuer(accountId, name, icon, type, nowMillis())
-                .onFailure { _sheetState.value = _sheetState.value.copy(error = PortfolioSheetError.Unknown(it.message)) }
+                .onFailure {
+                    _sheetState.value =
+                        _sheetState.value.copy(error = PortfolioSheetError.Unknown(it.message))
+                }
         }
     }
 }

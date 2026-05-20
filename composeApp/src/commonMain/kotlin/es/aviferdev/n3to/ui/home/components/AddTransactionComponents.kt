@@ -48,10 +48,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.Issuer
-import es.aviferdev.n3to.ui.home.IrpfInputMode
+import es.aviferdev.n3to.ui.home.viewmodel.IrpfInputMode
 
 import es.aviferdev.n3to.ui.theme.PrimaryAlpha
-import es.aviferdev.n3to.ui.theme.PrimaryDark
 
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.common_accept

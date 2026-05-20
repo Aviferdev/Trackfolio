@@ -117,15 +117,3 @@ fun QuickCard(
         }
     }
 }
-
-@Preview
-@Composable
-private fun QuickAccessSectionPreview() {
-    N3toTheme {
-        QuickAccessSection(
-            onNavigateToCharts = {},
-            onNavigateToDebts = {},
-            onNavigateToFiscalReport = {}
-        )
-    }
-}

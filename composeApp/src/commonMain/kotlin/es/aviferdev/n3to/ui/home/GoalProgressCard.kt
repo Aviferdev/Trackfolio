@@ -50,12 +50,6 @@ import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.todayIn
 
-/**
- * Tarjeta de progreso de objetivos del mes actual para la pantalla Home.
- * Muestra dos progress bars: ahorro e inversión, con checks cuando se cumplen.
- *
- * Si no hay ningún objetivo definido, muestra un placeholder con CTA.
- */
 @Composable
 fun GoalProgressCard(
     progress: MonthlyGoalProgress,

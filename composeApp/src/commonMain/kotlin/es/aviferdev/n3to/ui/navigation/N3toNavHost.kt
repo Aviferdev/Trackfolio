@@ -1,31 +1,14 @@
 package es.aviferdev.n3to.ui.navigation
 
-import androidx.compose.material3.MaterialTheme
-import es.aviferdev.n3to.ui.theme.appColors
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import es.aviferdev.n3to.core.security.AppSettings
-
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -42,6 +25,7 @@ import es.aviferdev.n3to.ui.fiscal.FiscalReportScreen
 import es.aviferdev.n3to.ui.fixedincome.FixedIncomeDetailScreen
 import es.aviferdev.n3to.ui.home.CategoryPickerScreen
 import es.aviferdev.n3to.ui.home.HomeScreen
+import es.aviferdev.n3to.ui.home.viewmodel.AddTransactionViewModel
 import es.aviferdev.n3to.ui.loan.LoanDetailScreen
 import es.aviferdev.n3to.ui.networth.NetWorthScreen
 import es.aviferdev.n3to.ui.portfolio.AssetCategoryDetailScreen
@@ -51,26 +35,24 @@ import es.aviferdev.n3to.ui.portfolio.PortfolioScreen
 import es.aviferdev.n3to.ui.portfolio.PortfolioSettingsScreen
 import es.aviferdev.n3to.ui.premium.PremiumScreen
 import es.aviferdev.n3to.ui.realestate.RealEstateDetailScreen
-import es.aviferdev.n3to.ui.valuable.ValuableDetailScreen
+import es.aviferdev.n3to.ui.savingsrates.SavingsRatesScreen
 import es.aviferdev.n3to.ui.settings.AboutScreen
+import es.aviferdev.n3to.ui.settings.AccountConfigScreen
 import es.aviferdev.n3to.ui.settings.ExpenseSettingsScreen
-import es.aviferdev.n3to.ui.settings.feedback.FeedbackScreen
 import es.aviferdev.n3to.ui.settings.IncomeSettingsScreen
 import es.aviferdev.n3to.ui.settings.IncomeTypeDetailScreen
 import es.aviferdev.n3to.ui.settings.PrivacySettingsScreen
-import es.aviferdev.n3to.ui.settings.AccountConfigScreen
 import es.aviferdev.n3to.ui.settings.SettingsScreen
 import es.aviferdev.n3to.ui.settings.emergencyfund.EmergencyFundSettingsScreen
+import es.aviferdev.n3to.ui.settings.feedback.FeedbackScreen
 import es.aviferdev.n3to.ui.settings.goal.GoalSettingsScreen
 import es.aviferdev.n3to.ui.settings.taxprofile.TaxProfileSettingsScreen
-import es.aviferdev.n3to.ui.savingsrates.SavingsRatesScreen
 import es.aviferdev.n3to.ui.transaction.TransactionDetailScreen
 import es.aviferdev.n3to.ui.transaction.TransactionListScreen
-import n3to.composeapp.generated.resources.Res
-import n3to.composeapp.generated.resources.common_understood
-import org.jetbrains.compose.resources.stringResource
+import es.aviferdev.n3to.ui.valuable.ValuableDetailScreen
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.qualifier.named
 
 data class BottomNavItem(
     val screen: Screen,
@@ -80,31 +62,38 @@ data class BottomNavItem(
 )
 
 @Composable
-fun N3toNavHost(
-    onResetOnboarding: () -> Unit = {}
-) {
+fun N3toNavHost() {
+    val loadingManager = koinInject<GlobalLoadingManager>()
+    val isLoading by loadingManager.isLoading.collectAsState()
+
+    Box(Modifier.fillMaxSize()) {
+        N3toContent()
+        GlobalLoadingOverlay(
+            isLoading = isLoading != null,
+            message = isLoading
+        )
+    }
+}
+
+@Composable
+fun N3toContent() {
+    val openStore: () -> Unit = koinInject(named("openStore"))
+
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
-
-    val loadingManager = koinInject<GlobalLoadingManager>()
-    val isLoading by loadingManager.isLoading.collectAsState()
-    val loadingMessage by loadingManager.loadingMessage.collectAsState()
-
-    val settings = koinInject<AppSettings>()
-    var showTabsIntro by remember { mutableStateOf(!settings.getBool("has_seen_tabs_intro")) }
 
     Box(Modifier.fillMaxSize()) {
         Scaffold(
             bottomBar = {
                 val currentRoute = currentDestination?.route ?: ""
                 val showBottomBar = !currentRoute.contains("TransactionDetailRoute") &&
-                    !currentRoute.contains("CategoryPickerRoute") &&
-                    !currentRoute.startsWith(Screen.Transactions.route) &&
-                    !currentRoute.startsWith(Screen.FiscalReport.route) &&
-                    !currentRoute.startsWith(Screen.Settings.route) &&
-                    !currentRoute.startsWith(Screen.Debts.route) &&
-                    !currentRoute.startsWith(Screen.Charts.route)
+                        !currentRoute.contains("CategoryPickerRoute") &&
+                        !currentRoute.startsWith(Screen.Transactions.route) &&
+                        !currentRoute.startsWith(Screen.FiscalReport.route) &&
+                        !currentRoute.startsWith(Screen.Settings.route) &&
+                        !currentRoute.startsWith(Screen.Debts.route) &&
+                        !currentRoute.startsWith(Screen.Charts.route)
 
                 if (showBottomBar) {
                     Box(
@@ -127,14 +116,14 @@ fun N3toNavHost(
                     }
                 }
             }
-        ) { innerPadding ->
+        ) { _ ->
             NavHost(
                 navController = navController,
                 startDestination = Screen.Home.route,
-                modifier = Modifier.padding(top = innerPadding.calculateTopPadding())
             ) {
                 composable(Screen.Home.route) {
                     HomeScreen(
+                        onOpenStore = openStore,
                         onNavigateToTransactions = {
                             navController.navigate(Screen.Transactions.route) {
                                 launchSingleTop = true
@@ -155,7 +144,9 @@ fun N3toNavHost(
                             navController.navigate(Screen.Settings.route) { launchSingleTop = true }
                         },
                         onNavigateToEmergencyFundSettings = {
-                            navController.navigate(Screen.EmergencyFundSettings.route) { launchSingleTop = true }
+                            navController.navigate(Screen.EmergencyFundSettings.route) {
+                                launchSingleTop = true
+                            }
                         },
                         onNavigateToFixedIncomeDetail = { positionId ->
                             navController.navigate(FixedIncomeDetailRoute(positionId)) {
@@ -173,7 +164,9 @@ fun N3toNavHost(
                             }
                         },
                         onNavigateToExpenseSettings = {
-                            navController.navigate(Screen.ExpenseSettings.route) { launchSingleTop = true }
+                            navController.navigate(Screen.ExpenseSettings.route) {
+                                launchSingleTop = true
+                            }
                         }
                     )
                     // Reabrir sheet al volver del CategoryPicker
@@ -183,19 +176,21 @@ fun N3toNavHost(
                         ?.savedStateHandle?.get<String>("selected_income_type")
 
                     if (catPickerCatId != null || catPickerIncType != null) {
-                        val homeVM: es.aviferdev.n3to.ui.home.AddTransactionViewModel = koinViewModel()
+                        val homeVM: AddTransactionViewModel = koinViewModel()
                         if (catPickerCatId != null) {
                             homeVM.onCategoryChange(catPickerCatId)
                             navController.currentBackStackEntry
                                 ?.savedStateHandle?.remove<String>("selected_category_id")
                         }
                         if (catPickerIncType != null) {
-                            IncomeType.fromName(catPickerIncType)?.let { homeVM.onIncomeTypeChange(it) }
+                            IncomeType.fromName(catPickerIncType)
+                                ?.let { homeVM.onIncomeTypeChange(it) }
                             navController.currentBackStackEntry
                                 ?.savedStateHandle?.remove<String>("selected_income_type")
                         }
                     }
                     HomeScreen(
+                        onOpenStore = openStore,
                         reopenFromPicker = catPickerCatId != null || catPickerIncType != null,
                         onConsumeReopen = {
                             navController.currentBackStackEntry
@@ -223,14 +218,16 @@ fun N3toNavHost(
                             navController.navigate(Screen.Settings.route) { launchSingleTop = true }
                         },
                         onNavigateToEmergencyFundSettings = {
-                            navController.navigate(Screen.EmergencyFundSettings.route) { launchSingleTop = true }
+                            navController.navigate(Screen.EmergencyFundSettings.route) {
+                                launchSingleTop = true
+                            }
                         },
                         onNavigateToFixedIncomeDetail = { positionId ->
                             navController.navigate(FixedIncomeDetailRoute(positionId)) {
                                 launchSingleTop = true
                             }
                         },
-                         onNavigateToCategoryPicker = { type ->
+                        onNavigateToCategoryPicker = { type ->
                             navController.navigate(CategoryPickerRoute(type.name)) {
                                 launchSingleTop = true
                             }
@@ -241,7 +238,9 @@ fun N3toNavHost(
                             }
                         },
                         onNavigateToExpenseSettings = {
-                            navController.navigate(Screen.ExpenseSettings.route) { launchSingleTop = true }
+                            navController.navigate(Screen.ExpenseSettings.route) {
+                                launchSingleTop = true
+                            }
                         }
                     )
                 }
@@ -293,7 +292,8 @@ fun N3toNavHost(
                     )
                 }
                 composable<TransactionDetailRoute> { backStackEntry ->
-                    val transactionId = backStackEntry.toRoute<TransactionDetailRoute>().transactionId
+                    val transactionId =
+                        backStackEntry.toRoute<TransactionDetailRoute>().transactionId
                     TransactionDetailScreen(
                         transactionId = transactionId,
                         onBack = { navController.popBackStack() },
@@ -329,7 +329,6 @@ fun N3toNavHost(
                         }
                     )
                 }
-
                 composable(Screen.SavingsRates.route) {
                     SavingsRatesScreen(
                         onNavigateBack = { navController.popBackStack() }
@@ -388,7 +387,9 @@ fun N3toNavHost(
                                 launchSingleTop = true
                             }
                         },
-                        onResetOnboarding = onResetOnboarding
+                        onResetOnboarding = {
+                            //TODO
+                        }
                     )
                 }
                 composable<AccountConfigRoute> { backStackEntry ->
@@ -397,19 +398,29 @@ fun N3toNavHost(
                         accountId = accountId,
                         onBack = { navController.popBackStack() },
                         onNavigateToExpenseSettings = {
-                            navController.navigate(Screen.ExpenseSettings.route) { launchSingleTop = true }
+                            navController.navigate(Screen.ExpenseSettings.route) {
+                                launchSingleTop = true
+                            }
                         },
                         onNavigateToIncomeSettings = {
-                            navController.navigate(Screen.IncomeSettings.route) { launchSingleTop = true }
+                            navController.navigate(Screen.IncomeSettings.route) {
+                                launchSingleTop = true
+                            }
                         },
                         onNavigateToTaxProfile = {
-                            navController.navigate(Screen.TaxProfileSettings.route) { launchSingleTop = true }
+                            navController.navigate(Screen.TaxProfileSettings.route) {
+                                launchSingleTop = true
+                            }
                         },
                         onNavigateToGoals = {
-                            navController.navigate(Screen.GoalSettings.route) { launchSingleTop = true }
+                            navController.navigate(Screen.GoalSettings.route) {
+                                launchSingleTop = true
+                            }
                         },
                         onNavigateToEmergencyFund = {
-                            navController.navigate(Screen.EmergencyFundSettings.route) { launchSingleTop = true }
+                            navController.navigate(Screen.EmergencyFundSettings.route) {
+                                launchSingleTop = true
+                            }
                         }
                     )
                 }
@@ -469,7 +480,8 @@ fun N3toNavHost(
                     )
                 }
                 composable<IncomeTypeDetailRoute> { backStackEntry ->
-                    val incomeTypeName = backStackEntry.toRoute<IncomeTypeDetailRoute>().incomeTypeName
+                    val incomeTypeName =
+                        backStackEntry.toRoute<IncomeTypeDetailRoute>().incomeTypeName
                     val incomeType = IncomeType.fromName(incomeTypeName)
                     if (incomeType != null) {
                         IncomeTypeDetailScreen(
@@ -566,67 +578,6 @@ fun N3toNavHost(
                     )
                 }
             }
-
         }
-
-        GlobalLoadingOverlay(
-            isLoading = isLoading,
-            message = loadingMessage
-        )
-
-        if (showTabsIntro) {
-            WelcomeTabsDialog(
-                onDismiss = {
-                    settings.putBool("has_seen_tabs_intro", true)
-                    showTabsIntro = false
-                }
-            )
-        }
-    }
-}
-
-@Composable
-private fun WelcomeTabsDialog(onDismiss: () -> Unit) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        containerColor = MaterialTheme.appColors.navySurface,
-        title = {
-            Text(
-                "Tus 3 secciones principales",
-                fontSize = 17.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.appColors.textPrimary
-            )
-        },
-        text = {
-            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                WelcomeTabRow(
-                    label = "Home",
-                    description = "Registra gastos e ingresos, consulta tu balance mensual y controla el fondo de emergencia."
-                )
-                WelcomeTabRow(
-                    label = "Portfolio",
-                    description = "Gestiona tus inversiones: acciones, ETFs, fondos, renta fija y otros activos."
-                )
-                WelcomeTabRow(
-                    label = "Patrimonio Neto",
-                    description = "Tu riqueza total: cuentas e inversiones más activos reales (vivienda, vehículos…) menos deudas."
-                )
-            }
-        },
-        confirmButton = {
-            TextButton(onClick = onDismiss) {
-                Text(stringResource(Res.string.common_understood), color = MaterialTheme.appColors.cyanAccent, fontWeight = FontWeight.SemiBold)
-            }
-        },
-        shape = RoundedCornerShape(20.dp)
-    )
-}
-
-@Composable
-private fun WelcomeTabRow(label: String, description: String) {
-    Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
-        Text(label, fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = MaterialTheme.appColors.cyanAccent)
-        Text(description, fontSize = 13.sp, color = MaterialTheme.appColors.textSecondary, lineHeight = 18.sp)
     }
 }

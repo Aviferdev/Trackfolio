@@ -1,7 +1,5 @@
 package es.aviferdev.n3to.ui.common.loading
 
-import androidx.compose.material3.MaterialTheme
-import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -15,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -26,6 +25,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.ui.splash.SplashLoader
+import es.aviferdev.n3to.ui.theme.appColors
 
 /**
  * Overlay de carga global que bloquea toda interacción con la pantalla.
@@ -43,9 +43,9 @@ fun GlobalLoadingOverlay(
     modifier: Modifier = Modifier
 ) {
     AnimatedVisibility(
-        visible  = isLoading,
-        enter    = fadeIn(animationSpec = tween(250)),
-        exit     = fadeOut(animationSpec = tween(250)),
+        visible = isLoading,
+        enter = fadeIn(animationSpec = tween(250)),
+        exit = fadeOut(animationSpec = tween(250)),
         modifier = modifier
     ) {
         Box(
@@ -61,7 +61,6 @@ fun GlobalLoadingOverlay(
                 },
             contentAlignment = Alignment.Center
         ) {
-            // Orb decorativo cian (esquina superior derecha, igual que HeroCard y SplashScreen)
             Box(
                 modifier = Modifier
                     .size(320.dp)
@@ -83,10 +82,10 @@ fun GlobalLoadingOverlay(
                 if (message != null) {
                     Spacer(Modifier.height(20.dp))
                     Text(
-                        text       = message,
-                        fontSize   = 14.sp,
+                        text = message,
+                        fontSize = 14.sp,
                         fontWeight = FontWeight.Medium,
-                        color      = MaterialTheme.appColors.textSecondary
+                        color = MaterialTheme.appColors.textSecondary
                     )
                 }
             }

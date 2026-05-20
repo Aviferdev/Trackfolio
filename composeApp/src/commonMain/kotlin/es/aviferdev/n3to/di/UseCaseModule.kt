@@ -175,10 +175,10 @@ import es.aviferdev.n3to.ui.annual.AnnualViewModel
 import es.aviferdev.n3to.ui.debt.DebtViewModel
 import es.aviferdev.n3to.ui.fiscal.FiscalReportViewModel
 import es.aviferdev.n3to.ui.fixedincome.FixedIncomeDetailViewModel
-import es.aviferdev.n3to.ui.home.AddTransactionViewModel
+import es.aviferdev.n3to.ui.home.viewmodel.AddTransactionViewModel
 import es.aviferdev.n3to.ui.settings.feedback.FeedbackViewModel
-import es.aviferdev.n3to.ui.home.CategoryPickerViewModel
-import es.aviferdev.n3to.ui.home.HomeViewModel
+import es.aviferdev.n3to.ui.home.viewmodel.CategoryPickerViewModel
+import es.aviferdev.n3to.ui.home.viewmodel.HomeViewModel
 import es.aviferdev.n3to.ui.settings.emergencyfund.EmergencyFundSettingsViewModel
 import es.aviferdev.n3to.ui.settings.goal.GoalSettingsViewModel
 import es.aviferdev.n3to.ui.settings.taxprofile.TaxProfileSettingsViewModel
@@ -619,7 +619,17 @@ val useCaseModule = module {
             savePlatform            = get()
         )
     }
-    viewModel { BackupViewModel(get(), get()) }
+    viewModel {
+        BackupViewModel(
+            backupManager              = get(),
+            saveLastBackupDate         = get(),
+            shouldShowBackupReminder   = get(),
+            getLastBackupDate          = get(),
+            getBackupReminderInterval  = get(),
+            saveBackupReminderInterval = get(),
+            saveBackupReminderDismissed = get()
+        )
+    }
     viewModel { CategoryViewModel(get(), get(), get()) }
     viewModel {
         IssuerViewModel(

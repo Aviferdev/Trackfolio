@@ -31,18 +31,6 @@ import es.aviferdev.n3to.ui.theme.PrimaryDark
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
-/**
- * Estado vacío genérico para cualquier pantalla.
- * Muestra un icono, título y subtítulo centrados, con botón de acción opcional.
- *
- * @param icon Emoji (String) o ImageVector para el icono.
- * @param iconTint Color del icono (solo aplica si se usa ImageVector).
- * @param title Título principal del estado vacío.
- * @param subtitle Texto descriptivo secundario.
- * @param actionLabel Texto del botón de acción (null = sin botón).
- * @param onAction Callback al pulsar el botón.
- * @param modifier Modifier para personalizar el layout.
- */
 @Composable
 fun EmptyStateView(
     icon: Any,

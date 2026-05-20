@@ -252,15 +252,7 @@ fun App() {
                         }
 
                         Box {
-                            N3toNavHost(
-                                onResetOnboarding = {
-                                    scope.launch {
-                                        resetOnboarding()
-                                        needsOnboarding = true
-                                    }
-                                }
-                            )
-                            // Snackbar flotante para el resultado del refresco
+                            N3toNavHost()
                             Box(modifier = Modifier
                                 .fillMaxSize()
                                 .padding(16.dp)

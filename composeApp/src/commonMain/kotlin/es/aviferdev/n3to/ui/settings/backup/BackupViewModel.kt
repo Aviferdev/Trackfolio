@@ -4,7 +4,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import es.aviferdev.n3to.core.security.BackupResult
 import es.aviferdev.n3to.core.security.DatabaseBackupManager
+import es.aviferdev.n3to.domain.usecase.backup.GetBackupReminderIntervalUseCase
+import es.aviferdev.n3to.domain.usecase.backup.GetLastBackupDateUseCase
+import es.aviferdev.n3to.domain.usecase.backup.SaveBackupReminderDismissedUseCase
+import es.aviferdev.n3to.domain.usecase.backup.SaveBackupReminderIntervalUseCase
 import es.aviferdev.n3to.domain.usecase.backup.SaveLastBackupDateUseCase
+import es.aviferdev.n3to.domain.usecase.backup.ShouldShowBackupReminderUseCase
+import es.aviferdev.n3to.platform.nowMillis
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -28,13 +34,62 @@ data class BackupSheetState(
     val backupState: BackupUiState = BackupUiState.Idle
 )
 
+data class BackupReminderState(
+    val showBanner: Boolean = false,
+    val neverBackup: Boolean = false,
+    val daysSinceLastBackup: Int = 0,
+    val showIntervalDialog: Boolean = false,
+    val currentInterval: Int = ShouldShowBackupReminderUseCase.DEFAULT_INTERVAL_DAYS
+)
+
 class BackupViewModel(
     private val backupManager: DatabaseBackupManager,
-    private val saveLastBackupDate: SaveLastBackupDateUseCase
+    private val saveLastBackupDate: SaveLastBackupDateUseCase,
+    private val shouldShowBackupReminder: ShouldShowBackupReminderUseCase,
+    private val getLastBackupDate: GetLastBackupDateUseCase,
+    private val getBackupReminderInterval: GetBackupReminderIntervalUseCase,
+    private val saveBackupReminderInterval: SaveBackupReminderIntervalUseCase,
+    private val saveBackupReminderDismissed: SaveBackupReminderDismissedUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(BackupSheetState())
     val state: StateFlow<BackupSheetState> = _state.asStateFlow()
+
+    private val _reminderState = MutableStateFlow(BackupReminderState())
+    val reminderState: StateFlow<BackupReminderState> = _reminderState.asStateFlow()
+
+    init {
+        checkReminder()
+    }
+
+    private fun checkReminder() {
+        if (!shouldShowBackupReminder()) return
+        val lastBackupMillis = getLastBackupDate()
+        val neverBackup = lastBackupMillis == 0L
+        val daysSince = if (neverBackup) 0 else {
+            maxOf(((nowMillis() - lastBackupMillis) / (24 * 60 * 60 * 1000)).toInt(), 1)
+        }
+        _reminderState.value = BackupReminderState(
+            showBanner = true,
+            neverBackup = neverBackup,
+            daysSinceLastBackup = daysSince,
+            currentInterval = getBackupReminderInterval.get()
+        )
+    }
+
+    fun openIntervalDialog() {
+        _reminderState.value = _reminderState.value.copy(showIntervalDialog = true)
+    }
+
+    fun dismissIntervalDialog() {
+        _reminderState.value = _reminderState.value.copy(showIntervalDialog = false)
+    }
+
+    fun saveReminderInterval(days: Int) {
+        saveBackupReminderInterval(days)
+        saveBackupReminderDismissed()
+        _reminderState.value = BackupReminderState()
+    }
 
     fun openExport() {
         _state.value = BackupSheetState(action = BackupAction.EXPORT)

@@ -121,27 +121,3 @@ private fun resolveTransactionLabel(
         transaction.categoryId?.let { categoryNames[it] } ?: stringResource(Res.string.transaction_label_expense)
     }
 }
-
-@Preview
-@Composable
-private fun RecentTransactionsSectionPreview() {
-    N3toTheme {
-        RecentTransactionsSection(
-            transactions = listOf(
-                Transaction(
-                    id = "1", accountId = "1", amount = 2500.0, type = TransactionType.INCOME,
-                    categoryId = null, date = 1715500800000L, notes = null, createdAt = 1715500800000L,
-                    incomeType = IncomeType.SALARY, grossAmount = 3000.0,
-                    issuerName = "Empresa S.L."
-                ),
-                Transaction(
-                    id = "2", accountId = "1", amount = 85.50, type = TransactionType.EXPENSE,
-                    categoryId = "food", date = 1715414400000L, notes = null, createdAt = 1715414400000L
-                )
-            ),
-            categoryNames = mapOf("food" to "Alimentación"),
-            balancesHidden = false,
-            onVerTodos = {}
-        )
-    }
-}

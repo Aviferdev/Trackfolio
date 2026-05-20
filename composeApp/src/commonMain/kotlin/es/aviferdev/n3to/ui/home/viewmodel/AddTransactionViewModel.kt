@@ -1,4 +1,4 @@
-package es.aviferdev.n3to.ui.home
+package es.aviferdev.n3to.ui.home.viewmodel
 
 import es.aviferdev.n3to.platform.nowLocalDate
 import es.aviferdev.n3to.platform.nowMillis
@@ -31,6 +31,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import kotlin.math.abs
+import kotlin.math.floor
 
 sealed class AddTransactionUiState {
     data object Idle    : AddTransactionUiState()
@@ -520,7 +522,7 @@ class AddTransactionViewModel(
     /** Formatea un importe Double para el campo de edición: redondea a 2 decimales, usa coma. */
     private fun formatAmountForEdit(amount: Double?): String {
         if (amount == null) return ""
-        val abs = kotlin.math.abs(amount)
+        val abs = abs(amount)
         val rounded = (abs * 100 + 0.5).toLong()
         val euros = rounded / 100
         val cents = rounded % 100
@@ -532,7 +534,7 @@ class AddTransactionViewModel(
         value.filter { it.isDigit() || it == ',' || it == '.' }
 
     private fun formatPercent(value: Double): String =
-        if (value == kotlin.math.floor(value)) value.toLong().toString()
+        if (value == floor(value)) value.toLong().toString()
         else value.toString().replace('.', ',')
 }
 

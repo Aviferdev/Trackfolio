@@ -1,19 +1,36 @@
 package es.aviferdev.n3to.ui.networth
 
-import androidx.compose.material3.MaterialTheme
-import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -22,18 +39,28 @@ import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.NetWorthData
 import es.aviferdev.n3to.domain.model.NetWorthHistoryPoint
 import es.aviferdev.n3to.ui.annual.DonutChartCard
-import es.aviferdev.n3to.ui.common.*
-import es.aviferdev.n3to.ui.common.component.EmptyStateView
+import es.aviferdev.n3to.ui.common.DonutSlice
 import es.aviferdev.n3to.ui.common.LineChartWithTimeRange
+import es.aviferdev.n3to.ui.common.N3toLabel
+import es.aviferdev.n3to.ui.common.component.EmptyStateView
 import es.aviferdev.n3to.ui.common.navigation.TopBarApp
 import es.aviferdev.n3to.ui.loan.AddEditLoanBottomSheet
-import es.aviferdev.n3to.ui.networth.components.*
+import es.aviferdev.n3to.ui.networth.components.AssetsSummaryCard
+import es.aviferdev.n3to.ui.networth.components.EverydayDebtsRow
+import es.aviferdev.n3to.ui.networth.components.LoanCard
+import es.aviferdev.n3to.ui.networth.components.NetWorthHeroCard
 import es.aviferdev.n3to.ui.realestate.AddEditPropertyBottomSheet
 import es.aviferdev.n3to.ui.realestate.PropertyCard
 import es.aviferdev.n3to.ui.splash.SplashLoader
+import es.aviferdev.n3to.ui.theme.DonutAccounts
+import es.aviferdev.n3to.ui.theme.DonutInvestments
+import es.aviferdev.n3to.ui.theme.DonutRealEstate
+import es.aviferdev.n3to.ui.theme.LocalBalanceHidden
+import es.aviferdev.n3to.ui.theme.N3toTheme
+import es.aviferdev.n3to.ui.theme.WarnOrange
+import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.ui.valuable.AddEditValuableBottomSheet
 import es.aviferdev.n3to.ui.valuable.ValuableCard
-import es.aviferdev.n3to.ui.theme.*
 import kotlinx.coroutines.delay
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
@@ -41,6 +68,7 @@ import kotlinx.datetime.toInstant
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.networth_add_loan_cd
 import n3to.composeapp.generated.resources.networth_add_property_cd
+import n3to.composeapp.generated.resources.networth_add_valuable_cd
 import n3to.composeapp.generated.resources.networth_assets_label_alt
 import n3to.composeapp.generated.resources.networth_evolution_title
 import n3to.composeapp.generated.resources.networth_liabilities_label_alt
@@ -53,7 +81,6 @@ import n3to.composeapp.generated.resources.networth_no_valuables
 import n3to.composeapp.generated.resources.networth_realestate_label
 import n3to.composeapp.generated.resources.networth_title
 import n3to.composeapp.generated.resources.networth_valuables_label
-import n3to.composeapp.generated.resources.networth_add_valuable_cd
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
@@ -67,8 +94,8 @@ fun NetWorthScreen(
     onNavigateToSettings: () -> Unit = {},
     viewModel: NetWorthViewModel = koinViewModel()
 ) {
-    val uiState              by viewModel.uiState.collectAsState()
-    val showAddLoanSheet     by viewModel.showAddLoanSheet.collectAsState()
+    val uiState by viewModel.uiState.collectAsState()
+    val showAddLoanSheet by viewModel.showAddLoanSheet.collectAsState()
     val showAddPropertySheet by viewModel.showAddPropertySheet.collectAsState()
     val showAddValuableSheet by viewModel.showAddValuableSheet.collectAsState()
     val balancesHidden = LocalBalanceHidden.current
@@ -77,8 +104,9 @@ fun NetWorthScreen(
     var chartVisible by remember { mutableStateOf(false) }
     var assetsVisible by remember { mutableStateOf(false) }
     var liabilitiesVisible by remember { mutableStateOf(false) }
+
     LaunchedEffect(Unit) {
-        delay(40);  heroVisible = true
+        delay(40); heroVisible = true
         delay(100); chartVisible = true
         delay(160); assetsVisible = true
         delay(220); liabilitiesVisible = true
@@ -92,11 +120,11 @@ fun NetWorthScreen(
         val state = uiState
         if (state is NetWorthUiState.Success) {
             AddEditPropertyBottomSheet(
-                accountId        = state.data.loans.firstOrNull()?.accountId ?: "",
+                accountId = state.data.loans.firstOrNull()?.accountId ?: "",
                 existingProperty = null,
-                availableLoans   = state.data.loans,
-                onDismiss        = { viewModel.closeAddPropertySheet() },
-                onSave           = { _, _ -> viewModel.closeAddPropertySheet() }
+                availableLoans = state.data.loans,
+                onDismiss = { viewModel.closeAddPropertySheet() },
+                onSave = { _, _ -> viewModel.closeAddPropertySheet() }
             )
         }
     }
@@ -124,11 +152,11 @@ fun NetWorthScreen(
             contentAlignment = Alignment.Center
         ) {
             EmptyStateView(
-                icon        = "\uD83C\uDFE6",
-                title       = stringResource(Res.string.networth_no_account_title),
-                subtitle    = stringResource(Res.string.networth_no_account_subtitle),
+                icon = "\uD83C\uDFE6",
+                title = stringResource(Res.string.networth_no_account_title),
+                subtitle = stringResource(Res.string.networth_no_account_subtitle),
                 actionLabel = "Ir a Ajustes",
-                onAction    = onNavigateToSettings
+                onAction = onNavigateToSettings
             )
         }
 
@@ -138,19 +166,19 @@ fun NetWorthScreen(
         ) { Text(state.message, color = MaterialTheme.appColors.expense) }
 
         is NetWorthUiState.Success -> NetWorthContent(
-            data               = state.data,
-            netWorthHistory    = state.netWorthHistory,
-            assetDistribution  = state.assetDistribution,
-            balancesHidden     = balancesHidden,
-            onLoanClick        = onLoanClick,
-            onPropertyClick    = onPropertyClick,
-            onValuableClick    = onValuableClick,
-            onAddLoan          = { viewModel.openAddLoanSheet() },
-            onAddProperty      = { viewModel.openAddPropertySheet() },
-            onAddValuable      = { viewModel.openAddValuableSheet() },
-            heroVisible        = heroVisible,
-            chartVisible       = chartVisible,
-            assetsVisible      = assetsVisible,
+            data = state.data,
+            netWorthHistory = state.netWorthHistory,
+            assetDistribution = state.assetDistribution,
+            balancesHidden = balancesHidden,
+            onLoanClick = onLoanClick,
+            onPropertyClick = onPropertyClick,
+            onValuableClick = onValuableClick,
+            onAddLoan = { viewModel.openAddLoanSheet() },
+            onAddProperty = { viewModel.openAddPropertySheet() },
+            onAddValuable = { viewModel.openAddValuableSheet() },
+            heroVisible = heroVisible,
+            chartVisible = chartVisible,
+            assetsVisible = assetsVisible,
             liabilitiesVisible = liabilitiesVisible
         )
     }
@@ -177,13 +205,13 @@ fun NetWorthContent(
 ) {
     val historyPoints = remember(netWorthHistory) {
         netWorthHistory.map { point ->
-            val parts   = point.yearMonth.split("-")
-            val year    = parts[0].toInt()
-            val month   = parts[1].toInt()
+            val parts = point.yearMonth.split("-")
+            val year = parts[0].toInt()
+            val month = parts[1].toInt()
             val lastDay = when (month) {
-                2        -> if (year % 4 == 0 && (year % 100 != 0 || year % 400 == 0)) 29 else 28
-                4,6,9,11 -> 30
-                else     -> 31
+                2 -> if (year % 4 == 0 && (year % 100 != 0 || year % 400 == 0)) 29 else 28
+                4, 6, 9, 11 -> 30
+                else -> 31
             }
             val epoch = LocalDateTime(year, month, lastDay, 23, 59, 59)
                 .toInstant(TimeZone.currentSystemDefault())
@@ -203,15 +231,15 @@ fun NetWorthContent(
         )
 
         LazyColumn(
-            modifier            = Modifier.fillMaxSize(),
-            contentPadding      = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
 
             item {
                 AnimatedVisibility(
                     visible = heroVisible,
-                    enter   = fadeIn() + slideInVertically(initialOffsetY = { it / 10 })
+                    enter = fadeIn() + slideInVertically(initialOffsetY = { it / 10 })
                 ) {
                     NetWorthHeroCard(data = data, balancesHidden = balancesHidden)
                 }
@@ -221,13 +249,13 @@ fun NetWorthContent(
                 item {
                     AnimatedVisibility(
                         visible = chartVisible,
-                        enter   = fadeIn() + slideInVertically(initialOffsetY = { it / 10 })
+                        enter = fadeIn() + slideInVertically(initialOffsetY = { it / 10 })
                     ) {
                         LineChartWithTimeRange(
-                            title          = stringResource(Res.string.networth_evolution_title),
-                            subtitle       = stringResource(Res.string.networth_monthly_title),
-                            points         = historyPoints,
-                            lineColor      = MaterialTheme.appColors.cyanAccent,
+                            title = stringResource(Res.string.networth_evolution_title),
+                            subtitle = stringResource(Res.string.networth_monthly_title),
+                            points = historyPoints,
+                            lineColor = MaterialTheme.appColors.cyanAccent,
                             balancesHidden = balancesHidden
                         )
                     }
@@ -237,19 +265,19 @@ fun NetWorthContent(
             item {
                 AnimatedVisibility(
                     visible = assetsVisible,
-                    enter   = fadeIn() + slideInVertically(initialOffsetY = { it / 10 })
+                    enter = fadeIn() + slideInVertically(initialOffsetY = { it / 10 })
                 ) {
                     Column {
                         N3toLabel(
-                            text     = stringResource(Res.string.networth_assets_label_alt),
+                            text = stringResource(Res.string.networth_assets_label_alt),
                             modifier = Modifier.padding(bottom = 8.dp)
                         )
                         if (assetDistribution.isNotEmpty()) {
                             DonutChartCard(
-                                title          = stringResource(Res.string.networth_assets_label_alt),
-                                subtitle       = "",
-                                slices         = assetDistribution,
-                                totalAmount    = data.totalAssets,
+                                title = stringResource(Res.string.networth_assets_label_alt),
+                                subtitle = "",
+                                slices = assetDistribution,
+                                totalAmount = data.totalAssets,
                                 balancesHidden = balancesHidden
                             )
                             Spacer(Modifier.height(12.dp))
@@ -262,26 +290,26 @@ fun NetWorthContent(
             item {
                 AnimatedVisibility(
                     visible = assetsVisible,
-                    enter   = fadeIn() + slideInVertically(initialOffsetY = { it / 10 })
+                    enter = fadeIn() + slideInVertically(initialOffsetY = { it / 10 })
                 ) {
                     Row(
-                        modifier              = Modifier.fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment     = Alignment.CenterVertically
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
                         N3toLabel(text = stringResource(Res.string.networth_realestate_label))
                         IconButton(
-                            onClick  = onAddProperty,
+                            onClick = onAddProperty,
                             modifier = Modifier
                                 .size(28.dp)
                                 .clip(RoundedCornerShape(8.dp))
                                 .background(MaterialTheme.appColors.navySelected)
                         ) {
                             Icon(
-                                imageVector        = Icons.Outlined.Add,
+                                imageVector = Icons.Outlined.Add,
                                 contentDescription = stringResource(Res.string.networth_add_property_cd),
-                                tint               = MaterialTheme.appColors.cyanAccent,
-                                modifier           = Modifier.size(15.dp)
+                                tint = MaterialTheme.appColors.cyanAccent,
+                                modifier = Modifier.size(15.dp)
                             )
                         }
                     }
@@ -292,7 +320,7 @@ fun NetWorthContent(
                 item {
                     AnimatedVisibility(
                         visible = assetsVisible,
-                        enter   = fadeIn() + slideInVertically(initialOffsetY = { it / 10 })
+                        enter = fadeIn() + slideInVertically(initialOffsetY = { it / 10 })
                     ) {
                         Box(
                             modifier = Modifier
@@ -302,7 +330,11 @@ fun NetWorthContent(
                                 .padding(24.dp),
                             contentAlignment = Alignment.Center
                         ) {
-                            Text(stringResource(Res.string.networth_no_properties), color = MaterialTheme.appColors.textTertiary, fontSize = 13.sp)
+                            Text(
+                                stringResource(Res.string.networth_no_properties),
+                                color = MaterialTheme.appColors.textTertiary,
+                                fontSize = 13.sp
+                            )
                         }
                     }
                 }
@@ -311,13 +343,13 @@ fun NetWorthContent(
             items(data.properties, key = { it.id }) { property ->
                 AnimatedVisibility(
                     visible = assetsVisible,
-                    enter   = fadeIn() + slideInVertically(initialOffsetY = { it / 10 })
+                    enter = fadeIn() + slideInVertically(initialOffsetY = { it / 10 })
                 ) {
                     val linkedLoan = data.loans.find { it.id == property.linkedLoanId }
                     PropertyCard(
-                        property   = property,
+                        property = property,
                         linkedLoan = linkedLoan,
-                        onClick    = { onPropertyClick(property.id) }
+                        onClick = { onPropertyClick(property.id) }
                     )
                 }
             }
@@ -325,16 +357,16 @@ fun NetWorthContent(
             item {
                 AnimatedVisibility(
                     visible = assetsVisible,
-                    enter   = fadeIn() + slideInVertically(initialOffsetY = { it / 10 })
+                    enter = fadeIn() + slideInVertically(initialOffsetY = { it / 10 })
                 ) {
                     Row(
-                        modifier              = Modifier.fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment     = Alignment.CenterVertically
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
                         N3toLabel(text = stringResource(Res.string.networth_valuables_label))
                         IconButton(
-                            onClick  = onAddValuable,
+                            onClick = onAddValuable,
                             modifier = Modifier
                                 .size(28.dp)
                                 .clip(RoundedCornerShape(8.dp))
@@ -343,8 +375,8 @@ fun NetWorthContent(
                             Icon(
                                 imageVector = Icons.Outlined.Add,
                                 contentDescription = stringResource(Res.string.networth_add_valuable_cd),
-                                tint        = MaterialTheme.appColors.cyanAccent,
-                                modifier    = Modifier.size(15.dp)
+                                tint = MaterialTheme.appColors.cyanAccent,
+                                modifier = Modifier.size(15.dp)
                             )
                         }
                     }
@@ -355,7 +387,7 @@ fun NetWorthContent(
                 item {
                     AnimatedVisibility(
                         visible = assetsVisible,
-                        enter   = fadeIn() + slideInVertically(initialOffsetY = { it / 10 })
+                        enter = fadeIn() + slideInVertically(initialOffsetY = { it / 10 })
                     ) {
                         Box(
                             modifier = Modifier
@@ -365,7 +397,11 @@ fun NetWorthContent(
                                 .padding(24.dp),
                             contentAlignment = Alignment.Center
                         ) {
-                            Text(stringResource(Res.string.networth_no_valuables), color = MaterialTheme.appColors.textTertiary, fontSize = 13.sp)
+                            Text(
+                                stringResource(Res.string.networth_no_valuables),
+                                color = MaterialTheme.appColors.textTertiary,
+                                fontSize = 13.sp
+                            )
                         }
                     }
                 }
@@ -374,11 +410,11 @@ fun NetWorthContent(
             items(data.valuables, key = { it.id }) { valuable ->
                 AnimatedVisibility(
                     visible = assetsVisible,
-                    enter   = fadeIn() + slideInVertically(initialOffsetY = { it / 10 })
+                    enter = fadeIn() + slideInVertically(initialOffsetY = { it / 10 })
                 ) {
                     ValuableCard(
                         valuable = valuable,
-                        onClick  = { onValuableClick(valuable.id) }
+                        onClick = { onValuableClick(valuable.id) }
                     )
                 }
             }
@@ -386,26 +422,26 @@ fun NetWorthContent(
             item {
                 AnimatedVisibility(
                     visible = liabilitiesVisible,
-                    enter   = fadeIn() + slideInVertically(initialOffsetY = { it / 10 })
+                    enter = fadeIn() + slideInVertically(initialOffsetY = { it / 10 })
                 ) {
                     Row(
-                        modifier              = Modifier.fillMaxWidth().padding(top = 8.dp),
+                        modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
                         horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment     = Alignment.CenterVertically
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
                         N3toLabel(text = stringResource(Res.string.networth_liabilities_label_alt))
                         IconButton(
-                            onClick  = onAddLoan,
+                            onClick = onAddLoan,
                             modifier = Modifier
                                 .size(28.dp)
                                 .clip(RoundedCornerShape(8.dp))
                                 .background(MaterialTheme.appColors.navySelected)
                         ) {
                             Icon(
-                                imageVector        = Icons.Outlined.Add,
+                                imageVector = Icons.Outlined.Add,
                                 contentDescription = stringResource(Res.string.networth_add_loan_cd),
-                                tint               = MaterialTheme.appColors.cyanAccent,
-                                modifier           = Modifier.size(15.dp)
+                                tint = MaterialTheme.appColors.cyanAccent,
+                                modifier = Modifier.size(15.dp)
                             )
                         }
                     }
@@ -416,7 +452,7 @@ fun NetWorthContent(
                 item {
                     AnimatedVisibility(
                         visible = liabilitiesVisible,
-                        enter   = fadeIn() + slideInVertically(initialOffsetY = { it / 10 })
+                        enter = fadeIn() + slideInVertically(initialOffsetY = { it / 10 })
                     ) {
                         Box(
                             modifier = Modifier
@@ -426,7 +462,11 @@ fun NetWorthContent(
                                 .padding(24.dp),
                             contentAlignment = Alignment.Center
                         ) {
-                            Text(stringResource(Res.string.networth_no_liabilities), color = MaterialTheme.appColors.textTertiary, fontSize = 13.sp)
+                            Text(
+                                stringResource(Res.string.networth_no_liabilities),
+                                color = MaterialTheme.appColors.textTertiary,
+                                fontSize = 13.sp
+                            )
                         }
                     }
                 }
@@ -436,9 +476,12 @@ fun NetWorthContent(
                 item {
                     AnimatedVisibility(
                         visible = liabilitiesVisible,
-                        enter   = fadeIn() + slideInVertically(initialOffsetY = { it / 10 })
+                        enter = fadeIn() + slideInVertically(initialOffsetY = { it / 10 })
                     ) {
-                        EverydayDebtsRow(amount = data.totalDebtsOwing, balancesHidden = balancesHidden)
+                        EverydayDebtsRow(
+                            amount = data.totalDebtsOwing,
+                            balancesHidden = balancesHidden
+                        )
                     }
                 }
             }
@@ -446,7 +489,7 @@ fun NetWorthContent(
             items(data.loans, key = { it.id }) { loan ->
                 AnimatedVisibility(
                     visible = liabilitiesVisible,
-                    enter   = fadeIn() + slideInVertically(initialOffsetY = { it / 10 })
+                    enter = fadeIn() + slideInVertically(initialOffsetY = { it / 10 })
                 ) {
                     LoanCard(loan = loan, onClick = { onLoanClick(loan.id) })
                 }
@@ -463,14 +506,14 @@ fun NetWorthContentPreview() {
     N3toTheme {
         NetWorthContent(
             data = NetWorthData(
-                totalAccountBalance   = 25000.0,
-                totalPortfolioValue   = 75000.0,
+                totalAccountBalance = 25000.0,
+                totalPortfolioValue = 75000.0,
                 totalFixedIncomeValue = 15000.0,
-                totalRealEstateValue  = 250000.0,
+                totalRealEstateValue = 250000.0,
                 totalLoansOutstanding = 30000.0,
-                totalDebtsOwing       = 2000.0,
-                loans                 = emptyList(),
-                properties            = emptyList()
+                totalDebtsOwing = 2000.0,
+                loans = emptyList(),
+                properties = emptyList()
             ),
             netWorthHistory = listOf(
                 NetWorthHistoryPoint("2026-01", 75000.0, 110000.0, 35000.0),
@@ -478,18 +521,18 @@ fun NetWorthContentPreview() {
                 NetWorthHistoryPoint("2026-03", 83000.0, 118000.0, 35000.0)
             ),
             assetDistribution = listOf(
-                DonutSlice("Cuentas",     "🏦", 25000.0,  21.74, DonutAccounts),
-                DonutSlice("Inversiones", "📈", 75000.0,  65.22, DonutInvestments),
-                DonutSlice("Renta fija",  "🏛️", 15000.0,  13.04, WarnOrange),
-                DonutSlice("Inmuebles",   "🏠", 250000.0, 68.49, DonutRealEstate)
+                DonutSlice("Cuentas", "🏦", 25000.0, 21.74, DonutAccounts),
+                DonutSlice("Inversiones", "📈", 75000.0, 65.22, DonutInvestments),
+                DonutSlice("Renta fija", "🏛️", 15000.0, 13.04, WarnOrange),
+                DonutSlice("Inmuebles", "🏠", 250000.0, 68.49, DonutRealEstate)
             ),
             balancesHidden = false,
-            onLoanClick    = {},
+            onLoanClick = {},
             onPropertyClick = {},
             onValuableClick = {},
-            onAddLoan      = {},
-            onAddProperty  = {},
-            onAddValuable  = {}
+            onAddLoan = {},
+            onAddProperty = {},
+            onAddValuable = {}
         )
     }
 }

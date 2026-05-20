@@ -1,14 +1,7 @@
 package es.aviferdev.n3to.ui.networth
 
-import androidx.compose.ui.graphics.Color
-import es.aviferdev.n3to.ui.theme.DonutAccounts
-import es.aviferdev.n3to.ui.theme.DonutInvestments
-import es.aviferdev.n3to.ui.theme.DonutRealEstate
-import es.aviferdev.n3to.ui.theme.DonutValuables
-import es.aviferdev.n3to.ui.theme.WarnOrange
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import es.aviferdev.n3to.domain.model.Loan
 import es.aviferdev.n3to.domain.model.NetWorthData
 import es.aviferdev.n3to.domain.model.NetWorthHistoryPoint
 import es.aviferdev.n3to.domain.usecase.loan.GetLoansByAccountUseCase
@@ -17,6 +10,11 @@ import es.aviferdev.n3to.domain.usecase.networth.GetNetWorthHistoryUseCase
 import es.aviferdev.n3to.ui.account.AccountSession
 import es.aviferdev.n3to.ui.common.DonutSlice
 import es.aviferdev.n3to.ui.common.loading.GlobalLoadingManager
+import es.aviferdev.n3to.ui.theme.DonutAccounts
+import es.aviferdev.n3to.ui.theme.DonutInvestments
+import es.aviferdev.n3to.ui.theme.DonutRealEstate
+import es.aviferdev.n3to.ui.theme.DonutValuables
+import es.aviferdev.n3to.ui.theme.WarnOrange
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -34,6 +32,7 @@ sealed class NetWorthUiState {
         val netWorthHistory: List<NetWorthHistoryPoint> = emptyList(),
         val assetDistribution: List<DonutSlice> = emptyList()
     ) : NetWorthUiState()
+
     data class Error(val message: String) : NetWorthUiState()
 }
 
@@ -64,8 +63,8 @@ class NetWorthViewModel(
             }
         }
         .stateIn(
-            scope        = viewModelScope,
-            started      = SharingStarted.WhileSubscribed(5_000),
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
             initialValue = NetWorthUiState.Loading
         )
 
@@ -90,14 +89,29 @@ class NetWorthViewModel(
         }
     }
 
-    fun openAddLoanSheet() { _showAddLoanSheet.value = true }
-    fun closeAddLoanSheet() { _showAddLoanSheet.value = false }
+    fun openAddLoanSheet() {
+        _showAddLoanSheet.value = true
+    }
 
-    fun openAddPropertySheet() { _showAddPropertySheet.value = true }
-    fun closeAddPropertySheet() { _showAddPropertySheet.value = false }
+    fun closeAddLoanSheet() {
+        _showAddLoanSheet.value = false
+    }
 
-    fun openAddValuableSheet() { _showAddValuableSheet.value = true }
-    fun closeAddValuableSheet() { _showAddValuableSheet.value = false }
+    fun openAddPropertySheet() {
+        _showAddPropertySheet.value = true
+    }
+
+    fun closeAddPropertySheet() {
+        _showAddPropertySheet.value = false
+    }
+
+    fun openAddValuableSheet() {
+        _showAddValuableSheet.value = true
+    }
+
+    fun closeAddValuableSheet() {
+        _showAddValuableSheet.value = false
+    }
 
     companion object {
         private val AssetColors = listOf(
@@ -131,11 +145,11 @@ class NetWorthViewModel(
 
             return items.mapIndexed { idx, (icon, name, value) ->
                 DonutSlice(
-                    name    = name,
-                    icon    = icon,
-                    amount  = value,
+                    name = name,
+                    icon = icon,
+                    amount = value,
                     percent = (value / total) * 100.0,
-                    color   = AssetColors[idx % AssetColors.size]
+                    color = AssetColors[idx % AssetColors.size]
                 )
             }
         }

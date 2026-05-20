@@ -23,18 +23,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.Account
 import es.aviferdev.n3to.ui.common.navigation.TopBarApp
 import es.aviferdev.n3to.ui.common.component.EmptyStateView
 import es.aviferdev.n3to.ui.common.dialog.DeleteConfirmDialog
-import es.aviferdev.n3to.ui.home.SetInitialBalanceBottomSheet
+import es.aviferdev.n3to.ui.home.bottomsheet.SetInitialBalanceBottomSheet
 
-import es.aviferdev.n3to.ui.theme.ExpenseRed
 import es.aviferdev.n3to.ui.theme.LocalBalanceHidden
-import es.aviferdev.n3to.ui.theme.PrimaryDark
 
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import n3to.composeapp.generated.resources.Res
@@ -46,7 +43,6 @@ import n3to.composeapp.generated.resources.account_delete_full_message
 import n3to.composeapp.generated.resources.account_empty_subtitle
 import n3to.composeapp.generated.resources.account_list_title
 import n3to.composeapp.generated.resources.account_no_accounts
-import n3to.composeapp.generated.resources.common_cancel
 import n3to.composeapp.generated.resources.common_delete
 import n3to.composeapp.generated.resources.common_edit
 import org.jetbrains.compose.resources.stringResource

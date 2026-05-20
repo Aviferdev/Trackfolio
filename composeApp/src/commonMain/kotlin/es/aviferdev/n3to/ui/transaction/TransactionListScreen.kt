@@ -35,11 +35,10 @@ import es.aviferdev.n3to.ui.common.navigation.TimeStepperHeader
 import es.aviferdev.n3to.ui.common.component.EmptyStateView
 import es.aviferdev.n3to.ui.common.dialog.DeleteConfirmDialog
 import es.aviferdev.n3to.ui.common.navigation.TopBarApp
-import es.aviferdev.n3to.ui.home.AddTransactionBottomSheet
-import es.aviferdev.n3to.ui.home.AddTransactionViewModel
+import es.aviferdev.n3to.ui.home.bottomsheet.AddTransactionBottomSheet
+import es.aviferdev.n3to.ui.home.viewmodel.AddTransactionViewModel
 
 import es.aviferdev.n3to.ui.theme.LocalBalanceHidden
-import es.aviferdev.n3to.ui.theme.PrimaryDark
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import es.aviferdev.n3to.ui.theme.localizedMonthNames
 import es.aviferdev.n3to.ui.transaction.components.*
