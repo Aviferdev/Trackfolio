@@ -31,6 +31,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
 import es.aviferdev.n3to.ui.navigation.BottomNavItem
 
@@ -43,7 +44,7 @@ fun FloatingBottomNavBar(
 ) {
     val selectedIndex = remember(items, currentDestination) {
         items.indexOfFirst { item ->
-            currentDestination?.hierarchy?.any { it.route == item.screen.route } == true
+            currentDestination?.hierarchy?.any { it.hasRoute(item.route::class) } == true
         }
     }
 

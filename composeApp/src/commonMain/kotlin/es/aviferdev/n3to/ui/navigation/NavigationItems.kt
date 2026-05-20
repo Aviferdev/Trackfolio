@@ -19,19 +19,19 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun bottomNavItems() = listOf(
     BottomNavItem(
-        screen = Screen.Home,
+        route = HomeRoute,
         label = stringResource(Res.string.nav_home),
         icon = Icons.Outlined.AccountBalanceWallet,
         selectedIcon = Icons.Filled.AccountBalanceWallet
     ),
     BottomNavItem(
-        screen = Screen.Portfolio,
+        route = PortfolioRoute,
         label = stringResource(Res.string.nav_portfolio),
         icon = Icons.AutoMirrored.Outlined.ShowChart,
         selectedIcon = Icons.AutoMirrored.Filled.ShowChart
     ),
     BottomNavItem(
-        screen = Screen.NetWorth,
+        route = NetWorthRoute,
         label = stringResource(Res.string.nav_networth),
         icon = Icons.Outlined.PieChart,
         selectedIcon = Icons.Filled.PieChart
