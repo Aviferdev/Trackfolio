@@ -25,7 +25,7 @@ import n3to.composeapp.generated.resources.account_set_balance_desc
 import n3to.composeapp.generated.resources.account_set_balance_hint
 import n3to.composeapp.generated.resources.account_set_balance_title
 import org.jetbrains.compose.resources.stringResource
-import androidx.compose.ui.tooling.preview.Preview
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 /**
  * Sheet obligatorio para configurar el saldo inicial de una cuenta.

@@ -91,7 +91,7 @@ import n3to.composeapp.generated.resources.home_section_goals
 import n3to.composeapp.generated.resources.home_settings_cd
 import n3to.composeapp.generated.resources.app_name
 import org.jetbrains.compose.resources.stringResource
-import androidx.compose.ui.tooling.preview.Preview
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.qualifier.named

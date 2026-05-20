@@ -7,12 +7,12 @@ compartiendo UI y lógica de negocio entre Android e iOS.
 
 | Propósito | Tecnología |
 |-----------|-----------|
-| Lenguaje | Kotlin 2.1.0 |
+| Lenguaje | Kotlin 2.3.21 |
 | UI | Compose Multiplatform 1.7.3 |
 | DI | Koin 4.0.0 |
 | Persistencia | SQLDelight 2.0.2 |
 | Async | Coroutines 1.9.0 |
-| Navegación | Navigation Compose 2.8.0 |
+| Navegación | Navigation Compose 2.8.0-alpha13 |
 | Min SDK / Compile SDK | 24 / 34 |
 
 Ver [ADR-0001](./docs/adr/0001-decisiones-tecnologicas-iniciales.md) para la justificación
@@ -41,6 +41,21 @@ de la decisión, para que cualquier desarrollador futuro entienda el «por qué�
 detrás del código.
 
 📖 [Índice de ADRs](./docs/adr/README.md)
+
+---
+
+## Requisitos previos
+
+| Herramienta | Versión mínima | Instalación |
+|-------------|---------------|-------------|
+| Xcode | 15.0 | Mac App Store |
+| CocoaPods | 1.14 | `sudo gem install cocoapods` |
+| JDK | 21 | `brew install --cask temurin@21` |
+| Android Studio / IntelliJ | 2024.x | jetbrains.com |
+
+> **CocoaPods es obligatorio para iOS.** El plugin `kotlin("native.cocoapods")`
+> lo usa para enlazar los SDKs de Firebase (Analytics, Crashlytics, Remote Config)
+> dentro del framework KMP durante la compilación.
 
 ---
 
@@ -78,8 +93,8 @@ Cada configuración:
   (`Configuration/DevDebug.xcconfig`, etc.)
 - Copia automáticamente el `GoogleService-Info.plist` correcto al bundle
   (build phase **"Copy Firebase Config"**)
-- Llama al Gradle task correcto (`linkDebugFramework…` o `linkReleaseFramework…`)
-  con el entorno de RevenueCat adecuado (`sandbox` o `prod`)
+- Llama al Gradle task `syncFramework` (vía CocoaPods) con el tipo de build
+  y el entorno de RevenueCat adecuado (`sandbox` o `prod`)
 
 El objeto `AppConfig` (KMP `expect/actual`) expone `environment`, `isDebug` y
 `revenueCatApiKey` en código compartido con el mismo valor que en Android:
@@ -262,18 +277,42 @@ No es necesario pasar este parámetro manualmente.
 
 ### iOS
 
-Compila desde **Xcode** seleccionando el scheme deseado, o desde línea de comandos:
+#### Primera vez (setup inicial)
+
+Tras clonar el repositorio ejecuta estos dos comandos **una sola vez**:
 
 ```bash
-# Compilar el framework KMP para un scheme concreto
-# (el build phase de Xcode hace esto automáticamente al pulsar ▶)
+# 1. Genera el framework vacío que necesita el podspec antes de pod install
+./gradlew :composeApp:generateDummyFramework
 
-# DevDebug — framework debug con entorno sandbox
-./gradlew :composeApp:linkDebugFrameworkIosArm64 -Prevenuecat.ios.env=sandbox
-
-# ProdRelease — framework release con entorno producción
-./gradlew :composeApp:linkReleaseFrameworkIosArm64 -Prevenuecat.ios.env=prod
+# 2. Instala los pods de Firebase y el framework KMP
+cd iosApp && pod install
 ```
+
+Esto crea `iosApp/Pods/` e `iosApp/iosApp.xcworkspace`.
+
+> Repite solo `pod install` (desde `iosApp/`) si cambian las versiones de pods
+> en `build.gradle.kts` o si añades nuevas dependencias de CocoaPods.
+
+#### Abrir el proyecto en Xcode
+
+Abre siempre el **workspace**, no el `.xcodeproj`:
+
+```bash
+open iosApp/iosApp.xcworkspace
+```
+
+Si abres `iosApp.xcodeproj` directamente, los Pods no estarán disponibles y
+el build fallará con errores de frameworks no encontrados.
+
+#### Compilación normal
+
+Compila desde **Xcode** seleccionando el scheme deseado (`DevDebug`, `ProdRelease`, etc.).
+El build phase de CocoaPods llama automáticamente al task `syncFramework` de Gradle,
+que construye el framework KMP con la configuración correcta.
+
+Los Firebase SDKs quedan enlazados **estáticamente** dentro de `ComposeApp.framework`
+(`isStatic = true`), integrados a través de los pods declarados en `build.gradle.kts`.
 
 Para archivar y distribuir, selecciona el scheme `ProdRelease` en Xcode y usa
 **Product → Archive**.

@@ -96,7 +96,7 @@ import n3to.composeapp.generated.resources.settings_backup
 import n3to.composeapp.generated.resources.home_confirm_identity
 import org.jetbrains.compose.resources.stringResource
 import kotlinx.coroutines.delay
-import androidx.compose.ui.tooling.preview.Preview
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 

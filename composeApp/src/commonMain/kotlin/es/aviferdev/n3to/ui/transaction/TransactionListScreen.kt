@@ -51,7 +51,7 @@ import n3to.composeapp.generated.resources.transaction_no_movements
 import n3to.composeapp.generated.resources.transaction_no_results
 import n3to.composeapp.generated.resources.transaction_title
 import org.jetbrains.compose.resources.stringResource
-import androidx.compose.ui.tooling.preview.Preview
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
 // ═══════════════════════════════════════════════════════════════════════════════

@@ -27,7 +27,7 @@ import n3to.composeapp.generated.resources.common_cancel
 import n3to.composeapp.generated.resources.common_close
 import n3to.composeapp.generated.resources.common_save
 
-import androidx.compose.ui.tooling.preview.Preview
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 /**
  * Bottom sheet ligero para configurar o quitar el límite anual de una categoría.
@@ -44,7 +44,7 @@ fun SetCategoryLimitSheet(
 ) {
     var limitText by remember {
         mutableStateOf(
-            if (currentLimit > 0.0) currentLimit.toBigDecimal().stripTrailingZeros().toPlainString()
+            if (currentLimit > 0.0) if (currentLimit % 1.0 == 0.0) currentLimit.toLong().toString() else currentLimit.toString()
             else ""
         )
     }

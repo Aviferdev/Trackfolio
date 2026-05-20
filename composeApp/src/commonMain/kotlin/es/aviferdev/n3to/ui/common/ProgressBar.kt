@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.dp
 
 import es.aviferdev.n3to.ui.theme.PrimaryDark
 import es.aviferdev.n3to.ui.theme.N3toTheme
-import androidx.compose.ui.tooling.preview.Preview
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 /**
  * Thin progress bar (3-4dp height).

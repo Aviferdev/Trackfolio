@@ -27,7 +27,7 @@ import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.reconciliation_adjust
 import n3to.composeapp.generated.resources.reconciliation_banner_text
 import org.jetbrains.compose.resources.stringResource
-import androidx.compose.ui.tooling.preview.Preview
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun ReconciliationReminderBanner(

@@ -9,6 +9,7 @@ plugins {
     alias(libs.plugins.google.services)
     alias(libs.plugins.firebase.crashlytics)
     alias(libs.plugins.kotlinSerialization)
+    kotlin("native.cocoapods")
 }
 
 kotlin {
@@ -25,15 +26,30 @@ kotlin {
         }
     }
 
-    listOf(
-        iosArm64(),
-        iosSimulatorArm64()
-    ).forEach { iosTarget ->
-        iosTarget.binaries.framework {
+    iosArm64()
+    iosSimulatorArm64()
+
+    cocoapods {
+        version = "1.0"
+        summary = "Trackfolio KMP framework"
+        homepage = "https://aviferdev.es"
+        ios.deploymentTarget = "16.0"
+        framework {
             baseName = "ComposeApp"
             isStatic = true
             binaryOption("bundleId", "es.aviferdev.n3to.framework")
         }
+        pod("FirebaseCore") { version = "11.9.0" }
+        pod("FirebaseAnalytics") { version = "11.9.0" }
+        pod("FirebaseCrashlytics") { version = "11.9.0" }
+        pod("FirebaseRemoteConfig") { version = "11.9.0" }
+        // El plugin CocoaPods solo reconoce "Debug" y "Release" por defecto.
+        // Sin este mapeo el task syncFramework falla con
+        // "Could not identify build type" al recibir DevDebug/ProdRelease, etc.
+        xcodeConfigurationToNativeBuildType["DevDebug"]    = org.jetbrains.kotlin.gradle.plugin.mpp.NativeBuildType.DEBUG
+        xcodeConfigurationToNativeBuildType["DevRelease"]  = org.jetbrains.kotlin.gradle.plugin.mpp.NativeBuildType.RELEASE
+        xcodeConfigurationToNativeBuildType["ProdDebug"]   = org.jetbrains.kotlin.gradle.plugin.mpp.NativeBuildType.DEBUG
+        xcodeConfigurationToNativeBuildType["ProdRelease"] = org.jetbrains.kotlin.gradle.plugin.mpp.NativeBuildType.RELEASE
     }
 
     sourceSets {
@@ -204,25 +220,26 @@ val generateIosAppConfig by tasks.registering {
     val sourceRoot = layout.buildDirectory.dir("generated/iosAppConfig")
     val outputFile = sourceRoot.map { it.file("es/aviferdev/n3to/core/AppConfig.ios.kt") }
 
+    // Resolve everything at configuration time — only serializable types leak into doLast
+    val envProvider = providers.gradleProperty("revenuecat.ios.env")
+        .orElse(providers.environmentVariable("REVENUECAT_IOS_ENV"))
+        .orElse("sandbox")
+
+    val rcProps = Properties().also { p ->
+        val f = layout.projectDirectory.file("revenuecat.properties").asFile
+        if (f.exists()) p.load(f.inputStream())
+    }
+    val revenueCatSandboxKey = rcProps.getProperty("REVENUECAT_IOS_SANDBOX")?.takeIf { it.isNotBlank() } ?: ""
+    val revenueCatProdKey    = rcProps.getProperty("REVENUECAT_IOS_PROD")?.takeIf { it.isNotBlank() } ?: ""
+
+    inputs.property("env", envProvider)
+    inputs.property("revenueCatSandboxKey", revenueCatSandboxKey)
+    inputs.property("revenueCatProdKey", revenueCatProdKey)
     outputs.dir(sourceRoot)
 
     doLast {
-        val env = project.findProperty("revenuecat.ios.env") as? String
-            ?: System.getenv("REVENUECAT_IOS_ENV")
-            ?: "sandbox"
-
-        val rcPropFile = file("revenuecat.properties")
-        val props = if (rcPropFile.exists()) {
-            Properties().apply { load(rcPropFile.inputStream()) }
-        } else {
-            Properties()
-        }
-
-        fun prop(key: String): String =
-            props.getProperty(key)?.takeIf { it.isNotBlank() } ?: ""
-
-        val keyProp = if (env == "prod") "REVENUECAT_IOS_PROD" else "REVENUECAT_IOS_SANDBOX"
-        val revenueCatApiKey = prop(keyProp)
+        val env = envProvider.get()
+        val revenueCatApiKey = if (env == "prod") revenueCatProdKey else revenueCatSandboxKey
 
         val isDebug = env != "prod"
         val environment = if (isDebug) "dev" else "prod"

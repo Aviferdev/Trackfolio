@@ -39,7 +39,7 @@ import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.ui.theme.N3toTheme
 
 import kotlinx.coroutines.delay
-import androidx.compose.ui.tooling.preview.Preview
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 /**
  * Slide 5 — Informe fiscal listo.

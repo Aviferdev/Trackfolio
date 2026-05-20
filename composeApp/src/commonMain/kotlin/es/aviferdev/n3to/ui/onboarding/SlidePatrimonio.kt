@@ -50,7 +50,7 @@ import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.onboarding_disponible_deudas
 import n3to.composeapp.generated.resources.onboarding_efectivo_total
 import org.jetbrains.compose.resources.stringResource
-import androidx.compose.ui.tooling.preview.Preview
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 /**
  * Slide 2 — Tu patrimonio, claro.

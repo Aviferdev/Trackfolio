@@ -32,7 +32,7 @@ import n3to.composeapp.generated.resources.common_close
 import n3to.composeapp.generated.resources.common_edit
 import n3to.composeapp.generated.resources.common_save
 
-import androidx.compose.ui.tooling.preview.Preview
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 // ─── CONSTANTES ──────────────────────────────────────────────────────────────────
 private val chipBorderColor: androidx.compose.ui.graphics.Color
@@ -149,7 +149,7 @@ fun EditCategorySheet(
     var name by remember { mutableStateOf(currentName) }
     var limitText by remember {
         mutableStateOf(
-            if (currentLimit > 0.0) currentLimit.toBigDecimal().stripTrailingZeros().toPlainString()
+            if (currentLimit > 0.0) if (currentLimit % 1.0 == 0.0) currentLimit.toLong().toString() else currentLimit.toString()
             else ""
         )
     }

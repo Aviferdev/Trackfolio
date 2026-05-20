@@ -16,7 +16,7 @@ import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.usecase.realestate.PropertyFinancialSummary
 import es.aviferdev.n3to.ui.common.SectionHeader
 import es.aviferdev.n3to.ui.theme.*
-import androidx.compose.ui.tooling.preview.Preview
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.realestate_cashflow_label
 import n3to.composeapp.generated.resources.realestate_profitability_label

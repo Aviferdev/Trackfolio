@@ -24,7 +24,7 @@ import es.aviferdev.n3to.domain.model.LimitType
 import es.aviferdev.n3to.ui.common.ProgressBar
 import es.aviferdev.n3to.ui.theme.*
 import es.aviferdev.n3to.ui.theme.N3toTheme
-import androidx.compose.ui.tooling.preview.Preview
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.budget_empty_subtitle
 import n3to.composeapp.generated.resources.budget_empty_title

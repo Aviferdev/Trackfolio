@@ -43,7 +43,7 @@ import n3to.composeapp.generated.resources.portfolio_update_price_current
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
-import androidx.compose.ui.tooling.preview.Preview
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun AssetDetailScreen(

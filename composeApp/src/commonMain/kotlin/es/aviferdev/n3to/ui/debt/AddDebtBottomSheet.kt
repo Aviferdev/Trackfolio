@@ -35,7 +35,7 @@ import n3to.composeapp.generated.resources.debt_they_owe
 import n3to.composeapp.generated.resources.debt_edit_title
 import n3to.composeapp.generated.resources.debt_type_label
 import org.jetbrains.compose.resources.stringResource
-import androidx.compose.ui.tooling.preview.Preview
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

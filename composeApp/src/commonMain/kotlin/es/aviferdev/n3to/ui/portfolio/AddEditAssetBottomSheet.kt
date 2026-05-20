@@ -108,7 +108,7 @@ import n3to.composeapp.generated.resources.portfolio_add_asset_title_edit
 import n3to.composeapp.generated.resources.common_understood
 import n3to.composeapp.generated.resources.help_asset_types_title
 import org.jetbrains.compose.resources.stringResource
-import androidx.compose.ui.tooling.preview.Preview
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 /**
  * Estado de la validación del ISIN contra la API de cotizaciones.

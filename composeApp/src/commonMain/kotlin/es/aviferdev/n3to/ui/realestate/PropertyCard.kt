@@ -24,7 +24,7 @@ import es.aviferdev.n3to.ui.common.DeltaIndicator
 import es.aviferdev.n3to.ui.common.ProgressBar
 import es.aviferdev.n3to.ui.common.StatusTag
 import es.aviferdev.n3to.ui.theme.*
-import androidx.compose.ui.tooling.preview.Preview
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.realestate_mortgage_amount_format
 import n3to.composeapp.generated.resources.realestate_no_mortgage_short

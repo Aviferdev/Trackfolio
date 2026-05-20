@@ -39,7 +39,7 @@ import n3to.composeapp.generated.resources.common_accept
 import n3to.composeapp.generated.resources.common_cancel
 import n3to.composeapp.generated.resources.common_select_date
 import org.jetbrains.compose.resources.stringResource
-import androidx.compose.ui.tooling.preview.Preview
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone

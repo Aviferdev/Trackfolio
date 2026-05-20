@@ -55,7 +55,7 @@ import n3to.composeapp.generated.resources.networth_title
 import n3to.composeapp.generated.resources.networth_valuables_label
 import n3to.composeapp.generated.resources.networth_add_valuable_cd
 import org.jetbrains.compose.resources.stringResource
-import androidx.compose.ui.tooling.preview.Preview
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.time.ExperimentalTime
 

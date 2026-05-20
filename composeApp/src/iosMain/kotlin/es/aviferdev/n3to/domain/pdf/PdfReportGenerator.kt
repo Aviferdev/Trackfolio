@@ -275,7 +275,7 @@ actual class PdfReportGenerator {
         fun drawIncomeDetailSection() {
             val byType = data.yearlyIncomes
                 .groupBy { it.incomeType ?: IncomeType.EXEMPT_INCOME }
-                .toSortedMap(compareBy { it.ordinal })
+                .entries.sortedBy { it.key.ordinal }.associate { it.key to it.value }
 
             val cols   = listOf("Fecha", "Bruto", "IRPF", "SS", "Com.", "Neto")
             val widths = listOf(55.0, 75.0, 70.0, 70.0, 60.0, 75.0)

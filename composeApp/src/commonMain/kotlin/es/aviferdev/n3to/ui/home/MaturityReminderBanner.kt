@@ -34,7 +34,7 @@ import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.home_maturity_more_format
 import n3to.composeapp.generated.resources.home_maturity_title
 import org.jetbrains.compose.resources.stringResource
-import androidx.compose.ui.tooling.preview.Preview
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun MaturityReminderBanner(

@@ -25,7 +25,7 @@ import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.common_none
 import n3to.composeapp.generated.resources.realestate_loan_only_mortgages
 import org.jetbrains.compose.resources.stringResource
-import androidx.compose.ui.tooling.preview.Preview
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

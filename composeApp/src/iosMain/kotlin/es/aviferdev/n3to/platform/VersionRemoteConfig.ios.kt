@@ -1,6 +1,9 @@
+@file:OptIn(kotlinx.cinterop.ExperimentalForeignApi::class)
+
 package es.aviferdev.n3to.platform
 
 import cocoapods.FirebaseRemoteConfig.FIRRemoteConfig
+import cocoapods.FirebaseRemoteConfig.FIRRemoteConfigSettings
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 
@@ -8,7 +11,6 @@ actual class VersionRemoteConfig {
     private val config = FIRRemoteConfig.remoteConfig()
 
     init {
-        // Valores por defecto offline para cuando no hay conexión
         config.setDefaults(
             mapOf(
                 "app_min_version" to "1.0.0",
@@ -21,8 +23,7 @@ actual class VersionRemoteConfig {
             )
         )
 
-        // Fetch interval mínimo: 12 horas
-        val settings = FIRRemoteConfig.remoteConfigSettings()
+        val settings = FIRRemoteConfigSettings()
         settings.minimumFetchInterval = 43200.0
         config.configSettings = settings
     }
@@ -32,7 +33,6 @@ actual class VersionRemoteConfig {
             suspendCancellableCoroutine<Unit> { continuation ->
                 config.fetchAndActivateWithCompletionHandler { _, error ->
                     if (error != null) {
-                        // Fallo de red — los defaults offline siguen activos
                         continuation.resume(Unit)
                     } else {
                         continuation.resume(Unit)
@@ -40,7 +40,7 @@ actual class VersionRemoteConfig {
                 }
             }
         } catch (_: Exception) {
-            // Cualquier error: los defaults offline están cargados
+            // Defaults offline activos en caso de error
         }
     }
 

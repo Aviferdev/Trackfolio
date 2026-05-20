@@ -1,10 +1,8 @@
 package es.aviferdev.n3to.domain.usecase.asset
 
 import es.aviferdev.n3to.core.security.AppSettings
-import kotlinx.datetime.Clock
+import es.aviferdev.n3to.platform.nowLocalDate
 import kotlinx.datetime.Instant
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
 
 /**
  * Controla la frecuencia de actualización diaria de precios y tipo de cambio.
@@ -42,15 +40,8 @@ class ShouldRefreshTodayUseCase(
         appSettings.putLong(key, startOfTodayEpoch())
     }
 
-    /**
-     * Calcula el epoch millis del inicio del día actual (00:00:00 local).
-     * Construye el string ISO "YYYY-MM-DDT00:00:00Z" para el día local.
-     */
     private fun startOfTodayEpoch(): Long {
-        val now = Clock.System.now()
-        val localNow = now.toLocalDateTime(TimeZone.currentSystemDefault())
-        val dateStr = localNow.date.toString() // "YYYY-MM-DD"
-        val startOfDay = Instant.parse("${dateStr}T00:00:00Z")
-        return startOfDay.toEpochMilliseconds()
+        val dateStr = nowLocalDate().toString()
+        return Instant.parse("${dateStr}T00:00:00Z").toEpochMilliseconds()
     }
 }

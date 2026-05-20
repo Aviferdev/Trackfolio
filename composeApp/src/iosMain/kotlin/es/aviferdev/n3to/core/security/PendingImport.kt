@@ -2,9 +2,6 @@ package es.aviferdev.n3to.core.security
 
 import kotlinx.cinterop.ExperimentalForeignApi
 import platform.Foundation.NSFileManager
-import platform.Foundation.NSHomeDirectory
-import platform.Foundation.NSFileType
-import platform.Foundation.NSFileTypeDirectory
 import platform.Foundation.NSSearchPathDirectory
 import platform.Foundation.NSCachesDirectory
 import platform.Foundation.NSDocumentDirectory
@@ -49,15 +46,6 @@ actual fun applyPendingDatabaseImport(): Boolean {
         }
     }
 
-    // Si no hay BD aún (instalación nueva con backup importado antes que init?),
-    // buscamos pending por todo el container.
-    val foundPending = findPendingRecursively(NSHomeDirectory(), maxDepth = 6)
-    if (foundPending != null) {
-        val targetPath = foundPending.removeSuffix(".pending")
-        println("$PENDING_TAG Pending encontrado por búsqueda: $foundPending")
-        return applyPending(targetPath, foundPending)
-    }
-
     return false
 }
 
@@ -97,26 +85,3 @@ private fun applyPending(dbPath: String, pendingPath: String): Boolean {
     return true
 }
 
-@OptIn(ExperimentalForeignApi::class)
-private fun findPendingRecursively(rootPath: String, maxDepth: Int): String? {
-    val fm = NSFileManager.defaultManager
-    if (maxDepth < 0) return null
-    @Suppress("UNCHECKED_CAST")
-    val entries = fm.contentsOfDirectoryAtPath(rootPath, error = null) as? List<String>
-        ?: return null
-    for (entry in entries) {
-        if (entry.endsWith(".pending") && entry.startsWith(DB_NAME)) {
-            return "$rootPath/$entry"
-        }
-    }
-    for (entry in entries) {
-        val sub = "$rootPath/$entry"
-        val attrs = fm.attributesOfItemAtPath(sub, error = null) ?: continue
-        val type = attrs[NSFileType] as? String ?: continue
-        if (type == NSFileTypeDirectory) {
-            val nested = findPendingRecursively(sub, maxDepth - 1)
-            if (nested != null) return nested
-        }
-    }
-    return null
-}

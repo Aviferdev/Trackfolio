@@ -1,4 +1,7 @@
 // DevDebug: entorno dev + build debug
+// El include de Pods DEBE ir antes que el del proyecto para que PODS_ROOT
+// y el resto de variables de CocoaPods estén disponibles al leer Dev.xcconfig.
+#include "Pods/Target Support Files/Pods-iosApp/Pods-iosApp.devdebug.xcconfig"
 #include "Dev.xcconfig"
 
 ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon-Debug

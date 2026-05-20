@@ -1,4 +1,6 @@
 // ProdDebug: entorno prod + build debug (para depurar problemas en producción)
+// El include de Pods DEBE ir antes que el del proyecto (ver DevDebug.xcconfig).
+#include "Pods/Target Support Files/Pods-iosApp/Pods-iosApp.proddebug.xcconfig"
 #include "Prod.xcconfig"
 
 ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon

@@ -27,7 +27,7 @@ import n3to.composeapp.generated.resources.portfolio_category_group_collapse
 import n3to.composeapp.generated.resources.portfolio_category_group_expand
 import n3to.composeapp.generated.resources.portfolio_closed_positions
 import org.jetbrains.compose.resources.stringResource
-import androidx.compose.ui.tooling.preview.Preview
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun ClosedPositionsHeader(

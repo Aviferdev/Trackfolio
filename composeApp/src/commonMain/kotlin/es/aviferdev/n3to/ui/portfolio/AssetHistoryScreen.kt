@@ -94,7 +94,7 @@ import n3to.composeapp.generated.resources.common_error
 import n3to.composeapp.generated.resources.error_asset_not_found
 import n3to.composeapp.generated.resources.transaction_delete_title
 import org.jetbrains.compose.resources.stringResource
-import androidx.compose.ui.tooling.preview.Preview
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import es.aviferdev.n3to.ui.portfolio.components.formatFullDate
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf

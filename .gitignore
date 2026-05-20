@@ -18,6 +18,12 @@ captures
 **/xcshareddata/WorkspaceSettings.xcsettings
 node_modules/
 
+# CocoaPods — directorio de pods generado por `pod install`
+# Podfile y Podfile.lock SÍ se versionan (definen y fijan dependencias)
+iosApp/Pods/
+# El xcworkspace lo regenera CocoaPods; se obtiene ejecutando `pod install`
+iosApp/iosApp.xcworkspace/
+
 # Firma y credenciales
 *.jks
 *.keystore

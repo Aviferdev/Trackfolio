@@ -43,7 +43,7 @@ import n3to.composeapp.generated.resources.portfolio_add_asset_platforms_hint
 import n3to.composeapp.generated.resources.portfolio_platform_name_label
 import n3to.composeapp.generated.resources.portfolio_settings_add
 import org.jetbrains.compose.resources.stringResource
-import androidx.compose.ui.tooling.preview.Preview
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 /**
  * Sheet para crear o editar una plataforma (broker, exchange, banco).

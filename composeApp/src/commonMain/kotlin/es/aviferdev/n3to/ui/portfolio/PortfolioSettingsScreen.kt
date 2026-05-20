@@ -69,7 +69,7 @@ import n3to.composeapp.generated.resources.portfolio_settings_sector_empty
 import n3to.composeapp.generated.resources.portfolio_settings_sector_section
 import n3to.composeapp.generated.resources.portfolio_settings_title
 import org.jetbrains.compose.resources.stringResource
-import androidx.compose.ui.tooling.preview.Preview
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun PortfolioSettingsScreen(

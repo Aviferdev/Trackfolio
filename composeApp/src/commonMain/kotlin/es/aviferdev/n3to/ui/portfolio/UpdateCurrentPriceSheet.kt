@@ -34,7 +34,7 @@ import n3to.composeapp.generated.resources.portfolio_update_save_hint
 import n3to.composeapp.generated.resources.portfolio_update_price_title
 import n3to.composeapp.generated.resources.portfolio_update_price_date
 import org.jetbrains.compose.resources.stringResource
-import androidx.compose.ui.tooling.preview.Preview
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 /**
  * Sheet ligero para refrescar únicamente el precio actual de un activo

@@ -45,7 +45,7 @@ import n3to.composeapp.generated.resources.reconciliation_done
 import n3to.composeapp.generated.resources.reconciliation_real_balance
 import n3to.composeapp.generated.resources.reconciliation_title
 import org.jetbrains.compose.resources.stringResource
-import androidx.compose.ui.tooling.preview.Preview
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

@@ -41,7 +41,7 @@ import n3to.composeapp.generated.resources.portfolio_dividend_valid_amount_error
 import n3to.composeapp.generated.resources.portfolio_dividend_withholding_label
 import n3to.composeapp.generated.resources.portfolio_dividend_withholding_short
 import org.jetbrains.compose.resources.stringResource
-import androidx.compose.ui.tooling.preview.Preview
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 /**
  * Sheet para registrar un dividendo sobre un activo.

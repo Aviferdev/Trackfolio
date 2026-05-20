@@ -39,7 +39,7 @@ import es.aviferdev.n3to.ui.theme.SecondaryTeal
 
 import es.aviferdev.n3to.ui.theme.WarnAmber
 import kotlinx.coroutines.delay
-import androidx.compose.ui.tooling.preview.Preview
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 /**
  * Slide 4 — Movimientos con sentido.

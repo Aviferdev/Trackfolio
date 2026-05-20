@@ -28,7 +28,7 @@ import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.portfolio_category_current_format
 import n3to.composeapp.generated.resources.portfolio_category_invested_format
 import org.jetbrains.compose.resources.stringResource
-import androidx.compose.ui.tooling.preview.Preview
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import kotlin.math.abs
 
 @Composable

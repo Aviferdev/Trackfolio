@@ -28,7 +28,7 @@ import n3to.composeapp.generated.resources.common_save
 import n3to.composeapp.generated.resources.fixedincome_new_issuer
 import n3to.composeapp.generated.resources.issuer_name_placeholder
 
-import androidx.compose.ui.tooling.preview.Preview
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

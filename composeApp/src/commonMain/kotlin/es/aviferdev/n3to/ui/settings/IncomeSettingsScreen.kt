@@ -26,7 +26,7 @@ import org.jetbrains.compose.resources.stringResource
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.annual_tab_income
 import n3to.composeapp.generated.resources.income_types_section
-import androidx.compose.ui.tooling.preview.Preview
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 /** Tipos de ingreso visibles en la Home (excluye los gestionados desde Portfolio). */
 private val HOME_INCOME_TYPES = IncomeType.entries.filter {

@@ -29,6 +29,7 @@ class PremiumManager(
     val status: StateFlow<PremiumStatus> = _status.asStateFlow()
 
     fun initialize(apiKey: String) {
+        if (apiKey.isBlank()) return
         purchaseManager.configure(apiKey)
         _status.update { it.copy(appUserId = purchaseManager.getAppUserId()) }
         scope.launch {

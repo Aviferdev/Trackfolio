@@ -65,7 +65,7 @@ import n3to.composeapp.generated.resources.fixedincome_select_date_cd
 import n3to.composeapp.generated.resources.fixedincome_start_date_label
 import n3to.composeapp.generated.resources.fixedincome_type_label
 import org.jetbrains.compose.resources.stringResource
-import androidx.compose.ui.tooling.preview.Preview
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable

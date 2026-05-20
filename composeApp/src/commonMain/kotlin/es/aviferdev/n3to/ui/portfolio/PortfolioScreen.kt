@@ -102,7 +102,7 @@ import n3to.composeapp.generated.resources.portfolio_new_purchase
 import n3to.composeapp.generated.resources.portfolio_settings_cd
 import n3to.composeapp.generated.resources.portfolio_title
 import org.jetbrains.compose.resources.stringResource
-import androidx.compose.ui.tooling.preview.Preview
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun PortfolioScreen(

@@ -37,9 +37,7 @@ import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kotlinx.datetime.Clock
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
+import es.aviferdev.n3to.platform.nowYear
 
 sealed class HomeUiState {
     data object Loading : HomeUiState()
@@ -154,10 +152,7 @@ class HomeViewModel(
                     if (accountId == null) {
                         emptyFlow()
                     } else {
-                        val currentYear = Clock.System.now()
-                            .toLocalDateTime(TimeZone.currentSystemDefault())
-                            .year
-                            .toString()
+                        val currentYear = nowYear().toString()
                         getCategoryBudgetStatus(accountId, currentYear)
                     }
                 }

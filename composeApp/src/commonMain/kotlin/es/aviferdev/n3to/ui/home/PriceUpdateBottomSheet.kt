@@ -61,7 +61,7 @@ import n3to.composeapp.generated.resources.portfolio_update_bulk_progress
 import n3to.composeapp.generated.resources.portfolio_update_price_last_format
 import n3to.composeapp.generated.resources.portfolio_update_price_title
 import org.jetbrains.compose.resources.stringResource
-import androidx.compose.ui.tooling.preview.Preview
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

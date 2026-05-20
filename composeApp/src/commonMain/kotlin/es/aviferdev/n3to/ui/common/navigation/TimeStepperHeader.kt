@@ -30,7 +30,7 @@ import es.aviferdev.n3to.ui.common.button.IconButtonApp
 import es.aviferdev.n3to.ui.common.separator.SpacerHorizontalApp
 import es.aviferdev.n3to.ui.common.separator.SpacerVerticalApp
 
-import androidx.compose.ui.tooling.preview.Preview
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 /**
  * Cabecera con navegación temporal (mes / año) que incluye un título

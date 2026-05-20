@@ -1,10 +1,11 @@
 package es.aviferdev.n3to.core.security
 
-import platform.Foundation.NSLocale
 import platform.Foundation.NSUserDefaults
 
 actual fun getSystemLanguage(): String {
-    val preferred = NSLocale.preferredLanguages.firstOrNull() ?: return "es"
+    val languages = NSUserDefaults.standardUserDefaults
+        .objectForKey("AppleLanguages") as? List<*>
+    val preferred = languages?.firstOrNull() as? String ?: return "es"
     // "es-ES" -> "es", "en-US" -> "en"
     return preferred.substringBefore("-").ifEmpty { "es" }
 }

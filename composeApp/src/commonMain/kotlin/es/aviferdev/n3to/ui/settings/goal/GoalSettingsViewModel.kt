@@ -204,7 +204,12 @@ class GoalSettingsViewModel(
 
     companion object {
         private fun formatAmount(amount: Double): String =
-            if (amount == 0.0) "" else String.format("%.2f", amount).replace(".", ",")
+            if (amount == 0.0) "" else {
+                val r = kotlin.math.round(amount * 100.0) / 100.0
+                val intPart = r.toLong()
+                val decPart = kotlin.math.round((r - intPart) * 100).toLong()
+                "${intPart},${decPart.toString().padStart(2, '0')}"
+            }
 
         private fun parseAmount(text: String): Double =
             text.trim().replace(",", ".").toDoubleOrNull() ?: 0.0

@@ -50,7 +50,7 @@ import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.error_asset_not_found
 import n3to.composeapp.generated.resources.portfolio_update_price_title
 import org.jetbrains.compose.resources.stringResource
-import androidx.compose.ui.tooling.preview.Preview
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun AssetHistoryContent(

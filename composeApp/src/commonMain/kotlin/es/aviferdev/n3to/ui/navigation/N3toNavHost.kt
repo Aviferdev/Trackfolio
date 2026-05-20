@@ -26,12 +26,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.core.security.AppSettings
 
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
+import androidx.navigation.toRoute
 import es.aviferdev.n3to.domain.model.IncomeType
 import es.aviferdev.n3to.domain.model.TransactionType
 import es.aviferdev.n3to.ui.annual.AnnualSummaryScreen
@@ -98,18 +97,14 @@ fun N3toNavHost(
     Box(Modifier.fillMaxSize()) {
         Scaffold(
             bottomBar = {
-                val hideRoutes = listOf(
-                    Screen.TransactionDetail.route,
-                    Screen.Transactions.route,
-                    Screen.CategoryPicker.route,
-                    Screen.FiscalReport.route,
-                    Screen.Settings.route,
-                    Screen.Debts.route,
-                    Screen.Charts.route,
-                )
-                val showBottomBar = currentDestination?.route?.let { route ->
-                    hideRoutes.none { route.startsWith(it.substringBefore("{")) }
-                } ?: true
+                val currentRoute = currentDestination?.route ?: ""
+                val showBottomBar = !currentRoute.contains("TransactionDetailRoute") &&
+                    !currentRoute.contains("CategoryPickerRoute") &&
+                    !currentRoute.startsWith(Screen.Transactions.route) &&
+                    !currentRoute.startsWith(Screen.FiscalReport.route) &&
+                    !currentRoute.startsWith(Screen.Settings.route) &&
+                    !currentRoute.startsWith(Screen.Debts.route) &&
+                    !currentRoute.startsWith(Screen.Charts.route)
 
                 if (showBottomBar) {
                     Box(
@@ -163,17 +158,17 @@ fun N3toNavHost(
                             navController.navigate(Screen.EmergencyFundSettings.route) { launchSingleTop = true }
                         },
                         onNavigateToFixedIncomeDetail = { positionId ->
-                            navController.navigate(Screen.FixedIncomeDetail.buildRoute(positionId)) {
+                            navController.navigate(FixedIncomeDetailRoute(positionId)) {
                                 launchSingleTop = true
                             }
                         },
                         onNavigateToCategoryPicker = { type ->
-                            navController.navigate(Screen.CategoryPicker.buildRoute(type.name)) {
+                            navController.navigate(CategoryPickerRoute(type.name)) {
                                 launchSingleTop = true
                             }
                         },
                         onNavigateToAccountConfig = { accountId ->
-                            navController.navigate(Screen.AccountConfig.createRoute(accountId)) {
+                            navController.navigate(AccountConfigRoute(accountId)) {
                                 launchSingleTop = true
                             }
                         },
@@ -231,17 +226,17 @@ fun N3toNavHost(
                             navController.navigate(Screen.EmergencyFundSettings.route) { launchSingleTop = true }
                         },
                         onNavigateToFixedIncomeDetail = { positionId ->
-                            navController.navigate(Screen.FixedIncomeDetail.buildRoute(positionId)) {
+                            navController.navigate(FixedIncomeDetailRoute(positionId)) {
                                 launchSingleTop = true
                             }
                         },
                          onNavigateToCategoryPicker = { type ->
-                            navController.navigate(Screen.CategoryPicker.buildRoute(type.name)) {
+                            navController.navigate(CategoryPickerRoute(type.name)) {
                                 launchSingleTop = true
                             }
                         },
                         onNavigateToAccountConfig = { accountId ->
-                            navController.navigate(Screen.AccountConfig.createRoute(accountId)) {
+                            navController.navigate(AccountConfigRoute(accountId)) {
                                 launchSingleTop = true
                             }
                         },
@@ -250,16 +245,8 @@ fun N3toNavHost(
                         }
                     )
                 }
-                composable(
-                    route = Screen.CategoryPicker.route,
-                    arguments = listOf(
-                        navArgument(Screen.CategoryPicker.ARG_INITIAL_TYPE) {
-                            type = NavType.StringType
-                        }
-                    )
-                ) { backStackEntry ->
-                    val typeName = backStackEntry.arguments
-                        ?.getString(Screen.CategoryPicker.ARG_INITIAL_TYPE).orEmpty()
+                composable<CategoryPickerRoute> { backStackEntry ->
+                    val typeName = backStackEntry.toRoute<CategoryPickerRoute>().initialType
                     val initialType = try {
                         TransactionType.valueOf(typeName)
                     } catch (_: Exception) {
@@ -299,25 +286,14 @@ fun N3toNavHost(
                         editTransactionId = editTxId,
                         onConsumeEdit = { },
                         onTransactionClick = { transaction ->
-                            navController.navigate(
-                                Screen.TransactionDetail.buildRoute(transaction.id)
-                            ) {
+                            navController.navigate(TransactionDetailRoute(transaction.id)) {
                                 launchSingleTop = true
                             }
                         }
                     )
                 }
-                composable(
-                    route = Screen.TransactionDetail.route,
-                    arguments = listOf(
-                        navArgument(Screen.TransactionDetail.ARG_TRANSACTION_ID) {
-                            type = NavType.StringType
-                        }
-                    )
-                ) { backStackEntry ->
-                    val transactionId =
-                        backStackEntry.arguments?.getString(Screen.TransactionDetail.ARG_TRANSACTION_ID)
-                            .orEmpty()
+                composable<TransactionDetailRoute> { backStackEntry ->
+                    val transactionId = backStackEntry.toRoute<TransactionDetailRoute>().transactionId
                     TransactionDetailScreen(
                         transactionId = transactionId,
                         onBack = { navController.popBackStack() },
@@ -332,7 +308,7 @@ fun N3toNavHost(
                 composable(Screen.Portfolio.route) {
                     PortfolioScreen(
                         onAssetClick = { assetId ->
-                            navController.navigate(Screen.AssetHistory.buildRoute(assetId)) {
+                            navController.navigate(AssetHistoryRoute(assetId)) {
                                 launchSingleTop = true
                             }
                         },
@@ -342,7 +318,7 @@ fun N3toNavHost(
                             }
                         },
                         onFixedIncomeClick = { positionId ->
-                            navController.navigate(Screen.FixedIncomeDetail.buildRoute(positionId)) {
+                            navController.navigate(FixedIncomeDetailRoute(positionId)) {
                                 launchSingleTop = true
                             }
                         },
@@ -362,17 +338,17 @@ fun N3toNavHost(
                 composable(Screen.NetWorth.route) {
                     NetWorthScreen(
                         onLoanClick = { loanId ->
-                            navController.navigate(Screen.LoanDetail.buildRoute(loanId)) {
+                            navController.navigate(LoanDetailRoute(loanId)) {
                                 launchSingleTop = true
                             }
                         },
                         onPropertyClick = { propertyId ->
-                            navController.navigate(Screen.RealEstateDetail.buildRoute(propertyId)) {
+                            navController.navigate(RealEstateDetailRoute(propertyId)) {
                                 launchSingleTop = true
                             }
                         },
                         onValuableClick = { valuableId ->
-                            navController.navigate(Screen.ValuableDetail.buildRoute(valuableId)) {
+                            navController.navigate(ValuableDetailRoute(valuableId)) {
                                 launchSingleTop = true
                             }
                         },
@@ -398,7 +374,7 @@ fun N3toNavHost(
                             }
                         },
                         onNavigateToAccountConfig = { accountId ->
-                            navController.navigate(Screen.AccountConfig.createRoute(accountId)) {
+                            navController.navigate(AccountConfigRoute(accountId)) {
                                 launchSingleTop = true
                             }
                         },
@@ -415,11 +391,8 @@ fun N3toNavHost(
                         onResetOnboarding = onResetOnboarding
                     )
                 }
-                composable(
-                    route = Screen.AccountConfig.route,
-                    arguments = listOf(navArgument(Screen.AccountConfig.ARG_ACCOUNT_ID) { type = NavType.StringType })
-                ) { backStackEntry ->
-                    val accountId = backStackEntry.arguments?.getString(Screen.AccountConfig.ARG_ACCOUNT_ID) ?: return@composable
+                composable<AccountConfigRoute> { backStackEntry ->
+                    val accountId = backStackEntry.toRoute<AccountConfigRoute>().accountId
                     AccountConfigScreen(
                         accountId = accountId,
                         onBack = { navController.popBackStack() },
@@ -489,22 +462,14 @@ fun N3toNavHost(
                     IncomeSettingsScreen(
                         onBack = { navController.popBackStack() },
                         onNavigateToIncomeTypeDetail = { incomeType ->
-                            navController.navigate(Screen.IncomeTypeDetail.buildRoute(incomeType.name)) {
+                            navController.navigate(IncomeTypeDetailRoute(incomeType.name)) {
                                 launchSingleTop = true
                             }
                         }
                     )
                 }
-                composable(
-                    route = Screen.IncomeTypeDetail.route,
-                    arguments = listOf(
-                        navArgument(Screen.IncomeTypeDetail.ARG_INCOME_TYPE) {
-                            type = NavType.StringType
-                        }
-                    )
-                ) { backStackEntry ->
-                    val incomeTypeName = backStackEntry.arguments
-                        ?.getString(Screen.IncomeTypeDetail.ARG_INCOME_TYPE).orEmpty()
+                composable<IncomeTypeDetailRoute> { backStackEntry ->
+                    val incomeTypeName = backStackEntry.toRoute<IncomeTypeDetailRoute>().incomeTypeName
                     val incomeType = IncomeType.fromName(incomeTypeName)
                     if (incomeType != null) {
                         IncomeTypeDetailScreen(
@@ -522,7 +487,7 @@ fun N3toNavHost(
                     PortfolioSettingsScreen(
                         onBack = { navController.popBackStack() },
                         onNavigateToCategoryDetail = { categoryId ->
-                            navController.navigate(Screen.AssetCategoryDetail.buildRoute(categoryId)) {
+                            navController.navigate(AssetCategoryDetailRoute(categoryId)) {
                                 launchSingleTop = true
                             }
                         },
@@ -536,119 +501,65 @@ fun N3toNavHost(
                         onBack = { navController.popBackStack() }
                     )
                 }
-                composable(
-                    route = Screen.AssetHistory.route,
-                    arguments = listOf(
-                        navArgument(Screen.AssetHistory.ARG_ASSET_ID) { type = NavType.StringType }
-                    )
-                ) { backStackEntry ->
-                    val assetId =
-                        backStackEntry.arguments?.getString(Screen.AssetHistory.ARG_ASSET_ID)
-                            .orEmpty()
+                composable<AssetHistoryRoute> { backStackEntry ->
+                    val assetId = backStackEntry.toRoute<AssetHistoryRoute>().assetId
                     AssetHistoryScreen(
                         assetId = assetId,
                         onBack = { navController.popBackStack() }
                     )
                 }
-                composable(
-                    route = Screen.AssetCategoryDetail.route,
-                    arguments = listOf(
-                        navArgument(Screen.AssetCategoryDetail.ARG_CATEGORY_ID) {
-                            type = NavType.StringType
-                        }
-                    )
-                ) { backStackEntry ->
-                    val categoryId =
-                        backStackEntry.arguments?.getString(Screen.AssetCategoryDetail.ARG_CATEGORY_ID)
-                            .orEmpty()
+                composable<AssetCategoryDetailRoute> { backStackEntry ->
+                    val categoryId = backStackEntry.toRoute<AssetCategoryDetailRoute>().categoryId
                     AssetCategoryDetailScreen(
                         categoryId = categoryId,
                         onBack = { navController.popBackStack() },
                         onAssetClick = { assetId ->
-                            navController.navigate(Screen.AssetDetail.buildRoute(assetId)) {
+                            navController.navigate(AssetDetailRoute(assetId)) {
                                 launchSingleTop = true
                             }
                         },
                         onFixedIncomeClick = { positionId ->
-                            navController.navigate(Screen.FixedIncomeDetail.buildRoute(positionId)) {
+                            navController.navigate(FixedIncomeDetailRoute(positionId)) {
                                 launchSingleTop = true
                             }
                         }
                     )
                 }
-                composable(
-                    route = Screen.AssetDetail.route,
-                    arguments = listOf(
-                        navArgument(Screen.AssetDetail.ARG_ASSET_ID) { type = NavType.StringType }
-                    )
-                ) { backStackEntry ->
-                    val assetId =
-                        backStackEntry.arguments?.getString(Screen.AssetDetail.ARG_ASSET_ID)
-                            .orEmpty()
+                composable<AssetDetailRoute> { backStackEntry ->
+                    val assetId = backStackEntry.toRoute<AssetDetailRoute>().assetId
                     AssetDetailScreen(
                         assetId = assetId,
                         onBack = { navController.popBackStack() }
                     )
                 }
-                composable(
-                    route = Screen.FixedIncomeDetail.route,
-                    arguments = listOf(
-                        navArgument(Screen.FixedIncomeDetail.ARG_POSITION_ID) {
-                            type = NavType.StringType
-                        }
-                    )
-                ) { backStackEntry ->
-                    val positionId =
-                        backStackEntry.arguments?.getString(Screen.FixedIncomeDetail.ARG_POSITION_ID)
-                            .orEmpty()
+                composable<FixedIncomeDetailRoute> { backStackEntry ->
+                    val positionId = backStackEntry.toRoute<FixedIncomeDetailRoute>().positionId
                     FixedIncomeDetailScreen(
                         positionId = positionId,
                         onBack = { navController.popBackStack() }
                     )
                 }
-                composable(
-                    route = Screen.RealEstateDetail.route,
-                    arguments = listOf(
-                        navArgument(Screen.RealEstateDetail.ARG_PROPERTY_ID) {
-                            type = NavType.StringType
-                        }
-                    )
-                ) { backStackEntry ->
-                    val propertyId = backStackEntry.arguments
-                        ?.getString(Screen.RealEstateDetail.ARG_PROPERTY_ID).orEmpty()
+                composable<RealEstateDetailRoute> { backStackEntry ->
+                    val propertyId = backStackEntry.toRoute<RealEstateDetailRoute>().propertyId
                     RealEstateDetailScreen(
                         propertyId = propertyId,
                         onNavigateBack = { navController.popBackStack() },
                         onNavigateToLoan = { loanId ->
-                            navController.navigate(Screen.LoanDetail.buildRoute(loanId)) {
+                            navController.navigate(LoanDetailRoute(loanId)) {
                                 launchSingleTop = true
                             }
                         }
                     )
                 }
-                composable(
-                    route = Screen.ValuableDetail.route,
-                    arguments = listOf(
-                        navArgument(Screen.ValuableDetail.ARG_VALUABLE_ID) {
-                            type = NavType.StringType
-                        }
-                    )
-                ) { backStackEntry ->
-                    val valuableId = backStackEntry.arguments
-                        ?.getString(Screen.ValuableDetail.ARG_VALUABLE_ID).orEmpty()
+                composable<ValuableDetailRoute> { backStackEntry ->
+                    val valuableId = backStackEntry.toRoute<ValuableDetailRoute>().valuableId
                     ValuableDetailScreen(
                         valuableId = valuableId,
                         onNavigateBack = { navController.popBackStack() }
                     )
                 }
-                composable(
-                    route = Screen.LoanDetail.route,
-                    arguments = listOf(
-                        navArgument(Screen.LoanDetail.ARG_LOAN_ID) { type = NavType.StringType }
-                    )
-                ) { backStackEntry ->
-                    val loanId = backStackEntry.arguments
-                        ?.getString(Screen.LoanDetail.ARG_LOAN_ID).orEmpty()
+                composable<LoanDetailRoute> { backStackEntry ->
+                    val loanId = backStackEntry.toRoute<LoanDetailRoute>().loanId
                     LoanDetailScreen(
                         loanId = loanId,
                         onBack = { navController.popBackStack() }
@@ -719,4 +630,3 @@ private fun WelcomeTabRow(label: String, description: String) {
         Text(description, fontSize = 13.sp, color = MaterialTheme.appColors.textSecondary, lineHeight = 18.sp)
     }
 }
-

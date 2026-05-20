@@ -28,7 +28,7 @@ import n3to.composeapp.generated.resources.fixedincome_net_amount_est
 import n3to.composeapp.generated.resources.fixedincome_register_coupon_btn_alt
 import n3to.composeapp.generated.resources.portfolio_add_tx_notes_label
 import org.jetbrains.compose.resources.stringResource
-import androidx.compose.ui.tooling.preview.Preview
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 private fun formatEuro(value: Double): String {
     val intPart = value.toLong()

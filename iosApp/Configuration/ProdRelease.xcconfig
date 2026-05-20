@@ -1,4 +1,6 @@
 // ProdRelease: entorno prod + build release (build final para App Store)
+// El include de Pods DEBE ir antes que el del proyecto (ver DevDebug.xcconfig).
+#include "Pods/Target Support Files/Pods-iosApp/Pods-iosApp.prodrelease.xcconfig"
 #include "Prod.xcconfig"
 
 ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon

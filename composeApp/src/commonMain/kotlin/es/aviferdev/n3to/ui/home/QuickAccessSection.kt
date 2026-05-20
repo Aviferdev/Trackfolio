@@ -39,7 +39,7 @@ import n3to.composeapp.generated.resources.home_quick_debts
 import n3to.composeapp.generated.resources.home_quick_fiscal
 import n3to.composeapp.generated.resources.home_quick_resumen
 import org.jetbrains.compose.resources.stringResource
-import androidx.compose.ui.tooling.preview.Preview
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun QuickAccessSection(

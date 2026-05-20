@@ -5,7 +5,7 @@ import androidx.compose.ui.Modifier
 import es.aviferdev.n3to.domain.model.Account
 import es.aviferdev.n3to.ui.common.component.NavyTabRow
 import es.aviferdev.n3to.ui.theme.N3toTheme
-import androidx.compose.ui.tooling.preview.Preview
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import es.aviferdev.n3to.platform.nowMillis
 
 @Composable

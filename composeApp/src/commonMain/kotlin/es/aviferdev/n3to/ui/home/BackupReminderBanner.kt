@@ -32,7 +32,7 @@ import n3to.composeapp.generated.resources.home_backup_days_format
 import n3to.composeapp.generated.resources.home_backup_never
 import org.jetbrains.compose.resources.stringResource
 import es.aviferdev.n3to.ui.theme.*
-import androidx.compose.ui.tooling.preview.Preview
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 /**
  * Banner que recuerda al usuario hacer una copia de seguridad.

@@ -17,7 +17,7 @@ import es.aviferdev.n3to.domain.model.RentalPeriod
 import es.aviferdev.n3to.ui.common.SectionHeader
 import es.aviferdev.n3to.ui.common.StatusTag
 import es.aviferdev.n3to.ui.theme.*
-import androidx.compose.ui.tooling.preview.Preview
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.common_active_badge
 import n3to.composeapp.generated.resources.realestate_rental_history_label

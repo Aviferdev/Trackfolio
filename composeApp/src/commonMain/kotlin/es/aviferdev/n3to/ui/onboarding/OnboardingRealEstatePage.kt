@@ -49,7 +49,7 @@ import n3to.composeapp.generated.resources.networth_title
 import n3to.composeapp.generated.resources.onboarding_seccion_patrimonio
 import n3to.composeapp.generated.resources.realestate_detail_title
 import org.jetbrains.compose.resources.stringResource
-import androidx.compose.ui.tooling.preview.Preview
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 // ─── Constantes de colores del sistema navy (composable getters para soporte de tema) ─────────────────
 private val CardBorder: androidx.compose.ui.graphics.Color

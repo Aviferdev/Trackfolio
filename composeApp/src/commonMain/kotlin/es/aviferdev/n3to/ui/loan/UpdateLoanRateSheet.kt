@@ -24,7 +24,7 @@ import n3to.composeapp.generated.resources.loan_change_rate
 import n3to.composeapp.generated.resources.loan_new_rate_label
 import n3to.composeapp.generated.resources.loan_rate_placeholder
 
-import androidx.compose.ui.tooling.preview.Preview
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

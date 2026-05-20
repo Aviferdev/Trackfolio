@@ -32,7 +32,7 @@ import n3to.composeapp.generated.resources.fiscal_net_only_warning
 import n3to.composeapp.generated.resources.fiscal_no_data_year
 import n3to.composeapp.generated.resources.fiscal_title
 import org.jetbrains.compose.resources.stringResource
-import androidx.compose.ui.tooling.preview.Preview
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
 // ═══════════════════════════════════════════════════════════════════════════════

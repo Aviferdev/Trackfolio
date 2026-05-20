@@ -55,7 +55,7 @@ import n3to.composeapp.generated.resources.fixedincome_not_found
 import n3to.composeapp.generated.resources.fixedincome_register_settlement
 import n3to.composeapp.generated.resources.fixedincome_sell_secondary
 import org.jetbrains.compose.resources.stringResource
-import androidx.compose.ui.tooling.preview.Preview
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
