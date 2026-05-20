@@ -131,6 +131,7 @@
 				0A1B2C3D4E5F6A8C /* Sources */,
 				0A1B2C3D4E5F6A84 /* Frameworks */,
 				0A1B2C3D4E5F6A8D /* Resources */,
+				BBAA0004BBAA00010001DD01 /* Copy Firebase Config */,
 				0A1B2C3D4E5F6A81 /* Embed Frameworks */,
 			);
 			buildRules = (
@@ -188,6 +189,25 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		BBAA0004BBAA00010001DD01 /* Copy Firebase Config */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Copy Firebase Config";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/GoogleService-Info.plist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "set -e\n\ncase \"$CONFIGURATION\" in\n  DevDebug|DevRelease)   ENV=Dev ;;\n  ProdDebug|ProdRelease) ENV=Prod ;;\n  *)                     ENV=Dev ;;\nesac\n\nPLIST_SRC=\"${SRCROOT}/Configuration/Firebase/${ENV}/GoogleService-Info.plist\"\n\nif [ ! -f \"$PLIST_SRC\" ]; then\n    echo \"error: Falta GoogleService-Info.plist para el entorno $ENV.\"\n    echo \"error: Descarga el archivo de Firebase Console y colócalo en:\"\n    echo \"error: iosApp/Configuration/Firebase/${ENV}/GoogleService-Info.plist\"\n    echo \"error: Usa el ejemplo: Configuration/Firebase/${ENV}/GoogleService-Info.plist.example\"\n    exit 1\nfi\n\ncp \"$PLIST_SRC\" \"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GoogleService-Info.plist\"\necho \"GoogleService-Info.plist (${ENV}) copiado al bundle\"\n";
+		};
 		0A1B2C3D4E5F6A8E /* Build Kotlin Framework */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -426,7 +446,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"iosApp/Preview Content\"";
-				DEVELOPMENT_TEAM = BZ3TL9QV4U;
+				DEVELOPMENT_TEAM = $(TEAM_ID);
 				ENABLE_PREVIEWS = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -462,7 +482,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"iosApp/Preview Content\"";
-				DEVELOPMENT_TEAM = BZ3TL9QV4U;
+				DEVELOPMENT_TEAM = $(TEAM_ID);
 				ENABLE_PREVIEWS = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -498,7 +518,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"iosApp/Preview Content\"";
-				DEVELOPMENT_TEAM = BZ3TL9QV4U;
+				DEVELOPMENT_TEAM = $(TEAM_ID);
 				ENABLE_PREVIEWS = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -534,7 +554,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"iosApp/Preview Content\"";
-				DEVELOPMENT_TEAM = BZ3TL9QV4U;
+				DEVELOPMENT_TEAM = $(TEAM_ID);
 				ENABLE_PREVIEWS = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",

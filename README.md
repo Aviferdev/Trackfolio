@@ -63,8 +63,55 @@ Se necesitan dos ficheros `google-services.json` (uno por flavor):
 
 ### Firebase (iOS)
 
-Si se añade Firebase en el futuro, descarga `GoogleService-Info.plist` para
-cada bundle identifier e intégralo en el proyecto de Xcode.
+Se necesitan dos ficheros `GoogleService-Info.plist` (uno por entorno), igual
+que Android usa dos `google-services.json`:
+
+1. **Crea dos aplicaciones iOS en Firebase Console**:
+   - **Dev**: bundle ID `es.aviferdev.n3to.dev`  → `iosApp/Configuration/Firebase/Dev/GoogleService-Info.plist`
+   - **Prod**: bundle ID `es.aviferdev.n3to`      → `iosApp/Configuration/Firebase/Prod/GoogleService-Info.plist`
+
+2. **Habilita** Analytics, Crashlytics y Remote Config en ambas (igual que en Android).
+
+3. **Descarga** el `GoogleService-Info.plist` de cada aplicación y colócalo en la
+   ruta indicada. Usa el `.example` como referencia de la estructura esperada:
+
+   ```bash
+   # Ver la estructura esperada
+   cat iosApp/Configuration/Firebase/Dev/GoogleService-Info.plist.example
+   ```
+
+4. El build script de Xcode **selecciona automáticamente** el plist correcto
+   según la configuración activa:
+
+   | Configuración Xcode | Plist usado                     | Equivalente Android |
+   |---------------------|---------------------------------|---------------------|
+   | `DevDebug`          | `Firebase/Dev/GoogleService-Info.plist` | `devDebug`   |
+   | `DevRelease`        | `Firebase/Dev/GoogleService-Info.plist` | `devRelease` |
+   | `ProdDebug`         | `Firebase/Prod/GoogleService-Info.plist` | `prodDebug` |
+   | `ProdRelease`       | `Firebase/Prod/GoogleService-Info.plist` | `prodRelease` |
+
+> **Nota:** Si el plist no está presente al compilar, Xcode mostrará un error
+> con la ruta exacta donde colocarlo.
+
+### Firma de release (iOS)
+
+Equivalente al `keystore.properties` de Android:
+
+1. **Crea** `iosApp/Configuration/signing.xcconfig` con tu Team ID:
+
+   ```bash
+   cp iosApp/Configuration/signing.xcconfig.example iosApp/Configuration/signing.xcconfig
+   ```
+
+2. **Edita** `signing.xcconfig` y reemplaza `REEMPLAZAR_CON_TEAM_ID` con tu
+   Apple Developer Team ID (10 caracteres). Encuéntralo en
+   [developer.apple.com → Membership](https://developer.apple.com/account).
+
+3. **Verifica que está ignorado por Git:**
+
+   ```bash
+   git check-ignore iosApp/Configuration/signing.xcconfig
+   ```
 
 ### Firma de release (Android)
 

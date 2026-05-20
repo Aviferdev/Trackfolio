@@ -1,0 +1,11 @@
+// Firma iOS — equivalente a keystore.properties en Android
+// 1. Copia este archivo:
+//       cp iosApp/Configuration/signing.xcconfig.example iosApp/Configuration/signing.xcconfig
+// 2. Rellena los valores:
+//    - TEAM_ID: tu Apple Developer Team ID (10 caracteres, ej: AB12CD34EF)
+//      Encuéntralo en developer.apple.com → Membership
+//    - Para distribución manual añade aquí PROVISIONING_PROFILE_SPECIFIER
+// 3. Verifica que está ignorado por Git:
+//       git check-ignore iosApp/Configuration/signing.xcconfig
+
+TEAM_ID = REEMPLAZAR_CON_TEAM_ID

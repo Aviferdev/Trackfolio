@@ -1,5 +1,6 @@
 // Configuración de desarrollo (Debug)
-TEAM_ID=
+// signing.xcconfig no está versionado — ver signing.xcconfig.example
+#include? "signing.xcconfig"
 
 INFOPLIST_KEY_CFBundleDisplayName=N3to DEV
 PRODUCT_BUNDLE_IDENTIFIER=es.aviferdev.n3to.dev
