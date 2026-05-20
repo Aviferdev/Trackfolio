@@ -36,7 +36,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import es.aviferdev.n3to.domain.model.NetWorthData
+import es.aviferdev.n3to.domain.model.NetWorthScreenData
 import es.aviferdev.n3to.domain.model.NetWorthHistoryPoint
 import es.aviferdev.n3to.ui.annual.DonutChartCard
 import es.aviferdev.n3to.ui.common.DonutSlice
@@ -187,7 +187,7 @@ fun NetWorthScreen(
 @OptIn(ExperimentalTime::class)
 @Composable
 fun NetWorthContent(
-    data: NetWorthData,
+    data: NetWorthScreenData,
     netWorthHistory: List<NetWorthHistoryPoint>,
     assetDistribution: List<DonutSlice>,
     balancesHidden: Boolean,
@@ -505,7 +505,7 @@ fun NetWorthContent(
 fun NetWorthContentPreview() {
     N3toTheme {
         NetWorthContent(
-            data = NetWorthData(
+            data = NetWorthScreenData(
                 totalAccountBalance = 25000.0,
                 totalPortfolioValue = 75000.0,
                 totalFixedIncomeValue = 15000.0,

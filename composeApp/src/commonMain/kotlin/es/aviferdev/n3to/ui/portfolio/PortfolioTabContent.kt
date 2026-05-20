@@ -21,9 +21,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -40,11 +38,12 @@ import es.aviferdev.n3to.ui.common.LineChartWithTimeRange
 import es.aviferdev.n3to.ui.common.component.EmptyStateView
 import es.aviferdev.n3to.ui.common.component.NavyTab
 import es.aviferdev.n3to.ui.fixedincome.FixedIncomePositionCard
+import es.aviferdev.n3to.ui.portfolio.home.DistributionView
+import es.aviferdev.n3to.ui.portfolio.home.PortfolioUiState
 import es.aviferdev.n3to.ui.savingsrates.SavingsRatePreviewCard
+import es.aviferdev.n3to.ui.theme.LocalBalanceHidden
 
-import es.aviferdev.n3to.ui.theme.PrimaryDark
 import n3to.composeapp.generated.resources.Res
-import n3to.composeapp.generated.resources.portfolio_empty_subtitle
 import n3to.composeapp.generated.resources.portfolio_empty_title
 import n3to.composeapp.generated.resources.portfolio_evolution_title
 import n3to.composeapp.generated.resources.portfolio_monthly_value
@@ -52,8 +51,6 @@ import n3to.composeapp.generated.resources.portfolio_no_portfolios_subtitle
 import n3to.composeapp.generated.resources.portfolio_no_portfolios_title
 import n3to.composeapp.generated.resources.portfolio_no_positions_select
 import n3to.composeapp.generated.resources.portfolio_no_positions_wallet
-import n3to.composeapp.generated.resources.portfolio_settings_cd
-import n3to.composeapp.generated.resources.portfolio_title
 import org.jetbrains.compose.resources.stringResource
 
 /**
@@ -78,7 +75,6 @@ fun PortfolioTabContent(
     isTodasTab: Boolean = portfolioId == null,
     state: PortfolioUiState,
     valueHistory: List<PortfolioValuePoint>,
-    balancesHidden: Boolean,
     portfolios: List<Portfolio>,
     onNavigateToSettings: () -> Unit,
     onAssetClick: (String) -> Unit,
@@ -89,6 +85,7 @@ fun PortfolioTabContent(
     onShowRegisterCouponSheet: (FixedIncomePosition) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val balancesHidden = LocalBalanceHidden.current
     var closedExpanded by remember { mutableStateOf(false) }
 
     Column(

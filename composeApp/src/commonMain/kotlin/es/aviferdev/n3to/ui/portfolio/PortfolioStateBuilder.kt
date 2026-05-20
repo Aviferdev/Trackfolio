@@ -1,6 +1,5 @@
 package es.aviferdev.n3to.ui.portfolio
 
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.graphics.Color
 import es.aviferdev.n3to.domain.model.Account
 import es.aviferdev.n3to.domain.model.Asset
@@ -22,11 +21,15 @@ import es.aviferdev.n3to.domain.portfolio.CompoundEffectCalculator
 import es.aviferdev.n3to.domain.portfolio.PortfolioCalculator
 import es.aviferdev.n3to.domain.portfolio.PositionInput
 import es.aviferdev.n3to.platform.nowMillis
+import es.aviferdev.n3to.ui.portfolio.home.AssetRow
+import es.aviferdev.n3to.ui.portfolio.home.CategoryGroup
+import es.aviferdev.n3to.ui.portfolio.home.CategorySlice
+import es.aviferdev.n3to.ui.portfolio.home.DistributionView
+import es.aviferdev.n3to.ui.portfolio.home.PortfolioUiState
 import es.aviferdev.n3to.ui.theme.CategoryPalette
 import es.aviferdev.n3to.ui.theme.PositiveGreen
 import es.aviferdev.n3to.ui.theme.UncategorizedColor
 import es.aviferdev.n3to.ui.theme.WarnAmber
-import es.aviferdev.n3to.ui.theme.appColors
 
 data class PortfolioStateInput(
     val portfolioId: String?,
@@ -97,15 +100,15 @@ class PortfolioStateBuilder {
             val fiProfit     = fiRowsForCat.sumOf { it.totalProfit }
 
             CategoryGroup(
-                category           = cat,
-                rows               = groupRows.sortedByDescending { it.position.currentValue },
-                fixedIncomeRows    = fiRowsForCat,
-                totalInvested      = invested + fiInvested,
-                totalCurrentValue  = current + fiCurrent,
+                category = cat,
+                rows = groupRows.sortedByDescending { it.position.currentValue },
+                fixedIncomeRows = fiRowsForCat,
+                totalInvested = invested + fiInvested,
+                totalCurrentValue = current + fiCurrent,
                 totalUnrealizedPnL = unrealized,
-                totalRealizedPnL   = realized,
-                totalPnL           = total + fiProfit,
-                totalPnLPercent    = if (invested + fiInvested > 0.0) ((total + fiProfit) / (invested + fiInvested)) * 100.0 else 0.0
+                totalRealizedPnL = realized,
+                totalPnL = total + fiProfit,
+                totalPnLPercent = if (invested + fiInvested > 0.0) ((total + fiProfit) / (invested + fiInvested)) * 100.0 else 0.0
             )
         }.sortedWith(
             compareBy(
@@ -125,15 +128,15 @@ class PortfolioStateBuilder {
             val fiCurrent  = fiRowsForCat.sumOf { it.currentValue }
             val fiProfit   = fiRowsForCat.sumOf { it.totalProfit }
             CategoryGroup(
-                category           = cat,
-                rows               = emptyList(),
-                fixedIncomeRows    = fiRowsForCat,
-                totalInvested      = fiInvested,
-                totalCurrentValue  = fiCurrent,
+                category = cat,
+                rows = emptyList(),
+                fixedIncomeRows = fiRowsForCat,
+                totalInvested = fiInvested,
+                totalCurrentValue = fiCurrent,
                 totalUnrealizedPnL = 0.0,
-                totalRealizedPnL   = 0.0,
-                totalPnL           = fiProfit,
-                totalPnLPercent    = if (fiInvested > 0.0) (fiProfit / fiInvested) * 100.0 else 0.0
+                totalRealizedPnL = 0.0,
+                totalPnL = fiProfit,
+                totalPnLPercent = if (fiInvested > 0.0) (fiProfit / fiInvested) * 100.0 else 0.0
             )
         }
 
@@ -172,11 +175,11 @@ class PortfolioStateBuilder {
             .mapIndexed { idx, g ->
                 CategorySlice(
                     categoryId = g.category?.id,
-                    name       = g.displayName,
-                    icon       = g.displayIcon,
-                    value      = g.totalCurrentValue,
-                    percent    = (g.totalCurrentValue / combinedCurrentValue) * 100.0,
-                    color      = colorForGroup(g, idx)
+                    name = g.displayName,
+                    icon = g.displayIcon,
+                    value = g.totalCurrentValue,
+                    percent = (g.totalCurrentValue / combinedCurrentValue) * 100.0,
+                    color = colorForGroup(g, idx)
                 )
             }
             .sortedByDescending { it.percent }
@@ -204,11 +207,24 @@ class PortfolioStateBuilder {
         val regionSlices: List<CategorySlice> = if (combinedCurrentValue > 0.0 && regionValues.isNotEmpty()) {
             regionValues.entries.mapIndexed { idx, (regionId, value) ->
                 if (regionId == "__uncatalogued__") {
-                    CategorySlice(null, "No catalogados", "❔", value, (value / combinedCurrentValue) * 100.0, UncategorizedColor)
+                    CategorySlice(
+                        null,
+                        "No catalogados",
+                        "❔",
+                        value,
+                        (value / combinedCurrentValue) * 100.0,
+                        UncategorizedColor
+                    )
                 } else {
                     val region = regionById[regionId]
-                    CategorySlice(regionId, region?.name ?: regionId, "🌍", value, (value / combinedCurrentValue) * 100.0,
-                        CategoryPalette[idx % CategoryPalette.size])
+                    CategorySlice(
+                        regionId,
+                        region?.name ?: regionId,
+                        "🌍",
+                        value,
+                        (value / combinedCurrentValue) * 100.0,
+                        CategoryPalette[idx % CategoryPalette.size]
+                    )
                 }
             }.sortedByDescending { it.percent }
         } else emptyList()
@@ -235,51 +251,64 @@ class PortfolioStateBuilder {
         val sectorSlices: List<CategorySlice> = if (combinedCurrentValue > 0.0 && sectorValues.isNotEmpty()) {
             sectorValues.entries.mapIndexed { idx, (sectorId, value) ->
                 if (sectorId == "__uncatalogued__") {
-                    CategorySlice(null, "No catalogados", "❔", value, (value / combinedCurrentValue) * 100.0, UncategorizedColor)
+                    CategorySlice(
+                        null,
+                        "No catalogados",
+                        "❔",
+                        value,
+                        (value / combinedCurrentValue) * 100.0,
+                        UncategorizedColor
+                    )
                 } else {
                     val sector = sectorById[sectorId]
-                    CategorySlice(sectorId, sector?.name ?: sectorId, sector?.icon ?: "📊", value,
-                        (value / combinedCurrentValue) * 100.0, CategoryPalette[idx % CategoryPalette.size])
+                    CategorySlice(
+                        sectorId,
+                        sector?.name ?: sectorId,
+                        sector?.icon ?: "📊",
+                        value,
+                        (value / combinedCurrentValue) * 100.0,
+                        CategoryPalette[idx % CategoryPalette.size]
+                    )
                 }
             }.sortedByDescending { it.percent }
         } else emptyList()
 
         return PortfolioUiState(
-            groups                   = allGroups,
-            regionGroups             = regionGroups,
-            sectorGroups             = sectorGroups,
-            closedPositions          = closedRows.sortedByDescending { it.position.realizedPnL },
+            groups = allGroups,
+            regionGroups = regionGroups,
+            sectorGroups = sectorGroups,
+            closedPositions = closedRows.sortedByDescending { it.position.realizedPnL },
             closedFixedIncomePositions = closedFiRows,
-            distribution             = distribution,
-            compositionDistribution  = compositionSlices,
-            regionDistribution       = regionSlices,
-            sectorDistribution       = sectorSlices,
+            distribution = distribution,
+            compositionDistribution = compositionSlices,
+            regionDistribution = regionSlices,
+            sectorDistribution = sectorSlices,
             selectedDistributionView = selectedDistributionView,
-            totalInvested            = totalInvested,
-            totalCurrentValue        = totalCurrentValue,
-            totalRealizedPnL         = totalRealizedPnL,
-            totalUnrealizedPnL       = totalUnrealizedPnL,
-            totalPnL                 = totalPnL,
-            totalPnLPercent          = if (totalInvested > 0.0) (totalPnL / totalInvested) * 100.0 else 0.0,
-            openPositionsCount       = openRows.size,
-            allAssets                = assets,
-            platforms                = platforms,
-            platformsByAsset         = platformsByAsset,
-            bondIssuers              = bondIssuers,
-            bankIssuers              = bankIssuers,
-            isLoading                = false,
-            fixedIncomeSummary       = fiSummary,
-            nearMaturityPositions    = nearMaturityPositions,
-            combinedInvested         = combinedInvested,
-            combinedCurrentValue     = combinedCurrentValue,
-            combinedPnL              = combinedPnL,
-            combinedPnLPercent       = combinedPnLPercent,
-            combinedRealizedPnL      = totalRealizedPnL + (fiSummary?.totalCollectedInterest ?: 0.0),
-            combinedUnrealizedPnL    = totalUnrealizedPnL + (fiSummary?.totalAccruedInterest ?: 0.0),
-            currentAccountId         = accountId,
-            allSectors               = allSectors,
-            allRegions               = allRegions,
-            compoundEffect           = compoundEffect
+            totalInvested = totalInvested,
+            totalCurrentValue = totalCurrentValue,
+            totalRealizedPnL = totalRealizedPnL,
+            totalUnrealizedPnL = totalUnrealizedPnL,
+            totalPnL = totalPnL,
+            totalPnLPercent = if (totalInvested > 0.0) (totalPnL / totalInvested) * 100.0 else 0.0,
+            openPositionsCount = openRows.size,
+            allAssets = assets,
+            platforms = platforms,
+            platformsByAsset = platformsByAsset,
+            bondIssuers = bondIssuers,
+            bankIssuers = bankIssuers,
+            isLoading = false,
+            fixedIncomeSummary = fiSummary,
+            nearMaturityPositions = nearMaturityPositions,
+            combinedInvested = combinedInvested,
+            combinedCurrentValue = combinedCurrentValue,
+            combinedPnL = combinedPnL,
+            combinedPnLPercent = combinedPnLPercent,
+            combinedRealizedPnL = totalRealizedPnL + (fiSummary?.totalCollectedInterest ?: 0.0),
+            combinedUnrealizedPnL = totalUnrealizedPnL + (fiSummary?.totalAccruedInterest ?: 0.0),
+            currentAccountId = accountId,
+            allSectors = allSectors,
+            allRegions = allRegions,
+            compoundEffect = compoundEffect
         )
     }
 
@@ -325,16 +354,16 @@ class PortfolioStateBuilder {
             val fiProfit   = fiRows.sumOf { it.totalProfit }
 
             CategoryGroup(
-                category           = null,
-                customName         = region ?: "No catalogados",
-                rows               = assetRows.sortedByDescending { it.position.currentValue },
-                fixedIncomeRows    = fiRows,
-                totalInvested      = invested + fiInvested,
-                totalCurrentValue  = current + fiCurrent,
+                category = null,
+                customName = region ?: "No catalogados",
+                rows = assetRows.sortedByDescending { it.position.currentValue },
+                fixedIncomeRows = fiRows,
+                totalInvested = invested + fiInvested,
+                totalCurrentValue = current + fiCurrent,
                 totalUnrealizedPnL = unrealized,
-                totalRealizedPnL   = realized,
-                totalPnL           = (realized + unrealized) + fiProfit,
-                totalPnLPercent    = if (invested + fiInvested > 0.0)
+                totalRealizedPnL = realized,
+                totalPnL = (realized + unrealized) + fiProfit,
+                totalPnLPercent = if (invested + fiInvested > 0.0)
                     ((realized + unrealized + fiProfit) / (invested + fiInvested)) * 100.0 else 0.0
             )
         }.sortedByDescending { it.totalCurrentValue }
@@ -364,16 +393,16 @@ class PortfolioStateBuilder {
             val fiProfit   = fiRows.sumOf { it.totalProfit }
 
             CategoryGroup(
-                category           = null,
-                customName         = sector ?: "No catalogados",
-                rows               = assetRows.sortedByDescending { it.position.currentValue },
-                fixedIncomeRows    = fiRows,
-                totalInvested      = invested + fiInvested,
-                totalCurrentValue  = current + fiCurrent,
+                category = null,
+                customName = sector ?: "No catalogados",
+                rows = assetRows.sortedByDescending { it.position.currentValue },
+                fixedIncomeRows = fiRows,
+                totalInvested = invested + fiInvested,
+                totalCurrentValue = current + fiCurrent,
                 totalUnrealizedPnL = unrealized,
-                totalRealizedPnL   = realized,
-                totalPnL           = (realized + unrealized) + fiProfit,
-                totalPnLPercent    = if (invested + fiInvested > 0.0)
+                totalRealizedPnL = realized,
+                totalPnL = (realized + unrealized) + fiProfit,
+                totalPnLPercent = if (invested + fiInvested > 0.0)
                     ((realized + unrealized + fiProfit) / (invested + fiInvested)) * 100.0 else 0.0
             )
         }.sortedByDescending { it.totalCurrentValue }
@@ -405,8 +434,26 @@ class PortfolioStateBuilder {
         }
 
         return buildList {
-            if (rfValue > 0) add(CategorySlice("rf", "Renta fija",     "🏦", rfValue, (rfValue / totalValue) * 100.0, WarnAmber))
-            if (rvValue > 0) add(CategorySlice("rv", "Renta variable", "📈", rvValue, (rvValue / totalValue) * 100.0, PositiveGreen))
+            if (rfValue > 0) add(
+                CategorySlice(
+                    "rf",
+                    "Renta fija",
+                    "🏦",
+                    rfValue,
+                    (rfValue / totalValue) * 100.0,
+                    WarnAmber
+                )
+            )
+            if (rvValue > 0) add(
+                CategorySlice(
+                    "rv",
+                    "Renta variable",
+                    "📈",
+                    rvValue,
+                    (rvValue / totalValue) * 100.0,
+                    PositiveGreen
+                )
+            )
         }.sortedByDescending { it.percent }
     }
 

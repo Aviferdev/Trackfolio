@@ -1,10 +1,7 @@
 package es.aviferdev.n3to.domain.model
 
-/**
- * Datos agregados de patrimonio neto.
- * Patrimonio neto = balance de cuentas + valor portfolio + renta fija + inmuebles + bienes − pasivos pendientes.
- */
-data class NetWorthData(
+
+data class NetWorthScreenData(
     val totalAccountBalance: Double,
     val totalPortfolioValue: Double,
     val totalFixedIncomeValue: Double,

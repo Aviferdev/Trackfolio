@@ -16,7 +16,7 @@ class GetNetWorthDataUseCase(
     private val propertyRepository: RealEstatePropertyRepository,
     private val valuableRepository: ValuableRepository
 ) {
-    operator fun invoke(accountId: String): Flow<NetWorthData> {
+    operator fun invoke(accountId: String): Flow<NetWorthScreenData> {
         val accountFlow = accountRepository.getAccountById(accountId)
         val assetsFlow = assetRepository.getAssetsByAccount(accountId)
         val txsFlow = assetTransactionRepository.getByAccount(accountId)
@@ -66,7 +66,7 @@ class GetNetWorthDataUseCase(
                 }
             }
 
-            NetWorthData(
+            NetWorthScreenData(
                 totalAccountBalance   = accountBalance,
                 totalPortfolioValue   = portfolioValue,
                 totalFixedIncomeValue = fixedIncomeValue,

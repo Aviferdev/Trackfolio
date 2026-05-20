@@ -34,8 +34,8 @@ import es.aviferdev.n3to.ui.networth.NetWorthScreen
 import es.aviferdev.n3to.ui.portfolio.AssetCategoryDetailScreen
 import es.aviferdev.n3to.ui.portfolio.AssetDetailScreen
 import es.aviferdev.n3to.ui.portfolio.AssetHistoryScreen
-import es.aviferdev.n3to.ui.portfolio.PortfolioScreen
-import es.aviferdev.n3to.ui.portfolio.PortfolioSettingsScreen
+import es.aviferdev.n3to.ui.portfolio.home.PortfolioScreen
+import es.aviferdev.n3to.ui.portfolio.settings.PortfolioSettingsScreen
 import es.aviferdev.n3to.ui.premium.PremiumScreen
 import es.aviferdev.n3to.ui.realestate.RealEstateDetailScreen
 import es.aviferdev.n3to.ui.savingsrates.SavingsRatesScreen

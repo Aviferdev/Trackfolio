@@ -31,8 +31,7 @@ import es.aviferdev.n3to.domain.model.Asset
 import es.aviferdev.n3to.domain.portfolio.AssetPosition
 import es.aviferdev.n3to.ui.common.component.IconActionButton
 import es.aviferdev.n3to.ui.common.component.PriceSourceBadge
-
-import es.aviferdev.n3to.ui.theme.ExpenseRed
+import es.aviferdev.n3to.ui.portfolio.home.AssetRow
 
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import es.aviferdev.n3to.ui.theme.formatAmount
@@ -149,8 +148,28 @@ private fun AssetCardPreview() {
     N3toTheme {
         AssetCard(
             row = AssetRow(
-                asset = Asset(id = "1", accountId = "acc1", ticker = "AAPL", name = "Apple Inc.", notes = null, createdAt = 0L, assetCategoryId = "cat1", currentPrice = 150.0),
-                position = AssetPosition(netQuantity = 10.0, averageCostOfRemaining = 100.0, totalInvestedRemaining = 1000.0, realizedPnL = 0.0, currentValue = 1500.0, unrealizedPnL = 500.0, unrealizedPnLPercent = 50.0, totalPnL = 500.0, totalPnLPercent = 50.0, hasCurrentPrice = true)
+                asset = Asset(
+                    id = "1",
+                    accountId = "acc1",
+                    ticker = "AAPL",
+                    name = "Apple Inc.",
+                    notes = null,
+                    createdAt = 0L,
+                    assetCategoryId = "cat1",
+                    currentPrice = 150.0
+                ),
+                position = AssetPosition(
+                    netQuantity = 10.0,
+                    averageCostOfRemaining = 100.0,
+                    totalInvestedRemaining = 1000.0,
+                    realizedPnL = 0.0,
+                    currentValue = 1500.0,
+                    unrealizedPnL = 500.0,
+                    unrealizedPnLPercent = 50.0,
+                    totalPnL = 500.0,
+                    totalPnLPercent = 50.0,
+                    hasCurrentPrice = true
+                )
             ),
             balancesHidden = false,
             onClick = {},

@@ -1,7 +1,5 @@
 package es.aviferdev.n3to.ui.common.component
 
-import androidx.compose.material3.MaterialTheme
-import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -10,11 +8,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Inbox
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -26,10 +23,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.ui.common.toMaterialIcon
-import es.aviferdev.n3to.ui.theme.PrimaryDark
-
-import es.aviferdev.n3to.ui.theme.N3toTheme
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import es.aviferdev.n3to.ui.theme.appColors
 
 @Composable
 fun EmptyStateView(
@@ -93,29 +87,5 @@ fun EmptyStateView(
                 }
             }
         }
-    }
-}
-
-@Preview
-@Composable
-private fun EmptyStatePreview() {
-    N3toTheme {
-        EmptyStateView(
-            icon = Icons.Default.Inbox,
-            title = "Sin datos",
-            subtitle = "No hay elementos para mostrar"
-        )
-    }
-}
-
-@Preview
-@Composable
-private fun EmptyStatePreviewEmoji() {
-    N3toTheme {
-        EmptyStateView(
-            icon = "📈",
-            title = "Sin posiciones",
-            subtitle = "Pulsa + para registrar\ntu primera inversión"
-        )
     }
 }

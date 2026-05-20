@@ -28,17 +28,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.ui.common.toMaterialIcon
 import androidx.compose.foundation.BorderStroke
+import es.aviferdev.n3to.ui.portfolio.home.CategorySlice
+import es.aviferdev.n3to.ui.portfolio.home.DistributionView
 import es.aviferdev.n3to.ui.theme.CategoryPalette
 
 import es.aviferdev.n3to.ui.theme.N3toTheme
-import es.aviferdev.n3to.ui.theme.WarnAmber
 import es.aviferdev.n3to.ui.theme.formatAmountEuro
 import es.aviferdev.n3to.ui.theme.maskAmount
 import org.jetbrains.compose.ui.tooling.preview.Preview

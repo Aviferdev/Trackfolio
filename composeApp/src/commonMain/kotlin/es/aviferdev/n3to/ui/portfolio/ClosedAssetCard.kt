@@ -23,7 +23,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import es.aviferdev.n3to.ui.theme.ExpenseRed
+import es.aviferdev.n3to.domain.model.Asset
+import es.aviferdev.n3to.domain.portfolio.AssetPosition
+import es.aviferdev.n3to.ui.portfolio.home.AssetRow
 
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import es.aviferdev.n3to.ui.theme.formatAmount
@@ -108,14 +110,21 @@ private fun ClosedAssetCardPreview() {
     N3toTheme {
         ClosedAssetCard(
             row = AssetRow(
-                asset = es.aviferdev.n3to.domain.model.Asset(
+                asset = Asset(
                     id = "1", accountId = "acc1", ticker = "AAPL", name = "Apple Inc.",
                     notes = null, createdAt = 0L, assetCategoryId = "cat1", currentPrice = 150.0
                 ),
-                position = es.aviferdev.n3to.domain.portfolio.AssetPosition(
-                    netQuantity = 0.0, averageCostOfRemaining = 100.0, totalInvestedRemaining = 1000.0,
-                    realizedPnL = 250.0, currentValue = 0.0, unrealizedPnL = 0.0, unrealizedPnLPercent = 0.0,
-                    totalPnL = 250.0, totalPnLPercent = 25.0, hasCurrentPrice = false
+                position = AssetPosition(
+                    netQuantity = 0.0,
+                    averageCostOfRemaining = 100.0,
+                    totalInvestedRemaining = 1000.0,
+                    realizedPnL = 250.0,
+                    currentValue = 0.0,
+                    unrealizedPnL = 0.0,
+                    unrealizedPnLPercent = 0.0,
+                    totalPnL = 250.0,
+                    totalPnLPercent = 25.0,
+                    hasCurrentPrice = false
                 )
             ),
             balancesHidden = false,

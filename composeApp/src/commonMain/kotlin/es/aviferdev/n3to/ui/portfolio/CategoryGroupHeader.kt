@@ -18,7 +18,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.ui.common.DeltaIndicator
-import es.aviferdev.n3to.ui.theme.ExpenseRed
+import es.aviferdev.n3to.ui.portfolio.home.CategoryGroup
 
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import es.aviferdev.n3to.ui.theme.formatAmount

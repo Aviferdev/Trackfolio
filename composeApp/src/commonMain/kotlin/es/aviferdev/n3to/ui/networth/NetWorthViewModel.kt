@@ -2,7 +2,7 @@ package es.aviferdev.n3to.ui.networth
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import es.aviferdev.n3to.domain.model.NetWorthData
+import es.aviferdev.n3to.domain.model.NetWorthScreenData
 import es.aviferdev.n3to.domain.model.NetWorthHistoryPoint
 import es.aviferdev.n3to.domain.usecase.loan.GetLoansByAccountUseCase
 import es.aviferdev.n3to.domain.usecase.networth.GetNetWorthDataUseCase
@@ -28,7 +28,7 @@ sealed class NetWorthUiState {
     data object Loading : NetWorthUiState()
     data object Empty : NetWorthUiState()
     data class Success(
-        val data: NetWorthData,
+        val data: NetWorthScreenData,
         val netWorthHistory: List<NetWorthHistoryPoint> = emptyList(),
         val assetDistribution: List<DonutSlice> = emptyList()
     ) : NetWorthUiState()
@@ -122,7 +122,7 @@ class NetWorthViewModel(
             DonutValuables    // Bienes — púrpura
         )
 
-        private fun buildAssetDistribution(data: NetWorthData): List<DonutSlice> {
+        private fun buildAssetDistribution(data: NetWorthScreenData): List<DonutSlice> {
             val total = data.totalAssets
             if (total <= 0.0) return emptyList()
 

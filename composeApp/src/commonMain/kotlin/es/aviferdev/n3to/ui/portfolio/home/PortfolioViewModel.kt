@@ -1,4 +1,4 @@
-package es.aviferdev.n3to.ui.portfolio
+package es.aviferdev.n3to.ui.portfolio.home
 
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
@@ -7,6 +7,11 @@ import es.aviferdev.n3to.domain.model.Account
 import es.aviferdev.n3to.domain.model.Asset
 import es.aviferdev.n3to.domain.model.AssetCategory
 import es.aviferdev.n3to.domain.model.AssetCategoryType
+import es.aviferdev.n3to.domain.model.AssetComposition
+import es.aviferdev.n3to.domain.model.AssetRegion
+import es.aviferdev.n3to.domain.model.AssetRegionDistribution
+import es.aviferdev.n3to.domain.model.AssetSector
+import es.aviferdev.n3to.domain.model.AssetSectorRelation
 import es.aviferdev.n3to.domain.model.AssetTransaction
 import es.aviferdev.n3to.domain.model.AssetTransactionType
 import es.aviferdev.n3to.domain.model.FixedIncomeEvent
@@ -16,7 +21,7 @@ import es.aviferdev.n3to.domain.model.FixedIncomeSummary
 import es.aviferdev.n3to.domain.model.Issuer
 import es.aviferdev.n3to.domain.model.IssuerType
 import es.aviferdev.n3to.domain.model.Platform
-import es.aviferdev.n3to.domain.model.Portfolio
+import es.aviferdev.n3to.domain.model.PortfolioScreenData
 import es.aviferdev.n3to.domain.model.PortfolioValuePoint
 import es.aviferdev.n3to.domain.model.Transaction
 import es.aviferdev.n3to.domain.portfolio.AssetPosition
@@ -24,10 +29,8 @@ import es.aviferdev.n3to.domain.portfolio.CompoundEffect
 import es.aviferdev.n3to.domain.repository.AssetMetadataRepository
 import es.aviferdev.n3to.domain.repository.AssetPlatformRepository
 import es.aviferdev.n3to.domain.usecase.account.GetAccountByIdUseCase
-import es.aviferdev.n3to.domain.usecase.asset.ArchiveAssetUseCase
 import es.aviferdev.n3to.domain.usecase.asset.DetectPriceAnomalyUseCase
 import es.aviferdev.n3to.domain.usecase.asset.GetAssetsByAccountUseCase
-import es.aviferdev.n3to.domain.usecase.asset.SaveAssetUseCase
 import es.aviferdev.n3to.domain.usecase.asset.UpdateAssetCurrentPriceUseCase
 import es.aviferdev.n3to.domain.usecase.asset.UpdateAssetUseCase
 import es.aviferdev.n3to.domain.usecase.assetcategory.GetAllAssetCategoriesIncludingArchivedUseCase
@@ -37,21 +40,26 @@ import es.aviferdev.n3to.domain.usecase.assettransaction.SaveAssetTransactionUse
 import es.aviferdev.n3to.domain.usecase.assettransaction.SyncAssetTransactionToLedgerUseCase
 import es.aviferdev.n3to.domain.usecase.fixedincome.CreateFixedIncomePositionUseCase
 import es.aviferdev.n3to.domain.usecase.fixedincome.GetFixedIncomeSummaryUseCase
+import es.aviferdev.n3to.domain.usecase.fixedincome.GetNearMaturityPositionsUseCase
+import es.aviferdev.n3to.domain.usecase.fixedincome.RegisterCouponUseCase
 import es.aviferdev.n3to.domain.usecase.issuer.CreateIssuerUseCase
 import es.aviferdev.n3to.domain.usecase.issuer.GetIssuersUseCase
 import es.aviferdev.n3to.domain.usecase.platform.GetPlatformsUseCase
-import es.aviferdev.n3to.domain.usecase.portfolio.DeletePortfolioUseCase
 import es.aviferdev.n3to.domain.usecase.portfolio.GetPortfolioValueHistoryUseCase
 import es.aviferdev.n3to.domain.usecase.portfolio.GetPortfoliosByAccountUseCase
 import es.aviferdev.n3to.domain.usecase.portfolio.SavePortfolioUseCase
 import es.aviferdev.n3to.domain.usecase.transaction.GetDividendsByAssetIdsUseCase
 import es.aviferdev.n3to.platform.nowMillis
 import es.aviferdev.n3to.ui.account.AccountSession
+import es.aviferdev.n3to.ui.common.loading.GlobalLoadingManager
+import es.aviferdev.n3to.ui.portfolio.PortfolioStateBuilder
+import es.aviferdev.n3to.ui.portfolio.PortfolioStateInput
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
@@ -59,13 +67,23 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-// ─── Estado de cada activo enriquecido con su posición FIFO ──────────────────
+
+sealed class PortfolioNewUiState {
+    data object Loading : PortfolioNewUiState()
+    data object Empty : PortfolioNewUiState()
+    data object EmptyPortFolio : PortfolioNewUiState()
+    data class Success(
+        val data: PortfolioScreenData,
+    ) : PortfolioNewUiState()
+
+    data class Error(val message: String) : PortfolioNewUiState()
+}
+
 data class AssetRow(
     val asset: Asset,
     val position: AssetPosition
 )
 
-/** Grupo de activos abiertos pertenecientes a la misma categoría (o "Sin categoría"). */
 data class CategoryGroup(
     val category: AssetCategory?,
     val customName: String? = null,
@@ -160,18 +178,16 @@ data class PortfolioUiState(
     val currentAccountId: String? = null,
     val showRegisterCouponSheet: Boolean = false,
     val selectedPositionForCoupon: FixedIncomePosition? = null,
-    val allSectors: List<es.aviferdev.n3to.domain.model.AssetSector> = emptyList(),
-    val allRegions: List<es.aviferdev.n3to.domain.model.AssetRegion> = emptyList(),
+    val allSectors: List<AssetSector> = emptyList(),
+    val allRegions: List<AssetRegion> = emptyList(),
     val compoundEffect: CompoundEffect? = null
 )
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class PortfolioViewModel(
     private val getAssetsByAccount: GetAssetsByAccountUseCase,
-    private val saveAsset: SaveAssetUseCase,
     private val updateAsset: UpdateAssetUseCase,
     private val updateAssetCurrentPrice: UpdateAssetCurrentPriceUseCase,
-    private val archiveAsset: ArchiveAssetUseCase,
     private val detectAnomaly: DetectPriceAnomalyUseCase,
     private val getAssetCategoriesIncludingArchived: GetAllAssetCategoriesIncludingArchivedUseCase,
     private val getAccountById: GetAccountByIdUseCase,
@@ -184,18 +200,39 @@ class PortfolioViewModel(
     private val assetMetadataRepository: AssetMetadataRepository,
     private val session: AccountSession,
     private val getFixedIncomeSummary: GetFixedIncomeSummaryUseCase,
-    private val getNearMaturityPositions: es.aviferdev.n3to.domain.usecase.fixedincome.GetNearMaturityPositionsUseCase? = null,
+    private val getNearMaturityPositions: GetNearMaturityPositionsUseCase? = null,
     private val createFixedIncomePosition: CreateFixedIncomePositionUseCase? = null,
     private val getBondIssuers: GetIssuersUseCase,
     private val createIssuer: CreateIssuerUseCase,
     private val getPortfolioValueHistory: GetPortfolioValueHistoryUseCase,
-    private val registerCoupon: es.aviferdev.n3to.domain.usecase.fixedincome.RegisterCouponUseCase? = null,
+    private val registerCoupon: RegisterCouponUseCase? = null,
     private val getPortfoliosByAccount: GetPortfoliosByAccountUseCase,
     private val savePortfolio: SavePortfolioUseCase,
-    private val deletePortfolio: DeletePortfolioUseCase,
     private val getDividendsByAssetIds: GetDividendsByAssetIdsUseCase,
-    private val stateBuilder: PortfolioStateBuilder
+    private val stateBuilder: PortfolioStateBuilder,
+    private val loadingManager: GlobalLoadingManager
 ) : ViewModel() {
+
+    private val _uiState = MutableStateFlow<PortfolioNewUiState>(PortfolioNewUiState.Loading)
+    val uiState: StateFlow<PortfolioNewUiState> = _uiState.asStateFlow()
+
+    init {
+        viewModelScope.launch {
+            session.selectedAccountId.collectLatest { accountId ->
+                if (accountId == null) {
+                    _uiState.value = PortfolioNewUiState.Empty
+                } else {
+                    getPortfoliosByAccount(accountId).collectLatest { portfolios ->
+                        _uiState.value = if (portfolios.isEmpty()) {
+                            PortfolioNewUiState.EmptyPortFolio
+                        } else {
+                            PortfolioNewUiState.Success(PortfolioScreenData(portfolios))
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     private val _sheetState = MutableStateFlow(SheetState())
     private val _selectedDistributionView = MutableStateFlow(DistributionView.CATEGORY)
@@ -204,46 +241,8 @@ class PortfolioViewModel(
     private val _selectedPortfolioId = MutableStateFlow<String?>(null)
     val selectedPortfolioId: StateFlow<String?> = _selectedPortfolioId.asStateFlow()
 
-    private val _showAddPortfolioSheet = MutableStateFlow(false)
-    val showAddPortfolioSheet: StateFlow<Boolean> = _showAddPortfolioSheet.asStateFlow()
-
-    private val _portfolios: StateFlow<List<Portfolio>> = session.selectedAccountId
-        .flatMapLatest { accountId ->
-            if (accountId == null) flowOf(emptyList())
-            else getPortfoliosByAccount(accountId)
-        }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
-    val portfolios: StateFlow<List<Portfolio>> = _portfolios
-
-    init {
-        viewModelScope.launch {
-            portfolios.collect { list ->
-                val currentId = _selectedPortfolioId.value
-                if (currentId != null && list.none { it.id == currentId }) {
-                    _selectedPortfolioId.value = null
-                }
-            }
-        }
-    }
-
     fun selectPortfolio(id: String?) {
         _selectedPortfolioId.value = id
-    }
-
-    fun openAddPortfolioSheet() {
-        _showAddPortfolioSheet.value = true
-    }
-
-    fun closeAddPortfolioSheet() {
-        _showAddPortfolioSheet.value = false
-    }
-
-    fun addPortfolio(name: String, description: String?) {
-        val accountId = session.selectedAccountId.value ?: return
-        viewModelScope.launch {
-            savePortfolio(accountId, name, description)
-            _showAddPortfolioSheet.value = false
-        }
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -257,11 +256,11 @@ class PortfolioViewModel(
         }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
-    private val allSectors: StateFlow<List<es.aviferdev.n3to.domain.model.AssetSector>> =
+    private val allSectors: StateFlow<List<AssetSector>> =
         assetMetadataRepository.getAllSectors()
             .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
-    private val allRegions: StateFlow<List<es.aviferdev.n3to.domain.model.AssetRegion>> =
+    private val allRegions: StateFlow<List<AssetRegion>> =
         assetMetadataRepository.getAllRegions()
             .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
@@ -287,9 +286,9 @@ class PortfolioViewModel(
 
     private data class BasePortfolioData(
         val platformsByAsset: Map<String, List<Platform>>,
-        val compositions: List<es.aviferdev.n3to.domain.model.AssetComposition>,
-        val sectorRelations: List<es.aviferdev.n3to.domain.model.AssetSectorRelation>,
-        val regionDistributions: List<es.aviferdev.n3to.domain.model.AssetRegionDistribution>
+        val compositions: List<AssetComposition>,
+        val sectorRelations: List<AssetSectorRelation>,
+        val regionDistributions: List<AssetRegionDistribution>
     )
 
     private data class BasicPortfolioDataWithFI(
@@ -367,7 +366,9 @@ class PortfolioViewModel(
                             assetPlatformRepository.getPlatformsByAssets(assetIds),
                             assetMetadataRepository.getAllCompositions(),
                             assetMetadataRepository.getSectorsByAssetIds(assetIds),
-                            assetMetadataRepository.getRegionDistributionsByAssetIds(assetIds)
+                            assetMetadataRepository.getRegionDistributionsByAssetIds(
+                                assetIds
+                            )
                         ) { platformsByAsset, compositions, sectorRelations, regionDistributions ->
                             BasePortfolioData(
                                 platformsByAsset,
@@ -376,8 +377,17 @@ class PortfolioViewModel(
                                 regionDistributions
                             )
                         }
-                        combine(metaFlow, getDividendsByAssetIds(assetIds)) { meta, dividends ->
-                            buildPortfolioState(portfolioId, basicData, meta, dividends, accountId)
+                        combine(
+                            metaFlow,
+                            getDividendsByAssetIds(assetIds)
+                        ) { meta, dividends ->
+                            buildPortfolioState(
+                                portfolioId,
+                                basicData,
+                                meta,
+                                dividends,
+                                accountId
+                            )
                         }
                     }
                 }
@@ -396,12 +406,17 @@ class PortfolioViewModel(
                 error = sheets.error
             )
         }
-        .combine(_selectedDistributionView) { state, view -> state.copy(selectedDistributionView = view) }
+        .combine(_selectedDistributionView) { state, view ->
+            state.copy(
+                selectedDistributionView = view
+            )
+        }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), PortfolioUiState())
 
-    val availableCategories: StateFlow<List<AssetCategory>> = getAssetCategoriesIncludingArchived()
-        .map { list -> list.filter { !it.archived } }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+    val availableCategories: StateFlow<List<AssetCategory>> =
+        getAssetCategoriesIncludingArchived()
+            .map { list -> list.filter { !it.archived } }
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
     private fun buildPortfolioState(
         portfolioId: String?,
@@ -486,7 +501,8 @@ class PortfolioViewModel(
         viewModelScope.launch {
             val asset = portfolioState.value.allAssets.find { it.id == assetId }
             if (asset != null && AssetCategoryType.isFixedIncome(asset.assetCategoryId)) {
-                _sheetState.value = _sheetState.value.copy(error = PortfolioSheetError.FiNoBuySell)
+                _sheetState.value =
+                    _sheetState.value.copy(error = PortfolioSheetError.FiNoBuySell)
                 return@launch
             }
 
@@ -505,7 +521,8 @@ class PortfolioViewModel(
             )
             saveAssetTransaction(tx)
                 .onSuccess {
-                    val currentAsset = portfolioState.value.allAssets.find { it.id == assetId }
+                    val currentAsset =
+                        portfolioState.value.allAssets.find { it.id == assetId }
                     if (currentAsset != null) {
                         if (portfolioId != null && currentAsset.portfolioId != portfolioId) {
                             updateAsset(currentAsset.copy(portfolioId = portfolioId))
@@ -544,7 +561,8 @@ class PortfolioViewModel(
 
     // ── Dividendos ────────────────────────────────────────────────────────────
     fun openDividendSheet() {
-        _sheetState.value = _sheetState.value.copy(showDividendSheet = true, dividendAssetId = null)
+        _sheetState.value =
+            _sheetState.value.copy(showDividendSheet = true, dividendAssetId = null)
     }
 
     fun closeDividendSheet() {

@@ -32,7 +32,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.Loan
-import es.aviferdev.n3to.domain.model.NetWorthData
+import es.aviferdev.n3to.domain.model.NetWorthScreenData
 import es.aviferdev.n3to.ui.common.*
 import es.aviferdev.n3to.ui.theme.*
 import kotlin.math.abs
@@ -52,7 +52,7 @@ import n3to.composeapp.generated.resources.networth_valuables_label
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-internal fun NetWorthHeroCard(data: NetWorthData, balancesHidden: Boolean) {
+internal fun NetWorthHeroCard(data: NetWorthScreenData, balancesHidden: Boolean) {
     val heroCardBg1 = MaterialTheme.appColors.heroCardStart
     val heroCardBg2 = MaterialTheme.appColors.heroCardEnd
     val appCCyanGlow = MaterialTheme.appColors.cyanGlow
@@ -133,7 +133,7 @@ private fun NetWorthMetric(label: String, value: String, color: Color) {
 }
 
 @Composable
-internal fun AssetsSummaryCard(data: NetWorthData, balancesHidden: Boolean) {
+internal fun AssetsSummaryCard(data: NetWorthScreenData, balancesHidden: Boolean) {
     val heroCardBg1 = MaterialTheme.appColors.heroCardStart
     val appCCyanAccent = MaterialTheme.appColors.cyanAccent
     val appCNavyBorder = MaterialTheme.appColors.navyBorder
