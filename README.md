@@ -42,83 +42,114 @@ detrás del código.
 
 📖 [Índice de ADRs](./docs/adr/README.md)
 
+---
+
+## Configuraciones de build
+
+Ambas plataformas tienen **4 configuraciones equivalentes** que combinan entorno (`dev`/`prod`)
+con tipo de compilación (`debug`/`release`).
+
+### Android — Product flavors × build types
+
+| Variante | Entorno | Bundle ID | Optimización | App icon |
+|----------|---------|-----------|--------------|----------|
+| `devDebug` | Dev (sandbox) | `…n3to.dev` | Sin minify | Debug |
+| `devRelease` | Dev (sandbox) | `…n3to.dev` | Minify + R8 | Debug |
+| `prodDebug` | Prod | `…n3to` | Sin minify | Release |
+| `prodRelease` | Prod | `…n3to` | Minify + R8 | Release |
+
+La variable `BuildConfig.ENVIRONMENT` expone `"dev"` o `"prod"` en tiempo de ejecución.
+La clave de RevenueCat se inyecta por flavor desde `revenuecat.properties`.
+
+### iOS — Xcode build configurations × schemes
+
+Equivalencia directa con Android. Selecciona el scheme en Xcode →
+**Product → Scheme** o en el selector de la toolbar.
+
+| Scheme / Configuración | Entorno | Bundle ID | Optimización Swift | App icon |
+|------------------------|---------|-----------|-------------------|----------|
+| `DevDebug` | Dev (sandbox) | `…n3to.dev` | `-Onone` + `DEBUG=1` | Debug |
+| `DevRelease` | Dev (sandbox) | `…n3to.dev` | `wholemodule` | Debug |
+| `ProdDebug` | Prod | `…n3to` | `-Onone` + `DEBUG=1` | Release |
+| `ProdRelease` | Prod | `…n3to` | `wholemodule` | Release |
+
+Cada configuración:
+- Lee su bundle ID y nombre de app desde el xcconfig correspondiente
+  (`Configuration/DevDebug.xcconfig`, etc.)
+- Copia automáticamente el `GoogleService-Info.plist` correcto al bundle
+  (build phase **"Copy Firebase Config"**)
+- Llama al Gradle task correcto (`linkDebugFramework…` o `linkReleaseFramework…`)
+  con el entorno de RevenueCat adecuado (`sandbox` o `prod`)
+
+El objeto `AppConfig` (KMP `expect/actual`) expone `environment`, `isDebug` y
+`revenueCatApiKey` en código compartido con el mismo valor que en Android:
+
+```kotlin
+// commonMain — igual en ambas plataformas
+AppConfig.environment    // "dev" | "prod"
+AppConfig.isDebug        // true | false
+AppConfig.revenueCatApiKey
+```
+
+---
+
 ## Ficheros sensibles (excluidos del repositorio)
 
-Por seguridad, los siguientes ficheros con credenciales y claves están excluidos
-del control de versiones mediante `.gitignore`. A continuación se indica cómo
-generarlos u obtenerlos.
+Los ficheros con credenciales están en `.gitignore`. A continuación se indica
+cómo obtenerlos y dónde colocarlos antes de compilar.
 
-### Firebase (Android)
+### Firebase
+
+#### Android
 
 Se necesitan dos ficheros `google-services.json` (uno por flavor):
 
-1. **Crea dos proyectos/aplicaciones en Firebase Console**:
+1. **Crea dos aplicaciones Android en Firebase Console**:
    - **Dev**: paquete `es.aviferdev.n3to.dev`  → `composeApp/src/dev/google-services.json`
    - **Prod**: paquete `es.aviferdev.n3to`      → `composeApp/src/prod/google-services.json`
 
-2. **Habilita** Analytics, Crashlytics y Remote Config en ambos.
+2. **Habilita** Analytics, Crashlytics y Remote Config en ambas.
 
-3. **Descarga** el `google-services.json` de cada aplicación y colócalo en la
-   ruta indicada.
+3. **Descarga** el `google-services.json` de cada aplicación y colócalo en la ruta indicada.
 
-### Firebase (iOS)
+#### iOS
 
-Se necesitan dos ficheros `GoogleService-Info.plist` (uno por entorno), igual
-que Android usa dos `google-services.json`:
+Se necesitan dos ficheros `GoogleService-Info.plist` (uno por entorno):
 
-1. **Crea dos aplicaciones iOS en Firebase Console**:
+1. **Crea dos aplicaciones iOS en Firebase Console**
+   (pueden estar en los mismos proyectos Firebase que Android):
    - **Dev**: bundle ID `es.aviferdev.n3to.dev`  → `iosApp/Configuration/Firebase/Dev/GoogleService-Info.plist`
    - **Prod**: bundle ID `es.aviferdev.n3to`      → `iosApp/Configuration/Firebase/Prod/GoogleService-Info.plist`
 
-2. **Habilita** Analytics, Crashlytics y Remote Config en ambas (igual que en Android).
+2. **Habilita** Analytics, Crashlytics y Remote Config en ambas.
 
-3. **Descarga** el `GoogleService-Info.plist` de cada aplicación y colócalo en la
-   ruta indicada. Usa el `.example` como referencia de la estructura esperada:
+3. **Descarga** el `GoogleService-Info.plist` de cada aplicación y colócalo en la ruta indicada.
+   El fichero `.example` muestra la estructura esperada:
 
    ```bash
-   # Ver la estructura esperada
    cat iosApp/Configuration/Firebase/Dev/GoogleService-Info.plist.example
    ```
 
-4. El build script de Xcode **selecciona automáticamente** el plist correcto
-   según la configuración activa:
+4. El build phase **"Copy Firebase Config"** selecciona automáticamente el plist correcto
+   según el scheme activo. Si el fichero no existe al compilar, Xcode muestra un error
+   con la ruta exacta donde colocarlo.
 
-   | Configuración Xcode | Plist usado                     | Equivalente Android |
-   |---------------------|---------------------------------|---------------------|
-   | `DevDebug`          | `Firebase/Dev/GoogleService-Info.plist` | `devDebug`   |
-   | `DevRelease`        | `Firebase/Dev/GoogleService-Info.plist` | `devRelease` |
-   | `ProdDebug`         | `Firebase/Prod/GoogleService-Info.plist` | `prodDebug` |
-   | `ProdRelease`       | `Firebase/Prod/GoogleService-Info.plist` | `prodRelease` |
+   | Scheme Xcode | Plist copiado |
+   |--------------|---------------|
+   | `DevDebug` / `DevRelease` | `Firebase/Dev/GoogleService-Info.plist` |
+   | `ProdDebug` / `ProdRelease` | `Firebase/Prod/GoogleService-Info.plist` |
 
-> **Nota:** Si el plist no está presente al compilar, Xcode mostrará un error
-> con la ruta exacta donde colocarlo.
+> La inicialización de Firebase (`FIRApp.configure()`) se ejecuta automáticamente
+> al arrancar la app desde el código KMP compartido, igual que el plugin
+> `google-services` lo hace en Android.
 
-### Firma de release (iOS)
+### Firma de release
 
-Equivalente al `keystore.properties` de Android:
+#### Android
 
-1. **Crea** `iosApp/Configuration/signing.xcconfig` con tu Team ID:
+1. **Genera un keystore** (por ejemplo, `n3to-release.jks`) y colócalo en `composeApp/`.
 
-   ```bash
-   cp iosApp/Configuration/signing.xcconfig.example iosApp/Configuration/signing.xcconfig
-   ```
-
-2. **Edita** `signing.xcconfig` y reemplaza `REEMPLAZAR_CON_TEAM_ID` con tu
-   Apple Developer Team ID (10 caracteres). Encuéntralo en
-   [developer.apple.com → Membership](https://developer.apple.com/account).
-
-3. **Verifica que está ignorado por Git:**
-
-   ```bash
-   git check-ignore iosApp/Configuration/signing.xcconfig
-   ```
-
-### Firma de release (Android)
-
-1. **Genera un keystore** (por ejemplo, `n3to-release.jks`) y colócalo en
-   `composeApp/`.
-
-2. **Crea** `composeApp/keystore.properties` con el siguiente contenido:
+2. **Crea** `composeApp/keystore.properties`:
 
    ```properties
    storeFile=n3to-release.jks
@@ -127,12 +158,36 @@ Equivalente al `keystore.properties` de Android:
    keyPassword=tu_password_del_alias
    ```
 
-> **Nota:** `storeFile` es una ruta relativa a `composeApp/`.
+   > `storeFile` es una ruta relativa a `composeApp/`.
+
+#### iOS
+
+Equivalente al `keystore.properties` de Android:
+
+1. **Crea** `iosApp/Configuration/signing.xcconfig` desde la plantilla:
+
+   ```bash
+   cp iosApp/Configuration/signing.xcconfig.example iosApp/Configuration/signing.xcconfig
+   ```
+
+2. **Edita** el fichero y sustituye `REEMPLAZAR_CON_TEAM_ID` por tu
+   Apple Developer Team ID (10 caracteres). Lo encuentras en
+   [developer.apple.com → Membership](https://developer.apple.com/account).
+
+3. **Verifica que está ignorado por Git:**
+
+   ```bash
+   git check-ignore iosApp/Configuration/signing.xcconfig
+   ```
+
+   Los xcconfigs de entorno (`Dev.xcconfig`, `Prod.xcconfig`) incluyen este fichero
+   con `#include?`, por lo que si no existe la firma cae al valor vacío sin romper
+   el build local de debug.
 
 ### RevenueCat (compras in-app)
 
-Se necesita un archivo `composeApp/revenuecat.properties` con las claves de API
-de RevenueCat. Este archivo **no está versionado** (está en `.gitignore`).
+Un único fichero `composeApp/revenuecat.properties` contiene las claves para ambas
+plataformas. No está versionado (`.gitignore`).
 
 1. **Copia la plantilla:**
 
@@ -141,37 +196,39 @@ de RevenueCat. Este archivo **no está versionado** (está en `.gitignore`).
    ```
 
 2. **Obtén tus claves en [RevenueCat Dashboard](https://app.revenuecat.com):**
-   - Ve a **Project Settings → API Keys**.
-   - Las claves disponibles son:
+   (Project Settings → API Keys)
 
-   | Propiedad en `.properties` | Prefijo | Propósito |
-   |----------------------------|---------|-----------|
-   | `REVENUECAT_ANDROID_SANDBOX` | `test_` | Pruebas Android (`dev` flavor) |
-   | `REVENUECAT_ANDROID_PROD` | `goog_` | Producción Google Play (`prod` flavor) |
-   | `REVENUECAT_IOS_SANDBOX` | `test_` | Pruebas iOS |
-   | `REVENUECAT_IOS_PROD` | `appl_` | Producción App Store |
+   | Propiedad | Prefijo | Plataforma / Entorno |
+   |-----------|---------|----------------------|
+   | `REVENUECAT_ANDROID_SANDBOX` | `test_` | Android — flavor `dev` |
+   | `REVENUECAT_ANDROID_PROD`    | `goog_` | Android — flavor `prod` |
+   | `REVENUECAT_IOS_SANDBOX`     | `test_` | iOS — configuraciones `Dev*` |
+   | `REVENUECAT_IOS_PROD`        | `appl_` | iOS — configuraciones `Prod*` |
 
-3. **Edita `composeApp/revenuecat.properties`** y pega cada clave en su
-   propiedad correspondiente.
+3. **Edita `revenuecat.properties`** y pega cada clave.
 
-4. **Verifica que el archivo está ignorado por Git:**
+4. **Verifica que está ignorado por Git:**
 
    ```bash
    git check-ignore composeApp/revenuecat.properties
    ```
 
-> ⚠️ **Seguridad:** Ninguna clave de RevenueCat debe estar hardcodeada en el
-> código o en `build.gradle.kts`. Todas se leen desde
-> `revenuecat.properties`, que está excluido del repositorio.
+**Android:** las claves se inyectan vía `buildConfigField` en cada flavor.
+
+**iOS:** el build phase de Xcode llama al Gradle task correspondiente con
+`-Prevenuecat.ios.env=sandbox` o `-Prevenuecat.ios.env=prod` según el scheme,
+que genera `AppConfig.ios.kt` con la clave correcta antes de compilar el framework.
+No es necesario pasar este parámetro manualmente.
+
+> ⚠️ Ninguna clave debe estar hardcodeada en el código ni en los ficheros de
+> configuración versionados. Todas se leen en tiempo de build desde
+> `revenuecat.properties`.
 
 #### CI/CD
 
-En pipelines automatizados, crea el archivo antes del build inyectando los
-secretos:
-
 ```yaml
-# GitHub Actions
-- name: Configure RevenueCat secrets
+# GitHub Actions — crear revenuecat.properties antes del build
+- name: Configure secrets
   run: |
     cat > composeApp/revenuecat.properties << 'EOF'
     REVENUECAT_ANDROID_SANDBOX=${{ secrets.REVENUECAT_ANDROID_SANDBOX }}
@@ -179,16 +236,17 @@ secretos:
     REVENUECAT_IOS_SANDBOX=${{ secrets.REVENUECAT_IOS_SANDBOX }}
     REVENUECAT_IOS_PROD=${{ secrets.REVENUECAT_IOS_PROD }}
     EOF
+
+# Para iOS también se necesitan los GoogleService-Info.plist
+- name: Configure Firebase iOS
+  run: |
+    echo "${{ secrets.GOOGLE_SERVICE_INFO_DEV }}" > \
+      iosApp/Configuration/Firebase/Dev/GoogleService-Info.plist
+    echo "${{ secrets.GOOGLE_SERVICE_INFO_PROD }}" > \
+      iosApp/Configuration/Firebase/Prod/GoogleService-Info.plist
 ```
 
-#### iOS (entorno)
-
-Por defecto, la compilación iOS usa el entorno **sandbox**. Para compilar en
-**producción**, añade la propiedad de Gradle:
-
-```bash
-./gradlew :composeApp:linkReleaseFrameworkIosArm64 -Prevenuecat.ios.env=prod
-```
+---
 
 ## Build
 
@@ -196,16 +254,31 @@ Por defecto, la compilación iOS usa el entorno **sandbox**. Para compilar en
 
 | Comando | Resultado |
 |---------|-----------|
-| `./gradlew :composeApp:assembleDevDebug` | Debug (dev flavor) |
-| `./gradlew :composeApp:assembleDevRelease` | Release (dev flavor) |
-| `./gradlew :composeApp:assembleProdRelease` | Release (prod flavor) |
+| `./gradlew :composeApp:assembleDevDebug` | APK debug (dev flavor) |
+| `./gradlew :composeApp:assembleDevRelease` | APK release firmado (dev flavor) |
+| `./gradlew :composeApp:assembleProdDebug` | APK debug (prod flavor) |
+| `./gradlew :composeApp:assembleProdRelease` | APK release firmado (prod flavor) |
 | `./gradlew :composeApp:build` | Build completo |
 
 ### iOS
 
+Compila desde **Xcode** seleccionando el scheme deseado, o desde línea de comandos:
+
 ```bash
-./gradlew :composeApp:compileKotlinIosArm64
+# Compilar el framework KMP para un scheme concreto
+# (el build phase de Xcode hace esto automáticamente al pulsar ▶)
+
+# DevDebug — framework debug con entorno sandbox
+./gradlew :composeApp:linkDebugFrameworkIosArm64 -Prevenuecat.ios.env=sandbox
+
+# ProdRelease — framework release con entorno producción
+./gradlew :composeApp:linkReleaseFrameworkIosArm64 -Prevenuecat.ios.env=prod
 ```
+
+Para archivar y distribuir, selecciona el scheme `ProdRelease` en Xcode y usa
+**Product → Archive**.
+
+---
 
 ## Verificación de traducciones
 
