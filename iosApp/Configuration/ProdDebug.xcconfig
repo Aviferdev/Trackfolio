@@ -1,0 +1,4 @@
+// ProdDebug: entorno prod + build debug (para depurar problemas en producción)
+#include "Prod.xcconfig"
+
+ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon

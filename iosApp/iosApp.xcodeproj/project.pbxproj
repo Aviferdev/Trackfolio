@@ -45,6 +45,10 @@
 		0A1B2C3D4E5F6B04 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		8BC85EA52FB77AEA00A071EF /* Dev.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Dev.xcconfig; sourceTree = "<group>"; };
 		8BC85EA62FB77B0700A071EF /* Prod.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Prod.xcconfig; sourceTree = "<group>"; };
+		BBAA0001BBAA00010001AA01 /* DevDebug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = DevDebug.xcconfig; sourceTree = "<group>"; };
+		BBAA0001BBAA00010001AA02 /* DevRelease.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = DevRelease.xcconfig; sourceTree = "<group>"; };
+		BBAA0001BBAA00010001AA03 /* ProdDebug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = ProdDebug.xcconfig; sourceTree = "<group>"; };
+		BBAA0001BBAA00010001AA04 /* ProdRelease.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = ProdRelease.xcconfig; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -96,8 +100,12 @@
 		0A1B2C3D4E5F6A88 /* Configuration */ = {
 			isa = PBXGroup;
 			children = (
-				8BC85EA62FB77B0700A071EF /* Prod.xcconfig */,
 				8BC85EA52FB77AEA00A071EF /* Dev.xcconfig */,
+				8BC85EA62FB77B0700A071EF /* Prod.xcconfig */,
+				BBAA0001BBAA00010001AA01 /* DevDebug.xcconfig */,
+				BBAA0001BBAA00010001AA02 /* DevRelease.xcconfig */,
+				BBAA0001BBAA00010001AA03 /* ProdDebug.xcconfig */,
+				BBAA0001BBAA00010001AA04 /* ProdRelease.xcconfig */,
 			);
 			path = Configuration;
 			sourceTree = "<group>";
@@ -196,7 +204,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "set -e\nexport JAVA_HOME=$(/usr/libexec/java_home)\ncd /Users/developer/Desktop/N3to\n./gradlew :composeApp:linkDebugFrameworkIosArm64\necho \"Framework compilado correctamente\"\n";
+			shellScript = "set -e\nexport JAVA_HOME=$(/usr/libexec/java_home)\ncd /Users/developer/Desktop/N3to\n\ncase \"$CONFIGURATION\" in\n  DevDebug)    RC_ENV=sandbox; LINK_TASK=linkDebugFrameworkIosArm64 ;;\n  DevRelease)  RC_ENV=sandbox; LINK_TASK=linkReleaseFrameworkIosArm64 ;;\n  ProdDebug)   RC_ENV=prod;    LINK_TASK=linkDebugFrameworkIosArm64 ;;\n  ProdRelease) RC_ENV=prod;    LINK_TASK=linkReleaseFrameworkIosArm64 ;;\n  *)           RC_ENV=sandbox; LINK_TASK=linkDebugFrameworkIosArm64 ;;\nesac\n\n./gradlew :composeApp:$LINK_TASK -Prevenuecat.ios.env=$RC_ENV\necho \"Framework compilado: $CONFIGURATION (env=$RC_ENV)\"\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -213,9 +221,9 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		0A1B2C3D4E5F6A91 /* Debug */ = {
+		BBAA0002BBAA00010001BB01 /* DevDebug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 8BC85EA52FB77AEA00A071EF /* Dev.xcconfig */;
+			baseConfigurationReference = BBAA0001BBAA00010001AA01 /* DevDebug.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ENABLE_MODULES = YES;
@@ -264,11 +272,11 @@
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				VERSIONING_SYSTEM = "apple-generic";
 			};
-			name = Debug;
+			name = DevDebug;
 		};
-		0A1B2C3D4E5F6A92 /* Release */ = {
+		BBAA0002BBAA00010001BB02 /* DevRelease */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 8BC85EA62FB77B0700A071EF /* Prod.xcconfig */;
+			baseConfigurationReference = BBAA0001BBAA00010001AA02 /* DevRelease.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ENABLE_MODULES = YES;
@@ -309,11 +317,109 @@
 				SWIFT_COMPILATION_MODE = wholemodule;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
-			name = Release;
+			name = DevRelease;
 		};
-		0A1B2C3D4E5F6A93 /* Debug */ = {
+		BBAA0002BBAA00010001BB03 /* ProdDebug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 8BC85EA52FB77AEA00A071EF /* Dev.xcconfig */;
+			baseConfigurationReference = BBAA0001BBAA00010001AA03 /* ProdDebug.xcconfig */;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = "";
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				VERSIONING_SYSTEM = "apple-generic";
+			};
+			name = ProdDebug;
+		};
+		BBAA0002BBAA00010001BB04 /* ProdRelease */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = BBAA0001BBAA00010001AA04 /* ProdRelease.xcconfig */;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = "";
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VERSIONING_SYSTEM = "apple-generic";
+			};
+			name = ProdRelease;
+		};
+		BBAA0003BBAA00010001CC01 /* DevDebug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = BBAA0001BBAA00010001AA01 /* DevDebug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon-Debug;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -345,11 +451,47 @@
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
-			name = Debug;
+			name = DevDebug;
 		};
-		0A1B2C3D4E5F6A94 /* Release */ = {
+		BBAA0003BBAA00010001CC02 /* DevRelease */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 8BC85EA62FB77B0700A071EF /* Prod.xcconfig */;
+			baseConfigurationReference = BBAA0001BBAA00010001AA02 /* DevRelease.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon-Debug;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"iosApp/Preview Content\"";
+				DEVELOPMENT_TEAM = BZ3TL9QV4U;
+				ENABLE_PREVIEWS = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					/Users/developer/Desktop/N3to/composeApp/build/bin/iosArm64/releaseFramework,
+				);
+				INFOPLIST_FILE = iosApp/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.finance";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-lsqlite3",
+					"-lc++",
+					"-lz",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = es.aviferdev.n3to.dev;
+				PRODUCT_NAME = N3to;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = DevRelease;
+		};
+		BBAA0003BBAA00010001CC03 /* ProdDebug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = BBAA0001BBAA00010001AA03 /* ProdDebug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -381,7 +523,43 @@
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
-			name = Release;
+			name = ProdDebug;
+		};
+		BBAA0003BBAA00010001CC04 /* ProdRelease */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = BBAA0001BBAA00010001AA04 /* ProdRelease.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"iosApp/Preview Content\"";
+				DEVELOPMENT_TEAM = BZ3TL9QV4U;
+				ENABLE_PREVIEWS = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					/Users/developer/Desktop/N3to/composeApp/build/bin/iosArm64/releaseFramework,
+				);
+				INFOPLIST_FILE = iosApp/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.finance";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-lsqlite3",
+					"-lc++",
+					"-lz",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = es.aviferdev.n3to;
+				PRODUCT_NAME = N3to;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = ProdRelease;
 		};
 /* End XCBuildConfiguration section */
 
@@ -389,20 +567,24 @@
 		0A1B2C3D4E5F6A8B /* Build configuration list for PBXNativeTarget "iosApp" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				0A1B2C3D4E5F6A93 /* Debug */,
-				0A1B2C3D4E5F6A94 /* Release */,
+				BBAA0003BBAA00010001CC01 /* DevDebug */,
+				BBAA0003BBAA00010001CC02 /* DevRelease */,
+				BBAA0003BBAA00010001CC03 /* ProdDebug */,
+				BBAA0003BBAA00010001CC04 /* ProdRelease */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = ProdRelease;
 		};
 		0A1B2C3D4E5F6A90 /* Build configuration list for PBXProject "iosApp" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				0A1B2C3D4E5F6A91 /* Debug */,
-				0A1B2C3D4E5F6A92 /* Release */,
+				BBAA0002BBAA00010001BB01 /* DevDebug */,
+				BBAA0002BBAA00010001BB02 /* DevRelease */,
+				BBAA0002BBAA00010001BB03 /* ProdDebug */,
+				BBAA0002BBAA00010001BB04 /* ProdRelease */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = ProdRelease;
 		};
 /* End XCConfigurationList section */
 	};

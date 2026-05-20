@@ -1,0 +1,4 @@
+// ProdRelease: entorno prod + build release (build final para App Store)
+#include "Prod.xcconfig"
+
+ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon
