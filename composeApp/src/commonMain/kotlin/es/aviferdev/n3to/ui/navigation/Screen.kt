@@ -1,19 +1,17 @@
 package es.aviferdev.n3to.ui.navigation
 
 sealed class Screen(val route: String) {
-    data object Home        : Screen("home")
-    data object Transactions: Screen("transactions")
-    data object Portfolio   : Screen("portfolio")
-    data object Debts       : Screen("debts")
-    data object Settings    : Screen("settings")
-    data object Charts      : Screen("charts")
-    data object NetWorth    : Screen("net_worth")
+    data object Home : Screen("home")
+    data object Transactions : Screen("transactions")
+    data object Portfolio : Screen("portfolio")
+    data object Debts : Screen("debts")
+    data object Settings : Screen("settings")
+    data object Charts : Screen("charts")
+    data object NetWorth : Screen("net_worth")
     data object PortfolioSettings : Screen("portfolio_settings")
-    data object FiscalReport: Screen("fiscal_report")
-
+    data object FiscalReport : Screen("fiscal_report")
     data object ExpenseSettings : Screen("settings_expense")
-    data object IncomeSettings  : Screen("settings_income")
-
+    data object IncomeSettings : Screen("settings_income")
     data object IncomeTypeDetail : Screen("settings_income/{incomeTypeName}") {
         const val ARG_INCOME_TYPE = "incomeTypeName"
         fun buildRoute(incomeTypeName: String): String = "settings_income/$incomeTypeName"
@@ -84,10 +82,3 @@ sealed class Screen(val route: String) {
         fun createRoute(accountId: String): String = "settings_account_config/$accountId"
     }
 }
-
-/**
- * Helper para determinar si una Screen corresponde a una pestaña principal de la bottom bar.
- * Útil para lógica de navegación condicional (ej: deseleccionar bottom bar en pantallas secundarias).
- */
-fun Screen.isMainTab(): Boolean =
-    this == Screen.Home || this == Screen.Portfolio || this == Screen.NetWorth

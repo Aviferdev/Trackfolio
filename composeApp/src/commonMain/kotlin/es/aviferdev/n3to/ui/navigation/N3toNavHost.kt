@@ -9,6 +9,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.navigation.NavDestination
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -27,6 +29,9 @@ import es.aviferdev.n3to.ui.home.CategoryPickerScreen
 import es.aviferdev.n3to.ui.home.HomeScreen
 import es.aviferdev.n3to.ui.home.viewmodel.AddTransactionViewModel
 import es.aviferdev.n3to.ui.loan.LoanDetailScreen
+import es.aviferdev.n3to.ui.navigation.Screen.Home
+import es.aviferdev.n3to.ui.navigation.Screen.NetWorth
+import es.aviferdev.n3to.ui.navigation.Screen.Portfolio
 import es.aviferdev.n3to.ui.networth.NetWorthScreen
 import es.aviferdev.n3to.ui.portfolio.AssetCategoryDetailScreen
 import es.aviferdev.n3to.ui.portfolio.AssetDetailScreen
@@ -86,42 +91,17 @@ fun N3toContent() {
     Box(Modifier.fillMaxSize()) {
         Scaffold(
             bottomBar = {
-                val currentRoute = currentDestination?.route ?: ""
-                val showBottomBar = !currentRoute.contains("TransactionDetailRoute") &&
-                        !currentRoute.contains("CategoryPickerRoute") &&
-                        !currentRoute.startsWith(Screen.Transactions.route) &&
-                        !currentRoute.startsWith(Screen.FiscalReport.route) &&
-                        !currentRoute.startsWith(Screen.Settings.route) &&
-                        !currentRoute.startsWith(Screen.Debts.route) &&
-                        !currentRoute.startsWith(Screen.Charts.route)
-
-                if (showBottomBar) {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.BottomCenter
-                    ) {
-                        FloatingBottomNavBar(
-                            items = bottomNavItems(),
-                            currentDestination = currentDestination,
-                            onItemClick = { item ->
-                                if (currentDestination?.route == item.screen.route) return@FloatingBottomNavBar
-                                navController.popBackStack(Screen.Home.route, inclusive = false)
-                                if (item.screen.route != Screen.Home.route) {
-                                    navController.navigate(item.screen.route) {
-                                        launchSingleTop = true
-                                    }
-                                }
-                            }
-                        )
-                    }
-                }
+                BottomBarN3toContent(
+                    navController = navController,
+                    currentDestination = currentDestination,
+                )
             }
         ) { _ ->
             NavHost(
                 navController = navController,
-                startDestination = Screen.Home.route,
+                startDestination = Home.route,
             ) {
-                composable(Screen.Home.route) {
+                composable(Home.route) {
                     HomeScreen(
                         onOpenStore = openStore,
                         onNavigateToTransactions = {
@@ -305,7 +285,7 @@ fun N3toContent() {
                         }
                     )
                 }
-                composable(Screen.Portfolio.route) {
+                composable(Portfolio.route) {
                     PortfolioScreen(
                         onAssetClick = { assetId ->
                             navController.navigate(AssetHistoryRoute(assetId)) {
@@ -334,7 +314,7 @@ fun N3toContent() {
                         onNavigateBack = { navController.popBackStack() }
                     )
                 }
-                composable(Screen.NetWorth.route) {
+                composable(NetWorth.route) {
                     NetWorthScreen(
                         onLoanClick = { loanId ->
                             navController.navigate(LoanDetailRoute(loanId)) {
@@ -581,3 +561,40 @@ fun N3toContent() {
         }
     }
 }
+
+@Composable
+private fun BottomBarN3toContent(
+    navController: NavHostController,
+    currentDestination: NavDestination?
+) {
+    if (currentDestination?.route.needShowBottomBar()) {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.BottomCenter
+        ) {
+            FloatingBottomNavBar(
+                items = bottomNavItems(),
+                currentDestination = currentDestination,
+                onItemClick = { item ->
+                    if (currentDestination?.route != item.screen.route) {
+                        navController.popBackStack(Home.route, inclusive = false)
+                        if (item.screen.route != Home.route) {
+                            navController.navigate(item.screen.route) {
+                                launchSingleTop = true
+                            }
+                        }
+                    }
+                }
+            )
+        }
+    }
+}
+
+private fun String?.needShowBottomBar() =
+    when (this) {
+        Home.route,
+        Portfolio.route,
+        NetWorth.route -> true
+
+        else -> false
+    }
