@@ -75,6 +75,7 @@ fun QuickAccessSection(
                     PremiumBadge(
                         modifier = Modifier
                             .align(Alignment.TopEnd)
+                            .padding(5.dp)
                     )
                 }
                 BetaBadge(
