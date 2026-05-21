@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AccountBalanceWallet
+import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -128,12 +129,14 @@ private fun BudgetRow(
                 )
             }
             // Botón de editar límite inline
-            Text(
-                text = "✏️",
-                fontSize = 14.sp,
+            Icon(
+                imageVector = Icons.Outlined.Edit,
+                contentDescription = "Editar límite",
+                tint = MaterialTheme.appColors.textSecondary,
                 modifier = Modifier
                     .clickable(onClick = onEdit)
                     .padding(4.dp)
+                    .size(18.dp)
             )
         }
 
