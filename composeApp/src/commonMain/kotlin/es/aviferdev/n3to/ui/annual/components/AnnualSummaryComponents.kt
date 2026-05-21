@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -28,6 +29,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,6 +40,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.AnnualSummary
+import es.aviferdev.n3to.domain.model.CategoryBudgetStatus
 import es.aviferdev.n3to.domain.model.MonthlyGoalProgress
 import es.aviferdev.n3to.domain.model.MonthlyTotals
 import es.aviferdev.n3to.ui.annual.AnnualTab
@@ -101,7 +104,9 @@ internal fun GastosTab(
     breakdown: List<MonthlyTotals>,
     comparisons: List<CategoryExpenseComparison>,
     year: String,
-    balancesHidden: Boolean
+    balancesHidden: Boolean,
+    budgetStatus: List<CategoryBudgetStatus> = emptyList(),
+    onConfigureBudgets: () -> Unit = {}
 ) {
     Column(
         modifier = Modifier
@@ -121,7 +126,9 @@ internal fun GastosTab(
             title = stringResource(Res.string.annual_expense_categories_title),
             comparisons = comparisons,
             isExpense = true,
-            balancesHidden = balancesHidden
+            balancesHidden = balancesHidden,
+            budgetStatus = budgetStatus,
+            onConfigureBudgets = onConfigureBudgets
         )
     }
 }
@@ -301,8 +308,12 @@ internal fun CategoryExpenseList(
     title: String,
     comparisons: List<CategoryExpenseComparison>,
     isExpense: Boolean,
-    balancesHidden: Boolean
+    balancesHidden: Boolean,
+    budgetStatus: List<CategoryBudgetStatus> = emptyList(),
+    onConfigureBudgets: () -> Unit = {}
 ) {
+    val budgetByName = budgetStatus.associateBy { it.categoryName }
+
     if (comparisons.isEmpty()) {
         Card(
             modifier = Modifier.fillMaxWidth(),
@@ -347,15 +358,35 @@ internal fun CategoryExpenseList(
         border = BorderStroke(0.5.dp, MaterialTheme.appColors.navyBorder)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text(
-                title,
-                fontSize = 14.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.appColors.textPrimary
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    title,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.appColors.textPrimary,
+                    modifier = Modifier.weight(1f)
+                )
+                if (budgetStatus.isNotEmpty()) {
+                    TextButton(
+                        onClick = onConfigureBudgets,
+                        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 0.dp)
+                    ) {
+                        Text(
+                            "Editar presupuestos",
+                            fontSize = 11.sp,
+                            color = MaterialTheme.appColors.cyanAccent,
+                            fontWeight = FontWeight.Medium
+                        )
+                    }
+                }
+            }
             Spacer(Modifier.height(14.dp))
 
             comparisons.forEach { comp ->
+                val budget = budgetByName[comp.name]
                 Column(modifier = Modifier.padding(bottom = 10.dp)) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -380,10 +411,45 @@ internal fun CategoryExpenseList(
                         )
                     }
                     Spacer(Modifier.height(5.dp))
+                    // Barra de progreso del gasto sobre el total
                     ProgressBar(
                         progress = (comp.currentPercent / 100.0).toFloat(),
                         color = comp.color
                     )
+                    // Barra de presupuesto si existe
+                    if (budget != null && budget.effectiveLimit > 0.0) {
+                        Spacer(Modifier.height(4.dp))
+                        val budgetProgress = (budget.spent / budget.effectiveLimit).toFloat().coerceIn(0f, 1f)
+                        val barColor = when {
+                            budget.isOverBudget -> MaterialTheme.appColors.expense
+                            budget.isNearLimit -> MaterialTheme.appColors.warnAmber
+                            else -> MaterialTheme.appColors.income
+                        }
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                "Presupuesto",
+                                fontSize = 9.sp,
+                                color = MaterialTheme.appColors.textTertiary,
+                                modifier = Modifier.weight(1f)
+                            )
+                            Text(
+                                "${maskAmount(formatAmount(budget.spent), balancesHidden)} / ${
+                                    maskAmount(formatAmount(budget.effectiveLimit), balancesHidden)
+                                } €",
+                                fontSize = 9.sp,
+                                color = barColor,
+                                fontWeight = FontWeight.Medium
+                            )
+                        }
+                        ProgressBar(
+                            progress = budgetProgress,
+                            color = barColor,
+                            height = 4.dp
+                        )
+                    }
                 }
             }
         }

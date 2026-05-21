@@ -442,7 +442,10 @@ fun N3toContent() {
                 }
                 composable<ChartsRoute> {
                     AnnualSummaryScreen(
-                        navigateBack = { navController.popBackStack() }
+                        navigateBack = { navController.popBackStack() },
+                        onNavigateToExpenseSettings = {
+                            navController.navigate(ExpenseSettingsRoute) { launchSingleTop = true }
+                        }
                     )
                 }
                 composable<PortfolioSettingsRoute> {

@@ -4,11 +4,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import es.aviferdev.n3to.domain.model.AnnualSummary
 import es.aviferdev.n3to.domain.model.CategoryBreakdown
+import es.aviferdev.n3to.domain.model.CategoryBudgetStatus
 import es.aviferdev.n3to.domain.model.IncomeTypeBreakdown
 import es.aviferdev.n3to.domain.model.MonthlyGoalProgress
 import es.aviferdev.n3to.domain.model.MonthlyInvestment
 import es.aviferdev.n3to.domain.model.MonthlyTotals
 import es.aviferdev.n3to.domain.usecase.assettransaction.GetMonthlyInvestmentsUseCase
+import es.aviferdev.n3to.domain.usecase.budget.GetCategoryBudgetStatusUseCase
 import es.aviferdev.n3to.domain.usecase.goal.GetYearlyGoalProgressUseCase
 import es.aviferdev.n3to.domain.usecase.transaction.GetAnnualSummaryUseCase
 import es.aviferdev.n3to.domain.usecase.transaction.GetExpensesByCategoryUseCase
@@ -46,7 +48,9 @@ data class AnnualUiState(
     val categoryComparisons: List<CategoryExpenseComparison> = emptyList(),
     val incomeComparisons: List<CategoryExpenseComparison> = emptyList(),
     // Progreso de objetivos anuales
-    val goalProgress: List<MonthlyGoalProgress> = emptyList()
+    val goalProgress: List<MonthlyGoalProgress> = emptyList(),
+    // Estado de presupuestos por categoría
+    val budgetStatus: List<CategoryBudgetStatus> = emptyList()
 )
 
 /**
@@ -58,7 +62,8 @@ private data class MainData(
     val expenses: List<CategoryBreakdown>,
     val incomes: List<IncomeTypeBreakdown>,
     val investments: List<MonthlyInvestment>,
-    val goalProgress: List<MonthlyGoalProgress>
+    val goalProgress: List<MonthlyGoalProgress>,
+    val budgetStatus: List<CategoryBudgetStatus>
 )
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -70,6 +75,7 @@ class AnnualViewModel(
     private val getIncomeByType: GetIncomeByTypeUseCase,
     private val getMonthlyInvestments: GetMonthlyInvestmentsUseCase,
     private val getYearlyGoalProgress: GetYearlyGoalProgressUseCase? = null,
+    private val getCategoryBudgetStatus: GetCategoryBudgetStatusUseCase,
     private val session: AccountSession
 ) : ViewModel() {
 
@@ -118,8 +124,11 @@ class AnnualViewModel(
                     getIncomeByType(accountId, year),
                     getMonthlyInvestments(accountId, year)
                 ) { summary, breakdown, expenses, income, investments ->
-                    MainData(summary, breakdown, expenses, income, investments, emptyList())
+                    MainData(summary, breakdown, expenses, income, investments, emptyList(), emptyList())
                 }
+
+                // Estado de presupuestos (flow separado)
+                val budgetFlow = getCategoryBudgetStatus(accountId, year)
 
                 // Progreso de objetivos anuales (flow separado)
                 val goalFlow = if (getYearlyGoalProgress != null) {
@@ -131,9 +140,10 @@ class AnnualViewModel(
                 combine(
                     mainFlow,
                     goalFlow,
+                    budgetFlow,
                     prevExpensesFlow,
                     prevIncomeFlow
-                ) { main, goals, prevExpenses, prevIncomes ->
+                ) { main, goals, budget, prevExpenses, prevIncomes ->
                     val totalExpense = main.summary?.totalExpense ?: 0.0
                     val totalIncome = main.summary?.totalIncome ?: 0.0
 
@@ -200,7 +210,8 @@ class AnnualViewModel(
                         monthlyInvestments = main.investments,
                         categoryComparisons = categoryComparisons,
                         incomeComparisons = incomeComparisons,
-                        goalProgress = goals
+                        goalProgress = goals,
+                        budgetStatus = budget
                     )
                 }
             }

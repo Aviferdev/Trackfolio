@@ -502,6 +502,7 @@ val useCaseModule = module {
             getIncomeByType = get(),
             getMonthlyInvestments = get(),
             getYearlyGoalProgress = get(),
+            getCategoryBudgetStatus = get(),
             session = get()
         )
     }

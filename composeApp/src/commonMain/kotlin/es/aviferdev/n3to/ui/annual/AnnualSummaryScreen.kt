@@ -44,6 +44,7 @@ enum class AnnualTab {
 @Composable
 fun AnnualSummaryScreen(
     navigateBack: () -> Unit = {},
+    onNavigateToExpenseSettings: () -> Unit = {},
     viewModel: AnnualViewModel = koinViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -103,7 +104,9 @@ fun AnnualSummaryScreen(
                         breakdown = uiState.monthlyBreakdown,
                         comparisons = uiState.categoryComparisons,
                         year = uiState.year,
-                        balancesHidden = balancesHidden
+                        balancesHidden = balancesHidden,
+                        budgetStatus = uiState.budgetStatus,
+                        onConfigureBudgets = onNavigateToExpenseSettings
                     )
                 }
 
