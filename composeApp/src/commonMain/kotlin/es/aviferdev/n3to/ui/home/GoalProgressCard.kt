@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ShowChart
+import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material.icons.outlined.GpsFixed
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -166,16 +167,30 @@ private fun GoalProgressRow(
                     color = MaterialTheme.appColors.textSecondary
                 )
             }
-            Text(
-                text = if (achieved) "✅ ${formatAmountEuro(actual)}" else "${formatAmountEuro(actual)} / ${
-                    formatAmountEuro(
-                        target
+            if (achieved) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        imageVector = Icons.Outlined.CheckCircle,
+                        contentDescription = null,
+                        tint = MaterialTheme.appColors.income,
+                        modifier = Modifier.size(14.dp)
                     )
-                }",
-                fontSize = 11.sp,
-                fontWeight = FontWeight.Medium,
-                color = if (achieved) MaterialTheme.appColors.income else MaterialTheme.appColors.textTertiary
-            )
+                    Spacer(Modifier.width(4.dp))
+                    Text(
+                        text = formatAmountEuro(actual),
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = MaterialTheme.appColors.income
+                    )
+                }
+            } else {
+                Text(
+                    text = "${formatAmountEuro(actual)} / ${formatAmountEuro(target)}",
+                    fontSize = 11.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = MaterialTheme.appColors.textTertiary
+                )
+            }
         }
 
         Spacer(Modifier.height(6.dp))

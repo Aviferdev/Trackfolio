@@ -1,6 +1,8 @@
 package es.aviferdev.n3to.ui.annual.components
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -159,7 +161,7 @@ internal fun AnnualTabs(
     selectedTab: AnnualTab,
     onTabSelected: (AnnualTab) -> Unit
 ) {
-    Surface(color = MaterialTheme.appColors.surface, shadowElevation = 1.dp) {
+    Surface(color = MaterialTheme.appColors.navySurface, shadowElevation = 0.dp) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -209,9 +211,10 @@ internal fun YearTotalsCard(summary: AnnualSummary, balancesHidden: Boolean) {
 
     Card(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.surface),
-        elevation = CardDefaults.cardElevation(0.dp)
+        shape = RoundedCornerShape(13.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.navySurface),
+        elevation = CardDefaults.cardElevation(0.dp),
+        border = BorderStroke(0.5.dp, MaterialTheme.appColors.navyBorder)
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -220,7 +223,7 @@ internal fun YearTotalsCard(summary: AnnualSummary, balancesHidden: Boolean) {
             Column(
                 modifier = Modifier
                     .weight(1f)
-                    .padding(vertical = 12.dp),
+                    .padding(vertical = 14.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
@@ -232,21 +235,21 @@ internal fun YearTotalsCard(summary: AnnualSummary, balancesHidden: Boolean) {
                 Spacer(Modifier.height(4.dp))
                 Text(
                     "+${maskAmount(formatAmount(summary.totalIncome), balancesHidden)} €",
-                    fontSize = 12.sp,
+                    fontSize = 13.sp,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.appColors.income
                 )
             }
 
             Box(
-                modifier = Modifier.width(1.dp).height(40.dp)
-                    .background(MaterialTheme.appColors.border)
+                modifier = Modifier.width(1.dp).fillMaxHeight(0.5f).align(Alignment.CenterVertically)
+                    .background(MaterialTheme.appColors.navyBorder)
             )
 
             Column(
                 modifier = Modifier
                     .weight(1f)
-                    .padding(vertical = 12.dp),
+                    .padding(vertical = 14.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
@@ -258,21 +261,21 @@ internal fun YearTotalsCard(summary: AnnualSummary, balancesHidden: Boolean) {
                 Spacer(Modifier.height(4.dp))
                 Text(
                     "−${maskAmount(formatAmount(summary.totalExpense), balancesHidden)} €",
-                    fontSize = 12.sp,
+                    fontSize = 13.sp,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.appColors.expense
                 )
             }
 
             Box(
-                modifier = Modifier.width(1.dp).height(40.dp)
-                    .background(MaterialTheme.appColors.border)
+                modifier = Modifier.width(1.dp).fillMaxHeight(0.5f).align(Alignment.CenterVertically)
+                    .background(MaterialTheme.appColors.navyBorder)
             )
 
             Column(
                 modifier = Modifier
                     .weight(1f)
-                    .padding(vertical = 12.dp),
+                    .padding(vertical = 14.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
@@ -284,7 +287,7 @@ internal fun YearTotalsCard(summary: AnnualSummary, balancesHidden: Boolean) {
                 Spacer(Modifier.height(4.dp))
                 Text(
                     "${maskAmount(formatAmount(savings), balancesHidden)} €",
-                    fontSize = 12.sp,
+                    fontSize = 13.sp,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.appColors.primary
                 )
@@ -303,10 +306,10 @@ internal fun CategoryExpenseList(
     if (comparisons.isEmpty()) {
         Card(
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(14.dp),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.surface),
+            shape = RoundedCornerShape(13.dp),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.navySurface),
             elevation = CardDefaults.cardElevation(0.dp),
-            border = CardDefaults.outlinedCardBorder()
+            border = BorderStroke(0.5.dp, MaterialTheme.appColors.navyBorder)
         ) {
             Column(
                 modifier = Modifier.fillMaxWidth().padding(16.dp),
@@ -338,12 +341,12 @@ internal fun CategoryExpenseList(
 
     Card(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(14.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.surface),
+        shape = RoundedCornerShape(13.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.navySurface),
         elevation = CardDefaults.cardElevation(0.dp),
-        border = CardDefaults.outlinedCardBorder()
+        border = BorderStroke(0.5.dp, MaterialTheme.appColors.navyBorder)
     ) {
-        Column(modifier = Modifier.padding(14.dp)) {
+        Column(modifier = Modifier.padding(16.dp)) {
             Text(
                 title,
                 fontSize = 14.sp,
@@ -410,7 +413,7 @@ internal fun VariationBadge(
     } else if (previousAmount == null) {
         Surface(
             shape = RoundedCornerShape(4.dp),
-            color = MaterialTheme.appColors.background
+            color = MaterialTheme.appColors.navySurfaceLight
         ) {
             Text(
                 stringResource(Res.string.annual_new_badge),
@@ -439,10 +442,10 @@ internal fun MonthlyBarChart(
 
     Card(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(14.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.surface),
+        shape = RoundedCornerShape(13.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.navySurface),
         elevation = CardDefaults.cardElevation(0.dp),
-        border = CardDefaults.outlinedCardBorder()
+        border = BorderStroke(0.5.dp, MaterialTheme.appColors.navyBorder)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(

@@ -53,7 +53,7 @@ fun AnnualSummaryScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.appColors.background)
+            .background(MaterialTheme.appColors.navyDeep)
     ) {
         TopBarWithActionsApp(
             title = stringResource(Res.string.annual_title),
@@ -65,6 +65,8 @@ fun AnnualSummaryScreen(
             canGoBack = uiState.canGoBack,
             onPrevious = { viewModel.previousYear() },
             onNext = { viewModel.nextYear() },
+            containerColor = MaterialTheme.appColors.navySurface,
+            dividerColor = MaterialTheme.appColors.navyBorder
         )
 
         // Tabs
@@ -119,9 +121,9 @@ fun AnnualSummaryScreen(
                         modifier = Modifier
                             .fillMaxSize()
                             .verticalScroll(rememberScrollState())
-                            .padding(horizontal = 20.dp)
+                            .padding(horizontal = 16.dp)
                             .padding(top = 16.dp, bottom = 40.dp),
-                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                        verticalArrangement = Arrangement.spacedBy(14.dp)
                     ) {
                         InvestmentBarChart(
                             investments = uiState.monthlyInvestments,
@@ -134,5 +136,3 @@ fun AnnualSummaryScreen(
         }
     }
 }
-
-// formatAmount y formatPercent se importan de ui.theme

@@ -385,7 +385,6 @@ fun HomeContent(
 
         Spacer(Modifier.height(14.dp))
 
-        // ── Banners contextuales ──────────────────────────────────────────────
         VersionUpdateBanner(
             visible = showVersionBanner,
             latestVersion = versionLatestVersion ?: "",
@@ -436,12 +435,12 @@ fun HomeContent(
             balancesHidden = balancesHidden,
             modifier = Modifier.padding(horizontal = 16.dp)
         )
-        Spacer(Modifier.height(24.dp))
+        Spacer(Modifier.height(12.dp))
         SectionHeader(
             label = stringResource(Res.string.home_section_goals),
             modifier = Modifier.padding(horizontal = 16.dp)
         )
-        Spacer(Modifier.height(10.dp))
+        Spacer(Modifier.height(4.dp))
         LockedFeatureOverlay(
             locked = accounts.isEmpty(),
             modifier = Modifier.padding(horizontal = 16.dp)
@@ -459,12 +458,12 @@ fun HomeContent(
             )
         }
 
-        Spacer(Modifier.height(24.dp))
+        Spacer(Modifier.height(12.dp))
         SectionHeader(
             label = stringResource(Res.string.home_section_emergency_fund),
             modifier = Modifier.padding(horizontal = 16.dp)
         )
-        Spacer(Modifier.height(10.dp))
+        Spacer(Modifier.height(4.dp))
         LockedFeatureOverlay(
             locked = accounts.isEmpty(),
             modifier = Modifier.padding(horizontal = 16.dp)
@@ -476,14 +475,14 @@ fun HomeContent(
             )
         }
 
-        Spacer(Modifier.height(24.dp))
+        Spacer(Modifier.height(12.dp))
         SectionHeader(
             label = stringResource(Res.string.home_section_budgets),
             actionLabel = if (budgetStatus.isNotEmpty()) "Editar" else null,
             onAction = if (budgetStatus.isNotEmpty()) onNavigateToExpenseSettings else null,
             modifier = Modifier.padding(horizontal = 16.dp)
         )
-        Spacer(Modifier.height(10.dp))
+        Spacer(Modifier.height(4.dp))
         LockedFeatureOverlay(
             locked = accounts.isEmpty(),
             modifier = Modifier.padding(horizontal = 16.dp)
@@ -511,7 +510,7 @@ fun HomeContent(
             )
         }
 
-        Spacer(Modifier.height(24.dp))
+        Spacer(Modifier.height(12.dp))
         LockedFeatureOverlay(
             locked = accounts.isEmpty(),
             modifier = Modifier.padding(horizontal = 16.dp)

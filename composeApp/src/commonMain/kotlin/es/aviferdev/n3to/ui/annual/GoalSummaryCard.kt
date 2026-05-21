@@ -1,5 +1,6 @@
 package es.aviferdev.n3to.ui.annual
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -63,10 +64,10 @@ fun GoalSummaryCard(
 
     Card(
         modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(14.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.surface),
+        shape = RoundedCornerShape(13.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.navySurface),
         elevation = CardDefaults.cardElevation(0.dp),
-        border = CardDefaults.outlinedCardBorder()
+        border = BorderStroke(0.5.dp, MaterialTheme.appColors.navyBorder)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             // Header
