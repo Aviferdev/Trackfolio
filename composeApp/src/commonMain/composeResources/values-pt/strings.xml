@@ -615,6 +615,8 @@
     <string name="premium_manage_accounts">Gerencie todas as suas contas sem restrições</string>
     <string name="premium_customize">Personalize o app com temas claro e escuro</string>
     <string name="premium_subscribe">Obter Premium</string>
+    <string name="premium_overlay_title">Função Premium</string>
+    <string name="premium_overlay_subtitle">Obtenha Premium para desbloquear esta função</string>
     <string name="premium_restore">Restaurar compra</string>
     <string name="premium_restore_success">Compras restauradas com sucesso</string>
     <string name="premium_restore_cancelled">Restauração cancelada</string>

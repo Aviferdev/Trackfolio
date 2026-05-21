@@ -613,6 +613,8 @@
     <string name="premium_manage_accounts">Manage all your accounts without restrictions</string>
     <string name="premium_customize">Customize the app with light and dark themes</string>
     <string name="premium_subscribe">Get Premium</string>
+    <string name="premium_overlay_title">Premium Feature</string>
+    <string name="premium_overlay_subtitle">Go Premium to unlock this feature</string>
     <string name="premium_restore">Restore purchase</string>
     <string name="premium_restore_success">Purchases restored successfully</string>
     <string name="premium_restore_cancelled">Restore cancelled</string>

@@ -613,6 +613,8 @@
     <string name="premium_manage_accounts">Управляйте всеми счетами без ограничений</string>
     <string name="premium_customize">Настройте приложение со светлой и тёмной темами</string>
     <string name="premium_subscribe">Купить Premium</string>
+    <string name="premium_overlay_title">Функция Premium</string>
+    <string name="premium_overlay_subtitle">Купите Premium, чтобы разблокировать эту функцию</string>
     <string name="premium_restore">Восстановить покупку</string>
     <string name="premium_restore_success">Покупки успешно восстановлены</string>
     <string name="premium_restore_cancelled">Восстановление отменено</string>

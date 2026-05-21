@@ -615,6 +615,8 @@
     <string name="premium_manage_accounts">制限なくすべての口座を管理</string>
     <string name="premium_customize">ライト/ダークテーマでカスタマイズ</string>
     <string name="premium_subscribe">Premiumを入手</string>
+    <string name="premium_overlay_title">プレミアム機能</string>
+    <string name="premium_overlay_subtitle">この機能を解放するにはプレミアムへ</string>
     <string name="premium_restore">購入を復元</string>
     <string name="premium_restore_success">購入が正常に復元されました</string>
     <string name="premium_restore_cancelled">復元がキャンセルされました</string>

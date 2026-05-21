@@ -615,6 +615,8 @@
     <string name="premium_manage_accounts">无限制管理所有账户</string>
     <string name="premium_customize">使用浅色和深色主题自定义应用</string>
     <string name="premium_subscribe">获取 Premium</string>
+    <string name="premium_overlay_title">高级功能</string>
+    <string name="premium_overlay_subtitle">升级至 Premium 以解锁此功能</string>
     <string name="premium_restore">恢复购买</string>
     <string name="premium_restore_success">购买恢复成功</string>
     <string name="premium_restore_cancelled">恢复已取消</string>
