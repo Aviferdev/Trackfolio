@@ -34,23 +34,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import es.aviferdev.n3to.core.premium.PremiumManager
 import es.aviferdev.n3to.core.premium.PremiumStatus
-import es.aviferdev.n3to.core.security.AppLockManager
-import es.aviferdev.n3to.core.security.BiometricAuthenticator
-import es.aviferdev.n3to.core.security.BiometricResult
-import es.aviferdev.n3to.core.security.LanguageManager
-import es.aviferdev.n3to.core.security.ThemeManager
-import es.aviferdev.n3to.core.security.getSystemLanguage
-import es.aviferdev.n3to.core.security.setPlatformLanguage
 import es.aviferdev.n3to.domain.model.Account
 import es.aviferdev.n3to.domain.model.PremiumConstants
-import es.aviferdev.n3to.domain.usecase.backup.GetBackupReminderIntervalUseCase
-import es.aviferdev.n3to.ui.account.AccountViewModel
 import es.aviferdev.n3to.ui.account.AddEditAccountBottomSheet
 import es.aviferdev.n3to.ui.common.topbar.TopBarWithActionsApp
+import es.aviferdev.n3to.ui.settings.backup.BackupAction
 import es.aviferdev.n3to.ui.settings.backup.BackupPasswordSheet
-import es.aviferdev.n3to.ui.settings.backup.BackupViewModel
 import es.aviferdev.n3to.ui.settings.components.EmptyAccountsCard
 import es.aviferdev.n3to.ui.settings.components.LanguageSelectorDialog
 import es.aviferdev.n3to.ui.settings.components.SettingsAccountCard
@@ -99,7 +89,6 @@ import n3to.composeapp.generated.resources.settings_show_onboarding
 import n3to.composeapp.generated.resources.settings_title
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
-import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
 // ─── WRAPPER ────────────────────────────────────────────────────────────────────
@@ -112,171 +101,114 @@ fun SettingsScreen(
     onNavigateToFeedback: () -> Unit = {},
     onNavigateToAbout: () -> Unit = {},
     onResetOnboarding: () -> Unit = {},
-    accountViewModel: AccountViewModel = koinViewModel(),
-    backupViewModel: BackupViewModel = koinViewModel()
+    viewModel: SettingsViewModel = koinViewModel()
 ) {
-    val accountState by accountViewModel.uiState.collectAsState()
-    val selectedId by accountViewModel.selectedAccountId.collectAsState()
-    val backupState by backupViewModel.state.collectAsState()
-    val authenticator: BiometricAuthenticator = koinInject()
-    val lockManager: AppLockManager = koinInject()
-    val premiumManager: PremiumManager = koinInject()
-    val premiumStatus by premiumManager.status.collectAsState()
-    val themeManager: ThemeManager = koinInject()
-    val isDarkTheme by themeManager.isDark.collectAsState()
+    val state by viewModel.uiState.collectAsState()
 
-    var biometricEnabled by remember { mutableStateOf(lockManager.biometricEnabled) }
-    var biometricError by remember { mutableStateOf<String?>(null) }
     val biometricTitleText = stringResource(Res.string.settings_biometric_title)
     val acceptText = stringResource(Res.string.common_accept)
     val biometricUnavailableText = stringResource(Res.string.settings_biometric_unavailable)
     val biometricActivateText = stringResource(Res.string.settings_biometric_activate)
     val confirmIdentityText = stringResource(Res.string.home_confirm_identity)
 
-    val languageManager: LanguageManager = koinInject()
-    val currentLanguage by languageManager.languageCode.collectAsState()
-    var showLanguageDialog by remember { mutableStateOf(false) }
-
-    val backupIntervalUseCase = koinInject<GetBackupReminderIntervalUseCase>()
-    var backupInterval by remember { mutableStateOf(backupIntervalUseCase.get()) }
-
-    val handleResetOnboarding: () -> Unit = {
-        onResetOnboarding()
-    }
-
     SettingsContent(
         navigateBack = navigateBack,
-        backupInterval = backupInterval,
-        onBackupIntervalChange = { days ->
-            backupInterval = days
-            backupIntervalUseCase.set(days)
-        },
-        accounts = accountState.accounts,
-        selectedId = selectedId,
-        biometricEnabled = biometricEnabled,
-        onAddAccount = { accountViewModel.openAddSheet() },
-        onSelectAccount = { id -> accountViewModel.selectAccount(id) },
-        onEditAccount = { account -> accountViewModel.openEditSheet(account) },
-        onDeleteAccount = { account -> accountViewModel.requestDelete(account) },
+        backupInterval = state.backupInterval,
+        onBackupIntervalChange = { viewModel.setBackupInterval(it) },
+        accounts = state.accounts,
+        selectedId = state.selectedAccountId,
+        biometricEnabled = state.biometricEnabled,
+        onAddAccount = { viewModel.openAddSheet() },
+        onSelectAccount = { viewModel.selectAccount(it) },
+        onEditAccount = { viewModel.openEditSheet(it) },
+        onDeleteAccount = { viewModel.requestDelete(it) },
         onToggleBiometric = { enabled ->
-            if (enabled) {
-                if (!authenticator.isAvailable()) {
-                    biometricError = biometricUnavailableText
-                } else {
-                    authenticator.authenticate(
-                        biometricActivateText,
-                        confirmIdentityText
-                    ) { result ->
-                        when (result) {
-                            is BiometricResult.Success -> {
-                                lockManager.enableBiometric(); biometricEnabled = true
-                            }
-
-                            is BiometricResult.Error -> biometricError = result.message
-                            else -> {}
-                        }
-                    }
-                }
-            } else {
-                lockManager.disableBiometric()
-                biometricEnabled = false
-            }
+            viewModel.toggleBiometric(
+                enabled,
+                biometricUnavailableText,
+                biometricActivateText,
+                confirmIdentityText
+            )
         },
-        onBackupClick = { backupViewModel.openExport() },
+        onBackupClick = { viewModel.openBackupExport() },
         onNavigateToPrivacySettings = onNavigateToPrivacySettings,
         onNavigateToPremium = onNavigateToPremium,
         onNavigateToAccountConfig = onNavigateToAccountConfig,
         onNavigateToFeedback = onNavigateToFeedback,
         onNavigateToAbout = onNavigateToAbout,
-        onResetOnboarding = handleResetOnboarding,
-        premiumStatus = premiumStatus,
-        isDarkTheme = isDarkTheme,
-        onToggleTheme = { themeManager.set(!isDarkTheme) },
-        currentLanguage = currentLanguage,
-        isSystemDefault = languageManager.isSystemDefault,
-        onLanguageClick = { showLanguageDialog = true }
+        onResetOnboarding = onResetOnboarding,
+        premiumStatus = PremiumStatus(isPremium = state.isPremium, isLifetime = state.isLifetimePremium),
+        isDarkTheme = state.isDarkTheme,
+        onToggleTheme = { viewModel.toggleTheme() },
+        currentLanguage = state.currentLanguage,
+        isSystemDefault = state.isSystemDefault,
+        onLanguageClick = { viewModel.showLanguageDialog() }
     )
 
-    // ── Sheets ───────────────────────────────────────────────────────────────
-    if (accountState.showAddSheet) {
+    // ── Add account sheet ────────────────────────────────────────────────────
+    if (state.showAddSheet) {
         AddEditAccountBottomSheet(
             account = null,
-            onSave = { name, balance -> accountViewModel.addAccount(name, balance) },
-            onDismiss = { accountViewModel.closeAddSheet() })
+            onSave = { name, balance -> viewModel.addAccount(name, balance) },
+            onDismiss = { viewModel.closeAddSheet() }
+        )
     }
-    if (accountState.showEditSheet && accountState.editingAccount != null) {
+    if (state.showEditSheet && state.editingAccount != null) {
         AddEditAccountBottomSheet(
-            account = accountState.editingAccount,
-            onSave = { name, _ ->
-                accountViewModel.editAccount(
-                    accountState.editingAccount!!,
-                    name
-                )
-            },
-            onDismiss = { accountViewModel.closeEditSheet() })
+            account = state.editingAccount,
+            onSave = { name, _ -> viewModel.editAccount(state.editingAccount!!, name) },
+            onDismiss = { viewModel.closeEditSheet() }
+        )
     }
-    if (accountState.showDeleteConfirm && accountState.accountToDelete != null) {
+    if (state.showDeleteConfirm && state.accountToDelete != null) {
         AlertDialog(
-            onDismissRequest = { accountViewModel.cancelDelete() },
+            onDismissRequest = { viewModel.cancelDelete() },
             containerColor = MaterialTheme.appColors.navySurface,
             title = {
                 Text(
                     stringResource(Res.string.settings_delete_account_title),
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp, fontWeight = FontWeight.Bold,
                     color = MaterialTheme.appColors.textPrimary
                 )
             },
             text = {
                 Text(
-                    stringResource(
-                        Res.string.settings_delete_account_message,
-                        accountState.accountToDelete!!.name
-                    ), fontSize = 13.sp, color = MaterialTheme.appColors.textSecondary
+                    stringResource(Res.string.settings_delete_account_message, state.accountToDelete!!.name),
+                    fontSize = 13.sp, color = MaterialTheme.appColors.textSecondary
                 )
             },
             confirmButton = {
-                TextButton(onClick = { accountViewModel.confirmDelete() }) {
+                TextButton(onClick = { viewModel.confirmDelete() }) {
                     Text(
                         stringResource(Res.string.common_delete),
-                        color = MaterialTheme.appColors.expense,
-                        fontWeight = FontWeight.SemiBold
+                        color = MaterialTheme.appColors.expense, fontWeight = FontWeight.SemiBold
                     )
                 }
             },
             dismissButton = {
-                TextButton(onClick = { accountViewModel.cancelDelete() }) {
-                    Text(
-                        stringResource(Res.string.common_cancel),
-                        color = MaterialTheme.appColors.cyanAccent
-                    )
+                TextButton(onClick = { viewModel.cancelDelete() }) {
+                    Text(stringResource(Res.string.common_cancel), color = MaterialTheme.appColors.cyanAccent)
                 }
             },
             shape = RoundedCornerShape(16.dp)
         )
     }
 
-    // Mostrar error de biometría si existe
-    biometricError?.let { msg ->
+    // ── Biometric error ──────────────────────────────────────────────────────
+    state.biometricError?.let { msg ->
         AlertDialog(
-            onDismissRequest = { biometricError = null },
+            onDismissRequest = { viewModel.clearBiometricError() },
             containerColor = MaterialTheme.appColors.navySurface,
             title = {
                 Text(
-                    biometricTitleText,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold,
+                    biometricTitleText, fontSize = 16.sp, fontWeight = FontWeight.Bold,
                     color = MaterialTheme.appColors.textPrimary
                 )
             },
             text = { Text(msg, fontSize = 13.sp, color = MaterialTheme.appColors.textSecondary) },
             confirmButton = {
-                TextButton(onClick = { biometricError = null }) {
-                    Text(
-                        acceptText,
-                        color = MaterialTheme.appColors.cyanAccent,
-                        fontWeight = FontWeight.SemiBold
-                    )
+                TextButton(onClick = { viewModel.clearBiometricError() }) {
+                    Text(acceptText, color = MaterialTheme.appColors.cyanAccent, fontWeight = FontWeight.SemiBold)
                 }
             },
             shape = RoundedCornerShape(16.dp)
@@ -284,84 +216,65 @@ fun SettingsScreen(
     }
 
     // ── Premium limit warning ────────────────────────────────────────────────
-    if (accountState.showPremiumLimitWarning) {
+    if (state.showPremiumLimitWarning) {
         AlertDialog(
-            onDismissRequest = { accountViewModel.dismissPremiumLimitWarning() },
+            onDismissRequest = { viewModel.dismissPremiumLimitWarning() },
             containerColor = MaterialTheme.appColors.navySurface,
             title = {
                 Text(
                     stringResource(Res.string.settings_premium_limit_title),
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp, fontWeight = FontWeight.Bold,
                     color = MaterialTheme.appColors.textPrimary
                 )
             },
             text = {
                 Text(
-                    stringResource(
-                        Res.string.settings_premium_limit_message,
-                        PremiumConstants.MAX_FREE_ACCOUNTS
-                    ),
-                    fontSize = 13.sp,
-                    color = MaterialTheme.appColors.textSecondary
+                    stringResource(Res.string.settings_premium_limit_message, PremiumConstants.MAX_FREE_ACCOUNTS),
+                    fontSize = 13.sp, color = MaterialTheme.appColors.textSecondary
                 )
             },
             confirmButton = {
-                TextButton(onClick = {
-                    accountViewModel.dismissPremiumLimitWarning()
-                    onNavigateToPremium()
-                }) {
+                TextButton(onClick = { viewModel.dismissPremiumLimitWarning(); onNavigateToPremium() }) {
                     Text(
                         stringResource(Res.string.settings_premium_cta),
-                        color = MaterialTheme.appColors.cyanAccent,
-                        fontWeight = FontWeight.SemiBold
+                        color = MaterialTheme.appColors.cyanAccent, fontWeight = FontWeight.SemiBold
                     )
                 }
             },
             dismissButton = {
-                TextButton(onClick = { accountViewModel.dismissPremiumLimitWarning() }) {
-                    Text(
-                        stringResource(Res.string.settings_not_now),
-                        color = MaterialTheme.appColors.textTertiary
-                    )
+                TextButton(onClick = { viewModel.dismissPremiumLimitWarning() }) {
+                    Text(stringResource(Res.string.settings_not_now), color = MaterialTheme.appColors.textTertiary)
                 }
             },
             shape = RoundedCornerShape(16.dp)
         )
     }
 
-    // ── Language selector ──────────────────────────────────────────────────
-    if (showLanguageDialog) {
+    // ── Language dialog ──────────────────────────────────────────────────────
+    if (state.showLanguageDialog) {
         LanguageSelectorDialog(
-            currentLanguage = currentLanguage,
-            isSystemDefault = languageManager.isSystemDefault,
-            onLanguageSelected = { code ->
-                val effectiveCode = code.ifEmpty { getSystemLanguage() }
-                setPlatformLanguage(effectiveCode)
-                languageManager.setLanguage(code)
-                showLanguageDialog = false
-            },
-            onDismiss = { showLanguageDialog = false }
+            currentLanguage = state.currentLanguage,
+            isSystemDefault = state.isSystemDefault,
+            onLanguageSelected = { viewModel.setLanguage(it) },
+            onDismiss = { viewModel.dismissLanguageDialog() }
         )
     }
 
     // ── Backup sheet ─────────────────────────────────────────────────────────
-    if (backupState.action != es.aviferdev.n3to.ui.settings.backup.BackupAction.NONE) {
+    val backupSheet = state.backupSheetState
+    if (backupSheet.action != BackupAction.NONE) {
         BackupPasswordSheet(
-            state = backupState,
-            onPasswordChange = { backupViewModel.onPasswordChange(it) },
-            onConfirmPasswordChange = { backupViewModel.onConfirmPasswordChange(it) },
+            state = backupSheet,
+            onPasswordChange = { viewModel.onBackupPasswordChange(it) },
+            onConfirmPasswordChange = { viewModel.onBackupConfirmPasswordChange(it) },
             onConfirm = {
-                when (backupState.action) {
-                    es.aviferdev.n3to.ui.settings.backup.BackupAction.EXPORT -> backupViewModel.confirmExport()
-                    es.aviferdev.n3to.ui.settings.backup.BackupAction.IMPORT -> backupViewModel.confirmImport()
+                when (backupSheet.action) {
+                    BackupAction.EXPORT -> viewModel.confirmBackupExport()
+                    BackupAction.IMPORT -> viewModel.confirmBackupImport()
                     else -> {}
                 }
             },
-            onDismiss = {
-                backupViewModel.dismiss()
-                backupViewModel.clearResult()
-            }
+            onDismiss = { viewModel.dismissBackupSheet(); viewModel.clearBackupResult() }
         )
     }
 }
@@ -438,10 +351,7 @@ fun SettingsContent(
                 item {
                     SettingsSectionHeader(label = stringResource(Res.string.settings_section_security))
                     SettingsGroupCard {
-                        SettingsBiometricRow(
-                            enabled = biometricEnabled,
-                            onToggle = onToggleBiometric
-                        )
+                        SettingsBiometricRow(enabled = biometricEnabled, onToggle = onToggleBiometric)
                     }
                 }
 
@@ -474,9 +384,10 @@ fun SettingsContent(
                         if (premiumStatus.isPremium) {
                             SettingsInfoRow(
                                 label = stringResource(Res.string.settings_premium_title),
-                                value = if (premiumStatus.isLifetime) stringResource(Res.string.settings_premium_lifetime) else stringResource(
-                                    Res.string.settings_premium_active
-                                )
+                                value = if (premiumStatus.isLifetime)
+                                    stringResource(Res.string.settings_premium_lifetime)
+                                else
+                                    stringResource(Res.string.settings_premium_active)
                             )
                             SettingsRowDivider()
                         } else {
@@ -543,18 +454,12 @@ fun SettingsContentPreview() {
         SettingsContent(
             accounts = listOf(
                 Account(
-                    id = "1",
-                    name = "Cuenta principal",
-                    initialBalance = 1000.0,
-                    computedBalance = 1500.0,
-                    createdAt = 0L
+                    id = "1", name = "Cuenta principal",
+                    initialBalance = 1000.0, computedBalance = 1500.0, createdAt = 0L
                 ),
                 Account(
-                    id = "2",
-                    name = "Efectivo",
-                    initialBalance = 0.0,
-                    computedBalance = 500.0,
-                    createdAt = 0L
+                    id = "2", name = "Efectivo",
+                    initialBalance = 0.0, computedBalance = 500.0, createdAt = 0L
                 )
             ),
             selectedId = "1",
@@ -568,4 +473,3 @@ fun SettingsContentPreview() {
         )
     }
 }
-

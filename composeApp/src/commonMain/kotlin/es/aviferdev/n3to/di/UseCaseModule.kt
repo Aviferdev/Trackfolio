@@ -200,6 +200,7 @@ import es.aviferdev.n3to.ui.savingsrates.SavingsRatesViewModel
 import es.aviferdev.n3to.ui.settings.AccountConfigViewModel
 import es.aviferdev.n3to.ui.settings.CategoryViewModel
 import es.aviferdev.n3to.ui.settings.IssuerViewModel
+import es.aviferdev.n3to.ui.settings.SettingsViewModel
 import es.aviferdev.n3to.ui.settings.backup.BackupViewModel
 import es.aviferdev.n3to.ui.settings.emergencyfund.EmergencyFundSettingsViewModel
 import es.aviferdev.n3to.ui.settings.feedback.FeedbackViewModel
@@ -431,7 +432,8 @@ val useCaseModule = module {
         AccountConfigViewModel(
             accountId = accountId,
             accountRepository = get(),
-            getReminderInterval = get()
+            getReminderInterval = get(),
+            updateAccount = get()
         )
     }
     viewModel {
@@ -444,6 +446,24 @@ val useCaseModule = module {
             seedCategories = get(),
             session = get(),
             premiumManager = get()
+        )
+    }
+    viewModel {
+        SettingsViewModel(
+            getAccounts = get(),
+            saveAccount = get(),
+            updateAccount = get(),
+            deleteAccount = get(),
+            setInitialBalance = get(),
+            seedCategories = get(),
+            session = get(),
+            premiumManager = get(),
+            getBackupReminderInterval = get(),
+            backupViewModel = get(),
+            authenticator = get(),
+            lockManager = get(),
+            themeManager = get(),
+            languageManager = get()
         )
     }
     viewModel {
@@ -548,6 +568,18 @@ val useCaseModule = module {
         PortfolioSettingsViewModel(
             session = get(),
             getPortfoliosByAccount = get(),
+            savePortfolio = get(),
+            updatePortfolio = get(),
+            deletePortfolio = get(),
+            getAssetsByAccount = get(),
+            getAssetCategoriesIncludingArchived = get(),
+            getSectors = get(),
+            getRegions = get(),
+            getPlatforms = get(),
+            savePlatform = get(),
+            renamePlatform = get(),
+            archivePlatform = get(),
+            getPriceReminderInterval = get()
         )
     }
     viewModel {

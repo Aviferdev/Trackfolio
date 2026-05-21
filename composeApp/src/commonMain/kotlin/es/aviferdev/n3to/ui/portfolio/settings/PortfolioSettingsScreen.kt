@@ -35,42 +35,26 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import es.aviferdev.n3to.domain.model.Asset
 import es.aviferdev.n3to.domain.model.AssetCategory
 import es.aviferdev.n3to.domain.model.AssetRegion
 import es.aviferdev.n3to.domain.model.AssetSector
 import es.aviferdev.n3to.domain.model.Platform
 import es.aviferdev.n3to.domain.model.Portfolio
-import es.aviferdev.n3to.domain.usecase.asset.GetPriceReminderIntervalUseCase
-import es.aviferdev.n3to.domain.usecase.portfolio.DeletePortfolioUseCase
-import es.aviferdev.n3to.domain.usecase.portfolio.SavePortfolioUseCase
-import es.aviferdev.n3to.domain.usecase.portfolio.UpdatePortfolioUseCase
-import es.aviferdev.n3to.ui.account.AccountSession
 import es.aviferdev.n3to.ui.common.SectionHeader
 import es.aviferdev.n3to.ui.common.topbar.TopBarWithActionsApp
 import es.aviferdev.n3to.ui.portfolio.AddEditPlatformSheet
 import es.aviferdev.n3to.ui.portfolio.AddEditPortfolioBottomSheet
-import es.aviferdev.n3to.ui.portfolio.AssetCatalogUiState
-import es.aviferdev.n3to.ui.portfolio.AssetCatalogViewModel
 import es.aviferdev.n3to.ui.portfolio.PlatformError
-import es.aviferdev.n3to.ui.portfolio.PlatformListUiState
-import es.aviferdev.n3to.ui.portfolio.PlatformViewModel
 import es.aviferdev.n3to.ui.portfolio.RegionManagementSheet
 import es.aviferdev.n3to.ui.portfolio.SectorManagementSheet
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import es.aviferdev.n3to.ui.theme.appColors
-import kotlinx.coroutines.launch
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.common_accept
 import n3to.composeapp.generated.resources.common_cancel
@@ -101,7 +85,6 @@ import n3to.composeapp.generated.resources.portfolio_settings_sector_section
 import n3to.composeapp.generated.resources.portfolio_settings_title
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
-import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -109,84 +92,47 @@ fun PortfolioSettingsScreen(
     onBack: () -> Unit,
     onNavigateToCategoryDetail: (String) -> Unit,
     onNavigateToPlatformDetail: (Platform) -> Unit,
-    portfolioSettingsViewModel: PortfolioSettingsViewModel = koinViewModel(),
-    assetCatalogViewModel: AssetCatalogViewModel = koinViewModel(),
-    platformViewModel: PlatformViewModel = koinViewModel()
+    viewModel: PortfolioSettingsViewModel = koinViewModel()
 ) {
-    val assetCatalogState by assetCatalogViewModel.uiState.collectAsState()
-    val platformState by platformViewModel.uiState.collectAsState()
-
-    var showSectorSheet by remember { mutableStateOf(false) }
-    var showRegionSheet by remember { mutableStateOf(false) }
-
-    val reminderIntervalUseCase = koinInject<GetPriceReminderIntervalUseCase>()
-    var selectedInterval by remember { mutableIntStateOf(reminderIntervalUseCase.get()) }
-
-    // ── Portfolio management ────────────────────────────────────────────────
-    val session = koinInject<AccountSession>()
-    val savePortfolio = koinInject<SavePortfolioUseCase>()
-    val updatePortfolio = koinInject<UpdatePortfolioUseCase>()
-    val deletePortfolio = koinInject<DeletePortfolioUseCase>()
-
-    val portCoroutine = rememberCoroutineScope()
-    val portfolios by portfolioSettingsViewModel.uiState.collectAsState()
-    var editingPortfolio by remember { mutableStateOf<Portfolio?>(null) }
-    var deletingPortfolio by remember { mutableStateOf<Portfolio?>(null) }
-    var showAddPortfolioSheet by remember { mutableStateOf(false) }
-    var noAccountError by remember { mutableStateOf(false) }
-
-    val portfoliosList =
-        (portfolios as? PortfolioSettingsUiState.Success)?.data?.portfolios ?: emptyList()
+    val state by viewModel.uiState.collectAsState()
 
     PortfolioSettingsContent(
-        assetCatalogState = assetCatalogState,
-        platformState = platformState,
+        state = state,
         onBack = onBack,
         onNavigateToCategoryDetail = onNavigateToCategoryDetail,
         onNavigateToPlatformDetail = onNavigateToPlatformDetail,
-        selectedInterval = selectedInterval,
-        onIntervalChange = { days ->
-            selectedInterval = days
-            reminderIntervalUseCase.set(days)
-        },
-        onOpenPlatformAdd = { platformViewModel.openAddSheet() },
-        onOpenPlatformEdit = { platform -> platformViewModel.openEditSheet(platform) },
-        onOpenSectorSheet = { showSectorSheet = true },
-        onOpenRegionSheet = { showRegionSheet = true },
-        portfolios = portfoliosList,
-        onEditPortfolio = { editingPortfolio = it },
-        onDeletePortfolio = { deletingPortfolio = it },
-        onAddPortfolio = { showAddPortfolioSheet = true }
+        onIntervalChange = { viewModel.setReminderInterval(it) },
+        onOpenPlatformAdd = { viewModel.openAddPlatformSheet() },
+        onOpenPlatformEdit = { viewModel.openEditPlatformSheet(it) },
+        onOpenSectorSheet = { viewModel.openSectorSheet() },
+        onOpenRegionSheet = { viewModel.openRegionSheet() },
+        onEditPortfolio = { viewModel.openEditPortfolioSheet(it) },
+        onDeletePortfolio = { viewModel.requestDeletePortfolio(it) },
+        onAddPortfolio = { viewModel.openAddPortfolioSheet() }
     )
 
-    if (platformState.showAddSheet) {
+    // ── Platform sheets ──────────────────────────────────────────────────────
+    if (state.showAddPlatformSheet) {
         AddEditPlatformSheet(
             initial = null,
-            onSave = { name, icon, notes -> platformViewModel.addPlatform(name, icon, notes) },
-            onDismiss = { platformViewModel.closeAddSheet() }
+            onSave = { name, icon, notes -> viewModel.addPlatform(name, icon, notes) },
+            onDismiss = { viewModel.closeAddPlatformSheet() }
         )
     }
-    platformState.editing?.let { platform ->
+    state.editingPlatform?.let { platform ->
         AddEditPlatformSheet(
             initial = platform,
-            onSave = { name, icon, notes ->
-                platformViewModel.renamePlatform(
-                    platform.id,
-                    name,
-                    icon,
-                    notes
-                )
-            },
-            onDismiss = { platformViewModel.closeEditSheet() }
+            onSave = { name, icon, notes -> viewModel.renamePlatform(platform.id, name, icon, notes) },
+            onDismiss = { viewModel.closeEditPlatformSheet() }
         )
     }
-    platformState.error?.let {
-        val errorText = when (it) {
+    state.platformError?.let { error ->
+        val errorText = when (error) {
             is PlatformError.AlreadyExists -> stringResource(Res.string.error_platform_already_exists)
-            is PlatformError.Unknown -> it.message ?: stringResource(Res.string.common_error)
+            is PlatformError.Unknown -> error.message ?: stringResource(Res.string.common_error)
         }
         AlertDialog(
-            onDismissRequest = { platformViewModel.clearError() },
+            onDismissRequest = { viewModel.clearPlatformError() },
             containerColor = MaterialTheme.appColors.surface,
             title = {
                 Text(
@@ -197,14 +143,10 @@ fun PortfolioSettingsScreen(
                 )
             },
             text = {
-                Text(
-                    errorText,
-                    fontSize = 14.sp,
-                    color = MaterialTheme.appColors.textSecondary
-                )
+                Text(errorText, fontSize = 14.sp, color = MaterialTheme.appColors.textSecondary)
             },
             confirmButton = {
-                TextButton(onClick = { platformViewModel.clearError() }) {
+                TextButton(onClick = { viewModel.clearPlatformError() }) {
                     Text(
                         stringResource(Res.string.common_accept),
                         color = MaterialTheme.appColors.primary,
@@ -216,51 +158,32 @@ fun PortfolioSettingsScreen(
         )
     }
 
-    if (showSectorSheet) {
-        SectorManagementSheet(
-            onDismiss = { showSectorSheet = false }
-        )
+    // ── Sector / Region sheets ────────────────────────────────────────────────
+    if (state.showSectorSheet) {
+        SectorManagementSheet(onDismiss = { viewModel.closeSectorSheet() })
     }
-    if (showRegionSheet) {
-        RegionManagementSheet(
-            onDismiss = { showRegionSheet = false }
-        )
+    if (state.showRegionSheet) {
+        RegionManagementSheet(onDismiss = { viewModel.closeRegionSheet() })
     }
 
     // ── Portfolio sheets ─────────────────────────────────────────────────────
-    if (showAddPortfolioSheet) {
+    if (state.showAddPortfolioSheet) {
         AddEditPortfolioBottomSheet(
             existing = null,
-            onSave = { name, desc ->
-                val accountId = session.selectedAccountId.value
-                if (accountId == null) {
-                    showAddPortfolioSheet = false
-                    noAccountError = true
-                } else {
-                    portCoroutine.launch {
-                        savePortfolio(accountId, name, desc)
-                        showAddPortfolioSheet = false
-                    }
-                }
-            },
-            onDismiss = { showAddPortfolioSheet = false }
+            onSave = { name, desc -> viewModel.addPortfolio(name, desc) },
+            onDismiss = { viewModel.closeAddPortfolioSheet() }
         )
     }
-    if (editingPortfolio != null) {
+    state.editingPortfolio?.let { portfolio ->
         AddEditPortfolioBottomSheet(
-            existing = editingPortfolio,
-            onSave = { name, desc ->
-                portCoroutine.launch {
-                    updatePortfolio(editingPortfolio!!.copy(name = name, description = desc))
-                }
-                editingPortfolio = null
-            },
-            onDismiss = { editingPortfolio = null }
+            existing = portfolio,
+            onSave = { name, desc -> viewModel.updatePortfolioEntry(portfolio, name, desc) },
+            onDismiss = { viewModel.closeEditPortfolioSheet() }
         )
     }
-    if (deletingPortfolio != null) {
+    state.deletingPortfolio?.let { portfolio ->
         AlertDialog(
-            onDismissRequest = { deletingPortfolio = null },
+            onDismissRequest = { viewModel.cancelDeletePortfolio() },
             containerColor = MaterialTheme.appColors.surface,
             title = {
                 Text(
@@ -272,19 +195,13 @@ fun PortfolioSettingsScreen(
             },
             text = {
                 Text(
-                    stringResource(
-                        Res.string.portfolio_settings_delete_portfolio_message,
-                        deletingPortfolio!!.name
-                    ), fontSize = 13.sp, color = MaterialTheme.appColors.textSecondary
+                    stringResource(Res.string.portfolio_settings_delete_portfolio_message, portfolio.name),
+                    fontSize = 13.sp,
+                    color = MaterialTheme.appColors.textSecondary
                 )
             },
             confirmButton = {
-                TextButton(onClick = {
-                    portCoroutine.launch {
-                        deletePortfolio(deletingPortfolio!!.id)
-                    }
-                    deletingPortfolio = null
-                }) {
+                TextButton(onClick = { viewModel.deletePortfolioEntry(portfolio.id) }) {
                     Text(
                         stringResource(Res.string.common_delete),
                         color = MaterialTheme.appColors.expense,
@@ -293,9 +210,7 @@ fun PortfolioSettingsScreen(
                 }
             },
             dismissButton = {
-                TextButton(onClick = {
-                    deletingPortfolio = null
-                }) {
+                TextButton(onClick = { viewModel.cancelDeletePortfolio() }) {
                     Text(
                         stringResource(Res.string.common_cancel),
                         color = MaterialTheme.appColors.primary
@@ -306,9 +221,9 @@ fun PortfolioSettingsScreen(
         )
     }
 
-    if (noAccountError) {
+    if (state.noAccountError) {
         AlertDialog(
-            onDismissRequest = { noAccountError = false },
+            onDismissRequest = { viewModel.dismissNoAccountError() },
             containerColor = MaterialTheme.appColors.surface,
             title = {
                 Text(
@@ -326,7 +241,7 @@ fun PortfolioSettingsScreen(
                 )
             },
             confirmButton = {
-                TextButton(onClick = { noAccountError = false }) {
+                TextButton(onClick = { viewModel.dismissNoAccountError() }) {
                     Text(
                         stringResource(Res.string.common_accept),
                         color = MaterialTheme.appColors.primary,
@@ -337,33 +252,25 @@ fun PortfolioSettingsScreen(
             shape = RoundedCornerShape(16.dp)
         )
     }
-
-
 }
 
 @Composable
 fun PortfolioSettingsContent(
-    assetCatalogState: AssetCatalogUiState,
-    platformState: PlatformListUiState,
+    state: PortfolioSettingsUiState,
     onBack: () -> Unit,
     onNavigateToCategoryDetail: (String) -> Unit,
     onNavigateToPlatformDetail: (Platform) -> Unit,
-    selectedInterval: Int,
     onIntervalChange: (Int) -> Unit,
     onOpenPlatformAdd: () -> Unit,
     onOpenPlatformEdit: (Platform) -> Unit,
     onOpenSectorSheet: () -> Unit,
     onOpenRegionSheet: () -> Unit,
     modifier: Modifier = Modifier,
-    portfolios: List<Portfolio> = emptyList(),
     onEditPortfolio: (Portfolio) -> Unit = {},
     onDeletePortfolio: (Portfolio) -> Unit = {},
     onAddPortfolio: () -> Unit = {}
 ) {
-    val categories = assetCatalogState.categories
-    val assetsByCategory = remember(assetCatalogState.assets) {
-        assetCatalogState.assets.groupBy { it.assetCategoryId }
-    }
+    val assetsByCategory = state.assets.groupBy { it.assetCategoryId }
 
     Column(
         modifier = modifier.fillMaxSize().background(MaterialTheme.appColors.background)
@@ -387,7 +294,7 @@ fun PortfolioSettingsContent(
             }
             item {
                 SettingsGroupCard {
-                    if (portfolios.isEmpty()) {
+                    if (state.portfolios.isEmpty()) {
                         Row(
                             modifier = Modifier.fillMaxWidth()
                                 .clickable { onAddPortfolio() }
@@ -410,7 +317,7 @@ fun PortfolioSettingsContent(
                             )
                         }
                     } else {
-                        portfolios.forEachIndexed { index, portfolio ->
+                        state.portfolios.forEachIndexed { index, portfolio ->
                             Row(
                                 modifier = Modifier.fillMaxWidth()
                                     .padding(horizontal = 16.dp, vertical = 10.dp),
@@ -432,10 +339,7 @@ fun PortfolioSettingsContent(
                                     }
                                 }
                                 Spacer(Modifier.width(8.dp))
-                                IconButton(
-                                    onClick = { onEditPortfolio(portfolio) },
-                                    modifier = Modifier.size(32.dp)
-                                ) {
+                                IconButton(onClick = { onEditPortfolio(portfolio) }, modifier = Modifier.size(32.dp)) {
                                     Icon(
                                         Icons.Default.Edit,
                                         contentDescription = stringResource(Res.string.portfolio_settings_edit_cd),
@@ -443,10 +347,7 @@ fun PortfolioSettingsContent(
                                         modifier = Modifier.size(16.dp)
                                     )
                                 }
-                                IconButton(
-                                    onClick = { onDeletePortfolio(portfolio) },
-                                    modifier = Modifier.size(32.dp)
-                                ) {
+                                IconButton(onClick = { onDeletePortfolio(portfolio) }, modifier = Modifier.size(32.dp)) {
                                     Icon(
                                         Icons.Default.Delete,
                                         contentDescription = stringResource(Res.string.portfolio_settings_delete_cd),
@@ -455,7 +356,7 @@ fun PortfolioSettingsContent(
                                     )
                                 }
                             }
-                            if (index < portfolios.lastIndex) {
+                            if (index < state.portfolios.lastIndex) {
                                 HorizontalDivider(
                                     color = MaterialTheme.appColors.border,
                                     thickness = 0.5.dp,
@@ -479,7 +380,7 @@ fun PortfolioSettingsContent(
             }
             item {
                 SettingsGroupCard {
-                    categories.forEachIndexed { index, category ->
+                    state.categories.forEachIndexed { index, category ->
                         val count = assetsByCategory[category.id]?.size ?: 0
                         Row(
                             modifier = Modifier.fillMaxWidth()
@@ -496,25 +397,17 @@ fun PortfolioSettingsContent(
                                     color = MaterialTheme.appColors.textPrimary
                                 )
                                 Text(
-                                    text = if (count == 1) stringResource(
-                                        Res.string.portfolio_settings_category_count_one,
-                                        count
-                                    )
-                                    else stringResource(
-                                        Res.string.portfolio_settings_category_count_many,
-                                        count
-                                    ),
+                                    text = if (count == 1)
+                                        stringResource(Res.string.portfolio_settings_category_count_one, count)
+                                    else
+                                        stringResource(Res.string.portfolio_settings_category_count_many, count),
                                     fontSize = 11.sp,
                                     color = MaterialTheme.appColors.textSecondary
                                 )
                             }
-                            Text(
-                                "›",
-                                fontSize = 18.sp,
-                                color = MaterialTheme.appColors.textSecondary
-                            )
+                            Text("›", fontSize = 18.sp, color = MaterialTheme.appColors.textSecondary)
                         }
-                        if (index < categories.lastIndex) {
+                        if (index < state.categories.lastIndex) {
                             HorizontalDivider(
                                 color = MaterialTheme.appColors.border,
                                 thickness = 0.5.dp,
@@ -525,6 +418,7 @@ fun PortfolioSettingsContent(
                 }
             }
 
+            // ── Recordatorio de precio ────────────────────────────────────────
             item { Spacer(Modifier.height(8.dp)) }
             item {
                 Text(
@@ -537,9 +431,7 @@ fun PortfolioSettingsContent(
             item {
                 SettingsGroupCard {
                     Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp, vertical = 14.dp)
+                        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 14.dp)
                     ) {
                         Text(
                             stringResource(Res.string.portfolio_settings_reminder_title),
@@ -559,7 +451,7 @@ fun PortfolioSettingsContent(
                             horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
                             listOf(7, 14, 30).forEach { days ->
-                                val isSelected = selectedInterval == days
+                                val isSelected = state.priceReminderInterval == days
                                 OutlinedButton(
                                     onClick = { onIntervalChange(days) },
                                     shape = RoundedCornerShape(8.dp),
@@ -585,6 +477,7 @@ fun PortfolioSettingsContent(
                 }
             }
 
+            // ── Plataformas ────────────────────────────────────────────────────
             item { Spacer(Modifier.height(8.dp)) }
             item {
                 SectionHeader(
@@ -595,7 +488,7 @@ fun PortfolioSettingsContent(
             }
             item {
                 SettingsGroupCard {
-                    if (platformState.platforms.isEmpty()) {
+                    if (state.platforms.isEmpty()) {
                         Text(
                             stringResource(Res.string.portfolio_settings_platform_empty),
                             fontSize = 13.sp,
@@ -603,19 +496,14 @@ fun PortfolioSettingsContent(
                             modifier = Modifier.padding(horizontal = 16.dp, vertical = 18.dp)
                         )
                     } else {
-                        platformState.platforms.forEachIndexed { index, platform ->
+                        state.platforms.forEachIndexed { index, platform ->
                             Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
+                                modifier = Modifier.fillMaxWidth()
                                     .clickable { onOpenPlatformEdit(platform) }
                                     .padding(horizontal = 16.dp, vertical = 14.dp),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Text(
-                                    platform.icon,
-                                    fontSize = 18.sp,
-                                    modifier = Modifier.size(28.dp)
-                                )
+                                Text(platform.icon, fontSize = 18.sp, modifier = Modifier.size(28.dp))
                                 Spacer(Modifier.width(12.dp))
                                 Column(modifier = Modifier.weight(1f)) {
                                     Text(
@@ -632,13 +520,9 @@ fun PortfolioSettingsContent(
                                         )
                                     }
                                 }
-                                Text(
-                                    "›",
-                                    fontSize = 18.sp,
-                                    color = MaterialTheme.appColors.textSecondary
-                                )
+                                Text("›", fontSize = 18.sp, color = MaterialTheme.appColors.textSecondary)
                             }
-                            if (index < platformState.platforms.lastIndex) {
+                            if (index < state.platforms.lastIndex) {
                                 HorizontalDivider(
                                     color = MaterialTheme.appColors.border,
                                     thickness = 0.5.dp,
@@ -650,6 +534,7 @@ fun PortfolioSettingsContent(
                 }
             }
 
+            // ── Sectores ───────────────────────────────────────────────────────
             item { Spacer(Modifier.height(8.dp)) }
             item {
                 SectionHeader(
@@ -660,8 +545,7 @@ fun PortfolioSettingsContent(
             }
             item {
                 SettingsGroupCard {
-                    val sectors = assetCatalogState.allSectors
-                    if (sectors.isEmpty()) {
+                    if (state.allSectors.isEmpty()) {
                         Text(
                             stringResource(Res.string.portfolio_settings_sector_empty),
                             fontSize = 13.sp,
@@ -669,7 +553,7 @@ fun PortfolioSettingsContent(
                             modifier = Modifier.padding(horizontal = 16.dp, vertical = 18.dp)
                         )
                     } else {
-                        sectors.forEachIndexed { index, sector ->
+                        state.allSectors.forEachIndexed { index, sector ->
                             Row(
                                 modifier = Modifier.fillMaxWidth()
                                     .padding(horizontal = 16.dp, vertical = 14.dp),
@@ -684,7 +568,7 @@ fun PortfolioSettingsContent(
                                     modifier = Modifier.weight(1f)
                                 )
                             }
-                            if (index < sectors.lastIndex) {
+                            if (index < state.allSectors.lastIndex) {
                                 HorizontalDivider(
                                     color = MaterialTheme.appColors.border,
                                     thickness = 0.5.dp,
@@ -696,6 +580,7 @@ fun PortfolioSettingsContent(
                 }
             }
 
+            // ── Regiones ───────────────────────────────────────────────────────
             item { Spacer(Modifier.height(8.dp)) }
             item {
                 SectionHeader(
@@ -706,8 +591,7 @@ fun PortfolioSettingsContent(
             }
             item {
                 SettingsGroupCard {
-                    val regions = assetCatalogState.allRegions
-                    if (regions.isEmpty()) {
+                    if (state.allRegions.isEmpty()) {
                         Text(
                             stringResource(Res.string.portfolio_settings_region_empty),
                             fontSize = 13.sp,
@@ -715,7 +599,7 @@ fun PortfolioSettingsContent(
                             modifier = Modifier.padding(horizontal = 16.dp, vertical = 18.dp)
                         )
                     } else {
-                        regions.forEachIndexed { index, region ->
+                        state.allRegions.forEachIndexed { index, region ->
                             Row(
                                 modifier = Modifier.fillMaxWidth()
                                     .padding(horizontal = 16.dp, vertical = 14.dp),
@@ -728,7 +612,7 @@ fun PortfolioSettingsContent(
                                     modifier = Modifier.weight(1f)
                                 )
                             }
-                            if (index < regions.lastIndex) {
+                            if (index < state.allRegions.lastIndex) {
                                 HorizontalDivider(
                                     color = MaterialTheme.appColors.border,
                                     thickness = 0.5.dp,
@@ -750,57 +634,25 @@ fun PortfolioSettingsContent(
 private fun PortfolioSettingsContentPreview() {
     N3toTheme {
         PortfolioSettingsContent(
-            assetCatalogState = AssetCatalogUiState(
+            state = PortfolioSettingsUiState(
                 categories = listOf(
-                    AssetCategory(
-                        id = "cat1",
-                        name = "Acciones",
-                        icon = "📈",
-                        sortOrder = 0,
-                        createdAt = 0L
-                    ),
-                    AssetCategory(
-                        id = "cat2",
-                        name = "ETFs",
-                        icon = "📊",
-                        sortOrder = 1,
-                        createdAt = 0L
-                    )
-                ),
-                assets = listOf(
-                    Asset(
-                        id = "a1",
-                        accountId = "acc1",
-                        ticker = "AAPL",
-                        name = "Apple Inc.",
-                        notes = null,
-                        createdAt = 0L,
-                        assetCategoryId = "cat1",
-                        currentPrice = 150.0
-                    )
+                    AssetCategory(id = "cat1", name = "Acciones", icon = "📈", sortOrder = 0, createdAt = 0L),
+                    AssetCategory(id = "cat2", name = "ETFs", icon = "📊", sortOrder = 1, createdAt = 0L)
                 ),
                 allSectors = listOf(
                     AssetSector(id = "s1", name = "Tecnología", icon = "💻", createdAt = 0L)
                 ),
                 allRegions = listOf(
                     AssetRegion(id = "r1", name = "EE.UU.", createdAt = 0L)
-                )
-            ),
-            platformState = PlatformListUiState(
+                ),
                 platforms = listOf(
-                    Platform(
-                        id = "p1",
-                        name = "Interactive Brokers",
-                        icon = "🏦",
-                        sortOrder = 0,
-                        createdAt = 0L
-                    )
-                )
+                    Platform(id = "p1", name = "Interactive Brokers", icon = "🏦", sortOrder = 0, createdAt = 0L)
+                ),
+                priceReminderInterval = 7
             ),
             onBack = {},
             onNavigateToCategoryDetail = {},
             onNavigateToPlatformDetail = {},
-            selectedInterval = 7,
             onIntervalChange = {},
             onOpenPlatformAdd = {},
             onOpenPlatformEdit = {},
@@ -809,9 +661,6 @@ private fun PortfolioSettingsContentPreview() {
         )
     }
 }
-
-// ── Componentes locales ──────────────────────────────────────────────────────
-// SectionHeader reemplazado por es.aviferdev.n3to.ui.common.SectionHeader
 
 @Composable
 private fun SettingsGroupCard(content: @Composable ColumnScope.() -> Unit) {

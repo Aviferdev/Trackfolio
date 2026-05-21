@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import es.aviferdev.n3to.domain.model.Account
 import es.aviferdev.n3to.domain.repository.AccountRepository
+import es.aviferdev.n3to.domain.usecase.account.UpdateAccountUseCase
 import es.aviferdev.n3to.domain.usecase.reconciliation.GetReconciliationReminderIntervalUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -25,7 +26,8 @@ data class AccountConfigUiState(
 class AccountConfigViewModel(
     private val accountId: String,
     private val accountRepository: AccountRepository,
-    private val getReminderInterval: GetReconciliationReminderIntervalUseCase
+    private val getReminderInterval: GetReconciliationReminderIntervalUseCase,
+    private val updateAccount: UpdateAccountUseCase
 ) : ViewModel() {
 
     val uiState: StateFlow<AccountConfigUiState> = accountRepository.getAccountById(accountId)
@@ -62,6 +64,13 @@ class AccountConfigViewModel(
 
     fun cancelDelete() {
         _showDeleteConfirm.value = false
+    }
+
+    fun editAccount(account: Account, newName: String) {
+        viewModelScope.launch {
+            updateAccount(account.copy(name = newName))
+            closeEditSheet()
+        }
     }
 
     fun confirmDelete() {

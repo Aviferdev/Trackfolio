@@ -43,7 +43,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import es.aviferdev.n3to.ui.account.AccountViewModel
 import es.aviferdev.n3to.ui.account.AddEditAccountBottomSheet
 import es.aviferdev.n3to.ui.common.dialog.DeleteConfirmDialog
 import es.aviferdev.n3to.ui.common.help.FirstTimeHelpBanner
@@ -88,7 +87,6 @@ fun AccountConfigScreen(
 ) {
     val viewModel: AccountConfigViewModel = koinViewModel { parametersOf(accountId) }
     val state by viewModel.uiState.collectAsState()
-    val accountVM: AccountViewModel = koinViewModel()
 
     val account = state.account
 
@@ -199,10 +197,7 @@ fun AccountConfigScreen(
     if (viewModel.showEditSheet.collectAsState().value && account != null) {
         AddEditAccountBottomSheet(
             account = account,
-            onSave = { newName, _ ->
-                accountVM.editAccount(account, newName)
-                viewModel.closeEditSheet()
-            },
+            onSave = { newName, _ -> viewModel.editAccount(account, newName) },
             onDismiss = { viewModel.closeEditSheet() }
         )
     }
