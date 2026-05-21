@@ -7,9 +7,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
-import es.aviferdev.n3to.ui.theme.N3toTheme
 import es.aviferdev.n3to.ui.theme.appColors
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 /**
  * Section label — 10sp, uppercase, semi-bold, tertiary color.
@@ -35,20 +33,4 @@ fun N3toLabel(
         letterSpacing = 0.7.sp,
         modifier = modifier
     )
-}
-
-@Preview
-@Composable
-private fun N3toLabelPreview() {
-    N3toTheme {
-        N3toLabel("Últimos movimientos")
-    }
-}
-
-@Preview
-@Composable
-private fun N3toLabelCustomColorPreview() {
-    N3toTheme {
-        N3toLabel("Activos", color = MaterialTheme.appColors.primary)
-    }
 }
