@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.SaveAlt
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -110,7 +111,12 @@ fun BackupReminderBanner(
                     .size(24.dp),
                 contentAlignment = Alignment.Center
             ) {
-                Text("×", fontSize = 16.sp, color = MaterialTheme.appColors.textTertiary)
+                Icon(
+                    imageVector = Icons.Outlined.Close,
+                    contentDescription = "Cerrar",
+                    tint = MaterialTheme.appColors.textTertiary,
+                    modifier = Modifier.size(16.dp)
+                )
             }
         }
     }
