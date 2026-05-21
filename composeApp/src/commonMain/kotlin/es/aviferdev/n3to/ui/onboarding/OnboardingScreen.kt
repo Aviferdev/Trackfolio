@@ -34,12 +34,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import es.aviferdev.n3to.domain.usecase.onboarding.MarkOnboardingCompletedUseCase
-
 import es.aviferdev.n3to.ui.theme.N3toTheme
-
 import kotlinx.coroutines.launch
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.onboarding_continue
@@ -61,22 +56,7 @@ import n3to.composeapp.generated.resources.onboarding_realestate_desc
 import n3to.composeapp.generated.resources.common_back_cd
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
-import org.koin.compose.koinInject
-
-// ─── ViewModel ─────────────────────────────────────────────
-
-class OnboardingViewModel(
-    private val markCompleted: MarkOnboardingCompletedUseCase,
-    private val onComplete: () -> Unit
-) : ViewModel() {
-
-    fun complete() {
-        viewModelScope.launch {
-            markCompleted()
-            onComplete()
-        }
-    }
-}
+import org.koin.compose.viewmodel.koinViewModel
 
 // ─── Slide metadata ────────────────────────────────────────
 
@@ -98,8 +78,7 @@ private val SLIDES = listOf(
 
 @Composable
 fun OnboardingScreen(onComplete: () -> Unit) {
-    val markCompleted = koinInject<MarkOnboardingCompletedUseCase>()
-    val viewModel = remember { OnboardingViewModel(markCompleted, onComplete) }
+    val viewModel: OnboardingViewModel = koinViewModel()
     val pagerState = rememberPagerState(pageCount = { SLIDES.size })
     var currentSlide by remember { mutableStateOf(0) }
     val coroutineScope = rememberCoroutineScope()
@@ -171,7 +150,7 @@ fun OnboardingScreen(onComplete: () -> Unit) {
 
                 if (isLast) {
                     Button(
-                        onClick = { viewModel.complete() },
+                        onClick = { viewModel.complete(onComplete) },
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(52.dp),

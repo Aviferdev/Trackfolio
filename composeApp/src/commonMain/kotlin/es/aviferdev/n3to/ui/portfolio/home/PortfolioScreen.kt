@@ -87,9 +87,6 @@ fun PortfolioScreen(
     onFixedIncomeClick: (String) -> Unit = {},
     onNavigateToSavingsRates: () -> Unit = {},
     viewModel: PortfolioViewModel = koinViewModel(),
-    catalogViewModel: AssetCatalogViewModel = koinViewModel(),
-    platformViewModel: PlatformViewModel = koinViewModel(),
-    accountViewModel: AccountViewModel = koinViewModel(),
 ) {
     val loadingManager = koinInject<GlobalLoadingManager>()
 
@@ -111,40 +108,43 @@ fun PortfolioScreen(
         when (val state = uiState) {
             is PortfolioNewUiState.Loading -> Unit
 
-            is PortfolioNewUiState.Error -> @Composable {
-                Box(
-                    Modifier.fillMaxSize().background(MaterialTheme.appColors.navyDeep),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        state.message,
-                        color = MaterialTheme.appColors.expense
-                    )
-                }
-            }
+            is PortfolioNewUiState.Error -> ErrorScreen(state.message)
 
-            is PortfolioNewUiState.Empty -> Emptya(
+            is PortfolioNewUiState.Empty -> NotAccountCreated(
                 onNavigateToSettings
             )
 
-            is PortfolioNewUiState.EmptyPortFolio -> Empty(
+            is PortfolioNewUiState.EmptyPortFolio -> NotAccountPortfolioCreated(
                 onNavigateToSettings = onNavigateToSettings
             )
 
-            is PortfolioNewUiState.Success -> Fill(
-                state.data.portfolios,
-                onClickPortfolio = {},
-                onNavigateToSettings = {},
-                onAssetClick = {},
-                onFixedIncomeClick = {},
-                onNavigateToSavingsRates = {},
+            is PortfolioNewUiState.Success -> ListAllPortfolios(
+                listPortfolio = state.data.portfolios,
+                onClickPortfolio = { viewModel.selectPortfolio(it) },
+                onNavigateToSettings = onNavigateToSettings,
+                onAssetClick = onAssetClick,
+                onFixedIncomeClick = onFixedIncomeClick,
+                onNavigateToSavingsRates = onNavigateToSavingsRates,
             )
         }
     }
 }
 
 @Composable
-private fun Emptya(
+private fun ErrorScreen(message: String) {
+    Box(
+        Modifier.fillMaxSize().background(MaterialTheme.appColors.navyDeep),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            message,
+            color = MaterialTheme.appColors.expense
+        )
+    }
+}
+
+@Composable
+private fun NotAccountCreated(
     onNavigateToSettings: () -> Unit,
 ) {
     Box(
@@ -162,7 +162,7 @@ private fun Emptya(
 }
 
 @Composable
-private fun Empty(
+private fun NotAccountPortfolioCreated(
     onNavigateToSettings: () -> Unit,
 ) {
     Column(
@@ -190,9 +190,9 @@ private fun Empty(
 }
 
 @Composable
-private fun Fill(
+private fun ListAllPortfolios(
     listPortfolio: List<Portfolio>,
-    onClickPortfolio: (portfolioId: String) -> Unit,
+    onClickPortfolio: (portfolioId: String?) -> Unit,
     onNavigateToSettings: () -> Unit,
     onAssetClick: (String) -> Unit = {},
     onFixedIncomeClick: (String) -> Unit = {},
@@ -200,7 +200,6 @@ private fun Fill(
     viewModel: PortfolioViewModel = koinViewModel(),
     catalogViewModel: AssetCatalogViewModel = koinViewModel(),
     platformViewModel: PlatformViewModel = koinViewModel(),
-    accountViewModel: AccountViewModel = koinViewModel(),
 ) {
 
     val state by viewModel.portfolioState.collectAsState()
@@ -224,9 +223,7 @@ private fun Fill(
         snapshotFlow { pagerState.currentPage }
             .collect { page ->
                 tabIndex = page
-                tabTitles.getOrNull(page)?.let {
-                    onClickPortfolio(it)
-                }
+                onClickPortfolio(tabTitles.getOrNull(page))
             }
     }
 
@@ -253,11 +250,17 @@ private fun Fill(
                         val page = tabTitles.indexOf(portfolioId)
                         coroutineScope.launch { pagerState.animateScrollToPage(page) }
                     },
-                    label = { portfolioId ->
-                        if (portfolioId == null) "Todas"
+                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                    content = { portfolioId ->
+                        val name = if (portfolioId == null) "Todas"
                         else listPortfolio.find { it.id == portfolioId }?.name ?: ""
-                    },
-                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                        Text(
+                            text = name,
+                            fontSize = 12.sp,
+                            fontWeight = if (portfolioId == tabTitles[tabIndex]) FontWeight.SemiBold else FontWeight.Normal,
+                            color = if (portfolioId == tabTitles[tabIndex]) MaterialTheme.appColors.textPrimary else MaterialTheme.appColors.textSecondary
+                        )
+                    }
                 )
             }
 

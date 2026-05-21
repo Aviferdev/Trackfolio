@@ -22,10 +22,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -36,8 +34,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import es.aviferdev.n3to.core.security.BiometricAuthenticator
-import es.aviferdev.n3to.core.security.BiometricResult
 import es.aviferdev.n3to.ui.theme.ErrorSoft
 import es.aviferdev.n3to.ui.theme.appColors
 import n3to.composeapp.generated.resources.Res
@@ -45,7 +41,7 @@ import n3to.composeapp.generated.resources.security_biometric_not_available
 import n3to.composeapp.generated.resources.security_unlock_hint
 import n3to.composeapp.generated.resources.security_unlock_title
 import org.jetbrains.compose.resources.stringResource
-import org.koin.compose.koinInject
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun LockScreen(onUnlocked: () -> Unit) {
@@ -56,28 +52,17 @@ fun LockScreen(onUnlocked: () -> Unit) {
     val appCNavySurface = MaterialTheme.appColors.navySurface
     val appCTextPrimary = MaterialTheme.appColors.textPrimary
     val appCTextSecondary = MaterialTheme.appColors.textSecondary
-    val authenticator: BiometricAuthenticator = koinInject()
-    var errorMessage by remember { mutableStateOf<String?>(null) }
-    var isAuthenticating by remember { mutableStateOf(false) }
+    val viewModel: LockViewModel = koinViewModel()
+    val lockState by viewModel.state.collectAsState()
     val unlockTitle = stringResource(Res.string.security_unlock_title)
     val unlockHint = stringResource(Res.string.security_unlock_hint)
     val bioNotAvailable = stringResource(Res.string.security_biometric_not_available)
 
-    // Lanza autenticación automáticamente al aparecer la pantalla
     LaunchedEffect(Unit) {
-        isAuthenticating = true
-        authenticator.authenticate(
-            title = unlockTitle,
-            subtitle = unlockHint
-        ) { result ->
-            isAuthenticating = false
-            when (result) {
-                is BiometricResult.Success -> onUnlocked()
-                is BiometricResult.UserCancelled -> errorMessage = null
-                is BiometricResult.NotAvailable -> errorMessage = bioNotAvailable
-                is BiometricResult.Error -> errorMessage = result.message
-            }
-        }
+        viewModel.authenticate(unlockTitle, unlockHint, bioNotAvailable)
+    }
+    LaunchedEffect(lockState) {
+        if (lockState is LockUiState.Unlocked) onUnlocked()
     }
 
     Box(
@@ -147,7 +132,7 @@ fun LockScreen(onUnlocked: () -> Unit) {
                 textAlign = TextAlign.Center
             )
 
-            errorMessage?.let { msg ->
+            (lockState as? LockUiState.Error)?.message?.let { msg ->
                 Spacer(Modifier.height(16.dp))
                 Box(
                     modifier = Modifier
@@ -166,23 +151,9 @@ fun LockScreen(onUnlocked: () -> Unit) {
 
             Spacer(Modifier.height(40.dp))
 
+            val isAuthenticating = lockState is LockUiState.Authenticating
             Button(
-                onClick = {
-                    isAuthenticating = true
-                    errorMessage = null
-                    authenticator.authenticate(
-                        title = unlockTitle,
-                        subtitle = unlockHint
-                    ) { result ->
-                        isAuthenticating = false
-                        when (result) {
-                            is BiometricResult.Success -> onUnlocked()
-                            is BiometricResult.UserCancelled -> Unit
-                            is BiometricResult.NotAvailable -> errorMessage = bioNotAvailable
-                            is BiometricResult.Error -> errorMessage = result.message
-                        }
-                    }
-                },
+                onClick = { viewModel.authenticate(unlockTitle, unlockHint, bioNotAvailable) },
                 enabled = !isAuthenticating,
                 modifier = Modifier
                     .fillMaxWidth()

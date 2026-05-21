@@ -50,7 +50,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import es.aviferdev.n3to.core.premium.PremiumManager
 import es.aviferdev.n3to.ui.common.InitialsAvatar
 import es.aviferdev.n3to.ui.common.N3toLabel
 import es.aviferdev.n3to.ui.common.topbar.TopBarWithActionsApp
@@ -76,6 +75,7 @@ import n3to.composeapp.generated.resources.about_version_label
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.koinInject
+import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.qualifier.named
 
 // ─── WRAPPER ────────────────────────────────────────────────────────────────────
@@ -85,15 +85,15 @@ fun AboutScreen(
     onOpenStore: () -> Unit = koinInject(named("openStore")),
     onShareApp: () -> Unit = koinInject(named("shareApp")),
     appVersion: String = koinInject(named("appVersion")),
-    premiumManager: PremiumManager = koinInject()
+    viewModel: AboutViewModel = koinViewModel()
 ) {
-    val premiumStatus by premiumManager.status.collectAsState()
+    val appUserId by viewModel.appUserId.collectAsState()
     AboutContent(
         onBack = onBack,
         onOpenStore = onOpenStore,
         onShareApp = onShareApp,
         appVersion = appVersion,
-        appUserId = premiumStatus.appUserId
+        appUserId = appUserId
     )
 }
 

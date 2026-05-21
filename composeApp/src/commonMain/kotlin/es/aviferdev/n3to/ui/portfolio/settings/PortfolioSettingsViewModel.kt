@@ -5,12 +5,10 @@ import androidx.lifecycle.viewModelScope
 import es.aviferdev.n3to.domain.model.PortfolioSettingsScreenData
 import es.aviferdev.n3to.domain.usecase.portfolio.GetPortfoliosByAccountUseCase
 import es.aviferdev.n3to.ui.account.AccountSession
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.lastOrNull
 import kotlinx.coroutines.launch
 
 
@@ -26,7 +24,6 @@ sealed class PortfolioSettingsUiState {
 }
 
 
-@OptIn(ExperimentalCoroutinesApi::class)
 class PortfolioSettingsViewModel(
     private val session: AccountSession,
     private val getPortfoliosByAccount: GetPortfoliosByAccountUseCase,
@@ -40,15 +37,16 @@ class PortfolioSettingsViewModel(
     init {
         viewModelScope.launch {
             session.selectedAccountId.collectLatest { accountId ->
-                accountId?.let {
-                    getPortfoliosByAccount(accountId).lastOrNull()?.let {
-                        _uiState.value =
-                            PortfolioSettingsUiState.Success(PortfolioSettingsScreenData(it))
-                    } ?: run {
-                        _uiState.value = PortfolioSettingsUiState.EmptyPortFolio
-                    }
-                } ?: run {
+                if (accountId == null) {
                     _uiState.value = PortfolioSettingsUiState.Empty
+                } else {
+                    _uiState.value = PortfolioSettingsUiState.Loading
+                    getPortfoliosByAccount(accountId).collect { portfolios ->
+                        _uiState.value = if (portfolios.isEmpty())
+                            PortfolioSettingsUiState.EmptyPortFolio
+                        else
+                            PortfolioSettingsUiState.Success(PortfolioSettingsScreenData(portfolios))
+                    }
                 }
             }
         }

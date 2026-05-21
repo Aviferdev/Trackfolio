@@ -175,6 +175,8 @@ import es.aviferdev.n3to.domain.usecase.version.GetVersionInfoUseCase
 import es.aviferdev.n3to.ui.account.AccountSession
 import es.aviferdev.n3to.ui.account.AccountViewModel
 import es.aviferdev.n3to.ui.annual.AnnualViewModel
+import es.aviferdev.n3to.ui.security.LockViewModel
+import es.aviferdev.n3to.ui.settings.AboutViewModel
 import es.aviferdev.n3to.ui.debt.DebtViewModel
 import es.aviferdev.n3to.ui.fiscal.FiscalReportViewModel
 import es.aviferdev.n3to.ui.fixedincome.FixedIncomeDetailViewModel
@@ -780,4 +782,10 @@ val useCaseModule = module {
     // ── Savings Rates ────────────────────────────────────────────────────────────
     factory { GetSavingsRatesUseCase(get()) }
     viewModel { SavingsRatesViewModel(get()) }
+
+    // ── Security / Lock ──────────────────────────────────────────────────────────
+    viewModel { LockViewModel(get()) }
+
+    // ── About ─────────────────────────────────────────────────────────────────────
+    viewModel { AboutViewModel(get()) }
 }
