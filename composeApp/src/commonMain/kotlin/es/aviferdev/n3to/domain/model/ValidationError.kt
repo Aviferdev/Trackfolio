@@ -13,8 +13,12 @@ sealed class ValidationError(override val message: String) : Throwable(message) 
     data object PurchaseValueInvalid : ValidationError("El valor de compra debe ser mayor que 0")
     data object EstimatedValueInvalid : ValidationError("El valor estimado debe ser mayor que 0")
     data object AcquisitionDateRequired : ValidationError("La fecha de adquisición es obligatoria")
-    data object OwnershipPercentageInvalid : ValidationError("El porcentaje de propiedad debe estar entre 0 y 100")
-    data object RentalIncomeRequired : ValidationError("La renta mensual es obligatoria para propiedades alquiladas")
+    data object OwnershipPercentageInvalid :
+        ValidationError("El porcentaje de propiedad debe estar entre 0 y 100")
+
+    data object RentalIncomeRequired :
+        ValidationError("La renta mensual es obligatoria para propiedades alquiladas")
+
     data object SalePriceInvalid : ValidationError("El precio de venta debe ser mayor que 0")
     data object SaleDateRequired : ValidationError("La fecha de venta es obligatoria")
     data object ExpenseAmountInvalid : ValidationError("El importe del gasto debe ser mayor que 0")
@@ -22,7 +26,9 @@ sealed class ValidationError(override val message: String) : Throwable(message) 
     // ─── Fixed Income ────────────────────────────────────────────────
     data object FixedIncomeNameEmpty : ValidationError("El nombre no puede estar vacío")
     data object FixedIncomePrincipalInvalid : ValidationError("El capital debe ser mayor que 0")
-    data object FixedIncomeInterestRateInvalid : ValidationError("El tipo de interés debe ser mayor que 0")
+    data object FixedIncomeInterestRateInvalid :
+        ValidationError("El tipo de interés debe ser mayor que 0")
+
     data object FixedIncomeDurationInvalid : ValidationError("La duración debe ser mayor que 0")
     data object FixedIncomeIssuerRequired : ValidationError("Debes seleccionar un emisor")
 
@@ -44,11 +50,16 @@ sealed class ValidationError(override val message: String) : Throwable(message) 
 
     // ─── Valuable (Bienes) ───────────────────────────────────────────
     data object ValuableNameEmpty : ValidationError("El nombre del bien no puede estar vacío")
-    data object ValuablePurchasePriceInvalid : ValidationError("El precio de compra debe ser mayor que 0")
+    data object ValuablePurchasePriceInvalid :
+        ValidationError("El precio de compra debe ser mayor que 0")
+
     data object ValuablePurchaseDateRequired : ValidationError("La fecha de compra es obligatoria")
-    data object ValuableSalePriceInvalid : ValidationError("El precio de venta debe ser mayor que 0")
+    data object ValuableSalePriceInvalid :
+        ValidationError("El precio de venta debe ser mayor que 0")
+
     data object ValuableSaleDateRequired : ValidationError("La fecha de venta es obligatoria")
-    data object ValuableExpenseAmountInvalid : ValidationError("El importe del gasto debe ser mayor que 0")
+    data object ValuableExpenseAmountInvalid :
+        ValidationError("El importe del gasto debe ser mayor que 0")
 
     // ─── Backup / Reminders ──────────────────────────────────────────
     data class InvalidInterval(val days: Int) : ValidationError("Intervalo no válido: $days")

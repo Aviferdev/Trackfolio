@@ -34,18 +34,19 @@ class ReconcileBalanceUseCase(
         val now = nowMillis()
 
         val formattedExpected = formatAmount(computedBalance)
-        val formattedReal     = formatAmount(realBalance)
-        val formattedDiff     = if (difference > 0) "+${formatAmount(difference)}" else formatAmount(difference)
+        val formattedReal = formatAmount(realBalance)
+        val formattedDiff =
+            if (difference > 0) "+${formatAmount(difference)}" else formatAmount(difference)
 
         val transaction = Transaction(
-            id                = uuid4().toString(),
-            accountId         = accountId,
-            amount            = difference, // positivo suma, negativo resta
-            type              = TransactionType.ADJUSTMENT,
-            categoryId        = DatabaseInitializer.ADJUSTMENT_CATEGORY_ID,
-            date              = now,
-            notes             = "Reconciliación: esperado ${formattedExpected}€, real ${formattedReal}€ (${formattedDiff}€)",
-            createdAt         = now,
+            id = uuid4().toString(),
+            accountId = accountId,
+            amount = difference, // positivo suma, negativo resta
+            type = TransactionType.ADJUSTMENT,
+            categoryId = DatabaseInitializer.ADJUSTMENT_CATEGORY_ID,
+            date = now,
+            notes = "Reconciliación: esperado ${formattedExpected}€, real ${formattedReal}€ (${formattedDiff}€)",
+            createdAt = now,
             excludeFromFiscal = true
         )
 

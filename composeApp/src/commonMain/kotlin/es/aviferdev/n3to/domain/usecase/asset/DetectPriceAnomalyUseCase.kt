@@ -15,6 +15,7 @@ class DetectPriceAnomalyUseCase {
     companion object {
         /** Umbral para advertencia (50% de cambio) */
         const val WARNING_THRESHOLD_PERCENT = 50.0
+
         /** Umbral para bloqueo/sospecha en entrada manual (500% = 5x) */
         const val SUSPICIOUS_THRESHOLD_PERCENT = 500.0
     }
@@ -72,10 +73,13 @@ class DetectPriceAnomalyUseCase {
                 val cause = when {
                     factor in 0.09..0.11 || factor in 9.0..11.0 ->
                         "Posible error de coma decimal (factor 10x)"
+
                     factor in 0.009..0.011 || factor in 99.0..101.0 ->
                         "Posible error de coma decimal (factor 100x)"
+
                     factor > 1000 ->
                         "Variación extremadamente alta ($changeStr)"
+
                     else ->
                         "Variación inusualmente alta ($changeStr)"
                 }

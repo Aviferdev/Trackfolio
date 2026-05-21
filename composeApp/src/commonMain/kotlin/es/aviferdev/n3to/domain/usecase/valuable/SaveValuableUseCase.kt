@@ -64,7 +64,8 @@ class SaveValuableUseCase(
         }
 
         // 3. Eliminar gastos previos (compra y tenencia) para evitar duplicados en edición
-        val linkedTransactions = transactionRepository.getByLinkedValuable(valuable.id).firstOrNull() ?: emptyList()
+        val linkedTransactions =
+            transactionRepository.getByLinkedValuable(valuable.id).firstOrNull() ?: emptyList()
         linkedTransactions
             .filter { it.id.startsWith("val_pexp_${valuable.id}") || it.id.startsWith("val_hexp_${valuable.id}") }
             .forEach { transactionRepository.deleteTransaction(it.id) }

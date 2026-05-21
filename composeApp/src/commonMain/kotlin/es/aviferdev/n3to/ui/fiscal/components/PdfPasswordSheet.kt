@@ -1,7 +1,5 @@
 package es.aviferdev.n3to.ui.fiscal.components
 
-import androidx.compose.material3.MaterialTheme
-import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,6 +19,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -40,7 +39,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import es.aviferdev.n3to.ui.theme.*
+import es.aviferdev.n3to.ui.theme.appColors
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.fiscal_cancel
 import n3to.composeapp.generated.resources.fiscal_confirm_password_label
@@ -57,15 +56,15 @@ import org.jetbrains.compose.resources.stringResource
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun PdfPasswordSheet(onConfirm: (String) -> Unit, onDismiss: () -> Unit) {
-    var password        by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
-    var error           by remember { mutableStateOf<String?>(null) }
+    var error by remember { mutableStateOf<String?>(null) }
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
-        sheetState       = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-        containerColor   = MaterialTheme.appColors.navySurface,
+        sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
+        containerColor = MaterialTheme.appColors.navySurface,
         dragHandle = {
             Box(
                 modifier = Modifier
@@ -83,9 +82,18 @@ internal fun PdfPasswordSheet(onConfirm: (String) -> Unit, onDismiss: () -> Unit
                 .padding(horizontal = 24.dp)
                 .padding(bottom = 32.dp)
         ) {
-            Text(stringResource(Res.string.fiscal_pdf_password_title), fontSize = 17.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.appColors.textPrimary)
+            Text(
+                stringResource(Res.string.fiscal_pdf_password_title),
+                fontSize = 17.sp,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.appColors.textPrimary
+            )
             Spacer(Modifier.height(6.dp))
-            Text(stringResource(Res.string.fiscal_pdf_password_desc), fontSize = 12.sp, color = MaterialTheme.appColors.textTertiary)
+            Text(
+                stringResource(Res.string.fiscal_pdf_password_desc),
+                fontSize = 12.sp,
+                color = MaterialTheme.appColors.textTertiary
+            )
             Spacer(Modifier.height(20.dp))
 
             OutlinedTextField(
@@ -108,13 +116,13 @@ internal fun PdfPasswordSheet(onConfirm: (String) -> Unit, onDismiss: () -> Unit
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(10.dp),
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor   = MaterialTheme.appColors.cyanAccent,
+                    focusedBorderColor = MaterialTheme.appColors.cyanAccent,
                     unfocusedBorderColor = MaterialTheme.appColors.navyBorder,
-                    focusedLabelColor    = MaterialTheme.appColors.cyanAccent,
-                    unfocusedLabelColor  = MaterialTheme.appColors.textTertiary,
-                    focusedTextColor     = MaterialTheme.appColors.textPrimary,
-                    unfocusedTextColor   = MaterialTheme.appColors.textPrimary,
-                    cursorColor          = MaterialTheme.appColors.cyanAccent
+                    focusedLabelColor = MaterialTheme.appColors.cyanAccent,
+                    unfocusedLabelColor = MaterialTheme.appColors.textTertiary,
+                    focusedTextColor = MaterialTheme.appColors.textPrimary,
+                    unfocusedTextColor = MaterialTheme.appColors.textPrimary,
+                    cursorColor = MaterialTheme.appColors.cyanAccent
                 )
             )
 
@@ -131,31 +139,45 @@ internal fun PdfPasswordSheet(onConfirm: (String) -> Unit, onDismiss: () -> Unit
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(10.dp),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor   = MaterialTheme.appColors.cyanAccent,
+                        focusedBorderColor = MaterialTheme.appColors.cyanAccent,
                         unfocusedBorderColor = MaterialTheme.appColors.navyBorder,
-                        focusedLabelColor    = MaterialTheme.appColors.cyanAccent,
-                        unfocusedLabelColor  = MaterialTheme.appColors.textTertiary,
-                        focusedTextColor     = MaterialTheme.appColors.textPrimary,
-                        unfocusedTextColor   = MaterialTheme.appColors.textPrimary,
-                        cursorColor          = MaterialTheme.appColors.cyanAccent
+                        focusedLabelColor = MaterialTheme.appColors.cyanAccent,
+                        unfocusedLabelColor = MaterialTheme.appColors.textTertiary,
+                        focusedTextColor = MaterialTheme.appColors.textPrimary,
+                        unfocusedTextColor = MaterialTheme.appColors.textPrimary,
+                        cursorColor = MaterialTheme.appColors.cyanAccent
                     )
                 )
             }
 
-            error?.let { Text(it, fontSize = 11.sp, color = MaterialTheme.appColors.expense, modifier = Modifier.padding(top = 4.dp)) }
+            error?.let {
+                Text(
+                    it,
+                    fontSize = 11.sp,
+                    color = MaterialTheme.appColors.expense,
+                    modifier = Modifier.padding(top = 4.dp)
+                )
+            }
             Spacer(Modifier.height(20.dp))
 
-            val passwordMismatchText  = stringResource(Res.string.fiscal_password_mismatch)
+            val passwordMismatchText = stringResource(Res.string.fiscal_password_mismatch)
             val passwordMinLengthText = stringResource(Res.string.fiscal_password_min_length)
             Button(
                 onClick = {
-                    if (password.isNotEmpty() && password != confirmPassword) { error = passwordMismatchText; return@Button }
-                    if (password.isNotEmpty() && password.length < 4) { error = passwordMinLengthText; return@Button }
+                    if (password.isNotEmpty() && password != confirmPassword) {
+                        error = passwordMismatchText; return@Button
+                    }
+                    if (password.isNotEmpty() && password.length < 4) {
+                        error = passwordMinLengthText; return@Button
+                    }
                     onConfirm(password)
                 },
                 modifier = Modifier.fillMaxWidth().height(50.dp),
                 shape = RoundedCornerShape(10.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.appColors.cyanAccent, contentColor = MaterialTheme.appColors.navyDeep)
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.appColors.cyanAccent,
+                    contentColor = MaterialTheme.appColors.navyDeep
+                )
             ) {
                 Text(
                     if (password.isEmpty())
@@ -168,7 +190,11 @@ internal fun PdfPasswordSheet(onConfirm: (String) -> Unit, onDismiss: () -> Unit
             }
             Spacer(Modifier.height(8.dp))
             TextButton(onClick = onDismiss, modifier = Modifier.fillMaxWidth()) {
-                Text(stringResource(Res.string.fiscal_cancel), fontSize = 13.sp, color = MaterialTheme.appColors.textTertiary)
+                Text(
+                    stringResource(Res.string.fiscal_cancel),
+                    fontSize = 13.sp,
+                    color = MaterialTheme.appColors.textTertiary
+                )
             }
         }
     }

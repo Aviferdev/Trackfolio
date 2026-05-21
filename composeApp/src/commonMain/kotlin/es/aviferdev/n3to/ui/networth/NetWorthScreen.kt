@@ -10,11 +10,14 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -36,14 +39,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import es.aviferdev.n3to.domain.model.NetWorthScreenData
 import es.aviferdev.n3to.domain.model.NetWorthHistoryPoint
+import es.aviferdev.n3to.domain.model.NetWorthScreenData
 import es.aviferdev.n3to.ui.annual.DonutChartCard
 import es.aviferdev.n3to.ui.common.DonutSlice
 import es.aviferdev.n3to.ui.common.LineChartWithTimeRange
 import es.aviferdev.n3to.ui.common.N3toLabel
 import es.aviferdev.n3to.ui.common.component.EmptyStateView
-import es.aviferdev.n3to.ui.common.navigation.TopBarApp
+import es.aviferdev.n3to.ui.common.topbar.TopBarWithoutActionsApp
 import es.aviferdev.n3to.ui.loan.AddEditLoanBottomSheet
 import es.aviferdev.n3to.ui.networth.components.AssetsSummaryCard
 import es.aviferdev.n3to.ui.networth.components.EverydayDebtsRow
@@ -79,7 +82,6 @@ import n3to.composeapp.generated.resources.networth_no_liabilities
 import n3to.composeapp.generated.resources.networth_no_properties
 import n3to.composeapp.generated.resources.networth_no_valuables
 import n3to.composeapp.generated.resources.networth_realestate_label
-import n3to.composeapp.generated.resources.networth_title
 import n3to.composeapp.generated.resources.networth_valuables_label
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -112,75 +114,81 @@ fun NetWorthScreen(
         delay(220); liabilitiesVisible = true
     }
 
-    if (showAddLoanSheet) {
-        AddEditLoanBottomSheet(onDismiss = { viewModel.closeAddLoanSheet() })
-    }
-
-    if (showAddPropertySheet) {
-        val state = uiState
-        if (state is NetWorthUiState.Success) {
-            AddEditPropertyBottomSheet(
-                accountId = state.data.loans.firstOrNull()?.accountId ?: "",
-                existingProperty = null,
-                availableLoans = state.data.loans,
-                onDismiss = { viewModel.closeAddPropertySheet() },
-                onSave = { _, _ -> viewModel.closeAddPropertySheet() }
-            )
-        }
-    }
-
-    if (showAddValuableSheet) {
-        val state = uiState
-        if (state is NetWorthUiState.Success) {
-            val accountId = state.data.loans.firstOrNull()?.accountId ?: ""
-            AddEditValuableBottomSheet(
-                accountId = accountId,
-                onDismiss = { viewModel.closeAddValuableSheet() },
-                onSave = { _, _, _ -> viewModel.closeAddValuableSheet() }
-            )
-        }
-    }
-
-    when (val state = uiState) {
-        is NetWorthUiState.Loading -> Box(
-            Modifier.fillMaxSize().background(MaterialTheme.appColors.navyDeep),
-            contentAlignment = Alignment.Center
-        ) { SplashLoader() }
-
-        is NetWorthUiState.Empty -> Box(
-            Modifier.fillMaxSize().background(MaterialTheme.appColors.navyDeep),
-            contentAlignment = Alignment.Center
-        ) {
-            EmptyStateView(
-                icon = "\uD83C\uDFE6",
-                title = stringResource(Res.string.networth_no_account_title),
-                subtitle = stringResource(Res.string.networth_no_account_subtitle),
-                actionLabel = "Ir a Ajustes",
-                onAction = onNavigateToSettings
-            )
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.appColors.navyDeep)
+    ) {
+        if (showAddLoanSheet) {
+            AddEditLoanBottomSheet(onDismiss = { viewModel.closeAddLoanSheet() })
         }
 
-        is NetWorthUiState.Error -> Box(
-            Modifier.fillMaxSize().background(MaterialTheme.appColors.navyDeep),
-            contentAlignment = Alignment.Center
-        ) { Text(state.message, color = MaterialTheme.appColors.expense) }
+        if (showAddPropertySheet) {
+            val state = uiState
+            if (state is NetWorthUiState.Success) {
+                AddEditPropertyBottomSheet(
+                    accountId = state.data.loans.firstOrNull()?.accountId ?: "",
+                    existingProperty = null,
+                    availableLoans = state.data.loans,
+                    onDismiss = { viewModel.closeAddPropertySheet() },
+                    onSave = { _, _ -> viewModel.closeAddPropertySheet() }
+                )
+            }
+        }
 
-        is NetWorthUiState.Success -> NetWorthContent(
-            data = state.data,
-            netWorthHistory = state.netWorthHistory,
-            assetDistribution = state.assetDistribution,
-            balancesHidden = balancesHidden,
-            onLoanClick = onLoanClick,
-            onPropertyClick = onPropertyClick,
-            onValuableClick = onValuableClick,
-            onAddLoan = { viewModel.openAddLoanSheet() },
-            onAddProperty = { viewModel.openAddPropertySheet() },
-            onAddValuable = { viewModel.openAddValuableSheet() },
-            heroVisible = heroVisible,
-            chartVisible = chartVisible,
-            assetsVisible = assetsVisible,
-            liabilitiesVisible = liabilitiesVisible
-        )
+        if (showAddValuableSheet) {
+            val state = uiState
+            if (state is NetWorthUiState.Success) {
+                val accountId = state.data.loans.firstOrNull()?.accountId ?: ""
+                AddEditValuableBottomSheet(
+                    accountId = accountId,
+                    onDismiss = { viewModel.closeAddValuableSheet() },
+                    onSave = { _, _, _ -> viewModel.closeAddValuableSheet() }
+                )
+            }
+        }
+
+        when (val state = uiState) {
+            is NetWorthUiState.Loading -> Box(
+                Modifier.fillMaxSize().background(MaterialTheme.appColors.navyDeep),
+                contentAlignment = Alignment.Center
+            ) { SplashLoader() }
+
+            is NetWorthUiState.Empty -> Box(
+                Modifier.fillMaxSize().background(MaterialTheme.appColors.navyDeep),
+                contentAlignment = Alignment.Center
+            ) {
+                EmptyStateView(
+                    icon = "\uD83C\uDFE6",
+                    title = stringResource(Res.string.networth_no_account_title),
+                    subtitle = stringResource(Res.string.networth_no_account_subtitle),
+                    actionLabel = "Ir a Ajustes",
+                    onAction = onNavigateToSettings
+                )
+            }
+
+            is NetWorthUiState.Error -> Box(
+                Modifier.fillMaxSize().background(MaterialTheme.appColors.navyDeep),
+                contentAlignment = Alignment.Center
+            ) { Text(state.message, color = MaterialTheme.appColors.expense) }
+
+            is NetWorthUiState.Success -> NetWorthContent(
+                data = state.data,
+                netWorthHistory = state.netWorthHistory,
+                assetDistribution = state.assetDistribution,
+                balancesHidden = balancesHidden,
+                onLoanClick = onLoanClick,
+                onPropertyClick = onPropertyClick,
+                onValuableClick = onValuableClick,
+                onAddLoan = { viewModel.openAddLoanSheet() },
+                onAddProperty = { viewModel.openAddPropertySheet() },
+                onAddValuable = { viewModel.openAddValuableSheet() },
+                heroVisible = heroVisible,
+                chartVisible = chartVisible,
+                assetsVisible = assetsVisible,
+                liabilitiesVisible = liabilitiesVisible
+            )
+        }
     }
 }
 
@@ -221,14 +229,12 @@ fun NetWorthContent(
     }
 
     Column(
-        modifier
+        modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.appColors.navyDeep)
+            .windowInsetsPadding(WindowInsets.statusBars)
+            .padding(bottom = 100.dp)
     ) {
-        TopBarApp(
-            title = stringResource(Res.string.networth_title),
-            navigateBack = null
-        )
+        TopBarWithoutActionsApp()
 
         LazyColumn(
             modifier = Modifier.fillMaxSize(),

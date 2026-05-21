@@ -20,9 +20,9 @@ class SaveAssetUseCase(
         if (result.isSuccess && asset.currentPrice != null) {
             priceHistoryRepository.insert(
                 AssetPriceHistory(
-                    id         = uuid4().toString(),
-                    assetId    = asset.id,
-                    price      = asset.currentPrice,
+                    id = uuid4().toString(),
+                    assetId = asset.id,
+                    price = asset.currentPrice,
                     recordedAt = asset.currentPriceUpdatedAt ?: asset.createdAt
                 )
             )

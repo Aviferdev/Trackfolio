@@ -41,16 +41,16 @@ class FixedIncomeEventLocalDataSourceImpl(
             withContext(Dispatchers.IO) {
                 val e = event.toEntity()
                 queries.insert(
-                    id               = e.id,
-                    positionId       = e.positionId,
-                    type             = e.type,
-                    grossAmount      = e.grossAmount,
-                    irpfPercent      = e.irpfPercent,
+                    id = e.id,
+                    positionId = e.positionId,
+                    type = e.type,
+                    grossAmount = e.grossAmount,
+                    irpfPercent = e.irpfPercent,
                     commissionAmount = e.commissionAmount,
-                    netAmount        = e.netAmount,
-                    date             = e.date,
-                    notes            = e.notes,
-                    createdAt        = e.createdAt
+                    netAmount = e.netAmount,
+                    date = e.date,
+                    notes = e.notes,
+                    createdAt = e.createdAt
                 )
             }
         }
@@ -60,14 +60,14 @@ class FixedIncomeEventLocalDataSourceImpl(
             withContext(Dispatchers.IO) {
                 val e = event.toEntity()
                 queries.update(
-                    id               = e.id,
-                    type             = e.type,
-                    grossAmount      = e.grossAmount,
-                    irpfPercent      = e.irpfPercent,
+                    id = e.id,
+                    type = e.type,
+                    grossAmount = e.grossAmount,
+                    irpfPercent = e.irpfPercent,
                     commissionAmount = e.commissionAmount,
-                    netAmount        = e.netAmount,
-                    date             = e.date,
-                    notes            = e.notes
+                    netAmount = e.netAmount,
+                    date = e.date,
+                    notes = e.notes
                 )
             }
         }

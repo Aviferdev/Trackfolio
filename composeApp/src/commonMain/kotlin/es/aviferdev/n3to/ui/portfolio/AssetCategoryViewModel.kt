@@ -21,11 +21,11 @@ sealed class AssetCategoryError {
 }
 
 data class AssetCategoryListUiState(
-    val categories: List<AssetCategory>     = emptyList(),
-    val showAddSheet: Boolean               = false,
-    val editing: AssetCategory?             = null,
-    val pendingDelete: AssetCategory?       = null,
-    val error: AssetCategoryError?          = null
+    val categories: List<AssetCategory> = emptyList(),
+    val showAddSheet: Boolean = false,
+    val editing: AssetCategory? = null,
+    val pendingDelete: AssetCategory? = null,
+    val error: AssetCategoryError? = null
 )
 
 class AssetCategoryViewModel(
@@ -35,10 +35,10 @@ class AssetCategoryViewModel(
     private val archiveCategory: ArchiveAssetCategoryUseCase
 ) : ViewModel() {
 
-    private val _showAddSheet  = MutableStateFlow(false)
-    private val _editing       = MutableStateFlow<AssetCategory?>(null)
+    private val _showAddSheet = MutableStateFlow(false)
+    private val _editing = MutableStateFlow<AssetCategory?>(null)
     private val _pendingDelete = MutableStateFlow<AssetCategory?>(null)
-    private val _error         = MutableStateFlow<AssetCategoryError?>(null)
+    private val _error = MutableStateFlow<AssetCategoryError?>(null)
 
     val uiState: StateFlow<AssetCategoryListUiState> = combine(
         getCategories(),
@@ -47,21 +47,26 @@ class AssetCategoryViewModel(
         }
     ) { categories, q ->
         AssetCategoryListUiState(
-            categories    = categories,
-            showAddSheet  = q.a,
-            editing       = q.b,
+            categories = categories,
+            showAddSheet = q.a,
+            editing = q.b,
             pendingDelete = q.c,
-            error         = q.d
+            error = q.d
         )
     }.stateIn(
-        scope        = viewModelScope,
-        started      = SharingStarted.WhileSubscribed(5_000),
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
         initialValue = AssetCategoryListUiState()
     )
 
     // ── Crear ─────────────────────────────────────────────────────────────────
-    fun openAddSheet()  { _showAddSheet.value = true }
-    fun closeAddSheet() { _showAddSheet.value = false }
+    fun openAddSheet() {
+        _showAddSheet.value = true
+    }
+
+    fun closeAddSheet() {
+        _showAddSheet.value = false
+    }
 
     fun addCategory(name: String, icon: String) {
         val trimmed = name.trim()
@@ -75,9 +80,9 @@ class AssetCategoryViewModel(
             val nextOrder = (uiState.value.categories.maxOfOrNull { it.sortOrder } ?: -1) + 1
             saveCategory(
                 AssetCategory(
-                    id        = "asset_cat_$now",
-                    name      = trimmed,
-                    icon      = icon.ifBlank { "📦" },
+                    id = "asset_cat_$now",
+                    name = trimmed,
+                    icon = icon.ifBlank { "📦" },
                     sortOrder = nextOrder,
                     createdAt = now
                 )
@@ -87,13 +92,23 @@ class AssetCategoryViewModel(
     }
 
     // ── Editar ────────────────────────────────────────────────────────────────
-    fun openEditSheet(category: AssetCategory) { _editing.value = category }
-    fun closeEditSheet()                       { _editing.value = null }
+    fun openEditSheet(category: AssetCategory) {
+        _editing.value = category
+    }
+
+    fun closeEditSheet() {
+        _editing.value = null
+    }
 
     fun renameCategory(id: String, newName: String, newIcon: String) {
         val trimmed = newName.trim()
         if (trimmed.isBlank()) return
-        if (uiState.value.categories.any { it.id != id && it.name.equals(trimmed, ignoreCase = true) }) {
+        if (uiState.value.categories.any {
+                it.id != id && it.name.equals(
+                    trimmed,
+                    ignoreCase = true
+                )
+            }) {
             _error.value = AssetCategoryError.AlreadyExists
             return
         }
@@ -105,18 +120,27 @@ class AssetCategoryViewModel(
     }
 
     // ── Eliminar (soft) ───────────────────────────────────────────────────────
-    fun requestDelete(category: AssetCategory) { _pendingDelete.value = category }
-    fun cancelDelete()                         { _pendingDelete.value = null }
+    fun requestDelete(category: AssetCategory) {
+        _pendingDelete.value = category
+    }
+
+    fun cancelDelete() {
+        _pendingDelete.value = null
+    }
 
     fun confirmDelete() {
         val cat = _pendingDelete.value ?: return
         viewModelScope.launch {
-            archiveCategory(cat.id).onFailure { _error.value = AssetCategoryError.Unknown(it.message) }
+            archiveCategory(cat.id).onFailure {
+                _error.value = AssetCategoryError.Unknown(it.message)
+            }
             _pendingDelete.value = null
         }
     }
 
-    fun clearError() { _error.value = null }
+    fun clearError() {
+        _error.value = null
+    }
 
     private data class Quad<A, B, C, D>(val a: A, val b: B, val c: C, val d: D)
 }

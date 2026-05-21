@@ -31,11 +31,11 @@ data class AssetTransaction(
     /** Importe total del movimiento sin comisiones (cantidad × precio unitario). */
     val grossAmount: Double get() = quantity * pricePerUnit
 
-    val isBuy: Boolean         get() = type == AssetTransactionType.BUY
-    val isSell: Boolean        get() = type == AssetTransactionType.SELL
+    val isBuy: Boolean get() = type == AssetTransactionType.BUY
+    val isSell: Boolean get() = type == AssetTransactionType.SELL
     val isTransferOut: Boolean get() = type == AssetTransactionType.TRANSFER_OUT
-    val isTransferIn: Boolean  get() = type == AssetTransactionType.TRANSFER_IN
-    val isTransfer: Boolean    get() = isTransferOut || isTransferIn
+    val isTransferIn: Boolean get() = type == AssetTransactionType.TRANSFER_IN
+    val isTransfer: Boolean get() = isTransferOut || isTransferIn
 
     /**
      * ID del traspaso al que pertenece este movimiento (tanto el OUT como el IN

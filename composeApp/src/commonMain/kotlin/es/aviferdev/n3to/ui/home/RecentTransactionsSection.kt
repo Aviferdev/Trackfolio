@@ -1,7 +1,5 @@
 package es.aviferdev.n3to.ui.home
 
-import androidx.compose.material3.MaterialTheme
-import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -12,6 +10,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -23,10 +22,7 @@ import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.Transaction
 import es.aviferdev.n3to.ui.common.SectionHeader
 import es.aviferdev.n3to.ui.common.metric.TransactionRow
-
-import es.aviferdev.n3to.ui.theme.N3toTheme
-import es.aviferdev.n3to.domain.model.IncomeType
-import es.aviferdev.n3to.domain.model.TransactionType
+import es.aviferdev.n3to.ui.theme.appColors
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.home_no_movements_subtitle
 import n3to.composeapp.generated.resources.home_no_movements_title
@@ -37,7 +33,6 @@ import n3to.composeapp.generated.resources.transaction_label_expense
 import n3to.composeapp.generated.resources.transaction_label_income
 import n3to.composeapp.generated.resources.transaction_label_investment
 import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun RecentTransactionsSection(
@@ -113,11 +108,13 @@ private fun resolveTransactionLabel(
     transaction: Transaction,
     categoryNames: Map<String, String>
 ): String {
-    if (transaction.isLinkedToAsset) return transaction.notes ?: stringResource(Res.string.transaction_label_investment)
+    if (transaction.isLinkedToAsset) return transaction.notes
+        ?: stringResource(Res.string.transaction_label_investment)
     if (transaction.isAdjustment) return stringResource(Res.string.transaction_label_balance_adjustment)
     return if (transaction.isIncome) {
         transaction.incomeType?.label ?: stringResource(Res.string.transaction_label_income)
     } else {
-        transaction.categoryId?.let { categoryNames[it] } ?: stringResource(Res.string.transaction_label_expense)
+        transaction.categoryId?.let { categoryNames[it] }
+            ?: stringResource(Res.string.transaction_label_expense)
     }
 }

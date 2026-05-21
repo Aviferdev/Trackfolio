@@ -118,16 +118,24 @@ fun N3toContent() {
                             navController.navigate(SettingsRoute) { launchSingleTop = true }
                         },
                         onNavigateToEmergencyFundSettings = {
-                            navController.navigate(EmergencyFundSettingsRoute) { launchSingleTop = true }
+                            navController.navigate(EmergencyFundSettingsRoute) {
+                                launchSingleTop = true
+                            }
                         },
                         onNavigateToFixedIncomeDetail = { positionId ->
-                            navController.navigate(FixedIncomeDetailRoute(positionId)) { launchSingleTop = true }
+                            navController.navigate(FixedIncomeDetailRoute(positionId)) {
+                                launchSingleTop = true
+                            }
                         },
                         onNavigateToCategoryPicker = { type ->
-                            navController.navigate(CategoryPickerRoute(type.name)) { launchSingleTop = true }
+                            navController.navigate(CategoryPickerRoute(type.name)) {
+                                launchSingleTop = true
+                            }
                         },
                         onNavigateToAccountConfig = { accountId ->
-                            navController.navigate(AccountConfigRoute(accountId)) { launchSingleTop = true }
+                            navController.navigate(AccountConfigRoute(accountId)) {
+                                launchSingleTop = true
+                            }
                         },
                         onNavigateToExpenseSettings = {
                             navController.navigate(ExpenseSettingsRoute) { launchSingleTop = true }
@@ -178,16 +186,24 @@ fun N3toContent() {
                             navController.navigate(SettingsRoute) { launchSingleTop = true }
                         },
                         onNavigateToEmergencyFundSettings = {
-                            navController.navigate(EmergencyFundSettingsRoute) { launchSingleTop = true }
+                            navController.navigate(EmergencyFundSettingsRoute) {
+                                launchSingleTop = true
+                            }
                         },
                         onNavigateToFixedIncomeDetail = { positionId ->
-                            navController.navigate(FixedIncomeDetailRoute(positionId)) { launchSingleTop = true }
+                            navController.navigate(FixedIncomeDetailRoute(positionId)) {
+                                launchSingleTop = true
+                            }
                         },
                         onNavigateToCategoryPicker = { type ->
-                            navController.navigate(CategoryPickerRoute(type.name)) { launchSingleTop = true }
+                            navController.navigate(CategoryPickerRoute(type.name)) {
+                                launchSingleTop = true
+                            }
                         },
                         onNavigateToAccountConfig = { accountId ->
-                            navController.navigate(AccountConfigRoute(accountId)) { launchSingleTop = true }
+                            navController.navigate(AccountConfigRoute(accountId)) {
+                                launchSingleTop = true
+                            }
                         },
                         onNavigateToExpenseSettings = {
                             navController.navigate(ExpenseSettingsRoute) { launchSingleTop = true }
@@ -239,7 +255,8 @@ fun N3toContent() {
                     )
                 }
                 composable<TransactionDetailRoute> { backStackEntry ->
-                    val transactionId = backStackEntry.toRoute<TransactionDetailRoute>().transactionId
+                    val transactionId =
+                        backStackEntry.toRoute<TransactionDetailRoute>().transactionId
                     TransactionDetailScreen(
                         transactionId = transactionId,
                         onBack = { navController.popBackStack() },
@@ -254,13 +271,19 @@ fun N3toContent() {
                 composable<PortfolioRoute> {
                     PortfolioScreen(
                         onAssetClick = { assetId ->
-                            navController.navigate(AssetHistoryRoute(assetId)) { launchSingleTop = true }
+                            navController.navigate(AssetHistoryRoute(assetId)) {
+                                launchSingleTop = true
+                            }
                         },
                         onNavigateToSettings = {
-                            navController.navigate(PortfolioSettingsRoute) { launchSingleTop = true }
+                            navController.navigate(PortfolioSettingsRoute) {
+                                launchSingleTop = true
+                            }
                         },
                         onFixedIncomeClick = { positionId ->
-                            navController.navigate(FixedIncomeDetailRoute(positionId)) { launchSingleTop = true }
+                            navController.navigate(FixedIncomeDetailRoute(positionId)) {
+                                launchSingleTop = true
+                            }
                         },
                         onNavigateToSavingsRates = {
                             navController.navigate(SavingsRatesRoute) { launchSingleTop = true }
@@ -275,13 +298,19 @@ fun N3toContent() {
                 composable<NetWorthRoute> {
                     NetWorthScreen(
                         onLoanClick = { loanId ->
-                            navController.navigate(LoanDetailRoute(loanId)) { launchSingleTop = true }
+                            navController.navigate(LoanDetailRoute(loanId)) {
+                                launchSingleTop = true
+                            }
                         },
                         onPropertyClick = { propertyId ->
-                            navController.navigate(RealEstateDetailRoute(propertyId)) { launchSingleTop = true }
+                            navController.navigate(RealEstateDetailRoute(propertyId)) {
+                                launchSingleTop = true
+                            }
                         },
                         onValuableClick = { valuableId ->
-                            navController.navigate(ValuableDetailRoute(valuableId)) { launchSingleTop = true }
+                            navController.navigate(ValuableDetailRoute(valuableId)) {
+                                launchSingleTop = true
+                            }
                         },
                         onNavigateToSettings = {
                             navController.navigate(SettingsRoute) { launchSingleTop = true }
@@ -301,7 +330,9 @@ fun N3toContent() {
                             navController.navigate(PremiumRoute) { launchSingleTop = true }
                         },
                         onNavigateToAccountConfig = { accountId ->
-                            navController.navigate(AccountConfigRoute(accountId)) { launchSingleTop = true }
+                            navController.navigate(AccountConfigRoute(accountId)) {
+                                launchSingleTop = true
+                            }
                         },
                         onNavigateToFeedback = {
                             navController.navigate(FeedbackRoute) { launchSingleTop = true }
@@ -326,13 +357,17 @@ fun N3toContent() {
                             navController.navigate(IncomeSettingsRoute) { launchSingleTop = true }
                         },
                         onNavigateToTaxProfile = {
-                            navController.navigate(TaxProfileSettingsRoute) { launchSingleTop = true }
+                            navController.navigate(TaxProfileSettingsRoute) {
+                                launchSingleTop = true
+                            }
                         },
                         onNavigateToGoals = {
                             navController.navigate(GoalSettingsRoute) { launchSingleTop = true }
                         },
                         onNavigateToEmergencyFund = {
-                            navController.navigate(EmergencyFundSettingsRoute) { launchSingleTop = true }
+                            navController.navigate(EmergencyFundSettingsRoute) {
+                                launchSingleTop = true
+                            }
                         }
                     )
                 }
@@ -390,7 +425,8 @@ fun N3toContent() {
                     )
                 }
                 composable<IncomeTypeDetailRoute> { backStackEntry ->
-                    val incomeTypeName = backStackEntry.toRoute<IncomeTypeDetailRoute>().incomeTypeName
+                    val incomeTypeName =
+                        backStackEntry.toRoute<IncomeTypeDetailRoute>().incomeTypeName
                     val incomeType = IncomeType.fromName(incomeTypeName)
                     if (incomeType != null) {
                         IncomeTypeDetailScreen(
@@ -435,10 +471,14 @@ fun N3toContent() {
                         categoryId = categoryId,
                         onBack = { navController.popBackStack() },
                         onAssetClick = { assetId ->
-                            navController.navigate(AssetDetailRoute(assetId)) { launchSingleTop = true }
+                            navController.navigate(AssetDetailRoute(assetId)) {
+                                launchSingleTop = true
+                            }
                         },
                         onFixedIncomeClick = { positionId ->
-                            navController.navigate(FixedIncomeDetailRoute(positionId)) { launchSingleTop = true }
+                            navController.navigate(FixedIncomeDetailRoute(positionId)) {
+                                launchSingleTop = true
+                            }
                         }
                     )
                 }
@@ -462,7 +502,9 @@ fun N3toContent() {
                         propertyId = propertyId,
                         onNavigateBack = { navController.popBackStack() },
                         onNavigateToLoan = { loanId ->
-                            navController.navigate(LoanDetailRoute(loanId)) { launchSingleTop = true }
+                            navController.navigate(LoanDetailRoute(loanId)) {
+                                launchSingleTop = true
+                            }
                         }
                     )
                 }
@@ -514,6 +556,6 @@ private fun BottomBarN3toContent(
 private fun NavDestination?.needShowBottomBar() =
     this?.let {
         it.hasRoute(HomeRoute::class) ||
-        it.hasRoute(PortfolioRoute::class) ||
-        it.hasRoute(NetWorthRoute::class)
+                it.hasRoute(PortfolioRoute::class) ||
+                it.hasRoute(NetWorthRoute::class)
     } ?: false

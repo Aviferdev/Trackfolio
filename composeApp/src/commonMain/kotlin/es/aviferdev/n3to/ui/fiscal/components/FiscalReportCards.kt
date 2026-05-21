@@ -1,7 +1,5 @@
 package es.aviferdev.n3to.ui.fiscal.components
 
-import androidx.compose.material3.MaterialTheme
-import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -25,7 +24,8 @@ import es.aviferdev.n3to.domain.model.FiscalIncomeTaxBreakdown
 import es.aviferdev.n3to.domain.model.FiscalReportData
 import es.aviferdev.n3to.domain.model.MonthlyTotals
 import es.aviferdev.n3to.ui.common.toMaterialIcon
-import es.aviferdev.n3to.ui.theme.*
+import es.aviferdev.n3to.ui.theme.appColors
+import es.aviferdev.n3to.ui.theme.formatQty
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.fiscal_asset_header
 import n3to.composeapp.generated.resources.fiscal_avg_price_header
@@ -74,7 +74,11 @@ internal fun AnnualSummaryCard(report: FiscalReportData) {
     val s = report.annualSummary
     ReportCard(stringResource(Res.string.fiscal_year_title, report.year)) {
         if (s == null) {
-            Text(stringResource(Res.string.fiscal_no_movements), fontSize = 13.sp, color = MaterialTheme.appColors.textTertiary)
+            Text(
+                stringResource(Res.string.fiscal_no_movements),
+                fontSize = 13.sp,
+                color = MaterialTheme.appColors.textTertiary
+            )
             return@ReportCard
         }
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -114,52 +118,120 @@ internal fun AnnualSummaryCard(report: FiscalReportData) {
 
 @Composable
 internal fun IncomeTaxBreakdownCard(report: FiscalReportData) {
-    val bk        = report.incomeTaxBreakdown
+    val bk = report.incomeTaxBreakdown
     val totalGross = bk.sumOf { it.grossTotal }
-    val totalIrpf  = bk.sumOf { it.irpfTotal }
-    val totalNet   = bk.sumOf { it.netTotal }
-    val totalSS    = bk.sumOf { it.socialSecurityTotal }
-    val totalComm  = bk.sumOf { it.commissionTotal }
+    val totalIrpf = bk.sumOf { it.irpfTotal }
+    val totalNet = bk.sumOf { it.netTotal }
+    val totalSS = bk.sumOf { it.socialSecurityTotal }
+    val totalComm = bk.sumOf { it.commissionTotal }
 
     ReportCard(stringResource(Res.string.fiscal_tax_breakdown_title, report.year)) {
         Row(Modifier.fillMaxWidth(), Arrangement.spacedBy(8.dp)) {
-            MetricCell(stringResource(Res.string.fiscal_gross_total), totalGross, MaterialTheme.appColors.textPrimary,  Modifier.weight(1f))
-            MetricCell(stringResource(Res.string.fiscal_irpf_total),  totalIrpf,  MaterialTheme.appColors.expense,   Modifier.weight(1f))
-            MetricCell(stringResource(Res.string.fiscal_net_total),   totalNet,   MaterialTheme.appColors.income,  Modifier.weight(1f))
+            MetricCell(
+                stringResource(Res.string.fiscal_gross_total),
+                totalGross,
+                MaterialTheme.appColors.textPrimary,
+                Modifier.weight(1f)
+            )
+            MetricCell(
+                stringResource(Res.string.fiscal_irpf_total),
+                totalIrpf,
+                MaterialTheme.appColors.expense,
+                Modifier.weight(1f)
+            )
+            MetricCell(
+                stringResource(Res.string.fiscal_net_total),
+                totalNet,
+                MaterialTheme.appColors.income,
+                Modifier.weight(1f)
+            )
         }
         if (totalSS > 0 || totalComm > 0) {
             Spacer(Modifier.height(8.dp))
             Row(Modifier.fillMaxWidth(), Arrangement.spacedBy(8.dp)) {
-                if (totalSS   > 0) MetricCell(stringResource(Res.string.fiscal_social_security),  totalSS,   MaterialTheme.appColors.warnAmber, Modifier.weight(1f))
-                if (totalComm > 0) MetricCell(stringResource(Res.string.fiscal_commissions_short), totalComm, MaterialTheme.appColors.warnAmber, Modifier.weight(1f))
-                if (totalSS > 0 && totalComm == 0.0)  Spacer(Modifier.weight(1f))
-                if (totalSS == 0.0 && totalComm > 0)  Spacer(Modifier.weight(1f))
+                if (totalSS > 0) MetricCell(
+                    stringResource(Res.string.fiscal_social_security),
+                    totalSS,
+                    MaterialTheme.appColors.warnAmber,
+                    Modifier.weight(1f)
+                )
+                if (totalComm > 0) MetricCell(
+                    stringResource(Res.string.fiscal_commissions_short),
+                    totalComm,
+                    MaterialTheme.appColors.warnAmber,
+                    Modifier.weight(1f)
+                )
+                if (totalSS > 0 && totalComm == 0.0) Spacer(Modifier.weight(1f))
+                if (totalSS == 0.0 && totalComm > 0) Spacer(Modifier.weight(1f))
             }
         }
         Spacer(Modifier.height(12.dp))
         HorizontalDivider(color = MaterialTheme.appColors.navyBorder, thickness = .5.dp)
         Spacer(Modifier.height(8.dp))
         Row(Modifier.fillMaxWidth()) {
-            Text(stringResource(Res.string.fiscal_income_type_header), fontSize = 10.sp, color = MaterialTheme.appColors.textTertiary, modifier = Modifier.weight(3f))
-            Text(stringResource(Res.string.fiscal_gross_header),        fontSize = 10.sp, color = MaterialTheme.appColors.textTertiary, modifier = Modifier.weight(2f), textAlign = TextAlign.End)
-            Text(stringResource(Res.string.fiscal_withholding_short),   fontSize = 10.sp, color = MaterialTheme.appColors.textTertiary, modifier = Modifier.weight(2f), textAlign = TextAlign.End)
-            Text(stringResource(Res.string.fiscal_net_header),          fontSize = 10.sp, color = MaterialTheme.appColors.textTertiary, modifier = Modifier.weight(2f), textAlign = TextAlign.End)
-            Text(stringResource(Res.string.fiscal_percent_header),      fontSize = 10.sp, color = MaterialTheme.appColors.textTertiary, modifier = Modifier.weight(1f), textAlign = TextAlign.End)
+            Text(
+                stringResource(Res.string.fiscal_income_type_header),
+                fontSize = 10.sp,
+                color = MaterialTheme.appColors.textTertiary,
+                modifier = Modifier.weight(3f)
+            )
+            Text(
+                stringResource(Res.string.fiscal_gross_header),
+                fontSize = 10.sp,
+                color = MaterialTheme.appColors.textTertiary,
+                modifier = Modifier.weight(2f),
+                textAlign = TextAlign.End
+            )
+            Text(
+                stringResource(Res.string.fiscal_withholding_short),
+                fontSize = 10.sp,
+                color = MaterialTheme.appColors.textTertiary,
+                modifier = Modifier.weight(2f),
+                textAlign = TextAlign.End
+            )
+            Text(
+                stringResource(Res.string.fiscal_net_header),
+                fontSize = 10.sp,
+                color = MaterialTheme.appColors.textTertiary,
+                modifier = Modifier.weight(2f),
+                textAlign = TextAlign.End
+            )
+            Text(
+                stringResource(Res.string.fiscal_percent_header),
+                fontSize = 10.sp,
+                color = MaterialTheme.appColors.textTertiary,
+                modifier = Modifier.weight(1f),
+                textAlign = TextAlign.End
+            )
         }
         Spacer(Modifier.height(5.dp))
         bk.forEachIndexed { i, item ->
-            if (i > 0) HorizontalDivider(color = MaterialTheme.appColors.navyBorder, thickness = .3.dp)
+            if (i > 0) HorizontalDivider(
+                color = MaterialTheme.appColors.navyBorder,
+                thickness = .3.dp
+            )
             TaxBreakdownRow(item)
         }
         Spacer(Modifier.height(8.dp))
-        Text(stringResource(Res.string.fiscal_incomes_with_tax_info), fontSize = 10.sp, color = MaterialTheme.appColors.textTertiary)
+        Text(
+            stringResource(Res.string.fiscal_incomes_with_tax_info),
+            fontSize = 10.sp,
+            color = MaterialTheme.appColors.textTertiary
+        )
     }
 }
 
 @Composable
 private fun TaxBreakdownRow(item: FiscalIncomeTaxBreakdown) {
-    Row(Modifier.fillMaxWidth().padding(vertical = 6.dp), verticalAlignment = Alignment.CenterVertically) {
-        Row(Modifier.weight(3f), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+    Row(
+        Modifier.fillMaxWidth().padding(vertical = 6.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Row(
+            Modifier.weight(3f),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
             Icon(
                 item.incomeType.toMaterialIcon(),
                 contentDescription = null,
@@ -167,31 +239,97 @@ private fun TaxBreakdownRow(item: FiscalIncomeTaxBreakdown) {
                 tint = MaterialTheme.appColors.cyanAccent.copy(alpha = 0.8f)
             )
             Column {
-                Text(item.incomeType.label, fontSize = 11.sp, color = MaterialTheme.appColors.textPrimary, fontWeight = FontWeight.Medium, lineHeight = 13.sp)
-                Text(stringResource(Res.string.fiscal_count_format, item.count, if (item.count != 1) "s" else ""), fontSize = 9.sp, color = MaterialTheme.appColors.textTertiary)
+                Text(
+                    item.incomeType.label,
+                    fontSize = 11.sp,
+                    color = MaterialTheme.appColors.textPrimary,
+                    fontWeight = FontWeight.Medium,
+                    lineHeight = 13.sp
+                )
+                Text(
+                    stringResource(
+                        Res.string.fiscal_count_format,
+                        item.count,
+                        if (item.count != 1) "s" else ""
+                    ), fontSize = 9.sp, color = MaterialTheme.appColors.textTertiary
+                )
             }
         }
-        Text(formatAmt(item.grossTotal),    fontSize = 11.sp, color = MaterialTheme.appColors.textPrimary,   modifier = Modifier.weight(2f), textAlign = TextAlign.End)
-        Text(formatAmt(item.irpfTotal),     fontSize = 11.sp, color = MaterialTheme.appColors.expense,    fontWeight = FontWeight.Medium, modifier = Modifier.weight(2f), textAlign = TextAlign.End)
-        Text(formatAmt(item.netTotal),      fontSize = 11.sp, color = MaterialTheme.appColors.income,   fontWeight = FontWeight.Medium, modifier = Modifier.weight(2f), textAlign = TextAlign.End)
-        Text(formatPct(item.avgIrpfPercent), fontSize = 11.sp, color = MaterialTheme.appColors.textSecondary, modifier = Modifier.weight(1f), textAlign = TextAlign.End)
+        Text(
+            formatAmt(item.grossTotal),
+            fontSize = 11.sp,
+            color = MaterialTheme.appColors.textPrimary,
+            modifier = Modifier.weight(2f),
+            textAlign = TextAlign.End
+        )
+        Text(
+            formatAmt(item.irpfTotal),
+            fontSize = 11.sp,
+            color = MaterialTheme.appColors.expense,
+            fontWeight = FontWeight.Medium,
+            modifier = Modifier.weight(2f),
+            textAlign = TextAlign.End
+        )
+        Text(
+            formatAmt(item.netTotal),
+            fontSize = 11.sp,
+            color = MaterialTheme.appColors.income,
+            fontWeight = FontWeight.Medium,
+            modifier = Modifier.weight(2f),
+            textAlign = TextAlign.End
+        )
+        Text(
+            formatPct(item.avgIrpfPercent),
+            fontSize = 11.sp,
+            color = MaterialTheme.appColors.textSecondary,
+            modifier = Modifier.weight(1f),
+            textAlign = TextAlign.End
+        )
     }
 }
 
 @Composable
 internal fun MonthlyBreakdownCard(report: FiscalReportData) {
-    val byMonth = report.monthlyBreakdown.associateBy { it.month.trimStart('0').ifEmpty { "0" }.toInt() }
+    val byMonth =
+        report.monthlyBreakdown.associateBy { it.month.trimStart('0').ifEmpty { "0" }.toInt() }
     val hasData = (1..12).any { byMonth[it] != null }
     ReportCard(stringResource(Res.string.fiscal_monthly_title)) {
         if (!hasData) {
-            Text(stringResource(Res.string.fiscal_no_movements_year, report.year), fontSize = 13.sp, color = MaterialTheme.appColors.textTertiary)
+            Text(
+                stringResource(Res.string.fiscal_no_movements_year, report.year),
+                fontSize = 13.sp,
+                color = MaterialTheme.appColors.textTertiary
+            )
             return@ReportCard
         }
         Row(Modifier.fillMaxWidth()) {
-            Text(stringResource(Res.string.fiscal_month_header),    fontSize = 10.sp, color = MaterialTheme.appColors.textTertiary, modifier = Modifier.weight(2f))
-            Text(stringResource(Res.string.fiscal_income_header),   fontSize = 10.sp, color = MaterialTheme.appColors.textTertiary, modifier = Modifier.weight(2f), textAlign = TextAlign.End)
-            Text(stringResource(Res.string.fiscal_expenses_header), fontSize = 10.sp, color = MaterialTheme.appColors.textTertiary, modifier = Modifier.weight(2f), textAlign = TextAlign.End)
-            Text(stringResource(Res.string.fiscal_balance_header),  fontSize = 10.sp, color = MaterialTheme.appColors.textTertiary, modifier = Modifier.weight(2f), textAlign = TextAlign.End)
+            Text(
+                stringResource(Res.string.fiscal_month_header),
+                fontSize = 10.sp,
+                color = MaterialTheme.appColors.textTertiary,
+                modifier = Modifier.weight(2f)
+            )
+            Text(
+                stringResource(Res.string.fiscal_income_header),
+                fontSize = 10.sp,
+                color = MaterialTheme.appColors.textTertiary,
+                modifier = Modifier.weight(2f),
+                textAlign = TextAlign.End
+            )
+            Text(
+                stringResource(Res.string.fiscal_expenses_header),
+                fontSize = 10.sp,
+                color = MaterialTheme.appColors.textTertiary,
+                modifier = Modifier.weight(2f),
+                textAlign = TextAlign.End
+            )
+            Text(
+                stringResource(Res.string.fiscal_balance_header),
+                fontSize = 10.sp,
+                color = MaterialTheme.appColors.textTertiary,
+                modifier = Modifier.weight(2f),
+                textAlign = TextAlign.End
+            )
         }
         Spacer(Modifier.height(4.dp))
         HorizontalDivider(color = MaterialTheme.appColors.navyBorder, thickness = .5.dp)
@@ -206,10 +344,30 @@ internal fun MonthlyBreakdownCard(report: FiscalReportData) {
 @Composable
 private fun MonthlyRow(month: Int, data: MonthlyTotals) {
     val balance = data.balance
-    Row(Modifier.fillMaxWidth().padding(vertical = 6.dp), verticalAlignment = Alignment.CenterVertically) {
-        Text(monthName(month), fontSize = 12.sp, color = MaterialTheme.appColors.textPrimary, modifier = Modifier.weight(2f))
-        Text(formatAmt(data.totalIncome),  fontSize = 11.sp, color = MaterialTheme.appColors.income, modifier = Modifier.weight(2f), textAlign = TextAlign.End)
-        Text(formatAmt(data.totalExpense), fontSize = 11.sp, color = MaterialTheme.appColors.expense,  modifier = Modifier.weight(2f), textAlign = TextAlign.End)
+    Row(
+        Modifier.fillMaxWidth().padding(vertical = 6.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            monthName(month),
+            fontSize = 12.sp,
+            color = MaterialTheme.appColors.textPrimary,
+            modifier = Modifier.weight(2f)
+        )
+        Text(
+            formatAmt(data.totalIncome),
+            fontSize = 11.sp,
+            color = MaterialTheme.appColors.income,
+            modifier = Modifier.weight(2f),
+            textAlign = TextAlign.End
+        )
+        Text(
+            formatAmt(data.totalExpense),
+            fontSize = 11.sp,
+            color = MaterialTheme.appColors.expense,
+            modifier = Modifier.weight(2f),
+            textAlign = TextAlign.End
+        )
         Text(
             "${if (balance >= 0) "+" else ""}${formatAmt(balance)}",
             fontSize = 11.sp,
@@ -225,16 +383,43 @@ private fun MonthlyRow(month: Int, data: MonthlyTotals) {
 internal fun DebtsCard(report: FiscalReportData) {
     ReportCard(stringResource(Res.string.fiscal_debts_title)) {
         report.activeDebts.forEachIndexed { i, debt ->
-            if (i > 0) HorizontalDivider(color = MaterialTheme.appColors.navyBorder, thickness = .3.dp)
+            if (i > 0) HorizontalDivider(
+                color = MaterialTheme.appColors.navyBorder,
+                thickness = .3.dp
+            )
             val isIOwe = debt.direction == DebtDirection.I_OWE
-            val color  = if (isIOwe) MaterialTheme.appColors.expense else MaterialTheme.appColors.income
-            Row(Modifier.fillMaxWidth().padding(vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
+            val color =
+                if (isIOwe) MaterialTheme.appColors.expense else MaterialTheme.appColors.income
+            Row(
+                Modifier.fillMaxWidth().padding(vertical = 8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 Column(modifier = Modifier.weight(1f)) {
-                    Text(debt.personName, fontSize = 13.sp, color = MaterialTheme.appColors.textPrimary, fontWeight = FontWeight.SemiBold)
-                    Text(if (isIOwe) stringResource(Res.string.fiscal_i_owe) else stringResource(Res.string.fiscal_they_owe), fontSize = 11.sp, color = color)
-                    debt.notes?.let { Text(it, fontSize = 10.sp, color = MaterialTheme.appColors.textTertiary) }
+                    Text(
+                        debt.personName,
+                        fontSize = 13.sp,
+                        color = MaterialTheme.appColors.textPrimary,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                    Text(
+                        if (isIOwe) stringResource(Res.string.fiscal_i_owe) else stringResource(Res.string.fiscal_they_owe),
+                        fontSize = 11.sp,
+                        color = color
+                    )
+                    debt.notes?.let {
+                        Text(
+                            it,
+                            fontSize = 10.sp,
+                            color = MaterialTheme.appColors.textTertiary
+                        )
+                    }
                 }
-                Text(formatAmt(debt.amount), fontSize = 13.sp, color = color, fontWeight = FontWeight.Bold)
+                Text(
+                    formatAmt(debt.amount),
+                    fontSize = 13.sp,
+                    color = color,
+                    fontWeight = FontWeight.Bold
+                )
             }
         }
     }
@@ -242,36 +427,102 @@ internal fun DebtsCard(report: FiscalReportData) {
 
 @Composable
 internal fun PortfolioCard(report: FiscalReportData) {
-    val positions     = report.assetPositions.filter { it.netQuantity > 0 || it.totalBought > 0 || it.totalSold > 0 }
+    val positions =
+        report.assetPositions.filter { it.netQuantity > 0 || it.totalBought > 0 || it.totalSold > 0 }
     val totalInvested = positions.sumOf { it.totalCost }
-    val totalValue    = positions.mapNotNull { it.currentValue }.sum()
+    val totalValue = positions.mapNotNull { it.currentValue }.sum()
     val totalRealized = positions.sumOf { it.realizedPnl }
 
     ReportCard(stringResource(Res.string.fiscal_portfolio_title)) {
         Row(Modifier.fillMaxWidth().padding(bottom = 10.dp), Arrangement.spacedBy(8.dp)) {
-            MetricCell(stringResource(Res.string.fiscal_invested_label),      totalInvested, MaterialTheme.appColors.textPrimary,  Modifier.weight(1f))
-            MetricCell(stringResource(Res.string.fiscal_current_value_label), totalValue,    if (totalValue >= totalInvested) MaterialTheme.appColors.income else MaterialTheme.appColors.expense, Modifier.weight(1f))
-            MetricCell(stringResource(Res.string.fiscal_realized_pnl_label),  totalRealized, if (totalRealized >= 0) MaterialTheme.appColors.income else MaterialTheme.appColors.expense, Modifier.weight(1f))
+            MetricCell(
+                stringResource(Res.string.fiscal_invested_label),
+                totalInvested,
+                MaterialTheme.appColors.textPrimary,
+                Modifier.weight(1f)
+            )
+            MetricCell(
+                stringResource(Res.string.fiscal_current_value_label),
+                totalValue,
+                if (totalValue >= totalInvested) MaterialTheme.appColors.income else MaterialTheme.appColors.expense,
+                Modifier.weight(1f)
+            )
+            MetricCell(
+                stringResource(Res.string.fiscal_realized_pnl_label),
+                totalRealized,
+                if (totalRealized >= 0) MaterialTheme.appColors.income else MaterialTheme.appColors.expense,
+                Modifier.weight(1f)
+            )
         }
         HorizontalDivider(color = MaterialTheme.appColors.navyBorder, thickness = .5.dp)
         Spacer(Modifier.height(8.dp))
         Row(Modifier.fillMaxWidth()) {
-            Text(stringResource(Res.string.fiscal_asset_header),    fontSize = 10.sp, color = MaterialTheme.appColors.textTertiary, modifier = Modifier.weight(2f))
-            Text(stringResource(Res.string.fiscal_units_header),    fontSize = 10.sp, color = MaterialTheme.appColors.textTertiary, modifier = Modifier.weight(1.5f), textAlign = TextAlign.End)
-            Text(stringResource(Res.string.fiscal_avg_price_header), fontSize = 10.sp, color = MaterialTheme.appColors.textTertiary, modifier = Modifier.weight(1.5f), textAlign = TextAlign.End)
-            Text(stringResource(Res.string.fiscal_pnl_total_header), fontSize = 10.sp, color = MaterialTheme.appColors.textTertiary, modifier = Modifier.weight(1.5f), textAlign = TextAlign.End)
+            Text(
+                stringResource(Res.string.fiscal_asset_header),
+                fontSize = 10.sp,
+                color = MaterialTheme.appColors.textTertiary,
+                modifier = Modifier.weight(2f)
+            )
+            Text(
+                stringResource(Res.string.fiscal_units_header),
+                fontSize = 10.sp,
+                color = MaterialTheme.appColors.textTertiary,
+                modifier = Modifier.weight(1.5f),
+                textAlign = TextAlign.End
+            )
+            Text(
+                stringResource(Res.string.fiscal_avg_price_header),
+                fontSize = 10.sp,
+                color = MaterialTheme.appColors.textTertiary,
+                modifier = Modifier.weight(1.5f),
+                textAlign = TextAlign.End
+            )
+            Text(
+                stringResource(Res.string.fiscal_pnl_total_header),
+                fontSize = 10.sp,
+                color = MaterialTheme.appColors.textTertiary,
+                modifier = Modifier.weight(1.5f),
+                textAlign = TextAlign.End
+            )
         }
         Spacer(Modifier.height(4.dp))
         positions.forEachIndexed { i, pos ->
-            if (i > 0) HorizontalDivider(color = MaterialTheme.appColors.navyBorder, thickness = .3.dp)
+            if (i > 0) HorizontalDivider(
+                color = MaterialTheme.appColors.navyBorder,
+                thickness = .3.dp
+            )
             val totalPnl = (pos.unrealizedPnl ?: 0.0) + pos.realizedPnl
-            Row(Modifier.fillMaxWidth().padding(vertical = 5.dp), verticalAlignment = Alignment.CenterVertically) {
+            Row(
+                Modifier.fillMaxWidth().padding(vertical = 5.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 Column(Modifier.weight(2f)) {
-                    Text(pos.ticker, fontSize = 12.sp, color = MaterialTheme.appColors.textPrimary, fontWeight = FontWeight.SemiBold)
-                    Text(pos.categoryName ?: stringResource(Res.string.fiscal_no_category), fontSize = 9.sp, color = MaterialTheme.appColors.textTertiary)
+                    Text(
+                        pos.ticker,
+                        fontSize = 12.sp,
+                        color = MaterialTheme.appColors.textPrimary,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                    Text(
+                        pos.categoryName ?: stringResource(Res.string.fiscal_no_category),
+                        fontSize = 9.sp,
+                        color = MaterialTheme.appColors.textTertiary
+                    )
                 }
-                Text(formatQty(pos.netQuantity),  fontSize = 11.sp, color = MaterialTheme.appColors.textPrimary,   modifier = Modifier.weight(1.5f), textAlign = TextAlign.End)
-                Text(formatAmt(pos.avgCostBasis), fontSize = 11.sp, color = MaterialTheme.appColors.textSecondary, modifier = Modifier.weight(1.5f), textAlign = TextAlign.End)
+                Text(
+                    formatQty(pos.netQuantity),
+                    fontSize = 11.sp,
+                    color = MaterialTheme.appColors.textPrimary,
+                    modifier = Modifier.weight(1.5f),
+                    textAlign = TextAlign.End
+                )
+                Text(
+                    formatAmt(pos.avgCostBasis),
+                    fontSize = 11.sp,
+                    color = MaterialTheme.appColors.textSecondary,
+                    modifier = Modifier.weight(1.5f),
+                    textAlign = TextAlign.End
+                )
                 Text(
                     formatAmt(totalPnl),
                     fontSize = 11.sp,
@@ -296,17 +547,64 @@ internal fun PortfolioCard(report: FiscalReportData) {
             )
             Spacer(Modifier.height(5.dp))
             Row(Modifier.fillMaxWidth()) {
-                Text(stringResource(Res.string.fiscal_asset_header),       fontSize = 10.sp, color = MaterialTheme.appColors.textTertiary, modifier = Modifier.weight(2f))
-                Text(stringResource(Res.string.fiscal_buys_header),        fontSize = 10.sp, color = MaterialTheme.appColors.textTertiary, modifier = Modifier.weight(1.5f), textAlign = TextAlign.End)
-                Text(stringResource(Res.string.fiscal_sales_header),       fontSize = 10.sp, color = MaterialTheme.appColors.textTertiary, modifier = Modifier.weight(1.5f), textAlign = TextAlign.End)
-                Text(stringResource(Res.string.fiscal_realized_pnl_label), fontSize = 10.sp, color = MaterialTheme.appColors.textTertiary, modifier = Modifier.weight(1.5f), textAlign = TextAlign.End)
+                Text(
+                    stringResource(Res.string.fiscal_asset_header),
+                    fontSize = 10.sp,
+                    color = MaterialTheme.appColors.textTertiary,
+                    modifier = Modifier.weight(2f)
+                )
+                Text(
+                    stringResource(Res.string.fiscal_buys_header),
+                    fontSize = 10.sp,
+                    color = MaterialTheme.appColors.textTertiary,
+                    modifier = Modifier.weight(1.5f),
+                    textAlign = TextAlign.End
+                )
+                Text(
+                    stringResource(Res.string.fiscal_sales_header),
+                    fontSize = 10.sp,
+                    color = MaterialTheme.appColors.textTertiary,
+                    modifier = Modifier.weight(1.5f),
+                    textAlign = TextAlign.End
+                )
+                Text(
+                    stringResource(Res.string.fiscal_realized_pnl_label),
+                    fontSize = 10.sp,
+                    color = MaterialTheme.appColors.textTertiary,
+                    modifier = Modifier.weight(1.5f),
+                    textAlign = TextAlign.End
+                )
             }
             yearActive.forEachIndexed { i, pos ->
-                if (i > 0) HorizontalDivider(color = MaterialTheme.appColors.navyBorder, thickness = .3.dp)
-                Row(Modifier.fillMaxWidth().padding(vertical = 5.dp), verticalAlignment = Alignment.CenterVertically) {
-                    Text(pos.ticker,              fontSize = 12.sp, color = MaterialTheme.appColors.textPrimary,  fontWeight = FontWeight.SemiBold, modifier = Modifier.weight(2f))
-                    Text(formatAmt(pos.totalBought), fontSize = 11.sp, color = MaterialTheme.appColors.income, modifier = Modifier.weight(1.5f), textAlign = TextAlign.End)
-                    Text(formatAmt(pos.totalSold),   fontSize = 11.sp, color = MaterialTheme.appColors.expense,  modifier = Modifier.weight(1.5f), textAlign = TextAlign.End)
+                if (i > 0) HorizontalDivider(
+                    color = MaterialTheme.appColors.navyBorder,
+                    thickness = .3.dp
+                )
+                Row(
+                    Modifier.fillMaxWidth().padding(vertical = 5.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        pos.ticker,
+                        fontSize = 12.sp,
+                        color = MaterialTheme.appColors.textPrimary,
+                        fontWeight = FontWeight.SemiBold,
+                        modifier = Modifier.weight(2f)
+                    )
+                    Text(
+                        formatAmt(pos.totalBought),
+                        fontSize = 11.sp,
+                        color = MaterialTheme.appColors.income,
+                        modifier = Modifier.weight(1.5f),
+                        textAlign = TextAlign.End
+                    )
+                    Text(
+                        formatAmt(pos.totalSold),
+                        fontSize = 11.sp,
+                        color = MaterialTheme.appColors.expense,
+                        modifier = Modifier.weight(1.5f),
+                        textAlign = TextAlign.End
+                    )
                     Text(
                         formatAmt(pos.realizedPnl),
                         fontSize = 11.sp,

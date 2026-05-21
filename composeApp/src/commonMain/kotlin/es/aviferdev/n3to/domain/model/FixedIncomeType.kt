@@ -60,7 +60,11 @@ enum class FixedIncomeType(
         emoji = "🏢",
         typicalMinMonths = 12,
         typicalMaxMonths = 180,
-        allowedFrequencies = setOf(InterestFrequency.QUARTERLY, InterestFrequency.SEMIANNUAL, InterestFrequency.ANNUAL),
+        allowedFrequencies = setOf(
+            InterestFrequency.QUARTERLY,
+            InterestFrequency.SEMIANNUAL,
+            InterestFrequency.ANNUAL
+        ),
         category = FixedIncomeCategory.CORPORATE,
         allowsSecondarySale = true,
         allowsEarlyCancellation = false,
@@ -73,7 +77,12 @@ enum class FixedIncomeType(
         emoji = "🏦",
         typicalMinMonths = 3,
         typicalMaxMonths = 60,
-        allowedFrequencies = setOf(InterestFrequency.MONTHLY, InterestFrequency.QUARTERLY, InterestFrequency.ANNUAL, InterestFrequency.AT_MATURITY),
+        allowedFrequencies = setOf(
+            InterestFrequency.MONTHLY,
+            InterestFrequency.QUARTERLY,
+            InterestFrequency.ANNUAL,
+            InterestFrequency.AT_MATURITY
+        ),
         category = FixedIncomeCategory.DEPOSIT,
         allowsSecondarySale = false,
         allowsEarlyCancellation = true,

@@ -31,7 +31,11 @@ class AssetRepositoryImpl(
     override suspend fun updateAsset(asset: Asset): Result<Unit> =
         dataSource.update(asset)
 
-    override suspend fun updateCurrentPrice(id: String, price: Double, updatedAt: Long): Result<Unit> =
+    override suspend fun updateCurrentPrice(
+        id: String,
+        price: Double,
+        updatedAt: Long
+    ): Result<Unit> =
         dataSource.updateCurrentPrice(id, price, updatedAt)
 
     override suspend fun archiveAsset(id: String): Result<Unit> =

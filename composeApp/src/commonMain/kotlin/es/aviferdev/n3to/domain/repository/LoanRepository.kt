@@ -11,7 +11,13 @@ interface LoanRepository {
     fun getTotalOutstandingByAccount(accountId: String): Flow<Double>
     suspend fun insert(loan: Loan): Result<Unit>
     suspend fun update(loan: Loan): Result<Unit>
-    suspend fun updateRate(id: String, newRate: Double, newMonthlyPayment: Double, outstandingPrincipal: Double): Result<Unit>
+    suspend fun updateRate(
+        id: String,
+        newRate: Double,
+        newMonthlyPayment: Double,
+        outstandingPrincipal: Double
+    ): Result<Unit>
+
     suspend fun incrementPaidInstallments(id: String, newOutstanding: Double): Result<Unit>
     suspend fun archive(id: String): Result<Unit>
 }

@@ -30,10 +30,10 @@ class TransactionLocalDataSourceImpl(
     private fun loadTaxLines(transactionId: String): List<TaxLine> =
         taxLineQueries.selectByTransaction(transactionId).executeAsList().map { entity ->
             TaxLine(
-                name    = entity.name,
-                role    = TaxRole.valueOf(entity.role),
+                name = entity.name,
+                role = TaxRole.valueOf(entity.role),
                 percent = entity.percent,
-                amount  = entity.amount
+                amount = entity.amount
             )
         }
 
@@ -62,9 +62,9 @@ class TransactionLocalDataSourceImpl(
             .mapToOneOrNull(Dispatchers.IO)
             .map { row ->
                 MonthlyTotals(
-                    year         = year,
-                    month        = month,
-                    totalIncome  = row?.totalIncome ?: 0.0,
+                    year = year,
+                    month = month,
+                    totalIncome = row?.totalIncome ?: 0.0,
                     totalExpense = row?.totalExpense ?: 0.0
                 )
             }
@@ -80,10 +80,10 @@ class TransactionLocalDataSourceImpl(
                 val prev = queries.getAnnualTotalsByAccount(accountId, prevYear)
                     .executeAsOneOrNull()
                 AnnualSummary(
-                    year                = year,
-                    totalIncome         = current?.totalIncome ?: 0.0,
-                    totalExpense        = current?.totalExpense ?: 0.0,
-                    previousYearIncome  = prev?.totalIncome ?: 0.0,
+                    year = year,
+                    totalIncome = current?.totalIncome ?: 0.0,
+                    totalExpense = current?.totalExpense ?: 0.0,
+                    previousYearIncome = prev?.totalIncome ?: 0.0,
                     previousYearExpense = prev?.totalExpense ?: 0.0
                 )
             }
@@ -102,9 +102,9 @@ class TransactionLocalDataSourceImpl(
             .map { rows ->
                 rows.map { row ->
                     MonthlyTotals(
-                        year         = year,
-                        month        = row.month,
-                        totalIncome  = row.totalIncome,
+                        year = year,
+                        month = row.month,
+                        totalIncome = row.totalIncome,
                         totalExpense = row.totalExpense
                     )
                 }
@@ -120,27 +120,27 @@ class TransactionLocalDataSourceImpl(
         runCatching {
             withContext(Dispatchers.IO) {
                 queries.insert(
-                    id                       = entity.id,
-                    accountId                = entity.accountId,
-                    amount                   = entity.amount,
-                    type                     = entity.type,
-                    categoryId               = entity.categoryId,
-                    date                     = entity.date,
-                    notes                    = entity.notes,
-                    createdAt                = entity.createdAt,
-                    excludeFromFiscal        = entity.excludeFromFiscal,
-                    incomeType               = entity.incomeType,
-                    grossAmount              = entity.grossAmount,
-                    commissionAmount         = entity.commissionAmount,
-                    issuerId                 = entity.issuerId,
-                    issuerName               = entity.issuerName,
-                    originalCurrency         = entity.originalCurrency,
-                    originalAmount           = entity.originalAmount,
-                    exchangeRate             = entity.exchangeRate,
+                    id = entity.id,
+                    accountId = entity.accountId,
+                    amount = entity.amount,
+                    type = entity.type,
+                    categoryId = entity.categoryId,
+                    date = entity.date,
+                    notes = entity.notes,
+                    createdAt = entity.createdAt,
+                    excludeFromFiscal = entity.excludeFromFiscal,
+                    incomeType = entity.incomeType,
+                    grossAmount = entity.grossAmount,
+                    commissionAmount = entity.commissionAmount,
+                    issuerId = entity.issuerId,
+                    issuerName = entity.issuerName,
+                    originalCurrency = entity.originalCurrency,
+                    originalAmount = entity.originalAmount,
+                    exchangeRate = entity.exchangeRate,
                     linkedAssetTransactionId = entity.linkedAssetTransactionId,
-                    linkedLoanId             = entity.linkedLoanId,
-                    linkedPropertyId         = entity.linkedPropertyId,
-                    linkedValuableId         = entity.linkedValuableId
+                    linkedLoanId = entity.linkedLoanId,
+                    linkedPropertyId = entity.linkedPropertyId,
+                    linkedValuableId = entity.linkedValuableId
                 )
             }
         }
@@ -149,26 +149,26 @@ class TransactionLocalDataSourceImpl(
         runCatching {
             withContext(Dispatchers.IO) {
                 queries.update(
-                    accountId                = entity.accountId,
-                    amount                   = entity.amount,
-                    type                     = entity.type,
-                    categoryId               = entity.categoryId,
-                    date                     = entity.date,
-                    notes                    = entity.notes,
-                    excludeFromFiscal        = entity.excludeFromFiscal,
-                    incomeType               = entity.incomeType,
-                    grossAmount              = entity.grossAmount,
-                    commissionAmount         = entity.commissionAmount,
-                    issuerId                 = entity.issuerId,
-                    issuerName               = entity.issuerName,
-                    originalCurrency         = entity.originalCurrency,
-                    originalAmount           = entity.originalAmount,
-                    exchangeRate             = entity.exchangeRate,
+                    accountId = entity.accountId,
+                    amount = entity.amount,
+                    type = entity.type,
+                    categoryId = entity.categoryId,
+                    date = entity.date,
+                    notes = entity.notes,
+                    excludeFromFiscal = entity.excludeFromFiscal,
+                    incomeType = entity.incomeType,
+                    grossAmount = entity.grossAmount,
+                    commissionAmount = entity.commissionAmount,
+                    issuerId = entity.issuerId,
+                    issuerName = entity.issuerName,
+                    originalCurrency = entity.originalCurrency,
+                    originalAmount = entity.originalAmount,
+                    exchangeRate = entity.exchangeRate,
                     linkedAssetTransactionId = entity.linkedAssetTransactionId,
-                    linkedLoanId             = entity.linkedLoanId,
-                    linkedPropertyId         = entity.linkedPropertyId,
-                    linkedValuableId         = entity.linkedValuableId,
-                    id                       = entity.id
+                    linkedLoanId = entity.linkedLoanId,
+                    linkedPropertyId = entity.linkedPropertyId,
+                    linkedValuableId = entity.linkedValuableId,
+                    id = entity.id
                 )
             }
         }
@@ -217,21 +217,27 @@ class TransactionLocalDataSourceImpl(
             .mapToList(Dispatchers.IO)
             .map { it.toDomainWithTaxLines() }
 
-    override fun getExpensesByCategoryPerYear(accountId: String, year: String): Flow<List<CategoryBreakdown>> =
+    override fun getExpensesByCategoryPerYear(
+        accountId: String,
+        year: String
+    ): Flow<List<CategoryBreakdown>> =
         queries.getExpensesByCategoryPerYear(accountId, year)
             .asFlow()
             .mapToList(Dispatchers.IO)
             .map { rows ->
                 rows.map { row ->
                     CategoryBreakdown(
-                        categoryId   = row.categoryId,
+                        categoryId = row.categoryId,
                         categoryName = row.categoryName,
-                        amount       = row.totalAmount ?: 0.0
+                        amount = row.totalAmount ?: 0.0
                     )
                 }
             }
 
-    override fun getIncomeByTypePerYear(accountId: String, year: String): Flow<List<IncomeTypeBreakdown>> =
+    override fun getIncomeByTypePerYear(
+        accountId: String,
+        year: String
+    ): Flow<List<IncomeTypeBreakdown>> =
         queries.getIncomeByTypePerYear(accountId, year)
             .asFlow()
             .mapToList(Dispatchers.IO)
@@ -240,9 +246,9 @@ class TransactionLocalDataSourceImpl(
                     val incomeType = IncomeType.fromName(row.incomeType)
                     IncomeTypeBreakdown(
                         incomeType = row.incomeType ?: "UNKNOWN",
-                        label      = incomeType?.label ?: "Otro",
-                        emoji      = incomeType?.emoji ?: "💰",
-                        amount     = row.totalAmount ?: 0.0
+                        label = incomeType?.label ?: "Otro",
+                        emoji = incomeType?.emoji ?: "💰",
+                        amount = row.totalAmount ?: 0.0
                     )
                 }
             }

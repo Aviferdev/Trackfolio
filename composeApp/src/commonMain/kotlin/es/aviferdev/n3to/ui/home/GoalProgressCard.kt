@@ -1,7 +1,5 @@
 package es.aviferdev.n3to.ui.home
 
-import androidx.compose.material3.MaterialTheme
-import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -14,11 +12,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.GpsFixed
 import androidx.compose.material.icons.automirrored.outlined.ShowChart
+import androidx.compose.material.icons.outlined.GpsFixed
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -27,14 +26,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.MonthlyGoalProgress
-import es.aviferdev.n3to.ui.common.ProgressBar
-
-import es.aviferdev.n3to.ui.theme.ExpenseRed
-
-import es.aviferdev.n3to.ui.theme.WarnAmber
-import es.aviferdev.n3to.ui.theme.formatAmount
 import es.aviferdev.n3to.platform.nowLocalDate
+import es.aviferdev.n3to.ui.common.ProgressBar
+import es.aviferdev.n3to.ui.theme.appColors
+import es.aviferdev.n3to.ui.theme.formatAmount
 import es.aviferdev.n3to.ui.theme.formatAmountEuro
+import es.aviferdev.n3to.ui.theme.localizedMonthNames
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.home_goals_define_subtitle
 import n3to.composeapp.generated.resources.home_goals_define_title
@@ -44,11 +41,7 @@ import n3to.composeapp.generated.resources.home_goals_no_movement
 import n3to.composeapp.generated.resources.home_goals_pace_needed
 import n3to.composeapp.generated.resources.home_goals_projection_above
 import n3to.composeapp.generated.resources.home_goals_savings
-import es.aviferdev.n3to.ui.theme.localizedMonthNames
 import org.jetbrains.compose.resources.stringResource
-import kotlinx.datetime.Clock
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.todayIn
 
 @Composable
 fun GoalProgressCard(
@@ -238,10 +231,18 @@ private fun rememberProjection(target: Double, actual: Double): String? {
 
     return if (projected >= target) {
         val margin = projected - target
-        stringResource(Res.string.home_goals_projection_above, formatAmountEuro(projected), formatAmountEuro(margin))
+        stringResource(
+            Res.string.home_goals_projection_above,
+            formatAmountEuro(projected),
+            formatAmountEuro(margin)
+        )
     } else if (dailyAverage > 0.0) {
         val neededDaily = (target - actual) / daysRemaining
-        stringResource(Res.string.home_goals_pace_needed, formatAmount(dailyAverage), formatAmount(neededDaily))
+        stringResource(
+            Res.string.home_goals_pace_needed,
+            formatAmount(dailyAverage),
+            formatAmount(neededDaily)
+        )
     } else {
         stringResource(Res.string.home_goals_no_movement)
     }

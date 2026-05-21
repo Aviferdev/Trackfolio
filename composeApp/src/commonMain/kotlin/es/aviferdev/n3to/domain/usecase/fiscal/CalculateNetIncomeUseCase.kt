@@ -13,16 +13,26 @@ class CalculateNetIncomeUseCase(private val calculateIrpf: CalculateIrpfUseCase)
         irpfFixed: String
     ): Double = when {
         incomeType.hasSocialContribution && incomeType != IncomeType.BOND_DEPOSIT -> {
-            val irpf = calculateIrpf.resolveAmount(gross, ssAmount, isIrpfPercentMode, irpfPercent, irpfFixed)
+            val irpf = calculateIrpf.resolveAmount(
+                gross,
+                ssAmount,
+                isIrpfPercentMode,
+                irpfPercent,
+                irpfFixed
+            )
             gross - ssAmount - irpf
         }
+
         incomeType == IncomeType.BOND_DEPOSIT -> {
-            val irpf = calculateIrpf.resolveAmount(gross, 0.0, isIrpfPercentMode, irpfPercent, irpfFixed)
+            val irpf =
+                calculateIrpf.resolveAmount(gross, 0.0, isIrpfPercentMode, irpfPercent, irpfFixed)
             gross - irpf - commission
         }
+
         incomeType == IncomeType.EXEMPT_INCOME -> gross
         else -> {
-            val irpf = calculateIrpf.resolveAmount(gross, 0.0, isIrpfPercentMode, irpfPercent, irpfFixed)
+            val irpf =
+                calculateIrpf.resolveAmount(gross, 0.0, isIrpfPercentMode, irpfPercent, irpfFixed)
             gross - irpf
         }
     }

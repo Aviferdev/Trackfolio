@@ -1,8 +1,5 @@
 package es.aviferdev.n3to.ui.portfolio.assethistory
 
-import androidx.compose.material3.MaterialTheme
-import es.aviferdev.n3to.ui.theme.appColors
-import es.aviferdev.n3to.platform.nowMillis
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -13,6 +10,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -20,8 +18,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import es.aviferdev.n3to.platform.nowMillis
 import es.aviferdev.n3to.ui.portfolio.components.formatFullDate
-import es.aviferdev.n3to.ui.theme.ExpenseRed
+import es.aviferdev.n3to.ui.theme.appColors
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.fixedincome_maturity_label
 import org.jetbrains.compose.resources.stringResource
@@ -45,7 +44,11 @@ fun MaturityDateCard(maturityDate: Long, modifier: Modifier = Modifier) {
             Text(if (isExpired) "⏰" else "📅", fontSize = 22.sp)
             Spacer(Modifier.width(12.dp))
             Column(modifier = Modifier.weight(1f)) {
-                Text(stringResource(Res.string.fixedincome_maturity_label), fontSize = 10.sp, color = MaterialTheme.appColors.textTertiary)
+                Text(
+                    stringResource(Res.string.fixedincome_maturity_label),
+                    fontSize = 10.sp,
+                    color = MaterialTheme.appColors.textTertiary
+                )
                 Spacer(Modifier.height(2.dp))
                 Text(
                     formatFullDate(maturityDate),

@@ -28,12 +28,12 @@ class CreateFixedIncomePositionUseCase(
         if (eventResult.isFailure) return eventResult
 
         val ledgerResult = createLedgerTransactionUseCase(
-            accountId    = position.accountId,
-            amount       = position.principal,
-            type         = TransactionType.EXPENSE,
-            date         = acquisitionEvent.date,
+            accountId = position.accountId,
+            amount = position.principal,
+            type = TransactionType.EXPENSE,
+            date = acquisitionEvent.date,
             incomeTypeId = null,
-            notes        = "Adquisición: ${position.name}",
+            notes = "Adquisición: ${position.name}",
             linkedEventId = "fi_${acquisitionEvent.id}"
         )
 
@@ -54,16 +54,16 @@ class CreateLedgerTransactionUseCase(
         linkedEventId: String?
     ): Result<Unit> = runCatching {
         val tx = Transaction(
-            id                  = "tx_${nowMillis()}",
-            accountId           = accountId,
-            amount              = amount,
-            type                = type,
-            date                = date,
-            categoryId          = null,
-            incomeType          = incomeTypeId?.let { IncomeType.fromName(it) },
-            notes               = notes,
+            id = "tx_${nowMillis()}",
+            accountId = accountId,
+            amount = amount,
+            type = type,
+            date = date,
+            categoryId = null,
+            incomeType = incomeTypeId?.let { IncomeType.fromName(it) },
+            notes = notes,
             linkedAssetTransactionId = linkedEventId,
-            createdAt           = nowMillis()
+            createdAt = nowMillis()
         )
         transactionRepository.saveTransaction(tx)
     }

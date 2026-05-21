@@ -1,15 +1,35 @@
 package es.aviferdev.n3to.ui.settings
 
-import androidx.compose.material3.MaterialTheme
-import es.aviferdev.n3to.ui.theme.appColors
-import es.aviferdev.n3to.platform.nowMillis
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -19,15 +39,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.Issuer
 import es.aviferdev.n3to.domain.model.IssuerType
-import es.aviferdev.n3to.ui.theme.*
-import org.jetbrains.compose.resources.stringResource
+import es.aviferdev.n3to.platform.nowMillis
+import es.aviferdev.n3to.ui.theme.N3toTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.common_cancel
 import n3to.composeapp.generated.resources.common_close
 import n3to.composeapp.generated.resources.common_save
 import n3to.composeapp.generated.resources.fixedincome_new_issuer
 import n3to.composeapp.generated.resources.issuer_name_placeholder
-
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -40,12 +61,12 @@ fun AddEditIssuerSheet(
 ) {
     var name by remember { mutableStateOf(initial?.name ?: "") }
     val defaultIcon = when (type) {
-        IssuerType.EMPLOYER           -> "🏢"
-        IssuerType.BANK               -> "🏦"
-        IssuerType.BOND_ISSUER        -> "📜"
-        IssuerType.DIVIDEND_SOURCE    -> "📈"
+        IssuerType.EMPLOYER -> "🏢"
+        IssuerType.BANK -> "🏦"
+        IssuerType.BOND_ISSUER -> "📜"
+        IssuerType.DIVIDEND_SOURCE -> "📈"
         IssuerType.PROMOTION_PLATFORM -> "🎁"
-        IssuerType.EXEMPT_SOURCE      -> "📋"
+        IssuerType.EXEMPT_SOURCE -> "📋"
     }
     var icon by remember { mutableStateOf(initial?.icon ?: defaultIcon) }
     val isEditing = initial != null
@@ -84,7 +105,11 @@ fun AddEditIssuerSheet(
                     color = MaterialTheme.appColors.textPrimary
                 )
                 IconButton(onClick = onDismiss) {
-                    Icon(Icons.Default.Close, stringResource(Res.string.common_close), tint = MaterialTheme.appColors.textSecondary)
+                    Icon(
+                        Icons.Default.Close,
+                        stringResource(Res.string.common_close),
+                        tint = MaterialTheme.appColors.textSecondary
+                    )
                 }
             }
 
@@ -94,7 +119,12 @@ fun AddEditIssuerSheet(
                 value = name,
                 onValueChange = { name = it },
                 modifier = Modifier.fillMaxWidth(),
-                placeholder = { Text(stringResource(Res.string.issuer_name_placeholder), color = MaterialTheme.appColors.textTertiary) },
+                placeholder = {
+                    Text(
+                        stringResource(Res.string.issuer_name_placeholder),
+                        color = MaterialTheme.appColors.textTertiary
+                    )
+                },
                 singleLine = true,
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = MaterialTheme.appColors.primary,
@@ -122,13 +152,22 @@ fun AddEditIssuerSheet(
                     disabledContainerColor = MaterialTheme.appColors.primary.copy(alpha = 0.3f)
                 )
             ) {
-                Text(stringResource(Res.string.common_save), fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = Color.White)
+                Text(
+                    stringResource(Res.string.common_save),
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = Color.White
+                )
             }
 
             Spacer(Modifier.height(8.dp))
 
             TextButton(onClick = onDismiss) {
-                Text(stringResource(Res.string.common_cancel), color = MaterialTheme.appColors.textSecondary, fontSize = 14.sp)
+                Text(
+                    stringResource(Res.string.common_cancel),
+                    color = MaterialTheme.appColors.textSecondary,
+                    fontSize = 14.sp
+                )
             }
         }
     }

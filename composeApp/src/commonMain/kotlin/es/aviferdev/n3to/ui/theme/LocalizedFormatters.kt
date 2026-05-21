@@ -11,7 +11,6 @@ import n3to.composeapp.generated.resources.date_format_dmy
 import n3to.composeapp.generated.resources.date_hours_ago
 import n3to.composeapp.generated.resources.date_just_now
 import n3to.composeapp.generated.resources.date_minutes_ago
-import n3to.composeapp.generated.resources.date_months_ago
 import n3to.composeapp.generated.resources.date_month_full_01
 import n3to.composeapp.generated.resources.date_month_full_02
 import n3to.composeapp.generated.resources.date_month_full_03
@@ -36,6 +35,7 @@ import n3to.composeapp.generated.resources.date_month_short_09
 import n3to.composeapp.generated.resources.date_month_short_10
 import n3to.composeapp.generated.resources.date_month_short_11
 import n3to.composeapp.generated.resources.date_month_short_12
+import n3to.composeapp.generated.resources.date_months_ago
 import n3to.composeapp.generated.resources.date_one_hour_ago
 import n3to.composeapp.generated.resources.date_one_minute_ago
 import n3to.composeapp.generated.resources.date_one_month_ago
@@ -121,39 +121,39 @@ fun formatDateLocalized(epochMillis: Long): String {
  */
 @Composable
 fun formatRelativeTimeLocalized(epochMillis: Long): String {
-    val justNow   = stringResource(Res.string.date_just_now)
+    val justNow = stringResource(Res.string.date_just_now)
     val oneMinute = stringResource(Res.string.date_one_minute_ago)
-    val minutes   = stringResource(Res.string.date_minutes_ago)
-    val oneHour   = stringResource(Res.string.date_one_hour_ago)
-    val hours     = stringResource(Res.string.date_hours_ago)
+    val minutes = stringResource(Res.string.date_minutes_ago)
+    val oneHour = stringResource(Res.string.date_one_hour_ago)
+    val hours = stringResource(Res.string.date_hours_ago)
     val yesterday = stringResource(Res.string.date_yesterday)
-    val days      = stringResource(Res.string.date_days_ago)
-    val oneMonth  = stringResource(Res.string.date_one_month_ago)
-    val months    = stringResource(Res.string.date_months_ago)
-    val oneYear   = stringResource(Res.string.date_one_year_ago)
-    val years     = stringResource(Res.string.date_years_ago)
+    val days = stringResource(Res.string.date_days_ago)
+    val oneMonth = stringResource(Res.string.date_one_month_ago)
+    val months = stringResource(Res.string.date_months_ago)
+    val oneYear = stringResource(Res.string.date_one_year_ago)
+    val years = stringResource(Res.string.date_years_ago)
 
-    val now     = nowMillis()
-    val diffMs  = (now - epochMillis).coerceAtLeast(0L)
+    val now = nowMillis()
+    val diffMs = (now - epochMillis).coerceAtLeast(0L)
     val seconds = diffMs / 1_000L
-    val mins    = seconds / 60L
-    val hrs     = mins / 60L
-    val dys     = hrs   / 24L
-    val mns     = dys   / 30L
-    val yrs     = dys   / 365L
+    val mins = seconds / 60L
+    val hrs = mins / 60L
+    val dys = hrs / 24L
+    val mns = dys / 30L
+    val yrs = dys / 365L
 
     return when {
-        seconds < 45L         -> justNow
-        mins    < 2L          -> oneMinute
-        mins    < 60L         -> stringResource(Res.string.date_minutes_ago, mins)
-        hrs     < 2L          -> oneHour
-        hrs     < 24L         -> stringResource(Res.string.date_hours_ago, hrs)
-        dys     < 2L          -> yesterday
-        dys     < 30L         -> stringResource(Res.string.date_days_ago, dys)
-        mns     < 2L          -> oneMonth
-        dys     < 365L        -> stringResource(Res.string.date_months_ago, mns)
-        yrs     < 2L          -> oneYear
-        else                  -> stringResource(Res.string.date_years_ago, yrs)
+        seconds < 45L -> justNow
+        mins < 2L -> oneMinute
+        mins < 60L -> stringResource(Res.string.date_minutes_ago, mins)
+        hrs < 2L -> oneHour
+        hrs < 24L -> stringResource(Res.string.date_hours_ago, hrs)
+        dys < 2L -> yesterday
+        dys < 30L -> stringResource(Res.string.date_days_ago, dys)
+        mns < 2L -> oneMonth
+        dys < 365L -> stringResource(Res.string.date_months_ago, mns)
+        yrs < 2L -> oneYear
+        else -> stringResource(Res.string.date_years_ago, yrs)
     }
 }
 

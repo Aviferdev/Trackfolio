@@ -134,7 +134,12 @@ fun SectorManagementSheet(
                 OutlinedTextField(
                     value = newName,
                     onValueChange = { newName = it },
-                    placeholder = { Text(stringResource(Res.string.portfolio_sector_name), fontSize = 14.sp) },
+                    placeholder = {
+                        Text(
+                            stringResource(Res.string.portfolio_sector_name),
+                            fontSize = 14.sp
+                        )
+                    },
                     modifier = Modifier.weight(1f),
                     singleLine = true,
                     shape = RoundedCornerShape(10.dp),
@@ -173,7 +178,11 @@ fun SectorManagementSheet(
                         modifier = Modifier
                             .size(36.dp)
                             .clip(RoundedCornerShape(8.dp))
-                            .background(if (newIcon == icon) MaterialTheme.appColors.primary.copy(alpha = 0.1f) else MaterialTheme.appColors.surfaceElevated)
+                            .background(
+                                if (newIcon == icon) MaterialTheme.appColors.primary.copy(
+                                    alpha = 0.1f
+                                ) else MaterialTheme.appColors.surfaceElevated
+                            )
                             .border(
                                 if (newIcon == icon) 1.5.dp else 0.5.dp,
                                 if (newIcon == icon) MaterialTheme.appColors.primary else MaterialTheme.appColors.border,
@@ -195,7 +204,12 @@ fun SectorManagementSheet(
             Spacer(Modifier.height(16.dp))
 
             errorMsg?.let { msg ->
-                Text(msg, fontSize = 12.sp, color = MaterialTheme.appColors.expense, modifier = Modifier.padding(bottom = 8.dp))
+                Text(
+                    msg,
+                    fontSize = 12.sp,
+                    color = MaterialTheme.appColors.expense,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
             }
 
             if (isLoading) {

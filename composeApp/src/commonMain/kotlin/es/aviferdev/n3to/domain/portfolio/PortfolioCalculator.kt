@@ -79,10 +79,10 @@ object PortfolioCalculator {
         for (tx in ordered) {
             val lots = lotsByPlatform.getOrPut(tx.platformId) { ArrayDeque() }
             when (tx.type) {
-                AssetTransactionType.BUY         -> lots.addLast(Lot(tx.quantity, tx.pricePerUnit))
-                AssetTransactionType.SELL        -> realizedPnL += consumeFifo(lots, tx)
+                AssetTransactionType.BUY -> lots.addLast(Lot(tx.quantity, tx.pricePerUnit))
+                AssetTransactionType.SELL -> realizedPnL += consumeFifo(lots, tx)
                 AssetTransactionType.TRANSFER_OUT -> consumeFifoNoRealize(lots, tx.quantity)
-                AssetTransactionType.TRANSFER_IN  -> lots.addLast(Lot(tx.quantity, tx.pricePerUnit))
+                AssetTransactionType.TRANSFER_IN -> lots.addLast(Lot(tx.quantity, tx.pricePerUnit))
             }
         }
 
@@ -111,17 +111,17 @@ object PortfolioCalculator {
             if (grossInvested > 0.0) (totalPnL / grossInvested) * 100.0 else 0.0
 
         return AssetPosition(
-            netQuantity            = netQuantity,
+            netQuantity = netQuantity,
             averageCostOfRemaining = averageCostOfRemaining,
             totalInvestedRemaining = totalInvestedRemaining,
-            realizedPnL            = realizedPnL,
-            currentValue           = currentValue,
-            unrealizedPnL          = unrealizedPnL,
-            unrealizedPnLPercent   = unrealizedPnLPercent,
-            totalPnL               = totalPnL,
-            totalPnLPercent        = totalPnLPercent,
-            hasCurrentPrice        = hasPrice,
-            dividendIncome         = dividendIncome
+            realizedPnL = realizedPnL,
+            currentValue = currentValue,
+            unrealizedPnL = unrealizedPnL,
+            unrealizedPnLPercent = unrealizedPnLPercent,
+            totalPnL = totalPnL,
+            totalPnLPercent = totalPnLPercent,
+            hasCurrentPrice = hasPrice,
+            dividendIncome = dividendIncome
         )
     }
 
@@ -203,14 +203,15 @@ object PortfolioCalculator {
             when (tx.type) {
                 AssetTransactionType.BUY, AssetTransactionType.TRANSFER_IN -> lots.addLast(
                     TrackedLot(
-                        txId         = tx.id,
-                        date         = tx.date,
+                        txId = tx.id,
+                        date = tx.date,
                         pricePerUnit = tx.pricePerUnit,
-                        originalQty  = tx.quantity,
-                        remaining    = tx.quantity,
-                        platformId   = tx.platformId
+                        originalQty = tx.quantity,
+                        remaining = tx.quantity,
+                        platformId = tx.platformId
                     )
                 )
+
                 AssetTransactionType.TRANSFER_OUT -> {
                     // Consume lotes FIFO sin generar P&L (traspaso fiscal neutro)
                     var toTransfer = tx.quantity
@@ -222,6 +223,7 @@ object PortfolioCalculator {
                         else lot.remaining -= consumed
                     }
                 }
+
                 AssetTransactionType.SELL -> {
                     var toSell = tx.quantity
                     val consumed = mutableListOf<FifoLotConsumption>()
@@ -233,26 +235,26 @@ object PortfolioCalculator {
                         consumed.add(
                             FifoLotConsumption(
                                 purchaseTransactionId = lot.txId,
-                                purchaseDate          = lot.date,
-                                purchasePrice         = lot.pricePerUnit,
-                                quantityConsumed      = consumedQty,
-                                pnl                   = pnl
+                                purchaseDate = lot.date,
+                                purchasePrice = lot.pricePerUnit,
+                                quantityConsumed = consumedQty,
+                                pnl = pnl
                             )
                         )
                         realized += pnl
-                        toSell   -= consumedQty
+                        toSell -= consumedQty
                         if (consumedQty >= lot.remaining) lots.removeFirst()
                         else lot.remaining -= consumedQty
                     }
                     sales.add(
                         FifoSaleMatch(
                             saleTransactionId = tx.id,
-                            saleDate          = tx.date,
-                            salePrice         = tx.pricePerUnit,
-                            saleQuantity      = tx.quantity,
-                            platformId        = tx.platformId,
-                            consumed          = consumed,
-                            realizedPnL       = realized
+                            saleDate = tx.date,
+                            salePrice = tx.pricePerUnit,
+                            saleQuantity = tx.quantity,
+                            platformId = tx.platformId,
+                            consumed = consumed,
+                            realizedPnL = realized
                         )
                     )
                 }
@@ -265,17 +267,17 @@ object PortfolioCalculator {
                 .map {
                     FifoOpenLot(
                         purchaseTransactionId = it.txId,
-                        purchaseDate          = it.date,
-                        pricePerUnit          = it.pricePerUnit,
-                        originalQuantity      = it.originalQty,
-                        remainingQuantity     = it.remaining,
-                        platformId            = it.platformId
+                        purchaseDate = it.date,
+                        pricePerUnit = it.pricePerUnit,
+                        originalQuantity = it.originalQty,
+                        remainingQuantity = it.remaining,
+                        platformId = it.platformId
                     )
                 }
         }
 
         return FifoBreakdown(
-            openLots    = openLots,
+            openLots = openLots,
             saleMatches = sales.sortedByDescending { it.saleDate }
         )
     }
@@ -343,6 +345,7 @@ object PortfolioCalculator {
             when (tx.type) {
                 AssetTransactionType.BUY, AssetTransactionType.TRANSFER_IN ->
                     lots.addLast(Lot(tx.quantity, tx.pricePerUnit))
+
                 AssetTransactionType.SELL, AssetTransactionType.TRANSFER_OUT ->
                     consumeFifoNoRealize(lots, tx.quantity)
             }

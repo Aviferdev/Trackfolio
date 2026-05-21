@@ -45,32 +45,32 @@ sealed class AssetHistoryError {
 }
 
 data class AssetHistoryUiState(
-    val asset: Asset?                       = null,
-    val position: AssetPosition?            = null,
-    val breakdown: FifoBreakdown?           = null,
+    val asset: Asset? = null,
+    val position: AssetPosition? = null,
+    val breakdown: FifoBreakdown? = null,
     val transactionsDesc: List<AssetTransaction> = emptyList(),
-    val transactionsAsc: List<AssetTransaction>  = emptyList(),
-    val dividends: List<Transaction>        = emptyList(),
-    val platforms: List<Platform>           = emptyList(),
-    val allPlatforms: List<Platform>        = emptyList(),
+    val transactionsAsc: List<AssetTransaction> = emptyList(),
+    val dividends: List<Transaction> = emptyList(),
+    val platforms: List<Platform> = emptyList(),
+    val allPlatforms: List<Platform> = emptyList(),
     val platformsByAsset: Map<String, List<Platform>> = emptyMap(),
-    val categories: List<AssetCategory>    = emptyList(),
-    val isLoading: Boolean                  = true,
-    val error: AssetHistoryError?           = null,
+    val categories: List<AssetCategory> = emptyList(),
+    val isLoading: Boolean = true,
+    val error: AssetHistoryError? = null,
     // Sheet de añadir/editar movimiento
-    val showAddSheet: Boolean               = false,
-    val editing: AssetTransaction?          = null,
+    val showAddSheet: Boolean = false,
+    val editing: AssetTransaction? = null,
     // Sheet de actualizar precio actual
-    val showUpdatePriceSheet: Boolean       = false,
+    val showUpdatePriceSheet: Boolean = false,
     // Confirmación de borrado
-    val pendingDelete: AssetTransaction?    = null,
+    val pendingDelete: AssetTransaction? = null,
     // Sheet de dividendo
-    val showDividendSheet: Boolean          = false,
-    val editingDividendId: String?          = null,
+    val showDividendSheet: Boolean = false,
+    val editingDividendId: String? = null,
     // Sheet de traspaso entre fondos
-    val showTransferSheet: Boolean          = false,
+    val showTransferSheet: Boolean = false,
     // ¿Este activo admite traspasos?
-    val isTransferable: Boolean             = false,
+    val isTransferable: Boolean = false,
     // Fondos destino disponibles para traspaso (misma cuenta, categoría traspasable)
     val transferableDestinations: List<Asset> = emptyList()
 )
@@ -96,14 +96,14 @@ class AssetHistoryViewModel(
     private val assetRepository: es.aviferdev.n3to.domain.repository.AssetRepository
 ) : ViewModel() {
 
-    private val _showAddSheet         = MutableStateFlow(false)
-    private val _editing              = MutableStateFlow<AssetTransaction?>(null)
+    private val _showAddSheet = MutableStateFlow(false)
+    private val _editing = MutableStateFlow<AssetTransaction?>(null)
     private val _showUpdatePriceSheet = MutableStateFlow(false)
-    private val _pendingDelete        = MutableStateFlow<AssetTransaction?>(null)
-    private val _error                = MutableStateFlow<AssetHistoryError?>(null)
-    private val _showDividendSheet    = MutableStateFlow(false)
-    private val _editingDividendId   = MutableStateFlow<String?>(null)
-    private val _showTransferSheet    = MutableStateFlow(false)
+    private val _pendingDelete = MutableStateFlow<AssetTransaction?>(null)
+    private val _error = MutableStateFlow<AssetHistoryError?>(null)
+    private val _showDividendSheet = MutableStateFlow(false)
+    private val _editingDividendId = MutableStateFlow<String?>(null)
+    private val _showTransferSheet = MutableStateFlow(false)
 
     private data class Sheets(
         val showAdd: Boolean,
@@ -124,28 +124,35 @@ class AssetHistoryViewModel(
         _error
     ) { showAdd, editing, showPrice, pendingDel, err ->
         Sheets(
-            showAdd  = showAdd,
-            editing  = editing,
+            showAdd = showAdd,
+            editing = editing,
             showUpdatePrice = showPrice,
-            pendingDelete   = pendingDel,
-            error           = err,
-            showDividend        = false,
-            editingDividendId   = null,
-            showTransfer        = false
+            pendingDelete = pendingDel,
+            error = err,
+            showDividend = false,
+            editingDividendId = null,
+            showTransfer = false
         )
     }.combine(
         combine(_showDividendSheet, _editingDividendId) { div, divId ->
-            object { val showDiv = div; val divId = divId }
+            object {
+                val showDiv = div;
+                val divId = divId
+            }
         }.combine(
             _showTransferSheet
         ) { extra, transfer ->
-            object { val showDiv = extra.showDiv; val divId = extra.divId; val showTransfer = transfer }
+            object {
+                val showDiv = extra.showDiv;
+                val divId = extra.divId;
+                val showTransfer = transfer
+            }
         }
     ) { base, extra ->
         base.copy(
-            showDividend         = extra.showDiv,
-            editingDividendId    = extra.divId,
-            showTransfer         = extra.showTransfer
+            showDividend = extra.showDiv,
+            editingDividendId = extra.divId,
+            showTransfer = extra.showTransfer
         )
     }
 
@@ -153,7 +160,17 @@ class AssetHistoryViewModel(
     private val coreDataFlow = getAssetById.getAssetById(assetId)
         .flatMapLatest { asset ->
             if (asset == null) {
-                flowOf(CoreData(null, emptyList(), emptyList(), emptyList(), emptyList(), emptyMap(), emptyList()))
+                flowOf(
+                    CoreData(
+                        null,
+                        emptyList(),
+                        emptyList(),
+                        emptyList(),
+                        emptyList(),
+                        emptyMap(),
+                        emptyList()
+                    )
+                )
             } else {
                 val categoryPlatformsFlow = if (asset.assetCategoryId != null)
                     platformCategoryRepository.getByCategory(asset.assetCategoryId)
@@ -167,13 +184,22 @@ class AssetHistoryViewModel(
                     transactionRepository.getDividendsByAsset(assetId),
                     categoryPlatformsFlow
                 ) { a, txs, assetPlatforms, dividends, catPlatforms ->
-                    object { val a = a; val txs = txs; val assetPlatforms = assetPlatforms; val dividends = dividends; val catPlatforms = catPlatforms }
+                    object {
+                        val a = a;
+                        val txs = txs;
+                        val assetPlatforms = assetPlatforms;
+                        val dividends = dividends;
+                        val catPlatforms = catPlatforms
+                    }
                 }
                 val secondPart = combine(
                     assetPlatformRepository.getPlatformsByAssets(listOf(assetId)),
                     getAssetCategoriesIncludingArchived()
                 ) { platformsByAsset, categories ->
-                    object { val platformsByAsset = platformsByAsset; val categories = categories }
+                    object {
+                        val platformsByAsset = platformsByAsset;
+                        val categories = categories
+                    }
                 }
                 combine(firstPart, secondPart) { first, second ->
                     CoreData(
@@ -208,62 +234,73 @@ class AssetHistoryViewModel(
             AssetHistoryUiState(isLoading = false, error = AssetHistoryError.AssetNotFound)
         } else {
             val dividendIncome = core.dividends.sumOf { it.amount }
-            val position  = PortfolioCalculator.calculate(core.txs, asset.currentPrice, dividendIncome)
+            val position =
+                PortfolioCalculator.calculate(core.txs, asset.currentPrice, dividendIncome)
             val breakdown = PortfolioCalculator.breakdown(core.txs)
             val isTransferable = TransferableCategories.isTransferable(asset.assetCategoryId)
             AssetHistoryUiState(
-                asset                = asset,
-                position             = position,
-                breakdown            = breakdown,
-                transactionsDesc     = core.txs.sortedWith(compareByDescending<AssetTransaction> { it.date }
+                asset = asset,
+                position = position,
+                breakdown = breakdown,
+                transactionsDesc = core.txs.sortedWith(compareByDescending<AssetTransaction> { it.date }
                     .thenByDescending { it.createdAt }),
-                transactionsAsc      = core.txs,
-                dividends            = core.dividends.sortedByDescending { it.date },
-                platforms            = core.assetPlatforms,
-                allPlatforms         = core.globalPlatforms,
-                platformsByAsset     = core.platformsByAsset,
-                categories           = core.categories,
-                isLoading            = false,
-                showAddSheet         = sheets.showAdd,
-                editing              = sheets.editing,
+                transactionsAsc = core.txs,
+                dividends = core.dividends.sortedByDescending { it.date },
+                platforms = core.assetPlatforms,
+                allPlatforms = core.globalPlatforms,
+                platformsByAsset = core.platformsByAsset,
+                categories = core.categories,
+                isLoading = false,
+                showAddSheet = sheets.showAdd,
+                editing = sheets.editing,
                 showUpdatePriceSheet = sheets.showUpdatePrice,
-                pendingDelete        = sheets.pendingDelete,
-                error                = sheets.error,
-                showDividendSheet    = sheets.showDividend,
-                editingDividendId    = sheets.editingDividendId,
-                showTransferSheet    = sheets.showTransfer,
-                isTransferable       = isTransferable
+                pendingDelete = sheets.pendingDelete,
+                error = sheets.error,
+                showDividendSheet = sheets.showDividend,
+                editingDividendId = sheets.editingDividendId,
+                showTransferSheet = sheets.showTransfer,
+                isTransferable = isTransferable
             )
         }
     }
-    .flatMapLatest { state ->
-        val accId = state.asset?.accountId
-        if (accId == null) flowOf(state)
-        else getAccountById(accId).flatMapLatest { acc ->
-            if (state.isTransferable) {
-                assetRepository.getAssetsByAccount(accId).flatMapLatest { allAssets ->
-                    val destinations = allAssets.filter { a ->
-                        a.id != assetId && TransferableCategories.isTransferable(a.assetCategoryId)
+        .flatMapLatest { state ->
+            val accId = state.asset?.accountId
+            if (accId == null) flowOf(state)
+            else getAccountById(accId).flatMapLatest { acc ->
+                if (state.isTransferable) {
+                    assetRepository.getAssetsByAccount(accId).flatMapLatest { allAssets ->
+                        val destinations = allAssets.filter { a ->
+                            a.id != assetId && TransferableCategories.isTransferable(a.assetCategoryId)
+                        }
+                        flowOf(
+                            state.copy(
+                                transferableDestinations = destinations
+                            )
+                        )
                     }
-                    flowOf(state.copy(
-                        transferableDestinations = destinations
-                    ))
+                } else {
+                    flowOf(state)
                 }
-            } else {
-                flowOf(state)
             }
         }
-    }
-    .stateIn(
-        scope        = viewModelScope,
-        started      = SharingStarted.WhileSubscribed(5_000),
-        initialValue = AssetHistoryUiState()
-    )
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = AssetHistoryUiState()
+        )
 
     // ── Sheet de añadir/editar movimiento ───────────────────────────────────
-    fun openAddSheet() { _showAddSheet.value = true; _editing.value = null }
-    fun openEditSheet(tx: AssetTransaction) { _editing.value = tx; _showAddSheet.value = true }
-    fun closeAddSheet() { _showAddSheet.value = false; _editing.value = null }
+    fun openAddSheet() {
+        _showAddSheet.value = true; _editing.value = null
+    }
+
+    fun openEditSheet(tx: AssetTransaction) {
+        _editing.value = tx; _showAddSheet.value = true
+    }
+
+    fun closeAddSheet() {
+        _showAddSheet.value = false; _editing.value = null
+    }
 
     fun saveTransaction(
         type: AssetTransactionType,
@@ -279,51 +316,52 @@ class AssetHistoryViewModel(
             val now = nowMillis()
             val result = if (current == null) {
                 val tx = AssetTransaction(
-                    id           = "tx_${now}_${(0..9999).random()}",
-                    assetId      = assetId,
-                    type         = type,
-                    quantity     = quantity,
+                    id = "tx_${now}_${(0..9999).random()}",
+                    assetId = assetId,
+                    type = type,
+                    quantity = quantity,
                     pricePerUnit = pricePerUnit,
-                    date         = date,
-                    platformId   = platformId,
-                    feeNote      = feeNote?.ifBlank { null },
-                    notes        = notes?.ifBlank { null },
-                    createdAt    = now
+                    date = date,
+                    platformId = platformId,
+                    feeNote = feeNote?.ifBlank { null },
+                    notes = notes?.ifBlank { null },
+                    createdAt = now
                 )
                 saveAssetTransaction(tx).also { r ->
                     if (r.isSuccess) {
                         syncToLedger.sync(
-                            assetTx   = tx,
+                            assetTx = tx,
                             accountId = uiState.value.asset!!.accountId,
                             assetName = uiState.value.asset!!.name
                         )
                         if (type == AssetTransactionType.BUY) {
                             assetPriceHistoryRepository.insert(
                                 AssetPriceHistory(
-                                    id         = uuid4().toString(),
-                                    assetId    = assetId,
-                                    price      = pricePerUnit,
+                                    id = uuid4().toString(),
+                                    assetId = assetId,
+                                    price = pricePerUnit,
                                     recordedAt = date
                                 )
                             ).onFailure { err ->
-                                _error.value = AssetHistoryError.PriceHistorySaveError(err.message ?: "")
+                                _error.value =
+                                    AssetHistoryError.PriceHistorySaveError(err.message ?: "")
                             }
                         }
                     }
                 }
             } else {
                 val updated = current.copy(
-                    type         = type,
-                    quantity     = quantity,
+                    type = type,
+                    quantity = quantity,
                     pricePerUnit = pricePerUnit,
-                    date         = date,
-                    platformId   = platformId,
-                    feeNote      = feeNote?.ifBlank { null },
-                    notes        = notes?.ifBlank { null }
+                    date = date,
+                    platformId = platformId,
+                    feeNote = feeNote?.ifBlank { null },
+                    notes = notes?.ifBlank { null }
                 )
                 updateAssetTransaction(updated).also { r ->
                     if (r.isSuccess) syncToLedger.sync(
-                        assetTx   = updated,
+                        assetTx = updated,
                         accountId = uiState.value.asset!!.accountId,
                         assetName = uiState.value.asset!!.name
                     )
@@ -336,8 +374,13 @@ class AssetHistoryViewModel(
     }
 
     // ── Borrado ─────────────────────────────────────────────────────────────
-    fun requestDelete(tx: AssetTransaction) { _pendingDelete.value = tx }
-    fun cancelDelete()                       { _pendingDelete.value = null }
+    fun requestDelete(tx: AssetTransaction) {
+        _pendingDelete.value = tx
+    }
+
+    fun cancelDelete() {
+        _pendingDelete.value = null
+    }
 
     fun confirmDelete() {
         val tx = _pendingDelete.value ?: return
@@ -346,23 +389,36 @@ class AssetHistoryViewModel(
                 // Un traspaso tiene dos patas: OUT + IN. Borrar ambas.
                 val groupId = tx.transferGroupId
                 if (groupId != null) {
-                    deleteAssetTransaction("txout_$groupId").onFailure { _error.value = AssetHistoryError.Unknown(it.message) }
-                    deleteAssetTransaction("txin_$groupId").onFailure { _error.value = AssetHistoryError.Unknown(it.message) }
+                    deleteAssetTransaction("txout_$groupId").onFailure {
+                        _error.value = AssetHistoryError.Unknown(it.message)
+                    }
+                    deleteAssetTransaction("txin_$groupId").onFailure {
+                        _error.value = AssetHistoryError.Unknown(it.message)
+                    }
                 } else {
                     // Fallback: borrar solo esta
-                    deleteAssetTransaction(tx.id).onFailure { _error.value = AssetHistoryError.Unknown(it.message) }
+                    deleteAssetTransaction(tx.id).onFailure {
+                        _error.value = AssetHistoryError.Unknown(it.message)
+                    }
                 }
             } else {
                 syncToLedger.remove(tx.id)
-                deleteAssetTransaction(tx.id).onFailure { _error.value = AssetHistoryError.Unknown(it.message) }
+                deleteAssetTransaction(tx.id).onFailure {
+                    _error.value = AssetHistoryError.Unknown(it.message)
+                }
             }
             _pendingDelete.value = null
         }
     }
 
     // ── Sheet de actualizar precio actual ───────────────────────────────────
-    fun openUpdatePriceSheet() { _showUpdatePriceSheet.value = true }
-    fun closeUpdatePriceSheet() { _showUpdatePriceSheet.value = false }
+    fun openUpdatePriceSheet() {
+        _showUpdatePriceSheet.value = true
+    }
+
+    fun closeUpdatePriceSheet() {
+        _showUpdatePriceSheet.value = false
+    }
 
     fun refreshCurrentPrice(newPrice: Double) {
         viewModelScope.launch {
@@ -373,12 +429,22 @@ class AssetHistoryViewModel(
         }
     }
 
-    fun clearError() { _error.value = null }
+    fun clearError() {
+        _error.value = null
+    }
 
     // ── Dividendos ─────────────────────────────────────────────────────
-    fun openDividendSheet()  { _showDividendSheet.value = true; _editingDividendId.value = null }
-    fun openEditDividendSheet(dividendId: String) { _editingDividendId.value = dividendId; _showDividendSheet.value = true }
-    fun closeDividendSheet() { _showDividendSheet.value = false; _editingDividendId.value = null }
+    fun openDividendSheet() {
+        _showDividendSheet.value = true; _editingDividendId.value = null
+    }
+
+    fun openEditDividendSheet(dividendId: String) {
+        _editingDividendId.value = dividendId; _showDividendSheet.value = true
+    }
+
+    fun closeDividendSheet() {
+        _showDividendSheet.value = false; _editingDividendId.value = null
+    }
 
     fun saveDividend(
         grossAmount: Double,
@@ -387,15 +453,16 @@ class AssetHistoryViewModel(
     ) {
         viewModelScope.launch {
             val asset = uiState.value.asset ?: return@launch
-            val dividendId = _editingDividendId.value ?: "div_${asset.id}_${nowMillis()}_${(0..9999).random()}"
+            val dividendId =
+                _editingDividendId.value ?: "div_${asset.id}_${nowMillis()}_${(0..9999).random()}"
 
             val result = syncToLedger.syncDividend(
-                dividendId  = dividendId,
-                accountId   = asset.accountId,
-                assetName   = asset.name,
+                dividendId = dividendId,
+                accountId = asset.accountId,
+                assetName = asset.name,
                 grossAmount = grossAmount,
                 withholdingPercent = irpfPercent,
-                date               = date
+                date = date
             )
             result
                 .onSuccess { closeDividendSheet() }
@@ -410,8 +477,13 @@ class AssetHistoryViewModel(
     }
 
     // ── Traspaso entre fondos ───────────────────────────────────────────
-    fun openTransferSheet()  { _showTransferSheet.value = true }
-    fun closeTransferSheet() { _showTransferSheet.value = false }
+    fun openTransferSheet() {
+        _showTransferSheet.value = true
+    }
+
+    fun closeTransferSheet() {
+        _showTransferSheet.value = false
+    }
 
     /**
      * Ejecuta un traspaso del fondo actual a otro fondo destino.
@@ -433,13 +505,13 @@ class AssetHistoryViewModel(
     ) {
         viewModelScope.launch {
             val result = executeFundTransfer(
-                sourceAssetId           = assetId,
-                destinationAssetId      = destinationAssetId,
-                quantity                = quantity,
-                sourcePlatformId        = sourcePlatformId,
-                destinationPlatformId   = destinationPlatformId,
+                sourceAssetId = assetId,
+                destinationAssetId = destinationAssetId,
+                quantity = quantity,
+                sourcePlatformId = sourcePlatformId,
+                destinationPlatformId = destinationPlatformId,
                 destinationPricePerUnit = destinationPricePerUnit,
-                date                    = date
+                date = date
             )
             result
                 .onSuccess { closeTransferSheet() }

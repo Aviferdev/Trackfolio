@@ -54,21 +54,21 @@ class LoanLocalDataSourceImpl(
             withContext(Dispatchers.IO) {
                 val e = loan.toEntity()
                 queries.insert(
-                    id                   = e.id,
-                    accountId            = e.accountId,
-                    name                 = e.name,
-                    type                 = e.type,
-                    totalAmount          = e.totalAmount,
+                    id = e.id,
+                    accountId = e.accountId,
+                    name = e.name,
+                    type = e.type,
+                    totalAmount = e.totalAmount,
                     outstandingPrincipal = e.outstandingPrincipal,
-                    currentInterestRate  = e.currentInterestRate,
-                    monthlyPayment       = e.monthlyPayment,
-                    totalInstallments    = e.totalInstallments,
-                    paidInstallments     = e.paidInstallments,
-                    startDate            = e.startDate,
-                    endDate              = e.endDate,
-                    lenderName           = e.lenderName,
-                    notes                = e.notes,
-                    createdAt            = e.createdAt
+                    currentInterestRate = e.currentInterestRate,
+                    monthlyPayment = e.monthlyPayment,
+                    totalInstallments = e.totalInstallments,
+                    paidInstallments = e.paidInstallments,
+                    startDate = e.startDate,
+                    endDate = e.endDate,
+                    lenderName = e.lenderName,
+                    notes = e.notes,
+                    createdAt = e.createdAt
                 )
             }
         }
@@ -78,19 +78,19 @@ class LoanLocalDataSourceImpl(
             withContext(Dispatchers.IO) {
                 val e = loan.toEntity()
                 queries.update(
-                    id                   = e.id,
-                    name                 = e.name,
-                    type                 = e.type,
-                    totalAmount          = e.totalAmount,
+                    id = e.id,
+                    name = e.name,
+                    type = e.type,
+                    totalAmount = e.totalAmount,
                     outstandingPrincipal = e.outstandingPrincipal,
-                    currentInterestRate  = e.currentInterestRate,
-                    monthlyPayment       = e.monthlyPayment,
-                    totalInstallments    = e.totalInstallments,
-                    paidInstallments     = e.paidInstallments,
-                    startDate            = e.startDate,
-                    endDate              = e.endDate,
-                    lenderName           = e.lenderName,
-                    notes                = e.notes
+                    currentInterestRate = e.currentInterestRate,
+                    monthlyPayment = e.monthlyPayment,
+                    totalInstallments = e.totalInstallments,
+                    paidInstallments = e.paidInstallments,
+                    startDate = e.startDate,
+                    endDate = e.endDate,
+                    lenderName = e.lenderName,
+                    notes = e.notes
                 )
             }
         }
@@ -104,19 +104,22 @@ class LoanLocalDataSourceImpl(
         runCatching {
             withContext(Dispatchers.IO) {
                 queries.updateRate(
-                    id                   = id,
-                    newRate              = newRate,
-                    newMonthlyPayment    = newMonthlyPayment,
+                    id = id,
+                    newRate = newRate,
+                    newMonthlyPayment = newMonthlyPayment,
                     outstandingPrincipal = outstandingPrincipal
                 )
             }
         }
 
-    override suspend fun incrementPaidInstallments(id: String, newOutstanding: Double): Result<Unit> =
+    override suspend fun incrementPaidInstallments(
+        id: String,
+        newOutstanding: Double
+    ): Result<Unit> =
         runCatching {
             withContext(Dispatchers.IO) {
                 queries.incrementPaidInstallments(
-                    id             = id,
+                    id = id,
                     newOutstanding = newOutstanding
                 )
             }

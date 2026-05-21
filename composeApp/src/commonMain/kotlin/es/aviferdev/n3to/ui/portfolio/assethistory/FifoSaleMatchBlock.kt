@@ -1,7 +1,5 @@
 package es.aviferdev.n3to.ui.portfolio.assethistory
 
-import androidx.compose.material3.MaterialTheme
-import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -12,6 +10,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -22,8 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.portfolio.FifoSaleMatch
 import es.aviferdev.n3to.ui.portfolio.formatShortDate
-import es.aviferdev.n3to.ui.theme.ExpenseRed
-
+import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.ui.theme.formatAmount
 import es.aviferdev.n3to.ui.theme.formatQty
 import es.aviferdev.n3to.ui.theme.maskAmount
@@ -46,7 +44,12 @@ fun FifoSaleMatchBlock(sale: FifoSaleMatch, masked: Boolean) {
         Row(Modifier.fillMaxWidth(), Arrangement.SpaceBetween, Alignment.CenterVertically) {
             Column(modifier = Modifier.weight(1f)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text("↘", fontSize = 13.sp, color = MaterialTheme.appColors.expense, fontWeight = FontWeight.Bold)
+                    Text(
+                        "↘",
+                        fontSize = 13.sp,
+                        color = MaterialTheme.appColors.expense,
+                        fontWeight = FontWeight.Bold
+                    )
                     Spacer(Modifier.width(5.dp))
                     Text(
                         "Venta de ${formatQty(sale.saleQuantity)} u.",

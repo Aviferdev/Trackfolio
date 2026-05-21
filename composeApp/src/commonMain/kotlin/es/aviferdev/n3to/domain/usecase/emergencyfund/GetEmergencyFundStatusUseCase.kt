@@ -43,13 +43,15 @@ class GetEmergencyFundStatusUseCase(
                         flow {
                             val balance = account?.computedBalance ?: 0.0
                             val calc = calculateTarget(fund)
-                            emit(computeStatus(
-                                fund = fund,
-                                targetAmount = calc.targetAmount,
-                                currentBalance = balance,
-                                monthlyAverage = calc.monthlyAverage,
-                                message = calc.message
-                            ))
+                            emit(
+                                computeStatus(
+                                    fund = fund,
+                                    targetAmount = calc.targetAmount,
+                                    currentBalance = balance,
+                                    monthlyAverage = calc.monthlyAverage,
+                                    message = calc.message
+                                )
+                            )
                         }
                     }
                 }

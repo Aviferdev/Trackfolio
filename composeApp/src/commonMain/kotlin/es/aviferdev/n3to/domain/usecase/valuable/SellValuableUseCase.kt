@@ -58,7 +58,8 @@ class SellValuableUseCase(
         }
 
         // 3. Eliminar gastos de venta previos (si existían por una edición)
-        val existingTransactions = transactionRepository.getByLinkedValuable(valuableId).firstOrNull() ?: emptyList()
+        val existingTransactions =
+            transactionRepository.getByLinkedValuable(valuableId).firstOrNull() ?: emptyList()
         existingTransactions
             .filter { it.id.startsWith("val_sexp_$valuableId") }
             .forEach { transactionRepository.deleteTransaction(it.id) }

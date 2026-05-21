@@ -43,15 +43,15 @@ class DebtLocalDataSourceImpl(
         runCatching {
             withContext(Dispatchers.IO) {
                 queries.insert(
-                    id         = entity.id,
-                    accountId  = entity.accountId,
+                    id = entity.id,
+                    accountId = entity.accountId,
                     personName = entity.personName,
-                    amount     = entity.amount,
-                    direction  = entity.direction,
-                    date       = entity.date,
-                    isPaid     = entity.isPaid,
-                    notes      = entity.notes,
-                    createdAt  = entity.createdAt
+                    amount = entity.amount,
+                    direction = entity.direction,
+                    date = entity.date,
+                    isPaid = entity.isPaid,
+                    notes = entity.notes,
+                    createdAt = entity.createdAt
                 )
             }
         }
@@ -61,11 +61,11 @@ class DebtLocalDataSourceImpl(
             withContext(Dispatchers.IO) {
                 queries.update(
                     personName = entity.personName,
-                    amount     = entity.amount,
-                    direction  = entity.direction,
-                    date       = entity.date,
-                    notes      = entity.notes,
-                    id         = entity.id
+                    amount = entity.amount,
+                    direction = entity.direction,
+                    date = entity.date,
+                    notes = entity.notes,
+                    id = entity.id
                 )
             }
         }

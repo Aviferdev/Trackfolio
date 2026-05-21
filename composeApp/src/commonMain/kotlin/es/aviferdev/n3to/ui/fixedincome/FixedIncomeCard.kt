@@ -98,18 +98,36 @@ fun FixedIncomeSection(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Column {
-                        Text(stringResource(Res.string.fixedincome_capital_short), fontSize = 11.sp, color = MaterialTheme.appColors.textTertiary)
                         Text(
-                            text = "${maskAmount(formatAmount(summary.totalPrincipal), balancesHidden)} €",
+                            stringResource(Res.string.fixedincome_capital_short),
+                            fontSize = 11.sp,
+                            color = MaterialTheme.appColors.textTertiary
+                        )
+                        Text(
+                            text = "${
+                                maskAmount(
+                                    formatAmount(summary.totalPrincipal),
+                                    balancesHidden
+                                )
+                            } €",
                             fontSize = 14.sp,
                             fontWeight = FontWeight.SemiBold,
                             color = MaterialTheme.appColors.textPrimary
                         )
                     }
                     Column(horizontalAlignment = Alignment.End) {
-                        Text(stringResource(Res.string.portfolio_update_price_current), fontSize = 11.sp, color = MaterialTheme.appColors.textTertiary)
                         Text(
-                            text = "${maskAmount(formatAmount(summary.totalCurrentValue), balancesHidden)} €",
+                            stringResource(Res.string.portfolio_update_price_current),
+                            fontSize = 11.sp,
+                            color = MaterialTheme.appColors.textTertiary
+                        )
+                        Text(
+                            text = "${
+                                maskAmount(
+                                    formatAmount(summary.totalCurrentValue),
+                                    balancesHidden
+                                )
+                            } €",
                             fontSize = 14.sp,
                             fontWeight = FontWeight.SemiBold,
                             color = MaterialTheme.appColors.textPrimary
@@ -125,19 +143,37 @@ fun FixedIncomeSection(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Column {
-                        Text(stringResource(Res.string.fixedincome_coupon_paid), fontSize = 11.sp, color = MaterialTheme.appColors.textTertiary)
                         Text(
-                            text = "+${maskAmount(formatAmount(summary.totalCollectedInterest), balancesHidden)} €",
+                            stringResource(Res.string.fixedincome_coupon_paid),
+                            fontSize = 11.sp,
+                            color = MaterialTheme.appColors.textTertiary
+                        )
+                        Text(
+                            text = "+${
+                                maskAmount(
+                                    formatAmount(summary.totalCollectedInterest),
+                                    balancesHidden
+                                )
+                            } €",
                             fontSize = 14.sp,
                             fontWeight = FontWeight.SemiBold,
                             color = if (summary.totalCollectedInterest >= 0) MaterialTheme.appColors.pnlPositive else MaterialTheme.appColors.textSecondary
                         )
                     }
                     Column(horizontalAlignment = Alignment.End) {
-                        Text(stringResource(Res.string.fixedincome_yield_label), fontSize = 11.sp, color = MaterialTheme.appColors.textTertiary)
+                        Text(
+                            stringResource(Res.string.fixedincome_yield_label),
+                            fontSize = 11.sp,
+                            color = MaterialTheme.appColors.textTertiary
+                        )
                         val sign = if (summary.totalNetProfit >= 0) "+" else ""
                         Text(
-                            text = "$sign${maskAmount(formatAmount(summary.totalNetProfit), balancesHidden)} € (${formatPercent(summary.totalNetProfitPercent)}%)",
+                            text = "$sign${
+                                maskAmount(
+                                    formatAmount(summary.totalNetProfit),
+                                    balancesHidden
+                                )
+                            } € (${formatPercent(summary.totalNetProfitPercent)}%)",
                             fontSize = 14.sp,
                             fontWeight = FontWeight.SemiBold,
                             color = when {
@@ -195,7 +231,10 @@ fun FixedIncomePositionCard(
             Box(
                 modifier = Modifier
                     .size(40.dp)
-                    .background(MaterialTheme.appColors.navySurfaceLight, RoundedCornerShape(10.dp)),
+                    .background(
+                        MaterialTheme.appColors.navySurfaceLight,
+                        RoundedCornerShape(10.dp)
+                    ),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
@@ -222,7 +261,12 @@ fun FixedIncomePositionCard(
                     "Al vencimiento"
                 }
                 Text(
-                    text = "Vence ${formatDateShort(position.maturityDate)} · $frequencyLabel · ${maskAmount(formatAmount(position.principal), balancesHidden)} €",
+                    text = "Vence ${formatDateShort(position.maturityDate)} · $frequencyLabel · ${
+                        maskAmount(
+                            formatAmount(position.principal),
+                            balancesHidden
+                        )
+                    } €",
                     fontSize = 10.sp,
                     color = MaterialTheme.appColors.textTertiary
                 )
@@ -234,12 +278,18 @@ fun FixedIncomePositionCard(
                     color = if (position.isOpen) MaterialTheme.appColors.pnlPositive else MaterialTheme.appColors.textDisabled
                 )
                 if (position.isOpen) {
-                    val interestToShow = if (row.collectedInterest > 0) row.collectedInterest else position.accruedInterestToDate
+                    val interestToShow =
+                        if (row.collectedInterest > 0) row.collectedInterest else position.accruedInterestToDate
                     val interestLabel = if (row.collectedInterest > 0) "Cobrado" else "Devengado"
                     if (interestToShow > 0) {
                         Spacer(Modifier.height(4.dp))
                         Text(
-                            text = "$interestLabel: +${maskAmount(formatAmount(interestToShow), balancesHidden)} €",
+                            text = "$interestLabel: +${
+                                maskAmount(
+                                    formatAmount(interestToShow),
+                                    balancesHidden
+                                )
+                            } €",
                             fontSize = 11.sp,
                             fontWeight = FontWeight.SemiBold,
                             color = MaterialTheme.appColors.pnlPositive
@@ -291,8 +341,12 @@ fun NearMaturityBadge(
     remainingDays: Int,
     isMatured: Boolean
 ) {
-    val bgColor = if (isMatured) MaterialTheme.appColors.expense.copy(alpha = 0.15f) else MaterialTheme.appColors.warnAmber.copy(alpha = 0.15f)
-    val textColor = if (isMatured) MaterialTheme.appColors.expense else MaterialTheme.appColors.warnAmber
+    val bgColor =
+        if (isMatured) MaterialTheme.appColors.expense.copy(alpha = 0.15f) else MaterialTheme.appColors.warnAmber.copy(
+            alpha = 0.15f
+        )
+    val textColor =
+        if (isMatured) MaterialTheme.appColors.expense else MaterialTheme.appColors.warnAmber
     val label = if (isMatured) "Vencido" else "$remainingDays días"
 
     Surface(

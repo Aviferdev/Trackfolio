@@ -51,7 +51,10 @@ class GetNetWorthHistoryUseCase(
         }
 
         val assetsFlow = combine(
-            combine(accountsFlow, getPortfolioValueHistory(accountId)) { accounts, portfolioHistory ->
+            combine(
+                accountsFlow,
+                getPortfolioValueHistory(accountId)
+            ) { accounts, portfolioHistory ->
                 Pair(accounts, portfolioHistory)
             },
             propertiesFlow
@@ -59,7 +62,10 @@ class GetNetWorthHistoryUseCase(
             Triple(accounts, portfolioHistory, properties)
         }
 
-        return combine(assetsFlow, liabilitiesFlow) { (accounts, portfolioHistory, properties), (loans, debts) ->
+        return combine(
+            assetsFlow,
+            liabilitiesFlow
+        ) { (accounts, portfolioHistory, properties), (loans, debts) ->
             buildNetWorthHistory(accountId, accounts, portfolioHistory, loans, debts, properties)
         }
     }
@@ -110,7 +116,8 @@ class GetNetWorthHistoryUseCase(
                     val key = "${year}-${mt.month.padStart(2, '0')}"
                     monthlyNets[key] = mt.balance
                 }
-            } catch (_: Exception) { }
+            } catch (_: Exception) {
+            }
         }
 
         // Balance total actual de todas las cuentas
@@ -152,7 +159,8 @@ class GetNetWorthHistoryUseCase(
         // ── Construir puntos ─────────────────────────────────────────────
         return months.map { monthEndMillis ->
             val monthLocal = Instant.fromEpochMilliseconds(monthEndMillis).toLocalDateTime(tz)
-            val monthKey = "${monthLocal.year}-${monthLocal.monthNumber.toString().padStart(2, '0')}"
+            val monthKey =
+                "${monthLocal.year}-${monthLocal.monthNumber.toString().padStart(2, '0')}"
 
             val accountBalance = balanceByMonth[monthKey] ?: totalInitialBalance
             val portfolioValue = portfolioByMonth[monthKey] ?: 0.0
@@ -164,8 +172,8 @@ class GetNetWorthHistoryUseCase(
             val debtsOwing = debts
                 .filter {
                     it.direction == DebtDirection.I_OWE &&
-                    !it.isPaid &&
-                    it.date <= monthEndMillis
+                            !it.isPaid &&
+                            it.date <= monthEndMillis
                 }
                 .sumOf { it.amount }
 
@@ -184,16 +192,17 @@ class GetNetWorthHistoryUseCase(
             val totalLiabilities = loansOutstanding + debtsOwing
 
             NetWorthHistoryPoint(
-                yearMonth       = monthKey,
-                netWorth        = totalAssets - totalLiabilities,
-                totalAssets     = totalAssets,
+                yearMonth = monthKey,
+                netWorth = totalAssets - totalLiabilities,
+                totalAssets = totalAssets,
                 totalLiabilities = totalLiabilities
             )
         }
     }
 
     private fun epochToYearMonth(epochMillis: Long): String {
-        val local = Instant.fromEpochMilliseconds(epochMillis).toLocalDateTime(TimeZone.currentSystemDefault())
+        val local = Instant.fromEpochMilliseconds(epochMillis)
+            .toLocalDateTime(TimeZone.currentSystemDefault())
         return "${local.year}-${local.monthNumber.toString().padStart(2, '0')}"
     }
 
@@ -213,7 +222,9 @@ class GetNetWorthHistoryUseCase(
             val instant = LocalDateTime(year, month, lastDay, 23, 59, 59).toInstant(tz)
             result.add(instant.toEpochMilliseconds())
             month++
-            if (month > 12) { month = 1; year++ }
+            if (month > 12) {
+                month = 1; year++
+            }
         }
         return result
     }

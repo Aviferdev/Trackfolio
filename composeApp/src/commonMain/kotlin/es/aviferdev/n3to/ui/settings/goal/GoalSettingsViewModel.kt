@@ -1,10 +1,10 @@
 package es.aviferdev.n3to.ui.settings.goal
 
-import es.aviferdev.n3to.platform.nowYear
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import es.aviferdev.n3to.domain.model.MonthlyGoal
 import es.aviferdev.n3to.domain.repository.GoalRepository
+import es.aviferdev.n3to.platform.nowYear
 import es.aviferdev.n3to.ui.account.AccountSession
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

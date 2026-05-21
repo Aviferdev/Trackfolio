@@ -90,15 +90,27 @@ fun SlidePortfolio(modifier: Modifier = Modifier) {
 
     LaunchedEffect(Unit) {
         delay(300); pill1Visible = true
-        delay(80);  pill2Visible = true
-        delay(80);  pill3Visible = true
+        delay(80); pill2Visible = true
+        delay(80); pill3Visible = true
         delay(100); calloutVisible = true
     }
 
-    val pill1Alpha by animateFloatAsState(targetValue = if (pill1Visible) 1f else 0f, animationSpec = tween(500, easing = EaseInOutCubic))
-    val pill2Alpha by animateFloatAsState(targetValue = if (pill2Visible) 1f else 0f, animationSpec = tween(500, easing = EaseInOutCubic))
-    val pill3Alpha by animateFloatAsState(targetValue = if (pill3Visible) 1f else 0f, animationSpec = tween(500, easing = EaseInOutCubic))
-    val calloutAlpha by animateFloatAsState(targetValue = if (calloutVisible) 1f else 0f, animationSpec = tween(500, easing = EaseInOutCubic))
+    val pill1Alpha by animateFloatAsState(
+        targetValue = if (pill1Visible) 1f else 0f,
+        animationSpec = tween(500, easing = EaseInOutCubic)
+    )
+    val pill2Alpha by animateFloatAsState(
+        targetValue = if (pill2Visible) 1f else 0f,
+        animationSpec = tween(500, easing = EaseInOutCubic)
+    )
+    val pill3Alpha by animateFloatAsState(
+        targetValue = if (pill3Visible) 1f else 0f,
+        animationSpec = tween(500, easing = EaseInOutCubic)
+    )
+    val calloutAlpha by animateFloatAsState(
+        targetValue = if (calloutVisible) 1f else 0f,
+        animationSpec = tween(500, easing = EaseInOutCubic)
+    )
 
     data class StockPill(val ticker: String, val returnPct: String, val badgeColor: Color)
 
@@ -106,7 +118,7 @@ fun SlidePortfolio(modifier: Modifier = Modifier) {
     val stocks = listOf(
         StockPill("AAPL", "+13,8%", appCCyanSubtle),
         StockPill("NVDA", "+36,4%", Color(0xFF76B900)),
-        StockPill("MSFT", "+9,0%",  Color(0xFF00A4EF))
+        StockPill("MSFT", "+9,0%", Color(0xFF00A4EF))
     )
     val pillAlphas = listOf(pill1Alpha, pill2Alpha, pill3Alpha)
     val pathLength = 300f
@@ -139,7 +151,12 @@ fun SlidePortfolio(modifier: Modifier = Modifier) {
                         color = appCTextTertiary,
                         letterSpacing = 0.7.sp
                     )
-                    Text(text = "+5,6%", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.appColors.income)
+                    Text(
+                        text = "+5,6%",
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.appColors.income
+                    )
                 }
 
                 Spacer(Modifier.height(10.dp))
@@ -169,7 +186,12 @@ fun SlidePortfolio(modifier: Modifier = Modifier) {
                     val scaledPoints = rawPoints.map { Offset(it.x * scaleX, it.y * scaleY) }
 
                     val chartPath = Path().apply {
-                        scaledPoints.forEachIndexed { i, p -> if (i == 0) moveTo(p.x, p.y) else lineTo(p.x, p.y) }
+                        scaledPoints.forEachIndexed { i, p ->
+                            if (i == 0) moveTo(
+                                p.x,
+                                p.y
+                            ) else lineTo(p.x, p.y)
+                        }
                     }
                     val areaPath = Path().apply {
                         addPath(chartPath)
@@ -181,7 +203,10 @@ fun SlidePortfolio(modifier: Modifier = Modifier) {
                     drawPath(
                         path = areaPath,
                         brush = Brush.verticalGradient(
-                            colors = listOf(appCCyanAccent.copy(alpha = 0.20f), appCCyanAccent.copy(alpha = 0f)),
+                            colors = listOf(
+                                appCCyanAccent.copy(alpha = 0.20f),
+                                appCCyanAccent.copy(alpha = 0f)
+                            ),
                             startY = 0f, endY = cvH
                         )
                     )
@@ -205,7 +230,10 @@ fun SlidePortfolio(modifier: Modifier = Modifier) {
         Spacer(Modifier.height(14.dp))
 
         // ── Stock pills ──────────────────────────────────
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
             stocks.forEachIndexed { index, stock ->
                 Box(
                     modifier = Modifier
@@ -222,14 +250,32 @@ fun SlidePortfolio(modifier: Modifier = Modifier) {
                         Box(
                             modifier = Modifier
                                 .size(30.dp)
-                                .background(color = stock.badgeColor.copy(alpha = 0.13f), shape = RoundedCornerShape(8.dp))
-                                .border(1.dp, stock.badgeColor.copy(alpha = 0.25f), RoundedCornerShape(8.dp)),
+                                .background(
+                                    color = stock.badgeColor.copy(alpha = 0.13f),
+                                    shape = RoundedCornerShape(8.dp)
+                                )
+                                .border(
+                                    1.dp,
+                                    stock.badgeColor.copy(alpha = 0.25f),
+                                    RoundedCornerShape(8.dp)
+                                ),
                             contentAlignment = Alignment.Center
                         ) {
-                            Text(text = stock.ticker, fontSize = 8.sp, fontWeight = FontWeight.Black, color = stock.badgeColor)
+                            Text(
+                                text = stock.ticker,
+                                fontSize = 8.sp,
+                                fontWeight = FontWeight.Black,
+                                color = stock.badgeColor
+                            )
                         }
                         Spacer(Modifier.height(6.dp))
-                        Text(text = stock.returnPct, fontSize = 10.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.appColors.income, textAlign = TextAlign.Center)
+                        Text(
+                            text = stock.returnPct,
+                            fontSize = 10.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.appColors.income,
+                            textAlign = TextAlign.Center
+                        )
                     }
                 }
             }
@@ -242,16 +288,31 @@ fun SlidePortfolio(modifier: Modifier = Modifier) {
             modifier = Modifier
                 .fillMaxWidth()
                 .graphicsLayer { alpha = calloutAlpha }
-                .background(color = appCCyanAccent.copy(alpha = 0.10f), shape = RoundedCornerShape(11.dp))
+                .background(
+                    color = appCCyanAccent.copy(alpha = 0.10f),
+                    shape = RoundedCornerShape(11.dp)
+                )
                 .border(1.dp, appCNavyBorder, RoundedCornerShape(11.dp))
                 .padding(horizontal = 12.dp, vertical = 9.dp)
         ) {
-            Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 Text(text = "🧮", fontSize = 14.sp, color = Color.Unspecified)
                 Spacer(Modifier.width(8.dp))
-                Text(text = stringResource(Res.string.onboarding_portfolio_desc), fontSize = 11.sp, fontWeight = FontWeight.SemiBold, color = appCTextPrimary)
+                Text(
+                    text = stringResource(Res.string.onboarding_portfolio_desc),
+                    fontSize = 11.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = appCTextPrimary
+                )
                 Spacer(Modifier.weight(1f))
-                Text(text = stringResource(Res.string.portfolio_summary_total_pnl), fontSize = 10.sp, color = appCTextTertiary)
+                Text(
+                    text = stringResource(Res.string.portfolio_summary_total_pnl),
+                    fontSize = 10.sp,
+                    color = appCTextTertiary
+                )
             }
         }
     }

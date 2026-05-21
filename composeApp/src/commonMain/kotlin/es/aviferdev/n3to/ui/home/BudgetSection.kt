@@ -1,15 +1,19 @@
 package es.aviferdev.n3to.ui.home
 
-import androidx.compose.material3.MaterialTheme
-import es.aviferdev.n3to.ui.theme.appColors
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -22,9 +26,8 @@ import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.CategoryBudgetStatus
 import es.aviferdev.n3to.domain.model.LimitType
 import es.aviferdev.n3to.ui.common.ProgressBar
-import es.aviferdev.n3to.ui.theme.*
 import es.aviferdev.n3to.ui.theme.N3toTheme
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import es.aviferdev.n3to.ui.theme.appColors
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.budget_empty_subtitle
 import n3to.composeapp.generated.resources.budget_empty_title
@@ -32,6 +35,7 @@ import n3to.composeapp.generated.resources.budget_limit_exceeded
 import n3to.composeapp.generated.resources.budget_no_income
 import n3to.composeapp.generated.resources.budget_remaining_format
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 /**
  * Sección de presupuestos para mostrar en Home.
@@ -161,7 +165,10 @@ private fun BudgetRow(
                     color = MaterialTheme.appColors.textSecondary
                 )
                 Text(
-                    text = stringResource(Res.string.budget_remaining_format, formatAmount(status.remaining)),
+                    text = stringResource(
+                        Res.string.budget_remaining_format,
+                        formatAmount(status.remaining)
+                    ),
                     fontSize = 11.sp,
                     color = if (status.isOverBudget) MaterialTheme.appColors.expense else MaterialTheme.appColors.textTertiary
                 )

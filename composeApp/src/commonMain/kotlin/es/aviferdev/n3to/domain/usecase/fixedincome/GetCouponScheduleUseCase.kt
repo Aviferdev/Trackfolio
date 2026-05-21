@@ -29,10 +29,10 @@ class GetCouponScheduleUseCase {
         }
 
         return FixedIncomeCalculator.couponSchedule(
-            startDate       = position.startDate,
-            maturityDate    = position.maturityDate,
-            frequency       = position.interestFrequency,
-            grossPerCoupon  = grossPerCoupon
+            startDate = position.startDate,
+            maturityDate = position.maturityDate,
+            frequency = position.interestFrequency,
+            grossPerCoupon = grossPerCoupon
         )
     }
 }

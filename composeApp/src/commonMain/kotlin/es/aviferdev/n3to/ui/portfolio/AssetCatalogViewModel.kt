@@ -1,23 +1,23 @@
 package es.aviferdev.n3to.ui.portfolio
 
-import es.aviferdev.n3to.platform.nowMillis
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import es.aviferdev.n3to.domain.model.Asset
 import es.aviferdev.n3to.domain.model.AssetCategory
+import es.aviferdev.n3to.domain.model.PriceQuote
 import es.aviferdev.n3to.domain.model.PriceSource
+import es.aviferdev.n3to.domain.portfolio.PortfolioCalculator
 import es.aviferdev.n3to.domain.repository.AssetMetadataRepository
 import es.aviferdev.n3to.domain.repository.AssetPlatformRepository
 import es.aviferdev.n3to.domain.repository.AssetTransactionRepository
-import es.aviferdev.n3to.domain.portfolio.PortfolioCalculator
-import es.aviferdev.n3to.domain.model.PriceQuote
 import es.aviferdev.n3to.domain.usecase.asset.ArchiveAssetUseCase
-import es.aviferdev.n3to.domain.usecase.asset.UnarchiveAssetUseCase
 import es.aviferdev.n3to.domain.usecase.asset.GetAssetsByAccountUseCase
 import es.aviferdev.n3to.domain.usecase.asset.SaveAssetUseCase
+import es.aviferdev.n3to.domain.usecase.asset.UnarchiveAssetUseCase
 import es.aviferdev.n3to.domain.usecase.asset.UpdateAssetUseCase
 import es.aviferdev.n3to.domain.usecase.asset.ValidateAssetIdentifierUseCase
 import es.aviferdev.n3to.domain.usecase.assetcategory.GetAllAssetCategoriesIncludingArchivedUseCase
+import es.aviferdev.n3to.platform.nowMillis
 import es.aviferdev.n3to.ui.account.AccountSession
 import es.aviferdev.n3to.ui.theme.formatQty
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -41,17 +41,17 @@ sealed class CatalogError {
 }
 
 data class AssetCatalogUiState(
-    val assets: List<Asset>             = emptyList(),
+    val assets: List<Asset> = emptyList(),
     val categories: List<AssetCategory> = emptyList(),
-    val showAddSheet: Boolean           = false,
-    val addForCategoryId: String?       = null,
-    val editing: Asset?                 = null,
+    val showAddSheet: Boolean = false,
+    val addForCategoryId: String? = null,
+    val editing: Asset? = null,
     val editingPlatformIds: Set<String> = emptySet(),
-    val editingSectorIds: Set<String>   = emptySet(),
+    val editingSectorIds: Set<String> = emptySet(),
     val editingRegionPercents: Map<String, Int> = emptyMap(),
     val editingFixedIncomePercent: Int = 0,
-    val pendingArchive: Asset?          = null,
-    val error: CatalogError?            = null,
+    val pendingArchive: Asset? = null,
+    val error: CatalogError? = null,
     val allSectors: List<es.aviferdev.n3to.domain.model.AssetSector> = emptyList(),
     val allRegions: List<es.aviferdev.n3to.domain.model.AssetRegion> = emptyList()
 )
@@ -71,13 +71,13 @@ class AssetCatalogViewModel(
     private val validateAssetIdentifier: ValidateAssetIdentifierUseCase? = null
 ) : ViewModel() {
 
-    private val _showAddSheet      = MutableStateFlow(false)
-    private val _addForCategoryId  = MutableStateFlow<String?>(null)
-    private val _editing           = MutableStateFlow<Asset?>(null)
+    private val _showAddSheet = MutableStateFlow(false)
+    private val _addForCategoryId = MutableStateFlow<String?>(null)
+    private val _editing = MutableStateFlow<Asset?>(null)
     private val _editingPlatformIds = MutableStateFlow<Set<String>>(emptySet())
-    private val _pendingArchive     = MutableStateFlow<Asset?>(null)
-    private val _error              = MutableStateFlow<CatalogError?>(null)
-    private val _editingSectorIds   = MutableStateFlow<Set<String>>(emptySet())
+    private val _pendingArchive = MutableStateFlow<Asset?>(null)
+    private val _error = MutableStateFlow<CatalogError?>(null)
+    private val _editingSectorIds = MutableStateFlow<Set<String>>(emptySet())
     private val _editingRegionPercents = MutableStateFlow<Map<String, Int>>(emptyMap())
     private val _editingFixedIncomePercent = MutableStateFlow(0)
 
@@ -104,10 +104,20 @@ class AssetCatalogViewModel(
     ) { sectIds, regPerc, fixedIncPct, arch -> SheetPart2(sectIds, regPerc, fixedIncPct, arch) }
 
     private val sheetStateFlow = combine(sheetStateFlowPart1, sheetStateFlowPart2) { part1, part2 ->
-        SheetState(part1.show, part1.catId, part1.edit, part1.platIds, part2.sectIds, part2.regPerc, part2.fixedIncPct, part2.arch)
+        SheetState(
+            part1.show,
+            part1.catId,
+            part1.edit,
+            part1.platIds,
+            part2.sectIds,
+            part2.regPerc,
+            part2.fixedIncPct,
+            part2.arch
+        )
     }
 
-    private val metadataFlow = combine(allSectors, allRegions) { sectors, regions -> sectors to regions }
+    private val metadataFlow =
+        combine(allSectors, allRegions) { sectors, regions -> sectors to regions }
 
     val uiState: StateFlow<AssetCatalogUiState> = combine(
         session.selectedAccountId.flatMapLatest { id ->
@@ -119,32 +129,38 @@ class AssetCatalogViewModel(
         metadataFlow
     ) { assets, categories, sheets, error, metadata ->
         AssetCatalogUiState(
-            assets             = assets,
-            categories         = categories,
-            showAddSheet       = sheets.show,
-            addForCategoryId   = sheets.catId,
-            editing            = sheets.edit,
+            assets = assets,
+            categories = categories,
+            showAddSheet = sheets.show,
+            addForCategoryId = sheets.catId,
+            editing = sheets.edit,
             editingPlatformIds = sheets.platIds,
-            editingSectorIds   = sheets.sectIds,
+            editingSectorIds = sheets.sectIds,
             editingRegionPercents = sheets.regPerc,
             editingFixedIncomePercent = sheets.fixedIncPct,
-            pendingArchive     = sheets.arch,
-            error              = error,
-            allSectors         = metadata.first,
-            allRegions         = metadata.second
+            pendingArchive = sheets.arch,
+            error = error,
+            allSectors = metadata.first,
+            allRegions = metadata.second
         )
     }.stateIn(
-        scope        = viewModelScope,
-        started      = SharingStarted.WhileSubscribed(5_000),
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
         initialValue = AssetCatalogUiState()
     )
 
-    fun openAddSheet()  { _showAddSheet.value = true; _addForCategoryId.value = null }
+    fun openAddSheet() {
+        _showAddSheet.value = true; _addForCategoryId.value = null
+    }
+
     fun openAddSheetForCategory(categoryId: String) {
         _addForCategoryId.value = categoryId
         _showAddSheet.value = true
     }
-    fun closeAddSheet() { _showAddSheet.value = false; _addForCategoryId.value = null }
+
+    fun closeAddSheet() {
+        _showAddSheet.value = false; _addForCategoryId.value = null
+    }
 
     fun openEditSheet(asset: Asset) {
         _editing.value = asset
@@ -162,6 +178,7 @@ class AssetCatalogViewModel(
             _editingFixedIncomePercent.value = composition?.fixedIncomePercent ?: 0
         }
     }
+
     fun closeEditSheet() {
         _editing.value = null
         _editingPlatformIds.value = emptySet()
@@ -175,13 +192,19 @@ class AssetCatalogViewModel(
             val txs = assetTransactionRepository.getByAsset(asset.id).first()
             val position = PortfolioCalculator.calculate(txs, asset.currentPrice)
             if (position.netQuantity > 0.0) {
-                _error.value = CatalogError.CannotArchiveWithOpenPositions(asset.ticker, formatQty(position.netQuantity))
+                _error.value = CatalogError.CannotArchiveWithOpenPositions(
+                    asset.ticker,
+                    formatQty(position.netQuantity)
+                )
             } else {
                 _pendingArchive.value = asset
             }
         }
     }
-    fun cancelArchive()              { _pendingArchive.value = null }
+
+    fun cancelArchive() {
+        _pendingArchive.value = null
+    }
 
     fun addAsset(
         ticker: String,
@@ -201,32 +224,32 @@ class AssetCatalogViewModel(
             return
         }
         val tickerTrim = ticker.trim().uppercase()
-        val nameTrim   = name.trim()
+        val nameTrim = name.trim()
         if (tickerTrim.isBlank() || nameTrim.isBlank()) {
             _error.value = CatalogError.TickerAndNameRequired
             return
         }
         if (uiState.value.assets.any {
-            it.ticker.equals(tickerTrim, ignoreCase = true) && it.accountId == accountId
-        }) {
+                it.ticker.equals(tickerTrim, ignoreCase = true) && it.accountId == accountId
+            }) {
             _error.value = CatalogError.AssetAlreadyExists(tickerTrim)
             return
         }
         viewModelScope.launch {
             val now = nowMillis()
             val asset = Asset(
-                id              = "asset_${now}_${(0..9999).random()}",
-                accountId       = accountId,
-                portfolioId     = portfolioId,
-                ticker          = tickerTrim,
-                name            = nameTrim,
-                notes           = notes?.ifBlank { null },
-                createdAt       = now,
+                id = "asset_${now}_${(0..9999).random()}",
+                accountId = accountId,
+                portfolioId = portfolioId,
+                ticker = tickerTrim,
+                name = nameTrim,
+                notes = notes?.ifBlank { null },
+                createdAt = now,
                 assetCategoryId = assetCategoryId,
-                currentPrice    = currentPrice,
+                currentPrice = currentPrice,
                 currentPriceUpdatedAt = if (currentPrice != null) now else null,
-                isin            = isin,
-                priceSource     = PriceSource.MANUAL,
+                isin = isin,
+                priceSource = PriceSource.MANUAL,
                 isinValidatedAt = if (isin != null) now else null,
                 isinValidationError = null
             )
@@ -289,30 +312,30 @@ class AssetCatalogViewModel(
         portfolioId: String? = null
     ) {
         val tickerTrim = ticker.trim().uppercase()
-        val nameTrim   = name.trim()
+        val nameTrim = name.trim()
         if (tickerTrim.isBlank() || nameTrim.isBlank()) {
             _error.value = CatalogError.TickerAndNameRequired
             return
         }
         viewModelScope.launch {
             val updatedAt = when {
-                currentPrice == null                  -> null
+                currentPrice == null -> null
                 currentPrice == original.currentPrice -> original.currentPriceUpdatedAt
                 else -> nowMillis()
             }
             updateAsset(
                 original.copy(
-                    ticker                = tickerTrim,
-                    name                  = nameTrim,
-                    notes                 = notes?.ifBlank { null },
-                    assetCategoryId       = assetCategoryId,
-                    currentPrice          = currentPrice,
+                    ticker = tickerTrim,
+                    name = nameTrim,
+                    notes = notes?.ifBlank { null },
+                    assetCategoryId = assetCategoryId,
+                    currentPrice = currentPrice,
                     currentPriceUpdatedAt = updatedAt,
-                    portfolioId           = portfolioId,
-                    isin                  = isin,
-                    priceSource           = PriceSource.MANUAL,
-                    isinValidatedAt       = if (isin != null) nowMillis() else null,
-                    isinValidationError   = null
+                    portfolioId = portfolioId,
+                    isin = isin,
+                    priceSource = PriceSource.MANUAL,
+                    isinValidatedAt = if (isin != null) nowMillis() else null,
+                    isinValidationError = null
                 )
             ).onSuccess {
                 // Guardar composición RF/RV
@@ -375,7 +398,9 @@ class AssetCatalogViewModel(
         }
     }
 
-    fun clearError() { _error.value = null }
+    fun clearError() {
+        _error.value = null
+    }
 
     /**
      * Valida un ISIN/ticker contra la API de cotizaciones.

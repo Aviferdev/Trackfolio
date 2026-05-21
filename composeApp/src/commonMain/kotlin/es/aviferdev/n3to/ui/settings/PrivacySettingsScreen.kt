@@ -1,7 +1,5 @@
 package es.aviferdev.n3to.ui.settings
 
-import androidx.compose.material3.MaterialTheme
-import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -20,13 +18,13 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.BugReport
 import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Restore
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Star
@@ -38,6 +36,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Switch
@@ -56,12 +55,15 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import es.aviferdev.n3to.ui.settings.components.*
 import es.aviferdev.n3to.core.browser.rememberUrlOpener
-import es.aviferdev.n3to.ui.common.navigation.TopBarApp
-
-import es.aviferdev.n3to.ui.theme.ExpenseRed
-import org.jetbrains.compose.resources.stringResource
+import es.aviferdev.n3to.ui.common.topbar.TopBarWithActionsApp
+import es.aviferdev.n3to.ui.settings.components.SettingsGroupCard
+import es.aviferdev.n3to.ui.settings.components.SettingsRowDivider
+import es.aviferdev.n3to.ui.settings.components.SettingsSectionHeader
+import es.aviferdev.n3to.ui.theme.appColors
+import kotlinx.datetime.Instant
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.common_cancel
 import n3to.composeapp.generated.resources.privacy_analytics_desc
@@ -84,8 +86,6 @@ import n3to.composeapp.generated.resources.privacy_premium_plan
 import n3to.composeapp.generated.resources.privacy_premium_restore
 import n3to.composeapp.generated.resources.privacy_premium_subscription_value
 import n3to.composeapp.generated.resources.privacy_premium_valid_until
-import n3to.composeapp.generated.resources.privacy_restore_error
-import n3to.composeapp.generated.resources.privacy_restore_success
 import n3to.composeapp.generated.resources.privacy_revoke_all_button
 import n3to.composeapp.generated.resources.privacy_revoke_all_hint
 import n3to.composeapp.generated.resources.privacy_revoke_confirm
@@ -95,10 +95,7 @@ import n3to.composeapp.generated.resources.privacy_section_consent
 import n3to.composeapp.generated.resources.privacy_section_data_collected
 import n3to.composeapp.generated.resources.privacy_section_premium
 import n3to.composeapp.generated.resources.settings_privacy_data
-
-import kotlinx.datetime.Instant
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 /** URL de la política de privacidad */
@@ -136,6 +133,7 @@ fun PrivacySettingsScreen(
             when (result) {
                 is RestoreResult.Success ->
                     snackbarHostState.showSnackbar("Compras restauradas correctamente")
+
                 is RestoreResult.Error ->
                     snackbarHostState.showSnackbar("Error: ${result.message}")
             }
@@ -165,12 +163,19 @@ fun PrivacySettingsScreen(
             },
             confirmButton = {
                 TextButton(onClick = viewModel::confirmRevokeAll) {
-                    Text(stringResource(Res.string.privacy_revoke_confirm), color = MaterialTheme.appColors.expense, fontWeight = FontWeight.SemiBold)
+                    Text(
+                        stringResource(Res.string.privacy_revoke_confirm),
+                        color = MaterialTheme.appColors.expense,
+                        fontWeight = FontWeight.SemiBold
+                    )
                 }
             },
             dismissButton = {
                 TextButton(onClick = viewModel::dismissRevokeConfirmation) {
-                    Text(stringResource(Res.string.common_cancel), color = MaterialTheme.appColors.cyanAccent)
+                    Text(
+                        stringResource(Res.string.common_cancel),
+                        color = MaterialTheme.appColors.cyanAccent
+                    )
                 }
             }
         )
@@ -178,7 +183,10 @@ fun PrivacySettingsScreen(
 
     Box(modifier = Modifier.fillMaxSize().background(MaterialTheme.appColors.navyDeep)) {
         Column(modifier = Modifier.fillMaxSize()) {
-            TopBarApp(title = stringResource(Res.string.settings_privacy_data), navigateBack = onBack)
+            TopBarWithActionsApp(
+                title = stringResource(Res.string.settings_privacy_data),
+                navigateBack = onBack
+            )
 
             if (uiState.isLoading) {
                 Box(
@@ -235,7 +243,9 @@ fun PrivacySettingsScreen(
                             PrivacyInfoRow(
                                 icon = Icons.Default.Star,
                                 label = stringResource(Res.string.privacy_premium_active_label),
-                                value = if (uiState.premiumStatus.isLifetime) stringResource(Res.string.privacy_premium_lifetime_value) else stringResource(Res.string.privacy_premium_subscription_value)
+                                value = if (uiState.premiumStatus.isLifetime) stringResource(Res.string.privacy_premium_lifetime_value) else stringResource(
+                                    Res.string.privacy_premium_subscription_value
+                                )
                             )
                             if (!uiState.premiumStatus.isLifetime) {
                                 val expiryDate = uiState.premiumStatus.expiryDate
@@ -353,7 +363,11 @@ fun PrivacySettingsScreen(
                     Spacer(Modifier.height(16.dp))
 
                     TextButton(onClick = { urlOpener.openUrl(PRIVACY_POLICY_URL) }) {
-                        Text(stringResource(Res.string.privacy_policy_link), color = MaterialTheme.appColors.cyanAccent, fontSize = 13.sp)
+                        Text(
+                            stringResource(Res.string.privacy_policy_link),
+                            color = MaterialTheme.appColors.cyanAccent,
+                            fontSize = 13.sp
+                        )
                     }
 
                     Spacer(Modifier.height(32.dp))
@@ -374,7 +388,8 @@ private fun PrivacyPremiumCard(
     isPremium: Boolean,
     content: @Composable ColumnScope.() -> Unit
 ) {
-    val borderColor = if (isPremium) MaterialTheme.appColors.cyanAccent.copy(alpha = 0.35f) else MaterialTheme.appColors.navyBorder
+    val borderColor =
+        if (isPremium) MaterialTheme.appColors.cyanAccent.copy(alpha = 0.35f) else MaterialTheme.appColors.navyBorder
     Card(
         modifier = Modifier.fillMaxWidth().border(0.5.dp, borderColor, RoundedCornerShape(11.dp)),
         shape = RoundedCornerShape(11.dp),
@@ -407,7 +422,12 @@ private fun PrivacyToggleItem(
         )
         Spacer(Modifier.width(14.dp))
         Column(Modifier.weight(1f)) {
-            Text(title, fontSize = 13.sp, fontWeight = FontWeight.Medium, color = MaterialTheme.appColors.textPrimary)
+            Text(
+                title,
+                fontSize = 13.sp,
+                fontWeight = FontWeight.Medium,
+                color = MaterialTheme.appColors.textPrimary
+            )
             Text(desc, fontSize = 11.sp, color = MaterialTheme.appColors.textTertiary)
         }
         Switch(
@@ -484,7 +504,7 @@ private fun PrivacyDataRow(
     val iconTint = when {
         isInfo -> MaterialTheme.appColors.cyanAccent
         active -> MaterialTheme.appColors.income
-        else   -> MaterialTheme.appColors.expense
+        else -> MaterialTheme.appColors.expense
     }
     Row(
         modifier = Modifier

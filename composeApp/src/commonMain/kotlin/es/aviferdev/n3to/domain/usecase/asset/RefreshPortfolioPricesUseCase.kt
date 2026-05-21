@@ -29,6 +29,7 @@ class RefreshPortfolioPricesUseCase(
     companion object {
         /** Pausa entre requests para evitar rate limiting */
         private const val RATE_LIMIT_DELAY_MS = 500L
+
         /** Tiempo máximo de espera por request */
         private const val REQUEST_TIMEOUT_MS = 10_000L
     }
@@ -74,14 +75,18 @@ class RefreshPortfolioPricesUseCase(
 
                 // Actualizar precio + histórico + marcar como AUTO
                 updateAssetCurrentPrice(asset.id, priceEur, quote.retrievedAt, categoryId)
-                assetRepository.updatePriceSource(asset.id, es.aviferdev.n3to.domain.model.PriceSource.AUTO)
+                assetRepository.updatePriceSource(
+                    asset.id,
+                    es.aviferdev.n3to.domain.model.PriceSource.AUTO
+                )
                 assetRepository.markIsinValidationError(asset.id, null)
                 updated++
                 println("[PriceRefresh] ✅ ${asset.ticker} → ${priceEur} € ${if (wasConverted) "(convertido de ${quote.currency})" else ""}")
             }.onFailure { error ->
                 val msg = error.message ?: ""
                 if (msg.contains("Not Found", ignoreCase = true) ||
-                    msg.contains("404", ignoreCase = true)) {
+                    msg.contains("404", ignoreCase = true)
+                ) {
                     notFound.add(isin)
                     assetRepository.markIsinValidationError(asset.id, "NOT_FOUND")
                     println("[PriceRefresh] ⚠️ ${asset.ticker} → ISIN no encontrado")

@@ -67,18 +67,18 @@ fun PortfolioDistributionCard(
     if (slices.isEmpty()) return
 
     val title = when (selectedView) {
-        DistributionView.CATEGORY    -> "Distribución por categoría"
+        DistributionView.CATEGORY -> "Distribución por categoría"
         DistributionView.COMPOSITION -> "Composición"
-        DistributionView.REGION     -> "Distribución por región"
-        DistributionView.SECTOR      -> "Distribución por sector"
+        DistributionView.REGION -> "Distribución por región"
+        DistributionView.SECTOR -> "Distribución por sector"
     }
 
     Card(
-        modifier  = modifier.fillMaxWidth(),
-        shape     = RoundedCornerShape(16.dp),
-        colors    = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.navySurface),
+        modifier = modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.navySurface),
         elevation = CardDefaults.cardElevation(0.dp),
-        border    = BorderStroke(0.5.dp, MaterialTheme.appColors.navyBorder)
+        border = BorderStroke(0.5.dp, MaterialTheme.appColors.navyBorder)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(
@@ -87,25 +87,25 @@ fun PortfolioDistributionCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text       = title,
-                    fontSize   = 14.sp,
+                    text = title,
+                    fontSize = 14.sp,
                     fontWeight = FontWeight.SemiBold,
-                    color      = MaterialTheme.appColors.textPrimary
+                    color = MaterialTheme.appColors.textPrimary
                 )
                 if (fixedIncomePercent > 0) {
                     Text(
-                        text       = "RF: ${fixedIncomePercent.toInt()}%",
-                        fontSize   = 12.sp,
+                        text = "RF: ${fixedIncomePercent.toInt()}%",
+                        fontSize = 12.sp,
                         fontWeight = FontWeight.Bold,
-                        color      = MaterialTheme.appColors.warnAmber
+                        color = MaterialTheme.appColors.warnAmber
                     )
                 }
             }
             Spacer(Modifier.height(2.dp))
             Text(
-                text     = stringResource(Res.string.portfolio_distribution_subtitle),
+                text = stringResource(Res.string.portfolio_distribution_subtitle),
                 fontSize = 11.sp,
-                color    = MaterialTheme.appColors.textSecondary
+                color = MaterialTheme.appColors.textSecondary
             )
             if (viewSelector != null) {
                 Spacer(Modifier.height(10.dp))
@@ -117,30 +117,30 @@ fun PortfolioDistributionCard(
             Row(verticalAlignment = Alignment.CenterVertically) {
                 // ── Donut ────────────────────────────────────────────────
                 Box(
-                    modifier         = Modifier
+                    modifier = Modifier
                         .size(140.dp)
                         .padding(4.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     DonutCanvas(
-                        slices   = slices,
+                        slices = slices,
                         modifier = Modifier.fillMaxWidth().aspectRatio(1f)
                     )
                     // Total al centro
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text(
-                            text     = stringResource(Res.string.common_total),
+                            text = stringResource(Res.string.common_total),
                             fontSize = 10.sp,
-                            color    = MaterialTheme.appColors.textSecondary
+                            color = MaterialTheme.appColors.textSecondary
                         )
                         Text(
-                            text       = maskAmount(
+                            text = maskAmount(
                                 formatAmountEuro(totalCurrentValue),
                                 balancesHidden
                             ),
-                            fontSize   = 13.sp,
+                            fontSize = 13.sp,
                             fontWeight = FontWeight.SemiBold,
-                            color      = MaterialTheme.appColors.textPrimary
+                            color = MaterialTheme.appColors.textPrimary
                         )
                     }
                 }
@@ -149,7 +149,7 @@ fun PortfolioDistributionCard(
 
                 // ── Leyenda ─────────────────────────────────────────────
                 Column(
-                    modifier            = Modifier.weight(1f),
+                    modifier = Modifier.weight(1f),
                     verticalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
                     slices.forEach { slice ->
@@ -167,25 +167,25 @@ private fun DonutCanvas(
     modifier: Modifier = Modifier
 ) {
     Canvas(modifier = modifier) {
-        val side       = minOf(size.width, size.height)
-        val strokeW    = side * 0.22f
-        val padding    = strokeW / 2f
-        val arcSize    = Size(side - strokeW, side - strokeW)
-        val topLeft    = Offset(padding, padding)
-        val gapDeg     = 1.5f      // separación visual entre slices
+        val side = minOf(size.width, size.height)
+        val strokeW = side * 0.22f
+        val padding = strokeW / 2f
+        val arcSize = Size(side - strokeW, side - strokeW)
+        val topLeft = Offset(padding, padding)
+        val gapDeg = 1.5f      // separación visual entre slices
         var startAngle = -90f      // empezar arriba (12 en punto)
 
         slices.forEach { slice ->
             val sweep = (slice.percent.toFloat() * 360f / 100f) - gapDeg
             if (sweep > 0f) {
                 drawArc(
-                    color     = slice.color,
+                    color = slice.color,
                     startAngle = startAngle,
                     sweepAngle = sweep,
-                    useCenter  = false,
-                    topLeft    = topLeft,
-                    size       = arcSize,
-                    style      = Stroke(width = strokeW)
+                    useCenter = false,
+                    topLeft = topLeft,
+                    size = arcSize,
+                    style = Stroke(width = strokeW)
                 )
             }
             startAngle += (slice.percent.toFloat() * 360f / 100f)
@@ -196,7 +196,7 @@ private fun DonutCanvas(
 @Composable
 private fun LegendRow(slice: CategorySlice) {
     Row(
-        modifier          = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Box(
@@ -214,18 +214,18 @@ private fun LegendRow(slice: CategorySlice) {
         )
         Spacer(Modifier.width(4.dp))
         Text(
-            text     = slice.name,
+            text = slice.name,
             fontSize = 12.sp,
-            color    = MaterialTheme.appColors.textPrimary,
+            color = MaterialTheme.appColors.textPrimary,
             modifier = Modifier.weight(1f, fill = true),
             maxLines = 1
         )
         Text(
-            text       = "${formatPercentLegend(slice.percent)}%",
-            fontSize   = 12.sp,
-            color      = MaterialTheme.appColors.textSecondary,
+            text = "${formatPercentLegend(slice.percent)}%",
+            fontSize = 12.sp,
+            color = MaterialTheme.appColors.textSecondary,
             fontWeight = FontWeight.SemiBold,
-            modifier   = Modifier.wrapContentSize()
+            modifier = Modifier.wrapContentSize()
         )
     }
 }

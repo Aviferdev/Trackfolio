@@ -1,7 +1,5 @@
 package es.aviferdev.n3to.ui.settings.components
 
-import androidx.compose.material3.MaterialTheme
-import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -33,6 +31,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
@@ -47,12 +46,21 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.Account
 import es.aviferdev.n3to.ui.common.N3toLabel
-
-import es.aviferdev.n3to.ui.theme.ExpenseRed
-
+import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.ui.theme.formatAmount
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.common_delete
+import n3to.composeapp.generated.resources.language_chinese
+import n3to.composeapp.generated.resources.language_english
+import n3to.composeapp.generated.resources.language_french
+import n3to.composeapp.generated.resources.language_german
+import n3to.composeapp.generated.resources.language_italian
+import n3to.composeapp.generated.resources.language_japanese
+import n3to.composeapp.generated.resources.language_korean
+import n3to.composeapp.generated.resources.language_portuguese
+import n3to.composeapp.generated.resources.language_russian
+import n3to.composeapp.generated.resources.language_spanish
+import n3to.composeapp.generated.resources.language_system
 import n3to.composeapp.generated.resources.settings_add_account
 import n3to.composeapp.generated.resources.settings_backup_reminder_off
 import n3to.composeapp.generated.resources.settings_backup_reminder_title
@@ -65,29 +73,31 @@ import n3to.composeapp.generated.resources.settings_edit_cd
 import n3to.composeapp.generated.resources.settings_interval_15d
 import n3to.composeapp.generated.resources.settings_interval_30d
 import n3to.composeapp.generated.resources.settings_interval_7d
-import n3to.composeapp.generated.resources.settings_reconciliation_reminder_title
 import n3to.composeapp.generated.resources.settings_language
+import n3to.composeapp.generated.resources.settings_reconciliation_reminder_title
 import n3to.composeapp.generated.resources.settings_theme_disabled
 import n3to.composeapp.generated.resources.settings_theme_enabled
-import n3to.composeapp.generated.resources.language_chinese
-import n3to.composeapp.generated.resources.language_english
-import n3to.composeapp.generated.resources.language_french
-import n3to.composeapp.generated.resources.language_german
-import n3to.composeapp.generated.resources.language_italian
-import n3to.composeapp.generated.resources.language_japanese
-import n3to.composeapp.generated.resources.language_korean
-import n3to.composeapp.generated.resources.language_portuguese
-import n3to.composeapp.generated.resources.language_russian
-import n3to.composeapp.generated.resources.language_spanish
-import n3to.composeapp.generated.resources.language_system
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-internal fun SettingsSectionHeader(label: String, actionLabel: String? = null, onAction: (() -> Unit)? = null) {
-    Row(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+internal fun SettingsSectionHeader(
+    label: String,
+    actionLabel: String? = null,
+    onAction: (() -> Unit)? = null
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
         N3toLabel(text = label)
         if (actionLabel != null && onAction != null) {
-            Text(actionLabel, fontSize = 11.sp, fontWeight = FontWeight.SemiBold, color = MaterialTheme.appColors.cyanAccent, modifier = Modifier.clickable { onAction() })
+            Text(
+                actionLabel,
+                fontSize = 11.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.appColors.cyanAccent,
+                modifier = Modifier.clickable { onAction() })
         }
     }
 }
@@ -95,7 +105,8 @@ internal fun SettingsSectionHeader(label: String, actionLabel: String? = null, o
 @Composable
 internal fun SettingsGroupCard(content: @Composable ColumnScope.() -> Unit) {
     Card(
-        modifier = Modifier.fillMaxWidth().border(0.5.dp, MaterialTheme.appColors.navyBorder, RoundedCornerShape(11.dp)),
+        modifier = Modifier.fillMaxWidth()
+            .border(0.5.dp, MaterialTheme.appColors.navyBorder, RoundedCornerShape(11.dp)),
         shape = RoundedCornerShape(11.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.navySurface),
         elevation = CardDefaults.cardElevation(0.dp)
@@ -106,51 +117,136 @@ internal fun SettingsGroupCard(content: @Composable ColumnScope.() -> Unit) {
 
 @Composable
 internal fun SettingsRowDivider() {
-    HorizontalDivider(modifier = Modifier.padding(start = 52.dp), color = MaterialTheme.appColors.navyBorder, thickness = 0.5.dp)
+    HorizontalDivider(
+        modifier = Modifier.padding(start = 52.dp),
+        color = MaterialTheme.appColors.navyBorder,
+        thickness = 0.5.dp
+    )
 }
 
 @Composable
 internal fun SettingsNavigableRow(icon: ImageVector, label: String, onClick: () -> Unit) {
-    Row(modifier = Modifier.fillMaxWidth().clickable(onClick = onClick).padding(horizontal = 16.dp, vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) {
-        Icon(icon, contentDescription = null, tint = MaterialTheme.appColors.cyanAccent, modifier = Modifier.size(20.dp))
+    Row(
+        modifier = Modifier.fillMaxWidth().clickable(onClick = onClick)
+            .padding(horizontal = 16.dp, vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            icon,
+            contentDescription = null,
+            tint = MaterialTheme.appColors.cyanAccent,
+            modifier = Modifier.size(20.dp)
+        )
         Spacer(Modifier.width(14.dp))
-        Text(label, fontSize = 13.sp, fontWeight = FontWeight.Medium, color = MaterialTheme.appColors.textPrimary, modifier = Modifier.weight(1f))
-        Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null, tint = MaterialTheme.appColors.textTertiary, modifier = Modifier.size(18.dp))
+        Text(
+            label,
+            fontSize = 13.sp,
+            fontWeight = FontWeight.Medium,
+            color = MaterialTheme.appColors.textPrimary,
+            modifier = Modifier.weight(1f)
+        )
+        Icon(
+            Icons.AutoMirrored.Filled.KeyboardArrowRight,
+            contentDescription = null,
+            tint = MaterialTheme.appColors.textTertiary,
+            modifier = Modifier.size(18.dp)
+        )
     }
 }
 
 @Composable
 internal fun SettingsInfoRow(label: String, value: String) {
-    Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) {
+    Row(
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
         Spacer(Modifier.width(32.dp))
-        Text(label, fontSize = 13.sp, fontWeight = FontWeight.Medium, color = MaterialTheme.appColors.textPrimary, modifier = Modifier.weight(1f))
+        Text(
+            label,
+            fontSize = 13.sp,
+            fontWeight = FontWeight.Medium,
+            color = MaterialTheme.appColors.textPrimary,
+            modifier = Modifier.weight(1f)
+        )
         Text(value, fontSize = 13.sp, color = MaterialTheme.appColors.textTertiary)
     }
 }
 
 @Composable
 internal fun SettingsBiometricRow(enabled: Boolean, onToggle: (Boolean) -> Unit) {
-    Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) {
-        Icon(Icons.Outlined.Fingerprint, contentDescription = null, tint = MaterialTheme.appColors.cyanAccent, modifier = Modifier.size(20.dp))
+    Row(
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            Icons.Outlined.Fingerprint,
+            contentDescription = null,
+            tint = MaterialTheme.appColors.cyanAccent,
+            modifier = Modifier.size(20.dp)
+        )
         Spacer(Modifier.width(14.dp))
         Column(modifier = Modifier.weight(1f)) {
-            Text(stringResource(Res.string.settings_biometric_lock), fontSize = 13.sp, fontWeight = FontWeight.Medium, color = MaterialTheme.appColors.textPrimary)
-            Text(if (enabled) stringResource(Res.string.settings_biometric_enabled) else stringResource(Res.string.settings_biometric_disabled), fontSize = 11.sp, color = MaterialTheme.appColors.textTertiary)
+            Text(
+                stringResource(Res.string.settings_biometric_lock),
+                fontSize = 13.sp,
+                fontWeight = FontWeight.Medium,
+                color = MaterialTheme.appColors.textPrimary
+            )
+            Text(
+                if (enabled) stringResource(Res.string.settings_biometric_enabled) else stringResource(
+                    Res.string.settings_biometric_disabled
+                ), fontSize = 11.sp, color = MaterialTheme.appColors.textTertiary
+            )
         }
-        Switch(checked = enabled, onCheckedChange = onToggle, colors = SwitchDefaults.colors(checkedThumbColor = Color.White, checkedTrackColor = MaterialTheme.appColors.cyanAccent, uncheckedThumbColor = Color.White, uncheckedTrackColor = MaterialTheme.appColors.navySurface))
+        Switch(
+            checked = enabled,
+            onCheckedChange = onToggle,
+            colors = SwitchDefaults.colors(
+                checkedThumbColor = Color.White,
+                checkedTrackColor = MaterialTheme.appColors.cyanAccent,
+                uncheckedThumbColor = Color.White,
+                uncheckedTrackColor = MaterialTheme.appColors.navySurface
+            )
+        )
     }
 }
 
 @Composable
 internal fun SettingsThemeRow(isDark: Boolean, onToggle: (Boolean) -> Unit) {
-    Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) {
-        Icon(Icons.Outlined.Lightbulb, contentDescription = null, tint = MaterialTheme.appColors.cyanAccent, modifier = Modifier.size(20.dp))
+    Row(
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            Icons.Outlined.Lightbulb,
+            contentDescription = null,
+            tint = MaterialTheme.appColors.cyanAccent,
+            modifier = Modifier.size(20.dp)
+        )
         Spacer(Modifier.width(14.dp))
         Column(modifier = Modifier.weight(1f)) {
-            Text(stringResource(Res.string.settings_dark_theme), fontSize = 13.sp, fontWeight = FontWeight.Medium, color = MaterialTheme.appColors.textPrimary)
-            Text(if (isDark) stringResource(Res.string.settings_theme_enabled) else stringResource(Res.string.settings_theme_disabled), fontSize = 11.sp, color = MaterialTheme.appColors.textTertiary)
+            Text(
+                stringResource(Res.string.settings_dark_theme),
+                fontSize = 13.sp,
+                fontWeight = FontWeight.Medium,
+                color = MaterialTheme.appColors.textPrimary
+            )
+            Text(
+                if (isDark) stringResource(Res.string.settings_theme_enabled) else stringResource(
+                    Res.string.settings_theme_disabled
+                ), fontSize = 11.sp, color = MaterialTheme.appColors.textTertiary
+            )
         }
-        Switch(checked = isDark, onCheckedChange = onToggle, colors = SwitchDefaults.colors(checkedThumbColor = Color.White, checkedTrackColor = MaterialTheme.appColors.cyanAccent, uncheckedThumbColor = Color.White, uncheckedTrackColor = MaterialTheme.appColors.navySurface))
+        Switch(
+            checked = isDark,
+            onCheckedChange = onToggle,
+            colors = SwitchDefaults.colors(
+                checkedThumbColor = Color.White,
+                checkedTrackColor = MaterialTheme.appColors.cyanAccent,
+                uncheckedThumbColor = Color.White,
+                uncheckedTrackColor = MaterialTheme.appColors.navySurface
+            )
+        )
     }
 }
 
@@ -181,18 +277,26 @@ internal fun SettingsLanguageRow(
             .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Icon(Icons.Outlined.Language, contentDescription = null,
-            tint = MaterialTheme.appColors.cyanAccent, modifier = Modifier.size(20.dp))
+        Icon(
+            Icons.Outlined.Language, contentDescription = null,
+            tint = MaterialTheme.appColors.cyanAccent, modifier = Modifier.size(20.dp)
+        )
         Spacer(Modifier.width(14.dp))
         Column(modifier = Modifier.weight(1f)) {
-            Text(stringResource(Res.string.settings_language),
+            Text(
+                stringResource(Res.string.settings_language),
                 fontSize = 13.sp, fontWeight = FontWeight.Medium,
-                color = MaterialTheme.appColors.textPrimary)
-            Text(subtitle,
-                fontSize = 11.sp, color = MaterialTheme.appColors.textTertiary)
+                color = MaterialTheme.appColors.textPrimary
+            )
+            Text(
+                subtitle,
+                fontSize = 11.sp, color = MaterialTheme.appColors.textTertiary
+            )
         }
-        Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null,
-            tint = MaterialTheme.appColors.textTertiary, modifier = Modifier.size(18.dp))
+        Icon(
+            Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null,
+            tint = MaterialTheme.appColors.textTertiary, modifier = Modifier.size(18.dp)
+        )
     }
 }
 
@@ -202,19 +306,30 @@ internal fun SettingsReconciliationIntervalRow(
     onIntervalChange: (Int) -> Unit,
 ) {
     val options = listOf(
-        0  to stringResource(Res.string.settings_backup_reminder_off),
-        7  to stringResource(Res.string.settings_interval_7d),
+        0 to stringResource(Res.string.settings_backup_reminder_off),
+        7 to stringResource(Res.string.settings_interval_7d),
         15 to stringResource(Res.string.settings_interval_15d),
         30 to stringResource(Res.string.settings_interval_30d)
     )
-    val label = options.find { it.first == interval }?.second ?: stringResource(Res.string.settings_interval_30d)
+    val label = options.find { it.first == interval }?.second
+        ?: stringResource(Res.string.settings_interval_30d)
 
     Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Icon(Icons.Outlined.Sync, contentDescription = null, tint = MaterialTheme.appColors.cyanAccent, modifier = Modifier.size(20.dp))
+            Icon(
+                Icons.Outlined.Sync,
+                contentDescription = null,
+                tint = MaterialTheme.appColors.cyanAccent,
+                modifier = Modifier.size(20.dp)
+            )
             Spacer(Modifier.width(14.dp))
             Column(modifier = Modifier.weight(1f)) {
-                Text(stringResource(Res.string.settings_reconciliation_reminder_title), fontSize = 13.sp, fontWeight = FontWeight.Medium, color = MaterialTheme.appColors.textPrimary)
+                Text(
+                    stringResource(Res.string.settings_reconciliation_reminder_title),
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = MaterialTheme.appColors.textPrimary
+                )
                 Text(label, fontSize = 11.sp, color = MaterialTheme.appColors.textTertiary)
             }
         }
@@ -241,9 +356,9 @@ internal fun SettingsReconciliationIntervalRow(
                 ) {
                     Text(
                         text,
-                        fontSize   = 10.sp,
+                        fontSize = 10.sp,
                         fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal,
-                        color      = if (selected) MaterialTheme.appColors.cyanAccent else MaterialTheme.appColors.textSecondary
+                        color = if (selected) MaterialTheme.appColors.cyanAccent else MaterialTheme.appColors.textSecondary
                     )
                 }
             }
@@ -257,19 +372,30 @@ internal fun SettingsBackupReminderIntervalRow(
     onIntervalChange: (Int) -> Unit,
 ) {
     val options = listOf(
-        0  to stringResource(Res.string.settings_backup_reminder_off),
-        7  to stringResource(Res.string.settings_interval_7d),
+        0 to stringResource(Res.string.settings_backup_reminder_off),
+        7 to stringResource(Res.string.settings_interval_7d),
         15 to stringResource(Res.string.settings_interval_15d),
         30 to stringResource(Res.string.settings_interval_30d)
     )
-    val label = options.find { it.first == interval }?.second ?: stringResource(Res.string.settings_interval_30d)
+    val label = options.find { it.first == interval }?.second
+        ?: stringResource(Res.string.settings_interval_30d)
 
     Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Icon(Icons.Outlined.SaveAlt, contentDescription = null, tint = MaterialTheme.appColors.cyanAccent, modifier = Modifier.size(20.dp))
+            Icon(
+                Icons.Outlined.SaveAlt,
+                contentDescription = null,
+                tint = MaterialTheme.appColors.cyanAccent,
+                modifier = Modifier.size(20.dp)
+            )
             Spacer(Modifier.width(14.dp))
             Column(modifier = Modifier.weight(1f)) {
-                Text(stringResource(Res.string.settings_backup_reminder_title), fontSize = 13.sp, fontWeight = FontWeight.Medium, color = MaterialTheme.appColors.textPrimary)
+                Text(
+                    stringResource(Res.string.settings_backup_reminder_title),
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = MaterialTheme.appColors.textPrimary
+                )
                 Text(label, fontSize = 11.sp, color = MaterialTheme.appColors.textTertiary)
             }
         }
@@ -296,9 +422,9 @@ internal fun SettingsBackupReminderIntervalRow(
                 ) {
                     Text(
                         text,
-                        fontSize   = 10.sp,
+                        fontSize = 10.sp,
                         fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal,
-                        color      = if (selected) MaterialTheme.appColors.cyanAccent else MaterialTheme.appColors.textSecondary
+                        color = if (selected) MaterialTheme.appColors.cyanAccent else MaterialTheme.appColors.textSecondary
                     )
                 }
             }
@@ -309,15 +435,30 @@ internal fun SettingsBackupReminderIntervalRow(
 @Composable
 internal fun EmptyAccountsCard(onAdd: () -> Unit) {
     Card(
-        modifier = Modifier.fillMaxWidth().clickable(onClick = onAdd).border(0.5.dp, MaterialTheme.appColors.navyBorder, RoundedCornerShape(11.dp)),
+        modifier = Modifier.fillMaxWidth().clickable(onClick = onAdd)
+            .border(0.5.dp, MaterialTheme.appColors.navyBorder, RoundedCornerShape(11.dp)),
         shape = RoundedCornerShape(11.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.navySurface),
         elevation = CardDefaults.cardElevation(0.dp)
     ) {
-        Row(modifier = Modifier.fillMaxWidth().padding(16.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
-            Icon(Icons.Default.Add, contentDescription = null, tint = MaterialTheme.appColors.cyanAccent, modifier = Modifier.size(20.dp))
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Icon(
+                Icons.Default.Add,
+                contentDescription = null,
+                tint = MaterialTheme.appColors.cyanAccent,
+                modifier = Modifier.size(20.dp)
+            )
             Spacer(Modifier.width(8.dp))
-            Text(stringResource(Res.string.settings_add_account), fontSize = 13.sp, fontWeight = FontWeight.Medium, color = MaterialTheme.appColors.cyanAccent)
+            Text(
+                stringResource(Res.string.settings_add_account),
+                fontSize = 13.sp,
+                fontWeight = FontWeight.Medium,
+                color = MaterialTheme.appColors.cyanAccent
+            )
         }
     }
 }
@@ -331,22 +472,64 @@ internal fun SettingsAccountCard(
     onDelete: () -> Unit,
     onConfigure: () -> Unit = {}
 ) {
-    val borderColor = if (isSelected) MaterialTheme.appColors.cyanAccent else MaterialTheme.appColors.navyBorder
+    val borderColor =
+        if (isSelected) MaterialTheme.appColors.cyanAccent else MaterialTheme.appColors.navyBorder
     val borderWidth = if (isSelected) 1.dp else 0.5.dp
     Card(
-        modifier = Modifier.fillMaxWidth().border(borderWidth, borderColor, RoundedCornerShape(11.dp)),
+        modifier = Modifier.fillMaxWidth()
+            .border(borderWidth, borderColor, RoundedCornerShape(11.dp)),
         shape = RoundedCornerShape(11.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.navySurface),
         elevation = CardDefaults.cardElevation(0.dp)
     ) {
-        Row(modifier = Modifier.fillMaxWidth().clickable(onClick = onSelect).padding(start = 16.dp, top = 8.dp, bottom = 8.dp, end = 4.dp), verticalAlignment = Alignment.CenterVertically) {
+        Row(
+            modifier = Modifier.fillMaxWidth().clickable(onClick = onSelect)
+                .padding(start = 16.dp, top = 8.dp, bottom = 8.dp, end = 4.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             Column(modifier = Modifier.weight(1f)) {
-                Text(account.name, fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = MaterialTheme.appColors.textPrimary)
-                Text("€ · ${formatAmount(account.computedBalance)}", fontSize = 11.sp, color = MaterialTheme.appColors.textTertiary)
+                Text(
+                    account.name,
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.appColors.textPrimary
+                )
+                Text(
+                    "€ · ${formatAmount(account.computedBalance)}",
+                    fontSize = 11.sp,
+                    color = MaterialTheme.appColors.textTertiary
+                )
             }
-            IconButton(onClick = onConfigure, modifier = Modifier.size(32.dp)) { Icon(Icons.Outlined.AccountBalance, contentDescription = stringResource(Res.string.settings_configure_cd), tint = MaterialTheme.appColors.cyanAccent, modifier = Modifier.size(18.dp)) }
-            IconButton(onClick = onEdit, modifier = Modifier.size(32.dp)) { Icon(Icons.Default.Edit, contentDescription = stringResource(Res.string.settings_edit_cd), tint = MaterialTheme.appColors.textSecondary, modifier = Modifier.size(16.dp)) }
-            IconButton(onClick = onDelete, modifier = Modifier.size(32.dp)) { Icon(Icons.Default.Delete, contentDescription = stringResource(Res.string.common_delete), tint = MaterialTheme.appColors.expense, modifier = Modifier.size(16.dp)) }
+            IconButton(
+                onClick = onConfigure,
+                modifier = Modifier.size(32.dp)
+            ) {
+                Icon(
+                    Icons.Outlined.AccountBalance,
+                    contentDescription = stringResource(Res.string.settings_configure_cd),
+                    tint = MaterialTheme.appColors.cyanAccent,
+                    modifier = Modifier.size(18.dp)
+                )
+            }
+            IconButton(onClick = onEdit, modifier = Modifier.size(32.dp)) {
+                Icon(
+                    Icons.Default.Edit,
+                    contentDescription = stringResource(Res.string.settings_edit_cd),
+                    tint = MaterialTheme.appColors.textSecondary,
+                    modifier = Modifier.size(16.dp)
+                )
+            }
+            IconButton(
+                onClick = onDelete,
+                modifier = Modifier.size(32.dp)
+            ) {
+                Icon(
+                    Icons.Default.Delete,
+                    contentDescription = stringResource(Res.string.common_delete),
+                    tint = MaterialTheme.appColors.expense,
+                    modifier = Modifier.size(16.dp)
+                )
+            }
         }
     }
 }

@@ -38,7 +38,10 @@ class LoanRepositoryImpl(
     ): Result<Unit> =
         localDataSource.updateRate(id, newRate, newMonthlyPayment, outstandingPrincipal)
 
-    override suspend fun incrementPaidInstallments(id: String, newOutstanding: Double): Result<Unit> =
+    override suspend fun incrementPaidInstallments(
+        id: String,
+        newOutstanding: Double
+    ): Result<Unit> =
         localDataSource.incrementPaidInstallments(id, newOutstanding)
 
     override suspend fun archive(id: String): Result<Unit> =

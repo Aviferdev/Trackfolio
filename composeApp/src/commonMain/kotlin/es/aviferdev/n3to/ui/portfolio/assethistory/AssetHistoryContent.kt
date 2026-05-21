@@ -1,35 +1,27 @@
 package es.aviferdev.n3to.ui.portfolio.assethistory
 
-import androidx.compose.material3.MaterialTheme
-import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material.icons.automirrored.outlined.ShowChart
+import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.AssetCategoryType
@@ -39,13 +31,11 @@ import es.aviferdev.n3to.domain.model.Platform
 import es.aviferdev.n3to.domain.model.Transaction
 import es.aviferdev.n3to.domain.model.TransactionType
 import es.aviferdev.n3to.domain.portfolio.AssetPosition
-import es.aviferdev.n3to.ui.common.navigation.TopBarApp
-import es.aviferdev.n3to.ui.common.toMaterialIcon
+import es.aviferdev.n3to.ui.common.button.FloatingButtonAdd
+import es.aviferdev.n3to.ui.common.topbar.TopBarWithActionsApp
 import es.aviferdev.n3to.ui.portfolio.AssetHistoryUiState
-
-import es.aviferdev.n3to.ui.theme.PrimaryDark
-
 import es.aviferdev.n3to.ui.theme.N3toTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.error_asset_not_found
 import n3to.composeapp.generated.resources.portfolio_update_price_title
@@ -75,7 +65,7 @@ fun AssetHistoryContent(
             .background(MaterialTheme.appColors.background)
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
-            TopBarApp(
+            TopBarWithActionsApp(
                 title = state.asset?.ticker ?: "Activo",
                 subtitle = state.asset?.name,
                 navigateBack = onBack,
@@ -121,7 +111,7 @@ fun AssetHistoryContent(
                         AssetSummaryCard(
                             ticker = state.asset.ticker,
                             currentPrice = state.asset.currentPrice,
-                                                        position = state.position,
+                            position = state.position,
                             modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
                         )
                     }
@@ -143,7 +133,7 @@ fun AssetHistoryContent(
                         item {
                             FifoBreakdownSection(
                                 breakdown = bd,
-                                                                balancesHidden = balancesHidden,
+                                balancesHidden = balancesHidden,
                                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
                             )
                         }
@@ -164,7 +154,7 @@ fun AssetHistoryContent(
                             TxRow(
                                 tx = tx,
                                 platform = state.platforms.firstOrNull { it.id == tx.platformId },
-                                                                balancesHidden = balancesHidden,
+                                balancesHidden = balancesHidden,
                                 onEdit = { onEditTransaction(tx) },
                                 onDelete = { onDeleteTransaction(tx) },
                                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
@@ -187,7 +177,7 @@ fun AssetHistoryContent(
                         items(state.dividends, key = { it.id }) { dividend ->
                             DividendRow(
                                 dividend = dividend,
-                                                                balancesHidden = balancesHidden,
+                                balancesHidden = balancesHidden,
                                 onDelete = {
                                     onDeleteDividend(
                                         dividend.linkedAssetTransactionId ?: dividend.id
@@ -208,16 +198,10 @@ fun AssetHistoryContent(
                     .align(Alignment.BottomEnd)
                     .padding(end = 20.dp, bottom = 28.dp)
             ) {
-                FloatingActionButton(
+                FloatingButtonAdd(
                     onClick = onFabClick,
                     modifier = Modifier.size(52.dp),
-                    shape = RoundedCornerShape(16.dp),
-                    containerColor = MaterialTheme.appColors.primary,
-                    contentColor = Color.White,
-                    elevation = FloatingActionButtonDefaults.elevation(4.dp)
-                ) {
-                    Text("+", fontSize = 26.sp, fontWeight = FontWeight.Light, color = Color.White)
-                }
+                )
                 DropdownMenu(
                     expanded = fabMenuOpen,
                     onDismissRequest = onFabDismiss,
@@ -243,7 +227,13 @@ fun AssetHistoryContent(
                                     fontSize = 14.sp
                                 )
                             },
-                            leadingIcon = { Icon(Icons.AutoMirrored.Outlined.ShowChart, contentDescription = null, modifier = Modifier.size(18.dp)) },
+                            leadingIcon = {
+                                Icon(
+                                    Icons.AutoMirrored.Outlined.ShowChart,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(18.dp)
+                                )
+                            },
                             onClick = { onFabDismiss(); onAddDividendClick() }
                         )
                     }

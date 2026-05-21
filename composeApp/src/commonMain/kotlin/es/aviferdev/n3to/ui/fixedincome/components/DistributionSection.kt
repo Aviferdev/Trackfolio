@@ -74,7 +74,11 @@ internal fun DistributionSection(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Column {
-                    Text(stringResource(Res.string.fixedincome_region_label), fontSize = 11.sp, color = MaterialTheme.appColors.textSecondary)
+                    Text(
+                        stringResource(Res.string.fixedincome_region_label),
+                        fontSize = 11.sp,
+                        color = MaterialTheme.appColors.textSecondary
+                    )
                     Text(
                         text = position?.region ?: stringResource(Res.string.fixedincome_no_region),
                         fontSize = 13.sp,
@@ -83,7 +87,11 @@ internal fun DistributionSection(
                     )
                 }
                 TextButton(onClick = { showRegionDialog = true }) {
-                    Text(stringResource(Res.string.fixedincome_change_region), fontSize = 12.sp, color = MaterialTheme.appColors.primary)
+                    Text(
+                        stringResource(Res.string.fixedincome_change_region),
+                        fontSize = 12.sp,
+                        color = MaterialTheme.appColors.primary
+                    )
                 }
             }
 
@@ -95,7 +103,11 @@ internal fun DistributionSection(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Column {
-                    Text(stringResource(Res.string.fixedincome_sector_label), fontSize = 11.sp, color = MaterialTheme.appColors.textSecondary)
+                    Text(
+                        stringResource(Res.string.fixedincome_sector_label),
+                        fontSize = 11.sp,
+                        color = MaterialTheme.appColors.textSecondary
+                    )
                     Text(
                         text = position?.sector ?: stringResource(Res.string.fixedincome_no_sector),
                         fontSize = 13.sp,
@@ -104,7 +116,11 @@ internal fun DistributionSection(
                     )
                 }
                 TextButton(onClick = { showSectorDialog = true }) {
-                    Text(stringResource(Res.string.fixedincome_change_sector), fontSize = 12.sp, color = MaterialTheme.appColors.primary)
+                    Text(
+                        stringResource(Res.string.fixedincome_change_sector),
+                        fontSize = 12.sp,
+                        color = MaterialTheme.appColors.primary
+                    )
                 }
             }
         }
@@ -142,7 +158,10 @@ internal fun DistributionSection(
             },
             confirmButton = {
                 TextButton(onClick = { showRegionDialog = false }) {
-                    Text(stringResource(Res.string.common_cancel), color = MaterialTheme.appColors.textSecondary)
+                    Text(
+                        stringResource(Res.string.common_cancel),
+                        color = MaterialTheme.appColors.textSecondary
+                    )
                 }
             }
         )
@@ -180,7 +199,10 @@ internal fun DistributionSection(
             },
             confirmButton = {
                 TextButton(onClick = { showSectorDialog = false }) {
-                    Text(stringResource(Res.string.common_cancel), color = MaterialTheme.appColors.textSecondary)
+                    Text(
+                        stringResource(Res.string.common_cancel),
+                        color = MaterialTheme.appColors.textSecondary
+                    )
                 }
             }
         )

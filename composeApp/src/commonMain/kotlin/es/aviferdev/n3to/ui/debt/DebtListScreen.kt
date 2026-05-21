@@ -1,7 +1,5 @@
 package es.aviferdev.n3to.ui.debt
 
-import androidx.compose.material3.MaterialTheme
-import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -13,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -22,12 +19,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.outlined.Handshake
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -41,7 +38,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.Debt
@@ -49,16 +45,13 @@ import es.aviferdev.n3to.domain.model.DebtDirection
 import es.aviferdev.n3to.ui.common.InitialsAvatar
 import es.aviferdev.n3to.ui.common.N3toLabel
 import es.aviferdev.n3to.ui.common.button.LargeButtonApp
-import es.aviferdev.n3to.ui.common.navigation.TopBarApp
 import es.aviferdev.n3to.ui.common.component.EmptyStateView
 import es.aviferdev.n3to.ui.common.row.SwipeRowApp
 import es.aviferdev.n3to.ui.common.separator.SpacerVerticalApp
-
-import es.aviferdev.n3to.ui.theme.ExpenseRed
+import es.aviferdev.n3to.ui.common.topbar.TopBarWithActionsApp
 import es.aviferdev.n3to.ui.theme.LocalBalanceHidden
-import es.aviferdev.n3to.ui.theme.PrimaryDark
-
 import es.aviferdev.n3to.ui.theme.N3toTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.ui.theme.formatAmount
 import es.aviferdev.n3to.ui.theme.formatDate
 import es.aviferdev.n3to.ui.theme.maskAmount
@@ -114,7 +107,8 @@ fun DebtListScreen(viewModel: DebtViewModel = koinViewModel()) {
     }
     debtToDelete?.let {
         AlertDialog(
-            onDismissRequest = { debtToDelete = null }, containerColor = MaterialTheme.appColors.surface,
+            onDismissRequest = { debtToDelete = null },
+            containerColor = MaterialTheme.appColors.surface,
             title = {
                 Text(
                     stringResource(Res.string.common_delete) + " " + stringResource(Res.string.debt_title).lowercase(),
@@ -133,7 +127,12 @@ fun DebtListScreen(viewModel: DebtViewModel = koinViewModel()) {
             confirmButton = {
                 TextButton(onClick = {
                     viewModel.deleteDebt(it.id); debtToDelete = null
-                }) { Text(stringResource(Res.string.common_delete), color = MaterialTheme.appColors.expense) }
+                }) {
+                    Text(
+                        stringResource(Res.string.common_delete),
+                        color = MaterialTheme.appColors.expense
+                    )
+                }
             },
             dismissButton = {
                 TextButton(onClick = { debtToDelete = null }) {
@@ -148,7 +147,8 @@ fun DebtListScreen(viewModel: DebtViewModel = koinViewModel()) {
     }
     debtToMarkPaid?.let {
         AlertDialog(
-            onDismissRequest = { debtToMarkPaid = null }, containerColor = MaterialTheme.appColors.surface,
+            onDismissRequest = { debtToMarkPaid = null },
+            containerColor = MaterialTheme.appColors.surface,
             title = {
                 Text(
                     stringResource(Res.string.debt_mark_paid),
@@ -167,7 +167,12 @@ fun DebtListScreen(viewModel: DebtViewModel = koinViewModel()) {
             confirmButton = {
                 TextButton(onClick = {
                     viewModel.markAsPaid(it.id); debtToMarkPaid = null
-                }) { Text(stringResource(Res.string.debt_mark_paid_confirm), color = MaterialTheme.appColors.income) }
+                }) {
+                    Text(
+                        stringResource(Res.string.debt_mark_paid_confirm),
+                        color = MaterialTheme.appColors.income
+                    )
+                }
             },
             dismissButton = {
                 TextButton(onClick = { debtToMarkPaid = null }) {
@@ -212,7 +217,7 @@ fun DebtListContent(
                 contentPadding = PaddingValues(bottom = 100.dp)
             ) {
                 item {
-                    TopBarApp(
+                    TopBarWithActionsApp(
                         title = stringResource(Res.string.debt_title),
                         navigateBack = {
                             // TODO: manejar navegación desde el wrapper
@@ -491,7 +496,11 @@ private fun DebtCard(debt: Debt, hidden: Boolean, onMarkPaid: () -> Unit, onEdit
                         contentPadding = PaddingValues(horizontal = 7.dp, vertical = 3.dp),
                         modifier = Modifier.height(24.dp)
                     ) {
-                        Text(stringResource(Res.string.debt_paid), fontSize = 9.sp, fontWeight = FontWeight.Bold)
+                        Text(
+                            stringResource(Res.string.debt_paid),
+                            fontSize = 9.sp,
+                            fontWeight = FontWeight.Bold
+                        )
                     }
                     TextButton(
                         onClick = onEdit,

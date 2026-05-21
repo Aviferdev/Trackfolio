@@ -1,7 +1,5 @@
 package es.aviferdev.n3to.ui.annual
 
-import androidx.compose.material3.MaterialTheme
-import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -16,11 +14,12 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.GpsFixed
 import androidx.compose.material.icons.automirrored.outlined.ShowChart
+import androidx.compose.material.icons.outlined.GpsFixed
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -29,8 +28,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.MonthlyGoalProgress
-import es.aviferdev.n3to.ui.theme.ExpenseRed
-import es.aviferdev.n3to.ui.theme.PrimaryDark
+import es.aviferdev.n3to.ui.theme.appColors
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.annual_goal_compliance
 import n3to.composeapp.generated.resources.annual_goal_met
@@ -95,9 +93,18 @@ fun GoalSummaryCard(
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                GoalLegendItem(color = MaterialTheme.appColors.income, label = stringResource(Res.string.annual_goal_met))
-                GoalLegendItem(color = MaterialTheme.appColors.expense, label = stringResource(Res.string.annual_goal_not_met))
-                GoalLegendItem(color = MaterialTheme.appColors.textTertiary, label = stringResource(Res.string.annual_no_goal))
+                GoalLegendItem(
+                    color = MaterialTheme.appColors.income,
+                    label = stringResource(Res.string.annual_goal_met)
+                )
+                GoalLegendItem(
+                    color = MaterialTheme.appColors.expense,
+                    label = stringResource(Res.string.annual_goal_not_met)
+                )
+                GoalLegendItem(
+                    color = MaterialTheme.appColors.textTertiary,
+                    label = stringResource(Res.string.annual_no_goal)
+                )
             }
 
             Spacer(Modifier.height(12.dp))
@@ -169,7 +176,12 @@ private fun GoalTypeSummaryRow(
                 modifier = Modifier.size(14.dp)
             )
             Spacer(Modifier.width(4.dp))
-            Text(label, fontSize = 12.sp, fontWeight = FontWeight.Medium, color = MaterialTheme.appColors.textPrimary)
+            Text(
+                label,
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Medium,
+                color = MaterialTheme.appColors.textPrimary
+            )
         }
         Text(
             text = "$achieved / $total meses",

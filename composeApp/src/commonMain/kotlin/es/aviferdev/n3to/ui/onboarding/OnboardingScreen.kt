@@ -257,11 +257,11 @@ private fun SlidePage(slide: SlideInfo) {
             contentAlignment = Alignment.Center
         ) {
             when (slide.id) {
-                "welcome"    -> SlideWelcome()
-                "patrim"     -> SlidePatrimonio()
-                "portfolio"  -> SlidePortfolio()
-                "movim"      -> SlideMovimientos()
-                "fiscal"     -> SlideFiscal()
+                "welcome" -> SlideWelcome()
+                "patrim" -> SlidePatrimonio()
+                "portfolio" -> SlidePortfolio()
+                "movim" -> SlideMovimientos()
+                "fiscal" -> SlideFiscal()
                 "realestate" -> OnboardingRealEstatePage(isVisible = true)
             }
         }

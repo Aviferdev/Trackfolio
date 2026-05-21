@@ -107,7 +107,15 @@ fun ClosedFixedIncomeCard(
                 )
                 Text(
                     if (row.totalProfit == 0.0) "—"
-                    else "${if (row.totalProfit >= 0) "+" else "−"} ${maskAmount(formatAmount(abs(row.totalProfit)), balancesHidden)} €",
+                    else "${if (row.totalProfit >= 0) "+" else "−"} ${
+                        maskAmount(
+                            formatAmount(
+                                abs(
+                                    row.totalProfit
+                                )
+                            ), balancesHidden
+                        )
+                    } €",
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Bold,
                     color = pnlColor

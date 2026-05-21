@@ -155,7 +155,11 @@ fun RegisterCouponBottomSheet(
                         .padding(horizontal = 14.dp, vertical = 12.dp),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Text(stringResource(Res.string.fixedincome_net_amount_est), fontSize = 13.sp, color = MaterialTheme.appColors.textSecondary)
+                    Text(
+                        stringResource(Res.string.fixedincome_net_amount_est),
+                        fontSize = 13.sp,
+                        color = MaterialTheme.appColors.textSecondary
+                    )
                     Text(
                         text = formatEuro(netAmount),
                         fontSize = 15.sp,
@@ -172,16 +176,16 @@ fun RegisterCouponBottomSheet(
                     val now = nowMillis()
                     val eventId = "fie_${now}"
                     val event = FixedIncomeEvent(
-                        id               = eventId,
-                        positionId       = "",
-                        type             = FixedIncomeEventType.COUPON,
-                        grossAmount      = gross,
-                        irpfPercent      = irpf,
+                        id = eventId,
+                        positionId = "",
+                        type = FixedIncomeEventType.COUPON,
+                        grossAmount = gross,
+                        irpfPercent = irpf,
                         commissionAmount = commission,
-                        netAmount        = netAmount,
-                        date             = dateMillis,
-                        notes            = notes.ifBlank { null },
-                        createdAt        = now
+                        netAmount = netAmount,
+                        date = dateMillis,
+                        notes = notes.ifBlank { null },
+                        createdAt = now
                     )
                     onSave(event)
                 },
@@ -193,7 +197,12 @@ fun RegisterCouponBottomSheet(
                 ),
                 shape = RoundedCornerShape(12.dp)
             ) {
-                Text(stringResource(Res.string.fixedincome_register_coupon_btn_alt), fontSize = 15.sp, fontWeight = FontWeight.SemiBold, modifier = Modifier.padding(vertical = 4.dp))
+                Text(
+                    stringResource(Res.string.fixedincome_register_coupon_btn_alt),
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    modifier = Modifier.padding(vertical = 4.dp)
+                )
             }
 
             Spacer(Modifier.height(16.dp))

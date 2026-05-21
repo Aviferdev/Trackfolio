@@ -1,7 +1,5 @@
 package es.aviferdev.n3to.ui.annual
 
-import androidx.compose.material3.MaterialTheme
-import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,35 +12,32 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ShowChart
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.MonthlyInvestment
-
-import es.aviferdev.n3to.ui.theme.PrimaryDark
-
 import es.aviferdev.n3to.ui.theme.N3toTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.ui.theme.formatAmountEuro
 import es.aviferdev.n3to.ui.theme.maskAmount
-import org.jetbrains.compose.ui.tooling.preview.Preview
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.annual_investment_monthly_format
 import n3to.composeapp.generated.resources.annual_no_investments
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 private val MONTH_LABELS = listOf("E", "F", "M", "A", "M", "J", "J", "A", "S", "O", "N", "D")
 
@@ -67,26 +62,31 @@ fun InvestmentBarChart(
     val totalInvested = investments.sumOf { it.amount }
 
     Card(
-        modifier  = modifier.fillMaxWidth(),
-        shape     = RoundedCornerShape(14.dp),
-        colors    = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.surface),
+        modifier = modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(14.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.surface),
         elevation = CardDefaults.cardElevation(0.dp),
-        border    = CardDefaults.outlinedCardBorder()
+        border = CardDefaults.outlinedCardBorder()
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
-                text       = stringResource(Res.string.annual_investment_monthly_format, year),
-                fontSize   = 14.sp,
+                text = stringResource(Res.string.annual_investment_monthly_format, year),
+                fontSize = 14.sp,
                 fontWeight = FontWeight.SemiBold,
-                color      = MaterialTheme.appColors.textPrimary
+                color = MaterialTheme.appColors.textPrimary
             )
             Spacer(Modifier.height(4.dp))
 
             // Total invertido
             Text(
-                text     = "Total invertido: ${maskAmount(formatAmountEuro(totalInvested), balancesHidden)}",
+                text = "Total invertido: ${
+                    maskAmount(
+                        formatAmountEuro(totalInvested),
+                        balancesHidden
+                    )
+                }",
                 fontSize = 12.sp,
-                color    = MaterialTheme.appColors.primary,
+                color = MaterialTheme.appColors.primary,
                 fontWeight = FontWeight.Medium
             )
 
@@ -94,19 +94,19 @@ fun InvestmentBarChart(
 
             // Barras
             Row(
-                modifier              = Modifier.fillMaxWidth().height(140.dp),
+                modifier = Modifier.fillMaxWidth().height(140.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment     = Alignment.Bottom
+                verticalAlignment = Alignment.Bottom
             ) {
                 (1..12).forEach { monthNum ->
                     val investment = dataMap[monthNum]
                     val amount = investment?.amount ?: 0.0
                     InvestmentBar(
-                        monthLabel  = MONTH_LABELS[monthNum - 1],
-                        amount      = amount,
-                        maxValue    = maxValue,
+                        monthLabel = MONTH_LABELS[monthNum - 1],
+                        amount = amount,
+                        maxValue = maxValue,
                         balancesHidden = balancesHidden,
-                        modifier    = Modifier.weight(1f)
+                        modifier = Modifier.weight(1f)
                     )
                 }
             }
@@ -126,7 +126,7 @@ private fun InvestmentBar(
     val maxBarHeight = 110.dp
 
     Column(
-        modifier            = modifier,
+        modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Bottom
     ) {
@@ -147,9 +147,9 @@ private fun InvestmentBar(
         }
         Spacer(Modifier.height(4.dp))
         Text(
-            text      = monthLabel,
-            fontSize  = 9.sp,
-            color     = MaterialTheme.appColors.textSecondary,
+            text = monthLabel,
+            fontSize = 9.sp,
+            color = MaterialTheme.appColors.textSecondary,
             textAlign = TextAlign.Center
         )
     }
@@ -158,11 +158,11 @@ private fun InvestmentBar(
 @Composable
 private fun EmptyInvestmentState(year: String) {
     Card(
-        modifier  = Modifier.fillMaxWidth(),
-        shape     = RoundedCornerShape(14.dp),
-        colors    = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.surface),
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(14.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.surface),
         elevation = CardDefaults.cardElevation(0.dp),
-        border    = CardDefaults.outlinedCardBorder()
+        border = CardDefaults.outlinedCardBorder()
     ) {
         Column(
             modifier = Modifier
@@ -171,18 +171,23 @@ private fun EmptyInvestmentState(year: String) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text       = stringResource(Res.string.annual_investment_monthly_format, year),
-                fontSize   = 14.sp,
+                text = stringResource(Res.string.annual_investment_monthly_format, year),
+                fontSize = 14.sp,
                 fontWeight = FontWeight.SemiBold,
-                color      = MaterialTheme.appColors.textPrimary
+                color = MaterialTheme.appColors.textPrimary
             )
             Spacer(Modifier.height(16.dp))
-            Icon(Icons.AutoMirrored.Outlined.ShowChart, contentDescription = null, modifier = Modifier.size(32.dp), tint = MaterialTheme.appColors.primary)
+            Icon(
+                Icons.AutoMirrored.Outlined.ShowChart,
+                contentDescription = null,
+                modifier = Modifier.size(32.dp),
+                tint = MaterialTheme.appColors.primary
+            )
             Spacer(Modifier.height(8.dp))
             Text(
-                text     = stringResource(Res.string.annual_no_investments),
+                text = stringResource(Res.string.annual_no_investments),
                 fontSize = 13.sp,
-                color    = MaterialTheme.appColors.textSecondary,
+                color = MaterialTheme.appColors.textSecondary,
                 textAlign = TextAlign.Center
             )
         }

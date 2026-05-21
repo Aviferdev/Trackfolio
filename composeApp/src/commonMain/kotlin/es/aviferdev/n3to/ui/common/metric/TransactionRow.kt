@@ -1,10 +1,7 @@
 package es.aviferdev.n3to.ui.common.metric
 
-import androidx.compose.material3.MaterialTheme
-import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -16,11 +13,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.ArrowDownward
-import androidx.compose.material.icons.outlined.ArrowUpward
-import androidx.compose.material.icons.outlined.Balance
 import androidx.compose.material.icons.automirrored.outlined.ShowChart
+import androidx.compose.material.icons.outlined.ArrowDownward
+import androidx.compose.material.icons.outlined.Balance
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -34,10 +31,8 @@ import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.Transaction
 import es.aviferdev.n3to.domain.model.TransactionType
 import es.aviferdev.n3to.ui.common.toMaterialIcon
-import es.aviferdev.n3to.ui.theme.ExpenseRed
-import es.aviferdev.n3to.ui.theme.PrimaryDark
-
 import es.aviferdev.n3to.ui.theme.N3toTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.ui.theme.formatAmount
 import es.aviferdev.n3to.ui.theme.formatDate
 import es.aviferdev.n3to.ui.theme.maskAmount
@@ -138,7 +133,12 @@ fun TransactionRow(
                     modifier = Modifier.size(if (compact) 22.dp else 20.dp)
                 )
             } else {
-                Text(avatarText ?: "?", fontSize = 15.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                Text(
+                    avatarText ?: "?",
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White
+                )
             }
         }
 
@@ -215,7 +215,11 @@ fun TransactionRow(
                 )
             }
             if (!compact && isLinked) {
-                Text("Portfolio", fontSize = 9.sp, color = MaterialTheme.appColors.primary.copy(alpha = 0.6f))
+                Text(
+                    "Portfolio",
+                    fontSize = 9.sp,
+                    color = MaterialTheme.appColors.primary.copy(alpha = 0.6f)
+                )
             }
         }
 

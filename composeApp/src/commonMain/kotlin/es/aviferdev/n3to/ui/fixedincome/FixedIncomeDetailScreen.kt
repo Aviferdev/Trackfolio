@@ -31,12 +31,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.FixedIncomeEvent
-import es.aviferdev.n3to.ui.common.navigation.TopBarApp
+import es.aviferdev.n3to.ui.common.topbar.TopBarWithActionsApp
 import es.aviferdev.n3to.ui.fixedincome.components.CouponTimelineSection
 import es.aviferdev.n3to.ui.fixedincome.components.DistributionSection
 import es.aviferdev.n3to.ui.fixedincome.components.EventsHistorySection
@@ -84,7 +83,12 @@ fun FixedIncomeDetailScreen(
         balancesHidden = balancesHidden,
         onBack = onBack,
         onDeleteEvent = { event -> viewModel.showDeleteEventDialog(event) },
-        onUpdateRegionSector = { region, sector -> viewModel.updateRegionAndSector(region, sector) },
+        onUpdateRegionSector = { region, sector ->
+            viewModel.updateRegionAndSector(
+                region,
+                sector
+            )
+        },
         onShowCloseSheet = { viewModel.showCloseSheetWithType(it) }
     )
 
@@ -102,19 +106,28 @@ fun FixedIncomeDetailScreen(
             },
             text = {
                 Text(
-                    stringResource(Res.string.fixedincome_delete_event_confirm, state.selectedEventForDelete!!.type.label),
+                    stringResource(
+                        Res.string.fixedincome_delete_event_confirm,
+                        state.selectedEventForDelete!!.type.label
+                    ),
                     fontSize = 14.sp,
                     color = MaterialTheme.appColors.textSecondary
                 )
             },
             confirmButton = {
                 TextButton(onClick = { viewModel.deleteEvent(state.selectedEventForDelete!!) }) {
-                    Text(stringResource(Res.string.common_delete), color = MaterialTheme.appColors.expense)
+                    Text(
+                        stringResource(Res.string.common_delete),
+                        color = MaterialTheme.appColors.expense
+                    )
                 }
             },
             dismissButton = {
                 TextButton(onClick = { viewModel.hideDeleteEventDialog() }) {
-                    Text(stringResource(Res.string.common_cancel), color = MaterialTheme.appColors.cyanAccent)
+                    Text(
+                        stringResource(Res.string.common_cancel),
+                        color = MaterialTheme.appColors.cyanAccent
+                    )
                 }
             },
             shape = RoundedCornerShape(16.dp)
@@ -160,8 +173,9 @@ fun FixedIncomeDetailContent(
 ) {
     Box(modifier.fillMaxSize().background(MaterialTheme.appColors.navyDeep)) {
         Column(Modifier.fillMaxSize()) {
-            TopBarApp(
-                title = state.row?.position?.name ?: stringResource(Res.string.fixedincome_detail_title),
+            TopBarWithActionsApp(
+                title = state.row?.position?.name
+                    ?: stringResource(Res.string.fixedincome_detail_title),
                 navigateBack = onBack
             )
 
@@ -171,13 +185,19 @@ fun FixedIncomeDetailContent(
                 }
             } else if (state.row == null) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text(stringResource(Res.string.fixedincome_not_found), color = MaterialTheme.appColors.textTertiary)
+                    Text(
+                        stringResource(Res.string.fixedincome_not_found),
+                        color = MaterialTheme.appColors.textTertiary
+                    )
                 }
             } else {
                 val row = state.row
                 val position = row.position
 
-                LazyColumn(modifier = Modifier.fillMaxSize(), contentPadding = PaddingValues(16.dp)) {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(16.dp)
+                ) {
                     item {
                         FixedIncomeDetailHeader(
                             position = position,
@@ -190,14 +210,20 @@ fun FixedIncomeDetailContent(
                     if (position.interestFrequency != es.aviferdev.n3to.domain.model.InterestFrequency.AT_MATURITY && state.couponSchedule.isNotEmpty()) {
                         item {
                             Spacer(Modifier.height(12.dp))
-                            CouponTimelineSection(schedule = state.couponSchedule, balancesHidden = balancesHidden)
+                            CouponTimelineSection(
+                                schedule = state.couponSchedule,
+                                balancesHidden = balancesHidden
+                            )
                         }
                     }
 
                     if (state.maturitySimulation != null) {
                         item {
                             Spacer(Modifier.height(12.dp))
-                            MaturitySimulatorCard(simulation = state.maturitySimulation, balancesHidden = balancesHidden)
+                            MaturitySimulatorCard(
+                                simulation = state.maturitySimulation,
+                                balancesHidden = balancesHidden
+                            )
                         }
                     }
 
@@ -232,10 +258,15 @@ fun FixedIncomeDetailContent(
                                         modifier = Modifier.fillMaxWidth(),
                                         shape = RoundedCornerShape(12.dp),
                                         colors = ButtonDefaults.buttonColors(
-                                            containerColor = MaterialTheme.appColors.expense.copy(alpha = 0.15f),
+                                            containerColor = MaterialTheme.appColors.expense.copy(
+                                                alpha = 0.15f
+                                            ),
                                             contentColor = MaterialTheme.appColors.expense
                                         ),
-                                        border = BorderStroke(1.dp, MaterialTheme.appColors.expense.copy(alpha = 0.4f))
+                                        border = BorderStroke(
+                                            1.dp,
+                                            MaterialTheme.appColors.expense.copy(alpha = 0.4f)
+                                        )
                                     ) {
                                         Text(
                                             text = stringResource(Res.string.fixedincome_register_settlement),
@@ -252,10 +283,15 @@ fun FixedIncomeDetailContent(
                                                 modifier = Modifier.fillMaxWidth(),
                                                 shape = RoundedCornerShape(12.dp),
                                                 colors = ButtonDefaults.buttonColors(
-                                                    containerColor = MaterialTheme.appColors.expense.copy(alpha = 0.15f),
+                                                    containerColor = MaterialTheme.appColors.expense.copy(
+                                                        alpha = 0.15f
+                                                    ),
                                                     contentColor = MaterialTheme.appColors.expense
                                                 ),
-                                                border = BorderStroke(1.dp, MaterialTheme.appColors.expense.copy(alpha = 0.4f))
+                                                border = BorderStroke(
+                                                    1.dp,
+                                                    MaterialTheme.appColors.expense.copy(alpha = 0.4f)
+                                                )
                                             ) {
                                                 Text(
                                                     text = stringResource(Res.string.fixedincome_cancel_title),
@@ -268,8 +304,13 @@ fun FixedIncomeDetailContent(
                                                 onClick = { onShowCloseSheet(es.aviferdev.n3to.domain.model.FixedIncomeCloseType.MATURITY) },
                                                 modifier = Modifier.fillMaxWidth(),
                                                 shape = RoundedCornerShape(12.dp),
-                                                border = BorderStroke(1.dp, MaterialTheme.appColors.navyBorder),
-                                                colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.appColors.cyanAccent)
+                                                border = BorderStroke(
+                                                    1.dp,
+                                                    MaterialTheme.appColors.navyBorder
+                                                ),
+                                                colors = ButtonDefaults.outlinedButtonColors(
+                                                    contentColor = MaterialTheme.appColors.cyanAccent
+                                                )
                                             ) {
                                                 Text(
                                                     text = stringResource(Res.string.fixedincome_liquidate_maturity),
@@ -278,16 +319,22 @@ fun FixedIncomeDetailContent(
                                                 )
                                             }
                                         }
+
                                         position.type.allowsSecondarySale -> {
                                             Button(
                                                 onClick = { onShowCloseSheet(es.aviferdev.n3to.domain.model.FixedIncomeCloseType.SECONDARY_SALE) },
                                                 modifier = Modifier.fillMaxWidth(),
                                                 shape = RoundedCornerShape(12.dp),
                                                 colors = ButtonDefaults.buttonColors(
-                                                    containerColor = MaterialTheme.appColors.expense.copy(alpha = 0.15f),
+                                                    containerColor = MaterialTheme.appColors.expense.copy(
+                                                        alpha = 0.15f
+                                                    ),
                                                     contentColor = MaterialTheme.appColors.expense
                                                 ),
-                                                border = BorderStroke(1.dp, MaterialTheme.appColors.expense.copy(alpha = 0.4f))
+                                                border = BorderStroke(
+                                                    1.dp,
+                                                    MaterialTheme.appColors.expense.copy(alpha = 0.4f)
+                                                )
                                             ) {
                                                 Text(
                                                     text = stringResource(Res.string.fixedincome_sell_secondary),
@@ -300,8 +347,13 @@ fun FixedIncomeDetailContent(
                                                 onClick = { onShowCloseSheet(es.aviferdev.n3to.domain.model.FixedIncomeCloseType.MATURITY) },
                                                 modifier = Modifier.fillMaxWidth(),
                                                 shape = RoundedCornerShape(12.dp),
-                                                border = BorderStroke(1.dp, MaterialTheme.appColors.navyBorder),
-                                                colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.appColors.cyanAccent)
+                                                border = BorderStroke(
+                                                    1.dp,
+                                                    MaterialTheme.appColors.navyBorder
+                                                ),
+                                                colors = ButtonDefaults.outlinedButtonColors(
+                                                    contentColor = MaterialTheme.appColors.cyanAccent
+                                                )
                                             ) {
                                                 Text(
                                                     text = stringResource(Res.string.fixedincome_liquidate_maturity),

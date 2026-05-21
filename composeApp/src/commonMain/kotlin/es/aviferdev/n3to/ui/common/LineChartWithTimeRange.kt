@@ -1,6 +1,5 @@
 package es.aviferdev.n3to.ui.common
 
-import es.aviferdev.n3to.platform.nowMillis
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -8,6 +7,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import es.aviferdev.n3to.platform.nowMillis
 import es.aviferdev.n3to.ui.common.chart.TimeRange
 import es.aviferdev.n3to.ui.common.component.TimeRangeChipRow
 

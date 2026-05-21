@@ -46,7 +46,9 @@ fun PropertyTransactionsSection(
                     Column {
                         Text(
                             if (tx.isIncome) "Ingreso" else tx.categoryId ?: "Gasto",
-                            fontWeight = FontWeight.Medium, fontSize = 13.sp, color = MaterialTheme.appColors.textPrimary
+                            fontWeight = FontWeight.Medium,
+                            fontSize = 13.sp,
+                            color = MaterialTheme.appColors.textPrimary
                         )
                         Text(
                             formatDateShort(tx.date),
@@ -59,11 +61,21 @@ fun PropertyTransactionsSection(
                             fontWeight = FontWeight.SemiBold, fontSize = 13.sp,
                             color = if (tx.isIncome) MaterialTheme.appColors.income else MaterialTheme.appColors.expense
                         )
-                        tx.notes?.let { Text(it, fontSize = 10.sp, color = MaterialTheme.appColors.textTertiary) }
+                        tx.notes?.let {
+                            Text(
+                                it,
+                                fontSize = 10.sp,
+                                color = MaterialTheme.appColors.textTertiary
+                            )
+                        }
                     }
                 }
                 if (index < transactions.lastIndex) {
-                    HorizontalDivider(color = MaterialTheme.appColors.border, thickness = 0.5.dp, modifier = Modifier.padding(vertical = 4.dp))
+                    HorizontalDivider(
+                        color = MaterialTheme.appColors.border,
+                        thickness = 0.5.dp,
+                        modifier = Modifier.padding(vertical = 4.dp)
+                    )
                 }
             }
         }
@@ -76,8 +88,26 @@ private fun PropertyTransactionsSectionPreview() {
     N3toTheme {
         PropertyTransactionsSection(
             transactions = listOf(
-                Transaction(id = "1", accountId = "a1", amount = 1200.0, type = es.aviferdev.n3to.domain.model.TransactionType.INCOME, categoryId = null, date = 1747000000000, notes = "Alquiler mayo", createdAt = 1747000000000),
-                Transaction(id = "2", accountId = "a1", amount = 50.0, type = es.aviferdev.n3to.domain.model.TransactionType.EXPENSE, categoryId = "cat_exp_03", date = 1747000000000, notes = "Comunidad", createdAt = 1747000000000)
+                Transaction(
+                    id = "1",
+                    accountId = "a1",
+                    amount = 1200.0,
+                    type = es.aviferdev.n3to.domain.model.TransactionType.INCOME,
+                    categoryId = null,
+                    date = 1747000000000,
+                    notes = "Alquiler mayo",
+                    createdAt = 1747000000000
+                ),
+                Transaction(
+                    id = "2",
+                    accountId = "a1",
+                    amount = 50.0,
+                    type = es.aviferdev.n3to.domain.model.TransactionType.EXPENSE,
+                    categoryId = "cat_exp_03",
+                    date = 1747000000000,
+                    notes = "Comunidad",
+                    createdAt = 1747000000000
+                )
             )
         )
     }

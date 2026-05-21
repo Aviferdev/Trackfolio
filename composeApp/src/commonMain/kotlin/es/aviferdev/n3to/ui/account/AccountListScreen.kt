@@ -1,12 +1,20 @@
 package es.aviferdev.n3to.ui.account
 
-import androidx.compose.material3.MaterialTheme
-import es.aviferdev.n3to.ui.theme.appColors
-import es.aviferdev.n3to.platform.nowMillis
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
@@ -16,8 +24,17 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.outlined.AccountBalance
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -26,14 +43,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.Account
-import es.aviferdev.n3to.ui.common.navigation.TopBarApp
+import es.aviferdev.n3to.platform.nowMillis
 import es.aviferdev.n3to.ui.common.component.EmptyStateView
 import es.aviferdev.n3to.ui.common.dialog.DeleteConfirmDialog
+import es.aviferdev.n3to.ui.common.topbar.TopBarWithActionsApp
 import es.aviferdev.n3to.ui.home.bottomsheet.SetInitialBalanceBottomSheet
-
 import es.aviferdev.n3to.ui.theme.LocalBalanceHidden
-
 import es.aviferdev.n3to.ui.theme.N3toTheme
+import es.aviferdev.n3to.ui.theme.SelectionLight
+import es.aviferdev.n3to.ui.theme.appColors
+import es.aviferdev.n3to.ui.theme.formatAmount
+import es.aviferdev.n3to.ui.theme.maskAmount
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.account_active_badge
 import n3to.composeapp.generated.resources.account_add_title
@@ -46,10 +66,6 @@ import n3to.composeapp.generated.resources.account_no_accounts
 import n3to.composeapp.generated.resources.common_delete
 import n3to.composeapp.generated.resources.common_edit
 import org.jetbrains.compose.resources.stringResource
-import es.aviferdev.n3to.ui.theme.formatAmount
-import es.aviferdev.n3to.ui.theme.maskAmount
-import es.aviferdev.n3to.ui.theme.SelectionLight
-
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -61,38 +77,38 @@ import org.koin.compose.viewmodel.koinViewModel
 fun AccountListScreen(
     viewModel: AccountViewModel = koinViewModel()
 ) {
-    val uiState    by viewModel.uiState.collectAsState()
+    val uiState by viewModel.uiState.collectAsState()
     val selectedId by viewModel.selectedAccountId.collectAsState()
     val balancesHidden = LocalBalanceHidden.current
 
     AccountListContent(
-        uiState         = uiState,
-        selectedId      = selectedId,
-        balancesHidden  = balancesHidden,
-        onAddClick      = { viewModel.openAddSheet() },
+        uiState = uiState,
+        selectedId = selectedId,
+        balancesHidden = balancesHidden,
+        onAddClick = { viewModel.openAddSheet() },
         onSelectAccount = { viewModel.selectAccount(it) },
-        onEditAccount   = { viewModel.openEditSheet(it) },
+        onEditAccount = { viewModel.openEditSheet(it) },
         onDeleteAccount = { viewModel.requestDelete(it) }
     )
 
     // ── Diálogos / Sheets (usan viewModel) ─────────────────────────────────────
     if (uiState.showAddSheet) {
         AddEditAccountBottomSheet(
-            account   = null,
-            onSave    = { name, balance -> viewModel.addAccount(name, balance) },
+            account = null,
+            onSave = { name, balance -> viewModel.addAccount(name, balance) },
             onDismiss = { viewModel.closeAddSheet() }
         )
     }
     uiState.pendingInitialBalanceAccount?.let { pending ->
         SetInitialBalanceBottomSheet(
             accountName = pending.name,
-            onConfirm   = { amount -> viewModel.confirmInitialBalance(amount) },
+            onConfirm = { amount -> viewModel.confirmInitialBalance(amount) },
         )
     }
     if (uiState.showEditSheet && uiState.editingAccount != null) {
         AddEditAccountBottomSheet(
-            account   = uiState.editingAccount,
-            onSave    = { name, _ ->
+            account = uiState.editingAccount,
+            onSave = { name, _ ->
                 viewModel.editAccount(uiState.editingAccount!!, name)
             },
             onDismiss = { viewModel.closeEditSheet() }
@@ -101,7 +117,10 @@ fun AccountListScreen(
     if (uiState.showDeleteConfirm && uiState.accountToDelete != null) {
         DeleteConfirmDialog(
             title = stringResource(Res.string.account_delete_confirm_title),
-            message = stringResource(Res.string.account_delete_full_message, uiState.accountToDelete!!.name),
+            message = stringResource(
+                Res.string.account_delete_full_message,
+                uiState.accountToDelete!!.name
+            ),
             onConfirm = { viewModel.confirmDelete() },
             onDismiss = { viewModel.cancelDelete() }
         )
@@ -127,11 +146,15 @@ fun AccountListContent(
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier.fillMaxSize().background(MaterialTheme.appColors.background)) {
-        TopBarApp(
+        TopBarWithActionsApp(
             title = stringResource(Res.string.account_list_title),
             actions = {
                 IconButton(onClick = onAddClick) {
-                    Icon(Icons.Default.Add, contentDescription = stringResource(Res.string.account_add_title), tint = MaterialTheme.appColors.textPrimary)
+                    Icon(
+                        Icons.Default.Add,
+                        contentDescription = stringResource(Res.string.account_add_title),
+                        tint = MaterialTheme.appColors.textPrimary
+                    )
                 }
             }
         )
@@ -146,18 +169,18 @@ fun AccountListContent(
             )
         } else {
             LazyColumn(
-                modifier            = Modifier.fillMaxSize(),
-                contentPadding      = PaddingValues(16.dp),
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(16.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 items(uiState.accounts, key = { it.id }) { account ->
                     AccountCard(
-                        account        = account,
-                        isSelected     = account.id == selectedId,
+                        account = account,
+                        isSelected = account.id == selectedId,
                         balancesHidden = balancesHidden,
-                        onSelect       = { onSelectAccount(account.id) },
-                        onEdit         = { onEditAccount(account) },
-                        onDelete       = { onDeleteAccount(account) }
+                        onSelect = { onSelectAccount(account.id) },
+                        onEdit = { onEditAccount(account) },
+                        onDelete = { onDeleteAccount(account) }
                     )
                 }
             }
@@ -174,12 +197,18 @@ fun AccountListContent(
 fun AccountListContentPreview() {
     val now = nowMillis()
     val fakeAccounts = listOf(
-        Account(id = "1", name = "Cuenta Principal",
-            initialBalance = 5000.0, computedBalance = 5200.0, createdAt = now),
-        Account(id = "2", name = "Efectivo",
-            initialBalance = 0.0, computedBalance = 0.0, createdAt = now),
-        Account(id = "3", name = "USD Savings",
-            initialBalance = 1000.0, computedBalance = 1050.0, createdAt = now)
+        Account(
+            id = "1", name = "Cuenta Principal",
+            initialBalance = 5000.0, computedBalance = 5200.0, createdAt = now
+        ),
+        Account(
+            id = "2", name = "Efectivo",
+            initialBalance = 0.0, computedBalance = 0.0, createdAt = now
+        ),
+        Account(
+            id = "3", name = "USD Savings",
+            initialBalance = 1000.0, computedBalance = 1050.0, createdAt = now
+        )
     )
 
     N3toTheme {
@@ -213,50 +242,50 @@ private fun AccountCard(
 ) {
     val borderColor by animateColorAsState(
         targetValue = if (isSelected) MaterialTheme.appColors.primary.copy(alpha = 0.6f) else MaterialTheme.appColors.border,
-        label       = "borderColor"
+        label = "borderColor"
     )
     val containerColor by animateColorAsState(
         targetValue = if (isSelected) SelectionLight else MaterialTheme.appColors.surface,
-        label       = "containerColor"
+        label = "containerColor"
     )
 
     Card(
-        onClick   = onSelect,
-        modifier  = Modifier.fillMaxWidth(),
-        shape     = RoundedCornerShape(16.dp),
-        border    = BorderStroke(if (isSelected) 2.dp else 0.5.dp, borderColor),
-        colors    = CardDefaults.cardColors(containerColor = containerColor),
+        onClick = onSelect,
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(16.dp),
+        border = BorderStroke(if (isSelected) 2.dp else 0.5.dp, borderColor),
+        colors = CardDefaults.cardColors(containerColor = containerColor),
         elevation = CardDefaults.cardElevation(if (isSelected) 2.dp else 0.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(
-                modifier              = Modifier.fillMaxWidth(),
-                verticalAlignment     = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Box(
-                        modifier        = Modifier
+                        modifier = Modifier
                             .size(44.dp)
                             .clip(CircleShape)
                             .background(if (isSelected) MaterialTheme.appColors.primary else MaterialTheme.appColors.background),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text       = account.name.firstOrNull()?.uppercaseChar()?.toString() ?: "?",
-                            fontSize   = 18.sp,
+                            text = account.name.firstOrNull()?.uppercaseChar()?.toString() ?: "?",
+                            fontSize = 18.sp,
                             fontWeight = FontWeight.Bold,
-                            color      = if (isSelected) Color.White else MaterialTheme.appColors.textSecondary
+                            color = if (isSelected) Color.White else MaterialTheme.appColors.textSecondary
                         )
                     }
                     Spacer(Modifier.width(12.dp))
                     Column {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Text(
-                                text       = account.name,
-                                fontSize   = 15.sp,
+                                text = account.name,
+                                fontSize = 15.sp,
                                 fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
-                                color      = MaterialTheme.appColors.textPrimary
+                                color = MaterialTheme.appColors.textPrimary
                             )
                             if (account.needsInitialBalance) {
                                 Spacer(Modifier.width(6.dp))
@@ -264,7 +293,7 @@ private fun AccountCard(
                             }
                         }
                         Text(
-                            text  = if (account.needsInitialBalance) "Saldo inicial pendiente" else "€",
+                            text = if (account.needsInitialBalance) "Saldo inicial pendiente" else "€",
                             fontSize = 12.sp,
                             color = if (account.needsInitialBalance) MaterialTheme.appColors.expense else MaterialTheme.appColors.textSecondary
                         )
@@ -272,10 +301,20 @@ private fun AccountCard(
                 }
                 Row {
                     IconButton(onClick = onEdit, modifier = Modifier.size(36.dp)) {
-                        Icon(Icons.Default.Edit, contentDescription = stringResource(Res.string.common_edit), modifier = Modifier.size(18.dp), tint = MaterialTheme.appColors.textSecondary)
+                        Icon(
+                            Icons.Default.Edit,
+                            contentDescription = stringResource(Res.string.common_edit),
+                            modifier = Modifier.size(18.dp),
+                            tint = MaterialTheme.appColors.textSecondary
+                        )
                     }
                     IconButton(onClick = onDelete, modifier = Modifier.size(36.dp)) {
-                        Icon(Icons.Default.Delete, contentDescription = stringResource(Res.string.common_delete), modifier = Modifier.size(18.dp), tint = MaterialTheme.appColors.expense)
+                        Icon(
+                            Icons.Default.Delete,
+                            contentDescription = stringResource(Res.string.common_delete),
+                            modifier = Modifier.size(18.dp),
+                            tint = MaterialTheme.appColors.expense
+                        )
                     }
                 }
             }
@@ -285,17 +324,26 @@ private fun AccountCard(
                 HorizontalDivider(color = MaterialTheme.appColors.border, thickness = 0.5.dp)
                 Spacer(Modifier.height(12.dp))
                 Row(
-                    modifier              = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment     = Alignment.Bottom
+                    verticalAlignment = Alignment.Bottom
                 ) {
                     Column {
-                        Text(stringResource(Res.string.account_balance_short), fontSize = 11.sp, color = MaterialTheme.appColors.textSecondary)
                         Text(
-                            text       = "${maskAmount(formatAmount(account.computedBalance), balancesHidden)} €",
-                            fontSize   = 20.sp,
+                            stringResource(Res.string.account_balance_short),
+                            fontSize = 11.sp,
+                            color = MaterialTheme.appColors.textSecondary
+                        )
+                        Text(
+                            text = "${
+                                maskAmount(
+                                    formatAmount(account.computedBalance),
+                                    balancesHidden
+                                )
+                            } €",
+                            fontSize = 20.sp,
                             fontWeight = FontWeight.Bold,
-                            color      = if (account.computedBalance >= 0) MaterialTheme.appColors.primary else MaterialTheme.appColors.expense
+                            color = if (account.computedBalance >= 0) MaterialTheme.appColors.primary else MaterialTheme.appColors.expense
                         )
                     }
                     if (isSelected) {
@@ -305,7 +353,12 @@ private fun AccountCard(
                                 .background(MaterialTheme.appColors.primary)
                                 .padding(horizontal = 10.dp, vertical = 4.dp)
                         ) {
-                            Text(stringResource(Res.string.account_active_badge), fontSize = 11.sp, color = Color.White, fontWeight = FontWeight.Medium)
+                            Text(
+                                stringResource(Res.string.account_active_badge),
+                                fontSize = 11.sp,
+                                color = Color.White,
+                                fontWeight = FontWeight.Medium
+                            )
                         }
                     }
                 }

@@ -1,17 +1,41 @@
 package es.aviferdev.n3to.ui.valuable
 
-import androidx.compose.material3.MaterialTheme
-import es.aviferdev.n3to.ui.theme.appColors
-import es.aviferdev.n3to.platform.nowMillis
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Close
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -20,15 +44,13 @@ import androidx.compose.ui.unit.sp
 import com.benasher44.uuid.uuid4
 import es.aviferdev.n3to.domain.model.Valuable
 import es.aviferdev.n3to.domain.model.ValuableExpense
-import kotlinx.datetime.Instant
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
 import es.aviferdev.n3to.domain.model.ValuableExpenseCategories
+import es.aviferdev.n3to.platform.nowMillis
 import es.aviferdev.n3to.ui.common.input.DatePickerRow
-import es.aviferdev.n3to.ui.theme.*
-import org.jetbrains.compose.resources.stringResource
+import es.aviferdev.n3to.ui.theme.appColors
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.common_save
+import n3to.composeapp.generated.resources.portfolio_add_asset_title_edit
 import n3to.composeapp.generated.resources.valuable_add_holding_expense
 import n3to.composeapp.generated.resources.valuable_add_purchase_expense
 import n3to.composeapp.generated.resources.valuable_description_label
@@ -38,14 +60,14 @@ import n3to.composeapp.generated.resources.valuable_estimated_value_placeholder
 import n3to.composeapp.generated.resources.valuable_expense_amount_label
 import n3to.composeapp.generated.resources.valuable_expense_delete_cd
 import n3to.composeapp.generated.resources.valuable_holding_expenses_title
+import n3to.composeapp.generated.resources.valuable_list_title
 import n3to.composeapp.generated.resources.valuable_name_label
 import n3to.composeapp.generated.resources.valuable_name_placeholder
 import n3to.composeapp.generated.resources.valuable_notes_label
 import n3to.composeapp.generated.resources.valuable_purchase_date_label
 import n3to.composeapp.generated.resources.valuable_purchase_expenses_title
 import n3to.composeapp.generated.resources.valuable_purchase_price_label
-import n3to.composeapp.generated.resources.portfolio_add_asset_title_edit
-import n3to.composeapp.generated.resources.valuable_list_title
+import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -61,9 +83,21 @@ fun AddEditValuableBottomSheet(
 
     var name by remember { mutableStateOf(existingValuable?.name ?: "") }
     var description by remember { mutableStateOf(existingValuable?.description ?: "") }
-    var purchasePriceText by remember { mutableStateOf(existingValuable?.purchasePrice?.toString() ?: "") }
-    var purchaseDateMillis by remember { mutableStateOf(existingValuable?.purchaseDate ?: nowMillis()) }
-    var estimatedValueText by remember { mutableStateOf(existingValuable?.estimatedValue?.toString() ?: "") }
+    var purchasePriceText by remember {
+        mutableStateOf(
+            existingValuable?.purchasePrice?.toString() ?: ""
+        )
+    }
+    var purchaseDateMillis by remember {
+        mutableStateOf(
+            existingValuable?.purchaseDate ?: nowMillis()
+        )
+    }
+    var estimatedValueText by remember {
+        mutableStateOf(
+            existingValuable?.estimatedValue?.toString() ?: ""
+        )
+    }
     var purchaseExpenses by remember { mutableStateOf(existingPurchaseExpenses) }
     var holdingExpenses by remember { mutableStateOf(existingHoldingExpenses) }
     var notes by remember { mutableStateOf(existingValuable?.notes ?: "") }
@@ -72,7 +106,10 @@ fun AddEditValuableBottomSheet(
         ValuableExpenseCategories.allIds.toList()
     }
 
-    ModalBottomSheet(onDismissRequest = onDismiss, containerColor = MaterialTheme.appColors.background) {
+    ModalBottomSheet(
+        onDismissRequest = onDismiss,
+        containerColor = MaterialTheme.appColors.background
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -80,7 +117,9 @@ fun AddEditValuableBottomSheet(
                 .verticalScroll(rememberScrollState())
         ) {
             Text(
-                text = if (isEditing) stringResource(Res.string.portfolio_add_asset_title_edit) else stringResource(Res.string.valuable_list_title),
+                text = if (isEditing) stringResource(Res.string.portfolio_add_asset_title_edit) else stringResource(
+                    Res.string.valuable_list_title
+                ),
                 fontWeight = FontWeight.Bold,
                 fontSize = 20.sp,
                 color = MaterialTheme.appColors.textPrimary
@@ -149,7 +188,12 @@ fun AddEditValuableBottomSheet(
             Spacer(Modifier.height(16.dp))
 
             // ── Gastos de compra ──────────────────────────────────────────
-            Text(stringResource(Res.string.valuable_purchase_expenses_title), fontWeight = FontWeight.SemiBold, fontSize = 14.sp, color = MaterialTheme.appColors.textPrimary)
+            Text(
+                stringResource(Res.string.valuable_purchase_expenses_title),
+                fontWeight = FontWeight.SemiBold,
+                fontSize = 14.sp,
+                color = MaterialTheme.appColors.textPrimary
+            )
             Spacer(Modifier.height(8.dp))
             purchaseExpenses.forEachIndexed { index, expense ->
                 ExpenseRow(
@@ -181,7 +225,12 @@ fun AddEditValuableBottomSheet(
             Spacer(Modifier.height(12.dp))
 
             // ── Gastos de tenencia ────────────────────────────────────────
-            Text(stringResource(Res.string.valuable_holding_expenses_title), fontWeight = FontWeight.SemiBold, fontSize = 14.sp, color = MaterialTheme.appColors.textPrimary)
+            Text(
+                stringResource(Res.string.valuable_holding_expenses_title),
+                fontWeight = FontWeight.SemiBold,
+                fontSize = 14.sp,
+                color = MaterialTheme.appColors.textPrimary
+            )
             Spacer(Modifier.height(8.dp))
             holdingExpenses.forEachIndexed { index, expense ->
                 ExpenseRow(
@@ -232,7 +281,10 @@ fun AddEditValuableBottomSheet(
                         notes = notes.ifBlank { null },
                         createdAt = existingValuable?.createdAt ?: nowMillis()
                     )
-                    onSave(valuable, purchaseExpenses.filter { it.amount > 0 }, holdingExpenses.filter { it.amount > 0 })
+                    onSave(
+                        valuable,
+                        purchaseExpenses.filter { it.amount > 0 },
+                        holdingExpenses.filter { it.amount > 0 })
                 },
                 modifier = Modifier.fillMaxWidth().height(48.dp),
                 shape = RoundedCornerShape(12.dp),
@@ -298,7 +350,11 @@ private fun ExpenseRow(
             colors = textFieldColors()
         )
         IconButton(onClick = onRemove) {
-            Icon(Icons.Outlined.Close, contentDescription = stringResource(Res.string.valuable_expense_delete_cd), tint = MaterialTheme.appColors.expense)
+            Icon(
+                Icons.Outlined.Close,
+                contentDescription = stringResource(Res.string.valuable_expense_delete_cd),
+                tint = MaterialTheme.appColors.expense
+            )
         }
     }
 }

@@ -67,7 +67,12 @@ internal fun MaturitySimulatorCard(
             )
             SimulatorRow(
                 label = stringResource(Res.string.fixedincome_coupons_received),
-                value = "- ${maskAmount(formatAmount(simulation.collectedCoupons), balancesHidden)}",
+                value = "- ${
+                    maskAmount(
+                        formatAmount(simulation.collectedCoupons),
+                        balancesHidden
+                    )
+                }",
                 valueColor = MaterialTheme.appColors.textSecondary
             )
             SimulatorRow(
@@ -78,12 +83,20 @@ internal fun MaturitySimulatorCard(
             if (simulation.estimatedCommission > 0) {
                 SimulatorRow(
                     label = stringResource(Res.string.fixedincome_estimated_commissions),
-                    value = "- ${maskAmount(formatAmount(simulation.estimatedCommission), balancesHidden)}",
+                    value = "- ${
+                        maskAmount(
+                            formatAmount(simulation.estimatedCommission),
+                            balancesHidden
+                        )
+                    }",
                     valueColor = MaterialTheme.appColors.pnlNegative
                 )
             }
 
-            HorizontalDivider(color = MaterialTheme.appColors.navyBorder, modifier = Modifier.padding(vertical = 8.dp))
+            HorizontalDivider(
+                color = MaterialTheme.appColors.navyBorder,
+                modifier = Modifier.padding(vertical = 8.dp)
+            )
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -96,7 +109,12 @@ internal fun MaturitySimulatorCard(
                     color = MaterialTheme.appColors.textPrimary
                 )
                 Text(
-                    text = "${maskAmount(formatAmount(simulation.netAtMaturity), balancesHidden)} €",
+                    text = "${
+                        maskAmount(
+                            formatAmount(simulation.netAtMaturity),
+                            balancesHidden
+                        )
+                    } €",
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.appColors.cyanAccent
@@ -107,7 +125,12 @@ internal fun MaturitySimulatorCard(
 
             val sign = if (simulation.netProfit >= 0) "+" else ""
             Text(
-                text = "${stringResource(Res.string.fixedincome_net_profit_label)}: $sign${maskAmount(formatAmount(simulation.netProfit), balancesHidden)} €",
+                text = "${stringResource(Res.string.fixedincome_net_profit_label)}: $sign${
+                    maskAmount(
+                        formatAmount(simulation.netProfit),
+                        balancesHidden
+                    )
+                } €",
                 fontSize = 13.sp,
                 fontWeight = FontWeight.Medium,
                 color = if (simulation.netProfit >= 0) MaterialTheme.appColors.pnlPositive else MaterialTheme.appColors.pnlNegative
@@ -129,6 +152,11 @@ internal fun SimulatorRow(
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Text(text = label, fontSize = 13.sp, color = MaterialTheme.appColors.textTertiary)
-        Text(text = "$value €", fontSize = 13.sp, fontWeight = FontWeight.Medium, color = valueColor)
+        Text(
+            text = "$value €",
+            fontSize = 13.sp,
+            fontWeight = FontWeight.Medium,
+            color = valueColor
+        )
     }
 }

@@ -50,7 +50,7 @@ fun formatAmount(amount: Double, addPositive: Boolean = false): String {
         }
     }.reversed()
     val formatted = "$eurosStr,${cents.toString().padStart(2, '0')}"
-    return if (negative) "-$formatted" else if (addPositive){
+    return if (negative) "-$formatted" else if (addPositive) {
         "+$formatted"
     } else {
         formatted
@@ -128,27 +128,27 @@ fun formatAmountEuro(amount: Double): String =
  * la frescura del precio actual de un activo.
  */
 fun formatRelativeTime(epochMillis: Long): String {
-    val now      = nowMillis()
-    val diffMs   = (now - epochMillis).coerceAtLeast(0L)
-    val seconds  = diffMs / 1_000L
-    val minutes  = seconds / 60L
-    val hours    = minutes / 60L
-    val days     = hours / 24L
-    val months   = days / 30L
-    val years    = days / 365L
+    val now = nowMillis()
+    val diffMs = (now - epochMillis).coerceAtLeast(0L)
+    val seconds = diffMs / 1_000L
+    val minutes = seconds / 60L
+    val hours = minutes / 60L
+    val days = hours / 24L
+    val months = days / 30L
+    val years = days / 365L
 
     return when {
-        seconds < 45L  -> "ahora mismo"
-        minutes < 2L   -> "hace 1 minuto"
-        minutes < 60L  -> "hace $minutes minutos"
-        hours   < 2L   -> "hace 1 hora"
-        hours   < 24L  -> "hace $hours horas"
-        days    < 2L   -> "ayer"
-        days    < 30L  -> "hace $days días"
-        months  < 2L   -> "hace 1 mes"
-        days    < 365L -> "hace $months meses"
-        years   < 2L   -> "hace 1 año"
-        else           -> "hace $years años"
+        seconds < 45L -> "ahora mismo"
+        minutes < 2L -> "hace 1 minuto"
+        minutes < 60L -> "hace $minutes minutos"
+        hours < 2L -> "hace 1 hora"
+        hours < 24L -> "hace $hours horas"
+        days < 2L -> "ayer"
+        days < 30L -> "hace $days días"
+        months < 2L -> "hace 1 mes"
+        days < 365L -> "hace $months meses"
+        years < 2L -> "hace 1 año"
+        else -> "hace $years años"
     }
 }
 
@@ -171,14 +171,17 @@ fun formatAxisLabel(value: Double): String {
             val m = value / 1_000_000
             "${sign}${formatCompact(m)}M €"
         }
+
         absVal >= 10_000 -> {
             val k = value / 1_000
             "${sign}${k.toLong()}K €"
         }
+
         absVal >= 1_000 -> {
             val k = value / 1_000
             "${sign}${formatCompact(k)}K €"
         }
+
         else -> {
             "${sign}${formatAmount(value)} €"
         }

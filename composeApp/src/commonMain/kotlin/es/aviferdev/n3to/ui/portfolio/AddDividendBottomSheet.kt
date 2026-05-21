@@ -64,11 +64,11 @@ fun AddDividendBottomSheet(
     var selectedAssetId by remember { mutableStateOf(allAssets.firstOrNull()?.id) }
     var grossAmountText by remember { mutableStateOf("") }
     var irpfPercentText by remember { mutableStateOf("19") }
-    var error           by remember { mutableStateOf<String?>(null) }
+    var error by remember { mutableStateOf<String?>(null) }
 
     val grossAmount = grossAmountText.replace(',', '.').toDoubleOrNull()
     val irpfPercent = irpfPercentText.replace(',', '.').toDoubleOrNull() ?: 0.0
-    val netAmount   = if (grossAmount != null && grossAmount > 0) {
+    val netAmount = if (grossAmount != null && grossAmount > 0) {
         grossAmount - (grossAmount * irpfPercent / 100.0)
     } else null
 
@@ -76,8 +76,8 @@ fun AddDividendBottomSheet(
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
-        sheetState       = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-        containerColor   = MaterialTheme.appColors.surface,
+        sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
+        containerColor = MaterialTheme.appColors.surface,
         dragHandle = {
             Box(
                 modifier = Modifier
@@ -99,14 +99,18 @@ fun AddDividendBottomSheet(
             Spacer(Modifier.height(8.dp))
 
             Text(
-                text       = stringResource(Res.string.portfolio_dividend_title_alt),
-                fontSize   = 16.sp,
+                text = stringResource(Res.string.portfolio_dividend_title_alt),
+                fontSize = 16.sp,
                 fontWeight = FontWeight.Medium,
-                color      = MaterialTheme.appColors.textPrimary
+                color = MaterialTheme.appColors.textPrimary
             )
             if (displayName.isNotBlank()) {
                 Spacer(Modifier.height(4.dp))
-                Text(text = displayName, fontSize = 13.sp, color = MaterialTheme.appColors.textSecondary)
+                Text(
+                    text = displayName,
+                    fontSize = 13.sp,
+                    color = MaterialTheme.appColors.textSecondary
+                )
             }
 
             Spacer(Modifier.height(16.dp))
@@ -114,7 +118,11 @@ fun AddDividendBottomSheet(
             // \u2500\u2500 Selector de activo (solo desde PortfolioScreen) \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
             if (showAssetSelector) {
                 Column(modifier = Modifier.fillMaxWidth()) {
-                    Text(stringResource(Res.string.portfolio_dividend_asset_label), fontSize = 12.sp, color = MaterialTheme.appColors.textSecondary)
+                    Text(
+                        stringResource(Res.string.portfolio_dividend_asset_label),
+                        fontSize = 12.sp,
+                        color = MaterialTheme.appColors.textSecondary
+                    )
                     Spacer(Modifier.height(8.dp))
                     LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         items(allAssets) { asset ->
@@ -122,7 +130,11 @@ fun AddDividendBottomSheet(
                             Box(
                                 modifier = Modifier
                                     .clip(RoundedCornerShape(10.dp))
-                                    .background(if (isSel) MaterialTheme.appColors.primary.copy(alpha = 0.1f) else Color.Transparent)
+                                    .background(
+                                        if (isSel) MaterialTheme.appColors.primary.copy(
+                                            alpha = 0.1f
+                                        ) else Color.Transparent
+                                    )
                                     .border(
                                         if (isSel) 1.5.dp else 0.5.dp,
                                         if (isSel) MaterialTheme.appColors.primary else MaterialTheme.appColors.border,
@@ -133,10 +145,10 @@ fun AddDividendBottomSheet(
                                 contentAlignment = Alignment.Center
                             ) {
                                 Text(
-                                    text       = asset.ticker,
-                                    fontSize   = 12.sp,
+                                    text = asset.ticker,
+                                    fontSize = 12.sp,
                                     fontWeight = if (isSel) FontWeight.SemiBold else FontWeight.Normal,
-                                    color      = if (isSel) MaterialTheme.appColors.primary else MaterialTheme.appColors.textSecondary
+                                    color = if (isSel) MaterialTheme.appColors.primary else MaterialTheme.appColors.textSecondary
                                 )
                             }
                         }
@@ -148,16 +160,16 @@ fun AddDividendBottomSheet(
             // \u2500\u2500 Neto calculado \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
             if (netAmount != null) {
                 Text(
-                    text       = "+ ${formatAmount(netAmount)} €",
-                    fontSize   = 28.sp,
-                    color      = MaterialTheme.appColors.income,
+                    text = "+ ${formatAmount(netAmount)} €",
+                    fontSize = 28.sp,
+                    color = MaterialTheme.appColors.income,
                     fontWeight = FontWeight.Bold
                 )
             } else {
                 Text(
-                    text     = stringResource(Res.string.portfolio_dividend_gross_hint),
+                    text = stringResource(Res.string.portfolio_dividend_gross_hint),
                     fontSize = 14.sp,
-                    color    = MaterialTheme.appColors.textSecondary
+                    color = MaterialTheme.appColors.textSecondary
                 )
             }
 
@@ -167,19 +179,44 @@ fun AddDividendBottomSheet(
 
             // \u2500\u2500 Importe bruto \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
             Column(modifier = Modifier.fillMaxWidth()) {
-                Text(stringResource(Res.string.portfolio_dividend_gross_label), fontSize = 12.sp, color = MaterialTheme.appColors.textSecondary)
+                Text(
+                    stringResource(Res.string.portfolio_dividend_gross_label),
+                    fontSize = 12.sp,
+                    color = MaterialTheme.appColors.textSecondary
+                )
                 Spacer(Modifier.height(4.dp))
                 OutlinedTextField(
-                    value           = grossAmountText,
-                    onValueChange   = { grossAmountText = it.filter { c -> c.isDigit() || c == ',' || c == '.' }; error = null },
-                    placeholder     = { Text("0,00", color = MaterialTheme.appColors.textSecondary.copy(alpha = 0.5f), fontSize = 14.sp) },
-                    suffix          = { Text("€", color = MaterialTheme.appColors.textSecondary, fontSize = 14.sp) },
+                    value = grossAmountText,
+                    onValueChange = {
+                        grossAmountText =
+                            it.filter { c -> c.isDigit() || c == ',' || c == '.' }; error = null
+                    },
+                    placeholder = {
+                        Text(
+                            "0,00",
+                            color = MaterialTheme.appColors.textSecondary.copy(alpha = 0.5f),
+                            fontSize = 14.sp
+                        )
+                    },
+                    suffix = {
+                        Text(
+                            "€",
+                            color = MaterialTheme.appColors.textSecondary,
+                            fontSize = 14.sp
+                        )
+                    },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                    singleLine      = true,
-                    modifier        = Modifier.fillMaxWidth(),
-                    shape           = RoundedCornerShape(8.dp),
-                    colors          = OutlinedTextFieldDefaults.colors(focusedBorderColor = MaterialTheme.appColors.primary, unfocusedBorderColor = MaterialTheme.appColors.border),
-                    textStyle       = TextStyle(fontSize = 14.sp, color = MaterialTheme.appColors.textPrimary)
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(8.dp),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = MaterialTheme.appColors.primary,
+                        unfocusedBorderColor = MaterialTheme.appColors.border
+                    ),
+                    textStyle = TextStyle(
+                        fontSize = 14.sp,
+                        color = MaterialTheme.appColors.textPrimary
+                    )
                 )
             }
 
@@ -187,19 +224,43 @@ fun AddDividendBottomSheet(
 
             // \u2500\u2500 Retenci\u00f3n IRPF \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
             Column(modifier = Modifier.fillMaxWidth()) {
-                Text(stringResource(Res.string.portfolio_dividend_withholding_label), fontSize = 12.sp, color = MaterialTheme.appColors.textSecondary)
+                Text(
+                    stringResource(Res.string.portfolio_dividend_withholding_label),
+                    fontSize = 12.sp,
+                    color = MaterialTheme.appColors.textSecondary
+                )
                 Spacer(Modifier.height(4.dp))
                 OutlinedTextField(
-                    value           = irpfPercentText,
-                    onValueChange   = { irpfPercentText = it.filter { c -> c.isDigit() || c == ',' || c == '.' } },
-                    placeholder     = { Text("19", color = MaterialTheme.appColors.textSecondary.copy(alpha = 0.5f), fontSize = 14.sp) },
-                    suffix          = { Text("%", color = MaterialTheme.appColors.textSecondary, fontSize = 14.sp) },
+                    value = irpfPercentText,
+                    onValueChange = {
+                        irpfPercentText = it.filter { c -> c.isDigit() || c == ',' || c == '.' }
+                    },
+                    placeholder = {
+                        Text(
+                            "19",
+                            color = MaterialTheme.appColors.textSecondary.copy(alpha = 0.5f),
+                            fontSize = 14.sp
+                        )
+                    },
+                    suffix = {
+                        Text(
+                            "%",
+                            color = MaterialTheme.appColors.textSecondary,
+                            fontSize = 14.sp
+                        )
+                    },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                    singleLine      = true,
-                    modifier        = Modifier.fillMaxWidth(),
-                    shape           = RoundedCornerShape(8.dp),
-                    colors          = OutlinedTextFieldDefaults.colors(focusedBorderColor = MaterialTheme.appColors.primary, unfocusedBorderColor = MaterialTheme.appColors.border),
-                    textStyle       = TextStyle(fontSize = 14.sp, color = MaterialTheme.appColors.textPrimary)
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(8.dp),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = MaterialTheme.appColors.primary,
+                        unfocusedBorderColor = MaterialTheme.appColors.border
+                    ),
+                    textStyle = TextStyle(
+                        fontSize = 14.sp,
+                        color = MaterialTheme.appColors.textPrimary
+                    )
                 )
             }
 
@@ -208,17 +269,29 @@ fun AddDividendBottomSheet(
                 Spacer(Modifier.height(14.dp))
                 val irpfAmount = grossAmount * irpfPercent / 100.0
                 Surface(
-                    shape  = RoundedCornerShape(10.dp),
-                    color  = MaterialTheme.appColors.income.copy(alpha = 0.07f),
+                    shape = RoundedCornerShape(10.dp),
+                    color = MaterialTheme.appColors.income.copy(alpha = 0.07f),
                     border = CardDefaults.outlinedCardBorder()
                 ) {
                     Row(
-                        modifier              = Modifier.fillMaxWidth().padding(12.dp),
+                        modifier = Modifier.fillMaxWidth().padding(12.dp),
                         horizontalArrangement = Arrangement.SpaceEvenly
                     ) {
-                        SummaryItem(stringResource(Res.string.portfolio_dividend_gross_short), grossAmount, MaterialTheme.appColors.textPrimary)
-                        if (irpfAmount > 0) SummaryItem(stringResource(Res.string.portfolio_dividend_withholding_short), irpfAmount, MaterialTheme.appColors.expense)
-                        SummaryItem(stringResource(Res.string.portfolio_dividend_net_short), netAmount ?: 0.0, MaterialTheme.appColors.income)
+                        SummaryItem(
+                            stringResource(Res.string.portfolio_dividend_gross_short),
+                            grossAmount,
+                            MaterialTheme.appColors.textPrimary
+                        )
+                        if (irpfAmount > 0) SummaryItem(
+                            stringResource(Res.string.portfolio_dividend_withholding_short),
+                            irpfAmount,
+                            MaterialTheme.appColors.expense
+                        )
+                        SummaryItem(
+                            stringResource(Res.string.portfolio_dividend_net_short),
+                            netAmount ?: 0.0,
+                            MaterialTheme.appColors.income
+                        )
                     }
                 }
             }
@@ -250,13 +323,17 @@ fun AddDividendBottomSheet(
                     onSave(selectedAssetId, ga, pct, now)
                 },
                 modifier = Modifier.fillMaxWidth().height(52.dp),
-                shape    = RoundedCornerShape(10.dp),
-                colors   = ButtonDefaults.buttonColors(
-                    containerColor         = MaterialTheme.appColors.primary,
+                shape = RoundedCornerShape(10.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.appColors.primary,
                     disabledContainerColor = MaterialTheme.appColors.primary.copy(alpha = 0.38f)
                 )
             ) {
-                Text(stringResource(Res.string.portfolio_dividend_register), fontSize = 16.sp, fontWeight = FontWeight.Medium)
+                Text(
+                    stringResource(Res.string.portfolio_dividend_register),
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Medium
+                )
             }
         }
     }
@@ -267,10 +344,10 @@ private fun SummaryItem(label: String, value: Double, color: Color) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Text(label, fontSize = 10.sp, color = MaterialTheme.appColors.textSecondary)
         Text(
-            text       = "${formatAmount(value)} €",
-            fontSize   = 12.sp,
+            text = "${formatAmount(value)} €",
+            fontSize = 12.sp,
             fontWeight = FontWeight.SemiBold,
-            color      = color
+            color = color
         )
     }
 }

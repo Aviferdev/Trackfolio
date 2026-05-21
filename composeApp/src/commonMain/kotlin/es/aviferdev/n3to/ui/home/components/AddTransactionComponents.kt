@@ -1,7 +1,5 @@
 package es.aviferdev.n3to.ui.home.components
 
-import androidx.compose.material3.MaterialTheme
-import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -27,6 +25,7 @@ import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -49,19 +48,18 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.Issuer
 import es.aviferdev.n3to.ui.home.viewmodel.IrpfInputMode
-
 import es.aviferdev.n3to.ui.theme.PrimaryAlpha
-
+import es.aviferdev.n3to.ui.theme.appColors
+import kotlinx.datetime.Instant
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.atStartOfDayIn
+import kotlinx.datetime.toLocalDateTime
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.common_accept
 import n3to.composeapp.generated.resources.common_cancel
 import n3to.composeapp.generated.resources.common_date_label
 import n3to.composeapp.generated.resources.transaction_net_estimated
 import org.jetbrains.compose.resources.stringResource
-import kotlinx.datetime.Instant
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.atStartOfDayIn
-import kotlinx.datetime.toLocalDateTime
 
 @Composable
 internal fun TypePill(
@@ -75,7 +73,11 @@ internal fun TypePill(
         modifier = modifier
             .clip(RoundedCornerShape(12.dp))
             .background(if (selected) selectedColor else Color.Transparent)
-            .border(1.dp, if (selected) selectedColor else MaterialTheme.appColors.border, RoundedCornerShape(12.dp))
+            .border(
+                1.dp,
+                if (selected) selectedColor else MaterialTheme.appColors.border,
+                RoundedCornerShape(12.dp)
+            )
             .clickable { onClick() }
             .padding(vertical = 10.dp),
         contentAlignment = Alignment.Center
@@ -233,7 +235,11 @@ internal fun DarkTextField(
             textStyle = TextStyle(fontSize = 13.sp, color = MaterialTheme.appColors.textPrimary),
             decorationBox = { inner ->
                 if (value.isEmpty()) {
-                    Text(placeholder, fontSize = 13.sp, color = MaterialTheme.appColors.textTertiary)
+                    Text(
+                        placeholder,
+                        fontSize = 13.sp,
+                        color = MaterialTheme.appColors.textTertiary
+                    )
                 }
                 inner()
             },
@@ -274,17 +280,25 @@ internal fun DateRow(
                     pickerState.selectedDateMillis?.let { selectedUtc ->
                         val selectedLocal = Instant.fromEpochMilliseconds(selectedUtc)
                             .toLocalDateTime(TimeZone.UTC).date
-                        val localInstant = selectedLocal.atStartOfDayIn(TimeZone.currentSystemDefault())
+                        val localInstant =
+                            selectedLocal.atStartOfDayIn(TimeZone.currentSystemDefault())
                         onDateSelected(localInstant.toEpochMilliseconds())
                     }
                     showPicker = false
                 }) {
-                    Text(stringResource(Res.string.common_accept), color = MaterialTheme.appColors.primary, fontWeight = FontWeight.Medium)
+                    Text(
+                        stringResource(Res.string.common_accept),
+                        color = MaterialTheme.appColors.primary,
+                        fontWeight = FontWeight.Medium
+                    )
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showPicker = false }) {
-                    Text(stringResource(Res.string.common_cancel), color = MaterialTheme.appColors.textSecondary)
+                    Text(
+                        stringResource(Res.string.common_cancel),
+                        color = MaterialTheme.appColors.textSecondary
+                    )
                 }
             },
             colors = DatePickerDefaults.colors(containerColor = MaterialTheme.appColors.surface)
@@ -310,7 +324,12 @@ internal fun DarkInlineField(
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier) {
-        Text(label, fontSize = 10.sp, fontWeight = FontWeight.SemiBold, color = MaterialTheme.appColors.textSecondary)
+        Text(
+            label,
+            fontSize = 10.sp,
+            fontWeight = FontWeight.SemiBold,
+            color = MaterialTheme.appColors.textSecondary
+        )
         Spacer(Modifier.height(6.dp))
         Row(
             modifier = Modifier
@@ -334,7 +353,11 @@ internal fun DarkInlineField(
                         inner()
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             if (value.isEmpty()) {
-                                Text(placeholder, fontSize = 14.sp, color = MaterialTheme.appColors.textTertiary)
+                                Text(
+                                    placeholder,
+                                    fontSize = 14.sp,
+                                    color = MaterialTheme.appColors.textTertiary
+                                )
                             } else {
                                 Text(
                                     value,
@@ -373,7 +396,12 @@ internal fun IrpfCompactField(
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier) {
-        Text(label, fontSize = 10.sp, fontWeight = FontWeight.SemiBold, color = MaterialTheme.appColors.textSecondary)
+        Text(
+            label,
+            fontSize = 10.sp,
+            fontWeight = FontWeight.SemiBold,
+            color = MaterialTheme.appColors.textSecondary
+        )
         Spacer(Modifier.height(6.dp))
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -390,7 +418,9 @@ internal fun IrpfCompactField(
                 BasicTextField(
                     value = if (irpfInputMode == IrpfInputMode.PERCENT) irpfPercent else irpfFixedAmount,
                     onValueChange = {
-                        if (irpfInputMode == IrpfInputMode.PERCENT) onIrpfPercentChange(it) else onIrpfFixedAmountChange(it)
+                        if (irpfInputMode == IrpfInputMode.PERCENT) onIrpfPercentChange(it) else onIrpfFixedAmountChange(
+                            it
+                        )
                     },
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
@@ -403,7 +433,8 @@ internal fun IrpfCompactField(
                         Box(modifier = Modifier.fillMaxWidth()) {
                             inner()
                             Row(verticalAlignment = Alignment.CenterVertically) {
-                                val currentValue = if (irpfInputMode == IrpfInputMode.PERCENT) irpfPercent else irpfFixedAmount
+                                val currentValue =
+                                    if (irpfInputMode == IrpfInputMode.PERCENT) irpfPercent else irpfFixedAmount
                                 if (currentValue.isEmpty()) {
                                     Text(
                                         if (irpfInputMode == IrpfInputMode.PERCENT) "0 %" else "0,00 €",
@@ -485,8 +516,18 @@ internal fun CalculatedNetRow(net: Double) {
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(stringResource(Res.string.transaction_net_estimated), fontSize = 12.sp, fontWeight = FontWeight.Medium, color = MaterialTheme.appColors.income)
-            Text("$formatted €", fontSize = 14.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.appColors.income)
+            Text(
+                stringResource(Res.string.transaction_net_estimated),
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Medium,
+                color = MaterialTheme.appColors.income
+            )
+            Text(
+                "$formatted €",
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.appColors.income
+            )
         }
     }
 }
@@ -499,7 +540,12 @@ internal fun IssuerSelector(
     issuerTypeLabel: String,
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
-        Text(issuerTypeLabel, fontSize = 10.sp, fontWeight = FontWeight.SemiBold, color = MaterialTheme.appColors.textSecondary)
+        Text(
+            issuerTypeLabel,
+            fontSize = 10.sp,
+            fontWeight = FontWeight.SemiBold,
+            color = MaterialTheme.appColors.textSecondary
+        )
         Spacer(Modifier.height(8.dp))
         if (issuers.isNotEmpty()) {
             LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -564,5 +610,7 @@ internal fun formatAmount(amount: Double): String {
     val euros = rounded / 100
     val cents = rounded % 100
     val eurosStr = euros.toString().reversed().chunked(3).joinToString(".").reversed()
-    return if (negative) "-$eurosStr,${cents.toString().padStart(2, '0')}" else "$eurosStr,${cents.toString().padStart(2, '0')}"
+    return if (negative) "-$eurosStr,${
+        cents.toString().padStart(2, '0')
+    }" else "$eurosStr,${cents.toString().padStart(2, '0')}"
 }

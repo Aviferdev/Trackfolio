@@ -31,7 +31,12 @@ fun FixedIncomeSectionHeader(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Icon("🏦".toMaterialIcon(), contentDescription = null, tint = MaterialTheme.appColors.textPrimary, modifier = Modifier.size(18.dp))
+        Icon(
+            "🏦".toMaterialIcon(),
+            contentDescription = null,
+            tint = MaterialTheme.appColors.textPrimary,
+            modifier = Modifier.size(18.dp)
+        )
         Spacer(Modifier.width(6.dp))
         Text(
             text = stringResource(Res.string.portfolio_fixed_income_section),

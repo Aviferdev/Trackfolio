@@ -37,20 +37,21 @@ class AssetCategoryLocalDataSourceImpl(
     override suspend fun insert(category: AssetCategory): Result<Unit> = runCatching {
         withContext(Dispatchers.IO) {
             queries.insert(
-                id        = category.id,
-                name      = category.name,
-                icon      = category.icon,
+                id = category.id,
+                name = category.name,
+                icon = category.icon,
                 sortOrder = category.sortOrder.toLong(),
                 createdAt = category.createdAt
             )
         }
     }
 
-    override suspend fun rename(id: String, newName: String, newIcon: String): Result<Unit> = runCatching {
-        withContext(Dispatchers.IO) {
-            queries.updateNameAndIcon(name = newName, icon = newIcon, id = id)
+    override suspend fun rename(id: String, newName: String, newIcon: String): Result<Unit> =
+        runCatching {
+            withContext(Dispatchers.IO) {
+                queries.updateNameAndIcon(name = newName, icon = newIcon, id = id)
+            }
         }
-    }
 
     override suspend fun updateSortOrder(id: String, sortOrder: Int): Result<Unit> = runCatching {
         withContext(Dispatchers.IO) {

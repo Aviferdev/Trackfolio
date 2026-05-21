@@ -16,14 +16,14 @@ class GetAssetEditMetadataUseCase(
     private val assetMetadataRepository: AssetMetadataRepository
 ) {
     suspend operator fun invoke(assetId: String): AssetEditMetadata {
-        val platforms   = assetPlatformRepository.getPlatformsByAsset(assetId).first()
-        val sectors     = assetMetadataRepository.getSectorsByAssetId(assetId).first()
-        val regions     = assetMetadataRepository.getRegionDistributionsByAssetId(assetId).first()
+        val platforms = assetPlatformRepository.getPlatformsByAsset(assetId).first()
+        val sectors = assetMetadataRepository.getSectorsByAssetId(assetId).first()
+        val regions = assetMetadataRepository.getRegionDistributionsByAssetId(assetId).first()
         val composition = assetMetadataRepository.getCompositionByAssetId(assetId).first()
         return AssetEditMetadata(
-            platformIds        = platforms.map { it.id }.toSet(),
-            sectorIds          = sectors.map { it.id }.toSet(),
-            regionPercents     = regions.associate { it.regionId to it.percent },
+            platformIds = platforms.map { it.id }.toSet(),
+            sectorIds = sectors.map { it.id }.toSet(),
+            regionPercents = regions.associate { it.regionId to it.percent },
             fixedIncomePercent = composition?.fixedIncomePercent ?: 0
         )
     }

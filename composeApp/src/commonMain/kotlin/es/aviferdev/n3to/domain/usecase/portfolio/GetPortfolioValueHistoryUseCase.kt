@@ -49,17 +49,28 @@ class GetPortfolioValueHistoryUseCase(
         refreshTrigger.value++
     }
 
-    operator fun invoke(accountId: String, portfolioId: String? = null): Flow<List<PortfolioValuePoint>> {
+    operator fun invoke(
+        accountId: String,
+        portfolioId: String? = null
+    ): Flow<List<PortfolioValuePoint>> {
         val assetsFlow = assetRepository.getAssetsByAccount(accountId)
         val txsFlow = assetTransactionRepository.getByAccount(accountId)
         val fiFlow = fixedIncomeRepository.getByAccount(accountId)
         val priceFlow = priceHistoryRepository.getByAccount(accountId)
 
-        return combine(assetsFlow, txsFlow, fiFlow, priceFlow, refreshTrigger) { assets, txs, fiPositions, prices, _ ->
+        return combine(
+            assetsFlow,
+            txsFlow,
+            fiFlow,
+            priceFlow,
+            refreshTrigger
+        ) { assets, txs, fiPositions, prices, _ ->
             val priceHistories = prices.groupBy { it.assetId }
             // Filtrar por cartera si se especifica
-            val filteredAssets = if (portfolioId != null) assets.filter { it.portfolioId == portfolioId } else assets
-            val filteredFi = if (portfolioId != null) fiPositions.filter { it.portfolioId == portfolioId } else fiPositions
+            val filteredAssets =
+                if (portfolioId != null) assets.filter { it.portfolioId == portfolioId } else assets
+            val filteredFi =
+                if (portfolioId != null) fiPositions.filter { it.portfolioId == portfolioId } else fiPositions
             buildPortfolioValueHistory(filteredAssets, txs, filteredFi, priceHistories)
         }
     }
@@ -157,10 +168,10 @@ class GetPortfolioValueHistoryUseCase(
         for (tx in txs.sortedBy { it.date }) {
             if (tx.date > asOfDate) break
             when (tx.type) {
-                AssetTransactionType.BUY          -> qty += tx.quantity
-                AssetTransactionType.SELL          -> qty -= tx.quantity
-                AssetTransactionType.TRANSFER_IN   -> qty += tx.quantity
-                AssetTransactionType.TRANSFER_OUT  -> qty -= tx.quantity
+                AssetTransactionType.BUY -> qty += tx.quantity
+                AssetTransactionType.SELL -> qty -= tx.quantity
+                AssetTransactionType.TRANSFER_IN -> qty += tx.quantity
+                AssetTransactionType.TRANSFER_OUT -> qty -= tx.quantity
             }
         }
         return qty

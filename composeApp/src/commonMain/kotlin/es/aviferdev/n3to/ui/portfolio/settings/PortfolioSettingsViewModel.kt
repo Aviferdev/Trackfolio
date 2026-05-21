@@ -31,9 +31,10 @@ class PortfolioSettingsViewModel(
     private val session: AccountSession,
     private val getPortfoliosByAccount: GetPortfoliosByAccountUseCase,
 
-) : ViewModel() {
+    ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow<PortfolioSettingsUiState>(PortfolioSettingsUiState.Loading)
+    private val _uiState =
+        MutableStateFlow<PortfolioSettingsUiState>(PortfolioSettingsUiState.Loading)
     val uiState: StateFlow<PortfolioSettingsUiState> = _uiState.asStateFlow()
 
     init {
@@ -41,7 +42,8 @@ class PortfolioSettingsViewModel(
             session.selectedAccountId.collectLatest { accountId ->
                 accountId?.let {
                     getPortfoliosByAccount(accountId).lastOrNull()?.let {
-                        _uiState.value = PortfolioSettingsUiState.Success(PortfolioSettingsScreenData(it))
+                        _uiState.value =
+                            PortfolioSettingsUiState.Success(PortfolioSettingsScreenData(it))
                     } ?: run {
                         _uiState.value = PortfolioSettingsUiState.EmptyPortFolio
                     }

@@ -22,11 +22,11 @@ class GetAmortizationScheduleUseCase(
             if (loan == null) flowOf(emptyList())
             else rateChangeRepository.getByLoan(loanId).map { rateChanges ->
                 FrenchAmortizationCalculator.generateSchedule(
-                    totalAmount       = loan.totalAmount,
-                    annualRate        = loan.currentInterestRate,
+                    totalAmount = loan.totalAmount,
+                    annualRate = loan.currentInterestRate,
                     totalInstallments = loan.totalInstallments,
-                    startDate         = loan.startDate,
-                    rateChanges       = rateChanges
+                    startDate = loan.startDate,
+                    rateChanges = rateChanges
                 )
             }
         }

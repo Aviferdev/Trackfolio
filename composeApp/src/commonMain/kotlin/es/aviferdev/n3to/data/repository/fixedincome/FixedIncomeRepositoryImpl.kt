@@ -18,10 +18,16 @@ class FixedIncomeRepositoryImpl(
     override fun getById(id: String): Flow<FixedIncomePosition?> =
         localDataSource.getById(id)
 
-    override fun getNearMaturity(accountId: String, thresholdDate: Long): Flow<List<FixedIncomePosition>> =
+    override fun getNearMaturity(
+        accountId: String,
+        thresholdDate: Long
+    ): Flow<List<FixedIncomePosition>> =
         localDataSource.getNearMaturity(accountId, thresholdDate)
 
-    override fun getByAccountAndCategory(accountId: String, categoryId: String): Flow<List<FixedIncomePosition>> =
+    override fun getByAccountAndCategory(
+        accountId: String,
+        categoryId: String
+    ): Flow<List<FixedIncomePosition>> =
         localDataSource.getByAccountAndCategory(accountId, categoryId)
 
     override fun getByPortfolio(portfolioId: String): Flow<List<FixedIncomePosition>> =

@@ -38,30 +38,52 @@ class ValuableLocalDataSourceImpl(
         withContext(Dispatchers.IO) {
             val e = valuable.toEntity()
             queries.insert(
-                id             = e.id,
-                accountId      = e.accountId,
-                name           = e.name,
-                description    = e.description,
-                purchasePrice  = e.purchasePrice,
-                purchaseDate   = e.purchaseDate,
+                id = e.id,
+                accountId = e.accountId,
+                name = e.name,
+                description = e.description,
+                purchasePrice = e.purchasePrice,
+                purchaseDate = e.purchaseDate,
                 estimatedValue = e.estimatedValue,
-                salePrice      = e.salePrice,
-                saleDate       = e.saleDate,
-                linkedLoanId   = e.linkedLoanId,
-                notes          = e.notes,
-                createdAt      = e.createdAt
+                salePrice = e.salePrice,
+                saleDate = e.saleDate,
+                linkedLoanId = e.linkedLoanId,
+                notes = e.notes,
+                createdAt = e.createdAt
             )
         }
     }
 
     override suspend fun sell(id: String, saleDate: Long, salePrice: Double): Result<Unit> =
-        runCatching { withContext(Dispatchers.IO) { queries.sell(saleDate = saleDate, salePrice = salePrice, id = id) } }
+        runCatching {
+            withContext(Dispatchers.IO) {
+                queries.sell(
+                    saleDate = saleDate,
+                    salePrice = salePrice,
+                    id = id
+                )
+            }
+        }
 
     override suspend fun updateEstimatedValue(id: String, value: Double): Result<Unit> =
-        runCatching { withContext(Dispatchers.IO) { queries.updateEstimatedValue(value = value, id = id) } }
+        runCatching {
+            withContext(Dispatchers.IO) {
+                queries.updateEstimatedValue(
+                    value = value,
+                    id = id
+                )
+            }
+        }
 
     override suspend fun updateLinkedLoan(valuableId: String, loanId: String): Result<Unit> =
-        runCatching { withContext(Dispatchers.IO) { queries.updateLinkedLoan(loanId = loanId, id = valuableId) } }
+        runCatching {
+            withContext(Dispatchers.IO) {
+                queries.updateLinkedLoan(
+                    loanId = loanId,
+                    id = valuableId
+                )
+            }
+        }
 
     override suspend fun delete(id: String): Result<Unit> =
         runCatching { withContext(Dispatchers.IO) { queries.deleteById(id) } }

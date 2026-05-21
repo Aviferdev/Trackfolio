@@ -72,10 +72,14 @@ private val AccentGradient: Brush
         1f to MaterialTheme.appColors.navySurface
     )
 
-private val PulseSpec: androidx.compose.animation.core.InfiniteRepeatableSpec<Float> = infiniteRepeatable(
-    animation = tween<Float>(1200, easing = androidx.compose.animation.core.FastOutSlowInEasing),
-    repeatMode = RepeatMode.Reverse
-)
+private val PulseSpec: androidx.compose.animation.core.InfiniteRepeatableSpec<Float> =
+    infiniteRepeatable(
+        animation = tween<Float>(
+            1200,
+            easing = androidx.compose.animation.core.FastOutSlowInEasing
+        ),
+        repeatMode = RepeatMode.Reverse
+    )
 
 @Composable
 fun OnboardingRealEstatePage(
@@ -102,7 +106,9 @@ fun OnboardingRealEstatePage(
         AnimatedVisibility(
             visible = isVisible,
             enter = fadeIn(animationSpec = tween(400, delayMillis = 150)) +
-                    slideInVertically(animationSpec = tween(400, delayMillis = 150), initialOffsetY = { it / 4 })
+                    slideInVertically(
+                        animationSpec = tween(400, delayMillis = 150),
+                        initialOffsetY = { it / 4 })
         ) {
             ViviendaMockCard()
         }
@@ -112,7 +118,9 @@ fun OnboardingRealEstatePage(
         AnimatedVisibility(
             visible = isVisible,
             enter = fadeIn(animationSpec = tween(400, delayMillis = 350)) +
-                    slideInVertically(animationSpec = tween(400, delayMillis = 350), initialOffsetY = { it / 4 })
+                    slideInVertically(
+                        animationSpec = tween(400, delayMillis = 350),
+                        initialOffsetY = { it / 4 })
         ) {
             HintPill()
         }
@@ -165,7 +173,10 @@ private fun ViviendaMockCard() {
             .padding(18.dp)
     ) {
         Column {
-            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
+            ) {
                 // Icono gradiente navy
                 Box(
                     modifier = Modifier
@@ -180,8 +191,17 @@ private fun ViviendaMockCard() {
                 Spacer(Modifier.width(12.dp))
 
                 Column(Modifier.weight(1f)) {
-                    Text(text = "Mi vivienda", fontSize = 14.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.appColors.textPrimary)
-                    Text(text = "Activo inmobiliario", fontSize = 10.sp, color = MaterialTheme.appColors.textTertiary)
+                    Text(
+                        text = "Mi vivienda",
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.appColors.textPrimary
+                    )
+                    Text(
+                        text = "Activo inmobiliario",
+                        fontSize = 10.sp,
+                        color = MaterialTheme.appColors.textTertiary
+                    )
                 }
 
                 // Badge EJEMPLO
@@ -202,16 +222,43 @@ private fun ViviendaMockCard() {
             HorizontalDividerCustom()
             Spacer(Modifier.height(12.dp))
 
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
                 Column(Modifier.weight(1f)) {
-                    Text(text = "VALOR ESTIMADO", fontSize = 9.sp, fontWeight = FontWeight.Bold, letterSpacing = 0.5.sp, color = MaterialTheme.appColors.textTertiary)
+                    Text(
+                        text = "VALOR ESTIMADO",
+                        fontSize = 9.sp,
+                        fontWeight = FontWeight.Bold,
+                        letterSpacing = 0.5.sp,
+                        color = MaterialTheme.appColors.textTertiary
+                    )
                     Spacer(Modifier.height(3.dp))
-                    Text(text = "285.000 €", fontSize = 16.sp, fontWeight = FontWeight.ExtraBold, letterSpacing = (-0.4).sp, color = MaterialTheme.appColors.textPrimary)
+                    Text(
+                        text = "285.000 €",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.ExtraBold,
+                        letterSpacing = (-0.4).sp,
+                        color = MaterialTheme.appColors.textPrimary
+                    )
                 }
                 Column(Modifier.weight(1f)) {
-                    Text(text = "HIPOTECA", fontSize = 9.sp, fontWeight = FontWeight.Bold, letterSpacing = 0.5.sp, color = MaterialTheme.appColors.textTertiary)
+                    Text(
+                        text = "HIPOTECA",
+                        fontSize = 9.sp,
+                        fontWeight = FontWeight.Bold,
+                        letterSpacing = 0.5.sp,
+                        color = MaterialTheme.appColors.textTertiary
+                    )
                     Spacer(Modifier.height(3.dp))
-                    Text(text = "−142.300 €", fontSize = 16.sp, fontWeight = FontWeight.ExtraBold, letterSpacing = (-0.4).sp, color = MaterialTheme.appColors.expense)
+                    Text(
+                        text = "−142.300 €",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.ExtraBold,
+                        letterSpacing = (-0.4).sp,
+                        color = MaterialTheme.appColors.expense
+                    )
                 }
             }
 
@@ -219,9 +266,24 @@ private fun ViviendaMockCard() {
             HorizontalDividerCustom()
             Spacer(Modifier.height(12.dp))
 
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.Bottom) {
-                Text(text = "Aporta a tu patrimonio", fontSize = 11.sp, fontWeight = FontWeight.SemiBold, color = MaterialTheme.appColors.textSecondary)
-                Text(text = "+142.700 €", fontSize = 18.sp, fontWeight = FontWeight.ExtraBold, letterSpacing = (-0.5).sp, color = MaterialTheme.appColors.income)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.Bottom
+            ) {
+                Text(
+                    text = "Aporta a tu patrimonio",
+                    fontSize = 11.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.appColors.textSecondary
+                )
+                Text(
+                    text = "+142.700 €",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.ExtraBold,
+                    letterSpacing = (-0.5).sp,
+                    color = MaterialTheme.appColors.income
+                )
             }
         }
     }
@@ -244,7 +306,12 @@ private fun HintPill() {
         Text(
             text = buildAnnotatedString {
                 append("Cuando entres, podrás registrarla desde ")
-                withStyle(SpanStyle(color = MaterialTheme.appColors.cyanAccent, fontWeight = FontWeight.ExtraBold)) {
+                withStyle(
+                    SpanStyle(
+                        color = MaterialTheme.appColors.cyanAccent,
+                        fontWeight = FontWeight.ExtraBold
+                    )
+                ) {
                     append("Patrimonio")
                 }
                 append(".")
@@ -260,7 +327,10 @@ private fun HintPill() {
 // ─── Divisor ──────────────────────────────────────────────────────────────────
 @Composable
 private fun HorizontalDividerCustom() {
-    Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(MaterialTheme.appColors.navyBorder))
+    Box(
+        modifier = Modifier.fillMaxWidth().height(1.dp)
+            .background(MaterialTheme.appColors.navyBorder)
+    )
 }
 
 @Preview

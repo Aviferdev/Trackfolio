@@ -41,7 +41,8 @@ class EmergencyFundLocalDataSourceImpl(
             calculationMethod = EmergencyFundMethod.valueOf(
                 settings.getString(key(accountId, KEY_METHOD), "MANUAL")
             ),
-            manualMonthlyExpense = settings.getString(key(accountId, KEY_EXPENSE), "0.0").toDouble(),
+            manualMonthlyExpense = settings.getString(key(accountId, KEY_EXPENSE), "0.0")
+                .toDouble(),
             excludedCategoryIds = settings.getString(key(accountId, KEY_EXCLUDED), "")
                 .split(SEPARATOR)
                 .filter { it.isNotBlank() }
@@ -52,7 +53,10 @@ class EmergencyFundLocalDataSourceImpl(
         settings.putInt(key(fund.accountId, KEY_MONTHS), fund.targetMonths)
         settings.putString(key(fund.accountId, KEY_METHOD), fund.calculationMethod.name)
         settings.putString(key(fund.accountId, KEY_EXPENSE), fund.manualMonthlyExpense.toString())
-        settings.putString(key(fund.accountId, KEY_EXCLUDED), fund.excludedCategoryIds.joinToString(SEPARATOR))
+        settings.putString(
+            key(fund.accountId, KEY_EXCLUDED),
+            fund.excludedCategoryIds.joinToString(SEPARATOR)
+        )
         refreshTrigger.value = Unit
     }
 

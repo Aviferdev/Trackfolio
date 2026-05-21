@@ -10,13 +10,13 @@ class SaveLoanUseCase(
     suspend operator fun invoke(loan: Loan): Result<Unit> {
         // Calcular cuota mensual con amortización francesa
         val monthlyPayment = FrenchAmortizationCalculator.calculateMonthlyPayment(
-            principal  = loan.totalAmount,
+            principal = loan.totalAmount,
             annualRate = loan.currentInterestRate,
-            months     = loan.totalInstallments
+            months = loan.totalInstallments
         )
 
         val loanWithPayment = loan.copy(
-            monthlyPayment       = monthlyPayment,
+            monthlyPayment = monthlyPayment,
             outstandingPrincipal = loan.totalAmount
         )
 

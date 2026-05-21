@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
-import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -20,10 +19,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-
 import es.aviferdev.n3to.ui.theme.PrimaryAlpha
-import es.aviferdev.n3to.ui.theme.PrimaryDark
-
+import es.aviferdev.n3to.ui.theme.appColors
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
@@ -36,9 +33,11 @@ internal fun CategoryChip(
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
-    val bg     = if (isSelected) MaterialTheme.appColors.primary                          else MaterialTheme.appColors.surfaceElevated
-    val border = if (isSelected) MaterialTheme.appColors.primary                          else MaterialTheme.appColors.border
-    val text   = if (isSelected) MaterialTheme.colorScheme.onPrimary  else MaterialTheme.appColors.textPrimary
+    val bg =
+        if (isSelected) MaterialTheme.appColors.primary else MaterialTheme.appColors.surfaceElevated
+    val border = if (isSelected) MaterialTheme.appColors.primary else MaterialTheme.appColors.border
+    val text =
+        if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.appColors.textPrimary
 
     Row(
         modifier = Modifier
@@ -52,9 +51,9 @@ internal fun CategoryChip(
         Text(icon, fontSize = 14.sp)
         Spacer(Modifier.width(6.dp))
         Text(
-            text       = label,
-            fontSize   = 13.sp,
-            color      = text,
+            text = label,
+            fontSize = 13.sp,
+            color = text,
             fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal
         )
     }
@@ -67,9 +66,11 @@ internal fun PlatformToggleChip(
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
-    val bg     = if (isSelected) MaterialTheme.appColors.primary.copy(alpha = 0.12f) else MaterialTheme.appColors.surfaceElevated
-    val border = if (isSelected) MaterialTheme.appColors.primary                      else MaterialTheme.appColors.border
-    val text   = if (isSelected) MaterialTheme.appColors.primary                      else MaterialTheme.appColors.textPrimary
+    val bg =
+        if (isSelected) MaterialTheme.appColors.primary.copy(alpha = 0.12f) else MaterialTheme.appColors.surfaceElevated
+    val border = if (isSelected) MaterialTheme.appColors.primary else MaterialTheme.appColors.border
+    val text =
+        if (isSelected) MaterialTheme.appColors.primary else MaterialTheme.appColors.textPrimary
 
     Row(
         modifier = Modifier
@@ -83,14 +84,19 @@ internal fun PlatformToggleChip(
         Text(icon, fontSize = 14.sp)
         Spacer(Modifier.width(6.dp))
         Text(
-            text       = label,
-            fontSize   = 13.sp,
-            color      = text,
+            text = label,
+            fontSize = 13.sp,
+            color = text,
             fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal
         )
         if (isSelected) {
             Spacer(Modifier.width(4.dp))
-            Text("✓", fontSize = 12.sp, color = MaterialTheme.appColors.primary, fontWeight = FontWeight.Bold)
+            Text(
+                "✓",
+                fontSize = 12.sp,
+                color = MaterialTheme.appColors.primary,
+                fontWeight = FontWeight.Bold
+            )
         }
     }
 }
@@ -102,9 +108,11 @@ internal fun SectorToggleChip(
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
-    val bg     = if (isSelected) MaterialTheme.appColors.primary.copy(alpha = 0.12f) else MaterialTheme.appColors.surfaceElevated
-    val border = if (isSelected) MaterialTheme.appColors.primary                      else MaterialTheme.appColors.border
-    val text   = if (isSelected) MaterialTheme.appColors.primary                      else MaterialTheme.appColors.textPrimary
+    val bg =
+        if (isSelected) MaterialTheme.appColors.primary.copy(alpha = 0.12f) else MaterialTheme.appColors.surfaceElevated
+    val border = if (isSelected) MaterialTheme.appColors.primary else MaterialTheme.appColors.border
+    val text =
+        if (isSelected) MaterialTheme.appColors.primary else MaterialTheme.appColors.textPrimary
 
     Row(
         modifier = Modifier
@@ -118,14 +126,19 @@ internal fun SectorToggleChip(
         Text(icon, fontSize = 14.sp)
         Spacer(Modifier.width(6.dp))
         Text(
-            text       = label,
-            fontSize   = 13.sp,
-            color      = text,
+            text = label,
+            fontSize = 13.sp,
+            color = text,
             fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal
         )
         if (isSelected) {
             Spacer(Modifier.width(4.dp))
-            Text("✓", fontSize = 12.sp, color = MaterialTheme.appColors.primary, fontWeight = FontWeight.Bold)
+            Text(
+                "✓",
+                fontSize = 12.sp,
+                color = MaterialTheme.appColors.primary,
+                fontWeight = FontWeight.Bold
+            )
         }
     }
 }
@@ -136,9 +149,10 @@ internal fun PortfolioChipSimple(
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
-    val bg        = if (isSelected) PrimaryAlpha         else Color.Transparent
-    val border    = if (isSelected) MaterialTheme.appColors.primary          else MaterialTheme.appColors.border
-    val textColor = if (isSelected) MaterialTheme.appColors.primary          else MaterialTheme.appColors.textSecondary
+    val bg = if (isSelected) PrimaryAlpha else Color.Transparent
+    val border = if (isSelected) MaterialTheme.appColors.primary else MaterialTheme.appColors.border
+    val textColor =
+        if (isSelected) MaterialTheme.appColors.primary else MaterialTheme.appColors.textSecondary
 
     Box(
         modifier = Modifier
@@ -149,10 +163,10 @@ internal fun PortfolioChipSimple(
             .padding(horizontal = 14.dp, vertical = 6.dp)
     ) {
         Text(
-            text       = label,
-            fontSize   = 12.sp,
+            text = label,
+            fontSize = 12.sp,
             fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
-            color      = textColor
+            color = textColor
         )
     }
 }

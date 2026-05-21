@@ -187,9 +187,9 @@ import es.aviferdev.n3to.ui.portfolio.AssetCategoryViewModel
 import es.aviferdev.n3to.ui.portfolio.AssetDetailViewModel
 import es.aviferdev.n3to.ui.portfolio.AssetHistoryViewModel
 import es.aviferdev.n3to.ui.portfolio.PlatformViewModel
-import es.aviferdev.n3to.ui.portfolio.settings.PortfolioSettingsViewModel
 import es.aviferdev.n3to.ui.portfolio.PortfolioStateBuilder
 import es.aviferdev.n3to.ui.portfolio.home.PortfolioViewModel
+import es.aviferdev.n3to.ui.portfolio.settings.PortfolioSettingsViewModel
 import es.aviferdev.n3to.ui.realestate.RealEstateDetailViewModel
 import es.aviferdev.n3to.ui.reconciliation.ReconciliationViewModel
 import es.aviferdev.n3to.ui.savingsrates.SavingsRatesViewModel
@@ -530,10 +530,8 @@ val useCaseModule = module {
             getPortfolioValueHistory = get(),
             registerCoupon = get(),
             getPortfoliosByAccount = get(),
-            savePortfolio = get(),
             getDividendsByAssetIds = get(),
             stateBuilder = get(),
-            loadingManager = get()
         )
     }
     viewModel {

@@ -1,33 +1,47 @@
 package es.aviferdev.n3to.ui.settings
 
-import androidx.compose.material3.MaterialTheme
-import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import es.aviferdev.n3to.ui.settings.components.*
 import es.aviferdev.n3to.data.database.CategoryEntity
-import es.aviferdev.n3to.domain.model.LimitType
 import es.aviferdev.n3to.domain.model.TransactionType
 import es.aviferdev.n3to.ui.common.SectionHeader
-import es.aviferdev.n3to.ui.common.navigation.TopBarApp
-import es.aviferdev.n3to.ui.theme.*
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import es.aviferdev.n3to.ui.common.topbar.TopBarWithActionsApp
+import es.aviferdev.n3to.ui.settings.components.SettingsGroupCard
+import es.aviferdev.n3to.ui.theme.N3toTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.annual_tab_expenses
 import n3to.composeapp.generated.resources.common_accept
@@ -39,6 +53,7 @@ import n3to.composeapp.generated.resources.error_category_already_exists
 import n3to.composeapp.generated.resources.expense_categories_section
 import n3to.composeapp.generated.resources.expense_no_categories
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
 // ─── WRAPPER ────────────────────────────────────────────────────────────────────
@@ -116,12 +131,20 @@ fun ExpenseSettingsScreen(
             },
             confirmButton = {
                 TextButton(onClick = { categoryViewModel.confirmDelete() }) {
-                    Text(stringResource(Res.string.common_delete), color = MaterialTheme.appColors.expense, fontWeight = FontWeight.Medium)
+                    Text(
+                        stringResource(Res.string.common_delete),
+                        color = MaterialTheme.appColors.expense,
+                        fontWeight = FontWeight.Medium
+                    )
                 }
             },
             dismissButton = {
                 TextButton(onClick = { categoryViewModel.cancelDelete() }) {
-                    Text(stringResource(Res.string.common_cancel), color = MaterialTheme.appColors.cyanAccent, fontWeight = FontWeight.Medium)
+                    Text(
+                        stringResource(Res.string.common_cancel),
+                        color = MaterialTheme.appColors.cyanAccent,
+                        fontWeight = FontWeight.Medium
+                    )
                 }
             },
             shape = RoundedCornerShape(16.dp)
@@ -132,18 +155,29 @@ fun ExpenseSettingsScreen(
         val msg = when (it) {
             is es.aviferdev.n3to.ui.settings.CategoryError.AlreadyExists -> stringResource(Res.string.error_category_already_exists)
             is es.aviferdev.n3to.ui.settings.CategoryError.InvalidName -> stringResource(Res.string.error_category_already_exists)
-            is es.aviferdev.n3to.ui.settings.CategoryError.Unknown -> it.message ?: stringResource(Res.string.common_error)
+            is es.aviferdev.n3to.ui.settings.CategoryError.Unknown -> it.message ?: stringResource(
+                Res.string.common_error
+            )
         }
         AlertDialog(
             onDismissRequest = { categoryViewModel.clearError() },
             containerColor = MaterialTheme.appColors.navySurface,
             title = {
-                Text(stringResource(Res.string.common_error), fontSize = 17.sp, fontWeight = FontWeight.SemiBold, color = MaterialTheme.appColors.textPrimary)
+                Text(
+                    stringResource(Res.string.common_error),
+                    fontSize = 17.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.appColors.textPrimary
+                )
             },
             text = { Text(msg, fontSize = 14.sp, color = MaterialTheme.appColors.textSecondary) },
             confirmButton = {
                 TextButton(onClick = { categoryViewModel.clearError() }) {
-                    Text(stringResource(Res.string.common_accept), color = MaterialTheme.appColors.cyanAccent, fontWeight = FontWeight.Medium)
+                    Text(
+                        stringResource(Res.string.common_accept),
+                        color = MaterialTheme.appColors.cyanAccent,
+                        fontWeight = FontWeight.Medium
+                    )
                 }
             },
             shape = RoundedCornerShape(16.dp)
@@ -165,7 +199,7 @@ fun ExpenseSettingsContent(
     Column(
         modifier = modifier.fillMaxSize().background(MaterialTheme.appColors.navyDeep)
     ) {
-        TopBarApp(
+        TopBarWithActionsApp(
             title = stringResource(Res.string.annual_tab_expenses),
             navigateBack = onBack
         )
@@ -188,7 +222,11 @@ fun ExpenseSettingsContent(
                             modifier = Modifier.fillMaxWidth().padding(16.dp),
                             contentAlignment = Alignment.Center
                         ) {
-                            Text(stringResource(Res.string.expense_no_categories), fontSize = 13.sp, color = MaterialTheme.appColors.textSecondary)
+                            Text(
+                                stringResource(Res.string.expense_no_categories),
+                                fontSize = 13.sp,
+                                color = MaterialTheme.appColors.textSecondary
+                            )
                         }
                     } else {
                         expenseCategories.forEachIndexed { index, cat ->
@@ -225,13 +263,23 @@ fun ExpenseSettingsContent(
                                     onClick = { onEdit(cat) },
                                     modifier = Modifier.size(28.dp)
                                 ) {
-                                    Icon(Icons.Default.Edit, stringResource(Res.string.common_edit), modifier = Modifier.size(14.dp), tint = MaterialTheme.appColors.textSecondary)
+                                    Icon(
+                                        Icons.Default.Edit,
+                                        stringResource(Res.string.common_edit),
+                                        modifier = Modifier.size(14.dp),
+                                        tint = MaterialTheme.appColors.textSecondary
+                                    )
                                 }
                                 IconButton(
                                     onClick = { onDelete(cat) },
                                     modifier = Modifier.size(28.dp)
                                 ) {
-                                    Icon(Icons.Default.Delete, stringResource(Res.string.common_delete), modifier = Modifier.size(14.dp), tint = MaterialTheme.appColors.expense)
+                                    Icon(
+                                        Icons.Default.Delete,
+                                        stringResource(Res.string.common_delete),
+                                        modifier = Modifier.size(14.dp),
+                                        tint = MaterialTheme.appColors.expense
+                                    )
                                 }
                             }
                             if (index < expenseCategories.lastIndex) {
@@ -258,8 +306,22 @@ fun ExpenseSettingsContentPreview() {
     N3toTheme {
         ExpenseSettingsContent(
             expenseCategories = listOf(
-                CategoryEntity(id = "1", accountId = "preview", name = "Comida", type = "EXPENSE", isDefault = 0, archived = 0),
-                CategoryEntity(id = "2", accountId = "preview", name = "Transporte", type = "EXPENSE", isDefault = 0, archived = 0)
+                CategoryEntity(
+                    id = "1",
+                    accountId = "preview",
+                    name = "Comida",
+                    type = "EXPENSE",
+                    isDefault = 0,
+                    archived = 0
+                ),
+                CategoryEntity(
+                    id = "2",
+                    accountId = "preview",
+                    name = "Transporte",
+                    type = "EXPENSE",
+                    isDefault = 0,
+                    archived = 0
+                )
             ),
             onAdd = {},
             onEdit = {},

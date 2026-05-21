@@ -66,10 +66,11 @@ class PriceRemoteDataSourceImpl(
 
     override suspend fun healthCheck(): Boolean {
         return try {
-            val response = httpClient.get("https://query1.finance.yahoo.com/v8/finance/chart/AAPL") {
-                parameter("interval", "1d")
-                parameter("range", "1d")
-            }
+            val response =
+                httpClient.get("https://query1.finance.yahoo.com/v8/finance/chart/AAPL") {
+                    parameter("interval", "1d")
+                    parameter("range", "1d")
+                }
             response.status.value in 200..299
         } catch (_: Exception) {
             false
@@ -185,7 +186,11 @@ class PriceRemoteDataSourceImpl(
                 val typeDisp = obj["typeDisp"]?.jsonPrimitive?.content ?: ""
 
                 val type = when {
-                    typeDisp.contains("Cryptocurrency", ignoreCase = true) -> IdentifierType.CRYPTO_SYMBOL
+                    typeDisp.contains(
+                        "Cryptocurrency",
+                        ignoreCase = true
+                    ) -> IdentifierType.CRYPTO_SYMBOL
+
                     else -> IdentifierType.ISIN
                 }
 

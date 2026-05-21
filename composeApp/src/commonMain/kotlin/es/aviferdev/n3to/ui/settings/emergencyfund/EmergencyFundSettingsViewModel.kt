@@ -36,6 +36,7 @@ data class EmergencyFundSettingsUiState(
                     val expense = manualExpenseText.trim().replace(",", ".").toDoubleOrNull() ?: 0.0
                     expense > 0.0
                 }
+
                 EmergencyFundMethod.AUTO -> true
             }
         }

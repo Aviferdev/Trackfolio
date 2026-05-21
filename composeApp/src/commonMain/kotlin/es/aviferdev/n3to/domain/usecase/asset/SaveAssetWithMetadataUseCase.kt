@@ -25,16 +25,29 @@ class SaveAssetWithMetadataUseCase(
         val now = asset.createdAt
         if (fixedIncomePercent > 0) {
             assetMetadataRepository.saveComposition(
-                AssetComposition(assetId = asset.id, fixedIncomePercent = fixedIncomePercent, createdAt = now)
+                AssetComposition(
+                    assetId = asset.id,
+                    fixedIncomePercent = fixedIncomePercent,
+                    createdAt = now
+                )
             )
         }
         sectorIds.forEach { sectorId ->
-            assetMetadataRepository.saveSectorRelation(AssetSectorRelation(assetId = asset.id, sectorId = sectorId))
+            assetMetadataRepository.saveSectorRelation(
+                AssetSectorRelation(
+                    assetId = asset.id,
+                    sectorId = sectorId
+                )
+            )
         }
         regionPercents.forEach { (regionId, percent) ->
             if (percent > 0) {
                 assetMetadataRepository.saveRegionDistribution(
-                    AssetRegionDistribution(assetId = asset.id, regionId = regionId, percent = percent)
+                    AssetRegionDistribution(
+                        assetId = asset.id,
+                        regionId = regionId,
+                        percent = percent
+                    )
                 )
             }
         }

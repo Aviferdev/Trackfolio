@@ -2,10 +2,24 @@ package es.aviferdev.n3to.ui.valuable
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import es.aviferdev.n3to.domain.model.*
-import es.aviferdev.n3to.domain.usecase.valuable.*
+import es.aviferdev.n3to.domain.model.Loan
+import es.aviferdev.n3to.domain.model.Transaction
+import es.aviferdev.n3to.domain.model.Valuable
+import es.aviferdev.n3to.domain.model.ValuableExpense
+import es.aviferdev.n3to.domain.model.ValuableSummary
+import es.aviferdev.n3to.domain.usecase.valuable.DeleteValuableUseCase
+import es.aviferdev.n3to.domain.usecase.valuable.GetValuableDetailUseCase
+import es.aviferdev.n3to.domain.usecase.valuable.LinkLoanToValuableUseCase
+import es.aviferdev.n3to.domain.usecase.valuable.SaveValuableUseCase
+import es.aviferdev.n3to.domain.usecase.valuable.SellValuableUseCase
+import es.aviferdev.n3to.domain.usecase.valuable.UpdateValuableEstimatedValueUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 data class ValuableDetailUiState(
@@ -53,7 +67,13 @@ class ValuableDetailViewModel(
             _showEditSheet, _showSellSheet, _showDeleteDialog,
             _showValueDialog, _showLoanPicker
         ) { a, b, c, d, e ->
-            SheetStates(showEdit = a, showSell = b, showDelete = c, showValue = d, showLoanPicker = e)
+            SheetStates(
+                showEdit = a,
+                showSell = b,
+                showDelete = c,
+                showValue = d,
+                showLoanPicker = e
+            )
         },
         _availableLoans
     ) { summary, sheets, loans ->
@@ -66,19 +86,43 @@ class ValuableDetailViewModel(
             showLoanPicker = sheets.showLoanPicker,
             availableLoans = loans
         )
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), ValuableDetailUiState(isLoading = true))
+    }.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(5_000),
+        ValuableDetailUiState(isLoading = true)
+    )
 
-    fun showEditSheet() { _showEditSheet.value = true }
-    fun hideEditSheet() { _showEditSheet.value = false }
+    fun showEditSheet() {
+        _showEditSheet.value = true
+    }
 
-    fun showSellSheet() { _showSellSheet.value = true }
-    fun hideSellSheet() { _showSellSheet.value = false }
+    fun hideEditSheet() {
+        _showEditSheet.value = false
+    }
 
-    fun showDeleteDialog() { _showDeleteDialog.value = true }
-    fun hideDeleteDialog() { _showDeleteDialog.value = false }
+    fun showSellSheet() {
+        _showSellSheet.value = true
+    }
 
-    fun showValueDialog() { _showValueDialog.value = true }
-    fun hideValueDialog() { _showValueDialog.value = false }
+    fun hideSellSheet() {
+        _showSellSheet.value = false
+    }
+
+    fun showDeleteDialog() {
+        _showDeleteDialog.value = true
+    }
+
+    fun hideDeleteDialog() {
+        _showDeleteDialog.value = false
+    }
+
+    fun showValueDialog() {
+        _showValueDialog.value = true
+    }
+
+    fun hideValueDialog() {
+        _showValueDialog.value = false
+    }
 
     fun showLoanPicker() {
         viewModelScope.launch {
@@ -89,9 +133,16 @@ class ValuableDetailViewModel(
             _showLoanPicker.value = true
         }
     }
-    fun hideLoanPicker() { _showLoanPicker.value = false }
 
-    fun saveValuable(valuable: Valuable, purchaseExpenses: List<ValuableExpense>, holdingExpenses: List<ValuableExpense>) {
+    fun hideLoanPicker() {
+        _showLoanPicker.value = false
+    }
+
+    fun saveValuable(
+        valuable: Valuable,
+        purchaseExpenses: List<ValuableExpense>,
+        holdingExpenses: List<ValuableExpense>
+    ) {
         viewModelScope.launch {
             saveValuableUseCase(valuable, purchaseExpenses, holdingExpenses)
                 .onSuccess { hideEditSheet() }

@@ -75,14 +75,20 @@ internal fun CouponTimelineSection(
                         )
                         Spacer(Modifier.width(12.dp))
                         Column {
-                            Text(text = formatDate(coupon.date), fontSize = 13.sp, color = MaterialTheme.appColors.textPrimary)
+                            Text(
+                                text = formatDate(coupon.date),
+                                fontSize = 13.sp,
+                                color = MaterialTheme.appColors.textPrimary
+                            )
                             Text(
                                 text = if (coupon.isPaid)
                                     "✅ ${stringResource(Res.string.fixedincome_coupon_paid)}"
                                 else
                                     "🔵 ${stringResource(Res.string.fixedincome_coupon_pending)}",
                                 fontSize = 11.sp,
-                                color = if (coupon.isPaid) MaterialTheme.appColors.income.copy(alpha = 0.8f) else MaterialTheme.appColors.cyanAccent.copy(alpha = 0.7f)
+                                color = if (coupon.isPaid) MaterialTheme.appColors.income.copy(alpha = 0.8f) else MaterialTheme.appColors.cyanAccent.copy(
+                                    alpha = 0.7f
+                                )
                             )
                         }
                     }
@@ -95,7 +101,10 @@ internal fun CouponTimelineSection(
                 }
 
                 if (index < schedule.lastIndex) {
-                    HorizontalDivider(color = MaterialTheme.appColors.navyBorder, modifier = Modifier.padding(start = 20.dp))
+                    HorizontalDivider(
+                        color = MaterialTheme.appColors.navyBorder,
+                        modifier = Modifier.padding(start = 20.dp)
+                    )
                 }
             }
         }

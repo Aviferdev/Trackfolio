@@ -8,9 +8,9 @@ package es.aviferdev.n3to.domain.model
 data class Platform(
     val id: String,
     val name: String,
-    val icon: String      = "🏦",
-    val sortOrder: Int    = 0,
+    val icon: String = "🏦",
+    val sortOrder: Int = 0,
     val archived: Boolean = false,
     val createdAt: Long,
-    val notes: String?    = null
+    val notes: String? = null
 )

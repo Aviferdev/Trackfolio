@@ -5,19 +5,19 @@ import es.aviferdev.n3to.data.database.GetComputedBalance
 import es.aviferdev.n3to.domain.model.Account
 
 fun GetComputedBalance.toDomain(): Account = Account(
-    id              = id,
-    name            = name,
-    initialBalance  = initialBalance,
+    id = id,
+    name = name,
+    initialBalance = initialBalance,
     computedBalance = computedBalance,
-    createdAt       = createdAt,
-    currency        = currency
+    createdAt = createdAt,
+    currency = currency
 )
 
 fun GetAllComputedBalances.toDomain(): Account = Account(
-    id              = id,
-    name            = name,
-    initialBalance  = initialBalance,
+    id = id,
+    name = name,
+    initialBalance = initialBalance,
     computedBalance = computedBalance,
-    createdAt       = createdAt,
-    currency        = currency
+    createdAt = createdAt,
+    currency = currency
 )

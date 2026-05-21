@@ -1,39 +1,47 @@
 package es.aviferdev.n3to.ui.settings
 
-import androidx.compose.material3.MaterialTheme
-import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import es.aviferdev.n3to.ui.settings.components.*
 import es.aviferdev.n3to.domain.model.IncomeType
 import es.aviferdev.n3to.ui.common.SectionHeader
 import es.aviferdev.n3to.ui.common.toMaterialIcon
-import es.aviferdev.n3to.ui.common.navigation.TopBarApp
-import es.aviferdev.n3to.ui.theme.*
-import org.jetbrains.compose.resources.stringResource
+import es.aviferdev.n3to.ui.common.topbar.TopBarWithActionsApp
+import es.aviferdev.n3to.ui.settings.components.SettingsGroupCard
+import es.aviferdev.n3to.ui.theme.N3toTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.annual_tab_income
 import n3to.composeapp.generated.resources.income_types_section
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 /** Tipos de ingreso visibles en la Home (excluye los gestionados desde Portfolio). */
 private val HOME_INCOME_TYPES = IncomeType.entries.filter {
     it != IncomeType.DIVIDEND &&
-    it != IncomeType.BOND_DEPOSIT &&
-    it != IncomeType.BONUS_PRIZE &&
-    it != IncomeType.RENTAL_INCOME
+            it != IncomeType.BOND_DEPOSIT &&
+            it != IncomeType.BONUS_PRIZE &&
+            it != IncomeType.RENTAL_INCOME
 }
 
 @Composable
@@ -44,7 +52,7 @@ fun IncomeSettingsScreen(
     Column(
         modifier = Modifier.fillMaxSize().background(MaterialTheme.appColors.navyDeep)
     ) {
-        TopBarApp(
+        TopBarWithActionsApp(
             title = stringResource(Res.string.annual_tab_income),
             navigateBack = onBack,
             containerColor = MaterialTheme.appColors.navySurface,
@@ -65,7 +73,12 @@ fun IncomeSettingsScreen(
                                 .padding(horizontal = 16.dp, vertical = 14.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Icon(incomeType.toMaterialIcon(), contentDescription = null, modifier = Modifier.size(22.dp), tint = MaterialTheme.appColors.cyanAccent)
+                            Icon(
+                                incomeType.toMaterialIcon(),
+                                contentDescription = null,
+                                modifier = Modifier.size(22.dp),
+                                tint = MaterialTheme.appColors.cyanAccent
+                            )
                             Spacer(Modifier.width(12.dp))
                             Text(
                                 text = incomeType.label,
@@ -73,7 +86,11 @@ fun IncomeSettingsScreen(
                                 color = MaterialTheme.appColors.textPrimary,
                                 modifier = Modifier.weight(1f)
                             )
-                            Text("\u203A", fontSize = 18.sp, color = MaterialTheme.appColors.textSecondary)
+                            Text(
+                                "\u203A",
+                                fontSize = 18.sp,
+                                color = MaterialTheme.appColors.textSecondary
+                            )
                         }
                         if (index < HOME_INCOME_TYPES.lastIndex) {
                             HorizontalDivider(

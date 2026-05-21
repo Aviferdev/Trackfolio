@@ -30,7 +30,8 @@ data class CategoryBudgetStatus(
 
     /** Progreso 0.0…1.0+ (puede superar 1.0 si se excede). */
     val progress: Float
-        get() = if (effectiveLimit > 0.0) (spent / effectiveLimit).toFloat().coerceIn(0f, 2f) else 0f
+        get() = if (effectiveLimit > 0.0) (spent / effectiveLimit).toFloat()
+            .coerceIn(0f, 2f) else 0f
 
     /** Cantidad restante hasta el límite (negativa si se ha excedido). */
     val remaining: Double

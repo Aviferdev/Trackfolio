@@ -173,7 +173,12 @@ fun SlidePatrimonio(modifier: Modifier = Modifier) {
             Column {
                 Text(text = "📈 Portfolio", fontSize = 14.sp, color = Color.Unspecified)
                 Spacer(Modifier.height(4.dp))
-                Text(text = "+2.209 €", fontSize = 14.sp, fontWeight = FontWeight.ExtraBold, color = MaterialTheme.appColors.income)
+                Text(
+                    text = "+2.209 €",
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = MaterialTheme.appColors.income
+                )
             }
         }
 
@@ -190,7 +195,12 @@ fun SlidePatrimonio(modifier: Modifier = Modifier) {
             Column {
                 Text(text = "🏠 Hipoteca", fontSize = 14.sp, color = Color.Unspecified)
                 Spacer(Modifier.height(4.dp))
-                Text(text = "−142.300 €", fontSize = 14.sp, fontWeight = FontWeight.ExtraBold, color = MaterialTheme.appColors.expense)
+                Text(
+                    text = "−142.300 €",
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = MaterialTheme.appColors.expense
+                )
             }
         }
     }

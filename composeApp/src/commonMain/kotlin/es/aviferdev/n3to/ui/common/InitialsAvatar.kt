@@ -19,11 +19,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import es.aviferdev.n3to.ui.theme.ExpenseRed
-import es.aviferdev.n3to.ui.theme.PrimaryDark
 import es.aviferdev.n3to.ui.theme.N3toTheme
-import org.jetbrains.compose.ui.tooling.preview.Preview
 import es.aviferdev.n3to.ui.theme.appColors
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 /**
  * Rounded-square avatar with centered initials/emoji.
@@ -44,19 +42,19 @@ fun InitialsAvatar(
     modifier: Modifier = Modifier
 ) {
     Box(
-        modifier         = modifier
+        modifier = modifier
             .size(size)
             .clip(RoundedCornerShape(10.dp))
             .background(bgColor),
         contentAlignment = Alignment.Center
     ) {
         Text(
-            text      = text.take(3),
-            fontSize  = textSize.sp,
+            text = text.take(3),
+            fontSize = textSize.sp,
             fontWeight = FontWeight.ExtraBold,
-            color     = Color.White,
+            color = Color.White,
             textAlign = TextAlign.Center,
-            maxLines  = 1
+            maxLines = 1
         )
     }
 }
@@ -71,7 +69,12 @@ private fun InitialsAvatarPreview() {
         ) {
             InitialsAvatar("A", bgColor = MaterialTheme.appColors.primary)
             InitialsAvatar("📈", bgColor = MaterialTheme.appColors.income)
-            InitialsAvatar("JD", bgColor = MaterialTheme.appColors.expense, size = 48.dp, textSize = 14)
+            InitialsAvatar(
+                "JD",
+                bgColor = MaterialTheme.appColors.expense,
+                size = 48.dp,
+                textSize = 14
+            )
         }
     }
 }

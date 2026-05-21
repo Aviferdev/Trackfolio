@@ -6,7 +6,12 @@ import es.aviferdev.n3to.domain.model.Account
 import es.aviferdev.n3to.domain.repository.AccountRepository
 import es.aviferdev.n3to.domain.usecase.reconciliation.GetReconciliationReminderIntervalUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 data class AccountConfigUiState(
@@ -43,11 +48,22 @@ class AccountConfigViewModel(
         getReminderInterval.set(accountId, days)
     }
 
-    fun openEditSheet() { _showEditSheet.value = true }
-    fun closeEditSheet() { _showEditSheet.value = false }
+    fun openEditSheet() {
+        _showEditSheet.value = true
+    }
 
-    fun requestDelete() { _showDeleteConfirm.value = true }
-    fun cancelDelete() { _showDeleteConfirm.value = false }
+    fun closeEditSheet() {
+        _showEditSheet.value = false
+    }
+
+    fun requestDelete() {
+        _showDeleteConfirm.value = true
+    }
+
+    fun cancelDelete() {
+        _showDeleteConfirm.value = false
+    }
+
     fun confirmDelete() {
         viewModelScope.launch {
             accountRepository.deleteAccount(accountId)

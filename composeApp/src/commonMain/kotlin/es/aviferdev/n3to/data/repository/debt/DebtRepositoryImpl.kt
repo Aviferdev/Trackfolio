@@ -25,7 +25,10 @@ class DebtRepositoryImpl(
     override fun getTotalByDirection(direction: DebtDirection): Flow<Double> =
         dataSource.getTotalByDirection(direction.name)
 
-    override fun getTotalByDirectionAndAccount(accountId: String, direction: DebtDirection): Flow<Double> =
+    override fun getTotalByDirectionAndAccount(
+        accountId: String,
+        direction: DebtDirection
+    ): Flow<Double> =
         dataSource.getTotalByDirectionAndAccount(accountId, direction.name)
 
     override suspend fun save(debt: Debt): Result<Unit> =

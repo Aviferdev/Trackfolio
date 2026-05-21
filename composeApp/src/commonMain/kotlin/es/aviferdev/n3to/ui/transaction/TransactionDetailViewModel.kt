@@ -38,7 +38,8 @@ class TransactionDetailViewModel(
     private val deleteTransactionUseCase: DeleteTransactionUseCase,
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow<TransactionDetailUiState>(TransactionDetailUiState.Loading)
+    private val _uiState =
+        MutableStateFlow<TransactionDetailUiState>(TransactionDetailUiState.Loading)
     val uiState: StateFlow<TransactionDetailUiState> = _uiState.asStateFlow()
 
     init {
@@ -93,9 +94,9 @@ class TransactionDetailViewModel(
         val incomeTypeEmoji = tx.incomeType?.emoji
 
         _uiState.value = TransactionDetailUiState.Success(
-            transaction    = tx,
-            categoryName   = categoryName,
-            accountName    = accountName,
+            transaction = tx,
+            categoryName = categoryName,
+            accountName = accountName,
             incomeTypeLabel = incomeTypeLabel,
             incomeTypeEmoji = incomeTypeEmoji,
         )

@@ -45,12 +45,12 @@ class AccountLocalDataSourceImpl(
     override suspend fun insertAccount(account: Account) {
         withContext(Dispatchers.IO) {
             queries.insert(
-                id          = account.id,
-                name        = account.name,
-                balance     = account.initialBalance,
-                createdAt   = account.createdAt,
+                id = account.id,
+                name = account.name,
+                balance = account.initialBalance,
+                createdAt = account.createdAt,
                 accountType = "GENERAL",  // columna legacy, siempre GENERAL
-                currency    = account.currency
+                currency = account.currency
             )
         }
     }
@@ -59,7 +59,7 @@ class AccountLocalDataSourceImpl(
         withContext(Dispatchers.IO) {
             queries.update(
                 name = account.name,
-                id   = account.id
+                id = account.id
             )
         }
     }

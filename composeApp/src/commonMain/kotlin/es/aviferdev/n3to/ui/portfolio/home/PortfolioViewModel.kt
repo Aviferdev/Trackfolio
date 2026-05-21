@@ -47,11 +47,9 @@ import es.aviferdev.n3to.domain.usecase.issuer.GetIssuersUseCase
 import es.aviferdev.n3to.domain.usecase.platform.GetPlatformsUseCase
 import es.aviferdev.n3to.domain.usecase.portfolio.GetPortfolioValueHistoryUseCase
 import es.aviferdev.n3to.domain.usecase.portfolio.GetPortfoliosByAccountUseCase
-import es.aviferdev.n3to.domain.usecase.portfolio.SavePortfolioUseCase
 import es.aviferdev.n3to.domain.usecase.transaction.GetDividendsByAssetIdsUseCase
 import es.aviferdev.n3to.platform.nowMillis
 import es.aviferdev.n3to.ui.account.AccountSession
-import es.aviferdev.n3to.ui.common.loading.GlobalLoadingManager
 import es.aviferdev.n3to.ui.portfolio.PortfolioStateBuilder
 import es.aviferdev.n3to.ui.portfolio.PortfolioStateInput
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -69,7 +67,7 @@ import kotlinx.coroutines.launch
 
 
 sealed class PortfolioNewUiState {
-    data object Loading : PortfolioNewUiState()
+    data class Loading(val message: String) : PortfolioNewUiState()
     data object Empty : PortfolioNewUiState()
     data object EmptyPortFolio : PortfolioNewUiState()
     data class Success(
@@ -207,13 +205,11 @@ class PortfolioViewModel(
     private val getPortfolioValueHistory: GetPortfolioValueHistoryUseCase,
     private val registerCoupon: RegisterCouponUseCase? = null,
     private val getPortfoliosByAccount: GetPortfoliosByAccountUseCase,
-    private val savePortfolio: SavePortfolioUseCase,
     private val getDividendsByAssetIds: GetDividendsByAssetIdsUseCase,
     private val stateBuilder: PortfolioStateBuilder,
-    private val loadingManager: GlobalLoadingManager
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow<PortfolioNewUiState>(PortfolioNewUiState.Loading)
+    private val _uiState = MutableStateFlow<PortfolioNewUiState>(PortfolioNewUiState.Loading(""))
     val uiState: StateFlow<PortfolioNewUiState> = _uiState.asStateFlow()
 
     init {

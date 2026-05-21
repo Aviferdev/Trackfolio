@@ -16,7 +16,11 @@ class CategoryBudgetRepositoryImpl(
     override fun getBudgetsByAccount(accountId: String): Flow<List<CategoryBudgetEntity>> =
         dataSource.getByAccount(accountId)
 
-    override suspend fun saveBudget(categoryId: String, annualLimit: Double, limitType: LimitType): Result<Unit> =
+    override suspend fun saveBudget(
+        categoryId: String,
+        annualLimit: Double,
+        limitType: LimitType
+    ): Result<Unit> =
         dataSource.upsert(categoryId, annualLimit, limitType.name)
 
     override suspend fun deleteBudget(categoryId: String): Result<Unit> =

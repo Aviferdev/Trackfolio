@@ -3,7 +3,13 @@ package es.aviferdev.n3to.ui.common
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -15,11 +21,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import es.aviferdev.n3to.ui.theme.ExpenseRed
 import es.aviferdev.n3to.ui.theme.N3toTheme
-import es.aviferdev.n3to.ui.theme.WarnAmber
-import org.jetbrains.compose.ui.tooling.preview.Preview
 import es.aviferdev.n3to.ui.theme.appColors
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 /**
  * Contextual alert banner with icon, label, optional action button, and dismiss.
@@ -57,25 +61,25 @@ fun AlertBanner(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text       = icon,
-            fontSize   = 16.sp,
-            color      = color,
-            modifier   = Modifier.padding(end = 10.dp)
+            text = icon,
+            fontSize = 16.sp,
+            color = color,
+            modifier = Modifier.padding(end = 10.dp)
         )
         Text(
-            text       = label,
-            fontSize   = 11.sp,
+            text = label,
+            fontSize = 11.sp,
             fontWeight = FontWeight.Medium,
-            color      = color,
-            modifier   = Modifier.weight(1f)
+            color = color,
+            modifier = Modifier.weight(1f)
         )
         if (actionLabel != null && onAction != null) {
             Text(
-                text       = actionLabel,
-                fontSize   = 10.sp,
+                text = actionLabel,
+                fontSize = 10.sp,
                 fontWeight = FontWeight.Bold,
-                color      = Color.White,
-                modifier   = Modifier
+                color = Color.White,
+                modifier = Modifier
                     .clip(RoundedCornerShape(6.dp))
                     .background(color)
                     .clickable { onAction() }
@@ -85,10 +89,10 @@ fun AlertBanner(
         if (onDismiss != null) {
             Spacer(Modifier.width(6.dp))
             Text(
-                text       = "×",
-                fontSize   = 14.sp,
-                color      = color,
-                modifier   = Modifier.clickable { onDismiss() }
+                text = "×",
+                fontSize = 14.sp,
+                color = color,
+                modifier = Modifier.clickable { onDismiss() }
             )
         }
     }

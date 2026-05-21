@@ -47,24 +47,40 @@ fun RentalPeriodHistorySection(
                 ) {
                     Column {
                         Row {
-                            Text("${period.monthlyRent.toInt()} €/mes", fontWeight = FontWeight.SemiBold, fontSize = 13.sp, color = MaterialTheme.appColors.textPrimary)
+                            Text(
+                                "${period.monthlyRent.toInt()} €/mes",
+                                fontWeight = FontWeight.SemiBold,
+                                fontSize = 13.sp,
+                                color = MaterialTheme.appColors.textPrimary
+                            )
                             Spacer(Modifier.width(6.dp))
                             if (period.isActive) {
-                                StatusTag(label = stringResource(Res.string.common_active_badge), color = MaterialTheme.appColors.income)
+                                StatusTag(
+                                    label = stringResource(Res.string.common_active_badge),
+                                    color = MaterialTheme.appColors.income
+                                )
                             }
                         }
                         Spacer(Modifier.height(2.dp))
                         val dateRange = "${formatDateShort(period.startDate)} — ${
                             period.endDate?.let { formatDateShort(it) } ?: "actualidad"
                         }"
-                        Text(dateRange, fontSize = 11.sp, color = MaterialTheme.appColors.textTertiary)
+                        Text(
+                            dateRange,
+                            fontSize = 11.sp,
+                            color = MaterialTheme.appColors.textTertiary
+                        )
                         period.notes?.let {
                             Text(it, fontSize = 11.sp, color = MaterialTheme.appColors.textTertiary)
                         }
                     }
                 }
                 if (index < periods.lastIndex) {
-                    HorizontalDivider(color = MaterialTheme.appColors.border, thickness = 0.5.dp, modifier = Modifier.padding(vertical = 4.dp))
+                    HorizontalDivider(
+                        color = MaterialTheme.appColors.border,
+                        thickness = 0.5.dp,
+                        modifier = Modifier.padding(vertical = 4.dp)
+                    )
                 }
             }
         }
@@ -77,8 +93,22 @@ private fun RentalPeriodHistorySectionPreview() {
     N3toTheme {
         RentalPeriodHistorySection(
             periods = listOf(
-                RentalPeriod(id = "1", propertyId = "p1", startDate = 1672531200000, endDate = 1704067200000, monthlyRent = 1200.0, notes = null),
-                RentalPeriod(id = "2", propertyId = "p1", startDate = 1704067200000, endDate = null, monthlyRent = 1300.0, notes = "Actualizado 2026")
+                RentalPeriod(
+                    id = "1",
+                    propertyId = "p1",
+                    startDate = 1672531200000,
+                    endDate = 1704067200000,
+                    monthlyRent = 1200.0,
+                    notes = null
+                ),
+                RentalPeriod(
+                    id = "2",
+                    propertyId = "p1",
+                    startDate = 1704067200000,
+                    endDate = null,
+                    monthlyRent = 1300.0,
+                    notes = "Actualizado 2026"
+                )
             )
         )
     }

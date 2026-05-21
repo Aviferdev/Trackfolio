@@ -14,13 +14,13 @@ class SavePortfolioUseCase(private val repository: PortfolioRepository) {
         val chars = "abcdefghijklmnopqrstuvwxyz0123456789"
         val id = "port_" + (1..20).map { chars.random() }.joinToString("")
         val portfolio = Portfolio(
-            id          = id,
-            accountId   = accountId,
-            name        = name,
+            id = id,
+            accountId = accountId,
+            name = name,
             description = description,
-            color       = color,
-            sortOrder   = 0,
-            createdAt   = nowMillis()
+            color = color,
+            sortOrder = 0,
+            createdAt = nowMillis()
         )
         return repository.save(portfolio)
     }

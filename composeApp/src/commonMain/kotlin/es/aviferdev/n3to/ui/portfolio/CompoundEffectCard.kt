@@ -1,7 +1,5 @@
 package es.aviferdev.n3to.ui.portfolio
 
-import androidx.compose.material3.MaterialTheme
-import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -17,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -34,20 +33,18 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.portfolio.CompoundEffect
-
 import es.aviferdev.n3to.ui.theme.N3toTheme
-
-import es.aviferdev.n3to.ui.theme.WarnAmber
+import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.ui.theme.formatAmount
 import es.aviferdev.n3to.ui.theme.formatPercent
 import es.aviferdev.n3to.ui.theme.maskAmount
-import org.jetbrains.compose.ui.tooling.preview.Preview
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.portfolio_compound_effect_estimated
 import n3to.composeapp.generated.resources.portfolio_compound_effect_title
 import n3to.composeapp.generated.resources.portfolio_compound_low_effect
 import n3to.composeapp.generated.resources.portfolio_compound_no_effect
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import kotlin.math.pow
 
 private const val PROJECTION_YEARS = 30
@@ -200,11 +197,13 @@ private fun ExpandedContent(
                     message = stringResource(Res.string.portfolio_compound_no_effect)
                 )
             }
+
             compoundEffect.compoundEffect <= 0.0 -> {
                 EmptyState(
                     message = stringResource(Res.string.portfolio_compound_low_effect)
                 )
             }
+
             else -> {
                 MainMetric(compoundEffect, balancesHidden)
                 Spacer(Modifier.height(6.dp))

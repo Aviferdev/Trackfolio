@@ -1,17 +1,41 @@
 package es.aviferdev.n3to.ui.valuable
 
-import androidx.compose.material3.MaterialTheme
-import es.aviferdev.n3to.ui.theme.appColors
-import es.aviferdev.n3to.platform.nowMillis
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Close
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -19,9 +43,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.ValuableExpense
 import es.aviferdev.n3to.domain.model.ValuableExpenseCategories
+import es.aviferdev.n3to.platform.nowMillis
 import es.aviferdev.n3to.ui.common.input.DatePickerRow
-import es.aviferdev.n3to.ui.theme.*
-import org.jetbrains.compose.resources.stringResource
+import es.aviferdev.n3to.ui.theme.appColors
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.valuable_add_sell_expense
 import n3to.composeapp.generated.resources.valuable_confirm_sale
@@ -31,6 +55,7 @@ import n3to.composeapp.generated.resources.valuable_sell_date_label
 import n3to.composeapp.generated.resources.valuable_sell_expenses_title
 import n3to.composeapp.generated.resources.valuable_sell_price_label
 import n3to.composeapp.generated.resources.valuable_sell_title_format
+import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -45,14 +70,22 @@ fun SellValuableBottomSheet(
     var saleExpenses by remember { mutableStateOf(listOf<ValuableExpense>()) }
     val expenseCategories = remember { ValuableExpenseCategories.allIds.toList() }
 
-    ModalBottomSheet(onDismissRequest = onDismiss, containerColor = MaterialTheme.appColors.background) {
+    ModalBottomSheet(
+        onDismissRequest = onDismiss,
+        containerColor = MaterialTheme.appColors.background
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 20.dp, vertical = 8.dp)
                 .verticalScroll(rememberScrollState())
         ) {
-            Text(stringResource(Res.string.valuable_sell_title_format, valuableName), fontWeight = FontWeight.Bold, fontSize = 20.sp, color = MaterialTheme.appColors.textPrimary)
+            Text(
+                stringResource(Res.string.valuable_sell_title_format, valuableName),
+                fontWeight = FontWeight.Bold,
+                fontSize = 20.sp,
+                color = MaterialTheme.appColors.textPrimary
+            )
             Spacer(Modifier.height(20.dp))
 
             OutlinedTextField(
@@ -72,7 +105,12 @@ fun SellValuableBottomSheet(
             Spacer(Modifier.height(16.dp))
 
             // Gastos de venta
-            Text(stringResource(Res.string.valuable_sell_expenses_title), fontWeight = FontWeight.SemiBold, fontSize = 14.sp, color = MaterialTheme.appColors.textPrimary)
+            Text(
+                stringResource(Res.string.valuable_sell_expenses_title),
+                fontWeight = FontWeight.SemiBold,
+                fontSize = 14.sp,
+                color = MaterialTheme.appColors.textPrimary
+            )
             Spacer(Modifier.height(8.dp))
             saleExpenses.forEachIndexed { index, expense ->
                 Row(
@@ -98,7 +136,12 @@ fun SellValuableBottomSheet(
                         ) {
                             expenseCategories.forEach { catId ->
                                 DropdownMenuItem(
-                                    text = { Text(catId.removePrefix("cat_exp_val_"), fontSize = 13.sp) },
+                                    text = {
+                                        Text(
+                                            catId.removePrefix("cat_exp_val_"),
+                                            fontSize = 13.sp
+                                        )
+                                    },
                                     onClick = {
                                         saleExpenses = saleExpenses.toMutableList().apply {
                                             set(index, expense.copy(categoryId = catId))
@@ -125,13 +168,20 @@ fun SellValuableBottomSheet(
                     IconButton(onClick = {
                         saleExpenses = saleExpenses.toMutableList().apply { removeAt(index) }
                     }) {
-                        Icon(Icons.Outlined.Close, contentDescription = stringResource(Res.string.valuable_expense_delete_cd), tint = MaterialTheme.appColors.expense)
+                        Icon(
+                            Icons.Outlined.Close,
+                            contentDescription = stringResource(Res.string.valuable_expense_delete_cd),
+                            tint = MaterialTheme.appColors.expense
+                        )
                     }
                 }
                 Spacer(Modifier.height(6.dp))
             }
             TextButton(onClick = {
-                saleExpenses = saleExpenses + ValuableExpense(categoryId = expenseCategories.first(), amount = 0.0)
+                saleExpenses = saleExpenses + ValuableExpense(
+                    categoryId = expenseCategories.first(),
+                    amount = 0.0
+                )
             }) {
                 Icon(Icons.Outlined.Add, contentDescription = null, modifier = Modifier.size(18.dp))
                 Spacer(Modifier.width(4.dp))
@@ -149,7 +199,10 @@ fun SellValuableBottomSheet(
                 shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.appColors.income)
             ) {
-                Text(stringResource(Res.string.valuable_confirm_sale), fontWeight = FontWeight.SemiBold)
+                Text(
+                    stringResource(Res.string.valuable_confirm_sale),
+                    fontWeight = FontWeight.SemiBold
+                )
             }
             Spacer(Modifier.height(32.dp))
         }

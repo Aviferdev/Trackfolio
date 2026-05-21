@@ -18,7 +18,12 @@ class SavePlatformUseCase(private val repository: PlatformRepository) {
 }
 
 class RenamePlatformUseCase(private val repository: PlatformRepository) {
-    suspend operator fun invoke(id: String, newName: String, newIcon: String, notes: String?): Result<Unit> =
+    suspend operator fun invoke(
+        id: String,
+        newName: String,
+        newIcon: String,
+        notes: String?
+    ): Result<Unit> =
         repository.rename(id, newName, newIcon, notes)
 }
 
@@ -54,12 +59,12 @@ class CreateAndLinkPlatformUseCase(
         createdAt: Long
     ): Result<Unit> {
         val platform = Platform(
-            id        = "platform_$createdAt",
-            name      = name,
-            icon      = icon.ifBlank { "🏦" },
+            id = "platform_$createdAt",
+            name = name,
+            icon = icon.ifBlank { "🏦" },
             sortOrder = sortOrder,
             createdAt = createdAt,
-            notes     = notes
+            notes = notes
         )
         val result = platformRepository.save(platform)
         if (result.isFailure) return result

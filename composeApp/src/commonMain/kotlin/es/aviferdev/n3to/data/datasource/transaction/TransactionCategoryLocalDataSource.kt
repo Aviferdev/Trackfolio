@@ -7,7 +7,11 @@ interface TransactionCategoryLocalDataSource {
     fun getByAccount(accountId: String): Flow<List<CategoryEntity>>
     fun getByTypeAndAccount(accountId: String, type: String): Flow<List<CategoryEntity>>
     fun getAllIncludingArchivedByAccount(accountId: String): Flow<List<CategoryEntity>>
-    fun getByTypeIncludingArchivedByAccount(accountId: String, type: String): Flow<List<CategoryEntity>>
+    fun getByTypeIncludingArchivedByAccount(
+        accountId: String,
+        type: String
+    ): Flow<List<CategoryEntity>>
+
     fun getById(id: String): Flow<CategoryEntity?>
     fun countByAccount(accountId: String): Flow<Long>
     suspend fun insert(entity: CategoryEntity): Result<Unit>

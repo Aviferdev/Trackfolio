@@ -31,10 +31,11 @@ class ExchangeRateRemoteDataSourceImpl(
     override suspend fun fetchEurUsdRate(): Result<ExchangeRate> {
         return try {
             println("[PriceRefresh] 💱 GET EUR/USD")
-            val response = httpClient.get("https://query1.finance.yahoo.com/v8/finance/chart/EURUSD=X") {
-                parameter("interval", "1d")
-                parameter("range", "1d")
-            }
+            val response =
+                httpClient.get("https://query1.finance.yahoo.com/v8/finance/chart/EURUSD=X") {
+                    parameter("interval", "1d")
+                    parameter("range", "1d")
+                }
             println("[PriceRefresh] ✅ ${response.status} EUR/USD")
             val body = response.bodyAsText()
             val rate = parseEurUsdRateResponse(body)

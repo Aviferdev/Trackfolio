@@ -117,7 +117,12 @@ object FixedIncomeCalculator {
 
         var nextDate = startDate
         val maturity = Instant.fromEpochMilliseconds(maturityDate)
-        while (Instant.fromEpochMilliseconds(nextDate) < Instant.fromEpochMilliseconds(asOfDate.coerceAtLeast(startDate))) {
+        while (Instant.fromEpochMilliseconds(nextDate) < Instant.fromEpochMilliseconds(
+                asOfDate.coerceAtLeast(
+                    startDate
+                )
+            )
+        ) {
             nextDate += intervalDays * 24 * 60 * 60 * 1000L
         }
 

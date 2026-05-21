@@ -48,7 +48,9 @@ fun AddEditPortfolioBottomSheet(
                 .imePadding()
         ) {
             Text(
-                text = if (isEditing) stringResource(Res.string.portfolio_edit_portfolio_title_alt) else stringResource(Res.string.portfolio_new_portfolio_title),
+                text = if (isEditing) stringResource(Res.string.portfolio_edit_portfolio_title_alt) else stringResource(
+                    Res.string.portfolio_new_portfolio_title
+                ),
                 fontSize = 18.sp,
                 fontWeight = FontWeight.SemiBold,
                 color = MaterialTheme.appColors.textPrimary,
@@ -61,7 +63,9 @@ fun AddEditPortfolioBottomSheet(
                 label = { Text(stringResource(Res.string.common_name)) },
                 placeholder = { Text(stringResource(Res.string.portfolio_portfolio_name)) },
                 isError = nameError,
-                supportingText = if (nameError) {{ Text(stringResource(Res.string.portfolio_add_asset_name_required)) }} else null,
+                supportingText = if (nameError) {
+                    { Text(stringResource(Res.string.portfolio_add_asset_name_required)) }
+                } else null,
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
                 shape = RoundedCornerShape(10.dp),
@@ -91,7 +95,9 @@ fun AddEditPortfolioBottomSheet(
 
             Button(
                 onClick = {
-                    if (name.isBlank()) { nameError = true; return@Button }
+                    if (name.isBlank()) {
+                        nameError = true; return@Button
+                    }
                     onSave(name.trim(), description.trim().ifBlank { null })
                 },
                 modifier = Modifier.fillMaxWidth().height(52.dp),
@@ -99,7 +105,9 @@ fun AddEditPortfolioBottomSheet(
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.appColors.primary)
             ) {
                 Text(
-                    text = if (isEditing) stringResource(Res.string.common_save_changes) else stringResource(Res.string.portfolio_save),
+                    text = if (isEditing) stringResource(Res.string.common_save_changes) else stringResource(
+                        Res.string.portfolio_save
+                    ),
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Medium
                 )

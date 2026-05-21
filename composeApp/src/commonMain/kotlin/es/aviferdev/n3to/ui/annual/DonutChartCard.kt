@@ -1,7 +1,5 @@
 package es.aviferdev.n3to.ui.annual
 
-import androidx.compose.material3.MaterialTheme
-import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -23,6 +21,7 @@ import androidx.compose.material.icons.outlined.BarChart
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -30,7 +29,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -39,16 +37,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.ui.common.DonutSlice
 import es.aviferdev.n3to.ui.theme.CategoryPalette
-
 import es.aviferdev.n3to.ui.theme.N3toTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.ui.theme.formatAmountEuro
 import es.aviferdev.n3to.ui.theme.maskAmount
-import org.jetbrains.compose.ui.tooling.preview.Preview
-import kotlin.math.abs
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.common_total
 import n3to.composeapp.generated.resources.networth_no_data
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 /**
  * Componente de gráfico donut reutilizable.
@@ -69,23 +66,23 @@ fun DonutChartCard(
     }
 
     Card(
-        modifier  = modifier.fillMaxWidth(),
-        shape     = RoundedCornerShape(14.dp),
-        colors    = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.navySurface),
+        modifier = modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(14.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.navySurface),
         elevation = CardDefaults.cardElevation(0.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
-                text       = title,
-                fontSize   = 14.sp,
+                text = title,
+                fontSize = 14.sp,
                 fontWeight = FontWeight.SemiBold,
-                color      = MaterialTheme.appColors.textPrimary
+                color = MaterialTheme.appColors.textPrimary
             )
             Spacer(Modifier.height(2.dp))
             Text(
-                text     = subtitle,
+                text = subtitle,
                 fontSize = 11.sp,
-                color    = MaterialTheme.appColors.textSecondary
+                color = MaterialTheme.appColors.textSecondary
             )
 
             Spacer(Modifier.height(16.dp))
@@ -93,30 +90,30 @@ fun DonutChartCard(
             Row(verticalAlignment = Alignment.CenterVertically) {
                 // ── Donut ────────────────────────────────────────────────
                 Box(
-                    modifier         = Modifier
+                    modifier = Modifier
                         .size(120.dp)
                         .padding(4.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     DonutCanvas(
-                        slices   = slices,
+                        slices = slices,
                         modifier = Modifier.fillMaxWidth().aspectRatio(1f)
                     )
                     // Total al centro
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text(
-                            text     = stringResource(Res.string.common_total),
+                            text = stringResource(Res.string.common_total),
                             fontSize = 10.sp,
-                            color    = MaterialTheme.appColors.textSecondary
+                            color = MaterialTheme.appColors.textSecondary
                         )
                         Text(
-                            text       = maskAmount(
+                            text = maskAmount(
                                 formatAmountEuro(totalAmount),
                                 balancesHidden
                             ),
-                            fontSize   = 12.sp,
+                            fontSize = 12.sp,
                             fontWeight = FontWeight.SemiBold,
-                            color      = MaterialTheme.appColors.textPrimary
+                            color = MaterialTheme.appColors.textPrimary
                         )
                     }
                 }
@@ -125,7 +122,7 @@ fun DonutChartCard(
 
                 // ── Leyenda ─────────────────────────────────────────────
                 Column(
-                    modifier            = Modifier.weight(1f),
+                    modifier = Modifier.weight(1f),
                     verticalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
                     slices.forEach { slice ->
@@ -143,25 +140,25 @@ private fun DonutCanvas(
     modifier: Modifier = Modifier
 ) {
     Canvas(modifier = modifier) {
-        val side       = minOf(size.width, size.height)
-        val strokeW    = side * 0.22f
-        val padding    = strokeW / 2f
-        val arcSize    = Size(side - strokeW, side - strokeW)
-        val topLeft    = Offset(padding, padding)
-        val gapDeg     = 1.5f
+        val side = minOf(size.width, size.height)
+        val strokeW = side * 0.22f
+        val padding = strokeW / 2f
+        val arcSize = Size(side - strokeW, side - strokeW)
+        val topLeft = Offset(padding, padding)
+        val gapDeg = 1.5f
         var startAngle = -90f
 
         slices.forEach { slice ->
             val sweep = (slice.percent.toFloat() * 360f / 100f) - gapDeg
             if (sweep > 0f) {
                 drawArc(
-                    color     = slice.color,
+                    color = slice.color,
                     startAngle = startAngle,
                     sweepAngle = sweep,
-                    useCenter  = false,
-                    topLeft    = topLeft,
-                    size       = arcSize,
-                    style      = Stroke(width = strokeW)
+                    useCenter = false,
+                    topLeft = topLeft,
+                    size = arcSize,
+                    style = Stroke(width = strokeW)
                 )
             }
             startAngle += (slice.percent.toFloat() * 360f / 100f)
@@ -172,7 +169,7 @@ private fun DonutCanvas(
 @Composable
 private fun DonutLegendRow(slice: DonutSlice, balancesHidden: Boolean) {
     Row(
-        modifier          = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Box(
@@ -183,32 +180,32 @@ private fun DonutLegendRow(slice: DonutSlice, balancesHidden: Boolean) {
         )
         Spacer(Modifier.width(8.dp))
         Text(
-            text     = slice.icon,
+            text = slice.icon,
             fontSize = 12.sp
         )
         Spacer(Modifier.width(4.dp))
         Text(
-            text     = slice.name,
+            text = slice.name,
             fontSize = 12.sp,
-            color    = MaterialTheme.appColors.textPrimary,
+            color = MaterialTheme.appColors.textPrimary,
             modifier = Modifier.weight(1f, fill = true),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
-Text(
-                            text       = maskAmount(formatAmountEuro(slice.amount), balancesHidden),
-                            fontSize   = 11.sp,
-                            color      = MaterialTheme.appColors.textSecondary,
-                            fontWeight = FontWeight.Normal,
-                            modifier   = Modifier.wrapContentSize()
-                        )
+        Text(
+            text = maskAmount(formatAmountEuro(slice.amount), balancesHidden),
+            fontSize = 11.sp,
+            color = MaterialTheme.appColors.textSecondary,
+            fontWeight = FontWeight.Normal,
+            modifier = Modifier.wrapContentSize()
+        )
         Spacer(Modifier.width(6.dp))
         Text(
-            text       = "(${formatPercentLegend(slice.percent)}%)",
-            fontSize   = 11.sp,
-            color      = MaterialTheme.appColors.textSecondary.copy(alpha = 0.7f),
+            text = "(${formatPercentLegend(slice.percent)}%)",
+            fontSize = 11.sp,
+            color = MaterialTheme.appColors.textSecondary.copy(alpha = 0.7f),
             fontWeight = FontWeight.Normal,
-            modifier   = Modifier.wrapContentSize()
+            modifier = Modifier.wrapContentSize()
         )
     }
 }
@@ -216,9 +213,9 @@ Text(
 @Composable
 private fun EmptyDonutState(title: String, subtitle: String) {
     Card(
-        modifier  = Modifier.fillMaxWidth(),
-        shape     = RoundedCornerShape(14.dp),
-        colors    = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.navySurface),
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(14.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.navySurface),
         elevation = CardDefaults.cardElevation(0.dp)
     ) {
         Column(
@@ -228,16 +225,16 @@ private fun EmptyDonutState(title: String, subtitle: String) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text       = title,
-                fontSize   = 14.sp,
+                text = title,
+                fontSize = 14.sp,
                 fontWeight = FontWeight.SemiBold,
-                color      = MaterialTheme.appColors.textPrimary
+                color = MaterialTheme.appColors.textPrimary
             )
             Spacer(Modifier.height(2.dp))
             Text(
-                text     = subtitle,
+                text = subtitle,
                 fontSize = 11.sp,
-                color    = MaterialTheme.appColors.textSecondary
+                color = MaterialTheme.appColors.textSecondary
             )
             Spacer(Modifier.height(16.dp))
             Icon(
@@ -248,9 +245,9 @@ private fun EmptyDonutState(title: String, subtitle: String) {
             )
             Spacer(Modifier.height(8.dp))
             Text(
-                text     = stringResource(Res.string.networth_no_data),
+                text = stringResource(Res.string.networth_no_data),
                 fontSize = 13.sp,
-                color    = MaterialTheme.appColors.textSecondary,
+                color = MaterialTheme.appColors.textSecondary,
                 textAlign = TextAlign.Center
             )
         }
@@ -264,10 +261,34 @@ private fun formatPercentLegend(value: Double): String {
 
 private fun createMockDonutSlices(): List<DonutSlice> {
     return listOf(
-        DonutSlice(name = "Salario", icon = "💼", amount = 36000.0, percent = 60.0, color = CategoryPalette[0]),
-        DonutSlice(name = "Inversiones", icon = "📈", amount = 12000.0, percent = 20.0, color = CategoryPalette[1]),
-        DonutSlice(name = "Freelance", icon = "💻", amount = 8000.0, percent = 13.3, color = CategoryPalette[2]),
-        DonutSlice(name = "Otros", icon = "🎁", amount = 4000.0, percent = 6.7, color = CategoryPalette[3])
+        DonutSlice(
+            name = "Salario",
+            icon = "💼",
+            amount = 36000.0,
+            percent = 60.0,
+            color = CategoryPalette[0]
+        ),
+        DonutSlice(
+            name = "Inversiones",
+            icon = "📈",
+            amount = 12000.0,
+            percent = 20.0,
+            color = CategoryPalette[1]
+        ),
+        DonutSlice(
+            name = "Freelance",
+            icon = "💻",
+            amount = 8000.0,
+            percent = 13.3,
+            color = CategoryPalette[2]
+        ),
+        DonutSlice(
+            name = "Otros",
+            icon = "🎁",
+            amount = 4000.0,
+            percent = 6.7,
+            color = CategoryPalette[3]
+        )
     )
 }
 

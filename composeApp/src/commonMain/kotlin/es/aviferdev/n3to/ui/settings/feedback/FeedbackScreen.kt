@@ -1,7 +1,5 @@
 package es.aviferdev.n3to.ui.settings.feedback
 
-import androidx.compose.material3.MaterialTheme
-import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -24,6 +22,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
@@ -41,8 +40,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import es.aviferdev.n3to.ui.common.navigation.TopBarApp
-
+import es.aviferdev.n3to.ui.common.topbar.TopBarWithActionsApp
+import es.aviferdev.n3to.ui.theme.appColors
+import kotlinx.coroutines.delay
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.feedback_category_label
 import n3to.composeapp.generated.resources.feedback_description_field
@@ -58,7 +58,6 @@ import n3to.composeapp.generated.resources.feedback_title_field
 import n3to.composeapp.generated.resources.feedback_title_placeholder
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
-import kotlinx.coroutines.delay
 
 @Composable
 fun FeedbackScreen(
@@ -77,6 +76,7 @@ fun FeedbackScreen(
                     delay(1200)
                     navigateBack()
                 }
+
                 is FeedbackEvent.Error -> {
                     snackbarHostState.showSnackbar(event.message)
                 }
@@ -94,7 +94,7 @@ fun FeedbackScreen(
                 .padding(innerPadding)
                 .background(MaterialTheme.appColors.navyDeep)
         ) {
-            TopBarApp(
+            TopBarWithActionsApp(
                 title = stringResource(Res.string.feedback_title),
                 navigateBack = navigateBack
             )
@@ -134,7 +134,12 @@ fun FeedbackScreen(
                     value = state.title,
                     onValueChange = viewModel::onTitleChanged,
                     label = { Text(stringResource(Res.string.feedback_title_field)) },
-                    placeholder = { Text(stringResource(Res.string.feedback_title_placeholder), color = MaterialTheme.appColors.textTertiary) },
+                    placeholder = {
+                        Text(
+                            stringResource(Res.string.feedback_title_placeholder),
+                            color = MaterialTheme.appColors.textTertiary
+                        )
+                    },
                     singleLine = true,
                     enabled = !state.isSending,
                     modifier = Modifier.fillMaxWidth(),
@@ -159,7 +164,12 @@ fun FeedbackScreen(
                     value = state.description,
                     onValueChange = viewModel::onDescriptionChanged,
                     label = { Text(stringResource(Res.string.feedback_description_field)) },
-                    placeholder = { Text(stringResource(Res.string.feedback_description_placeholder), color = MaterialTheme.appColors.textTertiary) },
+                    placeholder = {
+                        Text(
+                            stringResource(Res.string.feedback_description_placeholder),
+                            color = MaterialTheme.appColors.textTertiary
+                        )
+                    },
                     minLines = 4,
                     maxLines = 8,
                     enabled = !state.isSending,

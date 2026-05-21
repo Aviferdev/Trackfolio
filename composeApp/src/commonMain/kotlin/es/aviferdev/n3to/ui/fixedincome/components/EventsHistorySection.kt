@@ -116,7 +116,12 @@ private fun EventItem(
                 val eventGrossText = stringResource(Res.string.fixedincome_gross_label)
                 if (event.irpfPercent > 0 || event.commissionAmount > 0) {
                     Text(
-                        text = "$eventGrossText: ${maskAmount(formatAmount(event.grossAmount), balancesHidden)}",
+                        text = "$eventGrossText: ${
+                            maskAmount(
+                                formatAmount(event.grossAmount),
+                                balancesHidden
+                            )
+                        }",
                         fontSize = 10.sp,
                         color = MaterialTheme.appColors.textTertiary
                     )
@@ -129,7 +134,11 @@ private fun EventItem(
             Row {
                 if (event.irpfPercent > 0) {
                     Text(
-                        text = "${stringResource(Res.string.fixedincome_retention_label)} ${formatPercent(event.irpfPercent)}%",
+                        text = "${stringResource(Res.string.fixedincome_retention_label)} ${
+                            formatPercent(
+                                event.irpfPercent
+                            )
+                        }%",
                         fontSize = 10.sp,
                         color = MaterialTheme.appColors.pnlNegative
                     )
@@ -137,7 +146,12 @@ private fun EventItem(
                 }
                 if (event.commissionAmount > 0) {
                     Text(
-                        text = "${stringResource(Res.string.fixedincome_commission_label)}: ${maskAmount(formatAmount(event.commissionAmount), balancesHidden)}",
+                        text = "${stringResource(Res.string.fixedincome_commission_label)}: ${
+                            maskAmount(
+                                formatAmount(event.commissionAmount),
+                                balancesHidden
+                            )
+                        }",
                         fontSize = 10.sp,
                         color = MaterialTheme.appColors.textTertiary
                     )

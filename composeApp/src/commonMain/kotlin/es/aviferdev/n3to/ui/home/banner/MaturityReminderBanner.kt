@@ -1,8 +1,5 @@
 package es.aviferdev.n3to.ui.home.banner
 
-import androidx.compose.material3.MaterialTheme
-import es.aviferdev.n3to.ui.theme.appColors
-import es.aviferdev.n3to.platform.nowMillis
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -10,9 +7,18 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -25,10 +31,10 @@ import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.FixedIncomePosition
 import es.aviferdev.n3to.domain.model.FixedIncomeType
 import es.aviferdev.n3to.domain.model.InterestFrequency
+import es.aviferdev.n3to.platform.nowMillis
 import es.aviferdev.n3to.ui.common.toMaterialIcon
-
 import es.aviferdev.n3to.ui.theme.N3toTheme
-
+import es.aviferdev.n3to.ui.theme.appColors
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.home_maturity_more_format
 import n3to.composeapp.generated.resources.home_maturity_title
@@ -44,9 +50,9 @@ fun MaturityReminderBanner(
     modifier: Modifier = Modifier
 ) {
     AnimatedVisibility(
-        visible  = visible,
-        enter    = expandVertically() + fadeIn(),
-        exit     = shrinkVertically() + fadeOut(),
+        visible = visible,
+        enter = expandVertically() + fadeIn(),
+        exit = shrinkVertically() + fadeOut(),
         modifier = modifier
     ) {
         Column(
@@ -59,22 +65,26 @@ fun MaturityReminderBanner(
             // Header row
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier          = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth()
             ) {
                 Text("⚠️", fontSize = 16.sp)
                 Spacer(Modifier.width(8.dp))
                 Text(
-                    text       = stringResource(Res.string.home_maturity_title),
-                    fontSize   = 12.sp,
+                    text = stringResource(Res.string.home_maturity_title),
+                    fontSize = 12.sp,
                     fontWeight = FontWeight.Bold,
-                    color      = MaterialTheme.appColors.warnAmber,
-                    modifier   = Modifier.weight(1f)
+                    color = MaterialTheme.appColors.warnAmber,
+                    modifier = Modifier.weight(1f)
                 )
                 TextButton(
-                    onClick        = onDismiss,
+                    onClick = onDismiss,
                     contentPadding = PaddingValues(horizontal = 4.dp, vertical = 0.dp)
                 ) {
-                    Text("×", fontSize = 16.sp, color = MaterialTheme.appColors.warnAmber.copy(alpha = 0.6f))
+                    Text(
+                        "×",
+                        fontSize = 16.sp,
+                        color = MaterialTheme.appColors.warnAmber.copy(alpha = 0.6f)
+                    )
                 }
             }
 
@@ -83,24 +93,29 @@ fun MaturityReminderBanner(
             shown.forEach { position ->
                 Spacer(Modifier.height(8.dp))
                 Row(
-                    modifier          = Modifier
+                    modifier = Modifier
                         .fillMaxWidth()
                         .clickable { onViewDetails(position.id) },
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(position.type.toMaterialIcon(), contentDescription = null, modifier = Modifier.size(16.dp), tint = MaterialTheme.appColors.warnAmber)
+                    Icon(
+                        position.type.toMaterialIcon(),
+                        contentDescription = null,
+                        modifier = Modifier.size(16.dp),
+                        tint = MaterialTheme.appColors.warnAmber
+                    )
                     Spacer(Modifier.width(8.dp))
                     Text(
-                        text       = position.name,
-                        fontSize   = 12.sp,
+                        text = position.name,
+                        fontSize = 12.sp,
                         fontWeight = FontWeight.Medium,
-                        color      = MaterialTheme.appColors.warnAmber,
-                        modifier   = Modifier.weight(1f)
+                        color = MaterialTheme.appColors.warnAmber,
+                        modifier = Modifier.weight(1f)
                     )
                     Text(
-                        text     = "${position.remainingDays}d",
+                        text = "${position.remainingDays}d",
                         fontSize = 11.sp,
-                        color    = MaterialTheme.appColors.warnAmber.copy(alpha = 0.7f)
+                        color = MaterialTheme.appColors.warnAmber.copy(alpha = 0.7f)
                     )
                 }
             }
@@ -108,9 +123,9 @@ fun MaturityReminderBanner(
             if (positions.size > 3) {
                 Spacer(Modifier.height(4.dp))
                 Text(
-                    text     = stringResource(Res.string.home_maturity_more_format, positions.size - 3),
+                    text = stringResource(Res.string.home_maturity_more_format, positions.size - 3),
                     fontSize = 11.sp,
-                    color    = MaterialTheme.appColors.warnAmber.copy(alpha = 0.55f),
+                    color = MaterialTheme.appColors.warnAmber.copy(alpha = 0.55f),
                     modifier = Modifier.padding(start = 22.dp)
                 )
             }

@@ -17,7 +17,7 @@ class GetOutdatedAssetsUseCase(
     operator fun invoke(accountId: String): Flow<List<Asset>> {
         val intervalDays = appSettings.getInt(KEY_REMINDER_INTERVAL, DEFAULT_INTERVAL)
         val thresholdMillis = nowMillis() -
-            (intervalDays.toLong() * 24 * 60 * 60 * 1000)
+                (intervalDays.toLong() * 24 * 60 * 60 * 1000)
         return repository.getOutdatedAssets(accountId, thresholdMillis)
     }
 

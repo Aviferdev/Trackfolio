@@ -29,13 +29,13 @@ class PortfolioLocalDataSourceImpl(
     override suspend fun insert(entity: PortfolioEntity) {
         withContext(Dispatchers.IO) {
             queries.insert(
-                id          = entity.id,
-                accountId   = entity.accountId,
-                name        = entity.name,
+                id = entity.id,
+                accountId = entity.accountId,
+                name = entity.name,
                 description = entity.description,
-                color       = entity.color,
-                sortOrder   = entity.sortOrder,
-                createdAt   = entity.createdAt
+                color = entity.color,
+                sortOrder = entity.sortOrder,
+                createdAt = entity.createdAt
             )
         }
     }
@@ -43,11 +43,11 @@ class PortfolioLocalDataSourceImpl(
     override suspend fun update(entity: PortfolioEntity) {
         withContext(Dispatchers.IO) {
             queries.update(
-                name        = entity.name,
+                name = entity.name,
                 description = entity.description,
-                color       = entity.color,
-                sortOrder   = entity.sortOrder,
-                id          = entity.id
+                color = entity.color,
+                sortOrder = entity.sortOrder,
+                id = entity.id
             )
         }
     }

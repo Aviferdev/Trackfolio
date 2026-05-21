@@ -37,17 +37,22 @@ class PlatformLocalDataSourceImpl(
     override suspend fun insert(platform: Platform): Result<Unit> = runCatching {
         withContext(Dispatchers.IO) {
             queries.insert(
-                id        = platform.id,
-                name      = platform.name,
-                icon      = platform.icon,
+                id = platform.id,
+                name = platform.name,
+                icon = platform.icon,
                 sortOrder = platform.sortOrder.toLong(),
                 createdAt = platform.createdAt,
-                notes     = platform.notes
+                notes = platform.notes
             )
         }
     }
 
-    override suspend fun rename(id: String, newName: String, newIcon: String, notes: String?): Result<Unit> = runCatching {
+    override suspend fun rename(
+        id: String,
+        newName: String,
+        newIcon: String,
+        notes: String?
+    ): Result<Unit> = runCatching {
         withContext(Dispatchers.IO) {
             queries.updateNameAndIcon(name = newName, icon = newIcon, id = id)
             if (notes != null) {

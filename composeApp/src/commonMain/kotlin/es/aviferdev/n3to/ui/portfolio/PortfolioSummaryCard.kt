@@ -1,7 +1,5 @@
 package es.aviferdev.n3to.ui.portfolio
 
-import androidx.compose.material3.MaterialTheme
-import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -25,9 +24,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-
 import es.aviferdev.n3to.ui.theme.N3toTheme
-
+import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.ui.theme.formatAmount
 import es.aviferdev.n3to.ui.theme.formatPercent
 import es.aviferdev.n3to.ui.theme.maskAmount
@@ -88,7 +86,11 @@ fun PortfolioSummaryCard(
             }
             .padding(horizontal = 20.dp, vertical = 20.dp)
     ) {
-        Text(stringResource(Res.string.portfolio_summary_total_value), fontSize = 12.sp, color = Color.White.copy(alpha = 0.45f))
+        Text(
+            stringResource(Res.string.portfolio_summary_total_value),
+            fontSize = 12.sp,
+            color = Color.White.copy(alpha = 0.45f)
+        )
         Spacer(Modifier.height(6.dp))
         Row(verticalAlignment = Alignment.Bottom) {
             Text(
@@ -149,13 +151,24 @@ fun PortfolioSummaryCard(
         if (totalRealizedPnL != 0.0 && totalUnrealizedPnL != 0.0) {
             Spacer(Modifier.height(12.dp))
             Row(Modifier.fillMaxWidth(), Arrangement.SpaceBetween) {
-                PnLChip(stringResource(Res.string.portfolio_summary_realized), totalRealizedPnL, balancesHidden)
-                PnLChip(stringResource(Res.string.portfolio_summary_unrealized), totalUnrealizedPnL, balancesHidden)
+                PnLChip(
+                    stringResource(Res.string.portfolio_summary_realized),
+                    totalRealizedPnL,
+                    balancesHidden
+                )
+                PnLChip(
+                    stringResource(Res.string.portfolio_summary_unrealized),
+                    totalUnrealizedPnL,
+                    balancesHidden
+                )
             }
         }
         Spacer(Modifier.height(12.dp))
         Text(
-            if (positionsCount == 1) stringResource(Res.string.portfolio_summary_positions_one, positionsCount)
+            if (positionsCount == 1) stringResource(
+                Res.string.portfolio_summary_positions_one,
+                positionsCount
+            )
             else stringResource(Res.string.portfolio_summary_positions_many, positionsCount),
             fontSize = 10.sp,
             color = appCCyanSubtle.copy(alpha = 0.6f)

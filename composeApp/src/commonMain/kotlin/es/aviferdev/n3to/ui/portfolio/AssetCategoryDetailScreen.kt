@@ -6,10 +6,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.outlined.Archive
@@ -26,9 +24,8 @@ import es.aviferdev.n3to.domain.model.Asset
 import es.aviferdev.n3to.domain.model.AssetCategory
 import es.aviferdev.n3to.domain.model.Platform
 import es.aviferdev.n3to.ui.common.SectionHeader
-import es.aviferdev.n3to.ui.common.navigation.TopBarApp
+import es.aviferdev.n3to.ui.common.topbar.TopBarWithActionsApp
 import es.aviferdev.n3to.ui.fixedincome.FixedIncomePositionCard
-import es.aviferdev.n3to.ui.theme.*
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 import es.aviferdev.n3to.ui.theme.N3toTheme
@@ -40,8 +37,6 @@ import n3to.composeapp.generated.resources.error_cannot_archive_asset
 import n3to.composeapp.generated.resources.error_platform_already_exists
 import n3to.composeapp.generated.resources.common_cancel
 import n3to.composeapp.generated.resources.common_error
-import n3to.composeapp.generated.resources.portfolio_add_asset_cancel
-import n3to.composeapp.generated.resources.portfolio_add_asset_create
 import n3to.composeapp.generated.resources.portfolio_category_add_platform
 import n3to.composeapp.generated.resources.portfolio_settings_manage
 import n3to.composeapp.generated.resources.portfolio_category_archive_confirm
@@ -86,13 +81,13 @@ fun AssetCategoryDetailScreen(
 
     if (state.showLinkPlatformSheet && state.category != null) {
         LinkPlatformToCategorySheet(
-            categoryName    = state.category!!.name,
+            categoryName = state.category!!.name,
             linkedPlatforms = state.categoryPlatforms,
-            allPlatforms    = state.allPlatforms,
-            onLink          = { viewModel.linkPlatform(it) },
-            onUnlink        = { viewModel.unlinkPlatform(it) },
-            onCreate        = { name, icon, notes -> viewModel.createAndLinkPlatform(name, icon, notes) },
-            onDismiss       = { viewModel.closeLinkPlatformSheet() }
+            allPlatforms = state.allPlatforms,
+            onLink = { viewModel.linkPlatform(it) },
+            onUnlink = { viewModel.unlinkPlatform(it) },
+            onCreate = { name, icon, notes -> viewModel.createAndLinkPlatform(name, icon, notes) },
+            onDismiss = { viewModel.closeLinkPlatformSheet() }
         )
     }
 
@@ -100,7 +95,7 @@ fun AssetCategoryDetailScreen(
         AddEditAssetBottomSheet(
             asset = null,
             categories = state.allCategories,
-                        preselectedCategoryId = categoryId,
+            preselectedCategoryId = categoryId,
             allPlatforms = state.categoryPlatforms,
             allSectors = state.allSectors,
             linkedSectorIds = emptySet(),
@@ -108,7 +103,19 @@ fun AssetCategoryDetailScreen(
             linkedRegionPercents = emptyMap(),
             onValidateIsin = { identifier, catId -> viewModel.validateIsin(identifier, catId) },
             onSave = { ticker, name, notes, _, currentPrice, isin, platformIds, maturityDate, fixedPct, sectorIds, regionPercents, portfolioId ->
-                viewModel.addAsset(ticker, name, notes, currentPrice, isin, platformIds, maturityDate, fixedPct, sectorIds, regionPercents, portfolioId)
+                viewModel.addAsset(
+                    ticker,
+                    name,
+                    notes,
+                    currentPrice,
+                    isin,
+                    platformIds,
+                    maturityDate,
+                    fixedPct,
+                    sectorIds,
+                    regionPercents,
+                    portfolioId
+                )
             },
             onDismiss = { viewModel.closeAddSheet() }
         )
@@ -118,7 +125,7 @@ fun AssetCategoryDetailScreen(
         AddEditAssetBottomSheet(
             asset = editing,
             categories = state.allCategories,
-                        allPlatforms = state.categoryPlatforms,
+            allPlatforms = state.categoryPlatforms,
             linkedPlatformIds = state.editingPlatformIds,
             allSectors = state.allSectors,
             linkedSectorIds = state.editingSectorIds,
@@ -127,7 +134,21 @@ fun AssetCategoryDetailScreen(
             linkedFixedIncomePercent = state.editingFixedIncomePercent,
             onValidateIsin = { identifier, catId -> viewModel.validateIsin(identifier, catId) },
             onSave = { ticker, name, notes, catId, currentPrice, isin, platformIds, maturityDate, fixedPct, sectorIds, regionPercents, portfolioId ->
-                viewModel.editAsset(editing, ticker, name, notes, catId, currentPrice, isin, platformIds, maturityDate, fixedPct, sectorIds, regionPercents, portfolioId)
+                viewModel.editAsset(
+                    editing,
+                    ticker,
+                    name,
+                    notes,
+                    catId,
+                    currentPrice,
+                    isin,
+                    platformIds,
+                    maturityDate,
+                    fixedPct,
+                    sectorIds,
+                    regionPercents,
+                    portfolioId
+                )
             },
             onDismiss = { viewModel.closeEditSheet() }
         )
@@ -137,7 +158,14 @@ fun AssetCategoryDetailScreen(
         AlertDialog(
             onDismissRequest = { viewModel.cancelArchive() },
             containerColor = MaterialTheme.appColors.surface,
-            icon = { Icon(Icons.Outlined.Archive, contentDescription = null, modifier = Modifier.size(28.dp), tint = MaterialTheme.appColors.primary) },
+            icon = {
+                Icon(
+                    Icons.Outlined.Archive,
+                    contentDescription = null,
+                    modifier = Modifier.size(28.dp),
+                    tint = MaterialTheme.appColors.primary
+                )
+            },
             title = {
                 Text(
                     stringResource(Res.string.portfolio_category_archive_title),
@@ -148,19 +176,31 @@ fun AssetCategoryDetailScreen(
             },
             text = {
                 Text(
-                    stringResource(Res.string.portfolio_category_archive_message, pending.name, pending.ticker),
+                    stringResource(
+                        Res.string.portfolio_category_archive_message,
+                        pending.name,
+                        pending.ticker
+                    ),
                     fontSize = 14.sp,
                     color = MaterialTheme.appColors.textSecondary
                 )
             },
             confirmButton = {
                 TextButton(onClick = { viewModel.confirmArchive() }) {
-                    Text(stringResource(Res.string.portfolio_category_archive_confirm), color = MaterialTheme.appColors.expense, fontWeight = FontWeight.Medium)
+                    Text(
+                        stringResource(Res.string.portfolio_category_archive_confirm),
+                        color = MaterialTheme.appColors.expense,
+                        fontWeight = FontWeight.Medium
+                    )
                 }
             },
             dismissButton = {
                 TextButton(onClick = { viewModel.cancelArchive() }) {
-                    Text(stringResource(Res.string.common_cancel), color = MaterialTheme.appColors.primary, fontWeight = FontWeight.Medium)
+                    Text(
+                        stringResource(Res.string.common_cancel),
+                        color = MaterialTheme.appColors.primary,
+                        fontWeight = FontWeight.Medium
+                    )
                 }
             },
             shape = RoundedCornerShape(16.dp)
@@ -169,20 +209,45 @@ fun AssetCategoryDetailScreen(
 
     state.error?.let { err ->
         val msg = when (err) {
-            is es.aviferdev.n3to.ui.portfolio.CategoryDetailError.AccountRequired -> stringResource(Res.string.error_account_required)
-            is es.aviferdev.n3to.ui.portfolio.CategoryDetailError.TickerAndNameRequired -> stringResource(Res.string.error_asset_ticker_required)
-            is es.aviferdev.n3to.ui.portfolio.CategoryDetailError.CannotArchive -> stringResource(Res.string.error_cannot_archive_asset, err.ticker)
-            is es.aviferdev.n3to.ui.portfolio.CategoryDetailError.PlatformAlreadyExists -> stringResource(Res.string.error_platform_already_exists)
-            is es.aviferdev.n3to.ui.portfolio.CategoryDetailError.Unknown -> err.message ?: stringResource(Res.string.common_error)
+            is es.aviferdev.n3to.ui.portfolio.CategoryDetailError.AccountRequired -> stringResource(
+                Res.string.error_account_required
+            )
+
+            is es.aviferdev.n3to.ui.portfolio.CategoryDetailError.TickerAndNameRequired -> stringResource(
+                Res.string.error_asset_ticker_required
+            )
+
+            is es.aviferdev.n3to.ui.portfolio.CategoryDetailError.CannotArchive -> stringResource(
+                Res.string.error_cannot_archive_asset,
+                err.ticker
+            )
+
+            is es.aviferdev.n3to.ui.portfolio.CategoryDetailError.PlatformAlreadyExists -> stringResource(
+                Res.string.error_platform_already_exists
+            )
+
+            is es.aviferdev.n3to.ui.portfolio.CategoryDetailError.Unknown -> err.message
+                ?: stringResource(Res.string.common_error)
         }
         AlertDialog(
             onDismissRequest = { viewModel.clearError() },
             containerColor = MaterialTheme.appColors.surface,
-            title = { Text(stringResource(Res.string.common_error), fontSize = 17.sp, fontWeight = FontWeight.SemiBold, color = MaterialTheme.appColors.textPrimary) },
+            title = {
+                Text(
+                    stringResource(Res.string.common_error),
+                    fontSize = 17.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.appColors.textPrimary
+                )
+            },
             text = { Text(msg, fontSize = 14.sp, color = MaterialTheme.appColors.textSecondary) },
             confirmButton = {
                 TextButton(onClick = { viewModel.clearError() }) {
-                    Text(stringResource(Res.string.common_accept), color = MaterialTheme.appColors.primary, fontWeight = FontWeight.Medium)
+                    Text(
+                        stringResource(Res.string.common_accept),
+                        color = MaterialTheme.appColors.primary,
+                        fontWeight = FontWeight.Medium
+                    )
                 }
             },
             shape = RoundedCornerShape(16.dp)
@@ -207,7 +272,7 @@ fun AssetCategoryDetailContent(
     Column(
         modifier = modifier.fillMaxSize().background(MaterialTheme.appColors.background)
     ) {
-        TopBarApp(
+        TopBarWithActionsApp(
             title = state.category?.name ?: stringResource(Res.string.portfolio_category_title),
             navigateBack = onBack
         )
@@ -285,7 +350,7 @@ fun AssetCategoryDetailContent(
                             state.activeFixedIncome.forEachIndexed { index, fiRow ->
                                 FixedIncomePositionCard(
                                     row = fiRow,
-                                                                        balancesHidden = false,
+                                    balancesHidden = false,
                                     onClick = { onFixedIncomeClick(fiRow.position.id) }
                                 )
                                 if (index < state.activeFixedIncome.lastIndex) {
@@ -349,7 +414,11 @@ fun AssetCategoryDetailContent(
                                             .padding(horizontal = 16.dp, vertical = 12.dp),
                                         verticalAlignment = Alignment.CenterVertically
                                     ) {
-                                        Text(platform.icon, fontSize = 18.sp, modifier = Modifier.size(28.dp))
+                                        Text(
+                                            platform.icon,
+                                            fontSize = 18.sp,
+                                            modifier = Modifier.size(28.dp)
+                                        )
                                         Spacer(Modifier.width(12.dp))
                                         Text(
                                             platform.name,
@@ -420,19 +489,61 @@ private fun AssetCategoryDetailContentPreview() {
     N3toTheme {
         AssetCategoryDetailContent(
             state = AssetCategoryDetailUiState(
-                category = AssetCategory(id = "cat1", name = "Acciones", icon = "📈", sortOrder = 0, createdAt = 0L),
+                category = AssetCategory(
+                    id = "cat1",
+                    name = "Acciones",
+                    icon = "📈",
+                    sortOrder = 0,
+                    createdAt = 0L
+                ),
                 activeAssets = listOf(
-                    Asset(id = "a1", accountId = "acc1", ticker = "AAPL", name = "Apple Inc.", notes = null, createdAt = 0L, assetCategoryId = "cat1", currentPrice = 150.0),
-                    Asset(id = "a2", accountId = "acc1", ticker = "MSFT", name = "Microsoft Corp.", notes = null, createdAt = 0L, assetCategoryId = "cat1", currentPrice = 250.0)
+                    Asset(
+                        id = "a1",
+                        accountId = "acc1",
+                        ticker = "AAPL",
+                        name = "Apple Inc.",
+                        notes = null,
+                        createdAt = 0L,
+                        assetCategoryId = "cat1",
+                        currentPrice = 150.0
+                    ),
+                    Asset(
+                        id = "a2",
+                        accountId = "acc1",
+                        ticker = "MSFT",
+                        name = "Microsoft Corp.",
+                        notes = null,
+                        createdAt = 0L,
+                        assetCategoryId = "cat1",
+                        currentPrice = 250.0
+                    )
                 ),
                 categoryPlatforms = listOf(
-                    Platform(id = "p1", name = "Interactive Brokers", icon = "🏦", sortOrder = 0, createdAt = 0L)
+                    Platform(
+                        id = "p1",
+                        name = "Interactive Brokers",
+                        icon = "🏦",
+                        sortOrder = 0,
+                        createdAt = 0L
+                    )
                 ),
                 allPlatforms = listOf(
-                    Platform(id = "p1", name = "Interactive Brokers", icon = "🏦", sortOrder = 0, createdAt = 0L)
+                    Platform(
+                        id = "p1",
+                        name = "Interactive Brokers",
+                        icon = "🏦",
+                        sortOrder = 0,
+                        createdAt = 0L
+                    )
                 ),
                 allCategories = listOf(
-                    AssetCategory(id = "cat1", name = "Acciones", icon = "📈", sortOrder = 0, createdAt = 0L)
+                    AssetCategory(
+                        id = "cat1",
+                        name = "Acciones",
+                        icon = "📈",
+                        sortOrder = 0,
+                        createdAt = 0L
+                    )
                 ),
             ),
             categoryId = "cat1",
@@ -480,14 +591,29 @@ private fun AssetRow(
         }
         Spacer(Modifier.width(10.dp))
         Column(modifier = Modifier.weight(1f)) {
-            Text(asset.name, fontSize = 14.sp, color = MaterialTheme.appColors.textPrimary, maxLines = 1)
+            Text(
+                asset.name,
+                fontSize = 14.sp,
+                color = MaterialTheme.appColors.textPrimary,
+                maxLines = 1
+            )
             Text(asset.ticker, fontSize = 11.sp, color = MaterialTheme.appColors.textSecondary)
         }
         IconButton(onClick = onEdit, modifier = Modifier.size(28.dp)) {
-            Icon(Icons.Default.Edit, stringResource(Res.string.portfolio_category_edit_cd), modifier = Modifier.size(14.dp), tint = MaterialTheme.appColors.textSecondary)
+            Icon(
+                Icons.Default.Edit,
+                stringResource(Res.string.portfolio_category_edit_cd),
+                modifier = Modifier.size(14.dp),
+                tint = MaterialTheme.appColors.textSecondary
+            )
         }
         IconButton(onClick = onArchive, modifier = Modifier.size(28.dp)) {
-            Icon(Icons.Default.Delete, stringResource(Res.string.portfolio_category_archive_cd), modifier = Modifier.size(14.dp), tint = MaterialTheme.appColors.textSecondary)
+            Icon(
+                Icons.Default.Delete,
+                stringResource(Res.string.portfolio_category_archive_cd),
+                modifier = Modifier.size(14.dp),
+                tint = MaterialTheme.appColors.textSecondary
+            )
         }
         Text("›", fontSize = 18.sp, color = MaterialTheme.appColors.textSecondary)
     }
@@ -520,11 +646,25 @@ private fun ArchivedAssetRow(
         }
         Spacer(Modifier.width(10.dp))
         Column(modifier = Modifier.weight(1f)) {
-            Text(asset.name, fontSize = 14.sp, color = MaterialTheme.appColors.textSecondary, maxLines = 1)
-            Text(asset.ticker, fontSize = 11.sp, color = MaterialTheme.appColors.textSecondary.copy(alpha = 0.7f))
+            Text(
+                asset.name,
+                fontSize = 14.sp,
+                color = MaterialTheme.appColors.textSecondary,
+                maxLines = 1
+            )
+            Text(
+                asset.ticker,
+                fontSize = 11.sp,
+                color = MaterialTheme.appColors.textSecondary.copy(alpha = 0.7f)
+            )
         }
         TextButton(onClick = onRestore) {
-            Text(stringResource(Res.string.portfolio_category_restore), fontSize = 12.sp, color = MaterialTheme.appColors.primary, fontWeight = FontWeight.Medium)
+            Text(
+                stringResource(Res.string.portfolio_category_restore),
+                fontSize = 12.sp,
+                color = MaterialTheme.appColors.primary,
+                fontWeight = FontWeight.Medium
+            )
         }
     }
 }

@@ -28,9 +28,9 @@ enum class BackupAction { NONE, EXPORT, IMPORT }
 
 data class BackupSheetState(
     val action: BackupAction = BackupAction.NONE,
-    val password: String     = "",
-    val confirmPassword: String = "",   // solo para exportar
-    val passwordError: String?  = null,
+    val password: String = "",
+    val confirmPassword: String = "",
+    val passwordError: String? = null,
     val backupState: BackupUiState = BackupUiState.Idle
 )
 
@@ -117,9 +117,11 @@ class BackupViewModel(
         when {
             s.password.length < 6 -> {
                 println("[BackupVM] · password demasiado corta")
-                _state.value = s.copy(passwordError = "La contraseña debe tener al menos 6 caracteres")
+                _state.value =
+                    s.copy(passwordError = "La contraseña debe tener al menos 6 caracteres")
                 return
             }
+
             s.password != s.confirmPassword -> {
                 println("[BackupVM] · contraseñas no coinciden")
                 _state.value = s.copy(passwordError = "Las contraseñas no coinciden")
@@ -137,12 +139,15 @@ class BackupViewModel(
                         saveLastBackupDate()
                         println("[BackupVM] · fecha de último backup guardada")
                     }
-                    is BackupResult.Error -> { /* no hacer nada extra */ }
+
+                    is BackupResult.Error -> { /* no hacer nada extra */
+                    }
                 }
                 _state.value = when (result) {
                     is BackupResult.Success -> _state.value.copy(
                         backupState = BackupUiState.Success
                     )
+
                     is BackupResult.Error -> _state.value.copy(
                         backupState = BackupUiState.Error(result.message)
                     )
@@ -166,6 +171,7 @@ class BackupViewModel(
                     is BackupResult.Success -> _state.value.copy(
                         backupState = BackupUiState.Success
                     )
+
                     is BackupResult.Error -> _state.value.copy(
                         backupState = BackupUiState.Error(result.message),
                         passwordError = result.message

@@ -17,7 +17,10 @@ class PriceRepositoryImpl(
         return remoteDataSource.fetchQuote(identifier, type)
     }
 
-    override suspend fun validateIdentifier(identifier: String, type: IdentifierType): Result<PriceQuote> {
+    override suspend fun validateIdentifier(
+        identifier: String,
+        type: IdentifierType
+    ): Result<PriceQuote> {
         println("[PriceRepo] 🔍 validateIdentifier: $identifier (type=$type)")
         // Intenta obtener la cotización directamente
         return remoteDataSource.fetchQuote(identifier, type)
@@ -33,7 +36,7 @@ class PriceRepositoryImpl(
                 println("[PriceRepo] Search devolvió ${searchResults.size} resultados")
                 val match = searchResults.firstOrNull { quote ->
                     quote.identifier.equals(identifier, ignoreCase = true) ||
-                    quote.identifier.replace(".", "").equals(identifier, ignoreCase = true)
+                            quote.identifier.replace(".", "").equals(identifier, ignoreCase = true)
                 }
                 if (match == null) {
                     println("[PriceRepo] ❌ No se encontró coincidencia en search")
@@ -41,7 +44,8 @@ class PriceRepositoryImpl(
                 }
                 // Si encontramos por search, intentamos obtener la cotización con el símbolo encontrado
                 println("[PriceRepo] ✅ Encontrado por search: ${match.identifier}, obteniendo precio...")
-                remoteDataSource.fetchQuote(match.identifier, match.identifierType).getOrElse { match }
+                remoteDataSource.fetchQuote(match.identifier, match.identifierType)
+                    .getOrElse { match }
             }
     }
 

@@ -50,23 +50,33 @@ class LoanDetailViewModel(
         _showEditSheet
     ) { loan, schedule, rateChanges, showEdit ->
         LoanDetailUiState(
-            loan        = loan,
-            schedule    = schedule,
+            loan = loan,
+            schedule = schedule,
             rateChanges = rateChanges,
-            isLoading   = false,
+            isLoading = false,
             showEditSheet = showEdit
         )
     }.stateIn(
-        scope        = viewModelScope,
-        started      = SharingStarted.WhileSubscribed(5_000),
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
         initialValue = LoanDetailUiState()
     )
 
-    fun openRateSheet() { _showRateSheet.value = true }
-    fun closeRateSheet() { _showRateSheet.value = false }
+    fun openRateSheet() {
+        _showRateSheet.value = true
+    }
 
-    fun openEditSheet() { _showEditSheet.value = true }
-    fun closeEditSheet() { _showEditSheet.value = false }
+    fun closeRateSheet() {
+        _showRateSheet.value = false
+    }
+
+    fun openEditSheet() {
+        _showEditSheet.value = true
+    }
+
+    fun closeEditSheet() {
+        _showEditSheet.value = false
+    }
 
     fun updateRate(newRate: Double, effectiveDate: Long) {
         viewModelScope.launch {

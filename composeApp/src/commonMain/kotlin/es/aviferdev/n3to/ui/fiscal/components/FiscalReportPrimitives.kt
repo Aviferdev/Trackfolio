@@ -1,7 +1,5 @@
 package es.aviferdev.n3to.ui.fiscal.components
 
-import androidx.compose.material3.MaterialTheme
-import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -16,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -27,7 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.TaxProfileSnapshot
 import es.aviferdev.n3to.platform.nowYear
-import es.aviferdev.n3to.ui.theme.*
+import es.aviferdev.n3to.ui.theme.appColors
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.date_month_full_01
 import n3to.composeapp.generated.resources.date_month_full_02
@@ -48,15 +47,15 @@ import kotlin.math.abs
 
 @Composable
 internal fun monthName(month: Int): String = when (month) {
-    1  -> stringResource(Res.string.date_month_full_01)
-    2  -> stringResource(Res.string.date_month_full_02)
-    3  -> stringResource(Res.string.date_month_full_03)
-    4  -> stringResource(Res.string.date_month_full_04)
-    5  -> stringResource(Res.string.date_month_full_05)
-    6  -> stringResource(Res.string.date_month_full_06)
-    7  -> stringResource(Res.string.date_month_full_07)
-    8  -> stringResource(Res.string.date_month_full_08)
-    9  -> stringResource(Res.string.date_month_full_09)
+    1 -> stringResource(Res.string.date_month_full_01)
+    2 -> stringResource(Res.string.date_month_full_02)
+    3 -> stringResource(Res.string.date_month_full_03)
+    4 -> stringResource(Res.string.date_month_full_04)
+    5 -> stringResource(Res.string.date_month_full_05)
+    6 -> stringResource(Res.string.date_month_full_06)
+    7 -> stringResource(Res.string.date_month_full_07)
+    8 -> stringResource(Res.string.date_month_full_08)
+    9 -> stringResource(Res.string.date_month_full_09)
     10 -> stringResource(Res.string.date_month_full_10)
     11 -> stringResource(Res.string.date_month_full_11)
     12 -> stringResource(Res.string.date_month_full_12)
@@ -76,7 +75,12 @@ internal fun YearStepper(year: String, onPrevious: () -> Unit, onNext: () -> Uni
                 .background(MaterialTheme.appColors.navySurfaceLight)
                 .border(0.5.dp, MaterialTheme.appColors.navyBorder, RoundedCornerShape(9.dp))
         ) {
-            Text("‹", fontSize = 20.sp, color = MaterialTheme.appColors.cyanAccent, fontWeight = FontWeight.Light)
+            Text(
+                "‹",
+                fontSize = 20.sp,
+                color = MaterialTheme.appColors.cyanAccent,
+                fontWeight = FontWeight.Light
+            )
         }
         Text(
             year,
@@ -93,7 +97,11 @@ internal fun YearStepper(year: String, onPrevious: () -> Unit, onNext: () -> Uni
                 .clip(RoundedCornerShape(9.dp))
                 .background(if (!isMax) MaterialTheme.appColors.navySurfaceLight else Color.Transparent)
                 .then(
-                    if (!isMax) Modifier.border(0.5.dp, MaterialTheme.appColors.navyBorder, RoundedCornerShape(9.dp))
+                    if (!isMax) Modifier.border(
+                        0.5.dp,
+                        MaterialTheme.appColors.navyBorder,
+                        RoundedCornerShape(9.dp)
+                    )
                     else Modifier
                 )
         ) {
@@ -141,12 +149,23 @@ internal fun MetricCell(label: String, value: Double, color: Color, modifier: Mo
             letterSpacing = .4.sp
         )
         Spacer(Modifier.height(3.dp))
-        Text(formatAmt(value), fontSize = 12.sp, fontWeight = FontWeight.Bold, color = color, maxLines = 1)
+        Text(
+            formatAmt(value),
+            fontSize = 12.sp,
+            fontWeight = FontWeight.Bold,
+            color = color,
+            maxLines = 1
+        )
     }
 }
 
 @Composable
-internal fun FiscalMetricCell(label: String, amount: Double, color: Color, modifier: Modifier = Modifier) {
+internal fun FiscalMetricCell(
+    label: String,
+    amount: Double,
+    color: Color,
+    modifier: Modifier = Modifier
+) {
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(9.dp))
@@ -181,7 +200,11 @@ internal fun TaxProfileBadge(snapshot: TaxProfileSnapshot) {
             .fillMaxWidth()
             .clip(RoundedCornerShape(11.dp))
             .background(MaterialTheme.appColors.navySurface)
-            .border(0.5.dp, MaterialTheme.appColors.cyanAccent.copy(alpha = 0.25f), RoundedCornerShape(11.dp))
+            .border(
+                0.5.dp,
+                MaterialTheme.appColors.cyanAccent.copy(alpha = 0.25f),
+                RoundedCornerShape(11.dp)
+            )
             .padding(horizontal = 12.dp, vertical = 10.dp)
     ) {
         Row(
@@ -197,7 +220,11 @@ internal fun TaxProfileBadge(snapshot: TaxProfileSnapshot) {
                     color = MaterialTheme.appColors.cyanAccent
                 )
                 Text(
-                    stringResource(Res.string.fiscal_profile_since, snapshot.profile.currency, snapshot.effectiveFrom),
+                    stringResource(
+                        Res.string.fiscal_profile_since,
+                        snapshot.profile.currency,
+                        snapshot.effectiveFrom
+                    ),
                     fontSize = 10.sp,
                     color = MaterialTheme.appColors.textTertiary
                 )
@@ -207,10 +234,10 @@ internal fun TaxProfileBadge(snapshot: TaxProfileSnapshot) {
 }
 
 internal fun formatAmt(value: Double): String {
-    val sign    = if (value < 0) "-" else ""
-    val absVal  = abs(value)
-    val euros   = absVal.toLong()
-    val cents   = ((absVal - euros) * 100 + .5).toLong().coerceIn(0, 99)
+    val sign = if (value < 0) "-" else ""
+    val absVal = abs(value)
+    val euros = absVal.toLong()
+    val cents = ((absVal - euros) * 100 + .5).toLong().coerceIn(0, 99)
     val eurosStr = euros.toString().reversed().chunked(3).joinToString(".").reversed()
     return "$sign$eurosStr,${cents.toString().padStart(2, '0')} €"
 }

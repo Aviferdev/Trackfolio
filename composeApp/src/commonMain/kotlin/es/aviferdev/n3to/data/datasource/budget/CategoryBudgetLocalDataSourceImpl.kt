@@ -22,7 +22,11 @@ class CategoryBudgetLocalDataSourceImpl(
     override fun getByAccount(accountId: String): Flow<List<CategoryBudgetEntity>> =
         queries.selectByAccount(accountId).asFlow().mapToList(Dispatchers.IO)
 
-    override suspend fun upsert(categoryId: String, annualLimit: Double, limitType: String): Result<Unit> =
+    override suspend fun upsert(
+        categoryId: String,
+        annualLimit: Double,
+        limitType: String
+    ): Result<Unit> =
         runCatching {
             withContext(Dispatchers.IO) {
                 queries.upsert(categoryId, annualLimit, limitType)

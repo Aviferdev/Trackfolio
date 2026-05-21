@@ -1,7 +1,5 @@
 package es.aviferdev.n3to.ui.portfolio.assethistory
 
-import androidx.compose.material3.MaterialTheme
-import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -14,6 +12,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -23,8 +22,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.portfolio.AssetPosition
-
-import es.aviferdev.n3to.ui.theme.PrimaryDark
+import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.ui.theme.formatAmount
 import es.aviferdev.n3to.ui.theme.formatPercent
 import es.aviferdev.n3to.ui.theme.formatQty
@@ -108,7 +106,11 @@ fun PositionCard(
             HorizontalDivider(color = Color.White.copy(.12f), thickness = .5.dp)
             Spacer(Modifier.height(12.dp))
 
-            Text(stringResource(Res.string.portfolio_summary_total_pnl), fontSize = 10.sp, color = Color.White.copy(.5f))
+            Text(
+                stringResource(Res.string.portfolio_summary_total_pnl),
+                fontSize = 10.sp,
+                color = Color.White.copy(.5f)
+            )
             Spacer(Modifier.height(4.dp))
             Row(verticalAlignment = Alignment.Bottom) {
                 Text(

@@ -26,123 +26,127 @@ import es.aviferdev.n3to.domain.model.AssetTransactionType
 import es.aviferdev.n3to.domain.model.Platform
 
 fun AssetEntity.toDomain(): Asset = Asset(
-    id                    = id,
-    accountId             = accountId,
-    portfolioId           = portfolioId,
-    ticker                = ticker,
-    name                  = name,
-    notes                 = notes,
-    createdAt             = createdAt,
-    assetCategoryId       = assetCategoryId,
-    currentPrice          = currentPrice,
+    id = id,
+    accountId = accountId,
+    portfolioId = portfolioId,
+    ticker = ticker,
+    name = name,
+    notes = notes,
+    createdAt = createdAt,
+    assetCategoryId = assetCategoryId,
+    currentPrice = currentPrice,
     currentPriceUpdatedAt = currentPriceUpdatedAt,
-    archived              = archived != 0L,
-    maturityDate          = maturityDate,
-    isin                  = isin,
-    priceSource           = try { PriceSource.valueOf(priceSource) } catch (_: Exception) { PriceSource.MANUAL },
-    isinValidatedAt       = isinValidatedAt,
-    isinValidationError   = isinValidationError
+    archived = archived != 0L,
+    maturityDate = maturityDate,
+    isin = isin,
+    priceSource = try {
+        PriceSource.valueOf(priceSource)
+    } catch (_: Exception) {
+        PriceSource.MANUAL
+    },
+    isinValidatedAt = isinValidatedAt,
+    isinValidationError = isinValidationError
 )
 
 fun Asset.toEntity(): AssetEntity = AssetEntity(
-    id                    = id,
-    accountId             = accountId,
-    portfolioId           = portfolioId,
-    ticker                = ticker,
-    name                  = name,
-    notes                 = notes,
-    createdAt             = createdAt,
-    assetCategoryId       = assetCategoryId,
-    currentPrice          = currentPrice,
+    id = id,
+    accountId = accountId,
+    portfolioId = portfolioId,
+    ticker = ticker,
+    name = name,
+    notes = notes,
+    createdAt = createdAt,
+    assetCategoryId = assetCategoryId,
+    currentPrice = currentPrice,
     currentPriceUpdatedAt = currentPriceUpdatedAt,
-    archived              = if (archived) 1L else 0L,
-    maturityDate          = maturityDate,
-    isin                  = isin,
-    priceSource           = priceSource.name,
-    isinValidatedAt       = isinValidatedAt,
-    isinValidationError   = isinValidationError
+    archived = if (archived) 1L else 0L,
+    maturityDate = maturityDate,
+    isin = isin,
+    priceSource = priceSource.name,
+    isinValidatedAt = isinValidatedAt,
+    isinValidationError = isinValidationError
 )
 
 fun AssetCategoryEntity.toDomain(): AssetCategory = AssetCategory(
-    id        = id,
-    name      = name,
-    icon      = icon,
+    id = id,
+    name = name,
+    icon = icon,
     sortOrder = sortOrder.toInt(),
-    archived  = archived != 0L,
+    archived = archived != 0L,
     createdAt = createdAt
 )
 
 fun AssetCategory.toEntity(): AssetCategoryEntity = AssetCategoryEntity(
-    id        = id,
-    name      = name,
-    icon      = icon,
+    id = id,
+    name = name,
+    icon = icon,
     sortOrder = sortOrder.toLong(),
-    archived  = if (archived) 1L else 0L,
+    archived = if (archived) 1L else 0L,
     createdAt = createdAt
 )
 
 fun AssetTagEntity.toDomain(): AssetTag = AssetTag(
-    id         = id,
-    name       = name,
+    id = id,
+    name = name,
     categoryId = categoryId,
-    color      = color,
-    archived   = archived != 0L,
-    createdAt  = createdAt
+    color = color,
+    archived = archived != 0L,
+    createdAt = createdAt
 )
 
 fun AssetTag.toEntity(): AssetTagEntity = AssetTagEntity(
-    id         = id,
-    name       = name,
+    id = id,
+    name = name,
     categoryId = categoryId,
-    color      = color,
-    archived   = if (archived) 1L else 0L,
-    createdAt  = createdAt
+    color = color,
+    archived = if (archived) 1L else 0L,
+    createdAt = createdAt
 )
 
 fun PlatformEntity.toDomain(): Platform = Platform(
-    id        = id,
-    name      = name,
-    icon      = icon,
+    id = id,
+    name = name,
+    icon = icon,
     sortOrder = sortOrder.toInt(),
-    archived  = archived != 0L,
+    archived = archived != 0L,
     createdAt = createdAt,
-    notes     = notes
+    notes = notes
 )
 
 fun Platform.toEntity(): PlatformEntity = PlatformEntity(
-    id        = id,
-    name      = name,
-    icon      = icon,
+    id = id,
+    name = name,
+    icon = icon,
     sortOrder = sortOrder.toLong(),
-    archived  = if (archived) 1L else 0L,
+    archived = if (archived) 1L else 0L,
     createdAt = createdAt,
-    notes     = notes
+    notes = notes
 )
 
 fun AssetTransactionEntity.toDomain(): AssetTransaction = AssetTransaction(
-    id           = id,
-    assetId      = assetId,
-    type         = AssetTransactionType.valueOf(type),
-    quantity     = quantity,
+    id = id,
+    assetId = assetId,
+    type = AssetTransactionType.valueOf(type),
+    quantity = quantity,
     pricePerUnit = pricePerUnit,
-    date         = date,
-    platformId   = platformId,
-    feeNote      = feeNote,
-    notes        = notes,
-    createdAt    = createdAt
+    date = date,
+    platformId = platformId,
+    feeNote = feeNote,
+    notes = notes,
+    createdAt = createdAt
 )
 
 fun AssetTransaction.toEntity(): AssetTransactionEntity = AssetTransactionEntity(
-    id           = id,
-    assetId      = assetId,
-    type         = type.name,
-    quantity     = quantity,
+    id = id,
+    assetId = assetId,
+    type = type.name,
+    quantity = quantity,
     pricePerUnit = pricePerUnit,
-    date         = date,
-    platformId   = platformId,
-    feeNote      = feeNote,
-    notes        = notes,
-    createdAt    = createdAt
+    date = date,
+    platformId = platformId,
+    feeNote = feeNote,
+    notes = notes,
+    createdAt = createdAt
 )
 
 fun AssetCompositionEntity.toDomain(): AssetComposition = AssetComposition(
@@ -174,41 +178,49 @@ fun AssetSector.toEntity(): AssetSectorEntity = AssetSectorEntity(
 // ── Conversión desde tipos de query específicos ───────────────────────────
 
 fun SelectQuotableByAccount.toDomain(): Asset = Asset(
-    id                    = id,
-    accountId             = accountId,
-    portfolioId           = portfolioId,
-    ticker                = ticker,
-    name                  = name,
-    notes                 = notes,
-    createdAt             = createdAt,
-    assetCategoryId       = assetCategoryId,
-    currentPrice          = currentPrice,
+    id = id,
+    accountId = accountId,
+    portfolioId = portfolioId,
+    ticker = ticker,
+    name = name,
+    notes = notes,
+    createdAt = createdAt,
+    assetCategoryId = assetCategoryId,
+    currentPrice = currentPrice,
     currentPriceUpdatedAt = currentPriceUpdatedAt,
-    archived              = archived != 0L,
-    maturityDate          = maturityDate,
-    isin                  = isin,
-    priceSource           = try { PriceSource.valueOf(priceSource) } catch (_: Exception) { PriceSource.MANUAL },
-    isinValidatedAt       = isinValidatedAt,
-    isinValidationError   = isinValidationError
+    archived = archived != 0L,
+    maturityDate = maturityDate,
+    isin = isin,
+    priceSource = try {
+        PriceSource.valueOf(priceSource)
+    } catch (_: Exception) {
+        PriceSource.MANUAL
+    },
+    isinValidatedAt = isinValidatedAt,
+    isinValidationError = isinValidationError
 )
 
 fun SelectAssetsWithBrokenIsin.toDomain(): Asset = Asset(
-    id                    = id,
-    accountId             = accountId,
-    portfolioId           = portfolioId,
-    ticker                = ticker,
-    name                  = name,
-    notes                 = notes,
-    createdAt             = createdAt,
-    assetCategoryId       = assetCategoryId,
-    currentPrice          = currentPrice,
+    id = id,
+    accountId = accountId,
+    portfolioId = portfolioId,
+    ticker = ticker,
+    name = name,
+    notes = notes,
+    createdAt = createdAt,
+    assetCategoryId = assetCategoryId,
+    currentPrice = currentPrice,
     currentPriceUpdatedAt = currentPriceUpdatedAt,
-    archived              = archived != 0L,
-    maturityDate          = maturityDate,
-    isin                  = isin,
-    priceSource           = try { PriceSource.valueOf(priceSource) } catch (_: Exception) { PriceSource.MANUAL },
-    isinValidatedAt       = isinValidatedAt,
-    isinValidationError   = isinValidationError
+    archived = archived != 0L,
+    maturityDate = maturityDate,
+    isin = isin,
+    priceSource = try {
+        PriceSource.valueOf(priceSource)
+    } catch (_: Exception) {
+        PriceSource.MANUAL
+    },
+    isinValidatedAt = isinValidatedAt,
+    isinValidationError = isinValidationError
 )
 
 fun AssetSectorRelationEntity.toDomain(): AssetSectorRelation = AssetSectorRelation(
@@ -239,8 +251,9 @@ fun AssetRegionDistributionEntity.toDomain(): AssetRegionDistribution = AssetReg
     percent = percent.toInt()
 )
 
-fun AssetRegionDistribution.toEntity(): AssetRegionDistributionEntity = AssetRegionDistributionEntity(
-    assetId = assetId,
-    regionId = regionId,
-    percent = percent.toLong()
-)
+fun AssetRegionDistribution.toEntity(): AssetRegionDistributionEntity =
+    AssetRegionDistributionEntity(
+        assetId = assetId,
+        regionId = regionId,
+        percent = percent.toLong()
+    )

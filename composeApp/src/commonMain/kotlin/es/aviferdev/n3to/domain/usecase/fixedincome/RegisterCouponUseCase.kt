@@ -16,10 +16,10 @@ class RegisterCouponUseCase(
         if (eventResult.isFailure) return eventResult
 
         val ledgerResult = recordIncomeTransactionUseCase(
-            accountId    = accountId,
-            amount       = event.netAmount,
-            date         = event.date,
-            notes        = event.notes ?: "Cupón / Interés",
+            accountId = accountId,
+            amount = event.netAmount,
+            date = event.date,
+            notes = event.notes ?: "Cupón / Interés",
             linkedEventId = "fi_${event.id}"
         )
 
@@ -38,18 +38,18 @@ class RecordIncomeTransactionUseCase(
         linkedEventId: String?
     ): Result<Unit> = runCatching {
         val tx = Transaction(
-            id                  = "tx_${nowMillis()}",
-            accountId           = accountId,
-            amount              = amount,
-            type                = TransactionType.INCOME,
-            date                = date,
-            categoryId          = null,
-            incomeType          = IncomeType.BOND_DEPOSIT,
-            grossAmount         = null,
-            commissionAmount    = null,
-            notes               = notes,
+            id = "tx_${nowMillis()}",
+            accountId = accountId,
+            amount = amount,
+            type = TransactionType.INCOME,
+            date = date,
+            categoryId = null,
+            incomeType = IncomeType.BOND_DEPOSIT,
+            grossAmount = null,
+            commissionAmount = null,
+            notes = notes,
             linkedAssetTransactionId = linkedEventId,
-            createdAt           = nowMillis()
+            createdAt = nowMillis()
         )
         transactionRepository.saveTransaction(tx)
     }

@@ -1,7 +1,5 @@
 package es.aviferdev.n3to.ui.settings.goal
 
-import androidx.compose.material3.MaterialTheme
-import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -39,6 +37,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
@@ -65,13 +64,9 @@ import es.aviferdev.n3to.ui.common.help.HelpKeys
 import es.aviferdev.n3to.ui.common.help.HelpTooltipIcon
 import es.aviferdev.n3to.ui.common.input.InlineAmountField
 import es.aviferdev.n3to.ui.common.navigation.TimeStepperHeader
-import es.aviferdev.n3to.ui.common.navigation.TopBarApp
-
-import es.aviferdev.n3to.ui.theme.ExpenseRed
-
+import es.aviferdev.n3to.ui.common.topbar.TopBarWithActionsApp
+import es.aviferdev.n3to.ui.theme.appColors
 import kotlinx.coroutines.delay
-import org.jetbrains.compose.resources.stringResource
-import org.koin.compose.viewmodel.koinViewModel
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.common_close
 import n3to.composeapp.generated.resources.common_save
@@ -85,6 +80,8 @@ import n3to.composeapp.generated.resources.goal_savings_placeholder
 import n3to.composeapp.generated.resources.home_goals_investment
 import n3to.composeapp.generated.resources.home_goals_savings
 import n3to.composeapp.generated.resources.settings_monthly_goals_label
+import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun GoalSettingsScreen(
@@ -116,7 +113,7 @@ fun GoalSettingsScreen(
     LaunchedEffect(state.year) { selectedMonthKey = null }
 
     Column(modifier = Modifier.fillMaxSize().background(MaterialTheme.appColors.navyDeep)) {
-        TopBarApp(
+        TopBarWithActionsApp(
             title = stringResource(Res.string.settings_monthly_goals_label),
             navigateBack = {
                 if (state.isDirty) viewModel.save()
@@ -144,7 +141,10 @@ fun GoalSettingsScreen(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
-                    CircularProgressIndicator(color = MaterialTheme.appColors.cyanAccent, strokeWidth = 2.dp)
+                    CircularProgressIndicator(
+                        color = MaterialTheme.appColors.cyanAccent,
+                        strokeWidth = 2.dp
+                    )
                 }
             } else {
                 LazyColumn(
@@ -174,7 +174,12 @@ fun GoalSettingsScreen(
                             OutlinedTextField(
                                 value = state.baseSavingsText,
                                 onValueChange = viewModel::onBaseSavingsChange,
-                                placeholder = { Text(stringResource(Res.string.goal_savings_placeholder), color = MaterialTheme.appColors.textTertiary) },
+                                placeholder = {
+                                    Text(
+                                        stringResource(Res.string.goal_savings_placeholder),
+                                        color = MaterialTheme.appColors.textTertiary
+                                    )
+                                },
                                 trailingIcon = {
                                     Text(
                                         "€",
@@ -219,7 +224,12 @@ fun GoalSettingsScreen(
                             OutlinedTextField(
                                 value = state.baseInvestmentText,
                                 onValueChange = viewModel::onBaseInvestmentChange,
-                                placeholder = { Text(stringResource(Res.string.goal_investment_placeholder), color = MaterialTheme.appColors.textTertiary) },
+                                placeholder = {
+                                    Text(
+                                        stringResource(Res.string.goal_investment_placeholder),
+                                        color = MaterialTheme.appColors.textTertiary
+                                    )
+                                },
                                 trailingIcon = {
                                     Text(
                                         "€",
@@ -272,7 +282,7 @@ fun GoalSettingsScreen(
                                 }
                                 HelpTooltipIcon(
                                     title = HelpContent.texts[HelpKeys.GOAL_CUSTOMIZE]?.title ?: "",
-                                    body  = HelpContent.texts[HelpKeys.GOAL_CUSTOMIZE]?.body  ?: ""
+                                    body = HelpContent.texts[HelpKeys.GOAL_CUSTOMIZE]?.body ?: ""
                                 )
                             }
 
@@ -336,13 +346,18 @@ fun GoalSettingsScreen(
                                                     Text(
                                                         "Restablecer",
                                                         fontSize = 11.sp,
-                                                        color = MaterialTheme.appColors.expense.copy(alpha = 0.8f),
+                                                        color = MaterialTheme.appColors.expense.copy(
+                                                            alpha = 0.8f
+                                                        ),
                                                         modifier = Modifier
                                                             .clickable {
                                                                 viewModel.resetMonth(month.month)
                                                                 selectedMonthKey = null
                                                             }
-                                                            .padding(horizontal = 8.dp, vertical = 4.dp)
+                                                            .padding(
+                                                                horizontal = 8.dp,
+                                                                vertical = 4.dp
+                                                            )
                                                     )
                                                 }
                                                 IconButton(
@@ -383,7 +398,10 @@ fun GoalSettingsScreen(
                                                 label = stringResource(Res.string.home_goals_investment),
                                                 value = month.investmentText,
                                                 onChange = {
-                                                    viewModel.onMonthInvestmentChange(month.month, it)
+                                                    viewModel.onMonthInvestmentChange(
+                                                        month.month,
+                                                        it
+                                                    )
                                                 },
                                                 placeholder = stringResource(Res.string.goal_base_placeholder),
                                                 suffix = "€",
@@ -406,7 +424,9 @@ fun GoalSettingsScreen(
                             enabled = state.isDirty && !state.isSaving,
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = MaterialTheme.appColors.cyanAccent,
-                                disabledContainerColor = MaterialTheme.appColors.cyanAccent.copy(alpha = 0.3f),
+                                disabledContainerColor = MaterialTheme.appColors.cyanAccent.copy(
+                                    alpha = 0.3f
+                                ),
                                 contentColor = MaterialTheme.appColors.navyDeep,
                                 disabledContentColor = MaterialTheme.appColors.navyDeep.copy(alpha = 0.5f)
                             ),
@@ -467,7 +487,14 @@ private fun GoalSettingsHeroCard() {
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(20.dp))
-            .background(Brush.linearGradient(listOf(MaterialTheme.appColors.navySurface, MaterialTheme.appColors.navySurfaceLight)))
+            .background(
+                Brush.linearGradient(
+                    listOf(
+                        MaterialTheme.appColors.navySurface,
+                        MaterialTheme.appColors.navySurfaceLight
+                    )
+                )
+            )
             .border(0.5.dp, MaterialTheme.appColors.navyBorder, RoundedCornerShape(20.dp))
     ) {
         Box(
@@ -476,7 +503,12 @@ private fun GoalSettingsHeroCard() {
                 .align(Alignment.TopEnd)
                 .padding(top = 8.dp, end = 8.dp)
                 .background(
-                    Brush.radialGradient(listOf(MaterialTheme.appColors.cyanGlow.copy(alpha = 0.14f), Color.Transparent)),
+                    Brush.radialGradient(
+                        listOf(
+                            MaterialTheme.appColors.cyanGlow.copy(alpha = 0.14f),
+                            Color.Transparent
+                        )
+                    ),
                     shape = CircleShape
                 )
         )
@@ -627,7 +659,9 @@ private fun MonthChip(
                     modifier = Modifier
                         .size(4.dp)
                         .background(
-                            if (isSelected) MaterialTheme.appColors.cyanAccent else MaterialTheme.appColors.cyanAccent.copy(alpha = 0.6f),
+                            if (isSelected) MaterialTheme.appColors.cyanAccent else MaterialTheme.appColors.cyanAccent.copy(
+                                alpha = 0.6f
+                            ),
                             CircleShape
                         )
                 )

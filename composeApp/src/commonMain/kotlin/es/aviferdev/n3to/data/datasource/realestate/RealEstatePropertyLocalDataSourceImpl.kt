@@ -38,31 +38,45 @@ class RealEstatePropertyLocalDataSourceImpl(
         withContext(Dispatchers.IO) {
             val e = property.toEntity()
             queries.insert(
-                id                      = e.id,
-                accountId               = e.accountId,
-                name                    = e.name,
-                address                 = e.address,
-                propertyType            = e.propertyType,
-                purchaseValue           = e.purchaseValue,
-                currentEstimatedValue   = e.currentEstimatedValue,
-                acquisitionDate         = e.acquisitionDate,
-                ownershipPercentage     = e.ownershipPercentage,
-                linkedLoanId            = e.linkedLoanId,
-                rentalStatus            = e.rentalStatus,
-                monthlyRent             = e.monthlyRent,
+                id = e.id,
+                accountId = e.accountId,
+                name = e.name,
+                address = e.address,
+                propertyType = e.propertyType,
+                purchaseValue = e.purchaseValue,
+                currentEstimatedValue = e.currentEstimatedValue,
+                acquisitionDate = e.acquisitionDate,
+                ownershipPercentage = e.ownershipPercentage,
+                linkedLoanId = e.linkedLoanId,
+                rentalStatus = e.rentalStatus,
+                monthlyRent = e.monthlyRent,
                 mortgageReminderDismissed = e.mortgageReminderDismissed,
-                archived                = e.archived,
-                saleDate                = e.saleDate,
-                saleValue               = e.saleValue
+                archived = e.archived,
+                saleDate = e.saleDate,
+                saleValue = e.saleValue
             )
         }
     }
 
     override suspend fun updateEstimatedValue(id: String, value: Double): Result<Unit> =
-        runCatching { withContext(Dispatchers.IO) { queries.updateEstimatedValue(value = value, id = id) } }
+        runCatching {
+            withContext(Dispatchers.IO) {
+                queries.updateEstimatedValue(
+                    value = value,
+                    id = id
+                )
+            }
+        }
 
     override suspend fun updateLinkedLoan(id: String, loanId: String): Result<Unit> =
-        runCatching { withContext(Dispatchers.IO) { queries.updateLinkedLoan(loanId = loanId, id = id) } }
+        runCatching {
+            withContext(Dispatchers.IO) {
+                queries.updateLinkedLoan(
+                    loanId = loanId,
+                    id = id
+                )
+            }
+        }
 
     override suspend fun dismissMortgageReminder(id: String): Result<Unit> =
         runCatching { withContext(Dispatchers.IO) { queries.dismissMortgageReminder(id) } }
@@ -71,5 +85,13 @@ class RealEstatePropertyLocalDataSourceImpl(
         runCatching { withContext(Dispatchers.IO) { queries.archive(id) } }
 
     override suspend fun sell(id: String, saleDate: Long, saleValue: Double): Result<Unit> =
-        runCatching { withContext(Dispatchers.IO) { queries.sellProperty(saleDate = saleDate, saleValue = saleValue, id = id) } }
+        runCatching {
+            withContext(Dispatchers.IO) {
+                queries.sellProperty(
+                    saleDate = saleDate,
+                    saleValue = saleValue,
+                    id = id
+                )
+            }
+        }
 }

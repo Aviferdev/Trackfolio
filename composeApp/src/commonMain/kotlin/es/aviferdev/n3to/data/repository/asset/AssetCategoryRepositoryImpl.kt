@@ -10,7 +10,9 @@ class AssetCategoryRepositoryImpl(
 ) : AssetCategoryRepository {
 
     override fun getAll(): Flow<List<AssetCategory>> = dataSource.getAll()
-    override fun getAllIncludingArchived(): Flow<List<AssetCategory>> = dataSource.getAllIncludingArchived()
+    override fun getAllIncludingArchived(): Flow<List<AssetCategory>> =
+        dataSource.getAllIncludingArchived()
+
     override fun getById(id: String): Flow<AssetCategory?> = dataSource.getById(id)
     override fun count(): Flow<Long> = dataSource.count()
 

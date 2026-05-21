@@ -1,7 +1,5 @@
 package es.aviferdev.n3to.ui.portfolio
 
-import androidx.compose.material3.MaterialTheme
-import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -10,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -19,8 +18,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.ui.common.DeltaIndicator
 import es.aviferdev.n3to.ui.portfolio.home.CategoryGroup
-
 import es.aviferdev.n3to.ui.theme.N3toTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.ui.theme.formatAmount
 import es.aviferdev.n3to.ui.theme.formatPercent
 import es.aviferdev.n3to.ui.theme.maskAmount
@@ -62,11 +61,21 @@ fun CategoryGroupHeader(
                     color = MaterialTheme.appColors.textPrimary
                 )
                 Spacer(Modifier.width(6.dp))
-                Text("(${group.rowCount})", fontSize = 11.sp, color = MaterialTheme.appColors.textTertiary)
+                Text(
+                    "(${group.rowCount})",
+                    fontSize = 11.sp,
+                    color = MaterialTheme.appColors.textTertiary
+                )
             }
             if (group.totalPnL != 0.0) {
                 DeltaIndicator(
-                    value = "${if (group.totalPnLPercent >= 0) "+" else "−"}${formatPercent(abs(group.totalPnLPercent))}%",
+                    value = "${if (group.totalPnLPercent >= 0) "+" else "−"}${
+                        formatPercent(
+                            abs(
+                                group.totalPnLPercent
+                            )
+                        )
+                    }%",
                     isPositive = group.totalPnLPercent >= 0
                 )
             }
@@ -74,12 +83,18 @@ fun CategoryGroupHeader(
         Spacer(Modifier.height(5.dp))
         Row(Modifier.fillMaxWidth(), Arrangement.SpaceBetween) {
             Text(
-                stringResource(Res.string.portfolio_category_invested_format, maskAmount(formatAmount(group.totalInvested), balancesHidden)),
+                stringResource(
+                    Res.string.portfolio_category_invested_format,
+                    maskAmount(formatAmount(group.totalInvested), balancesHidden)
+                ),
                 fontSize = 11.sp,
                 color = MaterialTheme.appColors.textTertiary
             )
             Text(
-                stringResource(Res.string.portfolio_category_current_format, maskAmount(formatAmount(group.totalCurrentValue), balancesHidden)),
+                stringResource(
+                    Res.string.portfolio_category_current_format,
+                    maskAmount(formatAmount(group.totalCurrentValue), balancesHidden)
+                ),
                 fontSize = 11.sp,
                 color = MaterialTheme.appColors.textTertiary
             )

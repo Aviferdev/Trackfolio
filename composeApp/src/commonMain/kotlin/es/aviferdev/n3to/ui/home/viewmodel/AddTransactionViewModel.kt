@@ -1,7 +1,5 @@
 package es.aviferdev.n3to.ui.home.viewmodel
 
-import es.aviferdev.n3to.platform.nowLocalDate
-import es.aviferdev.n3to.platform.nowMillis
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -23,6 +21,8 @@ import es.aviferdev.n3to.domain.usecase.issuer.GetIssuersUseCase
 import es.aviferdev.n3to.domain.usecase.taxprofile.GetActiveTaxProfileSnapshotUseCase
 import es.aviferdev.n3to.domain.usecase.transaction.SaveTransactionUseCase
 import es.aviferdev.n3to.domain.usecase.transaction.UpdateTransactionUseCase
+import es.aviferdev.n3to.platform.nowLocalDate
+import es.aviferdev.n3to.platform.nowMillis
 import es.aviferdev.n3to.ui.account.AccountSession
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -35,7 +35,7 @@ import kotlin.math.abs
 import kotlin.math.floor
 
 sealed class AddTransactionUiState {
-    data object Idle    : AddTransactionUiState()
+    data object Idle : AddTransactionUiState()
     data object Loading : AddTransactionUiState()
     data object Success : AddTransactionUiState()
     data class Error(val message: String) : AddTransactionUiState()
@@ -115,42 +115,47 @@ class AddTransactionViewModel(
         private set
 
     /** Nombre de la retención sobre la renta según el perfil activo (IRPF, Income Tax, Federal Tax…). */
-    val withholdingTaxLabel: String get() {
-        val incType = selectedIncomeType ?: return "Retención fiscal"
-        val profile = activeTaxProfile ?: return "Retención fiscal"
-        return profile.profile.templatesFor(incType)
-            .firstOrNull { it.role == TaxRole.INCOME_TAX }
-            ?.name ?: "Retención fiscal"
-    }
+    val withholdingTaxLabel: String
+        get() {
+            val incType = selectedIncomeType ?: return "Retención fiscal"
+            val profile = activeTaxProfile ?: return "Retención fiscal"
+            return profile.profile.templatesFor(incType)
+                .firstOrNull { it.role == TaxRole.INCOME_TAX }
+                ?.name ?: "Retención fiscal"
+        }
 
     /** Nombres de las cotizaciones sociales según el perfil activo (Seg. Social, NI, FICA…). */
-    val socialContributionLabel: String get() {
-        val incType = selectedIncomeType ?: return "Cotizaciones sociales"
-        val profile = activeTaxProfile ?: return "Cotizaciones sociales"
-        val names = profile.profile.templatesFor(incType)
-            .filter { it.role == TaxRole.SOCIAL_CONTRIBUTION }
-            .map { it.name }
-        return if (names.isEmpty()) "Cotizaciones sociales" else names.joinToString(" + ")
-    }
+    val socialContributionLabel: String
+        get() {
+            val incType = selectedIncomeType ?: return "Cotizaciones sociales"
+            val profile = activeTaxProfile ?: return "Cotizaciones sociales"
+            val names = profile.profile.templatesFor(incType)
+                .filter { it.role == TaxRole.SOCIAL_CONTRIBUTION }
+                .map { it.name }
+            return if (names.isEmpty()) "Cotizaciones sociales" else names.joinToString(" + ")
+        }
 
     /**
      * Si el perfil activo tiene template de INCOME_TAX para este tipo → muestra campo retención.
      * Si no hay perfil (o es CUSTOM sin templates) → cae al flag del enum.
      */
-    val showWithholdingField: Boolean get() {
-        val incType = selectedIncomeType ?: return false
-        val profile = activeTaxProfile
-        if (profile == null || profile.profile.countryCode == null) return incType.hasWithholdingTax
-        return profile.profile.templatesFor(incType).any { it.role == TaxRole.INCOME_TAX }
-    }
+    val showWithholdingField: Boolean
+        get() {
+            val incType = selectedIncomeType ?: return false
+            val profile = activeTaxProfile
+            if (profile == null || profile.profile.countryCode == null) return incType.hasWithholdingTax
+            return profile.profile.templatesFor(incType).any { it.role == TaxRole.INCOME_TAX }
+        }
 
     /** Igual que showWithholdingField pero para cotizaciones sociales. */
-    val showSocialContributionField: Boolean get() {
-        val incType = selectedIncomeType ?: return false
-        val profile = activeTaxProfile
-        if (profile == null || profile.profile.countryCode == null) return incType.hasSocialContribution
-        return profile.profile.templatesFor(incType).any { it.role == TaxRole.SOCIAL_CONTRIBUTION }
-    }
+    val showSocialContributionField: Boolean
+        get() {
+            val incType = selectedIncomeType ?: return false
+            val profile = activeTaxProfile
+            if (profile == null || profile.profile.countryCode == null) return incType.hasSocialContribution
+            return profile.profile.templatesFor(incType)
+                .any { it.role == TaxRole.SOCIAL_CONTRIBUTION }
+        }
 
     // ── Cálculos ──────────────────────────────────────────────────────────────
 
@@ -163,7 +168,15 @@ class AddTransactionViewModel(
             val ss = socialSecurityAmount.replace(',', '.').toDoubleOrNull() ?: 0.0
             val comm = commissionAmount.replace(',', '.').toDoubleOrNull() ?: 0.0
             val isPercentMode = irpfInputMode == IrpfInputMode.PERCENT
-            return calculateNetIncome.calculate(incType, gross, ss, comm, isPercentMode, irpfPercent, irpfFixedAmount)
+            return calculateNetIncome.calculate(
+                incType,
+                gross,
+                ss,
+                comm,
+                isPercentMode,
+                irpfPercent,
+                irpfFixedAmount
+            )
         }
 
     // ── Validación ────────────────────────────────────────────────────────────
@@ -194,6 +207,7 @@ class AddTransactionViewModel(
                     val pct = irpfPercent.replace(',', '.').toDoubleOrNull()
                     pct != null && pct >= 0
                 }
+
                 IrpfInputMode.AMOUNT -> {
                     val fixed = irpfFixedAmount.replace(',', '.').toDoubleOrNull()
                     fixed != null && fixed >= 0
@@ -205,7 +219,9 @@ class AddTransactionViewModel(
             return grossOk && irpfOk && issuerOk
         }
 
-    init { loadCategories() }
+    init {
+        loadCategories()
+    }
 
     // ── Acciones de tipo ──────────────────────────────────────────────────────
 
@@ -228,7 +244,9 @@ class AddTransactionViewModel(
         // Limpiar campos que no aplican
         if (!incomeType.hasSocialContribution) socialSecurityAmount = ""
         if (!incomeType.hasCommission) commissionAmount = ""
-        if (!incomeType.hasWithholdingTax) { irpfPercent = ""; grossAmount = "" }
+        if (!incomeType.hasWithholdingTax) {
+            irpfPercent = ""; grossAmount = ""
+        }
         // Resetear modo IRPF
         irpfInputMode = IrpfInputMode.PERCENT
         irpfFixedAmount = ""
@@ -253,23 +271,50 @@ class AddTransactionViewModel(
 
     // ── Acciones de campos ────────────────────────────────────────────────────
 
-    fun onAmountChange(value: String) { amount = filterDecimal(value) }
-    fun onGrossAmountChange(value: String) { grossAmount = filterDecimal(value) }
-    fun onIrpfPercentChange(value: String) { irpfPercent = filterDecimal(value) }
-    fun onIrpfFixedAmountChange(value: String) { irpfFixedAmount = filterDecimal(value) }
+    fun onAmountChange(value: String) {
+        amount = filterDecimal(value)
+    }
+
+    fun onGrossAmountChange(value: String) {
+        grossAmount = filterDecimal(value)
+    }
+
+    fun onIrpfPercentChange(value: String) {
+        irpfPercent = filterDecimal(value)
+    }
+
+    fun onIrpfFixedAmountChange(value: String) {
+        irpfFixedAmount = filterDecimal(value)
+    }
+
     fun onIrpfInputModeChange(mode: IrpfInputMode) {
         irpfInputMode = mode
         // Limpiar el campo del modo contrario para evitar confusión
         when (mode) {
             IrpfInputMode.PERCENT -> irpfFixedAmount = ""
-            IrpfInputMode.AMOUNT  -> irpfPercent = ""
+            IrpfInputMode.AMOUNT -> irpfPercent = ""
         }
     }
-    fun onSocialSecurityChange(value: String) { socialSecurityAmount = filterDecimal(value) }
-    fun onCommissionChange(value: String) { commissionAmount = filterDecimal(value) }
-    fun onCategoryChange(categoryId: String) { selectedCategoryId = categoryId }
-    fun onNotesChange(value: String) { notes = value }
-    fun onDateChange(millis: Long) { dateMillis = millis }
+
+    fun onSocialSecurityChange(value: String) {
+        socialSecurityAmount = filterDecimal(value)
+    }
+
+    fun onCommissionChange(value: String) {
+        commissionAmount = filterDecimal(value)
+    }
+
+    fun onCategoryChange(categoryId: String) {
+        selectedCategoryId = categoryId
+    }
+
+    fun onNotesChange(value: String) {
+        notes = value
+    }
+
+    fun onDateChange(millis: Long) {
+        dateMillis = millis
+    }
 
     fun onIncomeModeChange(mode: IncomeInputMode) {
         incomeInputMode = mode
@@ -283,7 +328,10 @@ class AddTransactionViewModel(
             netAmount = ""
         }
     }
-    fun onNetAmountChange(value: String) { netAmount = filterDecimal(value) }
+
+    fun onNetAmountChange(value: String) {
+        netAmount = filterDecimal(value)
+    }
 
     fun onIssuerSelected(issuerId: String) {
         selectedIssuerId = issuerId
@@ -296,27 +344,32 @@ class AddTransactionViewModel(
         if (showNewIssuerField) selectedIssuerId = null
     }
 
-    fun onNewIssuerNameChange(value: String) { newIssuerName = value }
+    fun onNewIssuerNameChange(value: String) {
+        newIssuerName = value
+    }
 
     // ── Edición ───────────────────────────────────────────────────────────────
 
     fun loadForEdit(transaction: Transaction) {
         editingTransaction = transaction
-        type  = transaction.type
+        type = transaction.type
         notes = transaction.notes ?: ""
         dateMillis = transaction.date
 
         if (transaction.isIncome) {
-            selectedIncomeType       = transaction.incomeType
-            incomeInputMode          = if (transaction.isNetOnly) IncomeInputMode.NET_ONLY else IncomeInputMode.FISCAL
-            netAmount                = if (transaction.isNetOnly) formatAmountForEdit(transaction.amount) else ""
-            grossAmount              = formatAmountForEdit(transaction.grossAmount)
-            irpfPercent              = formatAmountForEdit(transaction.taxLines.firstOrNull { it.role == TaxRole.INCOME_TAX }?.percent)
-            socialSecurityAmount     = formatAmountForEdit(transaction.taxLines.firstOrNull { it.role == TaxRole.SOCIAL_CONTRIBUTION }?.amount)
-            commissionAmount         = formatAmountForEdit(transaction.commissionAmount)
-            selectedIssuerId         = transaction.issuerId
-            amount                   = ""
-            selectedCategoryId       = ""
+            selectedIncomeType = transaction.incomeType
+            incomeInputMode =
+                if (transaction.isNetOnly) IncomeInputMode.NET_ONLY else IncomeInputMode.FISCAL
+            netAmount = if (transaction.isNetOnly) formatAmountForEdit(transaction.amount) else ""
+            grossAmount = formatAmountForEdit(transaction.grossAmount)
+            irpfPercent =
+                formatAmountForEdit(transaction.taxLines.firstOrNull { it.role == TaxRole.INCOME_TAX }?.percent)
+            socialSecurityAmount =
+                formatAmountForEdit(transaction.taxLines.firstOrNull { it.role == TaxRole.SOCIAL_CONTRIBUTION }?.amount)
+            commissionAmount = formatAmountForEdit(transaction.commissionAmount)
+            selectedIssuerId = transaction.issuerId
+            amount = ""
+            selectedCategoryId = ""
             transaction.incomeType?.let { loadIssuersForType(it) }
             viewModelScope.launch {
                 activeTaxProfile = getActiveTaxProfile(nowLocalDate())
@@ -330,10 +383,10 @@ class AddTransactionViewModel(
 
     fun resetForCreate() {
         editingTransaction = null
-        amount             = ""
-        type               = TransactionType.EXPENSE
-        notes              = ""
-        dateMillis         = nowMillis()
+        amount = ""
+        type = TransactionType.EXPENSE
+        notes = ""
+        dateMillis = nowMillis()
         clearIncomeFields()
         loadCategories()
     }
@@ -363,7 +416,7 @@ class AddTransactionViewModel(
         val transaction = buildTransaction(
             accountId = accountId,
             netAmount = netAmount,
-            now       = now
+            now = now
         )
         persistTransaction(transaction)
     }
@@ -379,11 +432,11 @@ class AddTransactionViewModel(
             }
             val finalIssuerName = issuers.find { it.id == selectedIssuerId }?.name
             val transaction = buildTransaction(
-                accountId  = accountId,
-                netAmount  = net,
-                now        = now,
+                accountId = accountId,
+                netAmount = net,
+                now = now,
                 incomeType = incType,
-                issuerId   = selectedIssuerId,
+                issuerId = selectedIssuerId,
                 issuerName = finalIssuerName
             )
             persistTransaction(transaction)
@@ -405,25 +458,48 @@ class AddTransactionViewModel(
         val gross = grossAmount.replace(',', '.').toDoubleOrNull()
         val builtTaxLines = buildList {
             if (incType.hasWithholdingTax && gross != null) {
-                val ssVal = if (incType.hasSocialContribution) socialSecurityAmount.replace(',', '.').toDoubleOrNull() ?: 0.0 else 0.0
-                val pct = calculateIrpf.resolvePercent(gross, ssVal, irpfInputMode == IrpfInputMode.PERCENT, irpfPercent, irpfFixedAmount)
-                add(TaxLine(name = "Retención", role = TaxRole.INCOME_TAX, percent = pct, amount = gross * pct / 100.0))
+                val ssVal =
+                    if (incType.hasSocialContribution) socialSecurityAmount.replace(',', '.')
+                        .toDoubleOrNull() ?: 0.0 else 0.0
+                val pct = calculateIrpf.resolvePercent(
+                    gross,
+                    ssVal,
+                    irpfInputMode == IrpfInputMode.PERCENT,
+                    irpfPercent,
+                    irpfFixedAmount
+                )
+                add(
+                    TaxLine(
+                        name = "Retención",
+                        role = TaxRole.INCOME_TAX,
+                        percent = pct,
+                        amount = gross * pct / 100.0
+                    )
+                )
             }
             if (incType.hasSocialContribution) {
                 val ssVal = socialSecurityAmount.replace(',', '.').toDoubleOrNull()
-                if (ssVal != null && ssVal > 0) add(TaxLine(name = "Cotización Social", role = TaxRole.SOCIAL_CONTRIBUTION, percent = null, amount = ssVal))
+                if (ssVal != null && ssVal > 0) add(
+                    TaxLine(
+                        name = "Cotización Social",
+                        role = TaxRole.SOCIAL_CONTRIBUTION,
+                        percent = null,
+                        amount = ssVal
+                    )
+                )
             }
         }
         val transaction = buildTransaction(
-            accountId        = accountId,
-            netAmount        = net,
-            now              = now,
-            incomeType       = incType,
-            grossAmount      = gross,
-            taxLines         = builtTaxLines,
-            commissionAmount = if (incType.hasCommission) commissionAmount.replace(',', '.').toDoubleOrNull() else null,
-            issuerId         = finalIssuerId,
-            issuerName       = finalIssuerName
+            accountId = accountId,
+            netAmount = net,
+            now = now,
+            incomeType = incType,
+            grossAmount = gross,
+            taxLines = builtTaxLines,
+            commissionAmount = if (incType.hasCommission) commissionAmount.replace(',', '.')
+                .toDoubleOrNull() else null,
+            issuerId = finalIssuerId,
+            issuerName = finalIssuerName
         )
         persistTransaction(transaction)
     }
@@ -441,20 +517,20 @@ class AddTransactionViewModel(
     ): Transaction {
         val existing = editingTransaction
         return Transaction(
-            id               = existing?.id ?: uuid4().toString(),
-            accountId        = accountId,
-            amount           = netAmount,
-            type             = type,
-            categoryId       = if (type == TransactionType.EXPENSE) selectedCategoryId else null,
-            date             = dateMillis,
-            notes            = notes.ifBlank { null },
-            createdAt        = existing?.createdAt ?: now,
-            incomeType       = incomeType,
-            grossAmount      = grossAmount,
-            taxLines         = taxLines,
+            id = existing?.id ?: uuid4().toString(),
+            accountId = accountId,
+            amount = netAmount,
+            type = type,
+            categoryId = if (type == TransactionType.EXPENSE) selectedCategoryId else null,
+            date = dateMillis,
+            notes = notes.ifBlank { null },
+            createdAt = existing?.createdAt ?: now,
+            incomeType = incomeType,
+            grossAmount = grossAmount,
+            taxLines = taxLines,
             commissionAmount = commissionAmount,
-            issuerId         = issuerId,
-            issuerName       = issuerName
+            issuerId = issuerId,
+            issuerName = issuerName
         )
     }
 
@@ -469,27 +545,31 @@ class AddTransactionViewModel(
             .onFailure { _uiState.value = AddTransactionUiState.Error(it.message ?: "Error") }
     }
 
-    fun clear() { _uiState.value = AddTransactionUiState.Idle }
+    fun clear() {
+        _uiState.value = AddTransactionUiState.Idle
+    }
 
     // ── Helpers ───────────────────────────────────────────────────────────────
 
     private fun clearIncomeFields() {
-        selectedIncomeType   = null
-        incomeInputMode      = IncomeInputMode.FISCAL
-        netAmount            = ""
-        grossAmount          = ""
-        irpfPercent          = ""
-        irpfFixedAmount      = ""
-        irpfInputMode        = IrpfInputMode.PERCENT
+        selectedIncomeType = null
+        incomeInputMode = IncomeInputMode.FISCAL
+        netAmount = ""
+        grossAmount = ""
+        irpfPercent = ""
+        irpfFixedAmount = ""
+        irpfInputMode = IrpfInputMode.PERCENT
         socialSecurityAmount = ""
-        commissionAmount     = ""
-        selectedIssuerId     = null
-        newIssuerName        = ""
-        showNewIssuerField   = false
-        issuers              = emptyList()
+        commissionAmount = ""
+        selectedIssuerId = null
+        newIssuerName = ""
+        showNewIssuerField = false
+        issuers = emptyList()
     }
 
-    private fun loadCategories() { loadCategoriesAndSelect(type, null) }
+    private fun loadCategories() {
+        loadCategoriesAndSelect(type, null)
+    }
 
     private fun loadCategoriesAndSelect(forType: TransactionType, selectId: String?) {
         val accountId = session.selectedAccountId.value ?: return

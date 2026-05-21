@@ -161,50 +161,53 @@ fun AddEditAssetTransactionBottomSheet(
     }
 
     // Plataformas vinculadas al activo seleccionado o a los activos de la categoría seleccionada
-    val visiblePlatforms: List<Platform> = remember(selectedAssetId, selectedCategoryId, platformsByAsset, platforms, filteredAssets) {
-        // Primero obtener las plataformas de los activos filtrados por categoría
-        val categoryAssetIds = if (selectedCategoryId != null) {
-            filteredAssets.map { it.id }.toSet()
-        } else {
-            emptySet()
+    val visiblePlatforms: List<Platform> =
+        remember(selectedAssetId, selectedCategoryId, platformsByAsset, platforms, filteredAssets) {
+            // Primero obtener las plataformas de los activos filtrados por categoría
+            val categoryAssetIds = if (selectedCategoryId != null) {
+                filteredAssets.map { it.id }.toSet()
+            } else {
+                emptySet()
+            }
+
+            val platformsForFilteredAssets = if (categoryAssetIds.isNotEmpty()) {
+                categoryAssetIds.mapNotNull { platformsByAsset[it] }.flatten().distinctBy { it.id }
+            } else {
+                emptyList()
+            }
+
+            // Si hay un activo seleccionado específicamente, usar sus plataformas
+            val linked = selectedAssetId?.let { platformsByAsset[it] }
+
+            when {
+                // Si hay activo seleccionado con plataformas vinculadas, usar esas
+                linked != null && linked.isNotEmpty() -> linked
+                // Si hay activos filtrados con plataformas vinculadas, usar esas
+                platformsForFilteredAssets.isNotEmpty() -> platformsForFilteredAssets
+                // Si no hay categoría seleccionada ni activo con plataformas, mostrar todas
+                else -> platforms
+            }
+        }
+    val hasLinkedPlatforms: Boolean =
+        remember(selectedAssetId, selectedCategoryId, platformsByAsset, filteredAssets) {
+            when {
+                selectedAssetId != null -> platformsByAsset[selectedAssetId]?.isNotEmpty() ?: false
+                selectedCategoryId != null -> filteredAssets.any { platformsByAsset[it.id]?.isNotEmpty() == true }
+                else -> false
+            }
         }
 
-        val platformsForFilteredAssets = if (categoryAssetIds.isNotEmpty()) {
-            categoryAssetIds.mapNotNull { platformsByAsset[it] }.flatten().distinctBy { it.id }
-        } else {
-            emptyList()
+    val availableByPlatform: Map<String, Double> =
+        remember(relevantTransactions, dateMillis, transaction, visiblePlatforms) {
+            visiblePlatforms.associate { p ->
+                p.id to PortfolioCalculator.availableQuantityAt(
+                    transactions = relevantTransactions,
+                    asOfDate = dateMillis,
+                    platformId = p.id,
+                    excludingTransactionId = transaction?.id
+                )
+            }
         }
-
-        // Si hay un activo seleccionado específicamente, usar sus plataformas
-        val linked = selectedAssetId?.let { platformsByAsset[it] }
-
-        when {
-            // Si hay activo seleccionado con plataformas vinculadas, usar esas
-            linked != null && linked.isNotEmpty() -> linked
-            // Si hay activos filtrados con plataformas vinculadas, usar esas
-            platformsForFilteredAssets.isNotEmpty() -> platformsForFilteredAssets
-            // Si no hay categoría seleccionada ni activo con plataformas, mostrar todas
-            else -> platforms
-        }
-    }
-    val hasLinkedPlatforms: Boolean = remember(selectedAssetId, selectedCategoryId, platformsByAsset, filteredAssets) {
-        when {
-            selectedAssetId != null -> platformsByAsset[selectedAssetId]?.isNotEmpty() ?: false
-            selectedCategoryId != null -> filteredAssets.any { platformsByAsset[it.id]?.isNotEmpty() == true }
-            else -> false
-        }
-    }
-
-    val availableByPlatform: Map<String, Double> = remember(relevantTransactions, dateMillis, transaction, visiblePlatforms) {
-        visiblePlatforms.associate { p ->
-            p.id to PortfolioCalculator.availableQuantityAt(
-                transactions           = relevantTransactions,
-                asOfDate               = dateMillis,
-                platformId             = p.id,
-                excludingTransactionId = transaction?.id
-            )
-        }
-    }
 
     val platformsWithStock: Set<String> = remember(availableByPlatform) {
         availableByPlatform.filterValues { it > 0.0 }.keys
@@ -230,9 +233,9 @@ fun AddEditAssetTransactionBottomSheet(
     }
 
     // ── Validación ───────────────────────────────────────────────────────────
-    val parsedQty   = quantity.replace(',', '.').toDoubleOrNull()
+    val parsedQty = quantity.replace(',', '.').toDoubleOrNull()
     val parsedPrice = pricePerUnit.replace(',', '.').toDoubleOrNull()
-    val now         = nowMillis()
+    val now = nowMillis()
 
     val isSell = type == AssetTransactionType.SELL
 
@@ -241,22 +244,22 @@ fun AddEditAssetTransactionBottomSheet(
     } else if (isSell) {
         // Sin plataforma seleccionada: mostrar total global como referencia
         PortfolioCalculator.availableQuantityAt(
-            transactions           = relevantTransactions,
-            asOfDate               = dateMillis,
+            transactions = relevantTransactions,
+            asOfDate = dateMillis,
             excludingTransactionId = transaction?.id
         )
     } else 0.0
 
     val sellExceeds = isSell
-        && parsedQty != null && platformId != null
-        && parsedQty > (availableByPlatform[platformId] ?: 0.0)
+            && parsedQty != null && platformId != null
+            && parsedQty > (availableByPlatform[platformId] ?: 0.0)
 
     val isValid = selectedAssetId != null
-        && parsedQty != null && parsedQty > 0.0
-        && parsedPrice != null && parsedPrice > 0.0
-        && platformId != null
-        && dateMillis <= now
-        && !sellExceeds
+            && parsedQty != null && parsedQty > 0.0
+            && parsedPrice != null && parsedPrice > 0.0
+            && platformId != null
+            && dateMillis <= now
+            && !sellExceeds
 
     val selectedAsset = remember(selectedAssetId, allAssets) {
         allAssets.firstOrNull { it.id == selectedAssetId }
@@ -264,8 +267,8 @@ fun AddEditAssetTransactionBottomSheet(
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
-        sheetState       = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-        containerColor   = MaterialTheme.appColors.surface,
+        sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
+        containerColor = MaterialTheme.appColors.surface,
         dragHandle = {
             Box(
                 modifier = Modifier
@@ -286,11 +289,13 @@ fun AddEditAssetTransactionBottomSheet(
         ) {
             Spacer(Modifier.height(4.dp))
             Text(
-                text       = if (isEditing) stringResource(Res.string.portfolio_add_tx_title_edit) else stringResource(Res.string.portfolio_add_tx_title_new),
-                fontSize   = 18.sp,
+                text = if (isEditing) stringResource(Res.string.portfolio_add_tx_title_edit) else stringResource(
+                    Res.string.portfolio_add_tx_title_new
+                ),
+                fontSize = 18.sp,
                 fontWeight = FontWeight.SemiBold,
-                color      = MaterialTheme.appColors.textPrimary,
-                modifier   = Modifier.padding(bottom = 16.dp)
+                color = MaterialTheme.appColors.textPrimary,
+                modifier = Modifier.padding(bottom = 16.dp)
             )
 
             // ── Tipo BUY/SELL (oculto en modo buyOnly) ────────────────────────
@@ -304,18 +309,18 @@ fun AddEditAssetTransactionBottomSheet(
                     horizontalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
                     TypeToggle(
-                        label    = stringResource(Res.string.portfolio_add_tx_type_buy),
-                        isSel    = type == AssetTransactionType.BUY,
+                        label = stringResource(Res.string.portfolio_add_tx_type_buy),
+                        isSel = type == AssetTransactionType.BUY,
                         selColor = MaterialTheme.appColors.income,
                         modifier = Modifier.weight(1f),
-                        onClick  = { type = AssetTransactionType.BUY }
+                        onClick = { type = AssetTransactionType.BUY }
                     )
                     TypeToggle(
-                        label    = stringResource(Res.string.portfolio_add_tx_type_sell),
-                        isSel    = type == AssetTransactionType.SELL,
+                        label = stringResource(Res.string.portfolio_add_tx_type_sell),
+                        isSel = type == AssetTransactionType.SELL,
                         selColor = MaterialTheme.appColors.expense,
                         modifier = Modifier.weight(1f),
-                        onClick  = { type = AssetTransactionType.SELL }
+                        onClick = { type = AssetTransactionType.SELL }
                     )
                 }
                 Spacer(Modifier.height(16.dp))
@@ -328,56 +333,66 @@ fun AddEditAssetTransactionBottomSheet(
                     categories.filter { !AssetCategoryType.isFixedIncome(it.id) }
                 }
                 if (investmentCategories.isNotEmpty()) {
-                    Text(stringResource(Res.string.portfolio_add_tx_category_filter), fontSize = 12.sp, color = MaterialTheme.appColors.textSecondary, fontWeight = FontWeight.Medium)
+                    Text(
+                        stringResource(Res.string.portfolio_add_tx_category_filter),
+                        fontSize = 12.sp,
+                        color = MaterialTheme.appColors.textSecondary,
+                        fontWeight = FontWeight.Medium
+                    )
                     Spacer(Modifier.height(6.dp))
                     Row(
-                        modifier              = Modifier
+                        modifier = Modifier
                             .fillMaxWidth()
                             .horizontalScroll(rememberScrollState()),
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         CategoryFilterChip(
-                            label    = stringResource(Res.string.portfolio_add_tx_category_all),
+                            label = stringResource(Res.string.portfolio_add_tx_category_all),
                             isSelected = selectedCategoryId == null,
-                            onClick  = { selectedCategoryId = null }
+                            onClick = { selectedCategoryId = null }
                         )
                         investmentCategories.forEach { category ->
                             CategoryFilterChip(
-                                label    = category.name,
-                                icon     = category.icon,
+                                label = category.name,
+                                icon = category.icon,
                                 isSelected = selectedCategoryId == category.id,
-                                onClick  = { selectedCategoryId = category.id }
+                                onClick = { selectedCategoryId = category.id }
                             )
                         }
                     }
                     Spacer(Modifier.height(12.dp))
                 }
 
-                Text(stringResource(Res.string.portfolio_add_tx_select_asset), fontSize = 12.sp, color = MaterialTheme.appColors.textSecondary, fontWeight = FontWeight.Medium)
+                Text(
+                    stringResource(Res.string.portfolio_add_tx_select_asset),
+                    fontSize = 12.sp,
+                    color = MaterialTheme.appColors.textSecondary,
+                    fontWeight = FontWeight.Medium
+                )
                 Spacer(Modifier.height(8.dp))
                 if (filteredAssets.isEmpty()) {
                     if (selectedCategoryId != null && allAssets.isNotEmpty()) {
                         Text(
-                            text     = stringResource(Res.string.portfolio_add_tx_no_assets_category),
+                            text = stringResource(Res.string.portfolio_add_tx_no_assets_category),
                             fontSize = 12.sp,
-                            color    = MaterialTheme.appColors.textSecondary
+                            color = MaterialTheme.appColors.textSecondary
                         )
                     } else {
                         EmptyAssetsHint()
                     }
                 } else {
                     Row(
-                        modifier              = Modifier
+                        modifier = Modifier
                             .fillMaxWidth()
                             .horizontalScroll(rememberScrollState()),
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         filteredAssets.forEach { asset ->
                             AssetChip(
-                                ticker     = asset.ticker,
-                                name       = asset.name,
+                                ticker = asset.ticker,
+                                name = asset.name,
                                 isSelected = selectedAssetId == asset.id,
-                                onClick    = { selectedAssetId = asset.id }
+                                onClick = { selectedAssetId = asset.id }
                             )
                         }
                     }
@@ -394,35 +409,49 @@ fun AddEditAssetTransactionBottomSheet(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Box(
-                        modifier         = Modifier
+                        modifier = Modifier
                             .size(36.dp)
                             .clip(RoundedCornerShape(8.dp))
                             .background(MaterialTheme.appColors.primary),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text       = fixedAsset.ticker.take(3),
-                            fontSize   = if (fixedAsset.ticker.length > 3) 9.sp else 11.sp,
-                            color      = Color.White,
+                            text = fixedAsset.ticker.take(3),
+                            fontSize = if (fixedAsset.ticker.length > 3) 9.sp else 11.sp,
+                            color = Color.White,
                             fontWeight = FontWeight.Bold
                         )
                     }
                     Spacer(Modifier.width(10.dp))
                     Column(modifier = Modifier.weight(1f)) {
-                        Text(fixedAsset.name, fontSize = 14.sp, color = MaterialTheme.appColors.textPrimary, fontWeight = FontWeight.Medium)
-                        Text(fixedAsset.ticker, fontSize = 11.sp, color = MaterialTheme.appColors.textSecondary)
+                        Text(
+                            fixedAsset.name,
+                            fontSize = 14.sp,
+                            color = MaterialTheme.appColors.textPrimary,
+                            fontWeight = FontWeight.Medium
+                        )
+                        Text(
+                            fixedAsset.ticker,
+                            fontSize = 11.sp,
+                            color = MaterialTheme.appColors.textSecondary
+                        )
                     }
                 }
                 Spacer(Modifier.height(16.dp))
             }
 
             // ── Plataforma (obligatoria — antes de cantidad para ventas) ─────
-            Text(stringResource(Res.string.portfolio_add_tx_platform_label), fontSize = 12.sp, color = MaterialTheme.appColors.textSecondary, fontWeight = FontWeight.Medium)
+            Text(
+                stringResource(Res.string.portfolio_add_tx_platform_label),
+                fontSize = 12.sp,
+                color = MaterialTheme.appColors.textSecondary,
+                fontWeight = FontWeight.Medium
+            )
             if (isSell && platformId == null && platformsWithStock.isNotEmpty()) {
                 Text(
-                    text     = stringResource(Res.string.portfolio_add_tx_platform_select_hint),
+                    text = stringResource(Res.string.portfolio_add_tx_platform_select_hint),
                     fontSize = 11.sp,
-                    color    = MaterialTheme.appColors.expense.copy(alpha = 0.8f)
+                    color = MaterialTheme.appColors.expense.copy(alpha = 0.8f)
                 )
             }
             Spacer(Modifier.height(8.dp))
@@ -432,14 +461,14 @@ fun AddEditAssetTransactionBottomSheet(
                 // Hint cuando el activo no tiene plataformas vinculadas
                 if (!hasLinkedPlatforms && selectedAssetId != null) {
                     Text(
-                        text     = stringResource(Res.string.portfolio_add_tx_platform_not_assigned),
+                        text = stringResource(Res.string.portfolio_add_tx_platform_not_assigned),
                         fontSize = 11.sp,
-                        color    = MaterialTheme.appColors.textSecondary,
+                        color = MaterialTheme.appColors.textSecondary,
                         modifier = Modifier.padding(bottom = 8.dp)
                     )
                 }
                 Row(
-                    modifier              = Modifier
+                    modifier = Modifier
                         .fillMaxWidth()
                         .horizontalScroll(rememberScrollState()),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -450,12 +479,16 @@ fun AddEditAssetTransactionBottomSheet(
                         val available = availableByPlatform[p.id] ?: 0.0
 
                         PlatformChip(
-                            icon       = p.icon,
-                            label      = p.name,
+                            icon = p.icon,
+                            label = p.name,
                             isSelected = platformId == p.id,
-                            enabled    = enabled,
-                            badge      = if (isSell && hasStock) "${formatQty(available)} ${stringResource(Res.string.portfolio_add_tx_units_label)}" else null,
-                            onClick    = { if (enabled) platformId = p.id }
+                            enabled = enabled,
+                            badge = if (isSell && hasStock) "${formatQty(available)} ${
+                                stringResource(
+                                    Res.string.portfolio_add_tx_units_label
+                                )
+                            }" else null,
+                            onClick = { if (enabled) platformId = p.id }
                         )
                     }
                 }
@@ -464,36 +497,46 @@ fun AddEditAssetTransactionBottomSheet(
 
             // ── Cantidad + precio ────────────────────────────────────────────
             Row(
-                modifier              = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 OutlinedTextField(
-                    value         = quantity,
-                    onValueChange = { quantity = it.filter { c -> c.isDigit() || c == ',' || c == '.' } },
-                    label         = { Text(stringResource(Res.string.portfolio_add_tx_qty_label)) },
-                    placeholder   = { Text("0") },
-                    isError       = sellExceeds,
-                    modifier      = Modifier.weight(1f),
-                    singleLine    = true,
-                    shape         = RoundedCornerShape(10.dp),
+                    value = quantity,
+                    onValueChange = {
+                        quantity = it.filter { c -> c.isDigit() || c == ',' || c == '.' }
+                    },
+                    label = { Text(stringResource(Res.string.portfolio_add_tx_qty_label)) },
+                    placeholder = { Text("0") },
+                    isError = sellExceeds,
+                    modifier = Modifier.weight(1f),
+                    singleLine = true,
+                    shape = RoundedCornerShape(10.dp),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                    colors        = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor   = if (sellExceeds) MaterialTheme.appColors.expense else MaterialTheme.appColors.primary,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = if (sellExceeds) MaterialTheme.appColors.expense else MaterialTheme.appColors.primary,
                         unfocusedBorderColor = if (sellExceeds) MaterialTheme.appColors.expense else MaterialTheme.appColors.border
                     )
                 )
                 OutlinedTextField(
-                    value         = pricePerUnit,
-                    onValueChange = { pricePerUnit = it.filter { c -> c.isDigit() || c == ',' || c == '.' } },
-                    label         = { Text(stringResource(Res.string.portfolio_add_tx_price_label)) },
-                    placeholder   = { Text("0,00") },
-                    trailingIcon  = { Text("€", color = MaterialTheme.appColors.textSecondary, modifier = Modifier.padding(end = 12.dp)) },
-                    modifier      = Modifier.weight(1f),
-                    singleLine    = true,
-                    shape         = RoundedCornerShape(10.dp),
+                    value = pricePerUnit,
+                    onValueChange = {
+                        pricePerUnit = it.filter { c -> c.isDigit() || c == ',' || c == '.' }
+                    },
+                    label = { Text(stringResource(Res.string.portfolio_add_tx_price_label)) },
+                    placeholder = { Text("0,00") },
+                    trailingIcon = {
+                        Text(
+                            "€",
+                            color = MaterialTheme.appColors.textSecondary,
+                            modifier = Modifier.padding(end = 12.dp)
+                        )
+                    },
+                    modifier = Modifier.weight(1f),
+                    singleLine = true,
+                    shape = RoundedCornerShape(10.dp),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                    colors        = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor   = MaterialTheme.appColors.primary,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = MaterialTheme.appColors.primary,
                         unfocusedBorderColor = MaterialTheme.appColors.border
                     )
                 )
@@ -509,18 +552,31 @@ fun AddEditAssetTransactionBottomSheet(
                     stringResource(Res.string.portfolio_add_tx_platform_label_inline, platformName)
                 else ""
                 Text(
-                    text     = if (sellExceeds)
-                        stringResource(Res.string.portfolio_add_tx_only_available, formatQty(displayAvailable), platformLabel)
+                    text = if (sellExceeds)
+                        stringResource(
+                            Res.string.portfolio_add_tx_only_available,
+                            formatQty(displayAvailable),
+                            platformLabel
+                        )
                     else
-                        stringResource(Res.string.portfolio_add_tx_available, formatQty(displayAvailable), platformLabel),
+                        stringResource(
+                            Res.string.portfolio_add_tx_available,
+                            formatQty(displayAvailable),
+                            platformLabel
+                        ),
                     fontSize = 11.sp,
-                    color    = if (sellExceeds) MaterialTheme.appColors.expense else MaterialTheme.appColors.textSecondary
+                    color = if (sellExceeds) MaterialTheme.appColors.expense else MaterialTheme.appColors.textSecondary
                 )
             }
             Spacer(Modifier.height(12.dp))
 
             // ── Fecha ────────────────────────────────────────────────────────
-            Text(stringResource(Res.string.portfolio_add_tx_date_label), fontSize = 12.sp, color = MaterialTheme.appColors.textSecondary, fontWeight = FontWeight.Medium)
+            Text(
+                stringResource(Res.string.portfolio_add_tx_date_label),
+                fontSize = 12.sp,
+                color = MaterialTheme.appColors.textSecondary,
+                fontWeight = FontWeight.Medium
+            )
             Spacer(Modifier.height(6.dp))
             Box(
                 modifier = Modifier
@@ -531,31 +587,31 @@ fun AddEditAssetTransactionBottomSheet(
                     .padding(horizontal = 14.dp, vertical = 14.dp)
             ) {
                 Text(
-                    text     = formatFullDate(dateMillis),
+                    text = formatFullDate(dateMillis),
                     fontSize = 14.sp,
-                    color    = MaterialTheme.appColors.textPrimary
+                    color = MaterialTheme.appColors.textPrimary
                 )
             }
             Spacer(Modifier.height(12.dp))
 
             // ── Comisión informativa ────────────────────────────────────────
             OutlinedTextField(
-                value         = feeNote,
+                value = feeNote,
                 onValueChange = { feeNote = it },
-                label         = { Text(stringResource(Res.string.portfolio_add_tx_fee_label)) },
-                placeholder   = { Text(stringResource(Res.string.portfolio_add_tx_fee_placeholder)) },
+                label = { Text(stringResource(Res.string.portfolio_add_tx_fee_label)) },
+                placeholder = { Text(stringResource(Res.string.portfolio_add_tx_fee_placeholder)) },
                 supportingText = {
                     Text(
-                        text     = stringResource(Res.string.portfolio_add_tx_fee_hint),
+                        text = stringResource(Res.string.portfolio_add_tx_fee_hint),
                         fontSize = 11.sp,
-                        color    = MaterialTheme.appColors.textSecondary
+                        color = MaterialTheme.appColors.textSecondary
                     )
                 },
-                modifier      = Modifier.fillMaxWidth(),
-                singleLine    = true,
-                shape         = RoundedCornerShape(10.dp),
-                colors        = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor   = MaterialTheme.appColors.primary,
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                shape = RoundedCornerShape(10.dp),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = MaterialTheme.appColors.primary,
                     unfocusedBorderColor = MaterialTheme.appColors.border
                 )
             )
@@ -563,14 +619,14 @@ fun AddEditAssetTransactionBottomSheet(
 
             // ── Notas ───────────────────────────────────────────────────────
             OutlinedTextField(
-                value         = notes,
+                value = notes,
                 onValueChange = { notes = it },
-                label         = { Text(stringResource(Res.string.portfolio_add_tx_notes_label)) },
-                modifier      = Modifier.fillMaxWidth(),
-                singleLine    = true,
-                shape         = RoundedCornerShape(10.dp),
-                colors        = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor   = MaterialTheme.appColors.primary,
+                label = { Text(stringResource(Res.string.portfolio_add_tx_notes_label)) },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                shape = RoundedCornerShape(10.dp),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = MaterialTheme.appColors.primary,
                     unfocusedBorderColor = MaterialTheme.appColors.border
                 )
             )
@@ -579,10 +635,10 @@ fun AddEditAssetTransactionBottomSheet(
 
             Button(
                 onClick = {
-                    val assetIdNonNull    = selectedAssetId    ?: return@Button
-                    val platformIdNonNull = platformId         ?: return@Button
-                    val qty               = parsedQty          ?: return@Button
-                    val price             = parsedPrice        ?: return@Button
+                    val assetIdNonNull = selectedAssetId ?: return@Button
+                    val platformIdNonNull = platformId ?: return@Button
+                    val qty = parsedQty ?: return@Button
+                    val price = parsedPrice ?: return@Button
                     onSave(
                         assetIdNonNull,
                         type,
@@ -595,17 +651,19 @@ fun AddEditAssetTransactionBottomSheet(
                         selectedPortfolioId
                     )
                 },
-                enabled  = isValid,
+                enabled = isValid,
                 modifier = Modifier.fillMaxWidth().height(52.dp),
-                shape    = RoundedCornerShape(10.dp),
-                colors   = ButtonDefaults.buttonColors(
-                    containerColor         = MaterialTheme.appColors.primary,
+                shape = RoundedCornerShape(10.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.appColors.primary,
                     disabledContainerColor = MaterialTheme.appColors.primary.copy(alpha = 0.38f)
                 )
             ) {
                 Text(
-                    text       = if (isEditing) stringResource(Res.string.portfolio_add_tx_save_changes) else stringResource(Res.string.portfolio_add_tx_new),
-                    fontSize   = 16.sp,
+                    text = if (isEditing) stringResource(Res.string.portfolio_add_tx_save_changes) else stringResource(
+                        Res.string.portfolio_add_tx_new
+                    ),
+                    fontSize = 16.sp,
                     fontWeight = FontWeight.Medium
                 )
             }
@@ -626,11 +684,19 @@ fun AddEditAssetTransactionBottomSheet(
                         dateMillis = selected
                     }
                     showDatePicker = false
-                }) { Text(stringResource(Res.string.portfolio_add_tx_accept), color = MaterialTheme.appColors.primary) }
+                }) {
+                    Text(
+                        stringResource(Res.string.portfolio_add_tx_accept),
+                        color = MaterialTheme.appColors.primary
+                    )
+                }
             },
             dismissButton = {
                 TextButton(onClick = { showDatePicker = false }) {
-                    Text(stringResource(Res.string.portfolio_add_tx_cancel), color = MaterialTheme.appColors.textSecondary)
+                    Text(
+                        stringResource(Res.string.portfolio_add_tx_cancel),
+                        color = MaterialTheme.appColors.textSecondary
+                    )
                 }
             },
             colors = DatePickerDefaults.colors(containerColor = MaterialTheme.appColors.surface)
@@ -639,7 +705,7 @@ fun AddEditAssetTransactionBottomSheet(
                 state = pickerState,
                 colors = DatePickerDefaults.colors(
                     selectedDayContainerColor = MaterialTheme.appColors.primary,
-                    todayDateBorderColor      = MaterialTheme.appColors.primary
+                    todayDateBorderColor = MaterialTheme.appColors.primary
                 )
             )
         }

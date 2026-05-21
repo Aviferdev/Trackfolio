@@ -76,7 +76,8 @@ object FrenchAmortizationCalculator {
 
             // Comprobar si hay un cambio de tipo efectivo en esta cuota
             val rateChange = sortedChanges.firstOrNull { change ->
-                val changeInstallment = ((change.effectiveDate - startDate) / MILLIS_PER_MONTH).toInt()
+                val changeInstallment =
+                    ((change.effectiveDate - startDate) / MILLIS_PER_MONTH).toInt()
                 changeInstallment == i
             }
             if (rateChange != null) {

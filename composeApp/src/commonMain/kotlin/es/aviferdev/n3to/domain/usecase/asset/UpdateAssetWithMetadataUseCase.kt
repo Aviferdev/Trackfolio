@@ -26,7 +26,11 @@ class UpdateAssetWithMetadataUseCase(
         val now = nowMillis()
         if (fixedIncomePercent > 0) {
             assetMetadataRepository.saveComposition(
-                AssetComposition(assetId = asset.id, fixedIncomePercent = fixedIncomePercent, createdAt = now)
+                AssetComposition(
+                    assetId = asset.id,
+                    fixedIncomePercent = fixedIncomePercent,
+                    createdAt = now
+                )
             )
         } else {
             assetMetadataRepository.deleteComposition(asset.id)
@@ -34,14 +38,23 @@ class UpdateAssetWithMetadataUseCase(
 
         assetMetadataRepository.deleteAllSectorLinks(asset.id)
         sectorIds.forEach { sectorId ->
-            assetMetadataRepository.saveSectorRelation(AssetSectorRelation(assetId = asset.id, sectorId = sectorId))
+            assetMetadataRepository.saveSectorRelation(
+                AssetSectorRelation(
+                    assetId = asset.id,
+                    sectorId = sectorId
+                )
+            )
         }
 
         assetMetadataRepository.deleteAllRegionDistributions(asset.id)
         regionPercents.forEach { (regionId, percent) ->
             if (percent > 0) {
                 assetMetadataRepository.saveRegionDistribution(
-                    AssetRegionDistribution(assetId = asset.id, regionId = regionId, percent = percent)
+                    AssetRegionDistribution(
+                        assetId = asset.id,
+                        regionId = regionId,
+                        percent = percent
+                    )
                 )
             }
         }

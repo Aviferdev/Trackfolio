@@ -1,7 +1,5 @@
 package es.aviferdev.n3to.ui.home.bottomsheet
 
-import androidx.compose.material3.MaterialTheme
-import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -23,12 +21,12 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.Assignment
 import androidx.compose.material.icons.outlined.AccountBalance
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.Description
-import androidx.compose.material.icons.outlined.Folder
-import androidx.compose.material.icons.automirrored.outlined.Assignment
 import androidx.compose.material.icons.outlined.EditNote
+import androidx.compose.material.icons.outlined.Folder
 import androidx.compose.material.icons.outlined.Warning
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -37,6 +35,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -59,12 +58,21 @@ import es.aviferdev.n3to.domain.model.Category
 import es.aviferdev.n3to.domain.model.IncomeType
 import es.aviferdev.n3to.domain.model.Issuer
 import es.aviferdev.n3to.domain.model.TransactionType
+import es.aviferdev.n3to.ui.home.components.CalculatedNetRow
+import es.aviferdev.n3to.ui.home.components.DarkAmountInput
+import es.aviferdev.n3to.ui.home.components.DarkInlineField
+import es.aviferdev.n3to.ui.home.components.DarkTappableRow
+import es.aviferdev.n3to.ui.home.components.DarkTextField
+import es.aviferdev.n3to.ui.home.components.DateRow
+import es.aviferdev.n3to.ui.home.components.IrpfCompactField
+import es.aviferdev.n3to.ui.home.components.IssuerSelector
+import es.aviferdev.n3to.ui.home.components.ModeChip
+import es.aviferdev.n3to.ui.home.components.TypePill
 import es.aviferdev.n3to.ui.home.viewmodel.AddTransactionUiState
 import es.aviferdev.n3to.ui.home.viewmodel.AddTransactionViewModel
 import es.aviferdev.n3to.ui.home.viewmodel.IncomeInputMode
 import es.aviferdev.n3to.ui.home.viewmodel.IrpfInputMode
-import es.aviferdev.n3to.ui.home.components.*
-
+import es.aviferdev.n3to.ui.theme.appColors
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.common_amount_label
 import n3to.composeapp.generated.resources.common_category_label
@@ -250,7 +258,10 @@ private fun AddTransactionSheetContent(
 
         Spacer(Modifier.height(16.dp))
 
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
             TypePill(
                 label = stringResource(Res.string.transaction_type_income),
                 selected = type == TransactionType.INCOME,
@@ -270,7 +281,12 @@ private fun AddTransactionSheetContent(
         Spacer(Modifier.height(20.dp))
 
         if (type == TransactionType.EXPENSE) {
-            DarkAmountInput(value = amount, onValueChange = onAmountChange, label = stringResource(Res.string.common_amount_label), color = MaterialTheme.appColors.expense)
+            DarkAmountInput(
+                value = amount,
+                onValueChange = onAmountChange,
+                label = stringResource(Res.string.common_amount_label),
+                color = MaterialTheme.appColors.expense
+            )
             Spacer(Modifier.height(16.dp))
         }
 
@@ -307,7 +323,11 @@ private fun AddTransactionSheetContent(
                 exit = shrinkVertically() + fadeOut()
             ) {
                 Column(modifier = Modifier.fillMaxWidth().padding(top = 8.dp)) {
-                    DarkTextField(value = notes, onValueChange = onNotesChange, placeholder = stringResource(Res.string.transaction_note_placeholder))
+                    DarkTextField(
+                        value = notes,
+                        onValueChange = onNotesChange,
+                        placeholder = stringResource(Res.string.transaction_note_placeholder)
+                    )
                 }
             }
         }
@@ -347,8 +367,15 @@ private fun AddTransactionSheetContent(
                         onClick = { onIncomeModeChange(IncomeInputMode.FISCAL) },
                         modifier = Modifier.weight(1f),
                         label = {
-                            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                                Icon(Icons.AutoMirrored.Outlined.Assignment, contentDescription = null, modifier = Modifier.size(16.dp))
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(4.dp)
+                            ) {
+                                Icon(
+                                    Icons.AutoMirrored.Outlined.Assignment,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(16.dp)
+                                )
                                 Text(stringResource(Res.string.transaction_mode_fiscal))
                             }
                         }
@@ -358,8 +385,15 @@ private fun AddTransactionSheetContent(
                         onClick = { onIncomeModeChange(IncomeInputMode.NET_ONLY) },
                         modifier = Modifier.weight(1f),
                         label = {
-                            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                                Icon(Icons.Outlined.EditNote, contentDescription = null, modifier = Modifier.size(16.dp))
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(4.dp)
+                            ) {
+                                Icon(
+                                    Icons.Outlined.EditNote,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(16.dp)
+                                )
                                 Text(stringResource(Res.string.transaction_mode_net_only))
                             }
                         }
@@ -378,7 +412,12 @@ private fun AddTransactionSheetContent(
                             modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Icon(Icons.Outlined.Warning, contentDescription = null, tint = MaterialTheme.appColors.warnAmber, modifier = Modifier.size(16.dp))
+                            Icon(
+                                Icons.Outlined.Warning,
+                                contentDescription = null,
+                                tint = MaterialTheme.appColors.warnAmber,
+                                modifier = Modifier.size(16.dp)
+                            )
                             Spacer(Modifier.width(8.dp))
                             Text(
                                 "Sin detalle fiscal: este ingreso no aparecerá desglosado en el informe",
@@ -391,7 +430,12 @@ private fun AddTransactionSheetContent(
 
                     Spacer(Modifier.height(14.dp))
 
-                    DarkAmountInput(value = netAmount, onValueChange = onNetAmountChange, label = stringResource(Res.string.transaction_net_amount_label), color = MaterialTheme.appColors.income)
+                    DarkAmountInput(
+                        value = netAmount,
+                        onValueChange = onNetAmountChange,
+                        label = stringResource(Res.string.transaction_net_amount_label),
+                        color = MaterialTheme.appColors.income
+                    )
                     Spacer(Modifier.height(16.dp))
                     IssuerSelector(
                         issuers = issuers,
@@ -487,7 +531,11 @@ private fun AddTransactionSheetContent(
             )
         ) {
             if (uiState is AddTransactionUiState.Loading) {
-                CircularProgressIndicator(modifier = Modifier.size(20.dp), color = Color.White, strokeWidth = 2.dp)
+                CircularProgressIndicator(
+                    modifier = Modifier.size(20.dp),
+                    color = Color.White,
+                    strokeWidth = 2.dp
+                )
             } else {
                 Text(
                     if (isEditing) "Guardar cambios" else "Guardar transacción",

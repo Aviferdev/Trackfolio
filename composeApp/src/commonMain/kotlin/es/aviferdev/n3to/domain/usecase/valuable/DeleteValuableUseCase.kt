@@ -13,7 +13,8 @@ class DeleteValuableUseCase(
      */
     suspend operator fun invoke(valuableId: String): Result<Unit> {
         // Eliminar transacciones vinculadas
-        val linkedTxs = transactionRepository.getByLinkedValuable(valuableId).firstOrNull() ?: emptyList()
+        val linkedTxs =
+            transactionRepository.getByLinkedValuable(valuableId).firstOrNull() ?: emptyList()
         linkedTxs.forEach { transactionRepository.deleteTransaction(it.id) }
 
         // Eliminar el bien

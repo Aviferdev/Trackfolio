@@ -93,13 +93,41 @@ fun AddEditPropertyBottomSheet(
 
     var name by remember { mutableStateOf(existingProperty?.name ?: "") }
     var address by remember { mutableStateOf(existingProperty?.address ?: "") }
-    var selectedPropertyType by remember { mutableStateOf(existingProperty?.propertyType ?: PropertyType.PRIMARY_HOME) }
-    var purchaseValueText by remember { mutableStateOf(existingProperty?.purchaseValue?.toString() ?: "") }
-    var estimatedValueText by remember { mutableStateOf(existingProperty?.currentEstimatedValue?.toString() ?: "") }
-    var acquisitionDateMillis by remember { mutableStateOf(existingProperty?.acquisitionDate ?: nowMillis()) }
-    var ownershipText by remember { mutableStateOf(existingProperty?.ownershipPercentage?.toString() ?: "100") }
-    var selectedRentalStatus by remember { mutableStateOf(existingProperty?.rentalStatus ?: RentalStatus.OWN_USE) }
-    var monthlyRentText by remember { mutableStateOf(existingProperty?.monthlyRent?.toString() ?: "") }
+    var selectedPropertyType by remember {
+        mutableStateOf(
+            existingProperty?.propertyType ?: PropertyType.PRIMARY_HOME
+        )
+    }
+    var purchaseValueText by remember {
+        mutableStateOf(
+            existingProperty?.purchaseValue?.toString() ?: ""
+        )
+    }
+    var estimatedValueText by remember {
+        mutableStateOf(
+            existingProperty?.currentEstimatedValue?.toString() ?: ""
+        )
+    }
+    var acquisitionDateMillis by remember {
+        mutableStateOf(
+            existingProperty?.acquisitionDate ?: nowMillis()
+        )
+    }
+    var ownershipText by remember {
+        mutableStateOf(
+            existingProperty?.ownershipPercentage?.toString() ?: "100"
+        )
+    }
+    var selectedRentalStatus by remember {
+        mutableStateOf(
+            existingProperty?.rentalStatus ?: RentalStatus.OWN_USE
+        )
+    }
+    var monthlyRentText by remember {
+        mutableStateOf(
+            existingProperty?.monthlyRent?.toString() ?: ""
+        )
+    }
     var selectedLoanId by remember { mutableStateOf(existingProperty?.linkedLoanId) }
     var showLoanPicker by remember { mutableStateOf(false) }
     var showDatePicker by remember { mutableStateOf(false) }
@@ -112,7 +140,8 @@ fun AddEditPropertyBottomSheet(
 
     LaunchedEffect(accountId) {
         if (!categoriesLoaded && accountId.isNotBlank()) {
-            expenseCategories = getCategoriesByType(accountId, TransactionType.EXPENSE).firstOrNull() ?: emptyList()
+            expenseCategories =
+                getCategoriesByType(accountId, TransactionType.EXPENSE).firstOrNull() ?: emptyList()
             categoriesLoaded = true
         }
     }
@@ -141,9 +170,34 @@ fun AddEditPropertyBottomSheet(
     if (showDatePicker) {
         DatePickerDialog(
             onDismissRequest = { showDatePicker = false },
-            confirmButton = { TextButton(onClick = { datePickerState.selectedDateMillis?.let { acquisitionDateMillis = it }; showDatePicker = false }) { Text(stringResource(Res.string.common_accept), color = MaterialTheme.appColors.primary) } },
-            dismissButton = { TextButton(onClick = { showDatePicker = false }) { Text(stringResource(Res.string.common_cancel), color = MaterialTheme.appColors.textTertiary) } }
-        ) { DatePicker(state = datePickerState, colors = DatePickerDefaults.colors(containerColor = MaterialTheme.appColors.surface)) }
+            confirmButton = {
+                TextButton(onClick = {
+                    datePickerState.selectedDateMillis?.let {
+                        acquisitionDateMillis = it
+                    }; showDatePicker = false
+                }) {
+                    Text(
+                        stringResource(Res.string.common_accept),
+                        color = MaterialTheme.appColors.primary
+                    )
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = {
+                    showDatePicker = false
+                }) {
+                    Text(
+                        stringResource(Res.string.common_cancel),
+                        color = MaterialTheme.appColors.textTertiary
+                    )
+                }
+            }
+        ) {
+            DatePicker(
+                state = datePickerState,
+                colors = DatePickerDefaults.colors(containerColor = MaterialTheme.appColors.surface)
+            )
+        }
     }
 
     ModalBottomSheet(
@@ -168,7 +222,9 @@ fun AddEditPropertyBottomSheet(
                 .padding(bottom = 32.dp)
         ) {
             Text(
-                if (isEditing) stringResource(Res.string.realestate_edit_title) else stringResource(Res.string.realestate_new_title),
+                if (isEditing) stringResource(Res.string.realestate_edit_title) else stringResource(
+                    Res.string.realestate_new_title
+                ),
                 fontWeight = FontWeight.Bold,
                 fontSize = 18.sp,
                 color = MaterialTheme.appColors.textPrimary
@@ -181,7 +237,12 @@ fun AddEditPropertyBottomSheet(
             Spacer(Modifier.height(6.dp))
             OutlinedTextField(
                 value = name, onValueChange = { name = it },
-                placeholder = { Text(stringResource(Res.string.realestate_name_placeholder), color = MaterialTheme.appColors.textTertiary.copy(alpha = 0.6f)) },
+                placeholder = {
+                    Text(
+                        stringResource(Res.string.realestate_name_placeholder),
+                        color = MaterialTheme.appColors.textTertiary.copy(alpha = 0.6f)
+                    )
+                },
                 singleLine = true, modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(10.dp),
                 colors = fieldColors()
@@ -194,7 +255,12 @@ fun AddEditPropertyBottomSheet(
             Spacer(Modifier.height(6.dp))
             OutlinedTextField(
                 value = address, onValueChange = { address = it },
-                placeholder = { Text(stringResource(Res.string.realestate_address_placeholder), color = MaterialTheme.appColors.textTertiary.copy(alpha = 0.6f)) },
+                placeholder = {
+                    Text(
+                        stringResource(Res.string.realestate_address_placeholder),
+                        color = MaterialTheme.appColors.textTertiary.copy(alpha = 0.6f)
+                    )
+                },
                 singleLine = true, modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(10.dp),
                 colors = fieldColors()
@@ -249,7 +315,11 @@ fun AddEditPropertyBottomSheet(
                 colors = fieldColors(),
                 trailingIcon = {
                     IconButton(onClick = { showDatePicker = true }) {
-                        Icon(Icons.Outlined.CalendarMonth, stringResource(Res.string.common_action_cd), tint = MaterialTheme.appColors.textTertiary)
+                        Icon(
+                            Icons.Outlined.CalendarMonth,
+                            stringResource(Res.string.common_action_cd),
+                            tint = MaterialTheme.appColors.textTertiary
+                        )
                     }
                 }
             )
@@ -307,7 +377,9 @@ fun AddEditPropertyBottomSheet(
                 Icon(Icons.Outlined.Search, null, modifier = Modifier.size(18.dp))
                 Spacer(Modifier.width(8.dp))
                 Text(
-                    if (selectedLoanId != null) stringResource(Res.string.realestate_change_mortgage) else stringResource(Res.string.realestate_link_mortgage),
+                    if (selectedLoanId != null) stringResource(Res.string.realestate_change_mortgage) else stringResource(
+                        Res.string.realestate_link_mortgage
+                    ),
                     fontWeight = FontWeight.Medium
                 )
             }
@@ -321,7 +393,8 @@ fun AddEditPropertyBottomSheet(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Row(
-                    modifier = Modifier.weight(1f).clickable { showPurchaseExpenses = !showPurchaseExpenses },
+                    modifier = Modifier.weight(1f)
+                        .clickable { showPurchaseExpenses = !showPurchaseExpenses },
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
@@ -342,12 +415,24 @@ fun AddEditPropertyBottomSheet(
                     TextButton(
                         onClick = {
                             val firstCat = validExpenseCategories.firstOrNull()?.id ?: ""
-                            purchaseExpenses = purchaseExpenses + PropertyExpense(categoryId = firstCat, amount = 0.0)
+                            purchaseExpenses = purchaseExpenses + PropertyExpense(
+                                categoryId = firstCat,
+                                amount = 0.0
+                            )
                         }
                     ) {
-                        Icon(Icons.Outlined.Add, null, modifier = Modifier.size(16.dp), tint = MaterialTheme.appColors.primary)
+                        Icon(
+                            Icons.Outlined.Add,
+                            null,
+                            modifier = Modifier.size(16.dp),
+                            tint = MaterialTheme.appColors.primary
+                        )
                         Spacer(Modifier.width(4.dp))
-                        Text(stringResource(Res.string.realestate_add_expense), fontSize = 12.sp, color = MaterialTheme.appColors.primary)
+                        Text(
+                            stringResource(Res.string.realestate_add_expense),
+                            fontSize = 12.sp,
+                            color = MaterialTheme.appColors.primary
+                        )
                     }
                 }
             }
@@ -367,10 +452,12 @@ fun AddEditPropertyBottomSheet(
                             categories = validExpenseCategories,
                             expense = expense,
                             onExpenseChange = { updated ->
-                                purchaseExpenses = purchaseExpenses.toMutableList().apply { set(index, updated) }
+                                purchaseExpenses =
+                                    purchaseExpenses.toMutableList().apply { set(index, updated) }
                             },
                             onRemove = {
-                                purchaseExpenses = purchaseExpenses.toMutableList().apply { removeAt(index) }
+                                purchaseExpenses =
+                                    purchaseExpenses.toMutableList().apply { removeAt(index) }
                             }
                         )
                         Spacer(Modifier.height(8.dp))
@@ -381,7 +468,10 @@ fun AddEditPropertyBottomSheet(
                     Spacer(Modifier.height(4.dp))
                     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
                         Text(
-                            stringResource(Res.string.realestate_total_expenses_format, formatAmountEuro(totalPurchaseCosts)),
+                            stringResource(
+                                Res.string.realestate_total_expenses_format,
+                                formatAmountEuro(totalPurchaseCosts)
+                            ),
                             fontSize = 12.sp,
                             fontWeight = FontWeight.Medium,
                             color = MaterialTheme.appColors.textPrimary
@@ -415,7 +505,8 @@ fun AddEditPropertyBottomSheet(
                             linkedLoanId = selectedLoanId,
                             rentalStatus = selectedRentalStatus,
                             monthlyRent = if (selectedRentalStatus == RentalStatus.RENTED) monthlyRent else null,
-                            mortgageReminderDismissed = existingProperty?.mortgageReminderDismissed ?: false,
+                            mortgageReminderDismissed = existingProperty?.mortgageReminderDismissed
+                                ?: false,
                             archived = existingProperty?.archived ?: false
                         )
                         val validExpenses = purchaseExpenses.filter { it.amount > 0 }
@@ -433,10 +524,16 @@ fun AddEditPropertyBottomSheet(
                 )
             ) {
                 if (isLoading) {
-                    CircularProgressIndicator(Modifier.size(20.dp), color = Color.White, strokeWidth = 2.dp)
+                    CircularProgressIndicator(
+                        Modifier.size(20.dp),
+                        color = Color.White,
+                        strokeWidth = 2.dp
+                    )
                 } else {
                     Text(
-                        if (isEditing) stringResource(Res.string.realestate_save_changes) else stringResource(Res.string.realestate_add_property),
+                        if (isEditing) stringResource(Res.string.realestate_save_changes) else stringResource(
+                            Res.string.realestate_add_property
+                        ),
                         fontWeight = FontWeight.Bold,
                         fontSize = 16.sp
                     )
@@ -463,6 +560,7 @@ private fun fieldColors() = OutlinedTextFieldDefaults.colors(
 )
 
 private fun formatDate(epochMillis: Long): String {
-    val local = Instant.fromEpochMilliseconds(epochMillis).toLocalDateTime(TimeZone.currentSystemDefault())
+    val local =
+        Instant.fromEpochMilliseconds(epochMillis).toLocalDateTime(TimeZone.currentSystemDefault())
     return "${local.dayOfMonth}/${local.monthNumber}/${local.year}"
 }

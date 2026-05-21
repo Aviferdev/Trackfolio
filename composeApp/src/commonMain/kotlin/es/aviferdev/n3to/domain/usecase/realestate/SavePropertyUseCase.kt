@@ -73,7 +73,8 @@ class SavePropertyUseCase(
         }
 
         // 3. Eliminar gastos de compra previos (para evitar duplicados en edición)
-        val linkedTransactions = transactionRepository.getByLinkedProperty(property.id).firstOrNull() ?: emptyList()
+        val linkedTransactions =
+            transactionRepository.getByLinkedProperty(property.id).firstOrNull() ?: emptyList()
         linkedTransactions
             .filter { it.id.startsWith("prop_pexp_${property.id}") }
             .forEach { transactionRepository.deleteTransaction(it.id) }

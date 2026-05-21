@@ -21,26 +21,29 @@ class GetHomeBalanceUseCase(
             if (accounts.isEmpty()) {
                 flowOf(
                     HomeBalance(
-                        selectedAccount        = null,
+                        selectedAccount = null,
                         selectedAccountBalance = 0.0,
-                        totalOwed              = 0.0,
-                        totalOwing             = 0.0,
-                        recentTransactions     = emptyList()
+                        totalOwed = 0.0,
+                        totalOwing = 0.0,
+                        recentTransactions = emptyList()
                     )
                 )
             } else {
                 val account = accounts.find { it.id == selectedAccountId } ?: accounts.first()
                 combine(
                     transactionRepository.getRecentTransactionsByAccount(account.id, 5L),
-                    debtRepository.getTotalByDirectionAndAccount(account.id, DebtDirection.THEY_OWE),
+                    debtRepository.getTotalByDirectionAndAccount(
+                        account.id,
+                        DebtDirection.THEY_OWE
+                    ),
                     debtRepository.getTotalByDirectionAndAccount(account.id, DebtDirection.I_OWE)
                 ) { recent, totalOwed, totalOwing ->
                     HomeBalance(
-                        selectedAccount        = account,
+                        selectedAccount = account,
                         selectedAccountBalance = account.computedBalance,
-                        totalOwed              = totalOwed,
-                        totalOwing             = totalOwing,
-                        recentTransactions     = recent
+                        totalOwed = totalOwed,
+                        totalOwing = totalOwing,
+                        recentTransactions = recent
                     )
                 }
             }

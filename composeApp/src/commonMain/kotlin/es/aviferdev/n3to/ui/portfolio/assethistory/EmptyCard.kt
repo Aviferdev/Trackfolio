@@ -1,7 +1,5 @@
 package es.aviferdev.n3to.ui.portfolio.assethistory
 
-import androidx.compose.material3.MaterialTheme
-import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,6 +12,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Assignment
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -23,18 +22,24 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import es.aviferdev.n3to.ui.theme.PrimaryDark
+import es.aviferdev.n3to.ui.theme.appColors
 
 // ─── Empty card ───────────────────────────────────────────────────────────────
 @Composable
 fun EmptyCard(modifier: Modifier = Modifier) {
     Box(
-        modifier = modifier.fillMaxWidth().clip(RoundedCornerShape(13.dp)).background(MaterialTheme.appColors.surface)
+        modifier = modifier.fillMaxWidth().clip(RoundedCornerShape(13.dp))
+            .background(MaterialTheme.appColors.surface)
             .padding(28.dp),
         contentAlignment = Alignment.Center
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Icon(Icons.AutoMirrored.Outlined.Assignment, contentDescription = null, modifier = Modifier.size(30.dp), tint = MaterialTheme.appColors.primary)
+            Icon(
+                Icons.AutoMirrored.Outlined.Assignment,
+                contentDescription = null,
+                modifier = Modifier.size(30.dp),
+                tint = MaterialTheme.appColors.primary
+            )
             Spacer(Modifier.height(8.dp))
             Text(
                 "Sin movimientos",

@@ -49,7 +49,11 @@ fun CloseFixedIncomeBottomSheet(
     onSave: (FixedIncomeCloseType, Long, FixedIncomeEvent) -> Unit,
     onDismiss: () -> Unit
 ) {
-    var selectedCloseType by remember { mutableStateOf(preselectedCloseType ?: FixedIncomeCloseType.MATURITY) }
+    var selectedCloseType by remember {
+        mutableStateOf(
+            preselectedCloseType ?: FixedIncomeCloseType.MATURITY
+        )
+    }
     var closeDateMillis by remember { mutableStateOf(nowMillis()) }
     var grossAmountStr by remember { mutableStateOf(position.principal.toString()) }
     var irpfPercentStr by remember { mutableStateOf("19") }
@@ -116,7 +120,11 @@ fun CloseFixedIncomeBottomSheet(
 
             Spacer(Modifier.height(20.dp))
 
-            Text(stringResource(Res.string.fixedincome_close_type_label), fontSize = 12.sp, color = MaterialTheme.appColors.textSecondary)
+            Text(
+                stringResource(Res.string.fixedincome_close_type_label),
+                fontSize = 12.sp,
+                color = MaterialTheme.appColors.textSecondary
+            )
             Spacer(Modifier.height(8.dp))
 
             availableCloseTypes.forEach { closeType ->
@@ -217,7 +225,11 @@ fun CloseFixedIncomeBottomSheet(
                         .padding(horizontal = 14.dp, vertical = 12.dp),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Text(stringResource(Res.string.fixedincome_net_amount_label), fontSize = 13.sp, color = MaterialTheme.appColors.textSecondary)
+                    Text(
+                        stringResource(Res.string.fixedincome_net_amount_label),
+                        fontSize = 13.sp,
+                        color = MaterialTheme.appColors.textSecondary
+                    )
                     Text(
                         text = formatEuro(netAmount),
                         fontSize = 15.sp,
@@ -239,16 +251,16 @@ fun CloseFixedIncomeBottomSheet(
                         FixedIncomeCloseType.EARLY_CANCELLATION -> FixedIncomeEventType.EARLY_CANCELLATION
                     }
                     val event = FixedIncomeEvent(
-                        id               = eventId,
-                        positionId       = position.id,
-                        type             = eventType,
-                        grossAmount      = gross,
-                        irpfPercent      = irpf,
+                        id = eventId,
+                        positionId = position.id,
+                        type = eventType,
+                        grossAmount = gross,
+                        irpfPercent = irpf,
                         commissionAmount = commission,
-                        netAmount        = netAmount,
-                        date             = closeDateMillis,
-                        notes            = notes.ifBlank { null },
-                        createdAt        = now
+                        netAmount = netAmount,
+                        date = closeDateMillis,
+                        notes = notes.ifBlank { null },
+                        createdAt = now
                     )
                     onSave(selectedCloseType, closeDateMillis, event)
                 },
@@ -260,7 +272,12 @@ fun CloseFixedIncomeBottomSheet(
                 ),
                 shape = RoundedCornerShape(12.dp)
             ) {
-                Text(stringResource(Res.string.fixedincome_close_confirm_btn), fontSize = 15.sp, fontWeight = FontWeight.SemiBold, modifier = Modifier.padding(vertical = 4.dp))
+                Text(
+                    stringResource(Res.string.fixedincome_close_confirm_btn),
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    modifier = Modifier.padding(vertical = 4.dp)
+                )
             }
 
             Spacer(Modifier.height(16.dp))

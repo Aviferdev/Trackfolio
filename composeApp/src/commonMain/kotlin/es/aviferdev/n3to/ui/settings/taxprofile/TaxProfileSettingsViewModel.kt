@@ -47,7 +47,13 @@ class TaxProfileSettingsViewModel(
     }
 
     fun openAddSheet() {
-        _uiState.update { it.copy(showAddSheet = true, selectedProfile = TaxProfile.SPAIN, effectiveDateMillis = 0L) }
+        _uiState.update {
+            it.copy(
+                showAddSheet = true,
+                selectedProfile = TaxProfile.SPAIN,
+                effectiveDateMillis = 0L
+            )
+        }
     }
 
     fun closeAddSheet() {

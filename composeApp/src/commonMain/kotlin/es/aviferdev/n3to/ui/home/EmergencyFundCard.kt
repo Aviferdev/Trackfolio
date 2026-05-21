@@ -1,10 +1,7 @@
 package es.aviferdev.n3to.ui.home
 
-import androidx.compose.material3.MaterialTheme
-import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -19,21 +16,18 @@ import androidx.compose.material.icons.outlined.Shield
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.EmergencyFundMethod
 import es.aviferdev.n3to.domain.model.EmergencyFundStatus
 import es.aviferdev.n3to.ui.common.ProgressBar
-import es.aviferdev.n3to.ui.theme.ExpenseRed
-
-import es.aviferdev.n3to.ui.theme.WarnAmber
-
+import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.ui.theme.formatAmountEuro
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.home_ef_configure_subtitle
@@ -127,7 +121,10 @@ fun EmergencyFundCard(
                     )
                 }
                 Text(
-                    text = if (status.isCovered) stringResource(Res.string.home_ef_covered) else stringResource(Res.string.home_ef_months, status.targetMonths),
+                    text = if (status.isCovered) stringResource(Res.string.home_ef_covered) else stringResource(
+                        Res.string.home_ef_months,
+                        status.targetMonths
+                    ),
                     fontSize = 11.sp,
                     color = if (status.isCovered) MaterialTheme.appColors.income else MaterialTheme.appColors.textTertiary
                 )
@@ -188,7 +185,10 @@ fun EmergencyFundCard(
             if (status.missingAmount > 0.0 && !status.isCovered) {
                 Spacer(Modifier.height(6.dp))
                 Text(
-                    text = stringResource(Res.string.home_ef_missing_format, formatAmountEuro(status.missingAmount)),
+                    text = stringResource(
+                        Res.string.home_ef_missing_format,
+                        formatAmountEuro(status.missingAmount)
+                    ),
                     fontSize = 11.sp,
                     color = MaterialTheme.appColors.expense,
                     fontWeight = FontWeight.Medium
@@ -199,7 +199,10 @@ fun EmergencyFundCard(
             if (status.calculationMethod == EmergencyFundMethod.AUTO && status.monthlyAverage != null) {
                 Spacer(Modifier.height(4.dp))
                 Text(
-                    text = stringResource(Res.string.home_ef_monthly_avg_format, formatAmountEuro(status.monthlyAverage)),
+                    text = stringResource(
+                        Res.string.home_ef_monthly_avg_format,
+                        formatAmountEuro(status.monthlyAverage)
+                    ),
                     fontSize = 10.sp,
                     color = MaterialTheme.appColors.textTertiary
                 )

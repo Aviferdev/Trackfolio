@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -14,10 +13,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import es.aviferdev.n3to.ui.theme.ExpenseRed
 import es.aviferdev.n3to.ui.theme.N3toTheme
-import org.jetbrains.compose.ui.tooling.preview.Preview
 import es.aviferdev.n3to.ui.theme.appColors
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 /**
  * Delta indicator — arrow + formatted value, green for positive, red for negative.
@@ -39,21 +37,21 @@ fun DeltaIndicator(
     val arrow = if (isPositive) "↑" else "↓"
 
     Row(
-        modifier        = modifier,
+        modifier = modifier,
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text       = arrow,
-            fontSize   = 10.sp,
-            color      = color,
+            text = arrow,
+            fontSize = 10.sp,
+            color = color,
             fontWeight = FontWeight.Bold
         )
         Spacer(Modifier.width(2.dp))
         Text(
-            text       = value,
-            fontSize   = 11.sp,
+            text = value,
+            fontSize = 11.sp,
             fontWeight = FontWeight.Bold,
-            color      = color
+            color = color
         )
     }
 }

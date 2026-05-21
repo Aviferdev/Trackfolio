@@ -1,7 +1,5 @@
 package es.aviferdev.n3to.ui.portfolio
 
-import androidx.compose.material3.MaterialTheme
-import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -22,6 +20,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -42,7 +41,7 @@ import es.aviferdev.n3to.ui.portfolio.home.DistributionView
 import es.aviferdev.n3to.ui.portfolio.home.PortfolioUiState
 import es.aviferdev.n3to.ui.savingsrates.SavingsRatePreviewCard
 import es.aviferdev.n3to.ui.theme.LocalBalanceHidden
-
+import es.aviferdev.n3to.ui.theme.appColors
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.portfolio_empty_title
 import n3to.composeapp.generated.resources.portfolio_evolution_title
@@ -268,7 +267,8 @@ fun PortfolioTabContent(
             }
 
             // Posiciones cerradas
-            val totalClosedCount = state.closedPositions.size + state.closedFixedIncomePositions.size
+            val totalClosedCount =
+                state.closedPositions.size + state.closedFixedIncomePositions.size
             if (totalClosedCount > 0) {
                 item(key = "closed_hdr") {
                     ClosedPositionsHeader(

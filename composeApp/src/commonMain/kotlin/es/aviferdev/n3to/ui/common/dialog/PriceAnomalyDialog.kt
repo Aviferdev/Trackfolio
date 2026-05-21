@@ -18,7 +18,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import es.aviferdev.n3to.ui.theme.ExpenseRed
 import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.ui.theme.formatAmountEuro
 
@@ -113,7 +112,11 @@ fun PriceAnomalyDialog(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(10.dp)
                 ) {
-                    Text("Mantener precio introducido", fontSize = 14.sp, color = MaterialTheme.appColors.textSecondary)
+                    Text(
+                        "Mantener precio introducido",
+                        fontSize = 14.sp,
+                        color = MaterialTheme.appColors.textSecondary
+                    )
                 }
             } else {
                 // Para warning: confirmar
@@ -125,7 +128,11 @@ fun PriceAnomalyDialog(
                         containerColor = MaterialTheme.appColors.primary
                     )
                 ) {
-                    Text("Sí, guardar de todas formas", fontSize = 14.sp, fontWeight = FontWeight.Medium)
+                    Text(
+                        "Sí, guardar de todas formas",
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Medium
+                    )
                 }
             }
         },

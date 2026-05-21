@@ -26,7 +26,10 @@ class AssetTransactionRepositoryImpl(
     override fun countByPlatform(platformId: String): Flow<Long> =
         dataSource.countByPlatform(platformId)
 
-    override fun getMonthlyInvestmentsByYear(accountId: String, year: String): Flow<List<MonthlyInvestment>> =
+    override fun getMonthlyInvestmentsByYear(
+        accountId: String,
+        year: String
+    ): Flow<List<MonthlyInvestment>> =
         dataSource.getMonthlyInvestmentsByYear(accountId, year)
 
     override fun getMonthlyNetInvestmentsByYear(

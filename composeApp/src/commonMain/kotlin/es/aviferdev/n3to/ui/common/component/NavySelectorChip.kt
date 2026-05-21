@@ -1,15 +1,14 @@
 package es.aviferdev.n3to.ui.common.component
 
-import androidx.compose.material3.MaterialTheme
-import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -18,8 +17,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-
 import es.aviferdev.n3to.ui.theme.N3toTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 /**
@@ -40,7 +39,11 @@ fun NavySelectorChip(
         modifier = modifier
             .clip(shape)
             .background(if (selected) MaterialTheme.appColors.cyanAccent.copy(alpha = 0.15f) else Color.Transparent)
-            .border(1.dp, if (selected) MaterialTheme.appColors.cyanAccent else MaterialTheme.appColors.navyBorder, shape)
+            .border(
+                1.dp,
+                if (selected) MaterialTheme.appColors.cyanAccent else MaterialTheme.appColors.navyBorder,
+                shape
+            )
             .clickable(onClick = onClick)
             .padding(horizontal = 14.dp, vertical = 6.dp)
     ) {

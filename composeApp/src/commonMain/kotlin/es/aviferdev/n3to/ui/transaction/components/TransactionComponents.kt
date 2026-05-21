@@ -104,7 +104,10 @@ internal fun SearchBar(query: String, onChange: (String) -> Unit) {
             onValueChange = onChange,
             singleLine = true,
             modifier = Modifier.weight(1f),
-            textStyle = LocalTextStyle.current.copy(color = MaterialTheme.appColors.textPrimary, fontSize = 12.sp),
+            textStyle = LocalTextStyle.current.copy(
+                color = MaterialTheme.appColors.textPrimary,
+                fontSize = 12.sp
+            ),
             decorationBox = { inner ->
                 if (query.isEmpty()) {
                     Text(
@@ -145,13 +148,21 @@ internal fun TotalsRow(totalIncome: Double, totalExpense: Double, balancesHidden
             verticalAlignment = Alignment.CenterVertically
         ) {
             TotalCell(
-                label = stringResource(Res.string.transaction_filter_income), amount = totalIncome, color = MaterialTheme.appColors.income,
-                prefix = "+", balancesHidden = balancesHidden, modifier = Modifier.weight(1f)
+                label = stringResource(Res.string.transaction_filter_income),
+                amount = totalIncome,
+                color = MaterialTheme.appColors.income,
+                prefix = "+",
+                balancesHidden = balancesHidden,
+                modifier = Modifier.weight(1f)
             )
             Box(Modifier.width(1.dp).height(40.dp).background(MaterialTheme.appColors.border))
             TotalCell(
-                label = stringResource(Res.string.transaction_filter_expense), amount = totalExpense, color = MaterialTheme.appColors.expense,
-                prefix = "−", balancesHidden = balancesHidden, modifier = Modifier.weight(1f)
+                label = stringResource(Res.string.transaction_filter_expense),
+                amount = totalExpense,
+                color = MaterialTheme.appColors.expense,
+                prefix = "−",
+                balancesHidden = balancesHidden,
+                modifier = Modifier.weight(1f)
             )
             Box(Modifier.width(1.dp).height(40.dp).background(MaterialTheme.appColors.border))
             TotalCell(
@@ -258,11 +269,11 @@ internal fun TransactionCard(
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 label,
-                fontSize   = 13.sp,
+                fontSize = 13.sp,
                 fontWeight = FontWeight.SemiBold,
-                color      = MaterialTheme.appColors.textPrimary,
-                maxLines   = 1,
-                overflow   = TextOverflow.Ellipsis
+                color = MaterialTheme.appColors.textPrimary,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
             if (subtitle != null || dateFormatted.isNotEmpty()) {
                 Spacer(Modifier.height(1.dp))
@@ -271,7 +282,7 @@ internal fun TransactionCard(
                         Text(
                             subtitle,
                             fontSize = 11.sp,
-                            color    = MaterialTheme.appColors.textTertiary,
+                            color = MaterialTheme.appColors.textTertiary,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
@@ -285,7 +296,7 @@ internal fun TransactionCard(
                         Text(
                             dateFormatted,
                             fontSize = 11.sp,
-                            color    = MaterialTheme.appColors.textTertiary,
+                            color = MaterialTheme.appColors.textTertiary,
                             maxLines = 1
                         )
                     }
@@ -303,21 +314,25 @@ internal fun TransactionCard(
         ) {
             Text(
                 "$prefix ${maskAmount(formatAmount(displayAmount), balancesHidden)} €",
-                fontSize   = 13.sp,
+                fontSize = 13.sp,
                 fontWeight = FontWeight.Bold,
-                color      = amountColor,
-                maxLines   = 1
+                color = amountColor,
+                maxLines = 1
             )
             if (isIncome && transaction.grossAmount != null && !balancesHidden) {
                 Text(
                     "Bruto: ${formatAmount(transaction.grossAmount)} €",
                     fontSize = 9.sp,
-                    color    = MaterialTheme.appColors.textTertiary,
+                    color = MaterialTheme.appColors.textTertiary,
                     maxLines = 1
                 )
             }
             if (isLinked) {
-                Text("Portfolio", fontSize = 9.sp, color = MaterialTheme.appColors.primary.copy(alpha = 0.6f))
+                Text(
+                    "Portfolio",
+                    fontSize = 9.sp,
+                    color = MaterialTheme.appColors.primary.copy(alpha = 0.6f)
+                )
             }
         }
         Spacer(Modifier.width(12.dp))
@@ -332,14 +347,14 @@ internal fun TransactionCard(
 }
 
 internal fun incomeTypeIcon(incomeType: IncomeType): ImageVector = when (incomeType) {
-    IncomeType.SALARY        -> Icons.Outlined.Badge
+    IncomeType.SALARY -> Icons.Outlined.Badge
     IncomeType.BANK_INTEREST -> Icons.Outlined.AccountBalance
-    IncomeType.BOND_DEPOSIT  -> Icons.Outlined.RequestQuote
-    IncomeType.DIVIDEND      -> Icons.AutoMirrored.Outlined.ShowChart
-    IncomeType.BONUS_PRIZE   -> Icons.Outlined.CardGiftcard
+    IncomeType.BOND_DEPOSIT -> Icons.Outlined.RequestQuote
+    IncomeType.DIVIDEND -> Icons.AutoMirrored.Outlined.ShowChart
+    IncomeType.BONUS_PRIZE -> Icons.Outlined.CardGiftcard
     IncomeType.PRIZE_LOTTERY -> Icons.Outlined.EmojiEvents
     IncomeType.RENTAL_INCOME -> Icons.Outlined.House
-    IncomeType.FREELANCE     -> Icons.Outlined.BusinessCenter
+    IncomeType.FREELANCE -> Icons.Outlined.BusinessCenter
     IncomeType.EXEMPT_INCOME -> Icons.Outlined.CheckCircle
 }
 
@@ -364,7 +379,12 @@ internal fun IncomeBadge(transaction: Transaction) {
             append(incType.label)
             if (pct != null && pct > 0) append(" · ${pct.toLong()}% retención")
         }
-        Text(text, fontSize = 8.sp, color = MaterialTheme.appColors.primary, fontWeight = FontWeight.Medium)
+        Text(
+            text,
+            fontSize = 8.sp,
+            color = MaterialTheme.appColors.primary,
+            fontWeight = FontWeight.Medium
+        )
     }
 }
 

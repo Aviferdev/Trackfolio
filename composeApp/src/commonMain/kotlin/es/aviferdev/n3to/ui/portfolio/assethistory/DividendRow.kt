@@ -1,7 +1,5 @@
 package es.aviferdev.n3to.ui.portfolio.assethistory
 
-import androidx.compose.material3.MaterialTheme
-import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,16 +8,16 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.automirrored.outlined.ShowChart
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -30,8 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.Transaction
 import es.aviferdev.n3to.ui.portfolio.formatShortDate
-import es.aviferdev.n3to.ui.theme.ExpenseRed
-
+import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.ui.theme.formatAmount
 import es.aviferdev.n3to.ui.theme.maskAmount
 
@@ -44,7 +41,9 @@ fun DividendRow(
     modifier: Modifier = Modifier
 ) {
     val gross = dividend.grossAmount ?: dividend.amount
-    val irpf = dividend.taxLines.firstOrNull { it.role == es.aviferdev.n3to.domain.model.TaxRole.INCOME_TAX }?.amount ?: 0.0
+    val irpf =
+        dividend.taxLines.firstOrNull { it.role == es.aviferdev.n3to.domain.model.TaxRole.INCOME_TAX }?.amount
+            ?: 0.0
 
     Card(
         modifier = modifier.fillMaxWidth(),
@@ -60,7 +59,14 @@ fun DividendRow(
                 modifier = Modifier.size(36.dp).clip(RoundedCornerShape(10.dp))
                     .background(MaterialTheme.appColors.income.copy(.14f)),
                 contentAlignment = Alignment.Center
-            ) { Icon(Icons.AutoMirrored.Outlined.ShowChart, contentDescription = null, modifier = Modifier.size(18.dp), tint = MaterialTheme.appColors.income) }
+            ) {
+                Icon(
+                    Icons.AutoMirrored.Outlined.ShowChart,
+                    contentDescription = null,
+                    modifier = Modifier.size(18.dp),
+                    tint = MaterialTheme.appColors.income
+                )
+            }
             Spacer(Modifier.width(10.dp))
             Column(modifier = Modifier.weight(1f)) {
                 Text(
@@ -69,7 +75,11 @@ fun DividendRow(
                     color = MaterialTheme.appColors.income,
                     fontWeight = FontWeight.SemiBold
                 )
-                Text(formatShortDate(dividend.date), fontSize = 10.sp, color = MaterialTheme.appColors.textTertiary)
+                Text(
+                    formatShortDate(dividend.date),
+                    fontSize = 10.sp,
+                    color = MaterialTheme.appColors.textTertiary
+                )
                 if (irpf > 0) {
                     Text(
                         "Bruto: ${
@@ -90,7 +100,9 @@ fun DividendRow(
             Column(horizontalAlignment = Alignment.End) {
                 Text(
                     "+ ${maskAmount(formatAmount(dividend.amount), balancesHidden)} €",
-                    fontSize = 12.sp, color = MaterialTheme.appColors.income, fontWeight = FontWeight.Bold
+                    fontSize = 12.sp,
+                    color = MaterialTheme.appColors.income,
+                    fontWeight = FontWeight.Bold
                 )
                 IconButton(onClick = onDelete, modifier = Modifier.size(26.dp)) {
                     Icon(

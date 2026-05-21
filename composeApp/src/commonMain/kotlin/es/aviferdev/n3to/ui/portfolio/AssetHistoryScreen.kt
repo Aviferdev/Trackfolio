@@ -1,51 +1,8 @@
 package es.aviferdev.n3to.ui.portfolio
 
-import androidx.compose.material3.MaterialTheme
-import es.aviferdev.n3to.ui.theme.appColors
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkVertically
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBars
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.KeyboardArrowUp
-import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.FloatingActionButtonDefaults
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Surface
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -54,34 +11,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import es.aviferdev.n3to.domain.model.AssetCategoryType
-import es.aviferdev.n3to.domain.model.AssetTransaction
-import es.aviferdev.n3to.domain.model.AssetTransactionType
-import es.aviferdev.n3to.domain.model.Platform
-import es.aviferdev.n3to.domain.model.Transaction
-import es.aviferdev.n3to.domain.model.TransactionType
-import es.aviferdev.n3to.domain.portfolio.AssetPosition
-import es.aviferdev.n3to.domain.portfolio.FifoBreakdown
-import es.aviferdev.n3to.domain.portfolio.FifoOpenLot
-import es.aviferdev.n3to.domain.portfolio.FifoSaleMatch
-import es.aviferdev.n3to.ui.common.navigation.TopBarApp
 import es.aviferdev.n3to.ui.portfolio.assethistory.AssetHistoryContent
-
-import es.aviferdev.n3to.ui.theme.ExpenseRed
+import es.aviferdev.n3to.ui.portfolio.components.formatFullDate
 import es.aviferdev.n3to.ui.theme.LocalBalanceHidden
-import es.aviferdev.n3to.ui.theme.PrimaryDark
-
-import es.aviferdev.n3to.ui.theme.N3toTheme
-import es.aviferdev.n3to.ui.theme.formatAmount
-import es.aviferdev.n3to.ui.theme.maskAmount
+import es.aviferdev.n3to.ui.theme.appColors
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
@@ -94,11 +30,8 @@ import n3to.composeapp.generated.resources.common_error
 import n3to.composeapp.generated.resources.error_asset_not_found
 import n3to.composeapp.generated.resources.transaction_delete_title
 import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
-import es.aviferdev.n3to.ui.portfolio.components.formatFullDate
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
-import kotlin.math.abs
 
 @Composable
 fun AssetHistoryScreen(
@@ -135,7 +68,7 @@ fun AssetHistoryScreen(
             platformsByAsset = state.platformsByAsset,
             categories = state.categories,
             assetTransactions = state.transactionsAsc,
-                        onSave = { _, type, qty, price, date, platformId, feeNote, notes, _ ->
+            onSave = { _, type, qty, price, date, platformId, feeNote, notes, _ ->
                 viewModel.saveTransaction(type, qty, price, date, platformId, feeNote, notes)
             },
             onDismiss = { viewModel.closeAddSheet() }
@@ -144,7 +77,7 @@ fun AssetHistoryScreen(
     if (state.showUpdatePriceSheet && state.asset != null) {
         UpdateCurrentPriceSheet(
             asset = state.asset!!,
-                        onConfirm = { viewModel.refreshCurrentPrice(it) },
+            onConfirm = { viewModel.refreshCurrentPrice(it) },
             onDismiss = { viewModel.closeUpdatePriceSheet() }
         )
     }
@@ -156,7 +89,9 @@ fun AssetHistoryScreen(
             title = {
                 Text(
                     if (tx.isTransfer) "Eliminar traspaso" else stringResource(Res.string.transaction_delete_title),
-                    fontSize = 16.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.appColors.textPrimary
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.appColors.textPrimary
                 )
             },
             text = {
@@ -170,7 +105,11 @@ fun AssetHistoryScreen(
             },
             confirmButton = {
                 TextButton(onClick = { viewModel.confirmDelete() }) {
-                    Text(stringResource(Res.string.common_delete), color = MaterialTheme.appColors.expense, fontWeight = FontWeight.SemiBold)
+                    Text(
+                        stringResource(Res.string.common_delete),
+                        color = MaterialTheme.appColors.expense,
+                        fontWeight = FontWeight.SemiBold
+                    )
                 }
             },
             dismissButton = {
@@ -188,7 +127,8 @@ fun AssetHistoryScreen(
         val msg = when (err) {
             is es.aviferdev.n3to.ui.portfolio.AssetHistoryError.AssetNotFound -> stringResource(Res.string.error_asset_not_found)
             is es.aviferdev.n3to.ui.portfolio.AssetHistoryError.PriceHistorySaveError -> err.message
-            is es.aviferdev.n3to.ui.portfolio.AssetHistoryError.Unknown -> err.message ?: stringResource(Res.string.common_error)
+            is es.aviferdev.n3to.ui.portfolio.AssetHistoryError.Unknown -> err.message
+                ?: stringResource(Res.string.common_error)
         }
         AlertDialog(
             onDismissRequest = { viewModel.clearError() },
@@ -216,7 +156,7 @@ fun AssetHistoryScreen(
     if (state.showDividendSheet && state.asset != null) {
         AddDividendBottomSheet(
             fixedAssetName = state.asset!!.name,
-                        onSave = { _, grossAmount, irpfPercent, date ->
+            onSave = { _, grossAmount, irpfPercent, date ->
                 viewModel.saveDividend(
                     grossAmount,
                     irpfPercent,
@@ -232,7 +172,7 @@ fun AssetHistoryScreen(
             destinations = state.transferableDestinations,
             platforms = state.allPlatforms,
             assetTransactions = state.transactionsAsc,
-                        onExecuteTransfer = { destId, qty, srcPlat, dstPlat, vl, date ->
+            onExecuteTransfer = { destId, qty, srcPlat, dstPlat, vl, date ->
                 viewModel.executeTransfer(destId, qty, srcPlat, dstPlat, vl, date)
             },
             onDismiss = { viewModel.closeTransferSheet() }

@@ -1,16 +1,16 @@
 package es.aviferdev.n3to.ui.settings
 
-import es.aviferdev.n3to.platform.nowMillis
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.benasher44.uuid.uuid4
 import es.aviferdev.n3to.domain.model.Issuer
 import es.aviferdev.n3to.domain.model.IssuerType
 import es.aviferdev.n3to.domain.usecase.issuer.ArchiveIssuerUseCase
 import es.aviferdev.n3to.domain.usecase.issuer.GetIssuersUseCase
 import es.aviferdev.n3to.domain.usecase.issuer.RenameIssuerUseCase
 import es.aviferdev.n3to.domain.usecase.issuer.SaveIssuerUseCase
+import es.aviferdev.n3to.platform.nowMillis
 import es.aviferdev.n3to.ui.account.AccountSession
-import com.benasher44.uuid.uuid4
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -27,11 +27,11 @@ sealed class IssuerError {
 
 data class IssuerListUiState(
     val issuersByType: Map<IssuerType, List<Issuer>> = emptyMap(),
-    val showAddSheet: Boolean          = false,
-    val addType: IssuerType            = IssuerType.EMPLOYER,
-    val editing: Issuer?               = null,
-    val pendingDelete: Issuer?         = null,
-    val error: IssuerError?            = null
+    val showAddSheet: Boolean = false,
+    val addType: IssuerType = IssuerType.EMPLOYER,
+    val editing: Issuer? = null,
+    val pendingDelete: Issuer? = null,
+    val error: IssuerError? = null
 )
 
 class IssuerViewModel(
@@ -47,7 +47,9 @@ class IssuerViewModel(
 
     private val jobs = mutableMapOf<IssuerType, Job>()
 
-    init { observeAccount() }
+    init {
+        observeAccount()
+    }
 
     private fun observeAccount() {
         session.selectedAccountId
@@ -96,11 +98,11 @@ class IssuerViewModel(
         val accountId = session.selectedAccountId.value ?: return
         viewModelScope.launch {
             val issuer = Issuer(
-                id        = uuid4().toString(),
+                id = uuid4().toString(),
                 accountId = accountId,
-                name      = trimmed,
-                type      = type,
-                icon      = icon,
+                name = trimmed,
+                type = type,
+                icon = icon,
                 createdAt = nowMillis()
             )
             saveIssuer(issuer).onFailure { e ->

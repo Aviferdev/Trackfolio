@@ -1,7 +1,5 @@
 package es.aviferdev.n3to.ui.settings.taxprofile
 
-import androidx.compose.material3.MaterialTheme
-import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -31,6 +29,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -54,11 +53,8 @@ import es.aviferdev.n3to.ui.common.help.HelpContent
 import es.aviferdev.n3to.ui.common.help.HelpKeys
 import es.aviferdev.n3to.ui.common.help.HelpTooltipIcon
 import es.aviferdev.n3to.ui.common.input.DatePickerRow
-import es.aviferdev.n3to.ui.common.navigation.TopBarApp
-
-import es.aviferdev.n3to.ui.theme.ExpenseRed
-import es.aviferdev.n3to.ui.theme.PrimaryDark
-import org.jetbrains.compose.resources.stringResource
+import es.aviferdev.n3to.ui.common.topbar.TopBarWithActionsApp
+import es.aviferdev.n3to.ui.theme.appColors
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.common_accept
 import n3to.composeapp.generated.resources.common_cancel
@@ -76,7 +72,7 @@ import n3to.composeapp.generated.resources.tax_profile_history_section
 import n3to.composeapp.generated.resources.tax_profile_new_title
 import n3to.composeapp.generated.resources.tax_profile_title
 import n3to.composeapp.generated.resources.tax_profile_valid_from_label
-
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -88,14 +84,22 @@ fun TaxProfileSettingsScreen(
 
     Scaffold(
         containerColor = MaterialTheme.appColors.background,
-        topBar = { TopBarApp(title = stringResource(Res.string.tax_profile_title), navigateBack = onBack) },
+        topBar = {
+            TopBarWithActionsApp(
+                title = stringResource(Res.string.tax_profile_title),
+                navigateBack = onBack
+            )
+        },
         floatingActionButton = {
             FloatingActionButton(
                 onClick = { viewModel.openAddSheet() },
                 containerColor = MaterialTheme.appColors.primary,
                 contentColor = Color.White
             ) {
-                Icon(Icons.Default.Add, contentDescription = stringResource(Res.string.tax_profile_add_cd))
+                Icon(
+                    Icons.Default.Add,
+                    contentDescription = stringResource(Res.string.tax_profile_add_cd)
+                )
             }
         }
     ) { innerPadding ->
@@ -107,9 +111,18 @@ fun TaxProfileSettingsScreen(
                 contentAlignment = Alignment.Center
             ) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(stringResource(Res.string.tax_profile_empty_title), fontSize = 15.sp, fontWeight = FontWeight.Medium, color = MaterialTheme.appColors.textSecondary)
+                    Text(
+                        stringResource(Res.string.tax_profile_empty_title),
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = MaterialTheme.appColors.textSecondary
+                    )
                     Spacer(Modifier.height(4.dp))
-                    Text(stringResource(Res.string.tax_profile_empty_subtitle), fontSize = 13.sp, color = MaterialTheme.appColors.textTertiary)
+                    Text(
+                        stringResource(Res.string.tax_profile_empty_subtitle),
+                        fontSize = 13.sp,
+                        color = MaterialTheme.appColors.textTertiary
+                    )
                     Spacer(Modifier.height(16.dp))
                     Text(
                         "El perfil fiscal define los tramos IRPF y tipos de rendimiento que se aplican en el informe fiscal. Sin él, los cálculos no serán precisos.",
@@ -166,7 +179,12 @@ fun TaxProfileSettingsScreen(
             onDismissRequest = { viewModel.cancelDelete() },
             containerColor = MaterialTheme.appColors.surface,
             title = {
-                Text(stringResource(Res.string.tax_profile_delete_title), fontSize = 16.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.appColors.textPrimary)
+                Text(
+                    stringResource(Res.string.tax_profile_delete_title),
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.appColors.textPrimary
+                )
             },
             text = {
                 Text(
@@ -176,12 +194,19 @@ fun TaxProfileSettingsScreen(
             },
             confirmButton = {
                 TextButton(onClick = { viewModel.confirmDelete() }) {
-                    Text(stringResource(Res.string.common_delete), color = MaterialTheme.appColors.expense, fontWeight = FontWeight.SemiBold)
+                    Text(
+                        stringResource(Res.string.common_delete),
+                        color = MaterialTheme.appColors.expense,
+                        fontWeight = FontWeight.SemiBold
+                    )
                 }
             },
             dismissButton = {
                 TextButton(onClick = { viewModel.cancelDelete() }) {
-                    Text(stringResource(Res.string.common_cancel), color = MaterialTheme.appColors.primary)
+                    Text(
+                        stringResource(Res.string.common_cancel),
+                        color = MaterialTheme.appColors.primary
+                    )
                 }
             },
             shape = RoundedCornerShape(16.dp)
@@ -193,11 +218,22 @@ fun TaxProfileSettingsScreen(
         AlertDialog(
             onDismissRequest = { viewModel.clearError() },
             containerColor = MaterialTheme.appColors.surface,
-            title = { Text(stringResource(Res.string.common_error), fontSize = 16.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.appColors.textPrimary) },
+            title = {
+                Text(
+                    stringResource(Res.string.common_error),
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.appColors.textPrimary
+                )
+            },
             text = { Text(msg, fontSize = 13.sp, color = MaterialTheme.appColors.textSecondary) },
             confirmButton = {
                 TextButton(onClick = { viewModel.clearError() }) {
-                    Text(stringResource(Res.string.common_accept), color = MaterialTheme.appColors.primary, fontWeight = FontWeight.SemiBold)
+                    Text(
+                        stringResource(Res.string.common_accept),
+                        color = MaterialTheme.appColors.primary,
+                        fontWeight = FontWeight.SemiBold
+                    )
                 }
             },
             shape = RoundedCornerShape(16.dp)
@@ -243,7 +279,12 @@ private fun TaxProfileSnapshotRow(
                 )
             }
             IconButton(onClick = onDelete) {
-                Icon(Icons.Default.Delete, contentDescription = stringResource(Res.string.tax_profile_delete_cd), tint = MaterialTheme.appColors.expense, modifier = Modifier.size(20.dp))
+                Icon(
+                    Icons.Default.Delete,
+                    contentDescription = stringResource(Res.string.tax_profile_delete_cd),
+                    tint = MaterialTheme.appColors.expense,
+                    modifier = Modifier.size(20.dp)
+                )
             }
         }
     }
@@ -298,10 +339,15 @@ private fun AddTaxProfileSheet(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Text(stringResource(Res.string.tax_profile_country_label), fontSize = 13.sp, fontWeight = FontWeight.Medium, color = MaterialTheme.appColors.textTertiary)
+                    Text(
+                        stringResource(Res.string.tax_profile_country_label),
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = MaterialTheme.appColors.textTertiary
+                    )
                     HelpTooltipIcon(
                         title = HelpContent.texts[HelpKeys.IRPF_SYSTEM]?.title ?: "",
-                        body  = HelpContent.texts[HelpKeys.IRPF_SYSTEM]?.body  ?: ""
+                        body = HelpContent.texts[HelpKeys.IRPF_SYSTEM]?.body ?: ""
                     )
                 }
                 TaxProfile.ALL.forEach { profile ->
@@ -336,9 +382,17 @@ private fun AddTaxProfileSheet(
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.appColors.primary)
             ) {
                 if (isSaving) {
-                    CircularProgressIndicator(modifier = Modifier.size(20.dp), color = Color.White, strokeWidth = 2.dp)
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(20.dp),
+                        color = Color.White,
+                        strokeWidth = 2.dp
+                    )
                 } else {
-                    Text(stringResource(Res.string.common_save), fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
+                    Text(
+                        stringResource(Res.string.common_save),
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.SemiBold
+                    )
                 }
             }
         }

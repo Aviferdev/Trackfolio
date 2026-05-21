@@ -55,20 +55,20 @@ class AssetLocalDataSourceImpl(
             withContext(Dispatchers.IO) {
                 val e = asset.toEntity()
                 queries.insert(
-                    id                    = e.id,
-                    accountId             = e.accountId,
-                    portfolioId           = e.portfolioId,
-                    ticker                = e.ticker,
-                    name                  = e.name,
-                    notes                 = e.notes,
-                    createdAt             = e.createdAt,
-                    assetCategoryId       = e.assetCategoryId,
-                    currentPrice          = e.currentPrice,
+                    id = e.id,
+                    accountId = e.accountId,
+                    portfolioId = e.portfolioId,
+                    ticker = e.ticker,
+                    name = e.name,
+                    notes = e.notes,
+                    createdAt = e.createdAt,
+                    assetCategoryId = e.assetCategoryId,
+                    currentPrice = e.currentPrice,
                     currentPriceUpdatedAt = e.currentPriceUpdatedAt,
-                    maturityDate          = e.maturityDate,
-                    isin                  = e.isin,
-                    isinValidatedAt       = e.isinValidatedAt,
-                    isinValidationError   = e.isinValidationError
+                    maturityDate = e.maturityDate,
+                    isin = e.isin,
+                    isinValidatedAt = e.isinValidatedAt,
+                    isinValidationError = e.isinValidationError
                 )
             }
         }
@@ -78,29 +78,33 @@ class AssetLocalDataSourceImpl(
             withContext(Dispatchers.IO) {
                 val e = asset.toEntity()
                 queries.update(
-                    ticker                = e.ticker,
-                    name                  = e.name,
-                    notes                 = e.notes,
-                    assetCategoryId       = e.assetCategoryId,
-                    currentPrice          = e.currentPrice,
+                    ticker = e.ticker,
+                    name = e.name,
+                    notes = e.notes,
+                    assetCategoryId = e.assetCategoryId,
+                    currentPrice = e.currentPrice,
                     currentPriceUpdatedAt = e.currentPriceUpdatedAt,
-                    maturityDate          = e.maturityDate,
-                    isin                  = e.isin,
-                    priceSource           = e.priceSource,
-                    isinValidatedAt       = e.isinValidatedAt,
-                    isinValidationError   = e.isinValidationError,
-                    id                    = e.id
+                    maturityDate = e.maturityDate,
+                    isin = e.isin,
+                    priceSource = e.priceSource,
+                    isinValidatedAt = e.isinValidatedAt,
+                    isinValidationError = e.isinValidationError,
+                    id = e.id
                 )
             }
         }
 
-    override suspend fun updateCurrentPrice(id: String, price: Double, updatedAt: Long): Result<Unit> =
+    override suspend fun updateCurrentPrice(
+        id: String,
+        price: Double,
+        updatedAt: Long
+    ): Result<Unit> =
         runCatching {
             withContext(Dispatchers.IO) {
                 queries.updateCurrentPrice(
-                    currentPrice          = price,
+                    currentPrice = price,
                     currentPriceUpdatedAt = updatedAt,
-                    id                    = id
+                    id = id
                 )
             }
         }

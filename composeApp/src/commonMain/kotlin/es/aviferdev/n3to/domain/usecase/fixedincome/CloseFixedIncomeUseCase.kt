@@ -30,10 +30,10 @@ class CloseFixedIncomeUseCase(
         if (eventResult.isFailure) return eventResult
 
         val ledgerResult = recordSettlementTransactionUseCase(
-            accountId    = accountId,
-            amount       = settlementEvent.netAmount,
-            date         = settlementEvent.date,
-            notes        = "Liquidación renta fija: ${settlementEvent.type.label}",
+            accountId = accountId,
+            amount = settlementEvent.netAmount,
+            date = settlementEvent.date,
+            notes = "Liquidación renta fija: ${settlementEvent.type.label}",
             linkedEventId = "fi_${settlementEvent.id}"
         )
 
@@ -52,18 +52,18 @@ class RecordSettlementTransactionUseCase(
         linkedEventId: String?
     ): Result<Unit> = runCatching {
         val tx = Transaction(
-            id                  = "tx_${nowMillis()}",
-            accountId           = accountId,
-            amount              = amount,
-            type                = TransactionType.INCOME,
-            date                = date,
-            categoryId          = null,
-            incomeType          = IncomeType.BOND_DEPOSIT,
-            grossAmount         = null,
-            commissionAmount    = null,
-            notes               = notes,
+            id = "tx_${nowMillis()}",
+            accountId = accountId,
+            amount = amount,
+            type = TransactionType.INCOME,
+            date = date,
+            categoryId = null,
+            incomeType = IncomeType.BOND_DEPOSIT,
+            grossAmount = null,
+            commissionAmount = null,
+            notes = notes,
             linkedAssetTransactionId = linkedEventId,
-            createdAt           = nowMillis()
+            createdAt = nowMillis()
         )
         transactionRepository.saveTransaction(tx)
     }

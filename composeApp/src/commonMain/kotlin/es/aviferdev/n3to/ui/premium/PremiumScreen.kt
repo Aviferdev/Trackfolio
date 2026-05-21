@@ -29,11 +29,9 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
-
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -52,39 +50,32 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import es.aviferdev.n3to.ui.common.topbar.TopBarWithActionsApp
+import es.aviferdev.n3to.ui.theme.appColors
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.common_retry
-import n3to.composeapp.generated.resources.premium_ad_free_desc
-import n3to.composeapp.generated.resources.premium_annual_label
-import n3to.composeapp.generated.resources.premium_best_value
-import n3to.composeapp.generated.resources.premium_lifetime_label
-import n3to.composeapp.generated.resources.premium_title
-import n3to.composeapp.generated.resources.premium_monthly_label
-import n3to.composeapp.generated.resources.premium_multiple_accounts_desc
-import n3to.composeapp.generated.resources.premium_restore
-import n3to.composeapp.generated.resources.premium_restore_cd
-import n3to.composeapp.generated.resources.premium_themes_desc
-import n3to.composeapp.generated.resources.premium_fiscal_report
-import n3to.composeapp.generated.resources.premium_fiscal_report_desc
+import n3to.composeapp.generated.resources.premium_already_premium
+import n3to.composeapp.generated.resources.premium_already_premium_subtitle
 import n3to.composeapp.generated.resources.premium_backup
 import n3to.composeapp.generated.resources.premium_backup_desc
+import n3to.composeapp.generated.resources.premium_best_value
+import n3to.composeapp.generated.resources.premium_error_format
+import n3to.composeapp.generated.resources.premium_fiscal_report
+import n3to.composeapp.generated.resources.premium_fiscal_report_desc
+import n3to.composeapp.generated.resources.premium_lifetime_value
+import n3to.composeapp.generated.resources.premium_multiple_accounts_desc
+import n3to.composeapp.generated.resources.premium_restore_cd
+import n3to.composeapp.generated.resources.premium_restore_error_format
+import n3to.composeapp.generated.resources.premium_restore_success
+import n3to.composeapp.generated.resources.premium_subscribe
+import n3to.composeapp.generated.resources.premium_themes
+import n3to.composeapp.generated.resources.premium_themes_desc
+import n3to.composeapp.generated.resources.premium_title
+import n3to.composeapp.generated.resources.premium_unlimited_accounts
 import n3to.composeapp.generated.resources.premium_unlock_features
 import n3to.composeapp.generated.resources.premium_welcome
-import n3to.composeapp.generated.resources.premium_error_format
-import n3to.composeapp.generated.resources.premium_restore_success
-import n3to.composeapp.generated.resources.premium_restore_error_format
-import n3to.composeapp.generated.resources.premium_already_premium_subtitle
-import n3to.composeapp.generated.resources.premium_lifetime_value
-import n3to.composeapp.generated.resources.premium_subscribe
-import n3to.composeapp.generated.resources.premium_unlimited_accounts
-import n3to.composeapp.generated.resources.premium_themes
-import n3to.composeapp.generated.resources.premium_already_premium
 import org.jetbrains.compose.resources.stringResource
-import androidx.compose.ui.unit.sp
-
-import es.aviferdev.n3to.ui.theme.ExpenseRed
-
-import es.aviferdev.n3to.ui.common.navigation.TopBarApp
 import org.koin.compose.viewmodel.koinViewModel
 
 private fun getPackageLabel(identifier: String): String = when {
@@ -119,7 +110,12 @@ fun PremiumScreen(
                 }
 
                 is PremiumEvent.PurchaseError -> {
-                    snackbarHostState.showSnackbar(errorFormatText.replace(": %1\$s", ": ${event.message}").replace(": ", ": ${event.message}"))
+                    snackbarHostState.showSnackbar(
+                        errorFormatText.replace(
+                            ": %1\$s",
+                            ": ${event.message}"
+                        ).replace(": ", ": ${event.message}")
+                    )
                 }
 
                 is PremiumEvent.RestoreSuccess -> {
@@ -127,7 +123,12 @@ fun PremiumScreen(
                 }
 
                 is PremiumEvent.RestoreError -> {
-                    snackbarHostState.showSnackbar(restoreErrorFormatText.replace(": %1\$s", ": ${event.message}").replace(": ", ": ${event.message}"))
+                    snackbarHostState.showSnackbar(
+                        restoreErrorFormatText.replace(
+                            ": %1\$s",
+                            ": ${event.message}"
+                        ).replace(": ", ": ${event.message}")
+                    )
                 }
             }
         }
@@ -143,7 +144,7 @@ fun PremiumScreen(
                 .padding(bottom = 80.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            TopBarApp(
+            TopBarWithActionsApp(
                 title = stringResource(Res.string.premium_subscribe),
                 navigateBack = onBack
             )
@@ -191,36 +192,41 @@ fun PremiumScreen(
             // Tarjetas de precio
             when {
                 uiState.isPremium -> {
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(16.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.primaryContainer
-                    )
-                ) {
-                    Column(
-                        modifier = Modifier.padding(24.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Icon(Icons.Default.Star, null, modifier = Modifier.size(40.dp))
-                        Spacer(Modifier.height(8.dp))
-                        Text(
-                            stringResource(Res.string.premium_already_premium_subtitle),
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(16.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.primaryContainer
                         )
-                        if (uiState.isLifetime) {
-                            Text(stringResource(Res.string.premium_lifetime_value), style = MaterialTheme.typography.bodyMedium)
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(24.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Icon(Icons.Default.Star, null, modifier = Modifier.size(40.dp))
+                            Spacer(Modifier.height(8.dp))
+                            Text(
+                                stringResource(Res.string.premium_already_premium_subtitle),
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold
+                            )
+                            if (uiState.isLifetime) {
+                                Text(
+                                    stringResource(Res.string.premium_lifetime_value),
+                                    style = MaterialTheme.typography.bodyMedium
+                                )
+                            }
                         }
                     }
                 }
-                }
+
                 uiState.productLoadError != null -> {
                     PremiumErrorCard(
                         message = uiState.productLoadError ?: "",
                         onRetry = { viewModel.retryLoadProducts() }
                     )
                 }
+
                 else -> {
                     uiState.products.forEach { product ->
                         PremiumProductCard(
@@ -611,7 +617,11 @@ private fun PremiumErrorCard(
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
             .clip(RoundedCornerShape(16.dp))
-            .border(0.5.dp, MaterialTheme.appColors.expense.copy(alpha = 0.30f), RoundedCornerShape(16.dp))
+            .border(
+                0.5.dp,
+                MaterialTheme.appColors.expense.copy(alpha = 0.30f),
+                RoundedCornerShape(16.dp)
+            )
             .background(MaterialTheme.appColors.expense.copy(alpha = 0.05f))
             .padding(horizontal = 24.dp, vertical = 24.dp),
         horizontalAlignment = Alignment.CenterHorizontally

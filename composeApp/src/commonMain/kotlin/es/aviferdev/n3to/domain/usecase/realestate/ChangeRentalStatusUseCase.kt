@@ -25,7 +25,8 @@ class ChangeRentalStatusUseCase(
         monthlyRent: Double? = null
     ): Result<Unit> {
         // 1. Cerrar período activo si existe
-        val activePeriod = rentalPeriodRepository.getActivePeriodByProperty(propertyId).firstOrNull()
+        val activePeriod =
+            rentalPeriodRepository.getActivePeriodByProperty(propertyId).firstOrNull()
         activePeriod?.let {
             rentalPeriodRepository.closeRentalPeriod(it.id, effectiveDate)
         }
@@ -36,12 +37,12 @@ class ChangeRentalStatusUseCase(
                 return Result.failure(ValidationError.RentalIncomeRequired)
             rentalPeriodRepository.openRentalPeriod(
                 RentalPeriod(
-                    id          = uuid4().toString(),
-                    propertyId  = propertyId,
-                    startDate   = effectiveDate,
-                    endDate     = null,
+                    id = uuid4().toString(),
+                    propertyId = propertyId,
+                    startDate = effectiveDate,
+                    endDate = null,
                     monthlyRent = monthlyRent,
-                    notes       = null
+                    notes = null
                 )
             )
         }
@@ -52,7 +53,7 @@ class ChangeRentalStatusUseCase(
 
         val updated = property.copy(
             rentalStatus = newStatus,
-            monthlyRent  = if (newStatus == RentalStatus.RENTED) monthlyRent else null
+            monthlyRent = if (newStatus == RentalStatus.RENTED) monthlyRent else null
         )
 
         return propertyRepository.saveProperty(updated)

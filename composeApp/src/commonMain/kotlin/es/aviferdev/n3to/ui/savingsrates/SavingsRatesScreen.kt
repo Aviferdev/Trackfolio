@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -40,7 +39,7 @@ import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.SavingsRate
 import es.aviferdev.n3to.domain.model.SavingsRateType
 import es.aviferdev.n3to.ui.common.component.NavyTabRow
-import es.aviferdev.n3to.ui.common.navigation.TopBarApp
+import es.aviferdev.n3to.ui.common.topbar.TopBarWithActionsApp
 import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.ui.theme.formatAmount
 import es.aviferdev.n3to.ui.theme.formatDate
@@ -61,7 +60,7 @@ fun SavingsRatesScreen(
             .background(MaterialTheme.appColors.navyDeep)
             .windowInsetsPadding(WindowInsets.statusBars)
     ) {
-        TopBarApp(
+        TopBarWithActionsApp(
             title = "Cuentas remuneradas",
             navigateBack = onNavigateBack,
             actions = {
@@ -117,6 +116,7 @@ fun SavingsRatesScreen(
                         CircularProgressIndicator(color = MaterialTheme.appColors.cyanAccent)
                     }
                 }
+
                 state.error != null && rates.isEmpty() -> {
                     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                         Text(
@@ -126,6 +126,7 @@ fun SavingsRatesScreen(
                         )
                     }
                 }
+
                 else -> {
                     LazyColumn(
                         verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -235,6 +236,11 @@ private fun SavingsRateCard(rate: SavingsRate, modifier: Modifier = Modifier) {
 private fun MetaChip(label: String, value: String) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Text(text = label, fontSize = 9.sp, color = MaterialTheme.appColors.textTertiary)
-        Text(text = value, fontSize = 11.sp, color = MaterialTheme.appColors.textSecondary, fontWeight = FontWeight.Medium)
+        Text(
+            text = value,
+            fontSize = 11.sp,
+            color = MaterialTheme.appColors.textSecondary,
+            fontWeight = FontWeight.Medium
+        )
     }
 }

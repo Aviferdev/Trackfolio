@@ -40,10 +40,16 @@ class TransactionRepositoryImpl(
     override fun getIncomeByYear(accountId: String, year: String): Flow<List<Transaction>> =
         dataSource.getIncomeByYear(accountId, year)
 
-    override fun getExpensesByCategoryPerYear(accountId: String, year: String): Flow<List<CategoryBreakdown>> =
+    override fun getExpensesByCategoryPerYear(
+        accountId: String,
+        year: String
+    ): Flow<List<CategoryBreakdown>> =
         dataSource.getExpensesByCategoryPerYear(accountId, year)
 
-    override fun getIncomeByTypePerYear(accountId: String, year: String): Flow<List<IncomeTypeBreakdown>> =
+    override fun getIncomeByTypePerYear(
+        accountId: String,
+        year: String
+    ): Flow<List<IncomeTypeBreakdown>> =
         dataSource.getIncomeByTypePerYear(accountId, year)
 
     override fun getTransactionById(id: String): Flow<Transaction?> =

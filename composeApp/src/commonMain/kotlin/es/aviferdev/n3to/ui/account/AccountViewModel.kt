@@ -1,6 +1,5 @@
 package es.aviferdev.n3to.ui.account
 
-import es.aviferdev.n3to.platform.nowMillis
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import es.aviferdev.n3to.core.premium.PremiumManager
@@ -12,20 +11,21 @@ import es.aviferdev.n3to.domain.usecase.account.SaveAccountUseCase
 import es.aviferdev.n3to.domain.usecase.account.SetInitialBalanceUseCase
 import es.aviferdev.n3to.domain.usecase.account.UpdateAccountUseCase
 import es.aviferdev.n3to.domain.usecase.category.SeedDefaultCategoriesUseCase
+import es.aviferdev.n3to.platform.nowMillis
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 data class AccountUiState(
-    val accounts: List<Account>     = emptyList(),
-    val isLoading: Boolean          = false,
-    val error: String?              = null,
-    val showAddSheet: Boolean       = false,
-    val showEditSheet: Boolean      = false,
-    val editingAccount: Account?    = null,
-    val showDeleteConfirm: Boolean  = false,
-    val accountToDelete: Account?   = null,
+    val accounts: List<Account> = emptyList(),
+    val isLoading: Boolean = false,
+    val error: String? = null,
+    val showAddSheet: Boolean = false,
+    val showEditSheet: Boolean = false,
+    val editingAccount: Account? = null,
+    val showDeleteConfirm: Boolean = false,
+    val accountToDelete: Account? = null,
     val pendingInitialBalanceAccount: Account? = null,
     val showPremiumLimitWarning: Boolean = false
 )
@@ -78,7 +78,8 @@ class AccountViewModel(
     }
 
     fun selectAccount() {
-        val account = _uiState.value.accounts.find { it.id == session.selectedAccountId.value } ?: return
+        val account =
+            _uiState.value.accounts.find { it.id == session.selectedAccountId.value } ?: return
         if (account.needsInitialBalance) {
             _uiState.value = _uiState.value.copy(pendingInitialBalanceAccount = account)
         } else {
@@ -126,11 +127,11 @@ class AccountViewModel(
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true)
             val newAccount = Account(
-                id              = generateId(),
-                name            = name,
-                initialBalance  = 0.0,
+                id = generateId(),
+                name = name,
+                initialBalance = 0.0,
                 computedBalance = 0.0,
-                createdAt       = nowMillis()
+                createdAt = nowMillis()
             )
             saveAccount(newAccount)
                 .onSuccess {
@@ -138,7 +139,7 @@ class AccountViewModel(
                     setInitialBalance(newAccount.id, initialBalance)
                     session.selectAccount(newAccount.id)
                     _uiState.value = _uiState.value.copy(
-                        isLoading    = false,
+                        isLoading = false,
                         showAddSheet = false
                     )
                 }

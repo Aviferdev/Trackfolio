@@ -58,7 +58,7 @@ import es.aviferdev.n3to.domain.usecase.portfolio.SavePortfolioUseCase
 import es.aviferdev.n3to.domain.usecase.portfolio.UpdatePortfolioUseCase
 import es.aviferdev.n3to.ui.account.AccountSession
 import es.aviferdev.n3to.ui.common.SectionHeader
-import es.aviferdev.n3to.ui.common.navigation.TopBarApp
+import es.aviferdev.n3to.ui.common.topbar.TopBarWithActionsApp
 import es.aviferdev.n3to.ui.portfolio.AddEditPlatformSheet
 import es.aviferdev.n3to.ui.portfolio.AddEditPortfolioBottomSheet
 import es.aviferdev.n3to.ui.portfolio.AssetCatalogUiState
@@ -135,7 +135,8 @@ fun PortfolioSettingsScreen(
     var showAddPortfolioSheet by remember { mutableStateOf(false) }
     var noAccountError by remember { mutableStateOf(false) }
 
-    val portfoliosList = (portfolios as? PortfolioSettingsUiState.Success)?.data?.portfolios ?: emptyList()
+    val portfoliosList =
+        (portfolios as? PortfolioSettingsUiState.Success)?.data?.portfolios ?: emptyList()
 
     PortfolioSettingsContent(
         assetCatalogState = assetCatalogState,
@@ -367,7 +368,7 @@ fun PortfolioSettingsContent(
     Column(
         modifier = modifier.fillMaxSize().background(MaterialTheme.appColors.background)
     ) {
-        TopBarApp(
+        TopBarWithActionsApp(
             title = stringResource(Res.string.portfolio_settings_title),
             navigateBack = onBack
         )

@@ -1,12 +1,18 @@
 package es.aviferdev.n3to.ui.loan
 
-import androidx.compose.material3.MaterialTheme
-import es.aviferdev.n3to.ui.theme.appColors
-import es.aviferdev.n3to.platform.nowMillis
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
@@ -22,15 +28,20 @@ import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.rememberDatePickerState
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberDatePickerState
+import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -43,22 +54,20 @@ import es.aviferdev.n3to.domain.loan.FrenchAmortizationCalculator
 import es.aviferdev.n3to.domain.model.Loan
 import es.aviferdev.n3to.domain.model.LoanType
 import es.aviferdev.n3to.domain.usecase.loan.SaveLoanUseCase
+import es.aviferdev.n3to.platform.nowMillis
 import es.aviferdev.n3to.ui.account.AccountSession
-import es.aviferdev.n3to.ui.theme.*
-
+import es.aviferdev.n3to.ui.theme.appColors
+import es.aviferdev.n3to.ui.theme.formatAmount
 import kotlinx.coroutines.launch
-
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
-import kotlinx.datetime.atStartOfDayIn
 import kotlinx.datetime.toLocalDateTime
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.common_accept
 import n3to.composeapp.generated.resources.common_cancel
 import n3to.composeapp.generated.resources.common_save_changes
 import n3to.composeapp.generated.resources.fixedincome_start_date_label
-import n3to.composeapp.generated.resources.loan_new_title
 import n3to.composeapp.generated.resources.loan_edit_title
 import n3to.composeapp.generated.resources.loan_entity_label
 import n3to.composeapp.generated.resources.loan_interest_label
@@ -67,6 +76,7 @@ import n3to.composeapp.generated.resources.loan_lender_placeholder
 import n3to.composeapp.generated.resources.loan_monthly_payment
 import n3to.composeapp.generated.resources.loan_name_label
 import n3to.composeapp.generated.resources.loan_name_placeholder
+import n3to.composeapp.generated.resources.loan_new_title
 import n3to.composeapp.generated.resources.loan_principal_label
 import n3to.composeapp.generated.resources.loan_principal_placeholder
 import n3to.composeapp.generated.resources.loan_save
@@ -74,16 +84,6 @@ import n3to.composeapp.generated.resources.loan_term_label
 import n3to.composeapp.generated.resources.loan_term_placeholder
 import n3to.composeapp.generated.resources.loan_type_label
 import n3to.composeapp.generated.resources.portfolio_add_tx_notes_label
-import n3to.composeapp.generated.resources.loan_entity_label
-import n3to.composeapp.generated.resources.loan_history_title
-import n3to.composeapp.generated.resources.loan_interest_label
-import n3to.composeapp.generated.resources.loan_monthly_payment
-import n3to.composeapp.generated.resources.loan_name_label
-import n3to.composeapp.generated.resources.loan_name_placeholder
-import n3to.composeapp.generated.resources.loan_principal_label
-import n3to.composeapp.generated.resources.loan_save
-import n3to.composeapp.generated.resources.loan_term_label
-import n3to.composeapp.generated.resources.loan_type_label
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 
@@ -102,7 +102,11 @@ fun AddEditLoanBottomSheet(
     var selectedType by remember { mutableStateOf(loan?.type ?: LoanType.MORTGAGE) }
     var totalAmountText by remember { mutableStateOf(loan?.totalAmount?.toString() ?: "") }
     var interestRateText by remember { mutableStateOf(loan?.currentInterestRate?.toString() ?: "") }
-    var totalInstallmentsText by remember { mutableStateOf(loan?.totalInstallments?.toString() ?: "") }
+    var totalInstallmentsText by remember {
+        mutableStateOf(
+            loan?.totalInstallments?.toString() ?: ""
+        )
+    }
     var lenderName by remember { mutableStateOf(loan?.lenderName ?: "") }
     var notes by remember { mutableStateOf(loan?.notes ?: "") }
     var startDateMillis by remember { mutableStateOf(loan?.startDate ?: nowMillis()) }
@@ -116,15 +120,19 @@ fun AddEditLoanBottomSheet(
     val interestRate = interestRateText.replace(',', '.').toDoubleOrNull() ?: 0.0
     val totalInstallments = totalInstallmentsText.toIntOrNull() ?: 0
     val previewPayment = if (totalAmount > 0 && totalInstallments > 0) {
-        FrenchAmortizationCalculator.calculateMonthlyPayment(totalAmount, interestRate, totalInstallments)
+        FrenchAmortizationCalculator.calculateMonthlyPayment(
+            totalAmount,
+            interestRate,
+            totalInstallments
+        )
     } else 0.0
 
     val isValid = name.isNotBlank() && totalAmount > 0 && totalInstallments > 0 && interestRate >= 0
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
-        sheetState       = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-        containerColor   = MaterialTheme.appColors.surface,
+        sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
+        containerColor = MaterialTheme.appColors.surface,
         dragHandle = {
             Box(
                 modifier = Modifier
@@ -152,7 +160,11 @@ fun AddEditLoanBottomSheet(
             Spacer(Modifier.height(20.dp))
 
             // ── Tipo de préstamo ─────────────────────────────────────────────
-            Text(stringResource(Res.string.loan_type_label), fontSize = 13.sp, color = MaterialTheme.appColors.textSecondary)
+            Text(
+                stringResource(Res.string.loan_type_label),
+                fontSize = 13.sp,
+                color = MaterialTheme.appColors.textSecondary
+            )
             Spacer(Modifier.height(8.dp))
             LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 items(LoanType.entries.toList()) { type ->
@@ -194,7 +206,9 @@ fun AddEditLoanBottomSheet(
             // ── Capital total ────────────────────────────────────────────────
             OutlinedTextField(
                 value = totalAmountText,
-                onValueChange = { totalAmountText = it.filter { c -> c.isDigit() || c == ',' || c == '.' } },
+                onValueChange = {
+                    totalAmountText = it.filter { c -> c.isDigit() || c == ',' || c == '.' }
+                },
                 label = { Text(stringResource(Res.string.loan_principal_label)) },
                 placeholder = { Text(stringResource(Res.string.loan_principal_placeholder)) },
                 modifier = Modifier.fillMaxWidth(),
@@ -212,7 +226,9 @@ fun AddEditLoanBottomSheet(
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 OutlinedTextField(
                     value = interestRateText,
-                    onValueChange = { interestRateText = it.filter { c -> c.isDigit() || c == ',' || c == '.' } },
+                    onValueChange = {
+                        interestRateText = it.filter { c -> c.isDigit() || c == ',' || c == '.' }
+                    },
                     label = { Text(stringResource(Res.string.loan_interest_label)) },
                     placeholder = { Text(stringResource(Res.string.loan_interest_placeholder)) },
                     modifier = Modifier.weight(1f),
@@ -250,7 +266,11 @@ fun AddEditLoanBottomSheet(
                         modifier = Modifier.fillMaxWidth().padding(12.dp),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Text(stringResource(Res.string.loan_monthly_payment), fontSize = 13.sp, color = MaterialTheme.appColors.textSecondary)
+                        Text(
+                            stringResource(Res.string.loan_monthly_payment),
+                            fontSize = 13.sp,
+                            color = MaterialTheme.appColors.textSecondary
+                        )
                         Text(
                             "${formatAmount(previewPayment)} €/mes",
                             fontSize = 14.sp,
@@ -263,7 +283,12 @@ fun AddEditLoanBottomSheet(
 
             // ── Fecha de inicio ───────────────────────────────────────────────
             Spacer(Modifier.height(16.dp))
-            Text(stringResource(Res.string.fixedincome_start_date_label), fontSize = 12.sp, color = MaterialTheme.appColors.textSecondary, fontWeight = FontWeight.Medium)
+            Text(
+                stringResource(Res.string.fixedincome_start_date_label),
+                fontSize = 12.sp,
+                color = MaterialTheme.appColors.textSecondary,
+                fontWeight = FontWeight.Medium
+            )
             Spacer(Modifier.height(6.dp))
             Box(
                 modifier = Modifier
@@ -274,9 +299,9 @@ fun AddEditLoanBottomSheet(
                     .padding(horizontal = 14.dp, vertical = 14.dp)
             ) {
                 Text(
-                    text     = formatFullDate(startDateMillis),
+                    text = formatFullDate(startDateMillis),
                     fontSize = 14.sp,
-                    color    = MaterialTheme.appColors.textPrimary
+                    color = MaterialTheme.appColors.textPrimary
                 )
             }
 
@@ -320,12 +345,18 @@ fun AddEditLoanBottomSheet(
                     isLoading = true
                     val accountId = session.selectedAccountId.value ?: return@Button
                     val now = nowMillis()
-                    val endDate = startDateMillis + totalInstallments.toLong() * 30L * 24 * 60 * 60 * 1000
+                    val endDate =
+                        startDateMillis + totalInstallments.toLong() * 30L * 24 * 60 * 60 * 1000
 
                     // Calcular la cuota mensual
-                    val monthlyPayment = if (totalAmount > 0 && totalInstallments > 0 && interestRate >= 0) {
-                        FrenchAmortizationCalculator.calculateMonthlyPayment(totalAmount, interestRate, totalInstallments)
-                    } else 0.0
+                    val monthlyPayment =
+                        if (totalAmount > 0 && totalInstallments > 0 && interestRate >= 0) {
+                            FrenchAmortizationCalculator.calculateMonthlyPayment(
+                                totalAmount,
+                                interestRate,
+                                totalInstallments
+                            )
+                        } else 0.0
 
                     // Calcular cuotas pagadas basándose en la fecha de inicio
                     val monthsSinceStart = if (startDateMillis < now) {
@@ -355,33 +386,33 @@ fun AddEditLoanBottomSheet(
                         // Para edición, mantener los valores originales de cuotas pagadas y capital pendiente
                         // solo actualizar los datos editables
                         loan.copy(
-                            name                 = name.trim(),
-                            type                 = selectedType,
-                            currentInterestRate  = interestRate,
-                            monthlyPayment       = monthlyPayment,
-                            startDate            = startDateMillis,
-                            endDate              = endDate,
-                            lenderName           = lenderName.ifBlank { null },
-                            notes                = notes.ifBlank { null }
+                            name = name.trim(),
+                            type = selectedType,
+                            currentInterestRate = interestRate,
+                            monthlyPayment = monthlyPayment,
+                            startDate = startDateMillis,
+                            endDate = endDate,
+                            lenderName = lenderName.ifBlank { null },
+                            notes = notes.ifBlank { null }
                         )
                     } else {
                         Loan(
-                            id                   = uuid4().toString(),
-                            accountId            = accountId,
-                            name                 = name.trim(),
-                            type                 = selectedType,
-                            totalAmount          = totalAmount,
+                            id = uuid4().toString(),
+                            accountId = accountId,
+                            name = name.trim(),
+                            type = selectedType,
+                            totalAmount = totalAmount,
                             outstandingPrincipal = outstandingPrincipal,
-                            currentInterestRate  = interestRate,
-                            monthlyPayment       = monthlyPayment,
-                            totalInstallments    = totalInstallments,
-                            paidInstallments     = paidInstallments,
-                            startDate            = startDateMillis,
-                            endDate              = endDate,
-                            lenderName           = lenderName.ifBlank { null },
-                            notes                = notes.ifBlank { null },
-                            archived             = false,
-                            createdAt            = now
+                            currentInterestRate = interestRate,
+                            monthlyPayment = monthlyPayment,
+                            totalInstallments = totalInstallments,
+                            paidInstallments = paidInstallments,
+                            startDate = startDateMillis,
+                            endDate = endDate,
+                            lenderName = lenderName.ifBlank { null },
+                            notes = notes.ifBlank { null },
+                            archived = false,
+                            createdAt = now
                         )
                     }
                     scope.launch {
@@ -405,7 +436,11 @@ fun AddEditLoanBottomSheet(
                         strokeWidth = 2.dp
                     )
                 } else {
-                    Text(if (isEditing) stringResource(Res.string.common_save_changes) else stringResource(Res.string.loan_save), fontSize = 16.sp)
+                    Text(
+                        if (isEditing) stringResource(Res.string.common_save_changes) else stringResource(
+                            Res.string.loan_save
+                        ), fontSize = 16.sp
+                    )
                 }
             }
 
@@ -427,11 +462,19 @@ fun AddEditLoanBottomSheet(
                         startDateMillis = selected
                     }
                     showStartDatePicker = false
-                }) { Text(stringResource(Res.string.common_accept), color = MaterialTheme.appColors.primary) }
+                }) {
+                    Text(
+                        stringResource(Res.string.common_accept),
+                        color = MaterialTheme.appColors.primary
+                    )
+                }
             },
             dismissButton = {
                 TextButton(onClick = { showStartDatePicker = false }) {
-                    Text(stringResource(Res.string.common_cancel), color = MaterialTheme.appColors.textSecondary)
+                    Text(
+                        stringResource(Res.string.common_cancel),
+                        color = MaterialTheme.appColors.textSecondary
+                    )
                 }
             },
             colors = DatePickerDefaults.colors(containerColor = MaterialTheme.appColors.surface)
@@ -440,7 +483,7 @@ fun AddEditLoanBottomSheet(
                 state = pickerState,
                 colors = DatePickerDefaults.colors(
                     selectedDayContainerColor = MaterialTheme.appColors.primary,
-                    todayDateBorderColor      = MaterialTheme.appColors.primary
+                    todayDateBorderColor = MaterialTheme.appColors.primary
                 )
             )
         }
@@ -448,8 +491,10 @@ fun AddEditLoanBottomSheet(
 }
 
 private fun formatFullDate(epochMillis: Long): String {
-    val months = listOf("enero","febrero","marzo","abril","mayo","junio",
-        "julio","agosto","septiembre","octubre","noviembre","diciembre")
+    val months = listOf(
+        "enero", "febrero", "marzo", "abril", "mayo", "junio",
+        "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"
+    )
     val instant = Instant.fromEpochMilliseconds(epochMillis)
     val ld: LocalDate = instant.toLocalDateTime(TimeZone.currentSystemDefault()).date
     return "${ld.dayOfMonth} de ${months[ld.monthNumber - 1]} de ${ld.year}"

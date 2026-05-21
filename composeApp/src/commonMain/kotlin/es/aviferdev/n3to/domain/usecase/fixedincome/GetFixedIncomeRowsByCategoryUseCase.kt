@@ -18,7 +18,10 @@ class GetFixedIncomeRowsByCategoryUseCase(
         ) { positions, events ->
             val eventsByPosition = events.groupBy { it.positionId }
             positions.map { pos ->
-                FixedIncomeCalculator.calculatePosition(pos, eventsByPosition[pos.id] ?: emptyList())
+                FixedIncomeCalculator.calculatePosition(
+                    pos,
+                    eventsByPosition[pos.id] ?: emptyList()
+                )
             }
         }
 }

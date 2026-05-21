@@ -66,12 +66,13 @@ class PortfolioStateBuilder {
         else allFiRows.filter { it.position.portfolioId == portfolioId }
 
         val closedFiRows = if (portfolioId == null) (fiSummary?.closedPositions ?: emptyList())
-        else (fiSummary?.closedPositions ?: emptyList()).filter { it.position.portfolioId == portfolioId }
+        else (fiSummary?.closedPositions
+            ?: emptyList()).filter { it.position.portfolioId == portfolioId }
 
         val fiByCategory = fiRows.groupBy { it.position.assetCategoryId }
         val categoryById = categories.associateBy { it.id }
 
-        val openRows   = mutableListOf<AssetRow>()
+        val openRows = mutableListOf<AssetRow>()
         val closedRows = mutableListOf<AssetRow>()
         for (asset in filteredAssets) {
             val txs = txByAsset[asset.id].orEmpty()
@@ -79,7 +80,7 @@ class PortfolioStateBuilder {
             val hasSales = txs.any { it.type == AssetTransactionType.SELL }
             when {
                 pos.netQuantity > 0.0 -> openRows.add(AssetRow(asset, pos))
-                hasSales              -> closedRows.add(AssetRow(asset, pos))
+                hasSales -> closedRows.add(AssetRow(asset, pos))
             }
         }
 
@@ -88,16 +89,16 @@ class PortfolioStateBuilder {
 
         val groups: List<CategoryGroup> = grouped.map { (categoryId, groupRows) ->
             val cat = categoryId?.let { byId[it] }
-            val invested   = groupRows.sumOf { it.position.totalInvestedRemaining }
-            val current    = groupRows.sumOf { it.position.currentValue }
-            val realized   = groupRows.sumOf { it.position.realizedPnL }
+            val invested = groupRows.sumOf { it.position.totalInvestedRemaining }
+            val current = groupRows.sumOf { it.position.currentValue }
+            val realized = groupRows.sumOf { it.position.realizedPnL }
             val unrealized = groupRows.sumOf { it.position.unrealizedPnL }
-            val total      = realized + unrealized
+            val total = realized + unrealized
 
             val fiRowsForCat = fiByCategory[categoryId].orEmpty()
-            val fiInvested   = fiRowsForCat.sumOf { it.position.principal }
-            val fiCurrent    = fiRowsForCat.sumOf { it.currentValue }
-            val fiProfit     = fiRowsForCat.sumOf { it.totalProfit }
+            val fiInvested = fiRowsForCat.sumOf { it.position.principal }
+            val fiCurrent = fiRowsForCat.sumOf { it.currentValue }
+            val fiProfit = fiRowsForCat.sumOf { it.totalProfit }
 
             CategoryGroup(
                 category = cat,
@@ -118,15 +119,15 @@ class PortfolioStateBuilder {
             )
         )
 
-        val stockCategoryIds  = grouped.keys
+        val stockCategoryIds = grouped.keys
         val fiOnlyCategoryIds = fiByCategory.keys - stockCategoryIds
         val fiOnlyGroups = fiOnlyCategoryIds.mapNotNull { categoryId ->
             val fiRowsForCat = fiByCategory[categoryId].orEmpty()
             if (fiRowsForCat.isEmpty()) return@mapNotNull null
-            val cat      = categoryId?.let { categoryById[it] }
+            val cat = categoryId?.let { categoryById[it] }
             val fiInvested = fiRowsForCat.sumOf { it.position.principal }
-            val fiCurrent  = fiRowsForCat.sumOf { it.currentValue }
-            val fiProfit   = fiRowsForCat.sumOf { it.totalProfit }
+            val fiCurrent = fiRowsForCat.sumOf { it.currentValue }
+            val fiProfit = fiRowsForCat.sumOf { it.totalProfit }
             CategoryGroup(
                 category = cat,
                 rows = emptyList(),
@@ -151,23 +152,24 @@ class PortfolioStateBuilder {
         val regionGroups = buildRegionGroups(openRows, fiSummary?.positions.orEmpty())
         val sectorGroups = buildSectorGroups(openRows, fiSummary?.positions.orEmpty())
 
-        val totalInvested      = allGroups.sumOf { it.totalInvested }
-        val totalCurrentValue  = allGroups.sumOf { it.totalCurrentValue }
-        val totalRealizedPnL   = allGroups.sumOf { it.totalRealizedPnL } +
-                                 closedRows.sumOf { it.position.realizedPnL }
+        val totalInvested = allGroups.sumOf { it.totalInvested }
+        val totalCurrentValue = allGroups.sumOf { it.totalCurrentValue }
+        val totalRealizedPnL = allGroups.sumOf { it.totalRealizedPnL } +
+                closedRows.sumOf { it.position.realizedPnL }
         val totalUnrealizedPnL = allGroups.sumOf { it.totalUnrealizedPnL }
-        val totalPnL           = totalRealizedPnL + totalUnrealizedPnL
+        val totalPnL = totalRealizedPnL + totalUnrealizedPnL
 
         val compoundEffect = buildCompoundEffect(openRows, txByAsset, dividendsByAsset)
 
-        val fiTotalPrincipal    = fiSummary?.totalPrincipal ?: 0.0
+        val fiTotalPrincipal = fiSummary?.totalPrincipal ?: 0.0
         val fiTotalCurrentValue = fiSummary?.totalCurrentValue ?: 0.0
-        val fiTotalNetProfit    = fiSummary?.totalNetProfit ?: 0.0
+        val fiTotalNetProfit = fiSummary?.totalNetProfit ?: 0.0
 
-        val combinedInvested     = totalInvested + fiTotalPrincipal
+        val combinedInvested = totalInvested + fiTotalPrincipal
         val combinedCurrentValue = totalCurrentValue + fiTotalCurrentValue
-        val combinedPnL          = totalPnL + fiTotalNetProfit
-        val combinedPnLPercent   = if (combinedInvested > 0.0) (combinedPnL / combinedInvested) * 100.0 else 0.0
+        val combinedPnL = totalPnL + fiTotalNetProfit
+        val combinedPnLPercent =
+            if (combinedInvested > 0.0) (combinedPnL / combinedInvested) * 100.0 else 0.0
 
         val distribution: List<CategorySlice> = if (combinedCurrentValue <= 0.0) emptyList()
         else allGroups
@@ -185,17 +187,23 @@ class PortfolioStateBuilder {
             .sortedByDescending { it.percent }
 
         val compositionByAsset = compositions.associateBy { it.assetId }
-        val compositionSlices  = buildCompositionDistribution(allGroups, compositionByAsset, combinedCurrentValue, fiSummary)
+        val compositionSlices = buildCompositionDistribution(
+            allGroups,
+            compositionByAsset,
+            combinedCurrentValue,
+            fiSummary
+        )
 
-        val assetCurrentValues  = openRows.associate { it.asset.id to it.position.currentValue }
-        val regionById          = allRegions.associateBy { it.id }
-        val regionValues        = mutableMapOf<String, Double>()
-        val catalogedAssetIds   = mutableSetOf<String>()
+        val assetCurrentValues = openRows.associate { it.asset.id to it.position.currentValue }
+        val regionById = allRegions.associateBy { it.id }
+        val regionValues = mutableMapOf<String, Double>()
+        val catalogedAssetIds = mutableSetOf<String>()
 
         for (dist in regionDistributions) {
             val assetValue = assetCurrentValues[dist.assetId] ?: continue
             val weight = dist.percent / 100.0
-            regionValues[dist.regionId] = (regionValues[dist.regionId] ?: 0.0) + (assetValue * weight)
+            regionValues[dist.regionId] =
+                (regionValues[dist.regionId] ?: 0.0) + (assetValue * weight)
             catalogedAssetIds.add(dist.assetId)
         }
         for ((assetId, value) in assetCurrentValues) {
@@ -204,38 +212,39 @@ class PortfolioStateBuilder {
             }
         }
 
-        val regionSlices: List<CategorySlice> = if (combinedCurrentValue > 0.0 && regionValues.isNotEmpty()) {
-            regionValues.entries.mapIndexed { idx, (regionId, value) ->
-                if (regionId == "__uncatalogued__") {
-                    CategorySlice(
-                        null,
-                        "No catalogados",
-                        "❔",
-                        value,
-                        (value / combinedCurrentValue) * 100.0,
-                        UncategorizedColor
-                    )
-                } else {
-                    val region = regionById[regionId]
-                    CategorySlice(
-                        regionId,
-                        region?.name ?: regionId,
-                        "🌍",
-                        value,
-                        (value / combinedCurrentValue) * 100.0,
-                        CategoryPalette[idx % CategoryPalette.size]
-                    )
-                }
-            }.sortedByDescending { it.percent }
-        } else emptyList()
+        val regionSlices: List<CategorySlice> =
+            if (combinedCurrentValue > 0.0 && regionValues.isNotEmpty()) {
+                regionValues.entries.mapIndexed { idx, (regionId, value) ->
+                    if (regionId == "__uncatalogued__") {
+                        CategorySlice(
+                            null,
+                            "No catalogados",
+                            "❔",
+                            value,
+                            (value / combinedCurrentValue) * 100.0,
+                            UncategorizedColor
+                        )
+                    } else {
+                        val region = regionById[regionId]
+                        CategorySlice(
+                            regionId,
+                            region?.name ?: regionId,
+                            "🌍",
+                            value,
+                            (value / combinedCurrentValue) * 100.0,
+                            CategoryPalette[idx % CategoryPalette.size]
+                        )
+                    }
+                }.sortedByDescending { it.percent }
+            } else emptyList()
 
-        val sectorById                  = allSectors.associateBy { it.id }
-        val sectorValues                = mutableMapOf<String, Double>()
-        val sectorsByAsset              = sectorRelations.groupBy { it.assetId }
-        val catalogedAssetIdsForSector  = mutableSetOf<String>()
+        val sectorById = allSectors.associateBy { it.id }
+        val sectorValues = mutableMapOf<String, Double>()
+        val sectorsByAsset = sectorRelations.groupBy { it.assetId }
+        val catalogedAssetIdsForSector = mutableSetOf<String>()
 
         for ((assetId, relations) in sectorsByAsset) {
-            val assetValue   = assetCurrentValues[assetId] ?: continue
+            val assetValue = assetCurrentValues[assetId] ?: continue
             val valuePerSector = assetValue / relations.size
             for (rel in relations) {
                 sectorValues[rel.sectorId] = (sectorValues[rel.sectorId] ?: 0.0) + valuePerSector
@@ -248,30 +257,31 @@ class PortfolioStateBuilder {
             }
         }
 
-        val sectorSlices: List<CategorySlice> = if (combinedCurrentValue > 0.0 && sectorValues.isNotEmpty()) {
-            sectorValues.entries.mapIndexed { idx, (sectorId, value) ->
-                if (sectorId == "__uncatalogued__") {
-                    CategorySlice(
-                        null,
-                        "No catalogados",
-                        "❔",
-                        value,
-                        (value / combinedCurrentValue) * 100.0,
-                        UncategorizedColor
-                    )
-                } else {
-                    val sector = sectorById[sectorId]
-                    CategorySlice(
-                        sectorId,
-                        sector?.name ?: sectorId,
-                        sector?.icon ?: "📊",
-                        value,
-                        (value / combinedCurrentValue) * 100.0,
-                        CategoryPalette[idx % CategoryPalette.size]
-                    )
-                }
-            }.sortedByDescending { it.percent }
-        } else emptyList()
+        val sectorSlices: List<CategorySlice> =
+            if (combinedCurrentValue > 0.0 && sectorValues.isNotEmpty()) {
+                sectorValues.entries.mapIndexed { idx, (sectorId, value) ->
+                    if (sectorId == "__uncatalogued__") {
+                        CategorySlice(
+                            null,
+                            "No catalogados",
+                            "❔",
+                            value,
+                            (value / combinedCurrentValue) * 100.0,
+                            UncategorizedColor
+                        )
+                    } else {
+                        val sector = sectorById[sectorId]
+                        CategorySlice(
+                            sectorId,
+                            sector?.name ?: sectorId,
+                            sector?.icon ?: "📊",
+                            value,
+                            (value / combinedCurrentValue) * 100.0,
+                            CategoryPalette[idx % CategoryPalette.size]
+                        )
+                    }
+                }.sortedByDescending { it.percent }
+            } else emptyList()
 
         return PortfolioUiState(
             groups = allGroups,
@@ -321,10 +331,10 @@ class PortfolioStateBuilder {
             val txs = txByAsset[row.asset.id].orEmpty()
             if (txs.isEmpty()) return@mapNotNull null
             PositionInput(
-                asset        = row.asset,
+                asset = row.asset,
                 transactions = txs,
                 currentPrice = row.asset.currentPrice,
-                dividends    = dividendsByAsset[row.asset.id].orEmpty()
+                dividends = dividendsByAsset[row.asset.id].orEmpty()
             )
         },
         nowMillis()
@@ -334,7 +344,7 @@ class PortfolioStateBuilder {
         openRows: List<AssetRow>,
         fiPositions: List<FixedIncomeRow>
     ): List<CategoryGroup> {
-        val fiByRegion         = fiPositions.groupBy { it.position.region }
+        val fiByRegion = fiPositions.groupBy { it.position.region }
         val assetsWithoutRegion = openRows  // assets don't have per-asset region metadata yet
 
         val allRegionKeys = mutableSetOf<String?>()
@@ -342,16 +352,16 @@ class PortfolioStateBuilder {
         if (assetsWithoutRegion.isNotEmpty()) allRegionKeys.add("No catalogados")
 
         return allRegionKeys.map { region ->
-            val fiRows    = fiByRegion[region].orEmpty()
+            val fiRows = fiByRegion[region].orEmpty()
             val assetRows = if (region == null) assetsWithoutRegion else emptyList()
 
-            val invested   = assetRows.sumOf { it.position.totalInvestedRemaining }
-            val current    = assetRows.sumOf { it.position.currentValue }
-            val realized   = assetRows.sumOf { it.position.realizedPnL }
+            val invested = assetRows.sumOf { it.position.totalInvestedRemaining }
+            val current = assetRows.sumOf { it.position.currentValue }
+            val realized = assetRows.sumOf { it.position.realizedPnL }
             val unrealized = assetRows.sumOf { it.position.unrealizedPnL }
             val fiInvested = fiRows.sumOf { it.position.principal }
-            val fiCurrent  = fiRows.sumOf { it.currentValue }
-            val fiProfit   = fiRows.sumOf { it.totalProfit }
+            val fiCurrent = fiRows.sumOf { it.currentValue }
+            val fiProfit = fiRows.sumOf { it.totalProfit }
 
             CategoryGroup(
                 category = null,
@@ -373,7 +383,7 @@ class PortfolioStateBuilder {
         openRows: List<AssetRow>,
         fiPositions: List<FixedIncomeRow>
     ): List<CategoryGroup> {
-        val fiBySector          = fiPositions.groupBy { it.position.sector }
+        val fiBySector = fiPositions.groupBy { it.position.sector }
         val assetsWithoutSector = openRows  // assets don't have per-asset sector metadata yet
 
         val allSectorKeys = mutableSetOf<String?>()
@@ -381,16 +391,16 @@ class PortfolioStateBuilder {
         if (assetsWithoutSector.isNotEmpty()) allSectorKeys.add("No catalogados")
 
         return allSectorKeys.map { sector ->
-            val fiRows    = fiBySector[sector].orEmpty()
+            val fiRows = fiBySector[sector].orEmpty()
             val assetRows = if (sector == null) assetsWithoutSector else emptyList()
 
-            val invested   = assetRows.sumOf { it.position.totalInvestedRemaining }
-            val current    = assetRows.sumOf { it.position.currentValue }
-            val realized   = assetRows.sumOf { it.position.realizedPnL }
+            val invested = assetRows.sumOf { it.position.totalInvestedRemaining }
+            val current = assetRows.sumOf { it.position.currentValue }
+            val realized = assetRows.sumOf { it.position.realizedPnL }
             val unrealized = assetRows.sumOf { it.position.unrealizedPnL }
             val fiInvested = fiRows.sumOf { it.position.principal }
-            val fiCurrent  = fiRows.sumOf { it.currentValue }
-            val fiProfit   = fiRows.sumOf { it.totalProfit }
+            val fiCurrent = fiRows.sumOf { it.currentValue }
+            val fiProfit = fiRows.sumOf { it.totalProfit }
 
             CategoryGroup(
                 category = null,
@@ -422,7 +432,7 @@ class PortfolioStateBuilder {
         groups.forEach { group ->
             group.rows.forEach { assetRow ->
                 val composition = compositionByAsset[assetRow.asset.id]
-                val assetValue  = assetRow.position.currentValue
+                val assetValue = assetRow.position.currentValue
                 if (composition != null && composition.fixedIncomePercent > 0) {
                     val rfPart = assetValue * (composition.fixedIncomePercent / 100.0)
                     rfValue += rfPart

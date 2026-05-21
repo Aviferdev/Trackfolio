@@ -43,9 +43,9 @@ class AssetPriceHistoryLocalDataSourceImpl(
         runCatching {
             withContext(Dispatchers.IO) {
                 queries.insert(
-                    id         = record.id,
-                    assetId    = record.assetId,
-                    price      = record.price,
+                    id = record.id,
+                    assetId = record.assetId,
+                    price = record.price,
                     recordedAt = record.recordedAt
                 )
             }

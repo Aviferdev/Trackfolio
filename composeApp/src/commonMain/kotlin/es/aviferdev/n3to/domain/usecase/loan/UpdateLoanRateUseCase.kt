@@ -24,27 +24,27 @@ class UpdateLoanRateUseCase(
 
         // Registrar el cambio de tipo
         val rateChange = LoanRateChange(
-            id            = uuid4().toString(),
-            loanId        = loanId,
-            newRate       = newRate,
-            previousRate  = loan.currentInterestRate,
+            id = uuid4().toString(),
+            loanId = loanId,
+            newRate = newRate,
+            previousRate = loan.currentInterestRate,
             effectiveDate = effectiveDate,
-            createdAt     = now
+            createdAt = now
         )
         rateChangeRepository.insert(rateChange).getOrThrow()
 
         // Recalcular cuota con nuevo tipo y cuotas restantes
         val remaining = loan.remainingInstallments
         val newPayment = FrenchAmortizationCalculator.calculateMonthlyPayment(
-            principal  = loan.outstandingPrincipal,
+            principal = loan.outstandingPrincipal,
             annualRate = newRate,
-            months     = remaining
+            months = remaining
         )
 
         loanRepository.updateRate(
-            id                   = loanId,
-            newRate              = newRate,
-            newMonthlyPayment    = newPayment,
+            id = loanId,
+            newRate = newRate,
+            newMonthlyPayment = newPayment,
             outstandingPrincipal = loan.outstandingPrincipal
         ).getOrThrow()
     }

@@ -37,5 +37,12 @@ class RentalPeriodLocalDataSourceImpl(
     }
 
     override suspend fun closePeriod(periodId: String, endDate: Long): Result<Unit> =
-        runCatching { withContext(Dispatchers.IO) { queries.closePeriod(id = periodId, endDate = endDate) } }
+        runCatching {
+            withContext(Dispatchers.IO) {
+                queries.closePeriod(
+                    id = periodId,
+                    endDate = endDate
+                )
+            }
+        }
 }

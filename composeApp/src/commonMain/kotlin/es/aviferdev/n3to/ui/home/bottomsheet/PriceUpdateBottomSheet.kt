@@ -1,8 +1,5 @@
 package es.aviferdev.n3to.ui.home.bottomsheet
 
-import androidx.compose.material3.MaterialTheme
-import es.aviferdev.n3to.ui.theme.appColors
-import es.aviferdev.n3to.platform.nowMillis
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -27,6 +24,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -46,8 +44,9 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.Asset
-
+import es.aviferdev.n3to.platform.nowMillis
 import es.aviferdev.n3to.ui.theme.N3toTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.ui.theme.formatAmount
 import es.aviferdev.n3to.ui.theme.formatDate
 import n3to.composeapp.generated.resources.Res
@@ -75,8 +74,8 @@ fun PriceUpdateBottomSheet(
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
-        sheetState       = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-        containerColor   = MaterialTheme.appColors.surface,
+        sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
+        containerColor = MaterialTheme.appColors.surface,
         dragHandle = {
             Box(
                 modifier = Modifier
@@ -97,16 +96,20 @@ fun PriceUpdateBottomSheet(
         ) {
             // Header
             Text(
-                text       = stringResource(Res.string.portfolio_update_price_title),
-                fontSize   = 18.sp,
+                text = stringResource(Res.string.portfolio_update_price_title),
+                fontSize = 18.sp,
                 fontWeight = FontWeight.SemiBold,
-                color      = MaterialTheme.appColors.textPrimary,
-                modifier   = Modifier.padding(bottom = 4.dp)
+                color = MaterialTheme.appColors.textPrimary,
+                modifier = Modifier.padding(bottom = 4.dp)
             )
             Text(
-                text     = stringResource(Res.string.portfolio_update_bulk_progress, completedCount, totalCount),
+                text = stringResource(
+                    Res.string.portfolio_update_bulk_progress,
+                    completedCount,
+                    totalCount
+                ),
                 fontSize = 13.sp,
-                color    = MaterialTheme.appColors.textSecondary
+                color = MaterialTheme.appColors.textSecondary
             )
 
             // Barra de progreso visual
@@ -138,9 +141,9 @@ fun PriceUpdateBottomSheet(
                 items(outdatedAssets, key = { it.id }) { asset ->
                     val isCompleted = asset.id in updatedAssetIds
                     AssetPriceUpdateRow(
-                        asset              = asset,
-                        isCompleted        = isCompleted,
-                        priceInput         = priceInputs[asset.id] ?: "",
+                        asset = asset,
+                        isCompleted = isCompleted,
+                        priceInput = priceInputs[asset.id] ?: "",
                         onPriceInputChange = { priceInputs[asset.id] = it },
                         onConfirm = {
                             val value = priceInputs[asset.id]
@@ -155,10 +158,14 @@ fun PriceUpdateBottomSheet(
             Spacer(Modifier.height(16.dp))
 
             TextButton(
-                onClick  = onDismiss,
+                onClick = onDismiss,
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             ) {
-                Text(stringResource(Res.string.common_close), fontSize = 14.sp, color = MaterialTheme.appColors.textSecondary)
+                Text(
+                    stringResource(Res.string.common_close),
+                    fontSize = 14.sp,
+                    color = MaterialTheme.appColors.textSecondary
+                )
             }
         }
     }
@@ -174,8 +181,8 @@ private fun AssetPriceUpdateRow(
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        shape    = RoundedCornerShape(12.dp),
-        colors   = CardDefaults.cardColors(
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(
             containerColor = if (isCompleted) MaterialTheme.appColors.surfaceElevated else MaterialTheme.appColors.surface
         ),
         border = CardDefaults.outlinedCardBorder()
@@ -194,14 +201,14 @@ private fun AssetPriceUpdateRow(
                         Icon(
                             Icons.Default.Check,
                             contentDescription = stringResource(Res.string.common_confirm),
-                            tint     = Color.White,
+                            tint = Color.White,
                             modifier = Modifier.size(20.dp)
                         )
                     } else {
                         Text(
-                            text       = asset.ticker.take(3),
-                            fontSize   = if (asset.ticker.length > 3) 8.sp else 10.sp,
-                            color      = Color.White,
+                            text = asset.ticker.take(3),
+                            fontSize = if (asset.ticker.length > 3) 8.sp else 10.sp,
+                            color = Color.White,
                             fontWeight = FontWeight.Bold
                         )
                     }
@@ -209,37 +216,40 @@ private fun AssetPriceUpdateRow(
                 Spacer(Modifier.width(10.dp))
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        text       = asset.name,
-                        fontSize   = 14.sp,
+                        text = asset.name,
+                        fontSize = 14.sp,
                         fontWeight = FontWeight.Medium,
-                        color      = MaterialTheme.appColors.textPrimary,
-                        maxLines   = 1
+                        color = MaterialTheme.appColors.textPrimary,
+                        maxLines = 1
                     )
                     Row {
                         Text(
-                            text     = asset.ticker,
+                            text = asset.ticker,
                             fontSize = 11.sp,
-                            color    = MaterialTheme.appColors.textSecondary
+                            color = MaterialTheme.appColors.textSecondary
                         )
                         if (asset.currentPrice != null) {
                             Text(
-                                text     = " · ${formatAmount(asset.currentPrice)} €",
+                                text = " · ${formatAmount(asset.currentPrice)} €",
                                 fontSize = 11.sp,
-                                color    = MaterialTheme.appColors.textSecondary
+                                color = MaterialTheme.appColors.textSecondary
                             )
                         }
                     }
                     if (asset.currentPriceUpdatedAt != null) {
                         Text(
-                            text     = stringResource(Res.string.portfolio_update_price_last_format, formatDate(asset.currentPriceUpdatedAt)),
+                            text = stringResource(
+                                Res.string.portfolio_update_price_last_format,
+                                formatDate(asset.currentPriceUpdatedAt)
+                            ),
                             fontSize = 10.sp,
-                            color    = MaterialTheme.appColors.textSecondary.copy(alpha = 0.7f)
+                            color = MaterialTheme.appColors.textSecondary.copy(alpha = 0.7f)
                         )
                     } else {
                         Text(
-                            text     = stringResource(Res.string.portfolio_asset_no_price_registered),
+                            text = stringResource(Res.string.portfolio_asset_no_price_registered),
                             fontSize = 10.sp,
-                            color    = MaterialTheme.appColors.textSecondary.copy(alpha = 0.7f)
+                            color = MaterialTheme.appColors.textSecondary.copy(alpha = 0.7f)
                         )
                     }
                 }
@@ -249,37 +259,51 @@ private fun AssetPriceUpdateRow(
                 Spacer(Modifier.height(10.dp))
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    modifier          = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth()
                 ) {
                     OutlinedTextField(
-                        value         = priceInput,
+                        value = priceInput,
                         onValueChange = { new ->
                             onPriceInputChange(new.filter { c -> c.isDigit() || c == ',' || c == '.' })
                         },
-                        placeholder     = { Text(stringResource(Res.string.portfolio_asset_new_price_placeholder), fontSize = 14.sp, color = MaterialTheme.appColors.textSecondary.copy(alpha = 0.5f)) },
-                        textStyle       = TextStyle(fontSize = 14.sp, color = MaterialTheme.appColors.textPrimary),
-                        modifier        = Modifier.weight(1f).height(48.dp),
-                        shape           = RoundedCornerShape(8.dp),
+                        placeholder = {
+                            Text(
+                                stringResource(Res.string.portfolio_asset_new_price_placeholder),
+                                fontSize = 14.sp,
+                                color = MaterialTheme.appColors.textSecondary.copy(alpha = 0.5f)
+                            )
+                        },
+                        textStyle = TextStyle(
+                            fontSize = 14.sp,
+                            color = MaterialTheme.appColors.textPrimary
+                        ),
+                        modifier = Modifier.weight(1f).height(48.dp),
+                        shape = RoundedCornerShape(8.dp),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                        colors          = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor   = MaterialTheme.appColors.primary,
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = MaterialTheme.appColors.primary,
                             unfocusedBorderColor = MaterialTheme.appColors.border
                         ),
                         singleLine = true
                     )
                     Spacer(Modifier.width(8.dp))
                     IconButton(
-                        onClick  = onConfirm,
-                        enabled  = priceInput.replace(',', '.').toDoubleOrNull()?.let { it >= 0 } == true,
-                        colors   = IconButtonDefaults.iconButtonColors(
-                            containerColor         = MaterialTheme.appColors.primary,
-                            contentColor           = Color.White,
+                        onClick = onConfirm,
+                        enabled = priceInput.replace(',', '.').toDoubleOrNull()
+                            ?.let { it >= 0 } == true,
+                        colors = IconButtonDefaults.iconButtonColors(
+                            containerColor = MaterialTheme.appColors.primary,
+                            contentColor = Color.White,
                             disabledContainerColor = MaterialTheme.appColors.primary.copy(alpha = 0.38f),
-                            disabledContentColor   = Color.White.copy(alpha = 0.5f)
+                            disabledContentColor = Color.White.copy(alpha = 0.5f)
                         ),
                         modifier = Modifier.size(48.dp)
                     ) {
-                        Icon(Icons.Default.Check, stringResource(Res.string.common_confirm), modifier = Modifier.size(20.dp))
+                        Icon(
+                            Icons.Default.Check,
+                            stringResource(Res.string.common_confirm),
+                            modifier = Modifier.size(20.dp)
+                        )
                     }
                 }
             }

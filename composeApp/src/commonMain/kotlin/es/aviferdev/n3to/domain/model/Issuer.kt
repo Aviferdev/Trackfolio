@@ -16,10 +16,10 @@ data class Issuer(
 )
 
 private fun defaultIconFor(type: IssuerType): String = when (type) {
-    IssuerType.EMPLOYER           -> "🏢"
-    IssuerType.BANK               -> "🏦"
-    IssuerType.BOND_ISSUER        -> "📜"
-    IssuerType.DIVIDEND_SOURCE    -> "📈"
+    IssuerType.EMPLOYER -> "🏢"
+    IssuerType.BANK -> "🏦"
+    IssuerType.BOND_ISSUER -> "📜"
+    IssuerType.DIVIDEND_SOURCE -> "📈"
     IssuerType.PROMOTION_PLATFORM -> "🎁"
-    IssuerType.EXEMPT_SOURCE      -> "📋"
+    IssuerType.EXEMPT_SOURCE -> "📋"
 }

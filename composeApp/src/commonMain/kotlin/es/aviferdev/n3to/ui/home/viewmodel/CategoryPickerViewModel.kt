@@ -7,7 +7,10 @@ import es.aviferdev.n3to.domain.model.IncomeType
 import es.aviferdev.n3to.domain.model.TransactionType
 import es.aviferdev.n3to.domain.usecase.category.GetCategoriesByTypeUseCase
 import es.aviferdev.n3to.ui.account.AccountSession
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 
 // ─── UI State ──────────────────────────────────────────────────────────────────
@@ -31,7 +34,11 @@ class CategoryPickerViewModel(
 ) : ViewModel() {
 
     private val initialType: TransactionType =
-        try { TransactionType.valueOf(initialTypeName) } catch (_: IllegalArgumentException) { TransactionType.EXPENSE }
+        try {
+            TransactionType.valueOf(initialTypeName)
+        } catch (_: IllegalArgumentException) {
+            TransactionType.EXPENSE
+        }
 
     private val _uiState = MutableStateFlow(CategoryPickerUiState())
     val uiState: StateFlow<CategoryPickerUiState> = _uiState.asStateFlow()
@@ -45,14 +52,14 @@ class CategoryPickerViewModel(
         if (type == TransactionType.INCOME) {
             val types = IncomeType.entries.filter {
                 it != IncomeType.DIVIDEND &&
-                it != IncomeType.BOND_DEPOSIT &&
-                it != IncomeType.BONUS_PRIZE &&
-                it != IncomeType.RENTAL_INCOME
+                        it != IncomeType.BOND_DEPOSIT &&
+                        it != IncomeType.BONUS_PRIZE &&
+                        it != IncomeType.RENTAL_INCOME
             }
             _uiState.value = CategoryPickerUiState(
-                type            = type,
-                incomeTypes     = types,
-                isLoading       = false,
+                type = type,
+                incomeTypes = types,
+                isLoading = false,
             )
         } else {
             val accountId = session.selectedAccountId.value ?: return
@@ -63,11 +70,11 @@ class CategoryPickerViewModel(
                         val freq = categories.take(4)
                         val all = categories
                         _uiState.value = CategoryPickerUiState(
-                            type                    = type,
-                            frequentCategories      = freq,
-                            allCategories           = all,
+                            type = type,
+                            frequentCategories = freq,
+                            allCategories = all,
                             filteredCategoryIndices = all.indices.toList(),
-                            isLoading               = false,
+                            isLoading = false,
                         )
                     }
             }
@@ -84,7 +91,7 @@ class CategoryPickerViewModel(
             }
         }
         _uiState.value = state.copy(
-            searchQuery           = query,
+            searchQuery = query,
             filteredCategoryIndices = filtered
         )
     }

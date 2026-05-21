@@ -8,11 +8,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.AccountBalance
 import androidx.compose.material.icons.automirrored.outlined.ShowChart
+import androidx.compose.material.icons.outlined.AccountBalance
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -21,11 +20,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import es.aviferdev.n3to.ui.theme.PrimaryDark
 import es.aviferdev.n3to.ui.theme.N3toTheme
-import es.aviferdev.n3to.ui.theme.WarnAmber
-import org.jetbrains.compose.ui.tooling.preview.Preview
 import es.aviferdev.n3to.ui.theme.appColors
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 /**
  * Icon inside a colored rounded badge.
@@ -44,7 +41,7 @@ fun IconBadge(
     modifier: Modifier = Modifier
 ) {
     Box(
-        modifier         = modifier
+        modifier = modifier
             .size(size)
             .clip(RoundedCornerShape(10.dp))
             .background(color.copy(alpha = 0.10f)),
@@ -53,8 +50,8 @@ fun IconBadge(
         Icon(
             imageVector = icon,
             contentDescription = null,
-            tint        = color,
-            modifier    = Modifier.size(size * 0.54f)
+            tint = color,
+            modifier = Modifier.size(size * 0.54f)
         )
     }
 }
@@ -68,8 +65,15 @@ private fun IconBadgePreview() {
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             IconBadge(icon = Icons.Outlined.AccountBalance, color = MaterialTheme.appColors.income)
-            IconBadge(icon = Icons.Outlined.AccountBalance, color = MaterialTheme.appColors.warnAmber)
-            IconBadge(icon = Icons.AutoMirrored.Outlined.ShowChart, color = MaterialTheme.appColors.primary, size = 48.dp)
+            IconBadge(
+                icon = Icons.Outlined.AccountBalance,
+                color = MaterialTheme.appColors.warnAmber
+            )
+            IconBadge(
+                icon = Icons.AutoMirrored.Outlined.ShowChart,
+                color = MaterialTheme.appColors.primary,
+                size = 48.dp
+            )
         }
     }
 }

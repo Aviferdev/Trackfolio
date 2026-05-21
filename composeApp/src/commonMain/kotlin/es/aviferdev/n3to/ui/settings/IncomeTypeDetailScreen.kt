@@ -1,31 +1,46 @@
 package es.aviferdev.n3to.ui.settings
 
-import androidx.compose.material3.MaterialTheme
-import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import es.aviferdev.n3to.ui.settings.components.*
 import es.aviferdev.n3to.domain.model.IncomeType
 import es.aviferdev.n3to.domain.model.Issuer
 import es.aviferdev.n3to.domain.model.IssuerType
 import es.aviferdev.n3to.ui.common.SectionHeader
-import es.aviferdev.n3to.ui.common.navigation.TopBarApp
-import es.aviferdev.n3to.ui.theme.*
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import es.aviferdev.n3to.ui.common.topbar.TopBarWithActionsApp
+import es.aviferdev.n3to.ui.settings.components.SettingsGroupCard
+import es.aviferdev.n3to.ui.theme.N3toTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.common_accept
 import n3to.composeapp.generated.resources.common_archive
@@ -36,6 +51,7 @@ import n3to.composeapp.generated.resources.common_error
 import n3to.composeapp.generated.resources.error_issuer_already_exists
 import n3to.composeapp.generated.resources.income_type_archive_title
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
 /**
@@ -89,7 +105,12 @@ fun IncomeTypeDetailScreen(
             containerColor = MaterialTheme.appColors.navySurface,
             icon = { Text(pending.icon, fontSize = 28.sp) },
             title = {
-                Text(stringResource(Res.string.income_type_archive_title), fontSize = 17.sp, fontWeight = FontWeight.SemiBold, color = MaterialTheme.appColors.textPrimary)
+                Text(
+                    stringResource(Res.string.income_type_archive_title),
+                    fontSize = 17.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.appColors.textPrimary
+                )
             },
             text = {
                 Text(
@@ -99,12 +120,20 @@ fun IncomeTypeDetailScreen(
             },
             confirmButton = {
                 TextButton(onClick = { issuerViewModel.confirmDelete() }) {
-                    Text(stringResource(Res.string.common_archive), color = MaterialTheme.appColors.expense, fontWeight = FontWeight.Medium)
+                    Text(
+                        stringResource(Res.string.common_archive),
+                        color = MaterialTheme.appColors.expense,
+                        fontWeight = FontWeight.Medium
+                    )
                 }
             },
             dismissButton = {
                 TextButton(onClick = { issuerViewModel.cancelDelete() }) {
-                    Text(stringResource(Res.string.common_cancel), color = MaterialTheme.appColors.cyanAccent, fontWeight = FontWeight.Medium)
+                    Text(
+                        stringResource(Res.string.common_cancel),
+                        color = MaterialTheme.appColors.cyanAccent,
+                        fontWeight = FontWeight.Medium
+                    )
                 }
             },
             shape = RoundedCornerShape(16.dp)
@@ -114,16 +143,28 @@ fun IncomeTypeDetailScreen(
     issuerState.error?.let {
         val msg = when (it) {
             is es.aviferdev.n3to.ui.settings.IssuerError.AlreadyExists -> stringResource(Res.string.error_issuer_already_exists)
-            is es.aviferdev.n3to.ui.settings.IssuerError.Unknown -> it.message ?: stringResource(Res.string.common_error)
+            is es.aviferdev.n3to.ui.settings.IssuerError.Unknown -> it.message
+                ?: stringResource(Res.string.common_error)
         }
         AlertDialog(
             onDismissRequest = { issuerViewModel.clearError() },
             containerColor = MaterialTheme.appColors.navySurface,
-            title = { Text(stringResource(Res.string.common_error), fontSize = 17.sp, fontWeight = FontWeight.SemiBold, color = MaterialTheme.appColors.textPrimary) },
+            title = {
+                Text(
+                    stringResource(Res.string.common_error),
+                    fontSize = 17.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.appColors.textPrimary
+                )
+            },
             text = { Text(msg, fontSize = 14.sp, color = MaterialTheme.appColors.textSecondary) },
             confirmButton = {
                 TextButton(onClick = { issuerViewModel.clearError() }) {
-                    Text(stringResource(Res.string.common_accept), color = MaterialTheme.appColors.cyanAccent, fontWeight = FontWeight.Medium)
+                    Text(
+                        stringResource(Res.string.common_accept),
+                        color = MaterialTheme.appColors.cyanAccent,
+                        fontWeight = FontWeight.Medium
+                    )
                 }
             },
             shape = RoundedCornerShape(16.dp)
@@ -147,7 +188,7 @@ fun IncomeTypeDetailContent(
     Column(
         modifier = modifier.fillMaxSize().background(MaterialTheme.appColors.navyDeep)
     ) {
-        TopBarApp(
+        TopBarWithActionsApp(
             title = title,
             navigateBack = onBack,
             containerColor = MaterialTheme.appColors.navySurface,
@@ -197,13 +238,23 @@ fun IncomeTypeDetailContent(
                                     onClick = { onEdit(issuer) },
                                     modifier = Modifier.size(28.dp)
                                 ) {
-                                    Icon(Icons.Default.Edit, stringResource(Res.string.common_edit), modifier = Modifier.size(14.dp), tint = MaterialTheme.appColors.textSecondary)
+                                    Icon(
+                                        Icons.Default.Edit,
+                                        stringResource(Res.string.common_edit),
+                                        modifier = Modifier.size(14.dp),
+                                        tint = MaterialTheme.appColors.textSecondary
+                                    )
                                 }
                                 IconButton(
                                     onClick = { onDelete(issuer) },
                                     modifier = Modifier.size(28.dp)
                                 ) {
-                                    Icon(Icons.Default.Delete, stringResource(Res.string.common_delete), modifier = Modifier.size(14.dp), tint = MaterialTheme.appColors.expense)
+                                    Icon(
+                                        Icons.Default.Delete,
+                                        stringResource(Res.string.common_delete),
+                                        modifier = Modifier.size(14.dp),
+                                        tint = MaterialTheme.appColors.expense
+                                    )
                                 }
                             }
                             if (index < issuers.lastIndex) {
@@ -230,8 +281,24 @@ fun IncomeTypeDetailContentPreview() {
     N3toTheme {
         IncomeTypeDetailContent(
             issuers = listOf(
-                Issuer(id = "1", accountId = "a1", name = "Google", type = IssuerType.EMPLOYER, icon = "🏢", archived = false, createdAt = 0L),
-                Issuer(id = "2", accountId = "a1", name = "Meta", type = IssuerType.EMPLOYER, icon = "🏢", archived = false, createdAt = 0L)
+                Issuer(
+                    id = "1",
+                    accountId = "a1",
+                    name = "Google",
+                    type = IssuerType.EMPLOYER,
+                    icon = "🏢",
+                    archived = false,
+                    createdAt = 0L
+                ),
+                Issuer(
+                    id = "2",
+                    accountId = "a1",
+                    name = "Meta",
+                    type = IssuerType.EMPLOYER,
+                    icon = "🏢",
+                    archived = false,
+                    createdAt = 0L
+                )
             ),
             title = "💼 Salario",
             sectionLabel = "EMPRESA",

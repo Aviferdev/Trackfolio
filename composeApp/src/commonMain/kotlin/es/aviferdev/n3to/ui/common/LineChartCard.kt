@@ -1,16 +1,21 @@
 package es.aviferdev.n3to.ui.common
 
-import androidx.compose.material3.MaterialTheme
-import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ShowChart
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -29,14 +34,15 @@ import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import es.aviferdev.n3to.ui.theme.*
+import es.aviferdev.n3to.ui.theme.appColors
+import es.aviferdev.n3to.ui.theme.formatAxisLabel
+import kotlinx.datetime.Instant
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.common_insufficient_data
 import n3to.composeapp.generated.resources.portfolio_update_prices_hint
 import org.jetbrains.compose.resources.stringResource
-import kotlinx.datetime.Instant
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
 import kotlin.math.ceil
 import kotlin.math.floor
 import kotlin.math.log10
@@ -290,7 +296,12 @@ private fun EmptyLineChartState() {
         contentAlignment = Alignment.Center
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Icon(Icons.AutoMirrored.Outlined.ShowChart, contentDescription = null, modifier = Modifier.size(32.dp), tint = MaterialTheme.appColors.primary)
+            Icon(
+                Icons.AutoMirrored.Outlined.ShowChart,
+                contentDescription = null,
+                modifier = Modifier.size(32.dp),
+                tint = MaterialTheme.appColors.primary
+            )
             Spacer(Modifier.height(8.dp))
             Text(
                 text = stringResource(Res.string.common_insufficient_data),
@@ -456,9 +467,11 @@ private fun selectNormalLabels(
     val labels = mutableListOf<XAxisLabel>()
 
     // Primer punto
-    labels.add(allLabels.first().copy(
-        yearSuffix = if (showYearSuffix) allLabels.first().yearSuffix else null
-    ))
+    labels.add(
+        allLabels.first().copy(
+            yearSuffix = if (showYearSuffix) allLabels.first().yearSuffix else null
+        )
+    )
 
     // Puntos intermedios: meses 1, 4, 7, 10
     points.forEachIndexed { idx, (epoch, _) ->
@@ -486,9 +499,11 @@ private fun selectNormalLabels(
 
     // Último punto
     if (labels.lastOrNull()?.index != points.lastIndex) {
-        labels.add(allLabels.last().copy(
-            yearSuffix = if (showYearSuffix) allLabels.last().yearSuffix else null
-        ))
+        labels.add(
+            allLabels.last().copy(
+                yearSuffix = if (showYearSuffix) allLabels.last().yearSuffix else null
+            )
+        )
     }
 
     return labels

@@ -59,7 +59,9 @@ fun ClosedPositionsHeader(
         }
         Icon(
             if (expanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
-            contentDescription = if (expanded) stringResource(Res.string.portfolio_category_group_collapse) else stringResource(Res.string.portfolio_category_group_expand),
+            contentDescription = if (expanded) stringResource(Res.string.portfolio_category_group_collapse) else stringResource(
+                Res.string.portfolio_category_group_expand
+            ),
             tint = MaterialTheme.appColors.textTertiary,
             modifier = Modifier.size(18.dp)
         )

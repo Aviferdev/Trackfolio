@@ -1,7 +1,5 @@
 package es.aviferdev.n3to.ui.annual
 
-import androidx.compose.material3.MaterialTheme
-import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -13,6 +11,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.BarChart
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -22,13 +21,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import es.aviferdev.n3to.ui.annual.components.*
+import es.aviferdev.n3to.ui.annual.components.AnnualTabs
+import es.aviferdev.n3to.ui.annual.components.GastosTab
+import es.aviferdev.n3to.ui.annual.components.IngresosTab
+import es.aviferdev.n3to.ui.annual.components.ResumenTab
 import es.aviferdev.n3to.ui.common.component.EmptyStateView
 import es.aviferdev.n3to.ui.common.navigation.TimeStepperHeader
-import es.aviferdev.n3to.ui.common.navigation.TopBarApp
-
+import es.aviferdev.n3to.ui.common.topbar.TopBarWithActionsApp
 import es.aviferdev.n3to.ui.theme.LocalBalanceHidden
-import es.aviferdev.n3to.ui.theme.PrimaryDark
+import es.aviferdev.n3to.ui.theme.appColors
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.annual_no_data_subtitle
 import n3to.composeapp.generated.resources.annual_no_data_title
@@ -54,7 +55,10 @@ fun AnnualSummaryScreen(
             .fillMaxSize()
             .background(MaterialTheme.appColors.background)
     ) {
-        TopBarApp(title = stringResource(Res.string.annual_title), navigateBack = navigateBack)
+        TopBarWithActionsApp(
+            title = stringResource(Res.string.annual_title),
+            navigateBack = navigateBack
+        )
 
         TimeStepperHeader(
             currentValue = uiState.year,
@@ -78,8 +82,8 @@ fun AnnualSummaryScreen(
                 AnnualTab.RESUMEN -> {
                     if (uiState.summary != null) {
                         ResumenTab(
-                            summary        = uiState.summary!!,
-                            breakdown      = uiState.monthlyBreakdown,
+                            summary = uiState.summary!!,
+                            breakdown = uiState.monthlyBreakdown,
                             balancesHidden = balancesHidden,
                             goalProgress = uiState.goalProgress
                         )
@@ -91,22 +95,25 @@ fun AnnualSummaryScreen(
                         )
                     }
                 }
+
                 AnnualTab.GASTOS -> {
                     GastosTab(
-                        breakdown      = uiState.monthlyBreakdown,
-                        comparisons    = uiState.categoryComparisons,
-                        year           = uiState.year,
+                        breakdown = uiState.monthlyBreakdown,
+                        comparisons = uiState.categoryComparisons,
+                        year = uiState.year,
                         balancesHidden = balancesHidden
                     )
                 }
+
                 AnnualTab.INGRESOS -> {
                     IngresosTab(
-                        breakdown      = uiState.monthlyBreakdown,
-                        comparisons    = uiState.incomeComparisons,
-                        year           = uiState.year,
+                        breakdown = uiState.monthlyBreakdown,
+                        comparisons = uiState.incomeComparisons,
+                        year = uiState.year,
                         balancesHidden = balancesHidden
                     )
                 }
+
                 AnnualTab.INVERSIONES -> {
                     Column(
                         modifier = Modifier
@@ -117,8 +124,8 @@ fun AnnualSummaryScreen(
                         verticalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
                         InvestmentBarChart(
-                            investments    = uiState.monthlyInvestments,
-                            year           = uiState.year,
+                            investments = uiState.monthlyInvestments,
+                            year = uiState.year,
                             balancesHidden = balancesHidden
                         )
                     }

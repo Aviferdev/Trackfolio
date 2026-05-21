@@ -28,13 +28,14 @@ class UpdateAssetCurrentPriceUseCase(
         if (updateResult.isSuccess) {
             // Solo registrar histórico de precios para activos de inversión (no Renta Fija)
             // Se verifica usando el categoryId proporcionado o consultando el repositorio
-            val shouldRecordHistory = assetCategoryId?.let { !AssetCategoryType.isFixedIncome(it) } ?: true
+            val shouldRecordHistory =
+                assetCategoryId?.let { !AssetCategoryType.isFixedIncome(it) } ?: true
             if (shouldRecordHistory) {
                 priceHistoryRepository.insert(
                     AssetPriceHistory(
-                        id         = uuid4().toString(),
-                        assetId    = assetId,
-                        price      = price,
+                        id = uuid4().toString(),
+                        assetId = assetId,
+                        price = price,
                         recordedAt = updatedAt
                     )
                 )

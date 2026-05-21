@@ -1,7 +1,5 @@
 package es.aviferdev.n3to.ui.settings.emergencyfund
 
-import androidx.compose.material3.MaterialTheme
-import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.slideInVertically
@@ -11,6 +9,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -20,7 +19,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -36,6 +34,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -60,18 +59,15 @@ import es.aviferdev.n3to.domain.model.EmergencyFundMethod
 import es.aviferdev.n3to.ui.common.help.HelpContent
 import es.aviferdev.n3to.ui.common.help.HelpKeys
 import es.aviferdev.n3to.ui.common.help.HelpTooltipIcon
-import es.aviferdev.n3to.ui.common.navigation.TopBarApp
-
-import es.aviferdev.n3to.ui.theme.ExpenseRed
-
+import es.aviferdev.n3to.ui.common.topbar.TopBarWithActionsApp
+import es.aviferdev.n3to.ui.theme.appColors
 import kotlinx.coroutines.delay
-import org.jetbrains.compose.resources.stringResource
-import org.koin.compose.viewmodel.koinViewModel
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.common_save
 import n3to.composeapp.generated.resources.ef_average_expense_label
 import n3to.composeapp.generated.resources.ef_estimated_expense_label
 import n3to.composeapp.generated.resources.ef_exclude_categories_hint
+import n3to.composeapp.generated.resources.ef_expense_placeholder
 import n3to.composeapp.generated.resources.ef_months_hint
 import n3to.composeapp.generated.resources.ef_months_placeholder
 import n3to.composeapp.generated.resources.ef_no_categories
@@ -82,8 +78,9 @@ import n3to.composeapp.generated.resources.ef_recommendation_text
 import n3to.composeapp.generated.resources.ef_recommendation_title
 import n3to.composeapp.generated.resources.ef_what_is_text
 import n3to.composeapp.generated.resources.ef_what_is_title
-import n3to.composeapp.generated.resources.ef_expense_placeholder
 import n3to.composeapp.generated.resources.home_section_emergency_fund
+import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun EmergencyFundSettingsScreen(
@@ -103,7 +100,7 @@ fun EmergencyFundSettingsScreen(
     }
 
     Column(modifier = Modifier.fillMaxSize().background(MaterialTheme.appColors.navyDeep)) {
-        TopBarApp(
+        TopBarWithActionsApp(
             title = stringResource(Res.string.home_section_emergency_fund),
             navigateBack = navigateBack,
             containerColor = MaterialTheme.appColors.navySurface,
@@ -119,7 +116,10 @@ fun EmergencyFundSettingsScreen(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
-                    CircularProgressIndicator(color = MaterialTheme.appColors.cyanAccent, strokeWidth = 2.dp)
+                    CircularProgressIndicator(
+                        color = MaterialTheme.appColors.cyanAccent,
+                        strokeWidth = 2.dp
+                    )
                 }
             } else {
                 LazyColumn(
@@ -154,7 +154,12 @@ fun EmergencyFundSettingsScreen(
                             OutlinedTextField(
                                 value = state.monthsText,
                                 onValueChange = viewModel::onMonthsChange,
-                                placeholder = { Text(stringResource(Res.string.ef_months_placeholder), color = MaterialTheme.appColors.textTertiary) },
+                                placeholder = {
+                                    Text(
+                                        stringResource(Res.string.ef_months_placeholder),
+                                        color = MaterialTheme.appColors.textTertiary
+                                    )
+                                },
                                 singleLine = true,
                                 colors = OutlinedTextFieldDefaults.colors(
                                     focusedBorderColor = MaterialTheme.appColors.cyanAccent,
@@ -182,7 +187,7 @@ fun EmergencyFundSettingsScreen(
                                 SectionLabel("Método de cálculo")
                                 HelpTooltipIcon(
                                     title = HelpContent.texts[HelpKeys.EMERGENCY_FUND]?.title ?: "",
-                                    body  = HelpContent.texts[HelpKeys.EMERGENCY_FUND]?.body  ?: ""
+                                    body = HelpContent.texts[HelpKeys.EMERGENCY_FUND]?.body ?: ""
                                 )
                             }
                             Spacer(Modifier.height(10.dp))
@@ -212,7 +217,12 @@ fun EmergencyFundSettingsScreen(
                                 OutlinedTextField(
                                     value = state.manualExpenseText,
                                     onValueChange = viewModel::onManualExpenseChange,
-                                    placeholder = { Text(stringResource(Res.string.ef_expense_placeholder), color = MaterialTheme.appColors.textTertiary) },
+                                    placeholder = {
+                                        Text(
+                                            stringResource(Res.string.ef_expense_placeholder),
+                                            color = MaterialTheme.appColors.textTertiary
+                                        )
+                                    },
                                     singleLine = true,
                                     colors = OutlinedTextFieldDefaults.colors(
                                         focusedBorderColor = MaterialTheme.appColors.cyanAccent,
@@ -257,14 +267,22 @@ fun EmergencyFundSettingsScreen(
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .clip(RoundedCornerShape(11.dp))
-                                            .border(0.5.dp, MaterialTheme.appColors.navyBorder, RoundedCornerShape(11.dp))
+                                            .border(
+                                                0.5.dp,
+                                                MaterialTheme.appColors.navyBorder,
+                                                RoundedCornerShape(11.dp)
+                                            )
                                             .background(MaterialTheme.appColors.navyDeep)
                                     ) {
                                         state.expenseCategories.forEachIndexed { index, category ->
                                             CategoryExclusionRow(
                                                 name = category.name,
                                                 isExcluded = category.id in state.excludedCategoryIds,
-                                                onToggle = { viewModel.toggleCategoryExclusion(category.id) }
+                                                onToggle = {
+                                                    viewModel.toggleCategoryExclusion(
+                                                        category.id
+                                                    )
+                                                }
                                             )
                                             if (index < state.expenseCategories.lastIndex) {
                                                 HorizontalDivider(
@@ -286,7 +304,9 @@ fun EmergencyFundSettingsScreen(
                             enabled = state.isValid && !state.isSaving,
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = MaterialTheme.appColors.cyanAccent,
-                                disabledContainerColor = MaterialTheme.appColors.cyanAccent.copy(alpha = 0.3f),
+                                disabledContainerColor = MaterialTheme.appColors.cyanAccent.copy(
+                                    alpha = 0.3f
+                                ),
                                 contentColor = MaterialTheme.appColors.navyDeep,
                                 disabledContentColor = MaterialTheme.appColors.navyDeep.copy(alpha = 0.5f)
                             ),
@@ -323,7 +343,11 @@ fun EmergencyFundSettingsScreen(
                                 onClick = viewModel::delete,
                                 colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.appColors.expense),
                                 border = ButtonDefaults.outlinedButtonBorder(enabled = true).copy(
-                                    brush = androidx.compose.ui.graphics.SolidColor(MaterialTheme.appColors.expense.copy(alpha = 0.5f))
+                                    brush = androidx.compose.ui.graphics.SolidColor(
+                                        MaterialTheme.appColors.expense.copy(
+                                            alpha = 0.5f
+                                        )
+                                    )
                                 ),
                                 shape = RoundedCornerShape(14.dp),
                                 modifier = Modifier.fillMaxWidth().height(50.dp)
@@ -371,11 +395,18 @@ private fun EmergencyFundInfoCard() {
             .fillMaxWidth()
             .clip(RoundedCornerShape(14.dp))
             .background(MaterialTheme.appColors.cyanAccent.copy(alpha = 0.06f))
-            .border(0.5.dp, MaterialTheme.appColors.cyanAccent.copy(alpha = 0.25f), RoundedCornerShape(14.dp))
+            .border(
+                0.5.dp,
+                MaterialTheme.appColors.cyanAccent.copy(alpha = 0.25f),
+                RoundedCornerShape(14.dp)
+            )
             .padding(horizontal = 14.dp, vertical = 12.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
             Icon(
                 imageVector = Icons.Outlined.Info,
                 contentDescription = null,
@@ -396,7 +427,10 @@ private fun EmergencyFundInfoCard() {
             color = MaterialTheme.appColors.textSecondary,
             lineHeight = 17.sp
         )
-        HorizontalDivider(color = MaterialTheme.appColors.cyanAccent.copy(alpha = 0.15f), thickness = 0.5.dp)
+        HorizontalDivider(
+            color = MaterialTheme.appColors.cyanAccent.copy(alpha = 0.15f),
+            thickness = 0.5.dp
+        )
         Text(
             text = stringResource(Res.string.ef_recommendation_title),
             fontSize = 10.sp,
@@ -421,7 +455,10 @@ private fun EmergencyFundHeroCard() {
             .clip(RoundedCornerShape(20.dp))
             .background(
                 Brush.linearGradient(
-                    listOf(MaterialTheme.appColors.navySurface, MaterialTheme.appColors.navySurfaceLight)
+                    listOf(
+                        MaterialTheme.appColors.navySurface,
+                        MaterialTheme.appColors.navySurfaceLight
+                    )
                 )
             )
             .border(0.5.dp, MaterialTheme.appColors.navyBorder, RoundedCornerShape(20.dp))
@@ -434,7 +471,10 @@ private fun EmergencyFundHeroCard() {
                 .padding(top = 8.dp, end = 8.dp)
                 .background(
                     Brush.radialGradient(
-                        listOf(MaterialTheme.appColors.cyanGlow.copy(alpha = 0.14f), Color.Transparent)
+                        listOf(
+                            MaterialTheme.appColors.cyanGlow.copy(alpha = 0.14f),
+                            Color.Transparent
+                        )
                     ),
                     shape = CircleShape
                 )
@@ -554,7 +594,9 @@ private fun CategoryExclusionRow(
         Icon(
             imageVector = if (isExcluded) Icons.Outlined.RemoveCircle else Icons.Outlined.CheckCircle,
             contentDescription = null,
-            tint = if (isExcluded) MaterialTheme.appColors.expense.copy(alpha = 0.8f) else MaterialTheme.appColors.cyanAccent.copy(alpha = 0.7f),
+            tint = if (isExcluded) MaterialTheme.appColors.expense.copy(alpha = 0.8f) else MaterialTheme.appColors.cyanAccent.copy(
+                alpha = 0.7f
+            ),
             modifier = Modifier.size(18.dp)
         )
 
@@ -571,7 +613,9 @@ private fun CategoryExclusionRow(
             text = if (isExcluded) "Excluida" else "Incluida",
             fontSize = 11.sp,
             fontWeight = FontWeight.Medium,
-            color = if (isExcluded) MaterialTheme.appColors.expense.copy(alpha = 0.8f) else MaterialTheme.appColors.cyanAccent.copy(alpha = 0.7f)
+            color = if (isExcluded) MaterialTheme.appColors.expense.copy(alpha = 0.8f) else MaterialTheme.appColors.cyanAccent.copy(
+                alpha = 0.7f
+            )
         )
     }
 }

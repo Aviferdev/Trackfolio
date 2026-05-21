@@ -57,11 +57,46 @@ fun SlideMovimientos(modifier: Modifier = Modifier) {
     )
 
     val transactions = listOf(
-        TxRow("🏠", "Alquiler",   "Hogar",              "−850,00 €",  MaterialTheme.appColors.expense,  CategoryOrange.copy(alpha = 0.15f)),
-        TxRow("💼", "Nómina",    "Trabajo · 15% IRPF", "+2.800,00 €", MaterialTheme.appColors.income, MaterialTheme.appColors.income.copy(alpha = 0.15f)),
-        TxRow("🚗", "Gasolina",  "Transporte",          "−65,40 €",   MaterialTheme.appColors.expense,  SecondaryTeal.copy(alpha = 0.15f)),
-        TxRow("🛒", "Mercadona", "Alimentación",        "−112,30 €",  MaterialTheme.appColors.expense,  MaterialTheme.appColors.income.copy(alpha = 0.15f)),
-        TxRow("🎬", "Netflix",   "Ocio",                "−15,99 €",   MaterialTheme.appColors.expense,  MaterialTheme.appColors.warnAmber.copy(alpha = 0.15f))
+        TxRow(
+            "🏠",
+            "Alquiler",
+            "Hogar",
+            "−850,00 €",
+            MaterialTheme.appColors.expense,
+            CategoryOrange.copy(alpha = 0.15f)
+        ),
+        TxRow(
+            "💼",
+            "Nómina",
+            "Trabajo · 15% IRPF",
+            "+2.800,00 €",
+            MaterialTheme.appColors.income,
+            MaterialTheme.appColors.income.copy(alpha = 0.15f)
+        ),
+        TxRow(
+            "🚗",
+            "Gasolina",
+            "Transporte",
+            "−65,40 €",
+            MaterialTheme.appColors.expense,
+            SecondaryTeal.copy(alpha = 0.15f)
+        ),
+        TxRow(
+            "🛒",
+            "Mercadona",
+            "Alimentación",
+            "−112,30 €",
+            MaterialTheme.appColors.expense,
+            MaterialTheme.appColors.income.copy(alpha = 0.15f)
+        ),
+        TxRow(
+            "🎬",
+            "Netflix",
+            "Ocio",
+            "−15,99 €",
+            MaterialTheme.appColors.expense,
+            MaterialTheme.appColors.warnAmber.copy(alpha = 0.15f)
+        )
     )
 
     val rowVisible = remember {
@@ -92,7 +127,10 @@ fun SlideMovimientos(modifier: Modifier = Modifier) {
                     .fillMaxWidth()
                     .graphicsLayer { alpha = rowAlpha }
                     .padding(bottom = 8.dp)
-                    .background(color = MaterialTheme.appColors.navySurface, shape = RoundedCornerShape(13.dp))
+                    .background(
+                        color = MaterialTheme.appColors.navySurface,
+                        shape = RoundedCornerShape(13.dp)
+                    )
                     .border(1.dp, MaterialTheme.appColors.navyBorder, RoundedCornerShape(13.dp))
                     .padding(horizontal = 14.dp, vertical = 11.dp)
             ) {

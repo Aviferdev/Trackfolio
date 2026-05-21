@@ -50,7 +50,8 @@ class FixedIncomeDetailViewModel(
 
     private val _showRegisterCouponSheet = MutableStateFlow(false)
     private val _showCloseSheet = MutableStateFlow(false)
-    private val _preselectedCloseType = MutableStateFlow<es.aviferdev.n3to.domain.model.FixedIncomeCloseType?>(null)
+    private val _preselectedCloseType =
+        MutableStateFlow<es.aviferdev.n3to.domain.model.FixedIncomeCloseType?>(null)
     private val _showEditSheet = MutableStateFlow(false)
     private val _showDeleteEventDialog = MutableStateFlow(false)
     private val _selectedEventForDelete = MutableStateFlow<FixedIncomeEvent?>(null)
@@ -68,6 +69,7 @@ class FixedIncomeDetailViewModel(
         _error
     ) { values ->
         val row = values[0] as FixedIncomeRow?
+
         @Suppress("UNCHECKED_CAST")
         val events = values[1] as List<FixedIncomeEvent>
         val showCoupon = values[2] as Boolean
@@ -105,10 +107,18 @@ class FixedIncomeDetailViewModel(
         initialValue = FixedIncomeDetailUiState(isLoading = true)
     )
 
-    fun showRegisterCouponSheet() { _showRegisterCouponSheet.value = true }
-    fun hideRegisterCouponSheet() { _showRegisterCouponSheet.value = false }
+    fun showRegisterCouponSheet() {
+        _showRegisterCouponSheet.value = true
+    }
 
-    fun showCloseSheet() { _showCloseSheet.value = true }
+    fun hideRegisterCouponSheet() {
+        _showRegisterCouponSheet.value = false
+    }
+
+    fun showCloseSheet() {
+        _showCloseSheet.value = true
+    }
+
     fun hideCloseSheet() {
         _showCloseSheet.value = false
         _preselectedCloseType.value = null
@@ -123,6 +133,7 @@ class FixedIncomeDetailViewModel(
         _selectedEventForDelete.value = event
         _showDeleteEventDialog.value = true
     }
+
     fun hideDeleteEventDialog() {
         _showDeleteEventDialog.value = false
         _selectedEventForDelete.value = null
@@ -145,7 +156,11 @@ class FixedIncomeDetailViewModel(
         }
     }
 
-    fun closePosition(closeType: es.aviferdev.n3to.domain.model.FixedIncomeCloseType, closeDate: Long, settlementEvent: FixedIncomeEvent) {
+    fun closePosition(
+        closeType: es.aviferdev.n3to.domain.model.FixedIncomeCloseType,
+        closeDate: Long,
+        settlementEvent: FixedIncomeEvent
+    ) {
         viewModelScope.launch {
             val position = uiState.value.row?.position
             if (position == null) {
@@ -174,8 +189,13 @@ class FixedIncomeDetailViewModel(
         }
     }
 
-    fun showEditSheet() { _showEditSheet.value = true }
-    fun hideEditSheet() { _showEditSheet.value = false }
+    fun showEditSheet() {
+        _showEditSheet.value = true
+    }
+
+    fun hideEditSheet() {
+        _showEditSheet.value = false
+    }
 
     fun savePosition(updatedPosition: FixedIncomePosition) {
         viewModelScope.launch {
@@ -194,5 +214,7 @@ class FixedIncomeDetailViewModel(
         }
     }
 
-    fun clearError() { _error.value = null }
+    fun clearError() {
+        _error.value = null
+    }
 }

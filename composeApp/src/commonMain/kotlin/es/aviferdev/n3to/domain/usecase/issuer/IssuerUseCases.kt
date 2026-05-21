@@ -21,7 +21,12 @@ class SaveIssuerUseCase(private val repository: IssuerRepository) {
 }
 
 class RenameIssuerUseCase(private val repository: IssuerRepository) {
-    suspend operator fun invoke(id: String, name: String, icon: String, type: IssuerType): Result<Unit> =
+    suspend operator fun invoke(
+        id: String,
+        name: String,
+        icon: String,
+        type: IssuerType
+    ): Result<Unit> =
         repository.updateName(id, name, icon, type)
 }
 
@@ -43,12 +48,12 @@ class CreateIssuerUseCase(private val repository: IssuerRepository) {
             else -> "bi"
         }
         val issuer = Issuer(
-            id        = "${prefix}_$createdAt",
+            id = "${prefix}_$createdAt",
             accountId = accountId,
-            name      = name,
-            type      = type,
-            icon      = icon,
-            archived  = false,
+            name = name,
+            type = type,
+            icon = icon,
+            archived = false,
             createdAt = createdAt
         )
         return repository.save(issuer)

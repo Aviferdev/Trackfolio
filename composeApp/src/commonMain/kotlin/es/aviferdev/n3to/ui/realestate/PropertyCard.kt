@@ -46,32 +46,69 @@ fun PropertyCard(
         elevation = CardDefaults.cardElevation(0.dp)
     ) {
         Column(modifier = Modifier.fillMaxWidth().padding(14.dp)) {
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+            Row(
+                Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(property.propertyType.emoji, fontSize = 20.sp)
                     Spacer(Modifier.width(8.dp))
                     Column {
-                        Text(property.name, fontWeight = FontWeight.SemiBold, fontSize = 13.sp, color = MaterialTheme.appColors.textPrimary, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                        Text(property.address, fontSize = 11.sp, color = MaterialTheme.appColors.textTertiary, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                        Text(
+                            property.name,
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 13.sp,
+                            color = MaterialTheme.appColors.textPrimary,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                        Text(
+                            property.address,
+                            fontSize = 11.sp,
+                            color = MaterialTheme.appColors.textTertiary,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
                     }
                 }
                 Column(horizontalAlignment = Alignment.End) {
                     if (property.isSold) {
-                        Text(formatAmountEuro(property.saleValue ?: 0.0), fontWeight = FontWeight.Bold, fontSize = 13.sp, color = MaterialTheme.appColors.income)
+                        Text(
+                            formatAmountEuro(property.saleValue ?: 0.0),
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 13.sp,
+                            color = MaterialTheme.appColors.income
+                        )
                         DeltaIndicator(
                             value = formatPercentSigned(property.realizedGainPercent ?: 0.0),
                             isPositive = (property.realizedGain ?: 0.0) >= 0
                         )
                     } else {
-                        Text(formatAmountEuro(property.effectiveValue), fontWeight = FontWeight.Bold, fontSize = 13.sp, color = MaterialTheme.appColors.income)
-                        DeltaIndicator(value = formatPercentSigned(property.unrealizedGainPercent), isPositive = property.unrealizedGain >= 0)
+                        Text(
+                            formatAmountEuro(property.effectiveValue),
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 13.sp,
+                            color = MaterialTheme.appColors.income
+                        )
+                        DeltaIndicator(
+                            value = formatPercentSigned(property.unrealizedGainPercent),
+                            isPositive = property.unrealizedGain >= 0
+                        )
                     }
                 }
             }
             Spacer(Modifier.height(8.dp))
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(6.dp), verticalAlignment = Alignment.CenterVertically) {
+            Row(
+                Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(6.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 if (property.isSold) {
-                    StatusTag(label = stringResource(Res.string.realestate_sold_with_emoji), color = MaterialTheme.appColors.income)
+                    StatusTag(
+                        label = stringResource(Res.string.realestate_sold_with_emoji),
+                        color = MaterialTheme.appColors.income
+                    )
                 } else {
                     StatusTag(
                         label = when (property.rentalStatus) {
@@ -85,17 +122,37 @@ fun PropertyCard(
                     )
                 }
                 if (showMortgageReminder) {
-                    StatusTag(label = stringResource(Res.string.realestate_no_mortgage_short), color = MaterialTheme.appColors.warnAmber)
+                    StatusTag(
+                        label = stringResource(Res.string.realestate_no_mortgage_short),
+                        color = MaterialTheme.appColors.warnAmber
+                    )
                 }
             }
             if (linkedLoan != null) {
                 Spacer(Modifier.height(8.dp))
-                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                    Text(stringResource(Res.string.realestate_mortgage_amount_format, formatAmountEuro(linkedLoan.outstandingPrincipal)), fontSize = 10.sp, color = MaterialTheme.appColors.textTertiary)
-                    Text("${linkedLoan.paidInstallments}/${linkedLoan.totalInstallments}", fontSize = 10.sp, color = MaterialTheme.appColors.textTertiary)
+                Row(
+                    Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        stringResource(
+                            Res.string.realestate_mortgage_amount_format,
+                            formatAmountEuro(linkedLoan.outstandingPrincipal)
+                        ), fontSize = 10.sp, color = MaterialTheme.appColors.textTertiary
+                    )
+                    Text(
+                        "${linkedLoan.paidInstallments}/${linkedLoan.totalInstallments}",
+                        fontSize = 10.sp,
+                        color = MaterialTheme.appColors.textTertiary
+                    )
                 }
                 Spacer(Modifier.height(4.dp))
-                ProgressBar(progress = linkedLoan.progressPercent, color = MaterialTheme.appColors.expense, height = 3.dp)
+                ProgressBar(
+                    progress = linkedLoan.progressPercent,
+                    color = MaterialTheme.appColors.expense,
+                    height = 3.dp
+                )
             }
         }
     }
@@ -108,11 +165,20 @@ private fun PropertyCardPreview() {
         Column(modifier = Modifier.padding(16.dp).background(MaterialTheme.appColors.navyDeep)) {
             PropertyCard(
                 property = RealEstateProperty(
-                    id = "1", accountId = "acc1", name = "Mi casa", address = "Calle Mayor 1, Madrid",
-                    propertyType = PropertyType.PRIMARY_HOME, purchaseValue = 250000.0, currentEstimatedValue = 260000.0,
-                    acquisitionDate = 1672531200000, ownershipPercentage = 100.0, linkedLoanId = "loan1",
-                    rentalStatus = RentalStatus.OWN_USE, monthlyRent = null,
-                    mortgageReminderDismissed = false, archived = false
+                    id = "1",
+                    accountId = "acc1",
+                    name = "Mi casa",
+                    address = "Calle Mayor 1, Madrid",
+                    propertyType = PropertyType.PRIMARY_HOME,
+                    purchaseValue = 250000.0,
+                    currentEstimatedValue = 260000.0,
+                    acquisitionDate = 1672531200000,
+                    ownershipPercentage = 100.0,
+                    linkedLoanId = "loan1",
+                    rentalStatus = RentalStatus.OWN_USE,
+                    monthlyRent = null,
+                    mortgageReminderDismissed = false,
+                    archived = false
                 ),
                 linkedLoan = Loan(
                     id = "loan1", accountId = "acc1", name = "Hipoteca BBVA",

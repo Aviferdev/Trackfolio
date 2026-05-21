@@ -69,9 +69,10 @@ fun SlideFiscal(modifier: Modifier = Modifier) {
     )
 
     data class OpRow(val emoji: String, val label: String, val value: String)
+
     val operations = listOf(
         OpRow("📄", "Factura freelance", "−67,50 € IRPF"),
-        OpRow("💼", "Nómina marzo",       "−450,00 € IRPF"),
+        OpRow("💼", "Nómina marzo", "−450,00 € IRPF"),
         OpRow("📈", "Venta AAPL (3 ud.)", "+134,70 € plusv.")
     )
 
@@ -123,8 +124,16 @@ fun SlideFiscal(modifier: Modifier = Modifier) {
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    GridCell(label = "RENDIMIENTOS", value = "+33.600 €", modifier = Modifier.weight(1f))
-                    GridCell(label = "RETENCIONES",  value = "−4.032 €",  modifier = Modifier.weight(1f))
+                    GridCell(
+                        label = "RENDIMIENTOS",
+                        value = "+33.600 €",
+                        modifier = Modifier.weight(1f)
+                    )
+                    GridCell(
+                        label = "RETENCIONES",
+                        value = "−4.032 €",
+                        modifier = Modifier.weight(1f)
+                    )
                 }
             }
         }
@@ -169,8 +178,18 @@ fun SlideFiscal(modifier: Modifier = Modifier) {
                     ) {
                         Text(text = op.emoji, fontSize = 14.sp, color = Color.Unspecified)
                         Spacer(Modifier.width(10.dp))
-                        Text(text = op.label, fontSize = 11.sp, color = appCTextSecondary, modifier = Modifier.weight(1f))
-                        Text(text = op.value, fontSize = 11.sp, fontWeight = FontWeight.Bold, color = appCTextPrimary)
+                        Text(
+                            text = op.label,
+                            fontSize = 11.sp,
+                            color = appCTextSecondary,
+                            modifier = Modifier.weight(1f)
+                        )
+                        Text(
+                            text = op.value,
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = appCTextPrimary
+                        )
                     }
                 }
             }
@@ -186,9 +205,20 @@ private fun GridCell(label: String, value: String, modifier: Modifier = Modifier
             .padding(horizontal = 10.dp, vertical = 8.dp)
     ) {
         Column {
-            Text(text = label, fontSize = 9.sp, fontWeight = FontWeight.Bold, color = Color.White.copy(alpha = 0.65f), letterSpacing = 0.5.sp)
+            Text(
+                text = label,
+                fontSize = 9.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.White.copy(alpha = 0.65f),
+                letterSpacing = 0.5.sp
+            )
             Spacer(Modifier.height(3.dp))
-            Text(text = value, fontSize = 13.sp, fontWeight = FontWeight.ExtraBold, color = Color.White)
+            Text(
+                text = value,
+                fontSize = 13.sp,
+                fontWeight = FontWeight.ExtraBold,
+                color = Color.White
+            )
         }
     }
 }

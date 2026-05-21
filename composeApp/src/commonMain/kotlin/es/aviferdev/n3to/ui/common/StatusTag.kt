@@ -13,11 +13,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import es.aviferdev.n3to.ui.theme.ExpenseRed
-import es.aviferdev.n3to.ui.theme.PrimaryDark
 import es.aviferdev.n3to.ui.theme.N3toTheme
-import org.jetbrains.compose.ui.tooling.preview.Preview
 import es.aviferdev.n3to.ui.theme.appColors
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 /**
  * Status badge with semi-transparent background.
@@ -36,12 +34,12 @@ fun StatusTag(
     modifier: Modifier = Modifier
 ) {
     Text(
-        text          = label,
-        fontSize      = 9.sp,
-        fontWeight    = FontWeight.ExtraBold,
-        color         = color,
+        text = label,
+        fontSize = 9.sp,
+        fontWeight = FontWeight.ExtraBold,
+        color = color,
         letterSpacing = 0.4.sp,
-        modifier      = modifier
+        modifier = modifier
             .clip(RoundedCornerShape(5.dp))
             .background(color.copy(alpha = 0.13f))
             .padding(horizontal = 7.dp, vertical = 2.dp)

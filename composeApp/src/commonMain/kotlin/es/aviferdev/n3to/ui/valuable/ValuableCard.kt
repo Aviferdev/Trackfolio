@@ -1,12 +1,18 @@
 package es.aviferdev.n3to.ui.valuable
 
-import androidx.compose.material3.MaterialTheme
-import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -17,11 +23,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.Valuable
 import es.aviferdev.n3to.ui.common.DeltaIndicator
-import es.aviferdev.n3to.ui.theme.*
-import org.jetbrains.compose.resources.stringResource
+import es.aviferdev.n3to.ui.theme.SecondaryTeal
+import es.aviferdev.n3to.ui.theme.appColors
+import es.aviferdev.n3to.ui.theme.formatAmountEuro
+import es.aviferdev.n3to.ui.theme.formatPercentSigned
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.valuable_in_stock
 import n3to.composeapp.generated.resources.valuable_purchase_format
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun ValuableCard(
@@ -60,7 +69,10 @@ fun ValuableCard(
                 }
                 Spacer(Modifier.height(4.dp))
                 Text(
-                    text = stringResource(Res.string.valuable_purchase_format, formatAmountEuro(valuable.purchasePrice)),
+                    text = stringResource(
+                        Res.string.valuable_purchase_format,
+                        formatAmountEuro(valuable.purchasePrice)
+                    ),
                     fontSize = 11.sp,
                     color = MaterialTheme.appColors.textSecondary
                 )

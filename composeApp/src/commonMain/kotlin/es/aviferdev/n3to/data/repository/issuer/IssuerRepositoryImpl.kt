@@ -22,7 +22,12 @@ class IssuerRepositoryImpl(
     override suspend fun save(issuer: Issuer): Result<Unit> =
         dataSource.insert(issuer)
 
-    override suspend fun updateName(id: String, name: String, icon: String, type: IssuerType): Result<Unit> =
+    override suspend fun updateName(
+        id: String,
+        name: String,
+        icon: String,
+        type: IssuerType
+    ): Result<Unit> =
         dataSource.updateName(id, name, icon, type)
 
     override suspend fun archive(id: String, type: IssuerType): Result<Unit> =

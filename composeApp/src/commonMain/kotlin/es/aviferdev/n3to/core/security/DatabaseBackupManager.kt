@@ -29,24 +29,26 @@ expect class DatabaseBackupManager {
 
 // ─── Lógica de cifrado compartida (usada por ambos actual) ───────────────────
 
-const val BACKUP_SALT_LEN   = 16
-const val BACKUP_IV_LEN     = 16
-const val BACKUP_KEY_LEN    = 32
+const val BACKUP_SALT_LEN = 16
+const val BACKUP_IV_LEN = 16
+const val BACKUP_KEY_LEN = 32
 const val BACKUP_ITERATIONS = 100_000
 
 fun encryptBackup(dbBytes: ByteArray, password: String): ByteArray {
     val salt = kotlin.random.Random.nextBytes(BACKUP_SALT_LEN)
-    val iv   = kotlin.random.Random.nextBytes(BACKUP_IV_LEN)
-    val key  = AesCrypto.pbkdf2(password.encodeToByteArray(), salt, BACKUP_ITERATIONS, BACKUP_KEY_LEN)
-    val enc  = AesCrypto.encryptCbc(dbBytes, key, iv)
+    val iv = kotlin.random.Random.nextBytes(BACKUP_IV_LEN)
+    val key =
+        AesCrypto.pbkdf2(password.encodeToByteArray(), salt, BACKUP_ITERATIONS, BACKUP_KEY_LEN)
+    val enc = AesCrypto.encryptCbc(dbBytes, key, iv)
     return AesCrypto.intToBytes(BACKUP_SALT_LEN) + salt + iv + enc
 }
 
 fun decryptBackup(fileBytes: ByteArray, password: String): ByteArray {
     val saltLen = AesCrypto.bytesToInt(fileBytes.sliceArray(0..3))
-    val salt    = fileBytes.sliceArray(4 until 4 + saltLen)
-    val iv      = fileBytes.sliceArray(4 + saltLen until 4 + saltLen + BACKUP_IV_LEN)
-    val data    = fileBytes.sliceArray(4 + saltLen + BACKUP_IV_LEN until fileBytes.size)
-    val key     = AesCrypto.pbkdf2(password.encodeToByteArray(), salt, BACKUP_ITERATIONS, BACKUP_KEY_LEN)
+    val salt = fileBytes.sliceArray(4 until 4 + saltLen)
+    val iv = fileBytes.sliceArray(4 + saltLen until 4 + saltLen + BACKUP_IV_LEN)
+    val data = fileBytes.sliceArray(4 + saltLen + BACKUP_IV_LEN until fileBytes.size)
+    val key =
+        AesCrypto.pbkdf2(password.encodeToByteArray(), salt, BACKUP_ITERATIONS, BACKUP_KEY_LEN)
     return AesCrypto.decryptCbc(data, key, iv)
 }

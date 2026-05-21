@@ -36,9 +36,10 @@ data class FixedIncomePosition(
 ) {
     val isOpen: Boolean get() = closedAt == null
 
-    val isBond: Boolean get() = type == FixedIncomeType.BOND
-            || type == FixedIncomeType.CORPORATE_BOND
-            || type == FixedIncomeType.GOVERNMENT_OBLIGATION
+    val isBond: Boolean
+        get() = type == FixedIncomeType.BOND
+                || type == FixedIncomeType.CORPORATE_BOND
+                || type == FixedIncomeType.GOVERNMENT_OBLIGATION
     val isBill: Boolean get() = type == FixedIncomeType.BILL
     val isDeposit: Boolean get() = type == FixedIncomeType.DEPOSIT
 
@@ -82,7 +83,10 @@ data class FixedIncomePosition(
         }
 
     val progressPercent: Float
-        get() = if (totalTermDays > 0) (elapsedDays.toFloat() / totalTermDays.toFloat()).coerceIn(0f, 1f) else 0f
+        get() = if (totalTermDays > 0) (elapsedDays.toFloat() / totalTermDays.toFloat()).coerceIn(
+            0f,
+            1f
+        ) else 0f
 
     val isMatured: Boolean get() = nowMillis() >= maturityDate
 

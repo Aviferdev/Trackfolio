@@ -37,9 +37,9 @@ fun ReconciliationReminderBanner(
     modifier: Modifier = Modifier
 ) {
     AnimatedVisibility(
-        visible  = visible,
-        enter    = expandVertically() + fadeIn(),
-        exit     = shrinkVertically() + fadeOut(),
+        visible = visible,
+        enter = expandVertically() + fadeIn(),
+        exit = shrinkVertically() + fadeOut(),
         modifier = modifier
     ) {
         Row(
@@ -51,18 +51,18 @@ fun ReconciliationReminderBanner(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
-                imageVector        = Icons.Outlined.Balance,
+                imageVector = Icons.Outlined.Balance,
                 contentDescription = null,
-                tint               = SecondaryTeal,
-                modifier           = Modifier.size(18.dp)
+                tint = SecondaryTeal,
+                modifier = Modifier.size(18.dp)
             )
             Spacer(Modifier.width(10.dp))
             Text(
-                text       = stringResource(Res.string.reconciliation_banner_text),
-                fontSize   = 12.sp,
-                color      = SecondaryTeal,
+                text = stringResource(Res.string.reconciliation_banner_text),
+                fontSize = 12.sp,
+                color = SecondaryTeal,
                 fontWeight = FontWeight.Medium,
-                modifier   = Modifier.weight(1f)
+                modifier = Modifier.weight(1f)
             )
             Box(
                 modifier = Modifier
@@ -72,9 +72,9 @@ fun ReconciliationReminderBanner(
                     .padding(horizontal = 12.dp, vertical = 4.dp)
             ) {
                 Text(
-                    text       = stringResource(Res.string.reconciliation_adjust),
-                    fontSize   = 11.sp,
-                    color      = SecondaryTeal,
+                    text = stringResource(Res.string.reconciliation_adjust),
+                    fontSize = 11.sp,
+                    color = SecondaryTeal,
                     fontWeight = FontWeight.Bold
                 )
             }

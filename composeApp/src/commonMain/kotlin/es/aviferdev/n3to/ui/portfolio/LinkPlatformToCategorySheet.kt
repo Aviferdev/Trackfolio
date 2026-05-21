@@ -58,8 +58,8 @@ fun LinkPlatformToCategorySheet(
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
-        sheetState       = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-        containerColor   = MaterialTheme.appColors.surface,
+        sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
+        containerColor = MaterialTheme.appColors.surface,
         dragHandle = {
             Box(
                 modifier = Modifier
@@ -177,9 +177,19 @@ private fun PlatformLinkRow(
             modifier = Modifier.weight(1f)
         )
         if (isLinked) {
-            Text("✓", fontSize = 16.sp, color = MaterialTheme.appColors.primary, fontWeight = FontWeight.Bold)
+            Text(
+                "✓",
+                fontSize = 16.sp,
+                color = MaterialTheme.appColors.primary,
+                fontWeight = FontWeight.Bold
+            )
         } else {
-            Text("+", fontSize = 18.sp, color = MaterialTheme.appColors.textSecondary, fontWeight = FontWeight.Light)
+            Text(
+                "+",
+                fontSize = 18.sp,
+                color = MaterialTheme.appColors.textSecondary,
+                fontWeight = FontWeight.Light
+            )
         }
     }
     Spacer(Modifier.height(6.dp))
@@ -188,10 +198,38 @@ private fun PlatformLinkRow(
 private fun createMockPlatforms(): List<Platform> {
     val now = nowMillis()
     return listOf(
-        Platform(id = "1", name = "Interactive Brokers", icon = "📊", sortOrder = 0, archived = false, createdAt = now),
-        Platform(id = "2", name = "Degiro", icon = "📈", sortOrder = 1, archived = false, createdAt = now),
-        Platform(id = "3", name = "Coinbase", icon = "🪙", sortOrder = 2, archived = false, createdAt = now),
-        Platform(id = "4", name = "Sabadell", icon = "🏦", sortOrder = 3, archived = false, createdAt = now)
+        Platform(
+            id = "1",
+            name = "Interactive Brokers",
+            icon = "📊",
+            sortOrder = 0,
+            archived = false,
+            createdAt = now
+        ),
+        Platform(
+            id = "2",
+            name = "Degiro",
+            icon = "📈",
+            sortOrder = 1,
+            archived = false,
+            createdAt = now
+        ),
+        Platform(
+            id = "3",
+            name = "Coinbase",
+            icon = "🪙",
+            sortOrder = 2,
+            archived = false,
+            createdAt = now
+        ),
+        Platform(
+            id = "4",
+            name = "Sabadell",
+            icon = "🏦",
+            sortOrder = 3,
+            archived = false,
+            createdAt = now
+        )
     )
 }
 

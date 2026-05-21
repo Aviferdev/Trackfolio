@@ -34,7 +34,7 @@ import es.aviferdev.n3to.domain.model.TransactionType
 import es.aviferdev.n3to.ui.common.navigation.TimeStepperHeader
 import es.aviferdev.n3to.ui.common.component.EmptyStateView
 import es.aviferdev.n3to.ui.common.dialog.DeleteConfirmDialog
-import es.aviferdev.n3to.ui.common.navigation.TopBarApp
+import es.aviferdev.n3to.ui.common.topbar.TopBarWithActionsApp
 import es.aviferdev.n3to.ui.home.bottomsheet.AddTransactionBottomSheet
 import es.aviferdev.n3to.ui.home.viewmodel.AddTransactionViewModel
 
@@ -144,10 +144,15 @@ fun TransactionListContent(
     ) {
         val monthNames = localizedMonthNames().map { it.replaceFirstChar { c -> c.uppercase() } }
 
-        TopBarApp(title = stringResource(Res.string.transaction_title), navigateBack = onBack)
+        TopBarWithActionsApp(
+            title = stringResource(Res.string.transaction_title),
+            navigateBack = onBack
+        )
 
         TimeStepperHeader(
-            currentValue = monthNames.getOrElse(uiState.month.toIntOrNull()?.minus(1) ?: 0) { uiState.month },
+            currentValue = monthNames.getOrElse(
+                uiState.month.toIntOrNull()?.minus(1) ?: 0
+            ) { uiState.month },
             currentValueSecondary = uiState.year,
             canGoBack = uiState.canGoBack,
             onPrevious = onPreviousMonth,

@@ -40,7 +40,12 @@ fun MortgageReminderBanner(
                 modifier = Modifier.fillMaxWidth().padding(16.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(Icons.Outlined.HomeWork, null, tint = MaterialTheme.appColors.primary, modifier = Modifier.size(24.dp))
+                Icon(
+                    Icons.Outlined.HomeWork,
+                    null,
+                    tint = MaterialTheme.appColors.primary,
+                    modifier = Modifier.size(24.dp)
+                )
                 Spacer(Modifier.width(12.dp))
                 Column(Modifier.weight(1f)) {
                     Text(
@@ -62,11 +67,22 @@ fun MortgageReminderBanner(
                             shape = RoundedCornerShape(8.dp),
                             contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp),
                             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.appColors.primary)
-                        ) { Text(stringResource(Res.string.realestate_add_mortgage), fontSize = 11.sp) }
+                        ) {
+                            Text(
+                                stringResource(Res.string.realestate_add_mortgage),
+                                fontSize = 11.sp
+                            )
+                        }
                         TextButton(onClick = {
                             dismissed = true
                             onDismiss()
-                        }) { Text(stringResource(Res.string.common_dismiss), color = MaterialTheme.appColors.textTertiary, fontSize = 11.sp) }
+                        }) {
+                            Text(
+                                stringResource(Res.string.common_dismiss),
+                                color = MaterialTheme.appColors.textTertiary,
+                                fontSize = 11.sp
+                            )
+                        }
                     }
                 }
             }

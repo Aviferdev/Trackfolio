@@ -16,11 +16,16 @@ class CategoryRepositoryImpl(
     override fun getByAccount(accountId: String): Flow<List<Category>> =
         dataSource.getByAccount(accountId).map { list -> list.map { it.toDomain() } }
 
-    override fun getByTypeAndAccount(accountId: String, type: TransactionType): Flow<List<Category>> =
-        dataSource.getByTypeAndAccount(accountId, type.name).map { list -> list.map { it.toDomain() } }
+    override fun getByTypeAndAccount(
+        accountId: String,
+        type: TransactionType
+    ): Flow<List<Category>> =
+        dataSource.getByTypeAndAccount(accountId, type.name)
+            .map { list -> list.map { it.toDomain() } }
 
     override fun getAllIncludingArchivedByAccount(accountId: String): Flow<List<Category>> =
-        dataSource.getAllIncludingArchivedByAccount(accountId).map { list -> list.map { it.toDomain() } }
+        dataSource.getAllIncludingArchivedByAccount(accountId)
+            .map { list -> list.map { it.toDomain() } }
 
     override fun countByAccount(accountId: String): Flow<Long> =
         dataSource.countByAccount(accountId)

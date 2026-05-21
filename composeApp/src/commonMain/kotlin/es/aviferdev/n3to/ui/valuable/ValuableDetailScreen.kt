@@ -1,37 +1,65 @@
 package es.aviferdev.n3to.ui.valuable
 
-import androidx.compose.material3.MaterialTheme
-import es.aviferdev.n3to.ui.theme.appColors
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.outlined.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.material.icons.outlined.Sell
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import es.aviferdev.n3to.domain.model.ValuableExpense
 import es.aviferdev.n3to.ui.common.DeltaIndicator
 import es.aviferdev.n3to.ui.common.SectionHeader
 import es.aviferdev.n3to.ui.common.dialog.DeleteConfirmDialog
-import es.aviferdev.n3to.ui.theme.*
+import es.aviferdev.n3to.ui.theme.appColors
+import es.aviferdev.n3to.ui.theme.formatAmountEuro
+import es.aviferdev.n3to.ui.theme.formatPercentSigned
 import kotlinx.datetime.toLocalDateTime
-import org.jetbrains.compose.resources.stringResource
-import org.koin.compose.viewmodel.koinViewModel
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.common_cancel
 import n3to.composeapp.generated.resources.common_close
+import n3to.composeapp.generated.resources.common_delete
+import n3to.composeapp.generated.resources.common_edit
 import n3to.composeapp.generated.resources.common_update
-import n3to.composeapp.generated.resources.common_back_cd
 import n3to.composeapp.generated.resources.valuable_back_cd
 import n3to.composeapp.generated.resources.valuable_balance_label
 import n3to.composeapp.generated.resources.valuable_delete_message
@@ -42,8 +70,8 @@ import n3to.composeapp.generated.resources.valuable_no_loans
 import n3to.composeapp.generated.resources.valuable_sell_cd
 import n3to.composeapp.generated.resources.valuable_update_value_btn
 import n3to.composeapp.generated.resources.valuable_update_value_title
-import n3to.composeapp.generated.resources.common_edit
-import n3to.composeapp.generated.resources.common_delete
+import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -93,10 +121,20 @@ fun ValuableDetailScreen(
         AlertDialog(
             onDismissRequest = { viewModel.hideLoanPicker() },
             containerColor = MaterialTheme.appColors.navySurface,
-            title = { Text(stringResource(Res.string.valuable_link_loan_title), fontWeight = FontWeight.Bold, color = MaterialTheme.appColors.textPrimary) },
+            title = {
+                Text(
+                    stringResource(Res.string.valuable_link_loan_title),
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.appColors.textPrimary
+                )
+            },
             text = {
                 if (uiState.availableLoans.isEmpty()) {
-                    Text(stringResource(Res.string.valuable_no_loans), color = MaterialTheme.appColors.textTertiary, fontSize = 14.sp)
+                    Text(
+                        stringResource(Res.string.valuable_no_loans),
+                        color = MaterialTheme.appColors.textTertiary,
+                        fontSize = 14.sp
+                    )
                 } else {
                     Column {
                         uiState.availableLoans.forEach { loan ->
@@ -110,7 +148,11 @@ fun ValuableDetailScreen(
                                     .padding(vertical = 8.dp),
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
-                                Text(loan.name, fontSize = 14.sp, color = MaterialTheme.appColors.textPrimary)
+                                Text(
+                                    loan.name,
+                                    fontSize = 14.sp,
+                                    color = MaterialTheme.appColors.textPrimary
+                                )
                                 Text(
                                     formatAmountEuro(loan.outstandingPrincipal),
                                     fontSize = 13.sp,
@@ -124,7 +166,10 @@ fun ValuableDetailScreen(
             confirmButton = {},
             dismissButton = {
                 TextButton(onClick = { viewModel.hideLoanPicker() }) {
-                    Text(stringResource(Res.string.common_close), color = MaterialTheme.appColors.textTertiary)
+                    Text(
+                        stringResource(Res.string.common_close),
+                        color = MaterialTheme.appColors.textTertiary
+                    )
                 }
             }
         )
@@ -135,7 +180,13 @@ fun ValuableDetailScreen(
         AlertDialog(
             onDismissRequest = { viewModel.hideValueDialog() },
             containerColor = MaterialTheme.appColors.navySurface,
-            title = { Text(stringResource(Res.string.valuable_update_value_title), fontWeight = FontWeight.Bold, color = MaterialTheme.appColors.textPrimary) },
+            title = {
+                Text(
+                    stringResource(Res.string.valuable_update_value_title),
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.appColors.textPrimary
+                )
+            },
             text = {
                 OutlinedTextField(
                     value = valueText,
@@ -154,10 +205,20 @@ fun ValuableDetailScreen(
                 TextButton(onClick = {
                     valueText.toDoubleOrNull()?.let { viewModel.updateEstimatedValue(it) }
                     viewModel.hideValueDialog()
-                }) { Text(stringResource(Res.string.common_update), color = MaterialTheme.appColors.income) }
+                }) {
+                    Text(
+                        stringResource(Res.string.common_update),
+                        color = MaterialTheme.appColors.income
+                    )
+                }
             },
             dismissButton = {
-                TextButton(onClick = { viewModel.hideValueDialog() }) { Text(stringResource(Res.string.common_cancel), color = MaterialTheme.appColors.textTertiary) }
+                TextButton(onClick = { viewModel.hideValueDialog() }) {
+                    Text(
+                        stringResource(Res.string.common_cancel),
+                        color = MaterialTheme.appColors.textTertiary
+                    )
+                }
             }
         )
     }
@@ -168,25 +229,40 @@ fun ValuableDetailScreen(
                 title = { Text(summary?.valuable?.name ?: "Detalle bien") },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(Res.string.valuable_back_cd))
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(Res.string.valuable_back_cd)
+                        )
                     }
                 },
                 actions = {
                     if (summary != null) {
                         if (!summary.valuable.isSold) {
                             IconButton(onClick = { viewModel.showSellSheet() }) {
-                                Icon(Icons.Outlined.Sell, contentDescription = stringResource(Res.string.valuable_sell_cd))
+                                Icon(
+                                    Icons.Outlined.Sell,
+                                    contentDescription = stringResource(Res.string.valuable_sell_cd)
+                                )
                             }
                         }
                         IconButton(onClick = { viewModel.showEditSheet() }) {
-                            Icon(Icons.Outlined.Edit, contentDescription = stringResource(Res.string.common_edit))
+                            Icon(
+                                Icons.Outlined.Edit,
+                                contentDescription = stringResource(Res.string.common_edit)
+                            )
                         }
                         IconButton(onClick = { viewModel.showDeleteDialog() }) {
-                            Icon(Icons.Outlined.Delete, contentDescription = stringResource(Res.string.common_delete))
+                            Icon(
+                                Icons.Outlined.Delete,
+                                contentDescription = stringResource(Res.string.common_delete)
+                            )
                         }
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.appColors.background, titleContentColor = MaterialTheme.appColors.textPrimary)
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.appColors.background,
+                    titleContentColor = MaterialTheme.appColors.textPrimary
+                )
             )
         },
         containerColor = MaterialTheme.appColors.background
@@ -215,8 +291,16 @@ fun ValuableDetailScreen(
                     elevation = CardDefaults.cardElevation(0.dp)
                 ) {
                     Column(Modifier.padding(20.dp)) {
-                        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                            Text(stringResource(Res.string.valuable_balance_label), fontWeight = FontWeight.Bold, fontSize = 15.sp, color = MaterialTheme.appColors.textPrimary)
+                        Row(
+                            Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(
+                                stringResource(Res.string.valuable_balance_label),
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 15.sp,
+                                color = MaterialTheme.appColors.textPrimary
+                            )
                             if (valuable.isSold) {
                                 val profit = summary.realizedProfit
                                 val profitPct = summary.realizedProfitPercent
@@ -245,11 +329,17 @@ fun ValuableDetailScreen(
                             }
                         }
                         Spacer(Modifier.height(12.dp))
-                        HorizontalDivider(color = MaterialTheme.appColors.border, thickness = 0.5.dp)
+                        HorizontalDivider(
+                            color = MaterialTheme.appColors.border,
+                            thickness = 0.5.dp
+                        )
                         Spacer(Modifier.height(12.dp))
 
                         // Métricas
-                        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
+                        Row(
+                            Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceEvenly
+                        ) {
                             MetricItem("Compra", formatAmountEuro(valuable.purchasePrice))
                             if (valuable.isSold) {
                                 MetricItem("Venta", formatAmountEuro(valuable.salePrice ?: 0.0))
@@ -283,13 +373,19 @@ fun ValuableDetailScreen(
                             DetailRow("Precio venta", formatAmountEuro(valuable.salePrice ?: 0.0))
                         }
                         if (valuable.linkedLoanId != null) {
-                            DetailRow("Préstamo vinculado", summary.linkedLoan?.name ?: "ID: ${valuable.linkedLoanId}")
+                            DetailRow(
+                                "Préstamo vinculado",
+                                summary.linkedLoan?.name ?: "ID: ${valuable.linkedLoanId}"
+                            )
                         }
                         if (valuable.notes != null) {
                             DetailRow("Notas", valuable.notes)
                         }
                         Spacer(Modifier.height(12.dp))
-                        HorizontalDivider(color = MaterialTheme.appColors.border, thickness = 0.5.dp)
+                        HorizontalDivider(
+                            color = MaterialTheme.appColors.border,
+                            thickness = 0.5.dp
+                        )
                         Spacer(Modifier.height(8.dp))
                         Row(
                             modifier = Modifier.fillMaxWidth(),
@@ -302,7 +398,10 @@ fun ValuableDetailScreen(
                                     shape = RoundedCornerShape(8.dp),
                                     colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.appColors.primary)
                                 ) {
-                                    Text(stringResource(Res.string.valuable_update_value_btn), fontSize = 11.sp)
+                                    Text(
+                                        stringResource(Res.string.valuable_update_value_btn),
+                                        fontSize = 11.sp
+                                    )
                                 }
                                 OutlinedButton(
                                     onClick = { viewModel.showLoanPicker() },
@@ -311,7 +410,9 @@ fun ValuableDetailScreen(
                                     colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.appColors.primary)
                                 ) {
                                     Text(
-                                        if (valuable.linkedLoanId != null) "Cambiar préstamo" else stringResource(Res.string.valuable_link_loan_title),
+                                        if (valuable.linkedLoanId != null) "Cambiar préstamo" else stringResource(
+                                            Res.string.valuable_link_loan_title
+                                        ),
                                         fontSize = 11.sp
                                     )
                                 }
@@ -332,15 +433,25 @@ fun ValuableDetailScreen(
                             SectionHeader("Gastos")
                             Spacer(Modifier.height(8.dp))
                             if (summary.purchaseExpenses > 0) {
-                                DetailRow("Gastos compra", formatAmountEuro(summary.purchaseExpenses))
+                                DetailRow(
+                                    "Gastos compra",
+                                    formatAmountEuro(summary.purchaseExpenses)
+                                )
                             }
                             if (summary.holdingExpenses > 0) {
-                                DetailRow("Gastos tenencia", formatAmountEuro(summary.holdingExpenses))
+                                DetailRow(
+                                    "Gastos tenencia",
+                                    formatAmountEuro(summary.holdingExpenses)
+                                )
                             }
                             if (summary.saleExpenses > 0) {
                                 DetailRow("Gastos venta", formatAmountEuro(summary.saleExpenses))
                             }
-                            HorizontalDivider(color = MaterialTheme.appColors.border, thickness = 0.5.dp, modifier = Modifier.padding(vertical = 8.dp))
+                            HorizontalDivider(
+                                color = MaterialTheme.appColors.border,
+                                thickness = 0.5.dp,
+                                modifier = Modifier.padding(vertical = 8.dp)
+                            )
                             DetailRow("Total gastos", formatAmountEuro(summary.totalExpenses))
                         }
                     }
@@ -356,7 +467,12 @@ fun ValuableDetailScreen(
 private fun MetricItem(label: String, value: String) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Text(label, fontSize = 11.sp, color = MaterialTheme.appColors.textTertiary)
-        Text(value, fontWeight = FontWeight.SemiBold, fontSize = 14.sp, color = MaterialTheme.appColors.textPrimary)
+        Text(
+            value,
+            fontWeight = FontWeight.SemiBold,
+            fontSize = 14.sp,
+            color = MaterialTheme.appColors.textPrimary
+        )
     }
 }
 
@@ -367,7 +483,12 @@ private fun DetailRow(label: String, value: String) {
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Text(label, fontSize = 13.sp, color = MaterialTheme.appColors.textSecondary)
-        Text(value, fontSize = 13.sp, fontWeight = FontWeight.Medium, color = MaterialTheme.appColors.textPrimary)
+        Text(
+            value,
+            fontSize = 13.sp,
+            fontWeight = FontWeight.Medium,
+            color = MaterialTheme.appColors.textPrimary
+        )
     }
 }
 
@@ -379,5 +500,7 @@ private fun formatDate(millis: Long): String {
         "${local.dayOfMonth.toString().padStart(2, '0')}/" +
                 "${local.monthNumber.toString().padStart(2, '0')}/" +
                 "${local.year}"
-    } catch (_: Exception) { "-" }
+    } catch (_: Exception) {
+        "-"
+    }
 }

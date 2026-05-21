@@ -64,15 +64,15 @@ class GetPropertyFinancialSummaryUseCase(
         } else 0.0
 
         return PropertyFinancialSummary(
-            grossYieldOnPurchase  = if (property.purchaseValue > 0 && annualRent > 0) (annualRent / property.purchaseValue) * 100.0 else 0.0,
-            grossYieldOnCurrent   = if (property.currentEstimatedValue > 0 && annualRent > 0) (annualRent / property.currentEstimatedValue) * 100.0 else 0.0,
-            totalIncome           = totalIncome,
-            totalExpenses         = totalExpenses,
-            netCashflow           = netCashflow,
+            grossYieldOnPurchase = if (property.purchaseValue > 0 && annualRent > 0) (annualRent / property.purchaseValue) * 100.0 else 0.0,
+            grossYieldOnCurrent = if (property.currentEstimatedValue > 0 && annualRent > 0) (annualRent / property.currentEstimatedValue) * 100.0 else 0.0,
+            totalIncome = totalIncome,
+            totalExpenses = totalExpenses,
+            netCashflow = netCashflow,
             totalPurchaseExpenses = totalPurchaseExpenses,
-            totalSaleExpenses     = totalSaleExpenses,
-            totalReturn           = totalReturn,
-            totalReturnPercent    = totalReturnPercent
+            totalSaleExpenses = totalSaleExpenses,
+            totalReturn = totalReturn,
+            totalReturnPercent = totalReturnPercent
         )
     }
 }

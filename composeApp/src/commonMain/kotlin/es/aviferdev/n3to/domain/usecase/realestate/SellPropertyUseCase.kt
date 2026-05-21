@@ -59,7 +59,8 @@ class SellPropertyUseCase(
         }
 
         // 3. Eliminar gastos de venta previos (si existían por una edición)
-        val existingTransactions = transactionRepository.getByLinkedProperty(propertyId).firstOrNull() ?: emptyList()
+        val existingTransactions =
+            transactionRepository.getByLinkedProperty(propertyId).firstOrNull() ?: emptyList()
         existingTransactions
             .filter { it.id.startsWith("prop_sexp_$propertyId") }
             .forEach { transactionRepository.deleteTransaction(it.id) }

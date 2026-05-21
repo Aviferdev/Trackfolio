@@ -26,7 +26,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.Transaction
-import es.aviferdev.n3to.ui.common.navigation.TopBarApp
+import es.aviferdev.n3to.ui.common.topbar.TopBarWithActionsApp
 import es.aviferdev.n3to.ui.theme.*
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
@@ -36,7 +36,6 @@ import n3to.composeapp.generated.resources.common_cancel
 import n3to.composeapp.generated.resources.common_category_label
 import n3to.composeapp.generated.resources.common_date_label
 import n3to.composeapp.generated.resources.common_delete
-import n3to.composeapp.generated.resources.common_error
 import n3to.composeapp.generated.resources.common_retry
 import n3to.composeapp.generated.resources.fiscal_commissions_short
 import n3to.composeapp.generated.resources.transaction_delete_message
@@ -74,7 +73,7 @@ fun TransactionDetailScreen(
     }
 
     Column(modifier = Modifier.fillMaxSize().background(MaterialTheme.appColors.background)) {
-        TopBarApp(
+        TopBarWithActionsApp(
             title = stringResource(Res.string.transaction_detail_title),
             navigateBack = onBack
         )
@@ -115,14 +114,16 @@ fun TransactionDetailScreen(
 
             is TransactionDetailUiState.Success -> {
                 TransactionDetailContent(
-                    transaction    = state.transaction,
-                    categoryName   = state.categoryName,
-                    accountName    = state.accountName,
+                    transaction = state.transaction,
+                    categoryName = state.categoryName,
+                    accountName = state.accountName,
                     incomeTypeLabel = state.incomeTypeLabel,
                     incomeTypeEmoji = state.incomeTypeEmoji,
-                    onEdit         = if (state.transaction.isLinkedToAsset) null
-                                     else { onEditTransaction?.let { { it(state.transaction) } } },
-                    onDelete       = { showDeleteDialog = true }
+                    onEdit = if (state.transaction.isLinkedToAsset) null
+                    else {
+                        onEditTransaction?.let { { it(state.transaction) } }
+                    },
+                    onDelete = { showDeleteDialog = true }
                 )
             }
 
@@ -136,7 +137,7 @@ fun TransactionDetailScreen(
     if (showDeleteDialog) {
         AlertDialog(
             onDismissRequest = { showDeleteDialog = false },
-            containerColor   = MaterialTheme.appColors.surface,
+            containerColor = MaterialTheme.appColors.surface,
             title = {
                 Text(
                     stringResource(Res.string.transaction_detail_title) + " " + stringResource(Res.string.common_delete).lowercase(),
@@ -157,12 +158,20 @@ fun TransactionDetailScreen(
                     showDeleteDialog = false
                     viewModel.deleteTransaction()
                 }) {
-                    Text(stringResource(Res.string.common_delete), color = MaterialTheme.appColors.expense, fontWeight = FontWeight.SemiBold)
+                    Text(
+                        stringResource(Res.string.common_delete),
+                        color = MaterialTheme.appColors.expense,
+                        fontWeight = FontWeight.SemiBold
+                    )
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showDeleteDialog = false }) {
-                    Text(stringResource(Res.string.common_cancel), color = MaterialTheme.appColors.primary, fontWeight = FontWeight.Medium)
+                    Text(
+                        stringResource(Res.string.common_cancel),
+                        color = MaterialTheme.appColors.primary,
+                        fontWeight = FontWeight.Medium
+                    )
                 }
             },
             shape = RoundedCornerShape(16.dp)
@@ -196,25 +205,25 @@ private fun TransactionDetailContent(
         val (typeLabel, typeColor) = when {
             transaction.isAdjustment -> "AJUSTE" to MaterialTheme.appColors.primary
             transaction.isLinkedToAsset -> "INVERSIÓN" to MaterialTheme.appColors.primary
-            isPropertyTransaction   -> "INMUEBLE" to MaterialTheme.appColors.income
-            transaction.isIncome  -> "INGRESO" to MaterialTheme.appColors.income
-            else                  -> "GASTO" to MaterialTheme.appColors.expense
+            isPropertyTransaction -> "INMUEBLE" to MaterialTheme.appColors.income
+            transaction.isIncome -> "INGRESO" to MaterialTheme.appColors.income
+            else -> "GASTO" to MaterialTheme.appColors.expense
         }
         val isLinkedToProperty = transaction.linkedPropertyId != null
-    val isNegativeAmount = when {
+        val isNegativeAmount = when {
             transaction.isAdjustment -> transaction.amount < 0
-            transaction.isIncome    -> false
-            else                    -> true
+            transaction.isIncome -> false
+            else -> true
         }
         val absAmount = kotlin.math.abs(transaction.amount)
         val amountPrefix = if (isNegativeAmount) "−" else "+"
 
         val categoryIcon = when {
-            transaction.isAdjustment   -> Icons.Outlined.SwapHoriz
+            transaction.isAdjustment -> Icons.Outlined.SwapHoriz
             transaction.isLinkedToAsset -> Icons.AutoMirrored.Outlined.ShowChart
-            isLinkedToProperty         -> Icons.Outlined.House
-            transaction.isIncome       -> Icons.Outlined.ArrowDownward
-            else                       -> Icons.Outlined.ArrowUpward
+            isLinkedToProperty -> Icons.Outlined.House
+            transaction.isIncome -> Icons.Outlined.ArrowDownward
+            else -> Icons.Outlined.ArrowUpward
         }
 
         Card(

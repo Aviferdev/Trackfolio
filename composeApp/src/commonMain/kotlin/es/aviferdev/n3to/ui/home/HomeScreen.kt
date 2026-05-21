@@ -1,32 +1,20 @@
 package es.aviferdev.n3to.ui.home
 
-import androidx.compose.material3.MaterialTheme
-import es.aviferdev.n3to.ui.theme.appColors
-import es.aviferdev.n3to.platform.nowHour
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Settings
-import androidx.compose.material.icons.outlined.Visibility
-import androidx.compose.material.icons.outlined.VisibilityOff
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.FloatingActionButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -37,9 +25,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.core.VersionManager
 import es.aviferdev.n3to.core.security.BalanceVisibilityManager
 import es.aviferdev.n3to.core.security.BiometricAuthenticator
@@ -48,15 +34,14 @@ import es.aviferdev.n3to.domain.model.Account
 import es.aviferdev.n3to.domain.model.CategoryBudgetStatus
 import es.aviferdev.n3to.domain.model.EmergencyFundStatus
 import es.aviferdev.n3to.domain.model.HomeBalance
-import es.aviferdev.n3to.domain.model.IncomeType
 import es.aviferdev.n3to.domain.model.LimitType
 import es.aviferdev.n3to.domain.model.MonthlyGoalProgress
-import es.aviferdev.n3to.domain.model.Transaction
 import es.aviferdev.n3to.domain.model.TransactionType
-import es.aviferdev.n3to.ui.account.AccountSelectorBar
 import es.aviferdev.n3to.ui.account.AccountViewModel
 import es.aviferdev.n3to.ui.common.SectionHeader
-import es.aviferdev.n3to.ui.common.component.IconActionButton
+import es.aviferdev.n3to.ui.common.button.FloatingButtonAdd
+import es.aviferdev.n3to.ui.common.component.NavyTabRow
+import es.aviferdev.n3to.ui.common.topbar.TopBarWithoutActionsApp
 import es.aviferdev.n3to.ui.home.banner.BackupReminderBanner
 import es.aviferdev.n3to.ui.home.banner.MaturityReminderBanner
 import es.aviferdev.n3to.ui.home.banner.PriceReminderBanner
@@ -76,28 +61,20 @@ import es.aviferdev.n3to.ui.reconciliation.ReconciliationViewModel
 import es.aviferdev.n3to.ui.settings.SetCategoryLimitSheet
 import es.aviferdev.n3to.ui.settings.backup.BackupPasswordSheet
 import es.aviferdev.n3to.ui.settings.backup.BackupViewModel
-
 import es.aviferdev.n3to.ui.theme.LocalBalanceHidden
-import es.aviferdev.n3to.ui.theme.N3toTheme
-
+import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.ui.version.VersionUpdateBanner
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.home_confirm_identity
-import n3to.composeapp.generated.resources.home_hide_balances
-import n3to.composeapp.generated.resources.home_show_balances
-import n3to.composeapp.generated.resources.home_section_emergency_fund
 import n3to.composeapp.generated.resources.home_section_budgets
+import n3to.composeapp.generated.resources.home_section_emergency_fund
 import n3to.composeapp.generated.resources.home_section_goals
-import n3to.composeapp.generated.resources.home_settings_cd
-import n3to.composeapp.generated.resources.app_name
+import n3to.composeapp.generated.resources.home_show_balances
 import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
-// ─────────────────────────────────────────────────────────────────────────────
-//  HomeScreen — entry point (sin cambios de lógica/VM)
-// ─────────────────────────────────────────────────────────────────────────────
+
 @Composable
 fun HomeScreen(
     onNavigateToTransactions: () -> Unit = {},
@@ -138,17 +115,14 @@ fun HomeScreen(
     val confirmIdentityText = stringResource(Res.string.home_confirm_identity)
 
     var showAddTransaction by remember { mutableStateOf(false) }
-    var showInitialBalance by remember { mutableStateOf(false) }
     val addTransactionViewModel: AddTransactionViewModel = koinViewModel()
 
-    // ── Estado del limit sheet inline en Home ──────────────────────────────────
     var showBudgetLimitSheet by remember { mutableStateOf(false) }
     var budgetLimitCategoryId by remember { mutableStateOf("") }
     var budgetLimitCategoryName by remember { mutableStateOf("") }
     var budgetLimitCurrentLimit by remember { mutableStateOf(0.0) }
     var budgetLimitCurrentType by remember { mutableStateOf(LimitType.FIXED) }
 
-    // Reabrir sheet al volver del CategoryPicker
     LaunchedEffect(reopenFromPicker) {
         if (reopenFromPicker) {
             showAddTransaction = true
@@ -170,9 +144,6 @@ fun HomeScreen(
             }
 
             is HomeUiState.Success -> {
-                if (state.showInitialBalancePrompt && !showAddTransaction) {
-                    LaunchedEffect(state) { showInitialBalance = true }
-                }
                 val currentAccount = state.balance.selectedAccount
                 LaunchedEffect(currentAccount) {
                     currentAccount?.let { reconciliationViewModel.checkReminder(it.id) }
@@ -254,22 +225,13 @@ fun HomeScreen(
             }
         }
 
-        FloatingActionButton(
+        FloatingButtonAdd(
             onClick = { showAddTransaction = true },
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .padding(end = 20.dp, bottom = 136.dp)
                 .size(52.dp),
-            shape = RoundedCornerShape(16.dp),
-            containerColor = MaterialTheme.appColors.navySurface,
-            contentColor = MaterialTheme.appColors.cyanAccent,
-            elevation = FloatingActionButtonDefaults.elevation(
-                defaultElevation = 6.dp,
-                pressedElevation = 10.dp
-            )
-        ) {
-            Text("+", fontSize = 26.sp, fontWeight = FontWeight.Light, color = MaterialTheme.appColors.cyanAccent)
-        }
+        )
     }
 
     // ── Sheets ────────────────────────────────────────────────────────────────
@@ -281,15 +243,6 @@ fun HomeScreen(
                 onNavigateToCategoryPicker?.invoke(type)
             },
             viewModel = addTransactionViewModel
-        )
-    }
-
-    if (showInitialBalance) {
-        SetInitialBalanceBottomSheet(
-            accountName = (uiState as? HomeUiState.Success)?.balance?.selectedAccount?.name ?: "",
-            onConfirm = { amount ->
-                viewModel.setInitialBalance(amount); showInitialBalance = false
-            }
         )
     }
 
@@ -402,47 +355,18 @@ fun HomeContent(
             .windowInsetsPadding(WindowInsets.statusBars)
             .padding(bottom = 100.dp)
     ) {
-        // ── Cabecera ──────────────────────────────────────────────────────────
-        Spacer(Modifier.height(12.dp))
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Column {
-                Text(
-                    text = stringResource(Res.string.app_name),
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.appColors.textPrimary,
-                    letterSpacing = (-0.3).sp
-                )
-            }
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                IconActionButton(
-                    onClick = onToggleBalances,
-                    icon = if (balancesHidden) Icons.Outlined.VisibilityOff else Icons.Outlined.Visibility,
-                    iconTint = MaterialTheme.appColors.textSecondary,
-                    label = if (balancesHidden) stringResource(Res.string.home_show_balances) else stringResource(Res.string.home_hide_balances)
-                )
-                IconActionButton(
-                    onClick = onNavigateToSettings,
-                    icon = Icons.Outlined.Settings,
-                    iconTint = MaterialTheme.appColors.textSecondary,
-                    label = stringResource(Res.string.home_settings_cd)
-                )
-            }
-        }
+        TopBarWithoutActionsApp(
+            onNavigateToSettings = onNavigateToSettings,
+            onToggleBalances = onToggleBalances
+        )
 
-        // ── Selector de cuentas ───────────────────────────────────────────────
         if (accounts.isNotEmpty()) {
             Spacer(Modifier.height(12.dp))
-            AccountSelectorBar(
-                accounts = accounts,
-                selectedAccountId = selectedAccountId,
-                onAccountSelected = onAccountSelected
+            NavyTabRow(
+                items = accounts,
+                selected = accounts.find { it.id == selectedAccountId } ?: accounts.first(),
+                onSelect = { onAccountSelected(it.id) },
+                label = { if (it.needsInitialBalance) "${it.name} ⚠️" else it.name },
             )
         }
 

@@ -37,13 +37,19 @@ class FixedIncomeLocalDataSourceImpl(
             .mapToOneOrNull(Dispatchers.IO)
             .map { it?.toDomain() }
 
-    override fun getNearMaturity(accountId: String, thresholdDate: Long): Flow<List<FixedIncomePosition>> =
+    override fun getNearMaturity(
+        accountId: String,
+        thresholdDate: Long
+    ): Flow<List<FixedIncomePosition>> =
         queries.selectNearMaturity(accountId, thresholdDate)
             .asFlow()
             .mapToList(Dispatchers.IO)
             .map { list -> list.map { it.toDomain() } }
 
-    override fun getByAccountAndCategory(accountId: String, categoryId: String): Flow<List<FixedIncomePosition>> =
+    override fun getByAccountAndCategory(
+        accountId: String,
+        categoryId: String
+    ): Flow<List<FixedIncomePosition>> =
         queries.selectByAccountAndCategory(accountId, categoryId)
             .asFlow()
             .mapToList(Dispatchers.IO)
@@ -66,26 +72,26 @@ class FixedIncomeLocalDataSourceImpl(
             withContext(Dispatchers.IO) {
                 val e = position.toEntity()
                 queries.insert(
-                    id                = e.id,
-                    accountId         = e.accountId,
-                    portfolioId       = e.portfolioId,
-                    assetCategoryId   = e.assetCategoryId,
-                    name              = e.name,
-                    ticker            = e.ticker,
-                    type              = e.type,
-                    notes             = e.notes,
-                    principal         = e.principal,
-                    quantity          = e.quantity,
-                    nominalPerUnit    = e.nominalPerUnit,
-                    interestRate      = e.interestRate,
+                    id = e.id,
+                    accountId = e.accountId,
+                    portfolioId = e.portfolioId,
+                    assetCategoryId = e.assetCategoryId,
+                    name = e.name,
+                    ticker = e.ticker,
+                    type = e.type,
+                    notes = e.notes,
+                    principal = e.principal,
+                    quantity = e.quantity,
+                    nominalPerUnit = e.nominalPerUnit,
+                    interestRate = e.interestRate,
                     interestFrequency = e.interestFrequency,
-                    startDate         = e.startDate,
-                    maturityDate      = e.maturityDate,
-                    platformId        = e.platformId,
-                    issuerId          = e.issuerId,
-                    autoRenew         = e.autoRenew,
-                    feeNote           = e.feeNote,
-                    createdAt         = e.createdAt
+                    startDate = e.startDate,
+                    maturityDate = e.maturityDate,
+                    platformId = e.platformId,
+                    issuerId = e.issuerId,
+                    autoRenew = e.autoRenew,
+                    feeNote = e.feeNote,
+                    createdAt = e.createdAt
                 )
             }
         }
@@ -95,23 +101,23 @@ class FixedIncomeLocalDataSourceImpl(
             withContext(Dispatchers.IO) {
                 val e = position.toEntity()
                 queries.update(
-                    id                = e.id,
-                    assetCategoryId   = e.assetCategoryId,
-                    name              = e.name,
-                    ticker            = e.ticker,
-                    type              = e.type,
-                    notes             = e.notes,
-                    principal         = e.principal,
-                    quantity          = e.quantity,
-                    nominalPerUnit    = e.nominalPerUnit,
-                    interestRate      = e.interestRate,
+                    id = e.id,
+                    assetCategoryId = e.assetCategoryId,
+                    name = e.name,
+                    ticker = e.ticker,
+                    type = e.type,
+                    notes = e.notes,
+                    principal = e.principal,
+                    quantity = e.quantity,
+                    nominalPerUnit = e.nominalPerUnit,
+                    interestRate = e.interestRate,
                     interestFrequency = e.interestFrequency,
-                    startDate         = e.startDate,
-                    maturityDate      = e.maturityDate,
-                    platformId        = e.platformId,
-                    issuerId          = e.issuerId,
-                    autoRenew         = e.autoRenew,
-                    feeNote           = e.feeNote
+                    startDate = e.startDate,
+                    maturityDate = e.maturityDate,
+                    platformId = e.platformId,
+                    issuerId = e.issuerId,
+                    autoRenew = e.autoRenew,
+                    feeNote = e.feeNote
                 )
             }
         }

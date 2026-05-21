@@ -34,15 +34,15 @@ class SyncAssetTransactionToLedgerUseCase(
         assetName: String
     ): Result<Unit> {
         val txType = when (assetTx.type) {
-            AssetTransactionType.BUY  -> TransactionType.EXPENSE
+            AssetTransactionType.BUY -> TransactionType.EXPENSE
             AssetTransactionType.SELL -> TransactionType.INCOME
             // Los traspasos entre fondos no generan movimiento de liquidez
             AssetTransactionType.TRANSFER_OUT,
-            AssetTransactionType.TRANSFER_IN  -> return Result.success(Unit)
+            AssetTransactionType.TRANSFER_IN -> return Result.success(Unit)
         }
         val amount = assetTx.grossAmount
-        val label  = when (assetTx.type) {
-            AssetTransactionType.BUY  -> "Compra: ${fmtQty(assetTx.quantity)} uds. de $assetName"
+        val label = when (assetTx.type) {
+            AssetTransactionType.BUY -> "Compra: ${fmtQty(assetTx.quantity)} uds. de $assetName"
             AssetTransactionType.SELL -> "Venta: ${fmtQty(assetTx.quantity)} uds. de $assetName"
         }
 
@@ -56,23 +56,23 @@ class SyncAssetTransactionToLedgerUseCase(
             transactionRepository.updateTransaction(
                 existing.copy(
                     amount = amount,
-                    type   = txType,
-                    date   = assetTx.date,
-                    notes  = label
+                    type = txType,
+                    date = assetTx.date,
+                    notes = label
                 )
             )
         } else {
             // Crear nueva
             val now = nowMillis()
             val transaction = Transaction(
-                id                       = "ledger_${assetTx.id}",
-                accountId                = accountId,
-                amount                   = amount,
-                type                     = txType,
-                categoryId               = null,
-                date                     = assetTx.date,
-                notes                    = label,
-                createdAt                = now,
+                id = "ledger_${assetTx.id}",
+                accountId = accountId,
+                amount = amount,
+                type = txType,
+                categoryId = null,
+                date = assetTx.date,
+                notes = label,
+                createdAt = now,
                 linkedAssetTransactionId = assetTx.id
             )
             transactionRepository.saveTransaction(transaction)
@@ -112,7 +112,12 @@ class SyncAssetTransactionToLedgerUseCase(
         val netAmount = grossAmount - withholdingAmount
         val label = "Dividendo: $assetName"
         val taxLines = if (withholdingPercent > 0) listOf(
-            TaxLine(name = "Retención", role = TaxRole.INCOME_TAX, percent = withholdingPercent, amount = withholdingAmount)
+            TaxLine(
+                name = "Retención",
+                role = TaxRole.INCOME_TAX,
+                percent = withholdingPercent,
+                amount = withholdingAmount
+            )
         ) else emptyList()
 
         val existing = transactionRepository
@@ -122,32 +127,32 @@ class SyncAssetTransactionToLedgerUseCase(
         return if (existing != null) {
             transactionRepository.updateTransaction(
                 existing.copy(
-                    amount      = netAmount,
-                    date        = date,
-                    notes       = label,
-                    incomeType  = IncomeType.DIVIDEND,
+                    amount = netAmount,
+                    date = date,
+                    notes = label,
+                    incomeType = IncomeType.DIVIDEND,
                     grossAmount = grossAmount,
-                    taxLines    = taxLines,
-                    issuerId    = issuerId,
-                    issuerName  = issuerName
+                    taxLines = taxLines,
+                    issuerId = issuerId,
+                    issuerName = issuerName
                 )
             )
         } else {
             val now = nowMillis()
             val transaction = Transaction(
-                id                       = "ledger_$dividendId",
-                accountId                = accountId,
-                amount                   = netAmount,
-                type                     = TransactionType.INCOME,
-                categoryId               = null,
-                date                     = date,
-                notes                    = label,
-                createdAt                = now,
-                incomeType               = IncomeType.DIVIDEND,
-                grossAmount              = grossAmount,
-                taxLines                 = taxLines,
-                issuerId                 = issuerId,
-                issuerName               = issuerName,
+                id = "ledger_$dividendId",
+                accountId = accountId,
+                amount = netAmount,
+                type = TransactionType.INCOME,
+                categoryId = null,
+                date = date,
+                notes = label,
+                createdAt = now,
+                incomeType = IncomeType.DIVIDEND,
+                grossAmount = grossAmount,
+                taxLines = taxLines,
+                issuerId = issuerId,
+                issuerName = issuerName,
                 linkedAssetTransactionId = dividendId
             )
             transactionRepository.saveTransaction(transaction)
@@ -174,7 +179,12 @@ class SyncAssetTransactionToLedgerUseCase(
         val netAmount = grossAmount - withholdingAmount - commissionAmount
         val label = "Rendimiento bono/depósito: $assetName"
         val taxLines = if (withholdingPercent > 0) listOf(
-            TaxLine(name = "Retención", role = TaxRole.INCOME_TAX, percent = withholdingPercent, amount = withholdingAmount)
+            TaxLine(
+                name = "Retención",
+                role = TaxRole.INCOME_TAX,
+                percent = withholdingPercent,
+                amount = withholdingAmount
+            )
         ) else emptyList()
 
         val existing = transactionRepository
@@ -184,34 +194,34 @@ class SyncAssetTransactionToLedgerUseCase(
         return if (existing != null) {
             transactionRepository.updateTransaction(
                 existing.copy(
-                    amount           = netAmount,
-                    date             = date,
-                    notes            = label,
-                    incomeType       = IncomeType.BOND_DEPOSIT,
-                    grossAmount      = grossAmount,
-                    taxLines         = taxLines,
+                    amount = netAmount,
+                    date = date,
+                    notes = label,
+                    incomeType = IncomeType.BOND_DEPOSIT,
+                    grossAmount = grossAmount,
+                    taxLines = taxLines,
                     commissionAmount = commissionAmount,
-                    issuerId         = issuerId,
-                    issuerName       = issuerName
+                    issuerId = issuerId,
+                    issuerName = issuerName
                 )
             )
         } else {
             val now = nowMillis()
             val transaction = Transaction(
-                id                       = "ledger_$bondDepositId",
-                accountId                = accountId,
-                amount                   = netAmount,
-                type                     = TransactionType.INCOME,
-                categoryId               = null,
-                date                     = date,
-                notes                    = label,
-                createdAt                = now,
-                incomeType               = IncomeType.BOND_DEPOSIT,
-                grossAmount              = grossAmount,
-                taxLines                 = taxLines,
-                commissionAmount         = commissionAmount,
-                issuerId                 = issuerId,
-                issuerName               = issuerName,
+                id = "ledger_$bondDepositId",
+                accountId = accountId,
+                amount = netAmount,
+                type = TransactionType.INCOME,
+                categoryId = null,
+                date = date,
+                notes = label,
+                createdAt = now,
+                incomeType = IncomeType.BOND_DEPOSIT,
+                grossAmount = grossAmount,
+                taxLines = taxLines,
+                commissionAmount = commissionAmount,
+                issuerId = issuerId,
+                issuerName = issuerName,
                 linkedAssetTransactionId = bondDepositId
             )
             transactionRepository.saveTransaction(transaction)

@@ -1,7 +1,5 @@
 package es.aviferdev.n3to.ui.portfolio.assethistory
 
-import androidx.compose.material3.MaterialTheme
-import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -24,6 +22,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -36,6 +35,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.portfolio.FifoBreakdown
+import es.aviferdev.n3to.ui.theme.appColors
 
 // ─── FIFO breakdown ───────────────────────────────────────────────────────────
 @Composable
@@ -78,12 +78,18 @@ fun FifoBreakdownSection(
                             if (o > 0 && s > 0) append("  ·  ")
                             if (s > 0) append("$s ${if (s == 1) "cierre" else "cierres"}")
                         }
-                        Text(subtitle, fontSize = 10.sp, color = MaterialTheme.appColors.textTertiary)
+                        Text(
+                            subtitle,
+                            fontSize = 10.sp,
+                            color = MaterialTheme.appColors.textTertiary
+                        )
                     }
                 }
                 Icon(
                     if (expanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
-                    contentDescription = null, tint = MaterialTheme.appColors.textTertiary, modifier = Modifier.size(18.dp)
+                    contentDescription = null,
+                    tint = MaterialTheme.appColors.textTertiary,
+                    modifier = Modifier.size(18.dp)
                 )
             }
 

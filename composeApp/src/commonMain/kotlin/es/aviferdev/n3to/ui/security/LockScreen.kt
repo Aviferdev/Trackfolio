@@ -1,7 +1,5 @@
 package es.aviferdev.n3to.ui.security
 
-import androidx.compose.material3.MaterialTheme
-import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,6 +18,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -31,7 +30,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -40,9 +38,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.core.security.BiometricAuthenticator
 import es.aviferdev.n3to.core.security.BiometricResult
-
 import es.aviferdev.n3to.ui.theme.ErrorSoft
-
+import es.aviferdev.n3to.ui.theme.appColors
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.security_biometric_not_available
 import n3to.composeapp.generated.resources.security_unlock_hint
@@ -60,7 +57,7 @@ fun LockScreen(onUnlocked: () -> Unit) {
     val appCTextPrimary = MaterialTheme.appColors.textPrimary
     val appCTextSecondary = MaterialTheme.appColors.textSecondary
     val authenticator: BiometricAuthenticator = koinInject()
-    var errorMessage     by remember { mutableStateOf<String?>(null) }
+    var errorMessage by remember { mutableStateOf<String?>(null) }
     var isAuthenticating by remember { mutableStateOf(false) }
     val unlockTitle = stringResource(Res.string.security_unlock_title)
     val unlockHint = stringResource(Res.string.security_unlock_hint)
@@ -70,15 +67,15 @@ fun LockScreen(onUnlocked: () -> Unit) {
     LaunchedEffect(Unit) {
         isAuthenticating = true
         authenticator.authenticate(
-            title    = unlockTitle,
+            title = unlockTitle,
             subtitle = unlockHint
         ) { result ->
             isAuthenticating = false
             when (result) {
-                is BiometricResult.Success       -> onUnlocked()
+                is BiometricResult.Success -> onUnlocked()
                 is BiometricResult.UserCancelled -> errorMessage = null
-                is BiometricResult.NotAvailable  -> errorMessage = bioNotAvailable
-                is BiometricResult.Error         -> errorMessage = result.message
+                is BiometricResult.NotAvailable -> errorMessage = bioNotAvailable
+                is BiometricResult.Error -> errorMessage = result.message
             }
         }
     }
@@ -137,16 +134,16 @@ fun LockScreen(onUnlocked: () -> Unit) {
 
             Text(
                 "N3to",
-                fontSize   = 26.sp,
+                fontSize = 26.sp,
                 fontWeight = FontWeight.Bold,
-                color      = appCTextPrimary,
+                color = appCTextPrimary,
                 letterSpacing = (-0.5).sp
             )
             Spacer(Modifier.height(8.dp))
             Text(
                 "La app está bloqueada.\nAutentícate para continuar.",
-                fontSize  = 14.sp,
-                color     = appCTextSecondary,
+                fontSize = 14.sp,
+                color = appCTextSecondary,
                 textAlign = TextAlign.Center
             )
 
@@ -160,8 +157,8 @@ fun LockScreen(onUnlocked: () -> Unit) {
                 ) {
                     Text(
                         msg,
-                        fontSize  = 13.sp,
-                        color     = ErrorSoft,
+                        fontSize = 13.sp,
+                        color = ErrorSoft,
                         textAlign = TextAlign.Center
                     )
                 }
@@ -174,40 +171,40 @@ fun LockScreen(onUnlocked: () -> Unit) {
                     isAuthenticating = true
                     errorMessage = null
                     authenticator.authenticate(
-                        title    = unlockTitle,
+                        title = unlockTitle,
                         subtitle = unlockHint
                     ) { result ->
                         isAuthenticating = false
                         when (result) {
-                            is BiometricResult.Success       -> onUnlocked()
+                            is BiometricResult.Success -> onUnlocked()
                             is BiometricResult.UserCancelled -> Unit
-                            is BiometricResult.NotAvailable  -> errorMessage = bioNotAvailable
-                            is BiometricResult.Error         -> errorMessage = result.message
+                            is BiometricResult.NotAvailable -> errorMessage = bioNotAvailable
+                            is BiometricResult.Error -> errorMessage = result.message
                         }
                     }
                 },
-                enabled  = !isAuthenticating,
+                enabled = !isAuthenticating,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(52.dp),
-                shape    = RoundedCornerShape(14.dp),
-                colors   = ButtonDefaults.buttonColors(
-                    containerColor         = appCCyanAccent,
+                shape = RoundedCornerShape(14.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = appCCyanAccent,
                     disabledContainerColor = appCCyanAccent.copy(alpha = 0.38f)
                 )
             ) {
                 if (isAuthenticating) {
                     CircularProgressIndicator(
-                        modifier    = Modifier.size(20.dp),
-                        color       = appCNavyDeep,
+                        modifier = Modifier.size(20.dp),
+                        color = appCNavyDeep,
                         strokeWidth = 2.dp
                     )
                 } else {
                     Text(
                         "Desbloquear",
-                        fontSize   = 16.sp,
+                        fontSize = 16.sp,
                         fontWeight = FontWeight.SemiBold,
-                        color      = appCNavyDeep
+                        color = appCNavyDeep
                     )
                 }
             }

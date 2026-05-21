@@ -1,14 +1,33 @@
 package es.aviferdev.n3to.ui.settings
 
-import androidx.compose.material3.MaterialTheme
-import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -19,14 +38,15 @@ import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.LimitType
 import es.aviferdev.n3to.ui.common.component.SelectableChip
 import es.aviferdev.n3to.ui.common.input.AmountInputField
-import es.aviferdev.n3to.ui.theme.*
-import org.jetbrains.compose.resources.stringResource
+import es.aviferdev.n3to.ui.theme.N3toTheme
+import es.aviferdev.n3to.ui.theme.PrimaryAlpha
+import es.aviferdev.n3to.ui.theme.appColors
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.category_remove_limit
 import n3to.composeapp.generated.resources.common_cancel
 import n3to.composeapp.generated.resources.common_close
 import n3to.composeapp.generated.resources.common_save
-
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 /**
@@ -44,7 +64,8 @@ fun SetCategoryLimitSheet(
 ) {
     var limitText by remember {
         mutableStateOf(
-            if (currentLimit > 0.0) if (currentLimit % 1.0 == 0.0) currentLimit.toLong().toString() else currentLimit.toString()
+            if (currentLimit > 0.0) if (currentLimit % 1.0 == 0.0) currentLimit.toLong()
+                .toString() else currentLimit.toString()
             else ""
         )
     }
@@ -92,7 +113,11 @@ fun SetCategoryLimitSheet(
                     )
                 }
                 IconButton(onClick = onDismiss) {
-                    Icon(Icons.Default.Close, stringResource(Res.string.common_close), tint = MaterialTheme.appColors.textSecondary)
+                    Icon(
+                        Icons.Default.Close,
+                        stringResource(Res.string.common_close),
+                        tint = MaterialTheme.appColors.textSecondary
+                    )
                 }
             }
 
@@ -156,21 +181,34 @@ fun SetCategoryLimitSheet(
                     disabledContainerColor = MaterialTheme.appColors.primary.copy(alpha = 0.3f)
                 )
             ) {
-                Text(stringResource(Res.string.common_save), fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = Color.White)
+                Text(
+                    stringResource(Res.string.common_save),
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = Color.White
+                )
             }
 
             // ── Botón Quitar límite (solo si hay límite actual) ────────────────
             if (currentLimit > 0.0) {
                 Spacer(Modifier.height(8.dp))
                 TextButton(onClick = { onSave(0.0, LimitType.FIXED) }) {
-                    Text(stringResource(Res.string.category_remove_limit), color = MaterialTheme.appColors.expense, fontSize = 14.sp)
+                    Text(
+                        stringResource(Res.string.category_remove_limit),
+                        color = MaterialTheme.appColors.expense,
+                        fontSize = 14.sp
+                    )
                 }
             }
 
             Spacer(Modifier.height(4.dp))
 
             TextButton(onClick = onDismiss) {
-                Text(stringResource(Res.string.common_cancel), color = MaterialTheme.appColors.textSecondary, fontSize = 14.sp)
+                Text(
+                    stringResource(Res.string.common_cancel),
+                    color = MaterialTheme.appColors.textSecondary,
+                    fontSize = 14.sp
+                )
             }
         }
     }

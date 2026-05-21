@@ -11,20 +11,27 @@ class AssetTagRepositoryImpl(
 ) : AssetTagRepository {
 
     override fun getAllTags(): Flow<List<AssetTag>> = dataSource.getAllTags()
-    override fun getTagsByCategory(categoryId: String): Flow<List<AssetTag>> = dataSource.getTagsByCategory(categoryId)
+    override fun getTagsByCategory(categoryId: String): Flow<List<AssetTag>> =
+        dataSource.getTagsByCategory(categoryId)
+
     override fun getGlobalTags(): Flow<List<AssetTag>> = dataSource.getGlobalTags()
     override fun getTagById(id: String): Flow<AssetTag?> = dataSource.getTagById(id)
 
     override suspend fun saveTag(tag: AssetTag): Result<Unit> = dataSource.insertTag(tag)
     override suspend fun renameTag(id: String, newName: String, newColor: String): Result<Unit> =
         dataSource.renameTag(id, newName, newColor)
+
     override suspend fun archiveTag(id: String): Result<Unit> = dataSource.archiveTag(id)
     override suspend fun unarchiveTag(id: String): Result<Unit> = dataSource.unarchiveTag(id)
 
     override fun getAssignmentsForAsset(assetId: String): Flow<List<AssetTagAssignment>> =
         dataSource.getAssignmentsForAsset(assetId)
 
-    override suspend fun upsertAssignment(assetId: String, tagId: String, weight: Double): Result<Unit> =
+    override suspend fun upsertAssignment(
+        assetId: String,
+        tagId: String,
+        weight: Double
+    ): Result<Unit> =
         dataSource.upsertAssignment(assetId, tagId, weight)
 
     override suspend fun removeAssignment(assetId: String, tagId: String): Result<Unit> =

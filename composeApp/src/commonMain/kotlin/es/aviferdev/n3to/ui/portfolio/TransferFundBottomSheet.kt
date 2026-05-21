@@ -96,31 +96,31 @@ fun TransferFundBottomSheet(
 
     // ── Validación ───────────────────────────────────────────────────────────
     val parsedQty = quantity.replace(',', '.').toDoubleOrNull()
-    val parsedVL  = destinationVL.replace(',', '.').toDoubleOrNull()
-    val now       = nowMillis()
+    val parsedVL = destinationVL.replace(',', '.').toDoubleOrNull()
+    val now = nowMillis()
 
     val availableForTransfer: Double = if (sourcePlatformId != null) {
         PortfolioCalculator.availableQuantityAt(
             transactions = assetTransactions,
-            asOfDate     = dateMillis,
-            platformId   = sourcePlatformId!!
+            asOfDate = dateMillis,
+            platformId = sourcePlatformId!!
         )
     } else {
         PortfolioCalculator.availableQuantityAt(
             transactions = assetTransactions,
-            asOfDate     = dateMillis
+            asOfDate = dateMillis
         )
     }
 
     val transferExceeds = parsedQty != null && parsedQty > availableForTransfer
 
     val isValid = selectedDestinationId != null
-        && parsedQty != null && parsedQty > 0.0
-        && parsedVL != null && parsedVL > 0.0
-        && sourcePlatformId != null
-        && destinationPlatformId != null
-        && dateMillis <= now
-        && !transferExceeds
+            && parsedQty != null && parsedQty > 0.0
+            && parsedVL != null && parsedVL > 0.0
+            && sourcePlatformId != null
+            && destinationPlatformId != null
+            && dateMillis <= now
+            && !transferExceeds
 
     val selectedDestination = remember(selectedDestinationId, destinations) {
         destinations.firstOrNull { it.id == selectedDestinationId }
@@ -128,8 +128,8 @@ fun TransferFundBottomSheet(
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
-        sheetState       = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-        containerColor   = MaterialTheme.appColors.surface,
+        sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
+        containerColor = MaterialTheme.appColors.surface,
         dragHandle = {
             Box(
                 modifier = Modifier
@@ -150,21 +150,26 @@ fun TransferFundBottomSheet(
         ) {
             Spacer(Modifier.height(4.dp))
             Text(
-                text       = stringResource(Res.string.portfolio_transfer_title),
-                fontSize   = 18.sp,
+                text = stringResource(Res.string.portfolio_transfer_title),
+                fontSize = 18.sp,
                 fontWeight = FontWeight.SemiBold,
-                color      = MaterialTheme.appColors.textPrimary,
-                modifier   = Modifier.padding(bottom = 4.dp)
+                color = MaterialTheme.appColors.textPrimary,
+                modifier = Modifier.padding(bottom = 4.dp)
             )
             Text(
-                text     = stringResource(Res.string.portfolio_transfer_desc),
+                text = stringResource(Res.string.portfolio_transfer_desc),
                 fontSize = 12.sp,
-                color    = MaterialTheme.appColors.textSecondary,
+                color = MaterialTheme.appColors.textSecondary,
                 modifier = Modifier.padding(bottom = 16.dp)
             )
 
             // ── Fondo origen (solo lectura) ──────────────────────────────────
-            Text(stringResource(Res.string.portfolio_transfer_source_label), fontSize = 12.sp, color = MaterialTheme.appColors.textSecondary, fontWeight = FontWeight.Medium)
+            Text(
+                stringResource(Res.string.portfolio_transfer_source_label),
+                fontSize = 12.sp,
+                color = MaterialTheme.appColors.textSecondary,
+                fontWeight = FontWeight.Medium
+            )
             Spacer(Modifier.height(6.dp))
             Row(
                 modifier = Modifier
@@ -175,30 +180,44 @@ fun TransferFundBottomSheet(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Box(
-                    modifier         = Modifier
+                    modifier = Modifier
                         .size(36.dp)
                         .clip(RoundedCornerShape(8.dp))
                         .background(MaterialTheme.appColors.primary),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text       = sourceAsset.ticker.take(3),
-                        fontSize   = if (sourceAsset.ticker.length > 3) 9.sp else 11.sp,
-                        color      = Color.White,
+                        text = sourceAsset.ticker.take(3),
+                        fontSize = if (sourceAsset.ticker.length > 3) 9.sp else 11.sp,
+                        color = Color.White,
                         fontWeight = FontWeight.Bold
                     )
                 }
                 Spacer(Modifier.width(10.dp))
                 Column(modifier = Modifier.weight(1f)) {
-                    Text(sourceAsset.name, fontSize = 14.sp, color = MaterialTheme.appColors.textPrimary, fontWeight = FontWeight.Medium)
-                    Text(sourceAsset.ticker, fontSize = 11.sp, color = MaterialTheme.appColors.textSecondary)
+                    Text(
+                        sourceAsset.name,
+                        fontSize = 14.sp,
+                        color = MaterialTheme.appColors.textPrimary,
+                        fontWeight = FontWeight.Medium
+                    )
+                    Text(
+                        sourceAsset.ticker,
+                        fontSize = 11.sp,
+                        color = MaterialTheme.appColors.textSecondary
+                    )
                 }
                 Text("↗", fontSize = 20.sp, color = MaterialTheme.appColors.expense)
             }
             Spacer(Modifier.height(16.dp))
 
             // ── Fondo destino (selector) ─────────────────────────────────────
-            Text(stringResource(Res.string.portfolio_transfer_dest_label), fontSize = 12.sp, color = MaterialTheme.appColors.textSecondary, fontWeight = FontWeight.Medium)
+            Text(
+                stringResource(Res.string.portfolio_transfer_dest_label),
+                fontSize = 12.sp,
+                color = MaterialTheme.appColors.textSecondary,
+                fontWeight = FontWeight.Medium
+            )
             Spacer(Modifier.height(8.dp))
             if (destinations.isEmpty()) {
                 Box(
@@ -210,24 +229,24 @@ fun TransferFundBottomSheet(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text     = stringResource(Res.string.portfolio_transfer_no_destinations),
+                        text = stringResource(Res.string.portfolio_transfer_no_destinations),
                         fontSize = 12.sp,
-                        color    = MaterialTheme.appColors.textSecondary
+                        color = MaterialTheme.appColors.textSecondary
                     )
                 }
             } else {
                 Row(
-                    modifier              = Modifier
+                    modifier = Modifier
                         .fillMaxWidth()
                         .horizontalScroll(rememberScrollState()),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     destinations.forEach { asset ->
                         DestinationChip(
-                            ticker     = asset.ticker,
-                            name       = asset.name,
+                            ticker = asset.ticker,
+                            name = asset.name,
                             isSelected = selectedDestinationId == asset.id,
-                            onClick    = { selectedDestinationId = asset.id }
+                            onClick = { selectedDestinationId = asset.id }
                         )
                     }
                 }
@@ -236,51 +255,72 @@ fun TransferFundBottomSheet(
 
             // ── Cantidad de participaciones a traspasar ──────────────────────
             OutlinedTextField(
-                value         = quantity,
-                onValueChange = { quantity = it.filter { c -> c.isDigit() || c == ',' || c == '.' } },
-                label         = { Text(stringResource(Res.string.portfolio_transfer_qty_label)) },
-                placeholder   = { Text("0") },
-                isError       = transferExceeds,
-                modifier      = Modifier.fillMaxWidth(),
-                singleLine    = true,
-                shape         = RoundedCornerShape(10.dp),
+                value = quantity,
+                onValueChange = {
+                    quantity = it.filter { c -> c.isDigit() || c == ',' || c == '.' }
+                },
+                label = { Text(stringResource(Res.string.portfolio_transfer_qty_label)) },
+                placeholder = { Text("0") },
+                isError = transferExceeds,
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                shape = RoundedCornerShape(10.dp),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                colors        = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor   = if (transferExceeds) MaterialTheme.appColors.expense else MaterialTheme.appColors.primary,
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = if (transferExceeds) MaterialTheme.appColors.expense else MaterialTheme.appColors.primary,
                     unfocusedBorderColor = if (transferExceeds) MaterialTheme.appColors.expense else MaterialTheme.appColors.border
                 )
             )
             Spacer(Modifier.height(6.dp))
             Text(
-                text     = if (transferExceeds)
-                    stringResource(Res.string.portfolio_transfer_only_available, formatQty(availableForTransfer))
+                text = if (transferExceeds)
+                    stringResource(
+                        Res.string.portfolio_transfer_only_available,
+                        formatQty(availableForTransfer)
+                    )
                 else
-                    stringResource(Res.string.portfolio_transfer_available, formatQty(availableForTransfer)),
+                    stringResource(
+                        Res.string.portfolio_transfer_available,
+                        formatQty(availableForTransfer)
+                    ),
                 fontSize = 11.sp,
-                color    = if (transferExceeds) MaterialTheme.appColors.expense else MaterialTheme.appColors.textSecondary
+                color = if (transferExceeds) MaterialTheme.appColors.expense else MaterialTheme.appColors.textSecondary
             )
             Spacer(Modifier.height(12.dp))
 
             // ── VL del fondo destino ─────────────────────────────────────────
             OutlinedTextField(
-                value         = destinationVL,
-                onValueChange = { destinationVL = it.filter { c -> c.isDigit() || c == ',' || c == '.' } },
-                label         = { Text(stringResource(Res.string.portfolio_transfer_vl_label)) },
-                placeholder   = { Text("0,00") },
-                trailingIcon  = { Text("€", color = MaterialTheme.appColors.textSecondary, modifier = Modifier.padding(end = 12.dp)) },
-                modifier      = Modifier.fillMaxWidth(),
-                singleLine    = true,
-                shape         = RoundedCornerShape(10.dp),
+                value = destinationVL,
+                onValueChange = {
+                    destinationVL = it.filter { c -> c.isDigit() || c == ',' || c == '.' }
+                },
+                label = { Text(stringResource(Res.string.portfolio_transfer_vl_label)) },
+                placeholder = { Text("0,00") },
+                trailingIcon = {
+                    Text(
+                        "€",
+                        color = MaterialTheme.appColors.textSecondary,
+                        modifier = Modifier.padding(end = 12.dp)
+                    )
+                },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                shape = RoundedCornerShape(10.dp),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                colors        = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor   = MaterialTheme.appColors.primary,
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = MaterialTheme.appColors.primary,
                     unfocusedBorderColor = MaterialTheme.appColors.border
                 )
             )
             Spacer(Modifier.height(12.dp))
 
             // ── Fecha ────────────────────────────────────────────────────────
-            Text(stringResource(Res.string.portfolio_transfer_date_label), fontSize = 12.sp, color = MaterialTheme.appColors.textSecondary, fontWeight = FontWeight.Medium)
+            Text(
+                stringResource(Res.string.portfolio_transfer_date_label),
+                fontSize = 12.sp,
+                color = MaterialTheme.appColors.textSecondary,
+                fontWeight = FontWeight.Medium
+            )
             Spacer(Modifier.height(6.dp))
             Box(
                 modifier = Modifier
@@ -291,35 +331,40 @@ fun TransferFundBottomSheet(
                     .padding(horizontal = 14.dp, vertical = 14.dp)
             ) {
                 Text(
-                    text     = formatFullDate(dateMillis),
+                    text = formatFullDate(dateMillis),
                     fontSize = 14.sp,
-                    color    = MaterialTheme.appColors.textPrimary
+                    color = MaterialTheme.appColors.textPrimary
                 )
             }
             Spacer(Modifier.height(12.dp))
 
             // ── Plataforma origen ────────────────────────────────────────────
-            Text(stringResource(Res.string.portfolio_transfer_source_platform), fontSize = 12.sp, color = MaterialTheme.appColors.textSecondary, fontWeight = FontWeight.Medium)
+            Text(
+                stringResource(Res.string.portfolio_transfer_source_platform),
+                fontSize = 12.sp,
+                color = MaterialTheme.appColors.textSecondary,
+                fontWeight = FontWeight.Medium
+            )
             Spacer(Modifier.height(8.dp))
             if (platforms.isEmpty()) {
                 Text(
-                    text     = stringResource(Res.string.portfolio_transfer_no_platforms),
+                    text = stringResource(Res.string.portfolio_transfer_no_platforms),
                     fontSize = 12.sp,
-                    color    = MaterialTheme.appColors.textSecondary
+                    color = MaterialTheme.appColors.textSecondary
                 )
             } else {
                 Row(
-                    modifier              = Modifier
+                    modifier = Modifier
                         .fillMaxWidth()
                         .horizontalScroll(rememberScrollState()),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     platforms.forEach { p ->
                         TransferPlatformChip(
-                            icon       = p.icon,
-                            label      = p.name,
+                            icon = p.icon,
+                            label = p.name,
                             isSelected = sourcePlatformId == p.id,
-                            onClick    = { sourcePlatformId = p.id }
+                            onClick = { sourcePlatformId = p.id }
                         )
                     }
                 }
@@ -327,27 +372,32 @@ fun TransferFundBottomSheet(
             Spacer(Modifier.height(12.dp))
 
             // ── Plataforma destino ───────────────────────────────────────────
-            Text(stringResource(Res.string.portfolio_transfer_dest_platform), fontSize = 12.sp, color = MaterialTheme.appColors.textSecondary, fontWeight = FontWeight.Medium)
+            Text(
+                stringResource(Res.string.portfolio_transfer_dest_platform),
+                fontSize = 12.sp,
+                color = MaterialTheme.appColors.textSecondary,
+                fontWeight = FontWeight.Medium
+            )
             Spacer(Modifier.height(8.dp))
             if (platforms.isEmpty()) {
                 Text(
-                    text     = "Sin plataformas disponibles.",
+                    text = "Sin plataformas disponibles.",
                     fontSize = 12.sp,
-                    color    = MaterialTheme.appColors.textSecondary
+                    color = MaterialTheme.appColors.textSecondary
                 )
             } else {
                 Row(
-                    modifier              = Modifier
+                    modifier = Modifier
                         .fillMaxWidth()
                         .horizontalScroll(rememberScrollState()),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     platforms.forEach { p ->
                         TransferPlatformChip(
-                            icon       = p.icon,
-                            label      = p.name,
+                            icon = p.icon,
+                            label = p.name,
                             isSelected = destinationPlatformId == p.id,
-                            onClick    = { destinationPlatformId = p.id }
+                            onClick = { destinationPlatformId = p.id }
                         )
                     }
                 }
@@ -358,24 +408,24 @@ fun TransferFundBottomSheet(
             // ── Botón de confirmar ───────────────────────────────────────────
             Button(
                 onClick = {
-                    val destId     = selectedDestinationId    ?: return@Button
-                    val srcPlat    = sourcePlatformId         ?: return@Button
-                    val dstPlat    = destinationPlatformId    ?: return@Button
-                    val qty        = parsedQty                ?: return@Button
-                    val vl         = parsedVL                 ?: return@Button
+                    val destId = selectedDestinationId ?: return@Button
+                    val srcPlat = sourcePlatformId ?: return@Button
+                    val dstPlat = destinationPlatformId ?: return@Button
+                    val qty = parsedQty ?: return@Button
+                    val vl = parsedVL ?: return@Button
                     onExecuteTransfer(destId, qty, srcPlat, dstPlat, vl, dateMillis)
                 },
-                enabled  = isValid,
+                enabled = isValid,
                 modifier = Modifier.fillMaxWidth().height(52.dp),
-                shape    = RoundedCornerShape(10.dp),
-                colors   = ButtonDefaults.buttonColors(
-                    containerColor         = MaterialTheme.appColors.primary,
+                shape = RoundedCornerShape(10.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.appColors.primary,
                     disabledContainerColor = MaterialTheme.appColors.primary.copy(alpha = 0.38f)
                 )
             ) {
                 Text(
-                    text       = stringResource(Res.string.portfolio_transfer_confirm_btn),
-                    fontSize   = 16.sp,
+                    text = stringResource(Res.string.portfolio_transfer_confirm_btn),
+                    fontSize = 16.sp,
                     fontWeight = FontWeight.Medium
                 )
             }
@@ -396,11 +446,19 @@ fun TransferFundBottomSheet(
                         dateMillis = selected
                     }
                     showDatePicker = false
-                }) { Text(stringResource(Res.string.common_accept), color = MaterialTheme.appColors.primary) }
+                }) {
+                    Text(
+                        stringResource(Res.string.common_accept),
+                        color = MaterialTheme.appColors.primary
+                    )
+                }
             },
             dismissButton = {
                 TextButton(onClick = { showDatePicker = false }) {
-                    Text(stringResource(Res.string.common_cancel), color = MaterialTheme.appColors.textSecondary)
+                    Text(
+                        stringResource(Res.string.common_cancel),
+                        color = MaterialTheme.appColors.textSecondary
+                    )
                 }
             },
             colors = DatePickerDefaults.colors(containerColor = MaterialTheme.appColors.surface)
@@ -409,7 +467,7 @@ fun TransferFundBottomSheet(
                 state = pickerState,
                 colors = DatePickerDefaults.colors(
                     selectedDayContainerColor = MaterialTheme.appColors.primary,
-                    todayDateBorderColor      = MaterialTheme.appColors.primary
+                    todayDateBorderColor = MaterialTheme.appColors.primary
                 )
             )
         }
@@ -425,9 +483,10 @@ private fun DestinationChip(
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
-    val bg     = if (isSelected) MaterialTheme.appColors.primary    else MaterialTheme.appColors.surfaceElevated
-    val border = if (isSelected) MaterialTheme.appColors.primary    else MaterialTheme.appColors.border
-    val text   = if (isSelected) Color.White    else MaterialTheme.appColors.textPrimary
+    val bg =
+        if (isSelected) MaterialTheme.appColors.primary else MaterialTheme.appColors.surfaceElevated
+    val border = if (isSelected) MaterialTheme.appColors.primary else MaterialTheme.appColors.border
+    val text = if (isSelected) Color.White else MaterialTheme.appColors.textPrimary
 
     Row(
         modifier = Modifier
@@ -439,14 +498,14 @@ private fun DestinationChip(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text       = ticker,
-            fontSize   = 12.sp,
-            color      = text,
+            text = ticker,
+            fontSize = 12.sp,
+            color = text,
             fontWeight = FontWeight.Bold
         )
         Spacer(Modifier.width(6.dp))
         Text(
-            text  = name,
+            text = name,
             fontSize = 12.sp,
             color = text.copy(alpha = if (isSelected) 0.85f else 0.65f)
         )
@@ -460,9 +519,10 @@ private fun TransferPlatformChip(
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
-    val bg     = if (isSelected) MaterialTheme.appColors.primary    else MaterialTheme.appColors.surfaceElevated
-    val border = if (isSelected) MaterialTheme.appColors.primary    else MaterialTheme.appColors.border
-    val text   = if (isSelected) Color.White    else MaterialTheme.appColors.textPrimary
+    val bg =
+        if (isSelected) MaterialTheme.appColors.primary else MaterialTheme.appColors.surfaceElevated
+    val border = if (isSelected) MaterialTheme.appColors.primary else MaterialTheme.appColors.border
+    val text = if (isSelected) Color.White else MaterialTheme.appColors.textPrimary
 
     Row(
         modifier = Modifier
@@ -476,9 +536,9 @@ private fun TransferPlatformChip(
         Text(icon, fontSize = 14.sp)
         Spacer(Modifier.width(6.dp))
         Text(
-            text       = label,
-            fontSize   = 13.sp,
-            color      = text,
+            text = label,
+            fontSize = 13.sp,
+            color = text,
             fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal
         )
     }
@@ -499,8 +559,24 @@ private fun TransferFundBottomSheetPreview() {
             assetCategoryId = "fixed_cat_funds"
         )
         val destinationAssets = listOf(
-            Asset(id = "asset-2", accountId = "acc-1", ticker = "BBVA", name = "Fondo BBVA España", notes = null, createdAt = now, assetCategoryId = "fixed_cat_funds"),
-            Asset(id = "asset-3", accountId = "acc-1", ticker = "ING", name = "Fondo ING España", notes = null, createdAt = now, assetCategoryId = "fixed_cat_funds")
+            Asset(
+                id = "asset-2",
+                accountId = "acc-1",
+                ticker = "BBVA",
+                name = "Fondo BBVA España",
+                notes = null,
+                createdAt = now,
+                assetCategoryId = "fixed_cat_funds"
+            ),
+            Asset(
+                id = "asset-3",
+                accountId = "acc-1",
+                ticker = "ING",
+                name = "Fondo ING España",
+                notes = null,
+                createdAt = now,
+                assetCategoryId = "fixed_cat_funds"
+            )
         )
         val platforms = listOf(
             Platform("platform-1", "Banco Santander", "🏦", 0, false, now),

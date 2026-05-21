@@ -29,12 +29,12 @@ class LoanRateChangeLocalDataSourceImpl(
             withContext(Dispatchers.IO) {
                 val e = rateChange.toEntity()
                 queries.insert(
-                    id            = e.id,
-                    loanId        = e.loanId,
-                    newRate       = e.newRate,
-                    previousRate  = e.previousRate,
+                    id = e.id,
+                    loanId = e.loanId,
+                    newRate = e.newRate,
+                    previousRate = e.previousRate,
                     effectiveDate = e.effectiveDate,
-                    createdAt     = e.createdAt
+                    createdAt = e.createdAt
                 )
             }
         }

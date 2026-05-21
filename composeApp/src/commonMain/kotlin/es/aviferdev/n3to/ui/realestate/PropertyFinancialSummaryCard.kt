@@ -41,8 +41,14 @@ fun PropertyFinancialSummaryCard(
             Spacer(Modifier.height(8.dp))
 
             if (summary.grossYieldOnPurchase > 0 || summary.grossYieldOnCurrent > 0) {
-                DataRowLabel("Yield bruto s/ compra", "${formatPercent(summary.grossYieldOnPurchase)}%")
-                DataRowLabel("Yield bruto s/ valor actual", "${formatPercent(summary.grossYieldOnCurrent)}%")
+                DataRowLabel(
+                    "Yield bruto s/ compra",
+                    "${formatPercent(summary.grossYieldOnPurchase)}%"
+                )
+                DataRowLabel(
+                    "Yield bruto s/ valor actual",
+                    "${formatPercent(summary.grossYieldOnCurrent)}%"
+                )
                 Spacer(Modifier.height(8.dp))
                 HorizontalDivider(color = MaterialTheme.appColors.border, thickness = 0.5.dp)
                 Spacer(Modifier.height(8.dp))
@@ -53,19 +59,38 @@ fun PropertyFinancialSummaryCard(
 
             // Gastos de compra/venta
             if (summary.totalPurchaseExpenses > 0) {
-                DataRowLabel(stringResource(Res.string.realestate_purchase_expenses), formatAmountEuro(summary.totalPurchaseExpenses))
+                DataRowLabel(
+                    stringResource(Res.string.realestate_purchase_expenses),
+                    formatAmountEuro(summary.totalPurchaseExpenses)
+                )
             }
             if (summary.totalSaleExpenses > 0) {
-                DataRowLabel(stringResource(Res.string.realestate_sale_expenses), formatAmountEuro(summary.totalSaleExpenses))
+                DataRowLabel(
+                    stringResource(Res.string.realestate_sale_expenses),
+                    formatAmountEuro(summary.totalSaleExpenses)
+                )
             }
 
-            HorizontalDivider(color = MaterialTheme.appColors.border2, thickness = 0.5.dp, modifier = Modifier.padding(vertical = 4.dp))
+            HorizontalDivider(
+                color = MaterialTheme.appColors.border2,
+                thickness = 0.5.dp,
+                modifier = Modifier.padding(vertical = 4.dp)
+            )
 
             // Cashflow neto
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                Text(stringResource(Res.string.realestate_cashflow_label), fontWeight = FontWeight.SemiBold, fontSize = 13.sp, color = MaterialTheme.appColors.textPrimary)
                 Text(
-                    if (summary.netCashflow >= 0) formatAmountEuro(summary.netCashflow) else "-${formatAmountEuro(-summary.netCashflow)}",
+                    stringResource(Res.string.realestate_cashflow_label),
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 13.sp,
+                    color = MaterialTheme.appColors.textPrimary
+                )
+                Text(
+                    if (summary.netCashflow >= 0) formatAmountEuro(summary.netCashflow) else "-${
+                        formatAmountEuro(
+                            -summary.netCashflow
+                        )
+                    }",
                     fontWeight = FontWeight.Bold, fontSize = 13.sp,
                     color = if (summary.netCashflow >= 0) MaterialTheme.appColors.income else MaterialTheme.appColors.expense
                 )
@@ -74,19 +99,35 @@ fun PropertyFinancialSummaryCard(
             // Retorno total (solo si vendida)
             if (summary.totalReturn != null) {
                 Spacer(Modifier.height(8.dp))
-                HorizontalDivider(color = MaterialTheme.appColors.primary.copy(alpha = 0.3f), thickness = 0.5.dp)
+                HorizontalDivider(
+                    color = MaterialTheme.appColors.primary.copy(alpha = 0.3f),
+                    thickness = 0.5.dp
+                )
                 Spacer(Modifier.height(8.dp))
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                    Text(stringResource(Res.string.realestate_total_return_label), fontWeight = FontWeight.Bold, fontSize = 14.sp, color = MaterialTheme.appColors.textPrimary)
+                    Text(
+                        stringResource(Res.string.realestate_total_return_label),
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 14.sp,
+                        color = MaterialTheme.appColors.textPrimary
+                    )
                     Column(horizontalAlignment = androidx.compose.ui.Alignment.End) {
                         Text(
-                            if (summary.totalReturn >= 0) "+${formatAmountEuro(summary.totalReturn)}" else "-${formatAmountEuro(-summary.totalReturn)}",
+                            if (summary.totalReturn >= 0) "+${formatAmountEuro(summary.totalReturn)}" else "-${
+                                formatAmountEuro(
+                                    -summary.totalReturn
+                                )
+                            }",
                             fontWeight = FontWeight.Bold, fontSize = 14.sp,
                             color = if (summary.totalReturn >= 0) MaterialTheme.appColors.income else MaterialTheme.appColors.expense
                         )
                         if (summary.totalReturnPercent != null) {
                             Text(
-                                "${if (summary.totalReturnPercent >= 0) "+" else ""}${formatPercent(summary.totalReturnPercent)}%",
+                                "${if (summary.totalReturnPercent >= 0) "+" else ""}${
+                                    formatPercent(
+                                        summary.totalReturnPercent
+                                    )
+                                }%",
                                 fontSize = 11.sp,
                                 color = if (summary.totalReturnPercent >= 0) MaterialTheme.appColors.income else MaterialTheme.appColors.expense
                             )
@@ -100,9 +141,17 @@ fun PropertyFinancialSummaryCard(
 
 @Composable
 private fun DataRowLabel(label: String, value: String) {
-    Row(Modifier.fillMaxWidth().padding(vertical = 2.dp), horizontalArrangement = Arrangement.SpaceBetween) {
+    Row(
+        Modifier.fillMaxWidth().padding(vertical = 2.dp),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
         Text(label, fontSize = 13.sp, color = MaterialTheme.appColors.textSecondary)
-        Text(value, fontSize = 13.sp, color = MaterialTheme.appColors.textPrimary, fontWeight = FontWeight.Medium)
+        Text(
+            value,
+            fontSize = 13.sp,
+            color = MaterialTheme.appColors.textPrimary,
+            fontWeight = FontWeight.Medium
+        )
     }
 }
 

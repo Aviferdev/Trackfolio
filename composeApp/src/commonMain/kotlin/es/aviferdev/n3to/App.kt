@@ -168,9 +168,11 @@ fun App() {
                     appLockManager.onAppBackground()
                     isLocked = appLockManager.isLocked
                 }
+
                 Lifecycle.Event.ON_START -> {
                     isLocked = appLockManager.isLocked
                 }
+
                 else -> Unit
             }
         }
@@ -195,7 +197,8 @@ fun App() {
                     // Paso 1: Chequeo de versión (antes de cualquier contenido)
                     versionStatus is VersionManager.Status.Checking -> {
                         Box(
-                            modifier = Modifier.fillMaxSize().background(MaterialTheme.appColors.background),
+                            modifier = Modifier.fillMaxSize()
+                                .background(MaterialTheme.appColors.background),
                             contentAlignment = Alignment.Center
                         ) {
                             CircularProgressIndicator(color = PrimaryDark)
@@ -253,10 +256,12 @@ fun App() {
 
                         Box {
                             N3toNavHost()
-                            Box(modifier = Modifier
-                                .fillMaxSize()
-                                .padding(16.dp)
-                                .align(Alignment.TopCenter)) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(16.dp)
+                                    .align(Alignment.TopCenter)
+                            ) {
                                 SnackbarHost(hostState = snackbarHostState) { data ->
                                     Snackbar(
                                         snackbarData = data,

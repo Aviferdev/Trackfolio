@@ -11,8 +11,8 @@ data class AssetTag(
     val id: String,
     val name: String,
     val categoryId: String? = null,
-    val color: String       = "#3D6EAD",
-    val archived: Boolean   = false,
+    val color: String = "#3D6EAD",
+    val archived: Boolean = false,
     val createdAt: Long
 )
 

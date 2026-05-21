@@ -44,8 +44,8 @@ fun LoanPickerSheet(
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
-        sheetState       = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-        containerColor   = MaterialTheme.appColors.surface,
+        sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
+        containerColor = MaterialTheme.appColors.surface,
         dragHandle = {
             Box(
                 modifier = Modifier
@@ -66,14 +66,14 @@ fun LoanPickerSheet(
             Text(
                 "Seleccionar préstamo",
                 fontWeight = FontWeight.Bold,
-                fontSize   = 18.sp,
-                color      = MaterialTheme.appColors.textPrimary
+                fontSize = 18.sp,
+                color = MaterialTheme.appColors.textPrimary
             )
             Spacer(Modifier.height(4.dp))
             Text(
                 "Vincula una hipoteca o préstamo existente",
                 fontSize = 13.sp,
-                color    = MaterialTheme.appColors.textTertiary
+                color = MaterialTheme.appColors.textTertiary
             )
 
             Spacer(Modifier.height(12.dp))
@@ -89,7 +89,11 @@ fun LoanPickerSheet(
                     colors = CheckboxDefaults.colors(checkedColor = MaterialTheme.appColors.primary)
                 )
                 Spacer(Modifier.width(4.dp))
-                Text(stringResource(Res.string.realestate_loan_only_mortgages), fontSize = 13.sp, color = MaterialTheme.appColors.textSecondary)
+                Text(
+                    stringResource(Res.string.realestate_loan_only_mortgages),
+                    fontSize = 13.sp,
+                    color = MaterialTheme.appColors.textSecondary
+                )
             }
 
             Spacer(Modifier.height(8.dp))
@@ -105,11 +109,15 @@ fun LoanPickerSheet(
             ) {
                 RadioButton(
                     selected = selectedLoanId == null,
-                    onClick  = { onLoanSelected(null) },
-                    colors   = RadioButtonDefaults.colors(selectedColor = MaterialTheme.appColors.primary)
+                    onClick = { onLoanSelected(null) },
+                    colors = RadioButtonDefaults.colors(selectedColor = MaterialTheme.appColors.primary)
                 )
                 Spacer(Modifier.width(8.dp))
-                Text(stringResource(Res.string.common_none), fontSize = 14.sp, color = MaterialTheme.appColors.textSecondary)
+                Text(
+                    stringResource(Res.string.common_none),
+                    fontSize = 14.sp,
+                    color = MaterialTheme.appColors.textSecondary
+                )
             }
 
             Spacer(Modifier.height(4.dp))
@@ -120,9 +128,9 @@ fun LoanPickerSheet(
             ) {
                 items(filteredLoans, key = { it.id }) { loan ->
                     LoanPickerItem(
-                        loan       = loan,
+                        loan = loan,
                         isSelected = loan.id == selectedLoanId,
-                        onClick    = { onLoanSelected(loan) }
+                        onClick = { onLoanSelected(loan) }
                     )
                 }
             }
@@ -146,19 +154,24 @@ private fun LoanPickerItem(
     ) {
         RadioButton(
             selected = isSelected,
-            onClick  = onClick,
-            colors   = RadioButtonDefaults.colors(selectedColor = MaterialTheme.appColors.primary)
+            onClick = onClick,
+            colors = RadioButtonDefaults.colors(selectedColor = MaterialTheme.appColors.primary)
         )
         Spacer(Modifier.width(8.dp))
         Icon(
             imageVector = loan.type.toMaterialIcon(),
             contentDescription = null,
-            tint        = MaterialTheme.appColors.primary,
-            modifier    = Modifier.size(22.dp)
+            tint = MaterialTheme.appColors.primary,
+            modifier = Modifier.size(22.dp)
         )
         Spacer(Modifier.width(10.dp))
         Column(modifier = Modifier.weight(1f)) {
-            Text(loan.name, fontWeight = FontWeight.Medium, fontSize = 13.sp, color = MaterialTheme.appColors.textPrimary)
+            Text(
+                loan.name,
+                fontWeight = FontWeight.Medium,
+                fontSize = 13.sp,
+                color = MaterialTheme.appColors.textPrimary
+            )
             loan.lenderName?.let {
                 Text(it, fontSize = 11.sp, color = MaterialTheme.appColors.textTertiary)
             }
@@ -167,13 +180,13 @@ private fun LoanPickerItem(
             Text(
                 formatAmountEuro(loan.outstandingPrincipal),
                 fontWeight = FontWeight.SemiBold,
-                fontSize   = 12.sp,
-                color      = MaterialTheme.appColors.expense
+                fontSize = 12.sp,
+                color = MaterialTheme.appColors.expense
             )
             Text(
                 "${formatAmountEuro(loan.monthlyPayment)}/mes",
-                fontSize   = 10.sp,
-                color      = MaterialTheme.appColors.textTertiary
+                fontSize = 10.sp,
+                color = MaterialTheme.appColors.textTertiary
             )
         }
     }
@@ -195,12 +208,22 @@ private fun LoanPickerSheetPreview() {
                     lenderName = "BBVA", notes = null, archived = false, createdAt = 1672531200000
                 ),
                 Loan(
-                    id = "2", accountId = "acc1", name = "Préstamo coche",
-                    type = LoanType.CAR, totalAmount = 25000.0,
-                    outstandingPrincipal = 12000.0, currentInterestRate = 5.0,
-                    monthlyPayment = 450.0, totalInstallments = 60, paidInstallments = 24,
-                    startDate = 1672531200000, endDate = 1704067200000,
-                    lenderName = "Santander", notes = null, archived = false, createdAt = 1672531200000
+                    id = "2",
+                    accountId = "acc1",
+                    name = "Préstamo coche",
+                    type = LoanType.CAR,
+                    totalAmount = 25000.0,
+                    outstandingPrincipal = 12000.0,
+                    currentInterestRate = 5.0,
+                    monthlyPayment = 450.0,
+                    totalInstallments = 60,
+                    paidInstallments = 24,
+                    startDate = 1672531200000,
+                    endDate = 1704067200000,
+                    lenderName = "Santander",
+                    notes = null,
+                    archived = false,
+                    createdAt = 1672531200000
                 )
             ),
             selectedLoanId = "1",

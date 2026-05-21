@@ -14,8 +14,8 @@ val PrimaryDark = Color(0xFF5B57F5)
 val PrimaryVariant = Color(0xFF4440D4)
 val PrimaryAlpha = Color(0x335B57F5)
 val PrimaryLight = Color(0xFF8B89F8)
-val BrandGreen   = Color(0xFF00C897)   // verde del icono — esmeralda de marca
-val IncomeGreen  = BrandGreen
+val BrandGreen = Color(0xFF00C897)   // verde del icono — esmeralda de marca
+val IncomeGreen = BrandGreen
 val PositiveGreen = BrandGreen
 val ExpenseRed = Color(0xFFEC4246)
 val NegativeRed = ExpenseRed
@@ -38,26 +38,26 @@ val TextTertiary = Color(0x6BFFFFFF)
 val TextDisabled = Color(0x3DFFFFFF)
 
 // ─── Navy / Fintech design system ─────────────────────────────────────────────
-val NavyDeep         = Color(0xFF07111E)   // fondo de pantalla home
-val NavySurface      = Color(0xFF0D1B2A)   // superficie de cards
+val NavyDeep = Color(0xFF07111E)   // fondo de pantalla home
+val NavySurface = Color(0xFF0D1B2A)   // superficie de cards
 val NavySurfaceLight = Color(0xFF162B44)   // card elevada / extremo gradiente hero
-val NavySelected     = Color(0xFF1A3A5C)   // fondo estado seleccionado (avatar, chip)
-val NavyBorder       = Color(0xFF1E3558)   // separadores en contexto navy
-val CyanAccent       = Color(0xFF38BDF8)   // acento interactivo principal
-val CyanGlow         = Color(0xFF22D3EE)   // orb decorativo / glow
-val CyanSubtle       = Color(0xFF7DD3FC)   // valores secundarios destacados
+val NavySelected = Color(0xFF1A3A5C)   // fondo estado seleccionado (avatar, chip)
+val NavyBorder = Color(0xFF1E3558)   // separadores en contexto navy
+val CyanAccent = Color(0xFF38BDF8)   // acento interactivo principal
+val CyanGlow = Color(0xFF22D3EE)   // orb decorativo / glow
+val CyanSubtle = Color(0xFF7DD3FC)   // valores secundarios destacados
 
 // ─── Portfolio / P&L ──────────────────────────────────────────────────────────
-val PnLPositive     = Color(0xFF86EFAC)   // chip text — saturated green
-val PnLNegative     = Color(0xFFFCA5A5)   // chip text — saturated red
+val PnLPositive = Color(0xFF86EFAC)   // chip text — saturated green
+val PnLNegative = Color(0xFFFCA5A5)   // chip text — saturated red
 val PnLPositiveSoft = Color(0xFFB4FFB4)   // badge bg — soft green
 val PnLNegativeSoft = Color(0xFFFFB4B4)   // badge bg — soft red
 
 // ─── Donut net worth ──────────────────────────────────────────────────────────
-val DonutAccounts    = Color(0xFF4CAF50)
+val DonutAccounts = Color(0xFF4CAF50)
 val DonutInvestments = Color(0xFF2196F3)
-val DonutRealEstate  = Color(0xFF8D6E63)
-val DonutValuables   = Color(0xFF9C27B0)   // púrpura — bienes muebles
+val DonutRealEstate = Color(0xFF8D6E63)
+val DonutValuables = Color(0xFF9C27B0)   // púrpura — bienes muebles
 
 // ─── Utilidades compartidas ────────────────────────────────────────────────────
 val DragHandleColor = Color(0xFFBDBDBD)

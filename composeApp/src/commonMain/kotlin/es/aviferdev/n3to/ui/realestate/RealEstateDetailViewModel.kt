@@ -81,30 +81,36 @@ class RealEstateDetailViewModel(
         val showReminder = property.hasPendingMortgageReminder
 
         RealEstateDetailUiState(
-            property                 = property,
-            linkedLoan               = linkedLoan,
-            showMortgageReminder     = showReminder,
-            showEditSheet            = sheets.showEdit,
-            showValueSheet           = sheets.showValue,
+            property = property,
+            linkedLoan = linkedLoan,
+            showMortgageReminder = showReminder,
+            showEditSheet = sheets.showEdit,
+            showValueSheet = sheets.showValue,
             showChangeRentalStatusSheet = sheets.showRental,
-            showArchiveDialog        = sheets.showArchive,
-            showSellSheet            = sheets.showSell,
-            isLoading                = false
+            showArchiveDialog = sheets.showArchive,
+            showSellSheet = sheets.showSell,
+            isLoading = false
         )
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), RealEstateDetailUiState(isLoading = true))
+    }.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(5_000),
+        RealEstateDetailUiState(isLoading = true)
+    )
 
     // ── Cargar datos secundarios ─────────────────────────────────────────────
-    val rentalPeriods: StateFlow<List<RentalPeriod>> = propertyRepository.getPropertyById(propertyId)
-        .flatMapLatest { property ->
-            if (property != null) getRentalPeriods(property.id)
-            else flowOf(emptyList())
-        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+    val rentalPeriods: StateFlow<List<RentalPeriod>> =
+        propertyRepository.getPropertyById(propertyId)
+            .flatMapLatest { property ->
+                if (property != null) getRentalPeriods(property.id)
+                else flowOf(emptyList())
+            }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
-    val linkedTransactions: StateFlow<List<Transaction>> = propertyRepository.getPropertyById(propertyId)
-        .flatMapLatest { property ->
-            if (property != null) getTransactionsByProperty(property.id)
-            else flowOf(emptyList())
-        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+    val linkedTransactions: StateFlow<List<Transaction>> =
+        propertyRepository.getPropertyById(propertyId)
+            .flatMapLatest { property ->
+                if (property != null) getTransactionsByProperty(property.id)
+                else flowOf(emptyList())
+            }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
     val financialSummary: StateFlow<PropertyFinancialSummary?> = combine(
         propertyRepository.getPropertyById(propertyId),
@@ -115,23 +121,51 @@ class RealEstateDetailViewModel(
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 
     // ── Controles de sheets ──────────────────────────────────────────────────
-    fun showEditSheet() { _showEditSheet.value = true }
-    fun hideEditSheet() { _showEditSheet.value = false }
+    fun showEditSheet() {
+        _showEditSheet.value = true
+    }
 
-    fun showValueSheet() { _showValueSheet.value = true }
-    fun hideValueSheet() { _showValueSheet.value = false }
+    fun hideEditSheet() {
+        _showEditSheet.value = false
+    }
 
-    fun showChangeRentalStatusSheet() { _showChangeRentalStatusSheet.value = true }
-    fun hideChangeRentalStatusSheet() { _showChangeRentalStatusSheet.value = false }
+    fun showValueSheet() {
+        _showValueSheet.value = true
+    }
 
-    fun showArchiveDialog() { _showArchiveDialog.value = true }
-    fun hideArchiveDialog() { _showArchiveDialog.value = false }
+    fun hideValueSheet() {
+        _showValueSheet.value = false
+    }
 
-    fun showSellSheet() { _showSellSheet.value = true }
-    fun hideSellSheet() { _showSellSheet.value = false }
+    fun showChangeRentalStatusSheet() {
+        _showChangeRentalStatusSheet.value = true
+    }
+
+    fun hideChangeRentalStatusSheet() {
+        _showChangeRentalStatusSheet.value = false
+    }
+
+    fun showArchiveDialog() {
+        _showArchiveDialog.value = true
+    }
+
+    fun hideArchiveDialog() {
+        _showArchiveDialog.value = false
+    }
+
+    fun showSellSheet() {
+        _showSellSheet.value = true
+    }
+
+    fun hideSellSheet() {
+        _showSellSheet.value = false
+    }
 
     // ── Acciones ─────────────────────────────────────────────────────────────
-    fun saveProperty(property: RealEstateProperty, purchaseExpenses: List<PropertyExpense> = emptyList()) {
+    fun saveProperty(
+        property: RealEstateProperty,
+        purchaseExpenses: List<PropertyExpense> = emptyList()
+    ) {
         viewModelScope.launch {
             savePropertyUseCase(property, purchaseExpenses)
                 .onSuccess { hideEditSheet() }

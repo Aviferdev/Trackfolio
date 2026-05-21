@@ -1,7 +1,5 @@
 package es.aviferdev.n3to.ui.portfolio.assethistory
 
-import androidx.compose.material3.MaterialTheme
-import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -22,7 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.portfolio.FifoOpenLot
 import es.aviferdev.n3to.ui.portfolio.formatShortDate
-
+import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.ui.theme.formatAmount
 import es.aviferdev.n3to.ui.theme.formatQty
 import es.aviferdev.n3to.ui.theme.maskAmount
@@ -39,7 +38,12 @@ fun FifoOpenLotRow(index: Int, lot: FifoOpenLot, masked: Boolean) {
                 .background(MaterialTheme.appColors.income.copy(.14f)),
             contentAlignment = Alignment.Center
         ) {
-            Text("#$index", fontSize = 9.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.appColors.income)
+            Text(
+                "#$index",
+                fontSize = 9.sp,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.appColors.income
+            )
         }
         Spacer(Modifier.width(8.dp))
         Column(modifier = Modifier.weight(1f)) {
@@ -50,7 +54,9 @@ fun FifoOpenLotRow(index: Int, lot: FifoOpenLot, masked: Boolean) {
                         masked
                     )
                 } €",
-                fontSize = 12.sp, color = MaterialTheme.appColors.textPrimary, fontWeight = FontWeight.Medium
+                fontSize = 12.sp,
+                color = MaterialTheme.appColors.textPrimary,
+                fontWeight = FontWeight.Medium
             )
             Text(
                 "Comprado el ${formatShortDate(lot.purchaseDate)}${

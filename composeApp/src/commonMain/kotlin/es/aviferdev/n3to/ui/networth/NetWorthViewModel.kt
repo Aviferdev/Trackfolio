@@ -2,8 +2,8 @@ package es.aviferdev.n3to.ui.networth
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import es.aviferdev.n3to.domain.model.NetWorthScreenData
 import es.aviferdev.n3to.domain.model.NetWorthHistoryPoint
+import es.aviferdev.n3to.domain.model.NetWorthScreenData
 import es.aviferdev.n3to.domain.usecase.loan.GetLoansByAccountUseCase
 import es.aviferdev.n3to.domain.usecase.networth.GetNetWorthDataUseCase
 import es.aviferdev.n3to.domain.usecase.networth.GetNetWorthHistoryUseCase

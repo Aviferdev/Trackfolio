@@ -1,7 +1,5 @@
 package es.aviferdev.n3to.ui.settings
 
-import androidx.compose.material3.MaterialTheme
-import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -22,13 +20,13 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
-import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -55,12 +53,10 @@ import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.core.premium.PremiumManager
 import es.aviferdev.n3to.ui.common.InitialsAvatar
 import es.aviferdev.n3to.ui.common.N3toLabel
-import es.aviferdev.n3to.ui.common.navigation.TopBarApp
-
+import es.aviferdev.n3to.ui.common.topbar.TopBarWithActionsApp
 import es.aviferdev.n3to.ui.theme.N3toTheme
-
+import es.aviferdev.n3to.ui.theme.appColors
 import kotlinx.coroutines.delay
-import org.jetbrains.compose.ui.tooling.preview.Preview
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.about_app_name
 import n3to.composeapp.generated.resources.about_contact_label
@@ -78,6 +74,7 @@ import n3to.composeapp.generated.resources.about_tagline
 import n3to.composeapp.generated.resources.about_title
 import n3to.composeapp.generated.resources.about_version_label
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.koinInject
 import org.koin.core.qualifier.named
 
@@ -140,7 +137,7 @@ fun AboutContent(
     }
 
     Column(modifier = modifier.fillMaxSize().background(appCNavyDeep)) {
-        TopBarApp(title = stringResource(Res.string.about_title), navigateBack = onBack)
+        TopBarWithActionsApp(title = stringResource(Res.string.about_title), navigateBack = onBack)
 
         LazyColumn(
             contentPadding = PaddingValues(horizontal = 16.dp, vertical = 14.dp),
@@ -206,9 +203,15 @@ fun AboutContent(
                 N3toLabel(text = stringResource(Res.string.about_section_dev))
                 Spacer(Modifier.height(8.dp))
                 AboutGroupCard {
-                    AboutInfoRow(label = stringResource(Res.string.about_developer_label), value = stringResource(Res.string.about_developer_value))
+                    AboutInfoRow(
+                        label = stringResource(Res.string.about_developer_label),
+                        value = stringResource(Res.string.about_developer_value)
+                    )
                     AboutRowDivider()
-                    AboutInfoRow(label = stringResource(Res.string.about_license_label), value = stringResource(Res.string.about_license_value))
+                    AboutInfoRow(
+                        label = stringResource(Res.string.about_license_label),
+                        value = stringResource(Res.string.about_license_value)
+                    )
                     AboutRowDivider()
                     AboutClickableInfoRow(
                         label = stringResource(Res.string.about_contact_label),
@@ -311,7 +314,8 @@ private fun AboutGroupCard(content: @Composable ColumnScope.() -> Unit) {
     val heroCardBg1 = MaterialTheme.appColors.heroCardStart
     val appCNavyBorder = MaterialTheme.appColors.navyBorder
     Card(
-        modifier = Modifier.fillMaxWidth().border(0.5.dp, appCNavyBorder, RoundedCornerShape(11.dp)),
+        modifier = Modifier.fillMaxWidth()
+            .border(0.5.dp, appCNavyBorder, RoundedCornerShape(11.dp)),
         shape = RoundedCornerShape(11.dp),
         colors = CardDefaults.cardColors(containerColor = heroCardBg1),
         elevation = CardDefaults.cardElevation(0.dp)

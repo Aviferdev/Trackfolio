@@ -1,7 +1,5 @@
 package es.aviferdev.n3to.ui.portfolio.components
 
-import androidx.compose.material3.MaterialTheme
-import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -13,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -22,9 +21,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-
-import es.aviferdev.n3to.ui.theme.PrimaryDark
-
+import es.aviferdev.n3to.ui.theme.appColors
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.portfolio_add_tx_no_assets_hint
 import n3to.composeapp.generated.resources.portfolio_add_tx_no_platforms_hint
@@ -53,9 +50,9 @@ internal fun TypeToggle(
         contentAlignment = Alignment.Center
     ) {
         Text(
-            text       = label,
-            fontSize   = 14.sp,
-            color      = if (isSel) selColor else MaterialTheme.appColors.textSecondary,
+            text = label,
+            fontSize = 14.sp,
+            color = if (isSel) selColor else MaterialTheme.appColors.textSecondary,
             fontWeight = if (isSel) FontWeight.SemiBold else FontWeight.Medium
         )
     }
@@ -68,9 +65,10 @@ internal fun CategoryFilterChip(
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
-    val bg     = if (isSelected) MaterialTheme.appColors.primary   else MaterialTheme.appColors.surfaceElevated
-    val border = if (isSelected) MaterialTheme.appColors.primary   else MaterialTheme.appColors.border
-    val text   = if (isSelected) Color.White   else MaterialTheme.appColors.textPrimary
+    val bg =
+        if (isSelected) MaterialTheme.appColors.primary else MaterialTheme.appColors.surfaceElevated
+    val border = if (isSelected) MaterialTheme.appColors.primary else MaterialTheme.appColors.border
+    val text = if (isSelected) Color.White else MaterialTheme.appColors.textPrimary
 
     Row(
         modifier = Modifier
@@ -82,13 +80,17 @@ internal fun CategoryFilterChip(
         verticalAlignment = Alignment.CenterVertically
     ) {
         if (icon != null) {
-            Text(text = icon, fontSize = 12.sp, color = if (isSelected) Color.White else Color.Unspecified)
+            Text(
+                text = icon,
+                fontSize = 12.sp,
+                color = if (isSelected) Color.White else Color.Unspecified
+            )
             Spacer(Modifier.width(4.dp))
         }
         Text(
-            text       = label,
-            fontSize   = 12.sp,
-            color      = text,
+            text = label,
+            fontSize = 12.sp,
+            color = text,
             fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal
         )
     }
@@ -101,9 +103,10 @@ internal fun AssetChip(
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
-    val bg     = if (isSelected) MaterialTheme.appColors.primary   else MaterialTheme.appColors.surfaceElevated
-    val border = if (isSelected) MaterialTheme.appColors.primary   else MaterialTheme.appColors.border
-    val text   = if (isSelected) Color.White   else MaterialTheme.appColors.textPrimary
+    val bg =
+        if (isSelected) MaterialTheme.appColors.primary else MaterialTheme.appColors.surfaceElevated
+    val border = if (isSelected) MaterialTheme.appColors.primary else MaterialTheme.appColors.border
+    val text = if (isSelected) Color.White else MaterialTheme.appColors.textPrimary
 
     Row(
         modifier = Modifier
@@ -116,7 +119,11 @@ internal fun AssetChip(
     ) {
         Text(text = ticker, fontSize = 12.sp, color = text, fontWeight = FontWeight.Bold)
         Spacer(Modifier.width(6.dp))
-        Text(text = name, fontSize = 12.sp, color = text.copy(alpha = if (isSelected) 0.85f else 0.65f))
+        Text(
+            text = name,
+            fontSize = 12.sp,
+            color = text.copy(alpha = if (isSelected) 0.85f else 0.65f)
+        )
     }
 }
 
@@ -130,19 +137,19 @@ internal fun PlatformChip(
     onClick: () -> Unit
 ) {
     val bg = when {
-        !enabled   -> MaterialTheme.appColors.surfaceElevated.copy(alpha = 0.5f)
+        !enabled -> MaterialTheme.appColors.surfaceElevated.copy(alpha = 0.5f)
         isSelected -> MaterialTheme.appColors.primary
-        else       -> MaterialTheme.appColors.surfaceElevated
+        else -> MaterialTheme.appColors.surfaceElevated
     }
     val border = when {
-        !enabled   -> MaterialTheme.appColors.border.copy(alpha = 0.3f)
+        !enabled -> MaterialTheme.appColors.border.copy(alpha = 0.3f)
         isSelected -> MaterialTheme.appColors.primary
-        else       -> MaterialTheme.appColors.border
+        else -> MaterialTheme.appColors.border
     }
     val text = when {
-        !enabled   -> MaterialTheme.appColors.textSecondary.copy(alpha = 0.4f)
+        !enabled -> MaterialTheme.appColors.textSecondary.copy(alpha = 0.4f)
         isSelected -> Color.White
-        else       -> MaterialTheme.appColors.textPrimary
+        else -> MaterialTheme.appColors.textPrimary
     }
 
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -158,25 +165,25 @@ internal fun PlatformChip(
             Text(icon, fontSize = 14.sp, color = if (!enabled) text else Color.Unspecified)
             Spacer(Modifier.width(6.dp))
             Text(
-                text       = label,
-                fontSize   = 13.sp,
-                color      = text,
+                text = label,
+                fontSize = 13.sp,
+                color = text,
                 fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal
             )
         }
         if (badge != null) {
             Text(
-                text       = badge,
-                fontSize   = 10.sp,
-                color      = if (isSelected) MaterialTheme.appColors.primary else MaterialTheme.appColors.textSecondary,
+                text = badge,
+                fontSize = 10.sp,
+                color = if (isSelected) MaterialTheme.appColors.primary else MaterialTheme.appColors.textSecondary,
                 fontWeight = FontWeight.Medium,
-                modifier   = Modifier.padding(top = 2.dp)
+                modifier = Modifier.padding(top = 2.dp)
             )
         } else if (!enabled) {
             Text(
-                text     = stringResource(Res.string.portfolio_add_tx_no_units_badge),
+                text = stringResource(Res.string.portfolio_add_tx_no_units_badge),
                 fontSize = 10.sp,
-                color    = MaterialTheme.appColors.textSecondary.copy(alpha = 0.5f),
+                color = MaterialTheme.appColors.textSecondary.copy(alpha = 0.5f),
                 modifier = Modifier.padding(top = 2.dp)
             )
         }
@@ -193,7 +200,11 @@ internal fun EmptyAssetsHint() {
             .padding(16.dp),
         contentAlignment = Alignment.Center
     ) {
-        Text(text = stringResource(Res.string.portfolio_add_tx_no_assets_hint), fontSize = 12.sp, color = MaterialTheme.appColors.textSecondary)
+        Text(
+            text = stringResource(Res.string.portfolio_add_tx_no_assets_hint),
+            fontSize = 12.sp,
+            color = MaterialTheme.appColors.textSecondary
+        )
     }
 }
 
@@ -206,6 +217,10 @@ internal fun EmptyPlatformsInlineHint() {
             .background(MaterialTheme.appColors.surfaceElevated)
             .padding(14.dp)
     ) {
-        Text(text = stringResource(Res.string.portfolio_add_tx_no_platforms_hint), fontSize = 12.sp, color = MaterialTheme.appColors.textSecondary)
+        Text(
+            text = stringResource(Res.string.portfolio_add_tx_no_platforms_hint),
+            fontSize = 12.sp,
+            color = MaterialTheme.appColors.textSecondary
+        )
     }
 }

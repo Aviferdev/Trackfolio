@@ -1,7 +1,5 @@
 package es.aviferdev.n3to.ui.portfolio
 
-import androidx.compose.material3.MaterialTheme
-import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,6 +12,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -26,15 +25,15 @@ import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.Asset
 import es.aviferdev.n3to.domain.portfolio.AssetPosition
 import es.aviferdev.n3to.ui.portfolio.home.AssetRow
-
 import es.aviferdev.n3to.ui.theme.N3toTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.ui.theme.formatAmount
 import es.aviferdev.n3to.ui.theme.maskAmount
-import org.jetbrains.compose.ui.tooling.preview.Preview
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.portfolio_closed_badge
 import n3to.composeapp.generated.resources.portfolio_summary_realized
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import kotlin.math.abs
 
 @Composable
@@ -88,13 +87,29 @@ fun ClosedAssetCard(
                     color = MaterialTheme.appColors.textSecondary,
                     maxLines = 1
                 )
-                Text(stringResource(Res.string.portfolio_closed_badge), fontSize = 10.sp, color = MaterialTheme.appColors.textTertiary)
+                Text(
+                    stringResource(Res.string.portfolio_closed_badge),
+                    fontSize = 10.sp,
+                    color = MaterialTheme.appColors.textTertiary
+                )
             }
             Column(horizontalAlignment = Alignment.End) {
-                Text(stringResource(Res.string.portfolio_summary_realized), fontSize = 10.sp, color = MaterialTheme.appColors.textTertiary)
+                Text(
+                    stringResource(Res.string.portfolio_summary_realized),
+                    fontSize = 10.sp,
+                    color = MaterialTheme.appColors.textTertiary
+                )
                 Text(
                     if (pos.realizedPnL == 0.0) "—"
-                    else "${if (pos.realizedPnL >= 0) "+" else "−"} ${maskAmount(formatAmount(abs(pos.realizedPnL)), balancesHidden)} €",
+                    else "${if (pos.realizedPnL >= 0) "+" else "−"} ${
+                        maskAmount(
+                            formatAmount(
+                                abs(
+                                    pos.realizedPnL
+                                )
+                            ), balancesHidden
+                        )
+                    } €",
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Bold,
                     color = pnlColor

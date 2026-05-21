@@ -45,16 +45,16 @@ class AssetTransactionLocalDataSourceImpl(
         withContext(Dispatchers.IO) {
             val e = tx.toEntity()
             queries.insert(
-                id           = e.id,
-                assetId      = e.assetId,
-                type         = e.type,
-                quantity     = e.quantity,
+                id = e.id,
+                assetId = e.assetId,
+                type = e.type,
+                quantity = e.quantity,
                 pricePerUnit = e.pricePerUnit,
-                date         = e.date,
-                platformId   = e.platformId,
-                feeNote      = e.feeNote,
-                notes        = e.notes,
-                createdAt    = e.createdAt
+                date = e.date,
+                platformId = e.platformId,
+                feeNote = e.feeNote,
+                notes = e.notes,
+                createdAt = e.createdAt
             )
         }
     }
@@ -63,14 +63,14 @@ class AssetTransactionLocalDataSourceImpl(
         withContext(Dispatchers.IO) {
             val e = tx.toEntity()
             queries.update(
-                type         = e.type,
-                quantity     = e.quantity,
+                type = e.type,
+                quantity = e.quantity,
                 pricePerUnit = e.pricePerUnit,
-                date         = e.date,
-                platformId   = e.platformId,
-                feeNote      = e.feeNote,
-                notes        = e.notes,
-                id           = e.id
+                date = e.date,
+                platformId = e.platformId,
+                feeNote = e.feeNote,
+                notes = e.notes,
+                id = e.id
             )
         }
     }
@@ -83,14 +83,17 @@ class AssetTransactionLocalDataSourceImpl(
         queries.getOldestDateByAccount(accountId).asFlow().mapToOneOrNull(Dispatchers.IO)
             .map { it?.oldestDate }
 
-    override fun getMonthlyInvestmentsByYear(accountId: String, year: String): Flow<List<MonthlyInvestment>> =
+    override fun getMonthlyInvestmentsByYear(
+        accountId: String,
+        year: String
+    ): Flow<List<MonthlyInvestment>> =
         queries.getMonthlyInvestmentsByYear(accountId, year)
             .asFlow()
             .mapToList(Dispatchers.IO)
             .map { rows ->
                 rows.map { row ->
                     MonthlyInvestment(
-                        year  = year,
+                        year = year,
                         month = row.month,
                         amount = row.totalInvested ?: 0.0
                     )

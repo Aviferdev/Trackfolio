@@ -101,8 +101,8 @@ fun UpdateCurrentPriceSheet(
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
-        sheetState       = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-        containerColor   = MaterialTheme.appColors.surface,
+        sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
+        containerColor = MaterialTheme.appColors.surface,
         dragHandle = {
             Box(
                 modifier = Modifier
@@ -115,7 +115,7 @@ fun UpdateCurrentPriceSheet(
         }
     ) {
         Column(
-            modifier            = Modifier
+            modifier = Modifier
                 .fillMaxWidth()
                 .imePadding()
                 .padding(horizontal = 24.dp)
@@ -125,58 +125,67 @@ fun UpdateCurrentPriceSheet(
             Spacer(Modifier.height(4.dp))
 
             Text(
-                text       = stringResource(Res.string.portfolio_update_price_title),
-                fontSize   = 18.sp,
+                text = stringResource(Res.string.portfolio_update_price_title),
+                fontSize = 18.sp,
                 fontWeight = FontWeight.SemiBold,
-                color      = MaterialTheme.appColors.textPrimary
+                color = MaterialTheme.appColors.textPrimary
             )
             Spacer(Modifier.height(4.dp))
             Text(
-                text       = "${asset.ticker} · ${asset.name}",
-                fontSize   = 13.sp,
-                color      = MaterialTheme.appColors.textSecondary,
+                text = "${asset.ticker} · ${asset.name}",
+                fontSize = 13.sp,
+                color = MaterialTheme.appColors.textSecondary,
                 fontWeight = FontWeight.Medium,
-                textAlign  = TextAlign.Center
+                textAlign = TextAlign.Center
             )
 
             Spacer(Modifier.height(8.dp))
             val currentLabel = if (asset.currentPrice != null) {
-                stringResource(Res.string.portfolio_update_previous_price, formatAmountEuro(asset.currentPrice))
+                stringResource(
+                    Res.string.portfolio_update_previous_price,
+                    formatAmountEuro(asset.currentPrice)
+                )
             } else {
                 stringResource(Res.string.portfolio_update_no_price)
             }
             Text(
-                text      = currentLabel,
-                fontSize  = 12.sp,
-                color     = MaterialTheme.appColors.textSecondary,
+                text = currentLabel,
+                fontSize = 12.sp,
+                color = MaterialTheme.appColors.textSecondary,
                 textAlign = TextAlign.Center
             )
 
             Spacer(Modifier.height(24.dp))
 
             OutlinedTextField(
-                value         = price,
+                value = price,
                 onValueChange = { price = it.filter { c -> c.isDigit() || c == ',' || c == '.' } },
-                placeholder   = { Text("0,00", color = MaterialTheme.appColors.textSecondary.copy(alpha = 0.6f), fontSize = 32.sp) },
-                textStyle     = TextStyle(
-                    fontSize   = 32.sp,
+                placeholder = {
+                    Text(
+                        "0,00",
+                        color = MaterialTheme.appColors.textSecondary.copy(alpha = 0.6f),
+                        fontSize = 32.sp
+                    )
+                },
+                textStyle = TextStyle(
+                    fontSize = 32.sp,
                     fontWeight = FontWeight.Bold,
-                    color      = MaterialTheme.appColors.textPrimary,
-                    textAlign  = TextAlign.Center
+                    color = MaterialTheme.appColors.textPrimary,
+                    textAlign = TextAlign.Center
                 ),
                 trailingIcon = {
                     Text(
                         "€",
                         fontSize = 20.sp,
-                        color    = MaterialTheme.appColors.textSecondary,
+                        color = MaterialTheme.appColors.textSecondary,
                         modifier = Modifier.padding(end = 16.dp)
                     )
                 },
-                modifier        = Modifier.fillMaxWidth(),
-                shape           = RoundedCornerShape(12.dp),
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                colors          = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor   = MaterialTheme.appColors.primary,
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = MaterialTheme.appColors.primary,
                     unfocusedBorderColor = MaterialTheme.appColors.border
                 ),
                 singleLine = true
@@ -184,9 +193,9 @@ fun UpdateCurrentPriceSheet(
 
             Spacer(Modifier.height(8.dp))
             Text(
-                text     = stringResource(Res.string.portfolio_update_save_hint),
+                text = stringResource(Res.string.portfolio_update_save_hint),
                 fontSize = 11.sp,
-                color    = MaterialTheme.appColors.textSecondary
+                color = MaterialTheme.appColors.textSecondary
             )
 
             Spacer(Modifier.height(28.dp))
@@ -204,26 +213,35 @@ fun UpdateCurrentPriceSheet(
                                 anomalyResult = result
                                 showAnomalyDialog = true
                             }
+
                             else -> onConfirm(value)
                         }
                     } else {
                         onConfirm(value)
                     }
                 },
-                enabled  = isValid,
+                enabled = isValid,
                 modifier = Modifier.fillMaxWidth().height(52.dp),
-                shape    = RoundedCornerShape(10.dp),
-                colors   = ButtonDefaults.buttonColors(
-                    containerColor         = MaterialTheme.appColors.primary,
+                shape = RoundedCornerShape(10.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.appColors.primary,
                     disabledContainerColor = MaterialTheme.appColors.primary.copy(alpha = 0.38f)
                 )
             ) {
-                Text(stringResource(Res.string.portfolio_update_save), fontSize = 16.sp, fontWeight = FontWeight.Medium)
+                Text(
+                    stringResource(Res.string.portfolio_update_save),
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Medium
+                )
             }
 
             Spacer(Modifier.height(8.dp))
             TextButton(onClick = onDismiss, modifier = Modifier.fillMaxWidth()) {
-                Text(stringResource(Res.string.portfolio_update_cancel), fontSize = 14.sp, color = MaterialTheme.appColors.textSecondary)
+                Text(
+                    stringResource(Res.string.portfolio_update_cancel),
+                    fontSize = 14.sp,
+                    color = MaterialTheme.appColors.textSecondary
+                )
             }
         }
     }

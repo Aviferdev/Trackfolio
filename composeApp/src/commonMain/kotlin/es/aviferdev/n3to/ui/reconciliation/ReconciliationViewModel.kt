@@ -41,19 +41,19 @@ class ReconciliationViewModel(
 
     fun openBottomSheet(computedBalance: Double) {
         _uiState.value = _uiState.value.copy(
-            showBottomSheet  = true,
-            computedBalance  = computedBalance,
+            showBottomSheet = true,
+            computedBalance = computedBalance,
             realBalanceInput = "",
-            resultMessage    = null,
-            isSuccess        = false,
-            isProcessing     = false
+            resultMessage = null,
+            isSuccess = false,
+            isProcessing = false
         )
     }
 
     fun closeBottomSheet() {
         _uiState.value = _uiState.value.copy(
             showBottomSheet = false,
-            resultMessage   = null
+            resultMessage = null
         )
     }
 
@@ -77,7 +77,7 @@ class ReconciliationViewModel(
         if (realBalance == null) {
             _uiState.value = current.copy(
                 resultMessage = "Introduce un importe válido",
-                isSuccess     = false
+                isSuccess = false
             )
             return
         }
@@ -86,9 +86,9 @@ class ReconciliationViewModel(
 
         viewModelScope.launch {
             val result = reconcileBalance(
-                accountId       = accountId,
+                accountId = accountId,
                 computedBalance = current.computedBalance,
-                realBalance     = realBalance
+                realBalance = realBalance
             )
 
             result.fold(
@@ -96,10 +96,10 @@ class ReconciliationViewModel(
                     val diff = realBalance - current.computedBalance
                     val sign = if (diff > 0) "+" else ""
                     _uiState.value = _uiState.value.copy(
-                        isProcessing  = false,
+                        isProcessing = false,
                         resultMessage = "Ajuste de ${sign}${formatAmount(diff)}€ registrado",
-                        isSuccess     = true,
-                        showBanner    = false
+                        isSuccess = true,
+                        showBanner = false
                     )
                 },
                 onFailure = { error ->
@@ -108,9 +108,9 @@ class ReconciliationViewModel(
                         else -> "Error al reconciliar: ${error.message}"
                     }
                     _uiState.value = _uiState.value.copy(
-                        isProcessing  = false,
+                        isProcessing = false,
                         resultMessage = msg,
-                        isSuccess     = error is BalanceAlreadyMatchesException
+                        isSuccess = error is BalanceAlreadyMatchesException
                     )
                 }
             )

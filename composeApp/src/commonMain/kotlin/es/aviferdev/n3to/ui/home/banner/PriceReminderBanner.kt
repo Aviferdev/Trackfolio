@@ -1,7 +1,5 @@
 package es.aviferdev.n3to.ui.home.banner
 
-import androidx.compose.material3.MaterialTheme
-import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -9,12 +7,19 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ShowChart
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -23,8 +28,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-
 import es.aviferdev.n3to.ui.theme.N3toTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.common_update
 import n3to.composeapp.generated.resources.home_price_reminder_many
@@ -41,9 +46,9 @@ fun PriceReminderBanner(
     modifier: Modifier = Modifier
 ) {
     AnimatedVisibility(
-        visible  = visible,
-        enter    = expandVertically() + fadeIn(),
-        exit     = shrinkVertically() + fadeOut(),
+        visible = visible,
+        enter = expandVertically() + fadeIn(),
+        exit = shrinkVertically() + fadeOut(),
         modifier = modifier
     ) {
         Row(
@@ -55,17 +60,20 @@ fun PriceReminderBanner(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
-                imageVector        = Icons.AutoMirrored.Outlined.ShowChart,
+                imageVector = Icons.AutoMirrored.Outlined.ShowChart,
                 contentDescription = null,
-                tint               = MaterialTheme.appColors.warnAmber,
-                modifier           = Modifier.size(18.dp)
+                tint = MaterialTheme.appColors.warnAmber,
+                modifier = Modifier.size(18.dp)
             )
             Spacer(Modifier.width(10.dp))
             Text(
-                text     = if (outdatedCount == 1) stringResource(Res.string.home_price_reminder_one, outdatedCount)
-                          else stringResource(Res.string.home_price_reminder_many, outdatedCount),
+                text = if (outdatedCount == 1) stringResource(
+                    Res.string.home_price_reminder_one,
+                    outdatedCount
+                )
+                else stringResource(Res.string.home_price_reminder_many, outdatedCount),
                 fontSize = 12.sp,
-                color    = MaterialTheme.appColors.warnAmber,
+                color = MaterialTheme.appColors.warnAmber,
                 fontWeight = FontWeight.Medium,
                 modifier = Modifier.weight(1f)
             )
@@ -77,9 +85,9 @@ fun PriceReminderBanner(
                     .padding(horizontal = 12.dp, vertical = 4.dp)
             ) {
                 Text(
-                    text       = stringResource(Res.string.common_update),
-                    fontSize   = 11.sp,
-                    color      = MaterialTheme.appColors.warnAmber,
+                    text = stringResource(Res.string.common_update),
+                    fontSize = 11.sp,
+                    color = MaterialTheme.appColors.warnAmber,
                     fontWeight = FontWeight.Bold
                 )
             }
@@ -91,7 +99,11 @@ fun PriceReminderBanner(
                     .size(24.dp),
                 contentAlignment = Alignment.Center
             ) {
-                Text("×", fontSize = 16.sp, color = MaterialTheme.appColors.warnAmber.copy(alpha = 0.6f))
+                Text(
+                    "×",
+                    fontSize = 16.sp,
+                    color = MaterialTheme.appColors.warnAmber.copy(alpha = 0.6f)
+                )
             }
         }
     }

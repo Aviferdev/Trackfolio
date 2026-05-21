@@ -1,7 +1,5 @@
 package es.aviferdev.n3to.ui.portfolio.assethistory
 
-import androidx.compose.material3.MaterialTheme
-import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,6 +17,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -31,8 +30,7 @@ import es.aviferdev.n3to.domain.model.AssetTransaction
 import es.aviferdev.n3to.domain.model.AssetTransactionType
 import es.aviferdev.n3to.domain.model.Platform
 import es.aviferdev.n3to.ui.portfolio.formatShortDate
-import es.aviferdev.n3to.ui.theme.ExpenseRed
-
+import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.ui.theme.formatAmount
 import es.aviferdev.n3to.ui.theme.formatQty
 import es.aviferdev.n3to.ui.theme.maskAmount
@@ -98,12 +96,24 @@ fun TxRow(
                     )
                 }
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(formatShortDate(tx.date), fontSize = 10.sp, color = MaterialTheme.appColors.textTertiary)
+                    Text(
+                        formatShortDate(tx.date),
+                        fontSize = 10.sp,
+                        color = MaterialTheme.appColors.textTertiary
+                    )
                     if (platform != null) {
-                        Text("  ·  ", fontSize = 10.sp, color = MaterialTheme.appColors.textTertiary)
+                        Text(
+                            "  ·  ",
+                            fontSize = 10.sp,
+                            color = MaterialTheme.appColors.textTertiary
+                        )
                         Text(platform.icon, fontSize = 11.sp)
                         Spacer(Modifier.width(2.dp))
-                        Text(platform.name, fontSize = 10.sp, color = MaterialTheme.appColors.textTertiary)
+                        Text(
+                            platform.name,
+                            fontSize = 10.sp,
+                            color = MaterialTheme.appColors.textTertiary
+                        )
                     }
                 }
                 if (!tx.feeNote.isNullOrBlank()) Text(

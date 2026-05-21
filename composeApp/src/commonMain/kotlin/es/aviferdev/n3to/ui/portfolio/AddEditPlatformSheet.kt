@@ -1,47 +1,65 @@
 package es.aviferdev.n3to.ui.portfolio
 
-import androidx.compose.material3.MaterialTheme
-import es.aviferdev.n3to.ui.theme.appColors
-import es.aviferdev.n3to.platform.nowMillis
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.HelpOutline
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.Platform
+import es.aviferdev.n3to.platform.nowMillis
 import es.aviferdev.n3to.ui.common.toMaterialIcon
-import es.aviferdev.n3to.ui.theme.*
-
+import es.aviferdev.n3to.ui.theme.N3toTheme
+import es.aviferdev.n3to.ui.theme.appColors
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.common_cancel
 import n3to.composeapp.generated.resources.common_name
 import n3to.composeapp.generated.resources.common_save_changes
 import n3to.composeapp.generated.resources.portfolio_add_asset_name_required
+import n3to.composeapp.generated.resources.portfolio_add_asset_platforms_hint
 import n3to.composeapp.generated.resources.portfolio_add_tx_notes_label
 import n3to.composeapp.generated.resources.portfolio_platform_create_title
 import n3to.composeapp.generated.resources.portfolio_platform_edit_title
 import n3to.composeapp.generated.resources.portfolio_platform_icon_label
+import n3to.composeapp.generated.resources.portfolio_platform_name_label
 import n3to.composeapp.generated.resources.portfolio_platform_notes_label
 import n3to.composeapp.generated.resources.portfolio_platform_save
-import n3to.composeapp.generated.resources.portfolio_add_asset_platforms_hint
-import n3to.composeapp.generated.resources.portfolio_platform_name_label
-import n3to.composeapp.generated.resources.portfolio_settings_add
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -61,9 +79,9 @@ fun AddEditPlatformSheet(
 ) {
     val isEditing = initial != null
 
-    var name      by remember { mutableStateOf(initial?.name ?: "") }
-    var icon      by remember { mutableStateOf(initial?.icon ?: "🏦") }
-    var notes     by remember { mutableStateOf(initial?.notes ?: "") }
+    var name by remember { mutableStateOf(initial?.name ?: "") }
+    var icon by remember { mutableStateOf(initial?.icon ?: "🏦") }
+    var notes by remember { mutableStateOf(initial?.notes ?: "") }
     var nameError by remember { mutableStateOf(false) }
 
     // Iconos sugeridos para plataformas. El usuario puede pegar cualquier emoji.
@@ -75,8 +93,8 @@ fun AddEditPlatformSheet(
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
-        sheetState       = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-        containerColor   = MaterialTheme.appColors.surface,
+        sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
+        containerColor = MaterialTheme.appColors.surface,
         dragHandle = {
             Box(
                 modifier = Modifier
@@ -96,25 +114,32 @@ fun AddEditPlatformSheet(
         ) {
             Spacer(Modifier.height(4.dp))
             Text(
-                text       = if (isEditing) stringResource(Res.string.portfolio_platform_edit_title) else stringResource(Res.string.portfolio_platform_create_title),
-                fontSize   = 18.sp,
+                text = if (isEditing) stringResource(Res.string.portfolio_platform_edit_title) else stringResource(
+                    Res.string.portfolio_platform_create_title
+                ),
+                fontSize = 18.sp,
                 fontWeight = FontWeight.SemiBold,
-                color      = MaterialTheme.appColors.textPrimary
+                color = MaterialTheme.appColors.textPrimary
             )
             Spacer(Modifier.height(4.dp))
             Text(
-                text     = stringResource(Res.string.portfolio_add_asset_platforms_hint),
+                text = stringResource(Res.string.portfolio_add_asset_platforms_hint),
                 fontSize = 11.sp,
-                color    = MaterialTheme.appColors.textSecondary
+                color = MaterialTheme.appColors.textSecondary
             )
             Spacer(Modifier.height(20.dp))
 
             // ── Selector de icono ────────────────────────────────────────────
-            Text(stringResource(Res.string.portfolio_platform_icon_label), fontSize = 12.sp, color = MaterialTheme.appColors.textSecondary, fontWeight = FontWeight.Medium)
+            Text(
+                stringResource(Res.string.portfolio_platform_icon_label),
+                fontSize = 12.sp,
+                color = MaterialTheme.appColors.textSecondary,
+                fontWeight = FontWeight.Medium
+            )
             Spacer(Modifier.height(8.dp))
 
             Row(
-                modifier              = Modifier
+                modifier = Modifier
                     .fillMaxWidth()
                     .horizontalScroll(rememberScrollState()),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -147,21 +172,23 @@ fun AddEditPlatformSheet(
 
             // ── Nombre ──────────────────────────────────────────────────────
             OutlinedTextField(
-                value         = name,
+                value = name,
                 onValueChange = { name = it; nameError = false },
-                label         = { Text(stringResource(Res.string.common_name)) },
-                placeholder   = { Text(stringResource(Res.string.portfolio_platform_name_label)) },
-                isError       = nameError,
-                supportingText = if (nameError) {{ Text(stringResource(Res.string.portfolio_add_asset_name_required)) }} else null,
-                modifier      = Modifier.fillMaxWidth(),
-                singleLine    = true,
-                shape         = RoundedCornerShape(10.dp),
+                label = { Text(stringResource(Res.string.common_name)) },
+                placeholder = { Text(stringResource(Res.string.portfolio_platform_name_label)) },
+                isError = nameError,
+                supportingText = if (nameError) {
+                    { Text(stringResource(Res.string.portfolio_add_asset_name_required)) }
+                } else null,
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                shape = RoundedCornerShape(10.dp),
                 keyboardOptions = KeyboardOptions(
                     capitalization = KeyboardCapitalization.Sentences,
-                    imeAction      = ImeAction.Done
+                    imeAction = ImeAction.Done
                 ),
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor   = MaterialTheme.appColors.primary,
+                    focusedBorderColor = MaterialTheme.appColors.primary,
                     unfocusedBorderColor = MaterialTheme.appColors.border
                 )
             )
@@ -170,20 +197,20 @@ fun AddEditPlatformSheet(
 
             // ── Notas ─────────────────────────────────────────────────────
             OutlinedTextField(
-                value         = notes,
+                value = notes,
                 onValueChange = { if (it.length <= 200) notes = it },
-                label         = { Text(stringResource(Res.string.portfolio_add_tx_notes_label)) },
-                placeholder   = { Text(stringResource(Res.string.portfolio_platform_notes_label)) },
+                label = { Text(stringResource(Res.string.portfolio_add_tx_notes_label)) },
+                placeholder = { Text(stringResource(Res.string.portfolio_platform_notes_label)) },
                 supportingText = { Text("${notes.length}/200") },
-                modifier      = Modifier.fillMaxWidth(),
-                singleLine    = true,
-                shape         = RoundedCornerShape(10.dp),
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                shape = RoundedCornerShape(10.dp),
                 keyboardOptions = KeyboardOptions(
                     capitalization = KeyboardCapitalization.Sentences,
-                    imeAction      = ImeAction.Done
+                    imeAction = ImeAction.Done
                 ),
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor   = MaterialTheme.appColors.primary,
+                    focusedBorderColor = MaterialTheme.appColors.primary,
                     unfocusedBorderColor = MaterialTheme.appColors.border
                 )
             )
@@ -192,24 +219,32 @@ fun AddEditPlatformSheet(
 
             Button(
                 onClick = {
-                    if (name.isBlank()) { nameError = true; return@Button }
+                    if (name.isBlank()) {
+                        nameError = true; return@Button
+                    }
                     val notesValue = notes.trim().ifBlank { null }
                     onSave(name.trim(), icon, notesValue)
                 },
                 modifier = Modifier.fillMaxWidth().height(52.dp),
-                shape    = RoundedCornerShape(10.dp),
-                colors   = ButtonDefaults.buttonColors(containerColor = MaterialTheme.appColors.primary)
+                shape = RoundedCornerShape(10.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.appColors.primary)
             ) {
                 Text(
-                    text       = if (isEditing) stringResource(Res.string.common_save_changes) else stringResource(Res.string.portfolio_platform_save),
-                    fontSize   = 16.sp,
+                    text = if (isEditing) stringResource(Res.string.common_save_changes) else stringResource(
+                        Res.string.portfolio_platform_save
+                    ),
+                    fontSize = 16.sp,
                     fontWeight = FontWeight.Medium
                 )
             }
 
             Spacer(Modifier.height(8.dp))
             TextButton(onClick = onDismiss, modifier = Modifier.fillMaxWidth()) {
-                Text(stringResource(Res.string.common_cancel), fontSize = 14.sp, color = MaterialTheme.appColors.textSecondary)
+                Text(
+                    stringResource(Res.string.common_cancel),
+                    fontSize = 14.sp,
+                    color = MaterialTheme.appColors.textSecondary
+                )
             }
         }
     }

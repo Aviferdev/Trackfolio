@@ -11,6 +11,7 @@ interface AssetTransactionRepository {
     fun getByAccount(accountId: String): Flow<List<AssetTransaction>>
     fun getById(id: String): Flow<AssetTransaction?>
     fun countByPlatform(platformId: String): Flow<Long>
+
     /** Inversión mensual (compras) para un año. */
     fun getMonthlyInvestmentsByYear(accountId: String, year: String): Flow<List<MonthlyInvestment>>
 

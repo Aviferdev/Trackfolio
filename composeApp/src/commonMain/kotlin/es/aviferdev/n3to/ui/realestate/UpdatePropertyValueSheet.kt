@@ -47,46 +47,92 @@ fun UpdatePropertyValueSheet(
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
-        sheetState       = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-        containerColor   = MaterialTheme.appColors.surface,
+        sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
+        containerColor = MaterialTheme.appColors.surface,
         dragHandle = {
-            Box(Modifier.padding(top = 12.dp, bottom = 4.dp).width(40.dp).height(4.dp)
-                .clip(RoundedCornerShape(2.dp)).background(MaterialTheme.appColors.dragHandle))
+            Box(
+                Modifier.padding(top = 12.dp, bottom = 4.dp).width(40.dp).height(4.dp)
+                    .clip(RoundedCornerShape(2.dp)).background(MaterialTheme.appColors.dragHandle)
+            )
         }
     ) {
         Column(Modifier.fillMaxWidth().padding(horizontal = 20.dp).padding(bottom = 32.dp)) {
-            Text(stringResource(Res.string.realestate_update_value_title), fontWeight = FontWeight.Bold, fontSize = 18.sp, color = MaterialTheme.appColors.textPrimary)
+            Text(
+                stringResource(Res.string.realestate_update_value_title),
+                fontWeight = FontWeight.Bold,
+                fontSize = 18.sp,
+                color = MaterialTheme.appColors.textPrimary
+            )
             Spacer(Modifier.height(4.dp))
             Text(property.name, fontSize = 13.sp, color = MaterialTheme.appColors.textTertiary)
             Spacer(Modifier.height(16.dp))
 
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                Text(stringResource(Res.string.realestate_value_label), fontSize = 13.sp, color = MaterialTheme.appColors.textSecondary)
-                Text(formatAmountEuro(property.currentEstimatedValue), fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = MaterialTheme.appColors.textPrimary)
+                Text(
+                    stringResource(Res.string.realestate_value_label),
+                    fontSize = 13.sp,
+                    color = MaterialTheme.appColors.textSecondary
+                )
+                Text(
+                    formatAmountEuro(property.currentEstimatedValue),
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.appColors.textPrimary
+                )
             }
             Spacer(Modifier.height(12.dp))
 
             OutlinedTextField(
-                value = newValueText, onValueChange = { newValueText = it },
+                value = newValueText,
+                onValueChange = { newValueText = it },
                 label = { Text(stringResource(Res.string.realestate_new_value)) },
-                singleLine = true, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = MaterialTheme.appColors.primary, unfocusedBorderColor = MaterialTheme.appColors.border, cursorColor = MaterialTheme.appColors.primary, focusedLabelColor = MaterialTheme.appColors.primary, unfocusedLabelColor = MaterialTheme.appColors.textTertiary, focusedTextColor = MaterialTheme.appColors.textPrimary, unfocusedTextColor = MaterialTheme.appColors.textPrimary),
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = MaterialTheme.appColors.primary,
+                    unfocusedBorderColor = MaterialTheme.appColors.border,
+                    cursorColor = MaterialTheme.appColors.primary,
+                    focusedLabelColor = MaterialTheme.appColors.primary,
+                    unfocusedLabelColor = MaterialTheme.appColors.textTertiary,
+                    focusedTextColor = MaterialTheme.appColors.textPrimary,
+                    unfocusedTextColor = MaterialTheme.appColors.textPrimary
+                ),
                 modifier = Modifier.fillMaxWidth()
             )
 
             if (newValue > 0 && newValue != property.currentEstimatedValue) {
                 Spacer(Modifier.height(8.dp))
-                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                    Text(stringResource(Res.string.realestate_current_value_label), fontSize = 13.sp, color = MaterialTheme.appColors.textSecondary)
-                    DeltaIndicator(value = "${formatAmountEuro(valueDiff)} (${formatPercentSigned(diffPercent)})", isPositive = valueDiff >= 0)
+                Row(
+                    Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        stringResource(Res.string.realestate_current_value_label),
+                        fontSize = 13.sp,
+                        color = MaterialTheme.appColors.textSecondary
+                    )
+                    DeltaIndicator(
+                        value = "${formatAmountEuro(valueDiff)} (${
+                            formatPercentSigned(
+                                diffPercent
+                            )
+                        })", isPositive = valueDiff >= 0
+                    )
                 }
             }
 
             Spacer(Modifier.height(16.dp))
-            Button(onClick = { onUpdate(newValue) }, enabled = isValid,
+            Button(
+                onClick = { onUpdate(newValue) }, enabled = isValid,
                 modifier = Modifier.fillMaxWidth().height(48.dp), shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.appColors.primary)
-            ) { Text(stringResource(Res.string.realestate_update_value_title), fontWeight = FontWeight.Bold) }
+            ) {
+                Text(
+                    stringResource(Res.string.realestate_update_value_title),
+                    fontWeight = FontWeight.Bold
+                )
+            }
         }
     }
 }
@@ -97,12 +143,20 @@ private fun UpdatePropertyValueSheetPreview() {
     N3toTheme {
         UpdatePropertyValueSheet(
             property = RealEstateProperty(
-                id = "1", accountId = "acc1", name = "Mi casa", address = "Calle Mayor 1, Madrid",
+                id = "1",
+                accountId = "acc1",
+                name = "Mi casa",
+                address = "Calle Mayor 1, Madrid",
                 propertyType = es.aviferdev.n3to.domain.model.PropertyType.PRIMARY_HOME,
-                purchaseValue = 250000.0, currentEstimatedValue = 260000.0,
-                acquisitionDate = 1672531200000, ownershipPercentage = 100.0,
-                linkedLoanId = null, rentalStatus = es.aviferdev.n3to.domain.model.RentalStatus.OWN_USE,
-                monthlyRent = null, mortgageReminderDismissed = false, archived = false
+                purchaseValue = 250000.0,
+                currentEstimatedValue = 260000.0,
+                acquisitionDate = 1672531200000,
+                ownershipPercentage = 100.0,
+                linkedLoanId = null,
+                rentalStatus = es.aviferdev.n3to.domain.model.RentalStatus.OWN_USE,
+                monthlyRent = null,
+                mortgageReminderDismissed = false,
+                archived = false
             ), onDismiss = {}, onUpdate = {}
         )
     }

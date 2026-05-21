@@ -32,8 +32,12 @@ class GetNetWorthDataUseCase(
         val liabilitiesPart = combine(fiFlow, loansFlow, debtsFlow) { fi, loans, debts ->
             Triple(fi, loans, debts)
         }
-        return combine(assetsPart, liabilitiesPart, propertiesFlow, valuablesFlow) {
-            (account, assets, txs), (fiPositions, loans, debtsOwing), properties, valuables ->
+        return combine(
+            assetsPart,
+            liabilitiesPart,
+            propertiesFlow,
+            valuablesFlow
+        ) { (account, assets, txs), (fiPositions, loans, debtsOwing), properties, valuables ->
 
             val accountBalance = account?.computedBalance ?: 0.0
             val portfolioValue = assets.filter { !it.archived }
@@ -67,16 +71,16 @@ class GetNetWorthDataUseCase(
             }
 
             NetWorthScreenData(
-                totalAccountBalance   = accountBalance,
-                totalPortfolioValue   = portfolioValue,
+                totalAccountBalance = accountBalance,
+                totalPortfolioValue = portfolioValue,
                 totalFixedIncomeValue = fixedIncomeValue,
-                totalRealEstateValue  = totalRealEstateValue,
-                totalValuablesValue   = totalValuablesValue,
+                totalRealEstateValue = totalRealEstateValue,
+                totalValuablesValue = totalValuablesValue,
                 totalLoansOutstanding = loansOutstanding,
-                totalDebtsOwing       = debtsOwing,
-                loans                 = loans,
-                properties            = properties,
-                valuables             = valuables
+                totalDebtsOwing = debtsOwing,
+                loans = loans,
+                properties = properties,
+                valuables = valuables
             )
         }
     }

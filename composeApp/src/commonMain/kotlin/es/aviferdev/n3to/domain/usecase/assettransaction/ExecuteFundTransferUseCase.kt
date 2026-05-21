@@ -51,12 +51,12 @@ class ExecuteFundTransferUseCase(
         val txs = repository.getByAsset(sourceAssetId).firstOrNull() ?: emptyList()
         val costPerUnit = PortfolioCalculator.weightedCostBasisForTransfer(
             transactions = txs,
-            platformId   = platformId,
-            quantity      = quantity
+            platformId = platformId,
+            quantity = quantity
         )
         return TransferCostBasis(
             costBasisPerUnit = costPerUnit,
-            totalCostBasis   = costPerUnit * quantity
+            totalCostBasis = costPerUnit * quantity
         )
     }
 
@@ -90,8 +90,8 @@ class ExecuteFundTransferUseCase(
         // 1. Calcular coste base arrastrado
         val costBasis = calculateTransferCostBasis(
             sourceAssetId = sourceAssetId,
-            platformId    = sourcePlatformId,
-            quantity      = quantity
+            platformId = sourcePlatformId,
+            quantity = quantity
         )
 
         // 2. Participaciones destino = coste total arrastrado / VL destino
@@ -103,30 +103,30 @@ class ExecuteFundTransferUseCase(
 
         // 4. Crear TRANSFER_OUT en origen
         val transferOut = AssetTransaction(
-            id           = "txout_$transferGroupId",
-            assetId      = sourceAssetId,
-            type         = AssetTransactionType.TRANSFER_OUT,
-            quantity     = quantity,
+            id = "txout_$transferGroupId",
+            assetId = sourceAssetId,
+            type = AssetTransactionType.TRANSFER_OUT,
+            quantity = quantity,
             pricePerUnit = costBasis.costBasisPerUnit,
-            date         = date,
-            platformId   = sourcePlatformId,
-            feeNote      = null,
-            notes        = "TRANSFER:$transferGroupId",
-            createdAt    = now
+            date = date,
+            platformId = sourcePlatformId,
+            feeNote = null,
+            notes = "TRANSFER:$transferGroupId",
+            createdAt = now
         )
 
         // 5. Crear TRANSFER_IN en destino
         val transferIn = AssetTransaction(
-            id           = "txin_$transferGroupId",
-            assetId      = destinationAssetId,
-            type         = AssetTransactionType.TRANSFER_IN,
-            quantity     = destinationQuantity,
+            id = "txin_$transferGroupId",
+            assetId = destinationAssetId,
+            type = AssetTransactionType.TRANSFER_IN,
+            quantity = destinationQuantity,
             pricePerUnit = costBasisPerUnitDest,
-            date         = date,
-            platformId   = destinationPlatformId,
-            feeNote      = null,
-            notes        = "TRANSFER:$transferGroupId",
-            createdAt    = now + 1 // +1 para garantizar orden FIFO correcto
+            date = date,
+            platformId = destinationPlatformId,
+            feeNote = null,
+            notes = "TRANSFER:$transferGroupId",
+            createdAt = now + 1 // +1 para garantizar orden FIFO correcto
         )
 
         // 6. Persistir ambas transacciones

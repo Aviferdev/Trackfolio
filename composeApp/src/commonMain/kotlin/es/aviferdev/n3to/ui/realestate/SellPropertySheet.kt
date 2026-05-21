@@ -81,10 +81,22 @@ fun SellPropertySheet(
                 TextButton(onClick = {
                     datePickerState.selectedDateMillis?.let { saleDateMillis = it }
                     showDatePicker = false
-                }) { Text(stringResource(Res.string.common_accept), color = MaterialTheme.appColors.primary) }
+                }) {
+                    Text(
+                        stringResource(Res.string.common_accept),
+                        color = MaterialTheme.appColors.primary
+                    )
+                }
             },
             dismissButton = {
-                TextButton(onClick = { showDatePicker = false }) { Text(stringResource(Res.string.common_cancel), color = MaterialTheme.appColors.textTertiary) }
+                TextButton(onClick = {
+                    showDatePicker = false
+                }) {
+                    Text(
+                        stringResource(Res.string.common_cancel),
+                        color = MaterialTheme.appColors.textTertiary
+                    )
+                }
             },
             colors = DatePickerDefaults.colors(containerColor = MaterialTheme.appColors.surface)
         ) {
@@ -136,16 +148,35 @@ fun SellPropertySheet(
             Spacer(Modifier.height(20.dp))
 
             // ── Precio de venta ─────────────────────────────────────────────
-            Text(stringResource(Res.string.realestate_sell_price), fontSize = 13.sp, color = MaterialTheme.appColors.textSecondary)
+            Text(
+                stringResource(Res.string.realestate_sell_price),
+                fontSize = 13.sp,
+                color = MaterialTheme.appColors.textSecondary
+            )
             Spacer(Modifier.height(6.dp))
             OutlinedTextField(
                 value = saleValueText,
-                onValueChange = { saleValueText = it.filter { c -> c.isDigit() || c == ',' || c == '.' } },
-                placeholder = { Text(stringResource(Res.string.realestate_sale_price_hint), color = MaterialTheme.appColors.textTertiary.copy(alpha = 0.6f), fontSize = 14.sp) },
+                onValueChange = {
+                    saleValueText = it.filter { c -> c.isDigit() || c == ',' || c == '.' }
+                },
+                placeholder = {
+                    Text(
+                        stringResource(Res.string.realestate_sale_price_hint),
+                        color = MaterialTheme.appColors.textTertiary.copy(alpha = 0.6f),
+                        fontSize = 14.sp
+                    )
+                },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                trailingIcon = { Text("€", fontSize = 16.sp, color = MaterialTheme.appColors.textSecondary, modifier = Modifier.padding(end = 12.dp)) },
+                trailingIcon = {
+                    Text(
+                        "€",
+                        fontSize = 16.sp,
+                        color = MaterialTheme.appColors.textSecondary,
+                        modifier = Modifier.padding(end = 12.dp)
+                    )
+                },
                 shape = RoundedCornerShape(10.dp),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = MaterialTheme.appColors.primary,
@@ -158,7 +189,11 @@ fun SellPropertySheet(
             Spacer(Modifier.height(16.dp))
 
             // ── Fecha de venta ──────────────────────────────────────────────
-            Text(stringResource(Res.string.realestate_sale_date_title), fontSize = 13.sp, color = MaterialTheme.appColors.textSecondary)
+            Text(
+                stringResource(Res.string.realestate_sale_date_title),
+                fontSize = 13.sp,
+                color = MaterialTheme.appColors.textSecondary
+            )
             Spacer(Modifier.height(6.dp))
             OutlinedTextField(
                 value = formatSellDate(saleDateMillis),
@@ -168,7 +203,11 @@ fun SellPropertySheet(
                 shape = RoundedCornerShape(10.dp),
                 trailingIcon = {
                     IconButton(onClick = { showDatePicker = true }) {
-                        Icon(Icons.Outlined.CalendarMonth, stringResource(Res.string.common_action_cd), tint = MaterialTheme.appColors.textTertiary)
+                        Icon(
+                            Icons.Outlined.CalendarMonth,
+                            stringResource(Res.string.common_action_cd),
+                            tint = MaterialTheme.appColors.textTertiary
+                        )
                     }
                 },
                 colors = OutlinedTextFieldDefaults.colors(
@@ -188,16 +227,31 @@ fun SellPropertySheet(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(stringResource(Res.string.realestate_sale_expenses_title_alt), fontWeight = FontWeight.SemiBold, fontSize = 14.sp, color = MaterialTheme.appColors.textPrimary)
+                Text(
+                    stringResource(Res.string.realestate_sale_expenses_title_alt),
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 14.sp,
+                    color = MaterialTheme.appColors.textPrimary
+                )
                 TextButton(
                     onClick = {
                         val firstCategory = expenseCategories.firstOrNull()?.id ?: ""
-                        expenses = expenses + PropertyExpense(categoryId = firstCategory, amount = 0.0)
+                        expenses =
+                            expenses + PropertyExpense(categoryId = firstCategory, amount = 0.0)
                     }
                 ) {
-                    Icon(Icons.Outlined.Add, null, modifier = Modifier.size(16.dp), tint = MaterialTheme.appColors.primary)
+                    Icon(
+                        Icons.Outlined.Add,
+                        null,
+                        modifier = Modifier.size(16.dp),
+                        tint = MaterialTheme.appColors.primary
+                    )
                     Spacer(Modifier.width(4.dp))
-                    Text(stringResource(Res.string.realestate_add_sale_expense), fontSize = 12.sp, color = MaterialTheme.appColors.primary)
+                    Text(
+                        stringResource(Res.string.realestate_add_sale_expense),
+                        fontSize = 12.sp,
+                        color = MaterialTheme.appColors.primary
+                    )
                 }
             }
 
@@ -239,21 +293,61 @@ fun SellPropertySheet(
                     elevation = CardDefaults.cardElevation(0.dp)
                 ) {
                     Column(modifier = Modifier.padding(14.dp)) {
-                        Text(stringResource(Res.string.realestate_sale_summary), fontWeight = FontWeight.SemiBold, fontSize = 13.sp, color = MaterialTheme.appColors.textPrimary)
+                        Text(
+                            stringResource(Res.string.realestate_sale_summary),
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 13.sp,
+                            color = MaterialTheme.appColors.textPrimary
+                        )
                         Spacer(Modifier.height(8.dp))
-                        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                            Text(stringResource(Res.string.realestate_sale_price_short), fontSize = 12.sp, color = MaterialTheme.appColors.textSecondary)
-                            Text(formatAmountEuro(saleValue), fontSize = 12.sp, color = MaterialTheme.appColors.income, fontWeight = FontWeight.Medium)
+                        Row(
+                            Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(
+                                stringResource(Res.string.realestate_sale_price_short),
+                                fontSize = 12.sp,
+                                color = MaterialTheme.appColors.textSecondary
+                            )
+                            Text(
+                                formatAmountEuro(saleValue),
+                                fontSize = 12.sp,
+                                color = MaterialTheme.appColors.income,
+                                fontWeight = FontWeight.Medium
+                            )
                         }
                         if (totalExpenses > 0) {
-                            Row(Modifier.fillMaxWidth().padding(top = 4.dp), horizontalArrangement = Arrangement.SpaceBetween) {
-                                Text(stringResource(Res.string.realestate_sale_expenses_short), fontSize = 12.sp, color = MaterialTheme.appColors.textSecondary)
-                                Text("-${formatAmountEuro(totalExpenses)}", fontSize = 12.sp, color = MaterialTheme.appColors.expense, fontWeight = FontWeight.Medium)
+                            Row(
+                                Modifier.fillMaxWidth().padding(top = 4.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text(
+                                    stringResource(Res.string.realestate_sale_expenses_short),
+                                    fontSize = 12.sp,
+                                    color = MaterialTheme.appColors.textSecondary
+                                )
+                                Text(
+                                    "-${formatAmountEuro(totalExpenses)}",
+                                    fontSize = 12.sp,
+                                    color = MaterialTheme.appColors.expense,
+                                    fontWeight = FontWeight.Medium
+                                )
                             }
                         }
-                        HorizontalDivider(color = MaterialTheme.appColors.border2, modifier = Modifier.padding(vertical = 6.dp))
-                        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                            Text(stringResource(Res.string.realestate_net_proceeds), fontWeight = FontWeight.SemiBold, fontSize = 13.sp, color = MaterialTheme.appColors.textPrimary)
+                        HorizontalDivider(
+                            color = MaterialTheme.appColors.border2,
+                            modifier = Modifier.padding(vertical = 6.dp)
+                        )
+                        Row(
+                            Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(
+                                stringResource(Res.string.realestate_net_proceeds),
+                                fontWeight = FontWeight.SemiBold,
+                                fontSize = 13.sp,
+                                color = MaterialTheme.appColors.textPrimary
+                            )
                             Text(
                                 formatAmountEuro(netProceeds),
                                 fontWeight = FontWeight.Bold, fontSize = 13.sp,
@@ -288,7 +382,11 @@ fun SellPropertySheet(
                         strokeWidth = 2.dp
                     )
                 } else {
-                    Text(stringResource(Res.string.realestate_confirm_sale), fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                    Text(
+                        stringResource(Res.string.realestate_confirm_sale),
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 16.sp
+                    )
                 }
             }
         }
@@ -296,8 +394,10 @@ fun SellPropertySheet(
 }
 
 private fun formatSellDate(epochMillis: Long): String {
-    val months = listOf("enero", "febrero", "marzo", "abril", "mayo", "junio",
-        "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre")
+    val months = listOf(
+        "enero", "febrero", "marzo", "abril", "mayo", "junio",
+        "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"
+    )
     val ld = Instant.fromEpochMilliseconds(epochMillis)
         .toLocalDateTime(TimeZone.currentSystemDefault()).date
     return "${ld.dayOfMonth} de ${months[ld.monthNumber - 1]} de ${ld.year}"

@@ -1,6 +1,5 @@
 package es.aviferdev.n3to.ui.home.viewmodel
 
-import es.aviferdev.n3to.platform.nowMillis
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import es.aviferdev.n3to.core.VersionManager
@@ -25,6 +24,8 @@ import es.aviferdev.n3to.domain.usecase.fixedincome.GetNearMaturityPositionsUseC
 import es.aviferdev.n3to.domain.usecase.goal.GetCurrentMonthProgressUseCase
 import es.aviferdev.n3to.domain.usecase.home.GetHomeBalanceUseCase
 import es.aviferdev.n3to.domain.usecase.portfolio.GetPortfolioValueHistoryUseCase
+import es.aviferdev.n3to.platform.nowMillis
+import es.aviferdev.n3to.platform.nowYear
 import es.aviferdev.n3to.ui.account.AccountSession
 import es.aviferdev.n3to.ui.common.loading.GlobalLoadingManager
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -37,16 +38,14 @@ import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import es.aviferdev.n3to.platform.nowYear
 
 sealed class HomeUiState {
     data object Loading : HomeUiState()
     data class Success(
         val balance: HomeBalance,
-        /** Mapa de categoryId → nombre. Solo para gastos. */
         val categoryNames: Map<String, String>,
-        val showInitialBalancePrompt: Boolean
     ) : HomeUiState()
+
     data class Error(val message: String) : HomeUiState()
 }
 
@@ -97,15 +96,12 @@ class HomeViewModel(
                 HomeUiState.Success(
                     balance = balance,
                     categoryNames = categoryNames,
-                    showInitialBalancePrompt = balance.selectedAccount != null
-                        && balance.selectedAccountBalance == 0.0
-                        && balance.recentTransactions.isEmpty()
                 )
             }
         }
         .stateIn(
-            scope        = viewModelScope,
-            started      = SharingStarted.WhileSubscribed(5_000),
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
             initialValue = HomeUiState.Loading
         )
 
@@ -119,7 +115,8 @@ class HomeViewModel(
     val goalProgressState: StateFlow<GoalProgressState> = _goalProgressState.asStateFlow()
 
     private val _emergencyFundStatusState = MutableStateFlow(EmergencyFundStatus.NOT_CONFIGURED)
-    val emergencyFundStatus: StateFlow<EmergencyFundStatus> = _emergencyFundStatusState.asStateFlow()
+    val emergencyFundStatus: StateFlow<EmergencyFundStatus> =
+        _emergencyFundStatusState.asStateFlow()
 
     // ── Presupuestos ─────────────────────────────────────────────────────────────
     private val _budgetStatus = MutableStateFlow<List<CategoryBudgetStatus>>(emptyList())

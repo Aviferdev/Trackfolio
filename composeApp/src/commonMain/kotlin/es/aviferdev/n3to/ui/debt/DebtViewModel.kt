@@ -1,6 +1,5 @@
 package es.aviferdev.n3to.ui.debt
 
-import es.aviferdev.n3to.platform.nowMillis
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import es.aviferdev.n3to.domain.model.Debt
@@ -10,6 +9,7 @@ import es.aviferdev.n3to.domain.usecase.debt.GetActiveDebtsUseCase
 import es.aviferdev.n3to.domain.usecase.debt.MarkDebtAsPaidUseCase
 import es.aviferdev.n3to.domain.usecase.debt.SaveDebtUseCase
 import es.aviferdev.n3to.domain.usecase.debt.UpdateDebtUseCase
+import es.aviferdev.n3to.platform.nowMillis
 import es.aviferdev.n3to.ui.account.AccountSession
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted

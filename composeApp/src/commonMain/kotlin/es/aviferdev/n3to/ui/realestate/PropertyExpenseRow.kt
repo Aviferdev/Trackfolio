@@ -133,12 +133,28 @@ fun PropertyExpenseRow(
                             onExpenseChange(expense.copy(amount = amount))
                         }
                     },
-                    placeholder = { Text("0,00", fontSize = 13.sp, color = MaterialTheme.appColors.textTertiary) },
+                    placeholder = {
+                        Text(
+                            "0,00",
+                            fontSize = 13.sp,
+                            color = MaterialTheme.appColors.textTertiary
+                        )
+                    },
                     modifier = Modifier.weight(1f),
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                    trailingIcon = { Text("€", fontSize = 14.sp, color = MaterialTheme.appColors.textSecondary, modifier = Modifier.padding(end = 8.dp)) },
-                    textStyle = LocalTextStyle.current.copy(fontSize = 13.sp, color = MaterialTheme.appColors.textPrimary),
+                    trailingIcon = {
+                        Text(
+                            "€",
+                            fontSize = 14.sp,
+                            color = MaterialTheme.appColors.textSecondary,
+                            modifier = Modifier.padding(end = 8.dp)
+                        )
+                    },
+                    textStyle = LocalTextStyle.current.copy(
+                        fontSize = 13.sp,
+                        color = MaterialTheme.appColors.textPrimary
+                    ),
                     shape = RoundedCornerShape(8.dp),
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = MaterialTheme.appColors.primary,
@@ -152,10 +168,19 @@ fun PropertyExpenseRow(
                         notesText = it
                         onExpenseChange(expense.copy(notes = it.ifBlank { null }))
                     },
-                    placeholder = { Text(stringResource(Res.string.common_note_placeholder), fontSize = 12.sp, color = MaterialTheme.appColors.textTertiary) },
+                    placeholder = {
+                        Text(
+                            stringResource(Res.string.common_note_placeholder),
+                            fontSize = 12.sp,
+                            color = MaterialTheme.appColors.textTertiary
+                        )
+                    },
                     modifier = Modifier.weight(1f),
                     singleLine = true,
-                    textStyle = LocalTextStyle.current.copy(fontSize = 12.sp, color = MaterialTheme.appColors.textPrimary),
+                    textStyle = LocalTextStyle.current.copy(
+                        fontSize = 12.sp,
+                        color = MaterialTheme.appColors.textPrimary
+                    ),
                     shape = RoundedCornerShape(8.dp),
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = MaterialTheme.appColors.primary,

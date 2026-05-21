@@ -12,7 +12,11 @@ class AssetPriceHistoryRepositoryImpl(
     override fun getByAsset(assetId: String): Flow<List<AssetPriceHistory>> =
         dataSource.getByAsset(assetId)
 
-    override fun getByAssetInRange(assetId: String, fromDate: Long, toDate: Long): Flow<List<AssetPriceHistory>> =
+    override fun getByAssetInRange(
+        assetId: String,
+        fromDate: Long,
+        toDate: Long
+    ): Flow<List<AssetPriceHistory>> =
         dataSource.getByAssetInRange(assetId, fromDate, toDate)
 
     override fun getByAccount(accountId: String): Flow<List<AssetPriceHistory>> =

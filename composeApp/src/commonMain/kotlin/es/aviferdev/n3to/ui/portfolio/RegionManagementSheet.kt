@@ -106,7 +106,12 @@ fun RegionManagementSheet(
                 OutlinedTextField(
                     value = newName,
                     onValueChange = { newName = it },
-                    placeholder = { Text(stringResource(Res.string.portfolio_region_name), fontSize = 14.sp) },
+                    placeholder = {
+                        Text(
+                            stringResource(Res.string.portfolio_region_name),
+                            fontSize = 14.sp
+                        )
+                    },
                     modifier = Modifier.weight(1f),
                     singleLine = true,
                     shape = RoundedCornerShape(10.dp),
@@ -136,7 +141,12 @@ fun RegionManagementSheet(
             Spacer(Modifier.height(16.dp))
 
             errorMsg?.let { msg ->
-                Text(msg, fontSize = 12.sp, color = MaterialTheme.appColors.expense, modifier = Modifier.padding(bottom = 8.dp))
+                Text(
+                    msg,
+                    fontSize = 12.sp,
+                    color = MaterialTheme.appColors.expense,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
             }
 
             if (isLoading) {

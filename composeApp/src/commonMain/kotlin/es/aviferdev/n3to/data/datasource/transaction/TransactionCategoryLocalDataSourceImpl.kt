@@ -26,7 +26,10 @@ class TransactionCategoryLocalDataSourceImpl(
     override fun getAllIncludingArchivedByAccount(accountId: String): Flow<List<CategoryEntity>> =
         queries.selectAllIncludingArchived(accountId).asFlow().mapToList(Dispatchers.IO)
 
-    override fun getByTypeIncludingArchivedByAccount(accountId: String, type: String): Flow<List<CategoryEntity>> =
+    override fun getByTypeIncludingArchivedByAccount(
+        accountId: String,
+        type: String
+    ): Flow<List<CategoryEntity>> =
         queries.selectByTypeIncludingArchived(accountId, type).asFlow().mapToList(Dispatchers.IO)
 
     override fun getById(id: String): Flow<CategoryEntity?> =
@@ -39,10 +42,10 @@ class TransactionCategoryLocalDataSourceImpl(
         runCatching {
             withContext(Dispatchers.IO) {
                 queries.insert(
-                    id        = entity.id,
+                    id = entity.id,
                     accountId = entity.accountId,
-                    name      = entity.name,
-                    type      = entity.type,
+                    name = entity.name,
+                    type = entity.type,
                     isDefault = entity.isDefault
                 )
             }

@@ -113,7 +113,10 @@ internal fun FixedIncomeDetailHeader(
                         modifier = Modifier.padding(top = 3.dp)
                     )
                 }
-                StatusTag(label = position.type.label.uppercase(), color = MaterialTheme.appColors.warnAmber)
+                StatusTag(
+                    label = position.type.label.uppercase(),
+                    color = MaterialTheme.appColors.warnAmber
+                )
             }
 
             Spacer(Modifier.height(16.dp))
@@ -124,7 +127,13 @@ internal fun FixedIncomeDetailHeader(
             ) {
                 DetailCell(
                     label = stringResource(Res.string.fixedincome_annual_coupon),
-                    value = "${formatPercent(position.interestRate)}% · ${maskAmount(formatAmount(position.principal * position.interestRate / 100.0), balancesHidden)} €",
+                    value = "${formatPercent(position.interestRate)}% · ${
+                        maskAmount(
+                            formatAmount(
+                                position.principal * position.interestRate / 100.0
+                            ), balancesHidden
+                        )
+                    } €",
                     modifier = Modifier.weight(1f)
                 )
                 DetailCell(
@@ -172,6 +181,11 @@ internal fun DetailCell(label: String, value: String, modifier: Modifier = Modif
         val appCCyanAccent = MaterialTheme.appColors.cyanAccent
         Text(label, fontSize = 10.sp, color = appCCyanAccent.copy(alpha = 0.7f))
         Spacer(Modifier.height(2.dp))
-        Text(value, fontSize = 12.sp, fontWeight = FontWeight.SemiBold, color = MaterialTheme.appColors.textPrimary)
+        Text(
+            value,
+            fontSize = 12.sp,
+            fontWeight = FontWeight.SemiBold,
+            color = MaterialTheme.appColors.textPrimary
+        )
     }
 }

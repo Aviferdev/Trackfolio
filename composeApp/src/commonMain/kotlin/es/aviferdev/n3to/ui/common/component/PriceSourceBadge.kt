@@ -5,10 +5,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -47,12 +45,14 @@ fun PriceSourceBadge(
             label = "Error"
             icon = "⚠️"
         }
+
         priceSource == PriceSource.AUTO -> {
             backgroundColor = Color(0xFF1B5E20).copy(alpha = 0.15f)
             textColor = Color(0xFF4CAF50)
             label = "Auto"
             icon = "🔄"
         }
+
         else -> {
             backgroundColor = Color(0xFF424242).copy(alpha = 0.15f)
             textColor = MaterialTheme.appColors.textSecondary

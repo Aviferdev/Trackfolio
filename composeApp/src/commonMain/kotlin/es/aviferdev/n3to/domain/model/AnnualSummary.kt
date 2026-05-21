@@ -9,13 +9,15 @@ data class AnnualSummary(
 ) {
     val balance: Double get() = totalIncome - totalExpense
 
-    val incomeVariationPercent: Double get() = when {
-        previousYearIncome == 0.0 -> 0.0
-        else -> ((totalIncome - previousYearIncome) / previousYearIncome) * 100
-    }
+    val incomeVariationPercent: Double
+        get() = when {
+            previousYearIncome == 0.0 -> 0.0
+            else -> ((totalIncome - previousYearIncome) / previousYearIncome) * 100
+        }
 
-    val expenseVariationPercent: Double get() = when {
-        previousYearExpense == 0.0 -> 0.0
-        else -> ((totalExpense - previousYearExpense) / previousYearExpense) * 100
-    }
+    val expenseVariationPercent: Double
+        get() = when {
+            previousYearExpense == 0.0 -> 0.0
+            else -> ((totalExpense - previousYearExpense) / previousYearExpense) * 100
+        }
 }

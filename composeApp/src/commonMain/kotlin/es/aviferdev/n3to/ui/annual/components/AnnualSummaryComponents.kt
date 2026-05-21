@@ -1,7 +1,5 @@
 package es.aviferdev.n3to.ui.annual.components
 
-import androidx.compose.material3.MaterialTheme
-import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -25,6 +23,7 @@ import androidx.compose.material.icons.outlined.BarChart
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -43,11 +42,8 @@ import es.aviferdev.n3to.ui.annual.AnnualTab
 import es.aviferdev.n3to.ui.annual.CategoryExpenseComparison
 import es.aviferdev.n3to.ui.annual.GoalSummaryCard
 import es.aviferdev.n3to.ui.common.ProgressBar
-
-import es.aviferdev.n3to.ui.theme.ExpenseRed
 import es.aviferdev.n3to.ui.theme.MONTH_LABELS
-import es.aviferdev.n3to.ui.theme.PrimaryDark
-
+import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.ui.theme.formatAmount
 import es.aviferdev.n3to.ui.theme.formatPercent
 import es.aviferdev.n3to.ui.theme.maskAmount
@@ -90,10 +86,10 @@ internal fun ResumenTab(
             modifier = Modifier.fillMaxWidth()
         )
         MonthlyBarChart(
-            breakdown    = breakdown,
-            year         = summary.year,
-            showIncome   = true,
-            showExpense  = true
+            breakdown = breakdown,
+            year = summary.year,
+            showIncome = true,
+            showExpense = true
         )
     }
 }
@@ -114,15 +110,15 @@ internal fun GastosTab(
         verticalArrangement = Arrangement.spacedBy(14.dp)
     ) {
         MonthlyBarChart(
-            breakdown    = breakdown,
-            year         = year,
-            showIncome   = false,
-            showExpense  = true
+            breakdown = breakdown,
+            year = year,
+            showIncome = false,
+            showExpense = true
         )
         CategoryExpenseList(
-            title          = stringResource(Res.string.annual_expense_categories_title),
-            comparisons    = comparisons,
-            isExpense      = true,
+            title = stringResource(Res.string.annual_expense_categories_title),
+            comparisons = comparisons,
+            isExpense = true,
             balancesHidden = balancesHidden
         )
     }
@@ -144,15 +140,15 @@ internal fun IngresosTab(
         verticalArrangement = Arrangement.spacedBy(14.dp)
     ) {
         MonthlyBarChart(
-            breakdown    = breakdown,
-            year         = year,
-            showIncome   = true,
-            showExpense  = false
+            breakdown = breakdown,
+            year = year,
+            showIncome = true,
+            showExpense = false
         )
         CategoryExpenseList(
-            title          = stringResource(Res.string.annual_income_types_title),
-            comparisons    = comparisons,
-            isExpense      = false,
+            title = stringResource(Res.string.annual_income_types_title),
+            comparisons = comparisons,
+            isExpense = false,
             balancesHidden = balancesHidden
         )
     }
@@ -180,9 +176,9 @@ internal fun AnnualTabs(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text    = tab.displayName(),
+                        text = tab.displayName(),
                         fontSize = 13.sp,
-                        color   = if (isSelected) MaterialTheme.appColors.primary else MaterialTheme.appColors.textSecondary,
+                        color = if (isSelected) MaterialTheme.appColors.primary else MaterialTheme.appColors.textSecondary,
                         fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal
                     )
                     Spacer(Modifier.height(4.dp))
@@ -201,9 +197,9 @@ internal fun AnnualTabs(
 
 @Composable
 internal fun AnnualTab.displayName(): String = when (this) {
-    AnnualTab.RESUMEN    -> stringResource(Res.string.annual_tab_summary)
-    AnnualTab.GASTOS     -> stringResource(Res.string.annual_tab_expenses)
-    AnnualTab.INGRESOS   -> stringResource(Res.string.annual_tab_income)
+    AnnualTab.RESUMEN -> stringResource(Res.string.annual_tab_summary)
+    AnnualTab.GASTOS -> stringResource(Res.string.annual_tab_expenses)
+    AnnualTab.INGRESOS -> stringResource(Res.string.annual_tab_income)
     AnnualTab.INVERSIONES -> stringResource(Res.string.annual_tab_investments)
 }
 
@@ -212,9 +208,9 @@ internal fun YearTotalsCard(summary: AnnualSummary, balancesHidden: Boolean) {
     val savings = summary.totalIncome - summary.totalExpense
 
     Card(
-        modifier  = Modifier.fillMaxWidth(),
-        shape     = RoundedCornerShape(12.dp),
-        colors    = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.surface),
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.surface),
         elevation = CardDefaults.cardElevation(0.dp)
     ) {
         Row(
@@ -227,7 +223,12 @@ internal fun YearTotalsCard(summary: AnnualSummary, balancesHidden: Boolean) {
                     .padding(vertical = 12.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(stringResource(Res.string.annual_income_label), fontSize = 10.sp, color = MaterialTheme.appColors.textTertiary, fontWeight = FontWeight.Medium)
+                Text(
+                    stringResource(Res.string.annual_income_label),
+                    fontSize = 10.sp,
+                    color = MaterialTheme.appColors.textTertiary,
+                    fontWeight = FontWeight.Medium
+                )
                 Spacer(Modifier.height(4.dp))
                 Text(
                     "+${maskAmount(formatAmount(summary.totalIncome), balancesHidden)} €",
@@ -237,7 +238,10 @@ internal fun YearTotalsCard(summary: AnnualSummary, balancesHidden: Boolean) {
                 )
             }
 
-            Box(modifier = Modifier.width(1.dp).height(40.dp).background(MaterialTheme.appColors.border))
+            Box(
+                modifier = Modifier.width(1.dp).height(40.dp)
+                    .background(MaterialTheme.appColors.border)
+            )
 
             Column(
                 modifier = Modifier
@@ -245,7 +249,12 @@ internal fun YearTotalsCard(summary: AnnualSummary, balancesHidden: Boolean) {
                     .padding(vertical = 12.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(stringResource(Res.string.annual_expenses_label), fontSize = 10.sp, color = MaterialTheme.appColors.textTertiary, fontWeight = FontWeight.Medium)
+                Text(
+                    stringResource(Res.string.annual_expenses_label),
+                    fontSize = 10.sp,
+                    color = MaterialTheme.appColors.textTertiary,
+                    fontWeight = FontWeight.Medium
+                )
                 Spacer(Modifier.height(4.dp))
                 Text(
                     "−${maskAmount(formatAmount(summary.totalExpense), balancesHidden)} €",
@@ -255,7 +264,10 @@ internal fun YearTotalsCard(summary: AnnualSummary, balancesHidden: Boolean) {
                 )
             }
 
-            Box(modifier = Modifier.width(1.dp).height(40.dp).background(MaterialTheme.appColors.border))
+            Box(
+                modifier = Modifier.width(1.dp).height(40.dp)
+                    .background(MaterialTheme.appColors.border)
+            )
 
             Column(
                 modifier = Modifier
@@ -263,7 +275,12 @@ internal fun YearTotalsCard(summary: AnnualSummary, balancesHidden: Boolean) {
                     .padding(vertical = 12.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(stringResource(Res.string.annual_savings_label), fontSize = 10.sp, color = MaterialTheme.appColors.textTertiary, fontWeight = FontWeight.Medium)
+                Text(
+                    stringResource(Res.string.annual_savings_label),
+                    fontSize = 10.sp,
+                    color = MaterialTheme.appColors.textTertiary,
+                    fontWeight = FontWeight.Medium
+                )
                 Spacer(Modifier.height(4.dp))
                 Text(
                     "${maskAmount(formatAmount(savings), balancesHidden)} €",
@@ -285,17 +302,22 @@ internal fun CategoryExpenseList(
 ) {
     if (comparisons.isEmpty()) {
         Card(
-            modifier  = Modifier.fillMaxWidth(),
-            shape     = RoundedCornerShape(14.dp),
-            colors    = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.surface),
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(14.dp),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.surface),
             elevation = CardDefaults.cardElevation(0.dp),
-            border    = CardDefaults.outlinedCardBorder()
+            border = CardDefaults.outlinedCardBorder()
         ) {
             Column(
                 modifier = Modifier.fillMaxWidth().padding(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Icon(Icons.Outlined.BarChart, contentDescription = null, modifier = Modifier.size(32.dp), tint = MaterialTheme.appColors.primary)
+                Icon(
+                    Icons.Outlined.BarChart,
+                    contentDescription = null,
+                    modifier = Modifier.size(32.dp),
+                    tint = MaterialTheme.appColors.primary
+                )
                 Spacer(Modifier.height(8.dp))
                 Text(
                     stringResource(Res.string.annual_no_data_text),
@@ -315,11 +337,11 @@ internal fun CategoryExpenseList(
     }
 
     Card(
-        modifier  = Modifier.fillMaxWidth(),
-        shape     = RoundedCornerShape(14.dp),
-        colors    = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.surface),
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(14.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.surface),
         elevation = CardDefaults.cardElevation(0.dp),
-        border    = CardDefaults.outlinedCardBorder()
+        border = CardDefaults.outlinedCardBorder()
     ) {
         Column(modifier = Modifier.padding(14.dp)) {
             Text(
@@ -374,7 +396,8 @@ internal fun VariationBadge(
     if (changePercent != null) {
         val isPositive = changePercent >= 0
         val isGood = if (isExpense) !isPositive else isPositive
-        val varColor = if (isGood) MaterialTheme.appColors.income else MaterialTheme.appColors.expense
+        val varColor =
+            if (isGood) MaterialTheme.appColors.income else MaterialTheme.appColors.expense
         val arrow = if (isPositive) "▲" else "▼"
         val sign = if (isPositive && changePercent > 0) "+" else ""
 
@@ -415,49 +438,55 @@ internal fun MonthlyBarChart(
     }.coerceAtLeast(1.0)
 
     Card(
-        modifier  = Modifier.fillMaxWidth(),
-        shape     = RoundedCornerShape(14.dp),
-        colors    = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.surface),
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(14.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.surface),
         elevation = CardDefaults.cardElevation(0.dp),
-        border    = CardDefaults.outlinedCardBorder()
+        border = CardDefaults.outlinedCardBorder()
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
-                text       = stringResource(Res.string.annual_monthly_evolution, year),
-                fontSize   = 14.sp,
+                text = stringResource(Res.string.annual_monthly_evolution, year),
+                fontSize = 14.sp,
                 fontWeight = FontWeight.SemiBold,
-                color      = MaterialTheme.appColors.textPrimary
+                color = MaterialTheme.appColors.textPrimary
             )
             Spacer(Modifier.height(4.dp))
 
             Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                 if (showIncome) {
-                    LegendItem(color = MaterialTheme.appColors.income, label = stringResource(Res.string.annual_income_legend))
+                    LegendItem(
+                        color = MaterialTheme.appColors.income,
+                        label = stringResource(Res.string.annual_income_legend)
+                    )
                 }
                 if (showExpense) {
-                    LegendItem(color = MaterialTheme.appColors.expense, label = stringResource(Res.string.annual_expense_legend))
+                    LegendItem(
+                        color = MaterialTheme.appColors.expense,
+                        label = stringResource(Res.string.annual_expense_legend)
+                    )
                 }
             }
 
             Spacer(Modifier.height(16.dp))
 
             Row(
-                modifier              = Modifier.fillMaxWidth().height(160.dp),
+                modifier = Modifier.fillMaxWidth().height(160.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment     = Alignment.Bottom
+                verticalAlignment = Alignment.Bottom
             ) {
                 (1..12).forEach { monthNum ->
-                    val row     = dataMap[monthNum]
-                    val income  = row?.totalIncome  ?: 0.0
+                    val row = dataMap[monthNum]
+                    val income = row?.totalIncome ?: 0.0
                     val expense = row?.totalExpense ?: 0.0
                     MonthBarGroup(
-                        monthLabel   = MONTH_LABELS[monthNum - 1],
-                        income       = income,
-                        expense      = expense,
-                        maxValue     = maxValue,
-                        showIncome   = showIncome,
-                        showExpense  = showExpense,
-                        modifier     = Modifier.weight(1f)
+                        monthLabel = MONTH_LABELS[monthNum - 1],
+                        income = income,
+                        expense = expense,
+                        maxValue = maxValue,
+                        showIncome = showIncome,
+                        showExpense = showExpense,
+                        modifier = Modifier.weight(1f)
                     )
                 }
             }
@@ -475,18 +504,18 @@ internal fun MonthBarGroup(
     showExpense: Boolean = true,
     modifier: Modifier = Modifier
 ) {
-    val incomeRatio  = if (showIncome) (income / maxValue).toFloat().coerceIn(0f, 1f) else 0f
+    val incomeRatio = if (showIncome) (income / maxValue).toFloat().coerceIn(0f, 1f) else 0f
     val expenseRatio = if (showExpense) (expense / maxValue).toFloat().coerceIn(0f, 1f) else 0f
     val maxBarHeight = 130.dp
 
     Column(
-        modifier            = modifier,
+        modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Bottom
     ) {
         Row(
-            modifier            = Modifier.height(maxBarHeight),
-            verticalAlignment   = Alignment.Bottom,
+            modifier = Modifier.height(maxBarHeight),
+            verticalAlignment = Alignment.Bottom,
             horizontalArrangement = Arrangement.spacedBy(1.dp)
         ) {
             if (showIncome) {
@@ -510,9 +539,9 @@ internal fun MonthBarGroup(
         }
         Spacer(Modifier.height(4.dp))
         Text(
-            text      = monthLabel,
-            fontSize  = 9.sp,
-            color     = MaterialTheme.appColors.textSecondary,
+            text = monthLabel,
+            fontSize = 9.sp,
+            color = MaterialTheme.appColors.textSecondary,
             textAlign = TextAlign.Center
         )
     }

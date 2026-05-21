@@ -9,23 +9,39 @@ import es.aviferdev.n3to.domain.model.Transaction
 import kotlinx.coroutines.flow.Flow
 
 interface TransactionLocalDataSource {
-    fun getByMonthAndAccount(accountId: String, year: String, month: String): Flow<List<Transaction>>
-    fun getMonthlyTotalsByAccount(accountId: String, year: String, month: String): Flow<MonthlyTotals>
+    fun getByMonthAndAccount(
+        accountId: String,
+        year: String,
+        month: String
+    ): Flow<List<Transaction>>
+
+    fun getMonthlyTotalsByAccount(
+        accountId: String,
+        year: String,
+        month: String
+    ): Flow<MonthlyTotals>
+
     fun getAnnualTotalsByAccount(accountId: String, year: String): Flow<AnnualSummary>
     fun getRecentByAccount(accountId: String, limit: Long): Flow<List<Transaction>>
     fun getMonthlyBreakdown(accountId: String, year: String): Flow<List<MonthlyTotals>>
+
     /** Todos los ingresos del año indicado para el informe fiscal. */
     fun getIncomeByYear(accountId: String, year: String): Flow<List<Transaction>>
+
     /** Desglose de gastos por categoría para un año. */
     fun getExpensesByCategoryPerYear(accountId: String, year: String): Flow<List<CategoryBreakdown>>
+
     /** Desglose de ingresos por tipo para un año. */
     fun getIncomeByTypePerYear(accountId: String, year: String): Flow<List<IncomeTypeBreakdown>>
+
     /** Obtiene una transacción por su ID. */
     fun getById(id: String): Flow<Transaction?>
+
     // CRUD
     suspend fun insert(entity: TransactionEntity): Result<Unit>
     suspend fun update(entity: TransactionEntity): Result<Unit>
     suspend fun delete(id: String): Result<Unit>
+
     // Portfolio link
     suspend fun deleteByLinkedAssetTransaction(assetTxId: String): Result<Unit>
     fun getByLinkedAssetTransaction(assetTxId: String): Flow<Transaction?>

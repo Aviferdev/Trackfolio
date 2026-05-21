@@ -39,11 +39,11 @@ import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.core.browser.rememberUrlOpener
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.consent_accept
+import n3to.composeapp.generated.resources.consent_crash_description
 import n3to.composeapp.generated.resources.consent_decline
 import n3to.composeapp.generated.resources.consent_privacy_policy
 import n3to.composeapp.generated.resources.onboarding_welcome_subtitle
 import n3to.composeapp.generated.resources.privacy_analytics_title
-import n3to.composeapp.generated.resources.consent_crash_description
 import n3to.composeapp.generated.resources.privacy_crash_title
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -232,7 +232,10 @@ fun ConsentScreen(
             TextButton(onClick = {
                 urlOpener.openUrl(es.aviferdev.n3to.ui.settings.PRIVACY_POLICY_URL)
             }) {
-                Text(stringResource(Res.string.consent_privacy_policy), style = MaterialTheme.typography.bodySmall)
+                Text(
+                    stringResource(Res.string.consent_privacy_policy),
+                    style = MaterialTheme.typography.bodySmall
+                )
             }
             Spacer(Modifier.height(24.dp))
         }

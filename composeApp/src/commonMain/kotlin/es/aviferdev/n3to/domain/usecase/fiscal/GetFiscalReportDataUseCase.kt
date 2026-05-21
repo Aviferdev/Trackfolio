@@ -38,11 +38,11 @@ class GetFiscalReportDataUseCase(
             transactionRepository.getIncomeByYear(accountId, year)
         ) { account, annual, monthly, debts, incomes ->
             Base(
-                accountName      = account?.name ?: "Cuenta",
-                annualSummary    = annual,
+                accountName = account?.name ?: "Cuenta",
+                annualSummary = annual,
                 monthlyBreakdown = monthly,
-                debts            = debts,
-                yearIncomes      = incomes
+                debts = debts,
+                yearIncomes = incomes
             )
         }
 
@@ -54,7 +54,7 @@ class GetFiscalReportDataUseCase(
             ) { assets, allTxs, categories ->
 
                 val categoryMap = categories.associateBy { it.id }
-                val txsByAsset  = allTxs.groupBy { it.assetId }
+                val txsByAsset = allTxs.groupBy { it.assetId }
 
                 val positions = assets.map { asset ->
                     val txs = txsByAsset[asset.id].orEmpty().sortedBy { it.date }
@@ -65,31 +65,31 @@ class GetFiscalReportDataUseCase(
                     )
                 }
 
-                val totalRealizedGains  = positions.sumOf { maxOf(0.0, it.realizedPnl) }
+                val totalRealizedGains = positions.sumOf { maxOf(0.0, it.realizedPnl) }
                 val totalRealizedLosses = positions.sumOf { minOf(0.0, it.realizedPnl) }
 
-                val txBreakdown    = buildTaxBreakdown(base.yearIncomes)
+                val txBreakdown = buildTaxBreakdown(base.yearIncomes)
                 val assetBreakdown = buildAssetGainsBreakdown(positions)
-                val fullBreakdown  = mergeTaxBreakdowns(txBreakdown, assetBreakdown)
+                val fullBreakdown = mergeTaxBreakdowns(txBreakdown, assetBreakdown)
 
                 val adjustedSummary = base.annualSummary?.let { s ->
                     s.copy(
-                        totalIncome  = s.totalIncome + totalRealizedGains,
+                        totalIncome = s.totalIncome + totalRealizedGains,
                         totalExpense = s.totalExpense + kotlin.math.abs(totalRealizedLosses)
                     )
                 }
 
                 FiscalReportData(
-                    accountName        = base.accountName,
-                    year               = year,
-                    generatedAt        = nowMillis(),
-                    annualSummary      = adjustedSummary,
-                    monthlyBreakdown   = base.monthlyBreakdown,
-                    activeDebts        = base.debts,
-                    assetPositions     = positions,
+                    accountName = base.accountName,
+                    year = year,
+                    generatedAt = nowMillis(),
+                    annualSummary = adjustedSummary,
+                    monthlyBreakdown = base.monthlyBreakdown,
+                    activeDebts = base.debts,
+                    assetPositions = positions,
                     incomeTaxBreakdown = fullBreakdown,
-                    hasNetOnlyIncomes  = base.yearIncomes.any { it.isNetOnly },
-                    yearlyIncomes      = base.yearIncomes
+                    hasNetOnlyIncomes = base.yearIncomes.any { it.isNetOnly },
+                    yearlyIncomes = base.yearIncomes
                 )
             }
         }
@@ -102,20 +102,26 @@ class GetFiscalReportDataUseCase(
             .groupBy { it.incomeType ?: IncomeType.EXEMPT_INCOME }
             .map { (incomeType, txs) ->
                 val grossTotal = txs.sumOf { it.grossAmount ?: it.amount }
-                val netTotal   = txs.sumOf { it.amount }
-                val irpfTotal  = txs.sumOf { tx -> tx.taxLines.filter { it.role == es.aviferdev.n3to.domain.model.TaxRole.INCOME_TAX }.sumOf { it.amount } }
-                val ssTotal    = txs.sumOf { tx -> tx.taxLines.filter { it.role == es.aviferdev.n3to.domain.model.TaxRole.SOCIAL_CONTRIBUTION }.sumOf { it.amount } }
-                val commTotal  = txs.sumOf { it.commissionAmount ?: 0.0 }
-                val avgPct     = if (grossTotal > 0.0) (irpfTotal / grossTotal) * 100.0 else 0.0
+                val netTotal = txs.sumOf { it.amount }
+                val irpfTotal = txs.sumOf { tx ->
+                    tx.taxLines.filter { it.role == es.aviferdev.n3to.domain.model.TaxRole.INCOME_TAX }
+                        .sumOf { it.amount }
+                }
+                val ssTotal = txs.sumOf { tx ->
+                    tx.taxLines.filter { it.role == es.aviferdev.n3to.domain.model.TaxRole.SOCIAL_CONTRIBUTION }
+                        .sumOf { it.amount }
+                }
+                val commTotal = txs.sumOf { it.commissionAmount ?: 0.0 }
+                val avgPct = if (grossTotal > 0.0) (irpfTotal / grossTotal) * 100.0 else 0.0
                 FiscalIncomeTaxBreakdown(
-                    incomeType          = incomeType,
-                    count               = txs.size,
-                    grossTotal          = grossTotal,
-                    netTotal            = netTotal,
-                    irpfTotal           = irpfTotal,
+                    incomeType = incomeType,
+                    count = txs.size,
+                    grossTotal = grossTotal,
+                    netTotal = netTotal,
+                    irpfTotal = irpfTotal,
                     socialSecurityTotal = ssTotal,
-                    commissionTotal     = commTotal,
-                    avgIrpfPercent      = avgPct
+                    commissionTotal = commTotal,
+                    avgIrpfPercent = avgPct
                 )
             }
             .sortedBy { it.incomeType.ordinal }
@@ -126,15 +132,15 @@ class GetFiscalReportDataUseCase(
         if (withActivity.isEmpty()) return emptyList()
 
         val totalSold = withActivity.sumOf { it.totalSold }
-        val count     = withActivity.size
+        val count = withActivity.size
 
         return listOf(
             FiscalIncomeTaxBreakdown(
-                incomeType     = IncomeType.DIVIDEND,  // Ganancias patrimoniales → capital mobiliario
-                count          = count,
-                grossTotal     = totalSold,
-                netTotal       = totalSold,
-                irpfTotal      = 0.0,
+                incomeType = IncomeType.DIVIDEND,  // Ganancias patrimoniales → capital mobiliario
+                count = count,
+                grossTotal = totalSold,
+                netTotal = totalSold,
+                irpfTotal = 0.0,
                 avgIrpfPercent = 0.0
             )
         )
@@ -147,16 +153,16 @@ class GetFiscalReportDataUseCase(
             .groupBy { it.incomeType }
             .map { (incomeType, items) ->
                 FiscalIncomeTaxBreakdown(
-                    incomeType          = incomeType,
-                    count               = items.sumOf { it.count },
-                    grossTotal          = items.sumOf { it.grossTotal },
-                    netTotal            = items.sumOf { it.netTotal },
-                    irpfTotal           = items.sumOf { it.irpfTotal },
+                    incomeType = incomeType,
+                    count = items.sumOf { it.count },
+                    grossTotal = items.sumOf { it.grossTotal },
+                    netTotal = items.sumOf { it.netTotal },
+                    irpfTotal = items.sumOf { it.irpfTotal },
                     socialSecurityTotal = items.sumOf { it.socialSecurityTotal },
-                    commissionTotal     = items.sumOf { it.commissionTotal },
-                    avgIrpfPercent      = run {
+                    commissionTotal = items.sumOf { it.commissionTotal },
+                    avgIrpfPercent = run {
                         val totalGross = items.sumOf { it.grossTotal }
-                        val totalIrpf  = items.sumOf { it.irpfTotal }
+                        val totalIrpf = items.sumOf { it.irpfTotal }
                         if (totalGross > 0.0) (totalIrpf / totalGross) * 100.0 else 0.0
                     }
                 )
@@ -169,10 +175,10 @@ class GetFiscalReportDataUseCase(
         currentPrice: Double?, sortedTxs: List<AssetTransaction>, year: String
     ): AssetPosition {
         val fifoQueue = ArrayDeque<Pair<Double, Double>>()
-        var realizedPnl    = 0.0
+        var realizedPnl = 0.0
         var totalBoughtYear = 0.0
-        var totalSoldYear   = 0.0
-        val yearTxs         = mutableListOf<AssetTransaction>()
+        var totalSoldYear = 0.0
+        val yearTxs = mutableListOf<AssetTransaction>()
 
         for (tx in sortedTxs) {
             val isThisYear = epochMillisToYear(tx.date) == year
@@ -181,18 +187,20 @@ class GetFiscalReportDataUseCase(
                     fifoQueue.addLast(tx.quantity to tx.pricePerUnit)
                     if (isThisYear && tx.isBuy) totalBoughtYear += tx.grossAmount
                 }
+
                 AssetTransactionType.SELL -> {
                     var remaining = tx.quantity
                     while (remaining > 0.0 && fifoQueue.isNotEmpty()) {
                         val (lotQty, lotPrice) = fifoQueue.first()
                         val consumed = minOf(lotQty, remaining)
                         realizedPnl += consumed * (tx.pricePerUnit - lotPrice)
-                        remaining   -= consumed
+                        remaining -= consumed
                         if (consumed >= lotQty) fifoQueue.removeFirst()
                         else fifoQueue[0] = (lotQty - consumed) to lotPrice
                     }
                     if (isThisYear) totalSoldYear += tx.grossAmount
                 }
+
                 AssetTransactionType.TRANSFER_OUT -> {
                     // Consume lotes sin generar P&L (traspaso fiscal neutro)
                     var remaining = tx.quantity
@@ -208,32 +216,33 @@ class GetFiscalReportDataUseCase(
             if (isThisYear) yearTxs.add(tx)
         }
 
-        val netQuantity  = fifoQueue.sumOf { it.first }
-        val totalCost    = fifoQueue.sumOf { it.first * it.second }
-        val avgCost      = if (netQuantity > 0.0) totalCost / netQuantity else 0.0
+        val netQuantity = fifoQueue.sumOf { it.first }
+        val totalCost = fifoQueue.sumOf { it.first * it.second }
+        val avgCost = if (netQuantity > 0.0) totalCost / netQuantity else 0.0
         val currentValue = currentPrice?.let { it * netQuantity }
         val unrealizedPnl = currentValue?.let { it - totalCost }
 
         return AssetPosition(
-            ticker           = ticker,
-            name             = name,
-            categoryName     = categoryName,
-            netQuantity      = netQuantity,
-            avgCostBasis     = avgCost,
-            totalCost        = totalCost,
-            currentPrice     = currentPrice,
-            currentValue     = currentValue,
-            unrealizedPnl    = unrealizedPnl,
-            realizedPnl      = realizedPnl,
-            totalBought      = totalBoughtYear,
-            totalSold        = totalSoldYear,
+            ticker = ticker,
+            name = name,
+            categoryName = categoryName,
+            netQuantity = netQuantity,
+            avgCostBasis = avgCost,
+            totalCost = totalCost,
+            currentPrice = currentPrice,
+            currentValue = currentValue,
+            unrealizedPnl = unrealizedPnl,
+            realizedPnl = realizedPnl,
+            totalBought = totalBoughtYear,
+            totalSold = totalSoldYear,
             yearTransactions = yearTxs
         )
     }
 
     private fun epochMillisToYear(epochMillis: Long): String {
         val daysSinceEpoch = epochMillis / 86_400_000L
-        var year = 1970; var days = daysSinceEpoch
+        var year = 1970;
+        var days = daysSinceEpoch
         while (true) {
             val daysInYear = if (isLeap(year)) 366L else 365L
             if (days < daysInYear) break
@@ -245,10 +254,10 @@ class GetFiscalReportDataUseCase(
     private fun isLeap(y: Int) = (y % 4 == 0 && y % 100 != 0) || y % 400 == 0
 
     private data class Base(
-        val accountName:      String,
-        val annualSummary:    es.aviferdev.n3to.domain.model.AnnualSummary?,
+        val accountName: String,
+        val annualSummary: es.aviferdev.n3to.domain.model.AnnualSummary?,
         val monthlyBreakdown: List<es.aviferdev.n3to.domain.model.MonthlyTotals>,
-        val debts:            List<es.aviferdev.n3to.domain.model.Debt>,
-        val yearIncomes:      List<Transaction>
+        val debts: List<es.aviferdev.n3to.domain.model.Debt>,
+        val yearIncomes: List<Transaction>
     )
 }

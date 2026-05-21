@@ -65,25 +65,62 @@ fun ChangeRentalStatusSheet(
                 TextButton(onClick = {
                     datePickerState.selectedDateMillis?.let { effectiveDateMillis = it }
                     showDatePicker = false
-                }) { Text(stringResource(Res.string.common_accept), color = MaterialTheme.appColors.primary) }
+                }) {
+                    Text(
+                        stringResource(Res.string.common_accept),
+                        color = MaterialTheme.appColors.primary
+                    )
+                }
             },
-            dismissButton = { TextButton(onClick = { showDatePicker = false }) { Text(stringResource(Res.string.common_cancel), color = MaterialTheme.appColors.textTertiary) } }
-        ) { DatePicker(state = datePickerState, colors = DatePickerDefaults.colors(containerColor = MaterialTheme.appColors.surface)) }
+            dismissButton = {
+                TextButton(onClick = {
+                    showDatePicker = false
+                }) {
+                    Text(
+                        stringResource(Res.string.common_cancel),
+                        color = MaterialTheme.appColors.textTertiary
+                    )
+                }
+            }
+        ) {
+            DatePicker(
+                state = datePickerState,
+                colors = DatePickerDefaults.colors(containerColor = MaterialTheme.appColors.surface)
+            )
+        }
     }
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
         containerColor = MaterialTheme.appColors.surface,
-        dragHandle = { Box(Modifier.padding(top = 12.dp, bottom = 4.dp).width(40.dp).height(4.dp).clip(RoundedCornerShape(2.dp)).background(MaterialTheme.appColors.dragHandle)) }
+        dragHandle = {
+            Box(
+                Modifier.padding(top = 12.dp, bottom = 4.dp).width(40.dp).height(4.dp)
+                    .clip(RoundedCornerShape(2.dp)).background(MaterialTheme.appColors.dragHandle)
+            )
+        }
     ) {
         Column(Modifier.fillMaxWidth().padding(horizontal = 20.dp).padding(bottom = 32.dp)) {
-            Text(stringResource(Res.string.realestate_change_rental_title), fontWeight = FontWeight.Bold, fontSize = 18.sp, color = MaterialTheme.appColors.textPrimary)
+            Text(
+                stringResource(Res.string.realestate_change_rental_title),
+                fontWeight = FontWeight.Bold,
+                fontSize = 18.sp,
+                color = MaterialTheme.appColors.textPrimary
+            )
             Spacer(Modifier.height(4.dp))
-            Text(stringResource(Res.string.realestate_change_rental_status), fontSize = 13.sp, color = MaterialTheme.appColors.textTertiary)
+            Text(
+                stringResource(Res.string.realestate_change_rental_status),
+                fontSize = 13.sp,
+                color = MaterialTheme.appColors.textTertiary
+            )
             Spacer(Modifier.height(16.dp))
 
-            Text(stringResource(Res.string.realestate_rental_status_label), fontSize = 13.sp, color = MaterialTheme.appColors.textSecondary)
+            Text(
+                stringResource(Res.string.realestate_rental_status_label),
+                fontSize = 13.sp,
+                color = MaterialTheme.appColors.textSecondary
+            )
             Spacer(Modifier.height(6.dp))
             LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 items(RentalStatus.entries) { status ->
@@ -96,29 +133,64 @@ fun ChangeRentalStatusSheet(
             }
             Spacer(Modifier.height(12.dp))
 
-            Text(stringResource(Res.string.realestate_change_rental_date), fontSize = 13.sp, color = MaterialTheme.appColors.textSecondary)
+            Text(
+                stringResource(Res.string.realestate_change_rental_date),
+                fontSize = 13.sp,
+                color = MaterialTheme.appColors.textSecondary
+            )
             Spacer(Modifier.height(4.dp))
             OutlinedTextField(
                 value = formatDate(effectiveDateMillis), onValueChange = {}, readOnly = true,
-                colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = MaterialTheme.appColors.primary, unfocusedBorderColor = MaterialTheme.appColors.border, focusedTextColor = MaterialTheme.appColors.textPrimary, unfocusedTextColor = MaterialTheme.appColors.textPrimary),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = MaterialTheme.appColors.primary,
+                    unfocusedBorderColor = MaterialTheme.appColors.border,
+                    focusedTextColor = MaterialTheme.appColors.textPrimary,
+                    unfocusedTextColor = MaterialTheme.appColors.textPrimary
+                ),
                 modifier = Modifier.fillMaxWidth(),
-                trailingIcon = { IconButton(onClick = { showDatePicker = true }) { Icon(Icons.Outlined.CalendarMonth, stringResource(Res.string.common_action_cd), tint = MaterialTheme.appColors.textTertiary) } }
+                trailingIcon = {
+                    IconButton(onClick = {
+                        showDatePicker = true
+                    }) {
+                        Icon(
+                            Icons.Outlined.CalendarMonth,
+                            stringResource(Res.string.common_action_cd),
+                            tint = MaterialTheme.appColors.textTertiary
+                        )
+                    }
+                }
             )
 
             if (selectedStatus == RentalStatus.RENTED) {
                 Spacer(Modifier.height(12.dp))
                 OutlinedTextField(
-                    value = monthlyRentText, onValueChange = { monthlyRentText = it },
-                    label = { Text(stringResource(Res.string.realestate_monthly_rent_label)) }, singleLine = true,
+                    value = monthlyRentText,
+                    onValueChange = { monthlyRentText = it },
+                    label = { Text(stringResource(Res.string.realestate_monthly_rent_label)) },
+                    singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                    colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = MaterialTheme.appColors.primary, unfocusedBorderColor = MaterialTheme.appColors.border, cursorColor = MaterialTheme.appColors.primary, focusedLabelColor = MaterialTheme.appColors.primary, unfocusedLabelColor = MaterialTheme.appColors.textTertiary, focusedTextColor = MaterialTheme.appColors.textPrimary, unfocusedTextColor = MaterialTheme.appColors.textPrimary),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = MaterialTheme.appColors.primary,
+                        unfocusedBorderColor = MaterialTheme.appColors.border,
+                        cursorColor = MaterialTheme.appColors.primary,
+                        focusedLabelColor = MaterialTheme.appColors.primary,
+                        unfocusedLabelColor = MaterialTheme.appColors.textTertiary,
+                        focusedTextColor = MaterialTheme.appColors.textPrimary,
+                        unfocusedTextColor = MaterialTheme.appColors.textPrimary
+                    ),
                     modifier = Modifier.fillMaxWidth()
                 )
             }
 
             Spacer(Modifier.height(16.dp))
             Button(
-                onClick = { onConfirm(selectedStatus, effectiveDateMillis, if (selectedStatus == RentalStatus.RENTED) monthlyRent else null) },
+                onClick = {
+                    onConfirm(
+                        selectedStatus,
+                        effectiveDateMillis,
+                        if (selectedStatus == RentalStatus.RENTED) monthlyRent else null
+                    )
+                },
                 enabled = isValid,
                 modifier = Modifier.fillMaxWidth().height(48.dp), shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.appColors.primary)
@@ -128,6 +200,7 @@ fun ChangeRentalStatusSheet(
 }
 
 private fun formatDate(epochMillis: Long): String {
-    val local = Instant.fromEpochMilliseconds(epochMillis).toLocalDateTime(TimeZone.currentSystemDefault())
+    val local =
+        Instant.fromEpochMilliseconds(epochMillis).toLocalDateTime(TimeZone.currentSystemDefault())
     return "${local.dayOfMonth}/${local.monthNumber}/${local.year}"
 }

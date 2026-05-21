@@ -1,7 +1,5 @@
-package es.aviferdev.n3to.ui.common.navigation
+package es.aviferdev.n3to.ui.common.topbar
 
-import androidx.compose.material3.MaterialTheme
-import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
@@ -14,25 +12,26 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.ui.common.button.IconButtonApp
+import es.aviferdev.n3to.ui.common.separator.SpacerHorizontalApp
+import es.aviferdev.n3to.ui.theme.appColors
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.common_back_cd
 import org.jetbrains.compose.resources.stringResource
-import es.aviferdev.n3to.ui.common.separator.SpacerHorizontalApp
-import androidx.compose.ui.graphics.Color
-
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-fun TopBarApp(
+fun TopBarWithActionsApp(
     title: String,
     navigateBack: (() -> Unit)? = null,
     subtitle: String? = null,
@@ -87,7 +86,7 @@ fun TopBarApp(
 @Preview
 @Composable
 private fun TopBarPreview() {
-    TopBarApp(
+    TopBarWithActionsApp(
         title = "Ir atras",
         navigateBack = {}
     )

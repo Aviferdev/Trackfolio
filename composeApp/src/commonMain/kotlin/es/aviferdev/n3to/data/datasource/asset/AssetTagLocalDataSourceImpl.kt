@@ -40,20 +40,21 @@ class AssetTagLocalDataSourceImpl(
     override suspend fun insertTag(tag: AssetTag): Result<Unit> = runCatching {
         withContext(Dispatchers.IO) {
             queries.insertTag(
-                id         = tag.id,
-                name       = tag.name,
+                id = tag.id,
+                name = tag.name,
                 categoryId = tag.categoryId,
-                color      = tag.color,
-                createdAt  = tag.createdAt
+                color = tag.color,
+                createdAt = tag.createdAt
             )
         }
     }
 
-    override suspend fun renameTag(id: String, newName: String, newColor: String): Result<Unit> = runCatching {
-        withContext(Dispatchers.IO) {
-            queries.updateTagName(name = newName, color = newColor, id = id)
+    override suspend fun renameTag(id: String, newName: String, newColor: String): Result<Unit> =
+        runCatching {
+            withContext(Dispatchers.IO) {
+                queries.updateTagName(name = newName, color = newColor, id = id)
+            }
         }
-    }
 
     override suspend fun archiveTag(id: String): Result<Unit> = runCatching {
         withContext(Dispatchers.IO) { queries.archiveTag(id) }
@@ -71,30 +72,35 @@ class AssetTagLocalDataSourceImpl(
                 rows.map { row ->
                     AssetTagAssignment(
                         assetId = assetId,
-                        tag     = AssetTag(
-                            id         = row.id,
-                            name       = row.name,
+                        tag = AssetTag(
+                            id = row.id,
+                            name = row.name,
                             categoryId = row.categoryId,
-                            color      = row.color,
-                            archived   = row.archived != 0L,
-                            createdAt  = row.createdAt
+                            color = row.color,
+                            archived = row.archived != 0L,
+                            createdAt = row.createdAt
                         ),
-                        weight  = row.weight
+                        weight = row.weight
                     )
                 }
             }
 
-    override suspend fun upsertAssignment(assetId: String, tagId: String, weight: Double): Result<Unit> = runCatching {
+    override suspend fun upsertAssignment(
+        assetId: String,
+        tagId: String,
+        weight: Double
+    ): Result<Unit> = runCatching {
         withContext(Dispatchers.IO) {
             queries.upsertAssignment(assetId = assetId, tagId = tagId, weight = weight)
         }
     }
 
-    override suspend fun removeAssignment(assetId: String, tagId: String): Result<Unit> = runCatching {
-        withContext(Dispatchers.IO) {
-            queries.deleteAssignment(assetId = assetId, tagId = tagId)
+    override suspend fun removeAssignment(assetId: String, tagId: String): Result<Unit> =
+        runCatching {
+            withContext(Dispatchers.IO) {
+                queries.deleteAssignment(assetId = assetId, tagId = tagId)
+            }
         }
-    }
 
     override suspend fun removeAllAssignmentsForAsset(assetId: String): Result<Unit> = runCatching {
         withContext(Dispatchers.IO) {

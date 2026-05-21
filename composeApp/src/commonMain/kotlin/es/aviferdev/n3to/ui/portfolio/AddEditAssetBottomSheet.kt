@@ -122,6 +122,7 @@ private sealed class IsinValidationState {
         val currency: String,
         val exchange: String?
     ) : IsinValidationState()
+
     data class NotFound(val message: String) : IsinValidationState()
     data class Error(val message: String) : IsinValidationState()
 }
@@ -160,16 +161,20 @@ fun AddEditAssetBottomSheet(
 ) {
     val isEditing = asset != null
 
-    var ticker        by remember { mutableStateOf(asset?.ticker ?: "") }
-    var name          by remember { mutableStateOf(asset?.name ?: "") }
-    var currentPrice  by remember { mutableStateOf(asset?.currentPrice?.toString() ?: "") }
-    var notes         by remember { mutableStateOf(asset?.notes ?: "") }
-    var isin          by remember { mutableStateOf(asset?.isin ?: "") }
+    var ticker by remember { mutableStateOf(asset?.ticker ?: "") }
+    var name by remember { mutableStateOf(asset?.name ?: "") }
+    var currentPrice by remember { mutableStateOf(asset?.currentPrice?.toString() ?: "") }
+    var notes by remember { mutableStateOf(asset?.notes ?: "") }
+    var isin by remember { mutableStateOf(asset?.isin ?: "") }
     var selectedCategoryId by remember {
         mutableStateOf(asset?.assetCategoryId ?: preselectedCategoryId)
     }
     var selectedPlatformIds by remember(linkedPlatformIds) { mutableStateOf(linkedPlatformIds) }
-    var fixedIncomePercent by remember(linkedFixedIncomePercent) { mutableStateOf(linkedFixedIncomePercent) }
+    var fixedIncomePercent by remember(linkedFixedIncomePercent) {
+        mutableStateOf(
+            linkedFixedIncomePercent
+        )
+    }
     var currentPortfolioId by remember { mutableStateOf(selectedPortfolioId ?: asset?.portfolioId) }
     var showPortfolioMenu by remember { mutableStateOf(false) }
     var selectedSectorIds by remember(linkedSectorIds) { mutableStateOf(linkedSectorIds) }
@@ -203,7 +208,7 @@ fun AddEditAssetBottomSheet(
     }
 
     var tickerError by remember { mutableStateOf(false) }
-    var nameError   by remember { mutableStateOf(false) }
+    var nameError by remember { mutableStateOf(false) }
     var showCategoryHelp by remember { mutableStateOf(false) }
 
     val isValid = ticker.isNotBlank() && name.isNotBlank()
@@ -226,16 +231,18 @@ fun AddEditAssetBottomSheet(
         ) {
             Spacer(Modifier.height(4.dp))
             Text(
-                text       = if (isEditing) stringResource(Res.string.portfolio_add_asset_title_edit) else stringResource(Res.string.portfolio_add_asset_title_create),
-                fontSize   = 18.sp,
+                text = if (isEditing) stringResource(Res.string.portfolio_add_asset_title_edit) else stringResource(
+                    Res.string.portfolio_add_asset_title_create
+                ),
+                fontSize = 18.sp,
                 fontWeight = FontWeight.SemiBold,
-                color      = MaterialTheme.appColors.textPrimary,
-                modifier   = Modifier.padding(bottom = 4.dp)
+                color = MaterialTheme.appColors.textPrimary,
+                modifier = Modifier.padding(bottom = 4.dp)
             )
             Text(
-                text     = stringResource(Res.string.portfolio_add_asset_desc),
+                text = stringResource(Res.string.portfolio_add_asset_desc),
                 fontSize = 11.sp,
-                color    = MaterialTheme.appColors.textSecondary,
+                color = MaterialTheme.appColors.textSecondary,
                 modifier = Modifier.padding(bottom = 18.dp)
             )
 
@@ -246,11 +253,11 @@ fun AddEditAssetBottomSheet(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text       = stringResource(Res.string.portfolio_add_asset_category_label),
-                        fontSize   = 12.sp,
-                        color      = MaterialTheme.appColors.textSecondary,
+                        text = stringResource(Res.string.portfolio_add_asset_category_label),
+                        fontSize = 12.sp,
+                        color = MaterialTheme.appColors.textSecondary,
                         fontWeight = FontWeight.Medium,
-                        modifier   = Modifier.weight(1f)
+                        modifier = Modifier.weight(1f)
                     )
                     Icon(
                         imageVector = Icons.AutoMirrored.Outlined.HelpOutline,
@@ -270,16 +277,20 @@ fun AddEditAssetBottomSheet(
                 ) {
                     categories.forEach { cat ->
                         CategoryChip(
-                            icon       = cat.icon,
-                            label      = cat.name,
+                            icon = cat.icon,
+                            label = cat.name,
                             isSelected = selectedCategoryId == cat.id,
-                            onClick    = { selectedCategoryId = cat.id }
+                            onClick = { selectedCategoryId = cat.id }
                         )
                     }
                 }
                 if (selectedCategoryId == null) {
                     Spacer(Modifier.height(4.dp))
-                    Text(stringResource(Res.string.portfolio_add_asset_select_category), fontSize = 11.sp, color = MaterialTheme.appColors.expense)
+                    Text(
+                        stringResource(Res.string.portfolio_add_asset_select_category),
+                        fontSize = 11.sp,
+                        color = MaterialTheme.appColors.expense
+                    )
                 }
                 Spacer(Modifier.height(16.dp))
             }
@@ -287,9 +298,9 @@ fun AddEditAssetBottomSheet(
             // ── Selector de cartera ─────────────────────────────────────────
             if (portfolios.isNotEmpty()) {
                 Text(
-                    text       = stringResource(Res.string.portfolio_add_asset_portfolio_label),
-                    fontSize   = 12.sp,
-                    color      = MaterialTheme.appColors.textSecondary,
+                    text = stringResource(Res.string.portfolio_add_asset_portfolio_label),
+                    fontSize = 12.sp,
+                    color = MaterialTheme.appColors.textSecondary,
                     fontWeight = FontWeight.Medium
                 )
                 Spacer(Modifier.height(8.dp))
@@ -300,15 +311,15 @@ fun AddEditAssetBottomSheet(
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     PortfolioChipSimple(
-                        label      = stringResource(Res.string.portfolio_add_asset_no_portfolio),
+                        label = stringResource(Res.string.portfolio_add_asset_no_portfolio),
                         isSelected = currentPortfolioId == null,
-                        onClick    = { currentPortfolioId = null }
+                        onClick = { currentPortfolioId = null }
                     )
                     portfolios.forEach { portfolio ->
                         PortfolioChipSimple(
-                            label      = portfolio.name,
+                            label = portfolio.name,
                             isSelected = currentPortfolioId == portfolio.id,
-                            onClick    = { currentPortfolioId = portfolio.id }
+                            onClick = { currentPortfolioId = portfolio.id }
                         )
                     }
                 }
@@ -317,20 +328,22 @@ fun AddEditAssetBottomSheet(
 
             // Ticker
             OutlinedTextField(
-                value         = ticker,
+                value = ticker,
                 onValueChange = { ticker = it.uppercase(); tickerError = false },
-                label         = { Text(stringResource(Res.string.portfolio_add_asset_ticker_label)) },
-                placeholder   = {
+                label = { Text(stringResource(Res.string.portfolio_add_asset_ticker_label)) },
+                placeholder = {
                     Text(stringResource(Res.string.portfolio_add_asset_ticker_placeholder))
                 },
-                isError       = tickerError,
-                supportingText = if (tickerError) {{ Text(stringResource(Res.string.portfolio_add_asset_ticker_required)) }} else null,
-                modifier      = Modifier.fillMaxWidth(),
-                singleLine    = true,
-                shape         = RoundedCornerShape(10.dp),
+                isError = tickerError,
+                supportingText = if (tickerError) {
+                    { Text(stringResource(Res.string.portfolio_add_asset_ticker_required)) }
+                } else null,
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                shape = RoundedCornerShape(10.dp),
                 keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Characters),
-                colors        = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor   = MaterialTheme.appColors.primary,
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = MaterialTheme.appColors.primary,
                     unfocusedBorderColor = MaterialTheme.appColors.border
                 )
             )
@@ -338,60 +351,86 @@ fun AddEditAssetBottomSheet(
 
             // Nombre
             OutlinedTextField(
-                value         = name,
+                value = name,
                 onValueChange = { name = it; nameError = false },
-                label         = { Text(stringResource(Res.string.portfolio_add_asset_name_label)) },
-                placeholder   = {
+                label = { Text(stringResource(Res.string.portfolio_add_asset_name_label)) },
+                placeholder = {
                     Text(stringResource(Res.string.portfolio_add_asset_name_placeholder))
                 },
-                isError       = nameError,
-                supportingText = if (nameError) {{ Text(stringResource(Res.string.portfolio_add_asset_ticker_required)) }} else null,
-                modifier      = Modifier.fillMaxWidth(),
-                singleLine    = true,
-                shape         = RoundedCornerShape(10.dp),
-                colors        = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor   = MaterialTheme.appColors.primary,
+                isError = nameError,
+                supportingText = if (nameError) {
+                    { Text(stringResource(Res.string.portfolio_add_asset_ticker_required)) }
+                } else null,
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                shape = RoundedCornerShape(10.dp),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = MaterialTheme.appColors.primary,
                     unfocusedBorderColor = MaterialTheme.appColors.border
                 )
             )
-Spacer(Modifier.height(12.dp))
+            Spacer(Modifier.height(12.dp))
 
             // ── ISIN (Código internacional del activo) ───────────────────────
             if (!isFixedIncome) {
                 OutlinedTextField(
-                    value         = isin,
-                    onValueChange = { isin = it.uppercase().filter { c -> c.isLetterOrDigit() || c == '-' || c == '.' }; isinValidationState = IsinValidationState.Idle },
-                    label         = { Text("ISIN (opcional)") },
-                    placeholder   = { Text("ES0173516115") },
+                    value = isin,
+                    onValueChange = {
+                        isin = it.uppercase()
+                            .filter { c -> c.isLetterOrDigit() || c == '-' || c == '.' }; isinValidationState =
+                        IsinValidationState.Idle
+                    },
+                    label = { Text("ISIN (opcional)") },
+                    placeholder = { Text("ES0173516115") },
                     supportingText = if (AssetCategoryType.isQuotable(selectedCategoryId)) {
-                        { Text("Código ISIN para obtener precio automático", fontSize = 11.sp, color = MaterialTheme.appColors.textSecondary) }
+                        {
+                            Text(
+                                "Código ISIN para obtener precio automático",
+                                fontSize = 11.sp,
+                                color = MaterialTheme.appColors.textSecondary
+                            )
+                        }
                     } else {
                         null
                     },
-                    trailingIcon = if (onValidateIsin != null && AssetCategoryType.isQuotable(selectedCategoryId) && isin.isNotBlank()) {
+                    trailingIcon = if (onValidateIsin != null && AssetCategoryType.isQuotable(
+                            selectedCategoryId
+                        ) && isin.isNotBlank()
+                    ) {
                         {
                             TextButton(
                                 onClick = {
-                                    val isinTrimmed = isin.trim().uppercase().replace("-", "").replace(".", "")
+                                    val isinTrimmed =
+                                        isin.trim().uppercase().replace("-", "").replace(".", "")
                                     if (isinTrimmed.isNotBlank()) {
                                         isinValidationState = IsinValidationState.Validating
                                         coroutineScope.launch {
                                             onValidateIsin?.let { validate ->
                                                 validate(isinTrimmed, selectedCategoryId)
                                                     .onSuccess { quote ->
-                                                        isinValidationState = IsinValidationState.Valid(
-                                                            name = quote.name,
-                                                            price = quote.price,
-                                                            currency = quote.currency,
-                                                            exchange = quote.exchange
-                                                        )
+                                                        isinValidationState =
+                                                            IsinValidationState.Valid(
+                                                                name = quote.name,
+                                                                price = quote.price,
+                                                                currency = quote.currency,
+                                                                exchange = quote.exchange
+                                                            )
                                                     }
                                                     .onFailure { error ->
                                                         val msg = error.message ?: ""
-                                                        if (msg.contains("Not Found", ignoreCase = true) || msg.contains("404", ignoreCase = true)) {
-                                                            isinValidationState = IsinValidationState.NotFound("ISIN no encontrado en el mercado")
+                                                        if (msg.contains(
+                                                                "Not Found",
+                                                                ignoreCase = true
+                                                            ) || msg.contains(
+                                                                "404",
+                                                                ignoreCase = true
+                                                            )
+                                                        ) {
+                                                            isinValidationState =
+                                                                IsinValidationState.NotFound("ISIN no encontrado en el mercado")
                                                         } else {
-                                                            isinValidationState = IsinValidationState.Error(msg)
+                                                            isinValidationState =
+                                                                IsinValidationState.Error(msg)
                                                         }
                                                     }
                                             }
@@ -420,12 +459,12 @@ Spacer(Modifier.height(12.dp))
                     } else {
                         null
                     },
-                    modifier      = Modifier.fillMaxWidth(),
-                    singleLine    = true,
-                    shape         = RoundedCornerShape(10.dp),
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
+                    shape = RoundedCornerShape(10.dp),
                     keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Characters),
-                    colors        = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor   = MaterialTheme.appColors.primary,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = MaterialTheme.appColors.primary,
                         unfocusedBorderColor = MaterialTheme.appColors.border
                     )
                 )
@@ -439,26 +478,49 @@ Spacer(Modifier.height(12.dp))
                                 .fillMaxWidth()
                                 .clip(RoundedCornerShape(10.dp))
                                 .background(MaterialTheme.appColors.income.copy(alpha = 0.08f))
-                                .border(0.5.dp, MaterialTheme.appColors.income.copy(alpha = 0.3f), RoundedCornerShape(10.dp))
+                                .border(
+                                    0.5.dp,
+                                    MaterialTheme.appColors.income.copy(alpha = 0.3f),
+                                    RoundedCornerShape(10.dp)
+                                )
                                 .padding(12.dp)
                         ) {
                             Column {
-                                Text("✅ ISIN validado", fontSize = 12.sp, fontWeight = FontWeight.SemiBold, color = MaterialTheme.appColors.income)
+                                Text(
+                                    "✅ ISIN validado",
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = MaterialTheme.appColors.income
+                                )
                                 Spacer(Modifier.height(4.dp))
                                 Row {
                                     Text("📊 ", fontSize = 12.sp)
-                                    Text(state.name ?: "", fontSize = 12.sp, fontWeight = FontWeight.Medium, color = MaterialTheme.appColors.textPrimary)
+                                    Text(
+                                        state.name ?: "",
+                                        fontSize = 12.sp,
+                                        fontWeight = FontWeight.Medium,
+                                        color = MaterialTheme.appColors.textPrimary
+                                    )
                                 }
                                 Row {
                                     Text("💰 ", fontSize = 12.sp)
-                                    Text("${state.price} ${state.currency}", fontSize = 12.sp, color = MaterialTheme.appColors.textPrimary)
+                                    Text(
+                                        "${state.price} ${state.currency}",
+                                        fontSize = 12.sp,
+                                        color = MaterialTheme.appColors.textPrimary
+                                    )
                                     if (state.exchange != null) {
-                                        Text(" · ${state.exchange}", fontSize = 11.sp, color = MaterialTheme.appColors.textSecondary)
+                                        Text(
+                                            " · ${state.exchange}",
+                                            fontSize = 11.sp,
+                                            color = MaterialTheme.appColors.textSecondary
+                                        )
                                     }
                                 }
                             }
                         }
                     }
+
                     is IsinValidationState.NotFound -> {
                         Spacer(Modifier.height(8.dp))
                         Box(
@@ -466,15 +528,29 @@ Spacer(Modifier.height(12.dp))
                                 .fillMaxWidth()
                                 .clip(RoundedCornerShape(10.dp))
                                 .background(MaterialTheme.appColors.expense.copy(alpha = 0.08f))
-                                .border(0.5.dp, MaterialTheme.appColors.expense.copy(alpha = 0.3f), RoundedCornerShape(10.dp))
+                                .border(
+                                    0.5.dp,
+                                    MaterialTheme.appColors.expense.copy(alpha = 0.3f),
+                                    RoundedCornerShape(10.dp)
+                                )
                                 .padding(12.dp)
                         ) {
                             Column {
-                                Text("⚠️ ISIN no encontrado", fontSize = 12.sp, fontWeight = FontWeight.SemiBold, color = MaterialTheme.appColors.expense)
-                                Text("El identificador no se ha localizado en el mercado. Puedes guardarlo sin validar.", fontSize = 11.sp, color = MaterialTheme.appColors.textSecondary)
+                                Text(
+                                    "⚠️ ISIN no encontrado",
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = MaterialTheme.appColors.expense
+                                )
+                                Text(
+                                    "El identificador no se ha localizado en el mercado. Puedes guardarlo sin validar.",
+                                    fontSize = 11.sp,
+                                    color = MaterialTheme.appColors.textSecondary
+                                )
                             }
                         }
                     }
+
                     is IsinValidationState.Error -> {
                         Spacer(Modifier.height(8.dp))
                         Box(
@@ -482,15 +558,29 @@ Spacer(Modifier.height(12.dp))
                                 .fillMaxWidth()
                                 .clip(RoundedCornerShape(10.dp))
                                 .background(MaterialTheme.appColors.expense.copy(alpha = 0.08f))
-                                .border(0.5.dp, MaterialTheme.appColors.expense.copy(alpha = 0.3f), RoundedCornerShape(10.dp))
+                                .border(
+                                    0.5.dp,
+                                    MaterialTheme.appColors.expense.copy(alpha = 0.3f),
+                                    RoundedCornerShape(10.dp)
+                                )
                                 .padding(12.dp)
                         ) {
                             Column {
-                                Text("❌ Error de validación", fontSize = 12.sp, fontWeight = FontWeight.SemiBold, color = MaterialTheme.appColors.expense)
-                                Text(state.message, fontSize = 11.sp, color = MaterialTheme.appColors.textSecondary)
+                                Text(
+                                    "❌ Error de validación",
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = MaterialTheme.appColors.expense
+                                )
+                                Text(
+                                    state.message,
+                                    fontSize = 11.sp,
+                                    color = MaterialTheme.appColors.textSecondary
+                                )
                             }
                         }
                     }
+
                     else -> {} // Idle o Validating
                 }
                 Spacer(Modifier.height(12.dp))
@@ -499,9 +589,9 @@ Spacer(Modifier.height(12.dp))
             // ── Composición RF / RV (solo para Acciones, ETFs, Fondos) ───────
             if (isAnalyzable) {
                 Text(
-                    text       = stringResource(Res.string.portfolio_add_asset_composition_label),
-                    fontSize   = 12.sp,
-                    color      = MaterialTheme.appColors.textSecondary,
+                    text = stringResource(Res.string.portfolio_add_asset_composition_label),
+                    fontSize = 12.sp,
+                    color = MaterialTheme.appColors.textSecondary,
                     fontWeight = FontWeight.Medium
                 )
                 Spacer(Modifier.height(8.dp))
@@ -510,23 +600,23 @@ Spacer(Modifier.height(12.dp))
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Slider(
-                        value     = fixedIncomePercent.toFloat(),
+                        value = fixedIncomePercent.toFloat(),
                         onValueChange = { fixedIncomePercent = it.toInt() },
                         valueRange = 0f..100f,
-                        steps     = 3,
-                        modifier  = Modifier.weight(1f),
-                        colors    = SliderDefaults.colors(
-                            thumbColor   = MaterialTheme.appColors.primary,
+                        steps = 3,
+                        modifier = Modifier.weight(1f),
+                        colors = SliderDefaults.colors(
+                            thumbColor = MaterialTheme.appColors.primary,
                             activeTrackColor = MaterialTheme.appColors.primary
                         )
                     )
                     Spacer(Modifier.width(12.dp))
                     Text(
-                        text       = "${fixedIncomePercent}%",
-                        fontSize   = 16.sp,
+                        text = "${fixedIncomePercent}%",
+                        fontSize = 16.sp,
                         fontWeight = FontWeight.SemiBold,
-                        color      = MaterialTheme.appColors.primary,
-                        modifier   = Modifier.width(50.dp)
+                        color = MaterialTheme.appColors.primary,
+                        modifier = Modifier.width(50.dp)
                     )
                 }
                 Row(
@@ -535,16 +625,19 @@ Spacer(Modifier.height(12.dp))
                 ) {
                     listOf(0, 25, 50, 75, 100).forEach { pct ->
                         Text(
-                            text     = "$pct%",
+                            text = "$pct%",
                             fontSize = 9.sp,
-                            color    = if (pct == fixedIncomePercent) MaterialTheme.appColors.primary else MaterialTheme.appColors.textSecondary
+                            color = if (pct == fixedIncomePercent) MaterialTheme.appColors.primary else MaterialTheme.appColors.textSecondary
                         )
                     }
                 }
                 Text(
-                    text     = stringResource(Res.string.portfolio_add_asset_composition_hint, 100 - fixedIncomePercent),
+                    text = stringResource(
+                        Res.string.portfolio_add_asset_composition_hint,
+                        100 - fixedIncomePercent
+                    ),
                     fontSize = 10.sp,
-                    color    = MaterialTheme.appColors.textSecondary,
+                    color = MaterialTheme.appColors.textSecondary,
                     modifier = Modifier.padding(top = 4.dp)
                 )
                 Spacer(Modifier.height(12.dp))
@@ -553,16 +646,16 @@ Spacer(Modifier.height(12.dp))
             // ── Precio actual (no disponible para Renta Fija) ───────────────
             if (isFixedIncome) {
                 Text(
-                    text     = stringResource(Res.string.portfolio_add_asset_market_price_label),
+                    text = stringResource(Res.string.portfolio_add_asset_market_price_label),
                     fontSize = 12.sp,
-                    color    = MaterialTheme.appColors.textSecondary,
+                    color = MaterialTheme.appColors.textSecondary,
                     fontWeight = FontWeight.Medium
                 )
                 Spacer(Modifier.height(8.dp))
                 Text(
-                    text     = stringResource(Res.string.portfolio_add_asset_fi_price_hint),
+                    text = stringResource(Res.string.portfolio_add_asset_fi_price_hint),
                     fontSize = 11.sp,
-                    color    = MaterialTheme.appColors.textSecondary,
+                    color = MaterialTheme.appColors.textSecondary,
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(10.dp))
@@ -572,24 +665,32 @@ Spacer(Modifier.height(12.dp))
                 Spacer(Modifier.height(12.dp))
             } else {
                 OutlinedTextField(
-                    value         = currentPrice,
-                    onValueChange = { currentPrice = it.filter { c -> c.isDigit() || c == ',' || c == '.' } },
-                    label         = { Text(stringResource(Res.string.portfolio_add_asset_price_optional)) },
-                    placeholder   = { Text(stringResource(Res.string.portfolio_add_asset_price_placeholder_val)) },
-                    trailingIcon  = { Text("€", color = MaterialTheme.appColors.textSecondary, modifier = Modifier.padding(end = 12.dp)) },
-                    supportingText = {
+                    value = currentPrice,
+                    onValueChange = {
+                        currentPrice = it.filter { c -> c.isDigit() || c == ',' || c == '.' }
+                    },
+                    label = { Text(stringResource(Res.string.portfolio_add_asset_price_optional)) },
+                    placeholder = { Text(stringResource(Res.string.portfolio_add_asset_price_placeholder_val)) },
+                    trailingIcon = {
                         Text(
-                            text     = stringResource(Res.string.portfolio_add_asset_price_desc),
-                            fontSize = 11.sp,
-                            color    = MaterialTheme.appColors.textSecondary
+                            "€",
+                            color = MaterialTheme.appColors.textSecondary,
+                            modifier = Modifier.padding(end = 12.dp)
                         )
                     },
-                    modifier      = Modifier.fillMaxWidth(),
-                    singleLine    = true,
-                    shape         = RoundedCornerShape(10.dp),
+                    supportingText = {
+                        Text(
+                            text = stringResource(Res.string.portfolio_add_asset_price_desc),
+                            fontSize = 11.sp,
+                            color = MaterialTheme.appColors.textSecondary
+                        )
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
+                    shape = RoundedCornerShape(10.dp),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                    colors        = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor   = MaterialTheme.appColors.primary,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = MaterialTheme.appColors.primary,
                         unfocusedBorderColor = MaterialTheme.appColors.border
                     )
                 )
@@ -599,9 +700,9 @@ Spacer(Modifier.height(12.dp))
             // ── Plataformas vinculadas (multi-select) ────────────────────────
             if (allPlatforms.isNotEmpty()) {
                 Text(
-                    text       = stringResource(Res.string.portfolio_add_asset_platforms_label),
-                    fontSize   = 12.sp,
-                    color      = MaterialTheme.appColors.textSecondary,
+                    text = stringResource(Res.string.portfolio_add_asset_platforms_label),
+                    fontSize = 12.sp,
+                    color = MaterialTheme.appColors.textSecondary,
                     fontWeight = FontWeight.Medium
                 )
                 Spacer(Modifier.height(8.dp))
@@ -614,10 +715,10 @@ Spacer(Modifier.height(12.dp))
                     allPlatforms.forEach { platform ->
                         val isSelected = platform.id in selectedPlatformIds
                         PlatformToggleChip(
-                            icon       = platform.icon,
-                            label      = platform.name,
+                            icon = platform.icon,
+                            label = platform.name,
                             isSelected = isSelected,
-                            onClick    = {
+                            onClick = {
                                 selectedPlatformIds = if (isSelected)
                                     selectedPlatformIds - platform.id
                                 else
@@ -635,9 +736,9 @@ Spacer(Modifier.height(12.dp))
                 Spacer(Modifier.height(12.dp))
             } else {
                 Text(
-                    text     = stringResource(Res.string.portfolio_add_asset_no_platforms_hint),
+                    text = stringResource(Res.string.portfolio_add_asset_no_platforms_hint),
                     fontSize = 11.sp,
-                    color    = MaterialTheme.appColors.textSecondary,
+                    color = MaterialTheme.appColors.textSecondary,
                     modifier = Modifier.padding(bottom = 12.dp)
                 )
             }
@@ -646,9 +747,9 @@ Spacer(Modifier.height(12.dp))
             if (isAnalyzable && allSectors.isNotEmpty()) {
                 Spacer(Modifier.height(12.dp))
                 Text(
-                    text       = stringResource(Res.string.portfolio_add_asset_sectors_label),
-                    fontSize   = 12.sp,
-                    color      = MaterialTheme.appColors.textSecondary,
+                    text = stringResource(Res.string.portfolio_add_asset_sectors_label),
+                    fontSize = 12.sp,
+                    color = MaterialTheme.appColors.textSecondary,
                     fontWeight = FontWeight.Medium
                 )
                 Spacer(Modifier.height(8.dp))
@@ -661,10 +762,10 @@ Spacer(Modifier.height(12.dp))
                     allSectors.forEach { sector ->
                         val isSelected = sector.id in selectedSectorIds
                         SectorToggleChip(
-                            icon       = sector.icon,
-                            label      = sector.name,
+                            icon = sector.icon,
+                            label = sector.name,
                             isSelected = isSelected,
-                            onClick    = {
+                            onClick = {
                                 selectedSectorIds = if (isSelected)
                                     selectedSectorIds - sector.id
                                 else
@@ -685,9 +786,9 @@ Spacer(Modifier.height(12.dp))
             if (isAnalyzable && allRegions.isNotEmpty()) {
                 Spacer(Modifier.height(12.dp))
                 Text(
-                    text       = stringResource(Res.string.portfolio_add_asset_regions_label),
-                    fontSize   = 12.sp,
-                    color      = MaterialTheme.appColors.textSecondary,
+                    text = stringResource(Res.string.portfolio_add_asset_regions_label),
+                    fontSize = 12.sp,
+                    color = MaterialTheme.appColors.textSecondary,
                     fontWeight = FontWeight.Medium
                 )
                 Spacer(Modifier.height(4.dp))
@@ -730,9 +831,13 @@ Spacer(Modifier.height(12.dp))
                     }
                 }
                 val totalPercent = regionPercents.values.sum()
-                val totalColor = if (totalPercent > 100) MaterialTheme.appColors.expense else MaterialTheme.appColors.textSecondary
+                val totalColor =
+                    if (totalPercent > 100) MaterialTheme.appColors.expense else MaterialTheme.appColors.textSecondary
                 Text(
-                    text = stringResource(Res.string.portfolio_add_asset_regions_total, totalPercent),
+                    text = stringResource(
+                        Res.string.portfolio_add_asset_regions_total,
+                        totalPercent
+                    ),
                     fontSize = 10.sp,
                     color = totalColor,
                     modifier = Modifier.padding(top = 4.dp)
@@ -743,16 +848,16 @@ Spacer(Modifier.height(12.dp))
             if (isFixedIncome) {
                 Spacer(Modifier.height(12.dp))
                 Text(
-                    text       = stringResource(Res.string.portfolio_add_asset_maturity_date_label),
-                    fontSize   = 12.sp,
-                    color      = MaterialTheme.appColors.textSecondary,
+                    text = stringResource(Res.string.portfolio_add_asset_maturity_date_label),
+                    fontSize = 12.sp,
+                    color = MaterialTheme.appColors.textSecondary,
                     fontWeight = FontWeight.Medium
                 )
                 Spacer(Modifier.height(8.dp))
                 Text(
-                    text     = formatFullDate(maturityDateMillis),
+                    text = formatFullDate(maturityDateMillis),
                     fontSize = 14.sp,
-                    color    = MaterialTheme.appColors.textPrimary,
+                    color = MaterialTheme.appColors.textPrimary,
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(10.dp))
@@ -770,14 +875,14 @@ Spacer(Modifier.height(12.dp))
 
             // Nota
             OutlinedTextField(
-                value         = notes,
+                value = notes,
                 onValueChange = { notes = it },
-                label         = { Text(stringResource(Res.string.portfolio_add_asset_notes_optional)) },
-                modifier      = Modifier.fillMaxWidth(),
-                singleLine    = true,
-                shape         = RoundedCornerShape(10.dp),
-                colors        = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor   = MaterialTheme.appColors.primary,
+                label = { Text(stringResource(Res.string.portfolio_add_asset_notes_optional)) },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                shape = RoundedCornerShape(10.dp),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = MaterialTheme.appColors.primary,
                     unfocusedBorderColor = MaterialTheme.appColors.border
                 )
             )
@@ -786,10 +891,16 @@ Spacer(Modifier.height(12.dp))
 
             Button(
                 onClick = {
-                    if (ticker.isBlank()) { tickerError = true; return@Button }
-                    if (name.isBlank())   { nameError = true; return@Button }
-                    val curr = if (isFixedIncome) null else currentPrice.replace(',', '.').toDoubleOrNull()
-                    val regionsToSave = if (isAnalyzable) regionPercents.filter { it.value > 0 } else emptyMap()
+                    if (ticker.isBlank()) {
+                        tickerError = true; return@Button
+                    }
+                    if (name.isBlank()) {
+                        nameError = true; return@Button
+                    }
+                    val curr =
+                        if (isFixedIncome) null else currentPrice.replace(',', '.').toDoubleOrNull()
+                    val regionsToSave =
+                        if (isAnalyzable) regionPercents.filter { it.value > 0 } else emptyMap()
                     val sectorsToSave = if (isAnalyzable) selectedSectorIds else emptySet()
                     val compositionToSave = if (isAnalyzable) fixedIncomePercent else 0
                     val maturityToSave = if (isFixedIncome) maturityDateMillis else null
@@ -811,17 +922,19 @@ Spacer(Modifier.height(12.dp))
                         currentPortfolioId
                     )
                 },
-                enabled  = isValid,
+                enabled = isValid,
                 modifier = Modifier.fillMaxWidth().height(52.dp),
-                shape    = RoundedCornerShape(10.dp),
-                colors   = ButtonDefaults.buttonColors(
-                    containerColor         = MaterialTheme.appColors.primary,
+                shape = RoundedCornerShape(10.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.appColors.primary,
                     disabledContainerColor = MaterialTheme.appColors.primary.copy(alpha = 0.38f)
                 )
             ) {
                 Text(
-                    text       = if (isEditing) stringResource(Res.string.portfolio_add_asset_save_changes) else stringResource(Res.string.portfolio_add_asset_create),
-                    fontSize   = 16.sp,
+                    text = if (isEditing) stringResource(Res.string.portfolio_add_asset_save_changes) else stringResource(
+                        Res.string.portfolio_add_asset_create
+                    ),
+                    fontSize = 16.sp,
                     fontWeight = FontWeight.Medium
                 )
             }
@@ -834,20 +947,49 @@ Spacer(Modifier.height(12.dp))
             onDismissRequest = { showCategoryHelp = false },
             containerColor = MaterialTheme.appColors.surface,
             title = {
-                Text(stringResource(Res.string.help_asset_types_title), fontSize = 16.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.appColors.textPrimary)
+                Text(
+                    stringResource(Res.string.help_asset_types_title),
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.appColors.textPrimary
+                )
             },
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    AssetTypeHelpRow("📈", "Acciones / ETFs / Fondos", "Cotizados con precio de mercado. Admiten análisis por sectores y regiones geográficas.")
-                    AssetTypeHelpRow("💶", "Renta fija", "Bonos y depósitos con rendimiento acordado. Requieren fecha de vencimiento; sin precio de mercado automático.")
-                    AssetTypeHelpRow("₿", "Cripto / Materias primas / Crowdlending", "Activos alternativos con precio de mercado pero sin análisis sectorial.")
-                    AssetTypeHelpRow("🏠", "Inmuebles", "Propiedades físicas valoradas manualmente; sin precio de mercado automático.")
-                    AssetTypeHelpRow("💎", "Valiosos", "Arte, coleccionables u otros activos tangibles no financieros.")
+                    AssetTypeHelpRow(
+                        "📈",
+                        "Acciones / ETFs / Fondos",
+                        "Cotizados con precio de mercado. Admiten análisis por sectores y regiones geográficas."
+                    )
+                    AssetTypeHelpRow(
+                        "💶",
+                        "Renta fija",
+                        "Bonos y depósitos con rendimiento acordado. Requieren fecha de vencimiento; sin precio de mercado automático."
+                    )
+                    AssetTypeHelpRow(
+                        "₿",
+                        "Cripto / Materias primas / Crowdlending",
+                        "Activos alternativos con precio de mercado pero sin análisis sectorial."
+                    )
+                    AssetTypeHelpRow(
+                        "🏠",
+                        "Inmuebles",
+                        "Propiedades físicas valoradas manualmente; sin precio de mercado automático."
+                    )
+                    AssetTypeHelpRow(
+                        "💎",
+                        "Valiosos",
+                        "Arte, coleccionables u otros activos tangibles no financieros."
+                    )
                 }
             },
             confirmButton = {
                 TextButton(onClick = { showCategoryHelp = false }) {
-                    Text(stringResource(Res.string.common_understood), color = MaterialTheme.appColors.primary, fontWeight = FontWeight.SemiBold)
+                    Text(
+                        stringResource(Res.string.common_understood),
+                        color = MaterialTheme.appColors.primary,
+                        fontWeight = FontWeight.SemiBold
+                    )
                 }
             },
             shape = RoundedCornerShape(16.dp)
@@ -868,11 +1010,19 @@ Spacer(Modifier.height(12.dp))
                         maturityDateMillis = selected
                     }
                     showMaturityDatePicker = false
-                }) { Text(stringResource(Res.string.common_accept), color = MaterialTheme.appColors.primary) }
+                }) {
+                    Text(
+                        stringResource(Res.string.common_accept),
+                        color = MaterialTheme.appColors.primary
+                    )
+                }
             },
             dismissButton = {
                 TextButton(onClick = { showMaturityDatePicker = false }) {
-                    Text(stringResource(Res.string.portfolio_add_asset_cancel), color = MaterialTheme.appColors.textSecondary)
+                    Text(
+                        stringResource(Res.string.portfolio_add_asset_cancel),
+                        color = MaterialTheme.appColors.textSecondary
+                    )
                 }
             },
             colors = DatePickerDefaults.colors(containerColor = MaterialTheme.appColors.surface)
@@ -893,7 +1043,12 @@ private fun AssetTypeHelpRow(icon: String, title: String, description: String) {
     Row(verticalAlignment = Alignment.Top) {
         Text(icon, fontSize = 16.sp, modifier = Modifier.width(28.dp))
         Column {
-            Text(title, fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = MaterialTheme.appColors.textPrimary)
+            Text(
+                title,
+                fontSize = 13.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.appColors.textPrimary
+            )
             Text(description, fontSize = 11.sp, color = MaterialTheme.appColors.textSecondary)
         }
     }
