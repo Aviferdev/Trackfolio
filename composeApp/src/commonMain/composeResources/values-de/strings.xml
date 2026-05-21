@@ -1331,6 +1331,10 @@
     <!-- EMERGENCY FUND SETTINGS - missing -->
     <string name="ef_months_hint">Lege fest, wie viele Monatsausgaben dein Notfallfonds abdecken soll.</string>
     <string name="ef_months_placeholder">Z. B. 6</string>
+    <string name="ef_months_label">Zu deckende Monate</string>
+    <string name="ef_month_singular">Monat</string>
+    <string name="ef_month_plural">Monate</string>
+    <string name="ef_deactivate_button">Fonds deaktivieren</string>
     <string name="ef_estimated_expense_label">Geschätzte Ausgaben</string>
     <string name="ef_average_expense_label">Durchschnittliche Ausgaben</string>
     <string name="ef_expense_placeholder">Z. B. 1500</string>

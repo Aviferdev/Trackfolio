@@ -1333,6 +1333,10 @@
     <!-- EMERGENCY FUND SETTINGS - missing -->
     <string name="ef_months_hint">緊急予備資金でカバーしたい支出月数を設定します。</string>
     <string name="ef_months_placeholder">例: 6</string>
+    <string name="ef_months_label">カバーする月数</string>
+    <string name="ef_month_singular">ヶ月</string>
+    <string name="ef_month_plural">ヶ月</string>
+    <string name="ef_deactivate_button">ファンドを無効化</string>
     <string name="ef_estimated_expense_label">推定支出</string>
     <string name="ef_average_expense_label">平均支出</string>
     <string name="ef_expense_placeholder">例: 1500</string>

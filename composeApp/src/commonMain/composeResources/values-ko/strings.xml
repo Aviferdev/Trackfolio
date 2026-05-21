@@ -1333,6 +1333,10 @@
     <!-- EMERGENCY FUND SETTINGS - missing -->
     <string name="ef_months_hint">비상금으로 커버할 월 생활비 개월 수를 설정하세요.</string>
     <string name="ef_months_placeholder">예: 6</string>
+    <string name="ef_months_label">커버할 개월 수</string>
+    <string name="ef_month_singular">개월</string>
+    <string name="ef_month_plural">개월</string>
+    <string name="ef_deactivate_button">펀드 비활성화</string>
     <string name="ef_estimated_expense_label">예상 지출</string>
     <string name="ef_average_expense_label">평균 지출</string>
     <string name="ef_expense_placeholder">예: 1500</string>

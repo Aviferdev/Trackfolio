@@ -1331,6 +1331,10 @@
     <!-- EMERGENCY FUND SETTINGS - missing -->
     <string name="ef_months_hint">Укажите, сколько месяцев расходов вы хотите покрыть резервным фондом.</string>
     <string name="ef_months_placeholder">Напр. 6</string>
+    <string name="ef_months_label">Месяцев покрытия</string>
+    <string name="ef_month_singular">месяц</string>
+    <string name="ef_month_plural">месяцев</string>
+    <string name="ef_deactivate_button">Отключить фонд</string>
     <string name="ef_estimated_expense_label">Расчётный расход</string>
     <string name="ef_average_expense_label">Средние расходы</string>
     <string name="ef_expense_placeholder">Напр. 1500</string>

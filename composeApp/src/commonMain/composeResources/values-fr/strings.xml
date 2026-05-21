@@ -1331,6 +1331,10 @@
     <!-- EMERGENCY FUND SETTINGS - missing -->
     <string name="ef_months_hint">Définissez le nombre de mois de dépenses que vous souhaitez couvrir pour votre fonds d\'urgence.</string>
     <string name="ef_months_placeholder">Ex. 6</string>
+    <string name="ef_months_label">Mois à couvrir</string>
+    <string name="ef_month_singular">mois</string>
+    <string name="ef_month_plural">mois</string>
+    <string name="ef_deactivate_button">Désactiver le fonds</string>
     <string name="ef_estimated_expense_label">Dépense estimée</string>
     <string name="ef_average_expense_label">Dépenses moyennes</string>
     <string name="ef_expense_placeholder">Ex. 1500</string>

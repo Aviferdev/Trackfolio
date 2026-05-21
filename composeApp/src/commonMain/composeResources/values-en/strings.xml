@@ -1331,6 +1331,10 @@
     <!-- EMERGENCY FUND SETTINGS - missing -->
     <string name="ef_months_hint">Set how many months of expenses you want covered for your emergency fund.</string>
     <string name="ef_months_placeholder">E.g. 6</string>
+    <string name="ef_months_label">Months to cover</string>
+    <string name="ef_month_singular">month</string>
+    <string name="ef_month_plural">months</string>
+    <string name="ef_deactivate_button">Disable fund</string>
     <string name="ef_estimated_expense_label">Estimated expense</string>
     <string name="ef_average_expense_label">Average expenses</string>
     <string name="ef_expense_placeholder">E.g. 1500</string>

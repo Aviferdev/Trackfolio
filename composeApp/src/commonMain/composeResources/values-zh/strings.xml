@@ -1333,6 +1333,10 @@
     <!-- EMERGENCY FUND SETTINGS - missing -->
     <string name="ef_months_hint">设定应急基金需要覆盖多少个月的支出。</string>
     <string name="ef_months_placeholder">例如 6</string>
+    <string name="ef_months_label">要覆盖的月数</string>
+    <string name="ef_month_singular">个月</string>
+    <string name="ef_month_plural">个月</string>
+    <string name="ef_deactivate_button">停用基金</string>
     <string name="ef_estimated_expense_label">预估支出</string>
     <string name="ef_average_expense_label">平均支出</string>
     <string name="ef_expense_placeholder">例如 1500</string>

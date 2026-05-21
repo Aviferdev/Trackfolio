@@ -57,6 +57,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.EmergencyFundMethod
 import es.aviferdev.n3to.ui.common.help.HelpContent
+import es.aviferdev.n3to.ui.common.input.StepSlider
 import es.aviferdev.n3to.ui.common.help.HelpKeys
 import es.aviferdev.n3to.ui.common.help.HelpTooltipIcon
 import es.aviferdev.n3to.ui.common.topbar.TopBarWithActionsApp
@@ -68,7 +69,11 @@ import n3to.composeapp.generated.resources.ef_average_expense_label
 import n3to.composeapp.generated.resources.ef_estimated_expense_label
 import n3to.composeapp.generated.resources.ef_exclude_categories_hint
 import n3to.composeapp.generated.resources.ef_expense_placeholder
+import n3to.composeapp.generated.resources.ef_deactivate_button
+import n3to.composeapp.generated.resources.ef_month_plural
+import n3to.composeapp.generated.resources.ef_month_singular
 import n3to.composeapp.generated.resources.ef_months_hint
+import n3to.composeapp.generated.resources.ef_months_label
 import n3to.composeapp.generated.resources.ef_months_placeholder
 import n3to.composeapp.generated.resources.ef_no_categories
 import n3to.composeapp.generated.resources.ef_onboarding_badge
@@ -96,6 +101,12 @@ fun EmergencyFundSettingsScreen(
         if (state.message != null) {
             delay(2000)
             viewModel.clearMessage()
+        }
+    }
+
+    LaunchedEffect(state.isLoading) {
+        if (!state.isLoading && state.monthsText.isEmpty()) {
+            viewModel.onMonthsChange("3")
         }
     }
 
@@ -148,30 +159,18 @@ fun EmergencyFundSettingsScreen(
 
                     // ── Meses a cubrir ──
                     item {
+                        val monthSingular = stringResource(Res.string.ef_month_singular)
+                        val monthPlural = stringResource(Res.string.ef_month_plural)
                         NavySectionCard {
-                            SectionLabel("Meses a cubrir")
-                            Spacer(Modifier.height(8.dp))
-                            OutlinedTextField(
-                                value = state.monthsText,
-                                onValueChange = viewModel::onMonthsChange,
-                                placeholder = {
-                                    Text(
-                                        stringResource(Res.string.ef_months_placeholder),
-                                        color = MaterialTheme.appColors.textTertiary
-                                    )
-                                },
-                                singleLine = true,
-                                colors = OutlinedTextFieldDefaults.colors(
-                                    focusedBorderColor = MaterialTheme.appColors.cyanAccent,
-                                    unfocusedBorderColor = MaterialTheme.appColors.navyBorder,
-                                    cursorColor = MaterialTheme.appColors.cyanAccent,
-                                    focusedTextColor = MaterialTheme.appColors.textPrimary,
-                                    unfocusedTextColor = MaterialTheme.appColors.textPrimary,
-                                    focusedContainerColor = MaterialTheme.appColors.navyDeep,
-                                    unfocusedContainerColor = MaterialTheme.appColors.navyDeep
-                                ),
-                                shape = RoundedCornerShape(11.dp),
-                                modifier = Modifier.fillMaxWidth()
+                            StepSlider(
+                                label = stringResource(Res.string.ef_months_label),
+                                value = state.monthsText.toIntOrNull() ?: 3,
+                                min = 1,
+                                max = 24,
+                                onValueChange = { viewModel.onMonthsChange(it.toString()) },
+                                valueLabel = { n -> "$n ${if (n == 1) monthSingular else monthPlural}" },
+                                minLabel = "1 $monthSingular",
+                                maxLabel = "24 $monthPlural"
                             )
                         }
                     }
@@ -359,7 +358,7 @@ fun EmergencyFundSettingsScreen(
                                 )
                                 Spacer(Modifier.width(8.dp))
                                 Text(
-                                    "Desactivar fondo",
+                                    stringResource(Res.string.ef_deactivate_button),
                                     fontWeight = FontWeight.SemiBold,
                                     fontSize = 14.sp
                                 )

@@ -1333,6 +1333,10 @@
     <!-- EMERGENCY FUND SETTINGS - missing -->
     <string name="ef_months_hint">Defina quantos meses de despesas você quer cobertos para seu fundo de emergência.</string>
     <string name="ef_months_placeholder">Ex.: 6</string>
+    <string name="ef_months_label">Meses a cobrir</string>
+    <string name="ef_month_singular">mês</string>
+    <string name="ef_month_plural">meses</string>
+    <string name="ef_deactivate_button">Desativar fundo</string>
     <string name="ef_estimated_expense_label">Despesa estimada</string>
     <string name="ef_average_expense_label">Despesas médias</string>
     <string name="ef_expense_placeholder">Ex.: 1500</string>
