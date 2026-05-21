@@ -32,18 +32,15 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
  * Tab del sistema de diseño Navy/Fintech.
  *
  * Patrón compartido por AccountSelectorBar y los filtros de gráficos.
- * Muestra una etiqueta de texto con un subrayado cian animado bajo el
+ * Muestra contenido personalizado con un subrayado cian animado bajo el
  * item activo. Sin borde ni relleno de fondo — idéntico al AccountTab.
- *
- * @param leadingContent Contenido opcional antes del label (p.ej. avatar circular).
  */
 @Composable
 fun NavyTab(
-    label: String,
     selected: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    leadingContent: (@Composable () -> Unit)? = null
+    content: @Composable () -> Unit,
 ) {
     val indicatorWidth by animateDpAsState(
         targetValue = if (selected) 20.dp else 0.dp,
@@ -69,13 +66,7 @@ fun NavyTab(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(6.dp)
         ) {
-            leadingContent?.invoke()
-            Text(
-                text = label,
-                fontSize = 12.sp,
-                fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal,
-                color = if (selected) MaterialTheme.appColors.textPrimary else MaterialTheme.appColors.textSecondary
-            )
+            content()
         }
 
         Box(
@@ -84,19 +75,5 @@ fun NavyTab(
                 .width(indicatorWidth)
                 .background(MaterialTheme.appColors.cyanAccent, RoundedCornerShape(1.dp))
         )
-    }
-}
-
-@Preview
-@Composable
-private fun NavyTabPreview() {
-    N3toTheme {
-        Row(horizontalArrangement = Arrangement.spacedBy(0.dp)) {
-            NavyTab(label = "1M", selected = false, onClick = {})
-            NavyTab(label = "3M", selected = false, onClick = {})
-            NavyTab(label = "6M", selected = true, onClick = {})
-            NavyTab(label = "1A", selected = false, onClick = {})
-            NavyTab(label = "Todo", selected = false, onClick = {})
-        }
     }
 }

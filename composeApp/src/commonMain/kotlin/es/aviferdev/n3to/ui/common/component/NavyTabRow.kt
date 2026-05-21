@@ -12,8 +12,8 @@ fun <T> NavyTabRow(
     items: List<T>,
     selected: T,
     onSelect: (T) -> Unit,
-    label: (T) -> String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    content: @Composable (T) -> Unit,
 ) {
     Row(
         modifier = modifier.horizontalScroll(rememberScrollState()),
@@ -21,9 +21,9 @@ fun <T> NavyTabRow(
     ) {
         items.forEach { item ->
             NavyTab(
-                label = label(item),
                 selected = item == selected,
-                onClick = { onSelect(item) }
+                onClick = { onSelect(item) },
+                content = { content(item) }
             )
         }
     }

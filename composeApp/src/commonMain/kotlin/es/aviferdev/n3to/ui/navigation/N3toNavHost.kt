@@ -148,9 +148,6 @@ fun N3toContent() {
                                 launchSingleTop = true
                             }
                         },
-                        onNavigateToExpenseSettings = {
-                            navController.navigate(ExpenseSettingsRoute) { launchSingleTop = true }
-                        },
                     )
                     // Reabrir sheet al volver del CategoryPicker
                     val catPickerCatId = navController.currentBackStackEntry
@@ -215,9 +212,6 @@ fun N3toContent() {
                             navController.navigate(AccountConfigRoute(accountId)) {
                                 launchSingleTop = true
                             }
-                        },
-                        onNavigateToExpenseSettings = {
-                            navController.navigate(ExpenseSettingsRoute) { launchSingleTop = true }
                         },
                     )
                 }

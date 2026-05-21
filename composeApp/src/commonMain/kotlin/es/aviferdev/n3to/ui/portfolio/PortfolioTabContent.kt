@@ -21,6 +21,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -28,7 +29,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.Asset
 import es.aviferdev.n3to.domain.model.FixedIncomePosition
 import es.aviferdev.n3to.domain.model.Portfolio
@@ -216,9 +219,16 @@ fun PortfolioTabContent(
                             ) {
                                 DistributionView.entries.forEach { view ->
                                     NavyTab(
-                                        label = view.displayName,
                                         selected = state.selectedDistributionView == view,
-                                        onClick = { onSelectDistributionView(view) }
+                                        onClick = { onSelectDistributionView(view) },
+                                        content = {
+                                            Text(
+                                                text = view.displayName,
+                                                fontSize = 12.sp,
+                                                fontWeight = if (state.selectedDistributionView == view) FontWeight.SemiBold else FontWeight.Normal,
+                                                color = if (state.selectedDistributionView == view) MaterialTheme.appColors.textPrimary else MaterialTheme.appColors.textSecondary
+                                            )
+                                        }
                                     )
                                 }
                             }

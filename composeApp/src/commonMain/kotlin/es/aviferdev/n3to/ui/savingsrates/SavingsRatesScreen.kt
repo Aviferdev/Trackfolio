@@ -78,8 +78,16 @@ fun SavingsRatesScreen(
             items = SavingsRateType.entries,
             selected = state.selectedTab,
             onSelect = { viewModel.selectTab(it) },
-            label = { if (it == SavingsRateType.SHORT_TERM) "Corto plazo" else "Medio plazo" },
-            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+            content = { tab ->
+                val text = if (tab == SavingsRateType.SHORT_TERM) "Corto plazo" else "Medio plazo"
+                Text(
+                    text = text,
+                    fontSize = 12.sp,
+                    fontWeight = if (tab == state.selectedTab) FontWeight.SemiBold else FontWeight.Normal,
+                    color = if (tab == state.selectedTab) MaterialTheme.appColors.textPrimary else MaterialTheme.appColors.textSecondary
+                )
+            }
         )
 
         if (state.isStale) {

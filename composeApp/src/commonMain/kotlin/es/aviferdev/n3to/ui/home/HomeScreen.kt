@@ -3,6 +3,7 @@ package es.aviferdev.n3to.ui.home
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,9 +12,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Warning
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -25,17 +30,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.core.VersionManager
 import es.aviferdev.n3to.core.premium.PremiumManager
 import es.aviferdev.n3to.core.security.BalanceVisibilityManager
 import es.aviferdev.n3to.core.security.BiometricAuthenticator
 import es.aviferdev.n3to.core.security.BiometricResult
 import es.aviferdev.n3to.domain.model.Account
-import es.aviferdev.n3to.domain.model.CategoryBudgetStatus
 import es.aviferdev.n3to.domain.model.EmergencyFundStatus
 import es.aviferdev.n3to.domain.model.HomeBalance
-import es.aviferdev.n3to.domain.model.LimitType
 import es.aviferdev.n3to.domain.model.MonthlyGoalProgress
 import es.aviferdev.n3to.domain.model.TransactionType
 import es.aviferdev.n3to.ui.account.AccountViewModel
@@ -60,7 +65,6 @@ import es.aviferdev.n3to.ui.home.viewmodel.PriceReminderState
 import es.aviferdev.n3to.ui.reconciliation.ReconcileBalanceBottomSheet
 import es.aviferdev.n3to.ui.reconciliation.ReconciliationReminderBanner
 import es.aviferdev.n3to.ui.reconciliation.ReconciliationViewModel
-import es.aviferdev.n3to.ui.settings.SetCategoryLimitSheet
 import es.aviferdev.n3to.ui.settings.backup.BackupPasswordSheet
 import es.aviferdev.n3to.ui.settings.backup.BackupViewModel
 import es.aviferdev.n3to.ui.theme.LocalBalanceHidden
@@ -69,7 +73,6 @@ import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.ui.version.VersionUpdateBanner
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.home_confirm_identity
-import n3to.composeapp.generated.resources.home_section_budgets
 import n3to.composeapp.generated.resources.home_section_emergency_fund
 import n3to.composeapp.generated.resources.home_section_goals
 import n3to.composeapp.generated.resources.home_show_balances
@@ -85,7 +88,6 @@ fun HomeScreen(
     onNavigateToDebts: () -> Unit = {},
     onNavigateToFiscalReport: () -> Unit = {},
     onNavigateToSettings: () -> Unit = {},
-    onNavigateToExpenseSettings: () -> Unit = {},
     onNavigateToEmergencyFundSettings: () -> Unit = {},
     onOpenStore: () -> Unit = {},
     onNavigateToFixedIncomeDetail: (String) -> Unit = {},
@@ -103,7 +105,6 @@ fun HomeScreen(
     val nearMaturity by viewModel.nearMaturityState.collectAsState()
     val goalProgress by viewModel.goalProgressState.collectAsState()
     val emergencyFund by viewModel.emergencyFundStatus.collectAsState()
-    val budgetStatus by viewModel.budgetStatus.collectAsState()
 
     val premiumManager: PremiumManager = koinInject()
     val isPremium by premiumManager.status.collectAsState()
@@ -122,12 +123,6 @@ fun HomeScreen(
 
     var showAddTransaction by remember { mutableStateOf(false) }
     val addTransactionViewModel: AddTransactionViewModel = koinViewModel()
-
-    var showBudgetLimitSheet by remember { mutableStateOf(false) }
-    var budgetLimitCategoryId by remember { mutableStateOf("") }
-    var budgetLimitCategoryName by remember { mutableStateOf("") }
-    var budgetLimitCurrentLimit by remember { mutableStateOf(0.0) }
-    var budgetLimitCurrentType by remember { mutableStateOf(LimitType.FIXED) }
 
     val loadingManager = koinInject<GlobalLoadingManager>()
 
@@ -215,15 +210,6 @@ fun HomeScreen(
                     onDismissVersionBanner = { versionInfo?.let { viewModel.dismissVersionBanner(it.latestVersion) } },
                     goalProgressState = goalProgress,
                     emergencyFundStatus = emergencyFund,
-                    budgetStatus = budgetStatus,
-                    onNavigateToExpenseSettings = onNavigateToExpenseSettings,
-                    onEditBudget = { catId, catName, currentLimit, limitType ->
-                        budgetLimitCategoryId = catId
-                        budgetLimitCategoryName = catName
-                        budgetLimitCurrentLimit = currentLimit
-                        budgetLimitCurrentType = limitType
-                        showBudgetLimitSheet = true
-                    }
                 )
             }
 
@@ -302,19 +288,6 @@ fun HomeScreen(
         )
     }
 
-    // ── Limit sheet inline ─────────────────────────────────────────────────────
-    if (showBudgetLimitSheet) {
-        SetCategoryLimitSheet(
-            categoryName = budgetLimitCategoryName,
-            currentLimit = budgetLimitCurrentLimit,
-            currentLimitType = budgetLimitCurrentType,
-            onSave = { limit, limitType ->
-                viewModel.saveBudgetLimit(budgetLimitCategoryId, limit, limitType)
-                showBudgetLimitSheet = false
-            },
-            onDismiss = { showBudgetLimitSheet = false }
-        )
-    }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -357,9 +330,6 @@ fun HomeContent(
     onDismissVersionBanner: () -> Unit = {},
     goalProgressState: GoalProgressState = GoalProgressState(),
     emergencyFundStatus: EmergencyFundStatus = EmergencyFundStatus.NOT_CONFIGURED,
-    budgetStatus: List<CategoryBudgetStatus> = emptyList(),
-    onNavigateToExpenseSettings: () -> Unit = {},
-    onEditBudget: (categoryId: String, categoryName: String, currentLimit: Double, currentLimitType: LimitType) -> Unit = { _, _, _, _ -> }
 ) {
     Column(
         modifier = Modifier
@@ -379,7 +349,32 @@ fun HomeContent(
                 items = accounts,
                 selected = accounts.find { it.id == selectedAccountId } ?: accounts.first(),
                 onSelect = { onAccountSelected(it.id) },
-                label = { if (it.needsInitialBalance) "${it.name} ⚠️" else it.name },
+                content = { account ->
+                    if (account.needsInitialBalance) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(
+                                text = account.name,
+                                fontSize = 12.sp,
+                                fontWeight = if (account.id == selectedAccountId) FontWeight.SemiBold else FontWeight.Normal,
+                                color = if (account.id == selectedAccountId) MaterialTheme.appColors.textPrimary else MaterialTheme.appColors.textSecondary
+                            )
+                            Spacer(Modifier.width(4.dp))
+                            Icon(
+                                imageVector = Icons.Outlined.Warning,
+                                contentDescription = null,
+                                modifier = Modifier.size(14.dp),
+                                tint = MaterialTheme.appColors.warnAmber
+                            )
+                        }
+                    } else {
+                        Text(
+                            text = account.name,
+                            fontSize = 12.sp,
+                            fontWeight = if (account.id == selectedAccountId) FontWeight.SemiBold else FontWeight.Normal,
+                            color = if (account.id == selectedAccountId) MaterialTheme.appColors.textPrimary else MaterialTheme.appColors.textSecondary
+                        )
+                    }
+                },
             )
         }
 
@@ -471,26 +466,6 @@ fun HomeContent(
             EmergencyFundCard(
                 status = emergencyFundStatus,
                 onNavigateToSettings = onNavigateToEmergencyFundSettings,
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
-
-        Spacer(Modifier.height(12.dp))
-        SectionHeader(
-            label = stringResource(Res.string.home_section_budgets),
-            actionLabel = if (budgetStatus.isNotEmpty()) "Editar" else null,
-            onAction = if (budgetStatus.isNotEmpty()) onNavigateToExpenseSettings else null,
-            modifier = Modifier.padding(horizontal = 16.dp)
-        )
-        Spacer(Modifier.height(4.dp))
-        LockedFeatureOverlay(
-            locked = accounts.isEmpty(),
-            modifier = Modifier.padding(horizontal = 16.dp)
-        ) {
-            BudgetSection(
-                statuses = budgetStatus,
-                onEditBudget = onEditBudget,
-                onConfigureBudgets = onNavigateToExpenseSettings,
                 modifier = Modifier.fillMaxWidth()
             )
         }
