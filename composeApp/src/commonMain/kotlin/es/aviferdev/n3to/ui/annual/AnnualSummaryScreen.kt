@@ -1,6 +1,7 @@
 package es.aviferdev.n3to.ui.annual
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.snapping.SnapPosition
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,10 +23,12 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import es.aviferdev.n3to.ui.annual.components.BudgetStatusCard
 import es.aviferdev.n3to.ui.annual.components.CategoryExpenseList
 import es.aviferdev.n3to.ui.annual.components.MonthlyBarChart
 import es.aviferdev.n3to.ui.annual.components.YearTotalsCard
@@ -47,7 +50,7 @@ import org.koin.compose.viewmodel.koinViewModel
 fun AnnualSummaryScreen(
     navigateBack: () -> Unit = {},
     onNavigateToExpenseSettings: () -> Unit = {},
-    viewModel: AnnualViewModel = koinViewModel()
+    viewModel: AnnualViewModel = koinViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val balancesHidden = LocalBalanceHidden.current
@@ -61,7 +64,6 @@ fun AnnualSummaryScreen(
             title = stringResource(Res.string.annual_title),
             navigateBack = navigateBack
         )
-
         TimeStepperHeader(
             currentValue = uiState.displayLabel,
             canGoBack = uiState.canGoBack,
@@ -69,14 +71,12 @@ fun AnnualSummaryScreen(
             onPrevious = { viewModel.previousPeriod() },
             onNext = { viewModel.nextPeriod() },
             containerColor = MaterialTheme.appColors.navySurface,
-            dividerColor = MaterialTheme.appColors.navyBorder
+            dividerColor = MaterialTheme.appColors.navySurface
         )
-
         ViewModeToggle(
             viewMode = uiState.viewMode,
             onToggle = { viewModel.toggleViewMode() }
         )
-
         if (uiState.isLoading) {
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 CircularProgressIndicator(color = MaterialTheme.appColors.primary)
@@ -109,13 +109,16 @@ fun AnnualSummaryScreen(
                             year = uiState.year
                         )
                         GoalSummaryCard(goalProgress = uiState.goalProgress)
+                        BudgetStatusCard(
+                            budgetStatus = uiState.budgetStatus,
+                            balancesHidden = balancesHidden,
+                            onConfigureBudgets = onNavigateToExpenseSettings
+                        )
                         CategoryExpenseList(
                             title = stringResource(Res.string.annual_expense_categories_title),
                             comparisons = uiState.categoryComparisons,
                             isExpense = true,
-                            balancesHidden = balancesHidden,
-                            budgetStatus = uiState.budgetStatus,
-                            onConfigureBudgets = onNavigateToExpenseSettings
+                            balancesHidden = balancesHidden
                         )
                         CategoryExpenseList(
                             title = stringResource(Res.string.annual_income_types_title),
@@ -141,8 +144,11 @@ fun AnnualSummaryScreen(
                             title = stringResource(Res.string.annual_expense_categories_title),
                             comparisons = uiState.categoryComparisons,
                             isExpense = true,
-                            balancesHidden = balancesHidden,
+                            balancesHidden = balancesHidden
+                        )
+                        BudgetStatusCard(
                             budgetStatus = uiState.budgetStatus,
+                            balancesHidden = balancesHidden,
                             onConfigureBudgets = onNavigateToExpenseSettings
                         )
                         CategoryExpenseList(
@@ -161,53 +167,78 @@ fun AnnualSummaryScreen(
 @Composable
 private fun ViewModeToggle(
     viewMode: SummaryViewMode,
-    onToggle: () -> Unit
+    onToggle: () -> Unit,
 ) {
-    Surface(
-        color = MaterialTheme.appColors.navySurface,
-        shadowElevation = 0.dp
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(MaterialTheme.appColors.navySurface)
+            .padding(horizontal = 8.dp)
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 8.dp),
-            horizontalArrangement = Arrangement.Center
+        Surface(
+            onClick = { if (viewMode != SummaryViewMode.ANNUAL) onToggle() },
+            shape = RoundedCornerShape(6.dp),
+            color = if (viewMode == SummaryViewMode.ANNUAL) {
+                MaterialTheme.appColors.navyBorder
+            } else {
+                Color.Transparent
+            },
+            shadowElevation = if (viewMode == SummaryViewMode.ANNUAL) {
+                2.dp
+            } else {
+                0.dp
+            },
+            modifier = Modifier.weight(1f)
         ) {
-            Row(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(8.dp))
-                    .background(MaterialTheme.appColors.navyDeep)
-                    .padding(2.dp)
-            ) {
-                ModeChip(
-                    label = "Año",
-                    selected = viewMode == SummaryViewMode.ANNUAL,
-                    onClick = { if (viewMode != SummaryViewMode.ANNUAL) onToggle() }
-                )
-                ModeChip(
-                    label = "Mes",
-                    selected = viewMode == SummaryViewMode.MONTHLY,
-                    onClick = { if (viewMode != SummaryViewMode.MONTHLY) onToggle() }
-                )
-            }
+            Text(
+                text = "Año",   //TODO
+                fontSize = 13.sp,
+                fontWeight = if (viewMode == SummaryViewMode.ANNUAL) {
+                    FontWeight.SemiBold
+                } else {
+                    FontWeight.Normal
+                },
+                color = if (viewMode == SummaryViewMode.ANNUAL) {
+                    MaterialTheme.appColors.primary
+                } else {
+                    MaterialTheme.appColors.textSecondary
+                },
+                modifier = Modifier.padding(horizontal = 20.dp, vertical = 6.dp),
+                textAlign = TextAlign.Center
+            )
         }
-    }
-}
 
-@Composable
-private fun ModeChip(label: String, selected: Boolean, onClick: () -> Unit) {
-    Surface(
-        onClick = onClick,
-        shape = RoundedCornerShape(6.dp),
-        color = if (selected) MaterialTheme.appColors.navySurface else androidx.compose.ui.graphics.Color.Transparent,
-        shadowElevation = if (selected) 2.dp else 0.dp
-    ) {
-        Text(
-            text = label,
-            fontSize = 13.sp,
-            fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal,
-            color = if (selected) MaterialTheme.appColors.primary else MaterialTheme.appColors.textSecondary,
-            modifier = Modifier.padding(horizontal = 20.dp, vertical = 6.dp)
-        )
+        Surface(
+            onClick = { if (viewMode != SummaryViewMode.MONTHLY) onToggle() },
+            shape = RoundedCornerShape(6.dp),
+            color = if (viewMode == SummaryViewMode.MONTHLY) {
+                MaterialTheme.appColors.navyBorder
+            } else {
+                Color.Transparent
+            },
+            shadowElevation = if (viewMode == SummaryViewMode.MONTHLY) {
+                2.dp
+            } else {
+                0.dp
+            },
+            modifier = Modifier.weight(1f)
+        ) {
+            Text(
+                text = "Mes",   //TODO
+                fontSize = 13.sp,
+                fontWeight = if (viewMode == SummaryViewMode.MONTHLY) {
+                    FontWeight.SemiBold
+                } else {
+                    FontWeight.Normal
+                },
+                color = if (viewMode == SummaryViewMode.MONTHLY) {
+                    MaterialTheme.appColors.primary
+                } else {
+                    MaterialTheme.appColors.textSecondary
+                },
+                modifier = Modifier.padding(horizontal = 20.dp, vertical = 6.dp),
+                textAlign = TextAlign.Center
+            )
+        }
     }
 }

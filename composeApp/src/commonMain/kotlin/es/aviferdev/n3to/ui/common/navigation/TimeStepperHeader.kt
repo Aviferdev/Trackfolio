@@ -8,7 +8,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ChevronLeft
+import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -18,10 +22,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.ui.common.separator.SpacerHorizontalApp
+import es.aviferdev.n3to.ui.common.separator.SpacerVerticalApp
 import es.aviferdev.n3to.ui.theme.appColors
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -53,7 +59,13 @@ fun TimeStepperHeader(
         verticalAlignment = Alignment.CenterVertically
     ) {
         SpacerHorizontalApp(8.dp)
-        StepperArrowButton(enabled = canGoBack, onClick = onPrevious, label = "‹")
+        StepperArrowButton(
+            enabled = canGoBack,
+            onClick = onPrevious,
+            icon = Icons.Default.ChevronLeft,
+            modifier = Modifier.alpha(if (canGoBack) 1f else 0f)
+        )
+
         Column(
             modifier = Modifier.weight(1f),
             horizontalAlignment = Alignment.CenterHorizontally
@@ -76,7 +88,7 @@ fun TimeStepperHeader(
         StepperArrowButton(
             enabled = canGoForward,
             onClick = onNext,
-            label = "›",
+            icon = Icons.Default.ChevronRight,
             modifier = Modifier.alpha(if (canGoForward) 1f else 0f)
         )
         SpacerHorizontalApp(8.dp)
@@ -88,7 +100,7 @@ fun TimeStepperHeader(
 private fun StepperArrowButton(
     enabled: Boolean,
     onClick: () -> Unit,
-    label: String,
+    icon: ImageVector,
     modifier: Modifier = Modifier
 ) {
     IconButton(
@@ -97,25 +109,11 @@ private fun StepperArrowButton(
         modifier = modifier
             .size(34.dp)
             .clip(RoundedCornerShape(9.dp))
-            .background(if (enabled) MaterialTheme.appColors.surfaceElevated else androidx.compose.ui.graphics.Color.Transparent)
     ) {
-        Text(
-            text = label,
-            fontSize = 22.sp,
-            fontWeight = FontWeight.Light,
-            color = if (enabled) MaterialTheme.appColors.textPrimary else MaterialTheme.appColors.textTertiary
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            tint = if (enabled) MaterialTheme.appColors.textPrimary else MaterialTheme.appColors.textTertiary
         )
     }
-}
-
-@Preview
-@Composable
-private fun TimeStepperHeaderPreview() {
-    TimeStepperHeader(
-        currentValue = "Marzo",
-        currentValueSecondary = "2026",
-        canGoBack = true,
-        onPrevious = {},
-        onNext = {}
-    )
 }

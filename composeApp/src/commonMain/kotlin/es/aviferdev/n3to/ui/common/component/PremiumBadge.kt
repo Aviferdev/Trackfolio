@@ -27,7 +27,7 @@ fun PremiumBadge(
             imageVector = Icons.Filled.WorkspacePremium,
             contentDescription = null,
             tint = Color.White,
-            modifier = Modifier.size(10.dp)
+            modifier = Modifier.size(16.dp)
         )
     }
 }

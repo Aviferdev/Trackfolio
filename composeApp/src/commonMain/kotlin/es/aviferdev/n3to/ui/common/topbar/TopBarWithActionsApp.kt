@@ -1,5 +1,6 @@
 package es.aviferdev.n3to.ui.common.topbar
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
@@ -7,11 +8,13 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -22,13 +25,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import es.aviferdev.n3to.ui.common.button.IconButtonApp
 import es.aviferdev.n3to.ui.common.separator.SpacerHorizontalApp
 import es.aviferdev.n3to.ui.theme.appColors
-import n3to.composeapp.generated.resources.Res
-import n3to.composeapp.generated.resources.common_back_cd
-import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun TopBarWithActionsApp(
@@ -49,12 +47,14 @@ fun TopBarWithActionsApp(
             verticalAlignment = Alignment.CenterVertically
         ) {
             if (navigateBack != null) {
-                IconButtonApp(
-                    clickButton = navigateBack,
-                    icon = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = stringResource(Res.string.common_back_cd),
-                    backgroundColor = MaterialTheme.appColors.navySelected,
-                    iconTint = MaterialTheme.appColors.textSecondary
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = null,
+                    tint = MaterialTheme.appColors.textSecondary,
+                    modifier =
+                        Modifier.size(32.dp)
+                            .padding(4.dp)
+                            .clickable { navigateBack() }
                 )
                 SpacerHorizontalApp(8.dp)
             } else {
@@ -81,13 +81,4 @@ fun TopBarWithActionsApp(
         }
         HorizontalDivider(color = dividerColor, thickness = 0.5.dp)
     }
-}
-
-@Preview
-@Composable
-private fun TopBarPreview() {
-    TopBarWithActionsApp(
-        title = "Ir atras",
-        navigateBack = {}
-    )
 }

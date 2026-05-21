@@ -786,6 +786,10 @@
     <string name="annual_savings_label">Savings</string>
     <string name="annual_expense_categories_title">Expense categories</string>
     <string name="annual_income_types_title">Income types</string>
+    <string name="annual_budget_title">Budgets</string>
+    <string name="annual_budget_no_limits">No budgets configured</string>
+    <string name="annual_budget_configure">Configure limits in category settings</string>
+    <string name="annual_budget_edit">Edit budgets</string>
     <string name="annual_no_data_text">No data</string>
     <string name="annual_no_movements">No transactions registered</string>
     <string name="annual_new_badge">New</string>

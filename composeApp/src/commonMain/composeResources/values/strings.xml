@@ -786,6 +786,10 @@
     <string name="annual_savings_label">Ahorro</string>
     <string name="annual_expense_categories_title">Categorías de gasto</string>
     <string name="annual_income_types_title">Tipos de ingreso</string>
+    <string name="annual_budget_title">Presupuestos</string>
+    <string name="annual_budget_no_limits">Sin presupuestos configurados</string>
+    <string name="annual_budget_configure">Configura límites en ajustes de categorías</string>
+    <string name="annual_budget_edit">Editar presupuestos</string>
     <string name="annual_no_data_text">Sin datos</string>
     <string name="annual_no_movements">No hay movimientos registrados</string>
     <string name="annual_new_badge">Nuevo</string>

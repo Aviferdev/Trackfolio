@@ -44,6 +44,10 @@ import es.aviferdev.n3to.ui.theme.formatAmount
 import es.aviferdev.n3to.ui.theme.formatPercent
 import es.aviferdev.n3to.ui.theme.maskAmount
 import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.annual_budget_configure
+import n3to.composeapp.generated.resources.annual_budget_edit
+import n3to.composeapp.generated.resources.annual_budget_no_limits
+import n3to.composeapp.generated.resources.annual_budget_title
 import n3to.composeapp.generated.resources.annual_expense_legend
 import n3to.composeapp.generated.resources.annual_expenses_label
 import n3to.composeapp.generated.resources.annual_income_label
@@ -155,12 +159,8 @@ internal fun CategoryExpenseList(
     title: String,
     comparisons: List<CategoryExpenseComparison>,
     isExpense: Boolean,
-    balancesHidden: Boolean,
-    budgetStatus: List<CategoryBudgetStatus> = emptyList(),
-    onConfigureBudgets: () -> Unit = {}
+    balancesHidden: Boolean
 ) {
-    val budgetByName = budgetStatus.associateBy { it.categoryName }
-
     if (comparisons.isEmpty()) {
         Card(
             modifier = Modifier.fillMaxWidth(),
@@ -205,35 +205,15 @@ internal fun CategoryExpenseList(
         border = BorderStroke(0.5.dp, MaterialTheme.appColors.navyBorder)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    title,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.appColors.textPrimary,
-                    modifier = Modifier.weight(1f)
-                )
-                if (budgetStatus.isNotEmpty()) {
-                    TextButton(
-                        onClick = onConfigureBudgets,
-                        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 0.dp)
-                    ) {
-                        Text(
-                            "Editar presupuestos",
-                            fontSize = 11.sp,
-                            color = MaterialTheme.appColors.cyanAccent,
-                            fontWeight = FontWeight.Medium
-                        )
-                    }
-                }
-            }
+            Text(
+                title,
+                fontSize = 14.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.appColors.textPrimary
+            )
             Spacer(Modifier.height(14.dp))
 
             comparisons.forEach { comp ->
-                val budget = budgetByName[comp.name]
                 Column(modifier = Modifier.padding(bottom = 10.dp)) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -262,37 +242,106 @@ internal fun CategoryExpenseList(
                         progress = (comp.currentPercent / 100.0).toFloat(),
                         color = comp.color
                     )
-                    if (budget != null && budget.effectiveLimit > 0.0) {
-                        Spacer(Modifier.height(4.dp))
-                        val budgetProgress = (budget.spent / budget.effectiveLimit).toFloat().coerceIn(0f, 1f)
-                        val barColor = when {
-                            budget.isOverBudget -> MaterialTheme.appColors.expense
-                            budget.isNearLimit -> MaterialTheme.appColors.warnAmber
-                            else -> MaterialTheme.appColors.income
-                        }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+internal fun BudgetStatusCard(
+    budgetStatus: List<CategoryBudgetStatus>,
+    balancesHidden: Boolean,
+    onConfigureBudgets: () -> Unit = {}
+) {
+    val itemsWithLimit = budgetStatus.filter { it.effectiveLimit > 0.0 }
+
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(13.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.navySurface),
+        elevation = CardDefaults.cardElevation(0.dp),
+        border = BorderStroke(0.5.dp, MaterialTheme.appColors.navyBorder)
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    stringResource(Res.string.annual_budget_title),
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.appColors.textPrimary,
+                    modifier = Modifier.weight(1f)
+                )
+                TextButton(
+                    onClick = onConfigureBudgets,
+                    contentPadding = PaddingValues(horizontal = 8.dp, vertical = 0.dp)
+                ) {
+                    Text(
+                        stringResource(Res.string.annual_budget_edit),
+                        fontSize = 11.sp,
+                        color = MaterialTheme.appColors.cyanAccent,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+            }
+
+            if (itemsWithLimit.isEmpty()) {
+                Spacer(Modifier.height(12.dp))
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        stringResource(Res.string.annual_budget_no_limits),
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = MaterialTheme.appColors.textSecondary
+                    )
+                    Spacer(Modifier.height(4.dp))
+                    Text(
+                        stringResource(Res.string.annual_budget_configure),
+                        fontSize = 11.sp,
+                        color = MaterialTheme.appColors.textTertiary,
+                        textAlign = TextAlign.Center
+                    )
+                }
+            } else {
+                Spacer(Modifier.height(14.dp))
+                itemsWithLimit.forEach { budget ->
+                    val barColor = when {
+                        budget.isOverBudget -> MaterialTheme.appColors.expense
+                        budget.isNearLimit -> MaterialTheme.appColors.warnAmber
+                        else -> MaterialTheme.appColors.income
+                    }
+                    val budgetProgress = budget.progress.coerceIn(0f, 1f)
+
+                    Column(modifier = Modifier.padding(bottom = 12.dp)) {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
-                                "Presupuesto",
-                                fontSize = 9.sp,
-                                color = MaterialTheme.appColors.textTertiary,
+                                budget.categoryName,
+                                fontSize = 12.sp,
+                                color = MaterialTheme.appColors.textSecondary,
                                 modifier = Modifier.weight(1f)
                             )
                             Text(
                                 "${maskAmount(formatAmount(budget.spent), balancesHidden)} / ${
                                     maskAmount(formatAmount(budget.effectiveLimit), balancesHidden)
                                 } €",
-                                fontSize = 9.sp,
+                                fontSize = 11.sp,
                                 color = barColor,
                                 fontWeight = FontWeight.Medium
                             )
                         }
+                        Spacer(Modifier.height(5.dp))
                         ProgressBar(
                             progress = budgetProgress,
-                            color = barColor,
-                            height = 4.dp
+                            color = barColor
                         )
                     }
                 }

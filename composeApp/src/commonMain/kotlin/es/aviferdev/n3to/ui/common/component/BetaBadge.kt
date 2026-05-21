@@ -3,6 +3,7 @@ package es.aviferdev.n3to.ui.common.component
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -24,6 +25,7 @@ fun BetaBadge(
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(4.dp))
+            .wrapContentHeight()
             .background(MaterialTheme.appColors.cyanAccent.copy(alpha = 0.15f))
             .padding(horizontal = 4.dp, vertical = 2.dp)
     ) {

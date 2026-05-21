@@ -121,7 +121,7 @@ fun SlideWelcome(modifier: Modifier = Modifier) {
 
             Box(
                 modifier = Modifier
-                    .size(128.dp)
+                    .size(160.dp)
                     .graphicsLayer {
                         translationY = floatOffset
                         alpha = iconAlpha
