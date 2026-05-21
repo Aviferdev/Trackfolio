@@ -126,6 +126,8 @@
     <string name="home_goals_projection_above">📈 예상: %1$s — 목표 초과 (+%2$s)</string>
     <string name="home_goals_pace_needed">📊 현재 속도: %1$s€/일 — 목표 달성에 %2$s€/일 필요</string>
     <string name="home_goals_no_movement">📊 이번 달 아직 움직임이 없습니다</string>
+    <string name="home_locked_no_account_title">계정이 필요합니다</string>
+    <string name="home_locked_no_account_subtitle">이 기능을 사용하려면 설정에서 계정을 만드세요</string>
 
     <!-- HOME – Banners -->
     <string name="home_price_reminder_one">가격이 업데이트되지 않은 자산 %1$d개 (&gt;7일)</string>

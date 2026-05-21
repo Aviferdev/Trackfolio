@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -38,6 +39,7 @@ import es.aviferdev.n3to.domain.model.MonthlyGoalProgress
 import es.aviferdev.n3to.domain.model.TransactionType
 import es.aviferdev.n3to.ui.account.AccountViewModel
 import es.aviferdev.n3to.ui.common.SectionHeader
+import es.aviferdev.n3to.ui.common.component.LockedFeatureOverlay
 import es.aviferdev.n3to.ui.common.button.FloatingButtonAdd
 import es.aviferdev.n3to.ui.common.component.NavyTabRow
 import es.aviferdev.n3to.ui.common.loading.GlobalLoadingManager
@@ -230,6 +232,7 @@ fun HomeScreen(
 
         FloatingButtonAdd(
             onClick = { showAddTransaction = true },
+            enabled = accountState.accounts.isNotEmpty(),
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .padding(end = 20.dp, bottom = 136.dp)
@@ -432,17 +435,22 @@ fun HomeContent(
             modifier = Modifier.padding(horizontal = 16.dp)
         )
         Spacer(Modifier.height(10.dp))
-        GoalProgressCard(
-            progress = goalProgressState.progress ?: MonthlyGoalProgress.from(
-                year = "",
-                month = "",
-                goal = null,
-                savingsActual = 0.0,
-                investmentActual = 0.0
-            ),
-            onNavigateToSettings = onNavigateToSettings,
+        LockedFeatureOverlay(
+            locked = accounts.isEmpty(),
             modifier = Modifier.padding(horizontal = 16.dp)
-        )
+        ) {
+            GoalProgressCard(
+                progress = goalProgressState.progress ?: MonthlyGoalProgress.from(
+                    year = "",
+                    month = "",
+                    goal = null,
+                    savingsActual = 0.0,
+                    investmentActual = 0.0
+                ),
+                onNavigateToSettings = onNavigateToSettings,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
 
         Spacer(Modifier.height(24.dp))
         SectionHeader(
@@ -450,11 +458,16 @@ fun HomeContent(
             modifier = Modifier.padding(horizontal = 16.dp)
         )
         Spacer(Modifier.height(10.dp))
-        EmergencyFundCard(
-            status = emergencyFundStatus,
-            onNavigateToSettings = onNavigateToEmergencyFundSettings,
+        LockedFeatureOverlay(
+            locked = accounts.isEmpty(),
             modifier = Modifier.padding(horizontal = 16.dp)
-        )
+        ) {
+            EmergencyFundCard(
+                status = emergencyFundStatus,
+                onNavigateToSettings = onNavigateToEmergencyFundSettings,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
 
         Spacer(Modifier.height(24.dp))
         SectionHeader(
@@ -464,29 +477,44 @@ fun HomeContent(
             modifier = Modifier.padding(horizontal = 16.dp)
         )
         Spacer(Modifier.height(10.dp))
-        BudgetSection(
-            statuses = budgetStatus,
-            onEditBudget = onEditBudget,
-            onConfigureBudgets = onNavigateToExpenseSettings,
+        LockedFeatureOverlay(
+            locked = accounts.isEmpty(),
             modifier = Modifier.padding(horizontal = 16.dp)
-        )
+        ) {
+            BudgetSection(
+                statuses = budgetStatus,
+                onEditBudget = onEditBudget,
+                onConfigureBudgets = onNavigateToExpenseSettings,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
 
         Spacer(Modifier.height(24.dp))
-        QuickAccessSection(
-            onNavigateToCharts = onNavigateToCharts,
-            onNavigateToDebts = onNavigateToDebts,
-            onNavigateToFiscalReport = onNavigateToFiscalReport,
-            hasDebts = balance.totalOwed > 0 || balance.totalOwing > 0,
+        LockedFeatureOverlay(
+            locked = accounts.isEmpty(),
             modifier = Modifier.padding(horizontal = 16.dp)
-        )
+        ) {
+            QuickAccessSection(
+                onNavigateToCharts = onNavigateToCharts,
+                onNavigateToDebts = onNavigateToDebts,
+                onNavigateToFiscalReport = onNavigateToFiscalReport,
+                hasDebts = balance.totalOwed > 0 || balance.totalOwing > 0,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
 
         Spacer(Modifier.height(24.dp))
-        RecentTransactionsSection(
-            transactions = balance.recentTransactions,
-            categoryNames = categoryNames,
-            balancesHidden = balancesHidden,
-            onVerTodos = onNavigateToTransactions,
+        LockedFeatureOverlay(
+            locked = accounts.isEmpty(),
             modifier = Modifier.padding(horizontal = 16.dp)
-        )
+        ) {
+            RecentTransactionsSection(
+                transactions = balance.recentTransactions,
+                categoryNames = categoryNames,
+                balancesHidden = balancesHidden,
+                onVerTodos = onNavigateToTransactions,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
     }
 }

@@ -15,14 +15,15 @@ import es.aviferdev.n3to.ui.theme.appColors
 @Composable
 fun FloatingButtonAdd(
     onClick: () -> Unit,
-    modifier: Modifier
+    modifier: Modifier,
+    enabled: Boolean = true
 ) {
     FloatingActionButton(
-        onClick = onClick,
+        onClick = { if (enabled) onClick() },
         modifier = modifier,
         shape = RoundedCornerShape(16.dp),
         containerColor = MaterialTheme.appColors.navySurface,
-        contentColor = MaterialTheme.appColors.cyanAccent,
+        contentColor = if (enabled) MaterialTheme.appColors.cyanAccent else MaterialTheme.appColors.textTertiary,
         elevation = FloatingActionButtonDefaults.elevation(
             defaultElevation = 6.dp,
             pressedElevation = 10.dp
@@ -32,7 +33,7 @@ fun FloatingButtonAdd(
             text = "+",
             fontSize = 26.sp,
             fontWeight = FontWeight.Light,
-            color = MaterialTheme.appColors.cyanAccent
+            color = if (enabled) MaterialTheme.appColors.cyanAccent else MaterialTheme.appColors.textTertiary
         )
     }
 }

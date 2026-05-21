@@ -126,6 +126,8 @@
     <string name="home_goals_projection_above">📈 Projeção: %1$s — acima da meta (+%2$s)</string>
     <string name="home_goals_pace_needed">📊 Ritmo atual: %1$s€/dia — Necessário %2$s€/dia para atingir a meta</string>
     <string name="home_goals_no_movement">📊 Nenhum movimento ainda este mês</string>
+    <string name="home_locked_no_account_title">Você precisa de uma conta</string>
+    <string name="home_locked_no_account_subtitle">Crie uma conta em Configurações para ativar este recurso</string>
 
     <!-- HOME – Banners -->
     <string name="home_price_reminder_one">%1$d ativo sem preço atualizado (&gt;7 dias)</string>
