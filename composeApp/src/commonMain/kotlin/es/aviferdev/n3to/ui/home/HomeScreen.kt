@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -41,13 +40,13 @@ import es.aviferdev.n3to.ui.account.AccountViewModel
 import es.aviferdev.n3to.ui.common.SectionHeader
 import es.aviferdev.n3to.ui.common.button.FloatingButtonAdd
 import es.aviferdev.n3to.ui.common.component.NavyTabRow
+import es.aviferdev.n3to.ui.common.loading.GlobalLoadingManager
 import es.aviferdev.n3to.ui.common.topbar.TopBarWithoutActionsApp
 import es.aviferdev.n3to.ui.home.banner.BackupReminderBanner
 import es.aviferdev.n3to.ui.home.banner.MaturityReminderBanner
 import es.aviferdev.n3to.ui.home.banner.PriceReminderBanner
 import es.aviferdev.n3to.ui.home.bottomsheet.AddTransactionBottomSheet
 import es.aviferdev.n3to.ui.home.bottomsheet.PriceUpdateBottomSheet
-import es.aviferdev.n3to.ui.home.bottomsheet.SetInitialBalanceBottomSheet
 import es.aviferdev.n3to.ui.home.dialog.BackupReminderIntervalDialog
 import es.aviferdev.n3to.ui.home.viewmodel.AddTransactionViewModel
 import es.aviferdev.n3to.ui.home.viewmodel.GoalProgressState
@@ -123,10 +122,20 @@ fun HomeScreen(
     var budgetLimitCurrentLimit by remember { mutableStateOf(0.0) }
     var budgetLimitCurrentType by remember { mutableStateOf(LimitType.FIXED) }
 
+    val loadingManager = koinInject<GlobalLoadingManager>()
+
     LaunchedEffect(reopenFromPicker) {
         if (reopenFromPicker) {
             showAddTransaction = true
             onConsumeReopen()
+        }
+    }
+
+    LaunchedEffect(uiState) {
+        (uiState as? HomeUiState.Loading)?.let {
+            loadingManager.show(it.message)
+        } ?: run {
+            loadingManager.hide()
         }
     }
 
@@ -136,12 +145,7 @@ fun HomeScreen(
             .background(MaterialTheme.appColors.navyDeep)
     ) {
         when (val state = uiState) {
-            is HomeUiState.Loading -> {
-                CircularProgressIndicator(
-                    modifier = Modifier.align(Alignment.Center),
-                    color = MaterialTheme.appColors.cyanAccent
-                )
-            }
+            is HomeUiState.Loading -> Unit
 
             is HomeUiState.Success -> {
                 val currentAccount = state.balance.selectedAccount
@@ -149,7 +153,6 @@ fun HomeScreen(
                     currentAccount?.let { reconciliationViewModel.checkReminder(it.id) }
                 }
 
-                val showVersionBanner = versionStatus is VersionManager.Status.UpdateAvailable
                 val versionInfo = (versionStatus as? VersionManager.Status.UpdateAvailable)?.info
 
                 HomeContent(
@@ -198,7 +201,7 @@ fun HomeScreen(
                     daysSinceLastBackup = backupReminderState.daysSinceLastBackup,
                     onBackupNow = { backupViewModel.openExport() },
                     onBackupRemindLater = { backupViewModel.openIntervalDialog() },
-                    showVersionBanner = showVersionBanner,
+                    showVersionBanner = (versionStatus is VersionManager.Status.UpdateAvailable),
                     versionLatestVersion = versionInfo?.latestVersion,
                     onVersionUpdateNow = onOpenStore,
                     onDismissVersionBanner = { versionInfo?.let { viewModel.dismissVersionBanner(it.latestVersion) } },

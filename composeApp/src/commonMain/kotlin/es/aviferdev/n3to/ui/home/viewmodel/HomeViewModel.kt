@@ -40,7 +40,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 sealed class HomeUiState {
-    data object Loading : HomeUiState()
+    data class Loading(val message: String) : HomeUiState()
     data class Success(
         val balance: HomeBalance,
         val categoryNames: Map<String, String>,
@@ -102,7 +102,7 @@ class HomeViewModel(
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = HomeUiState.Loading
+            initialValue = HomeUiState.Loading("")
         )
 
     private val _priceReminderState = MutableStateFlow(PriceReminderState())
