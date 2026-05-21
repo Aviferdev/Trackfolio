@@ -1491,6 +1491,6 @@
     <string name="language_portuguese">Português</string>
     <string name="language_italian">Italiano</string>
     <string name="language_korean">한국어</string>
-    <string name="language_beta">Beta</string>
+    <string name="badge_beta">베타</string>
     <string name="language_select_title">언어 선택</string>
 </resources>

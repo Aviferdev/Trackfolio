@@ -27,6 +27,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import es.aviferdev.n3to.core.VersionManager
+import es.aviferdev.n3to.core.premium.PremiumManager
 import es.aviferdev.n3to.core.security.BalanceVisibilityManager
 import es.aviferdev.n3to.core.security.BiometricAuthenticator
 import es.aviferdev.n3to.core.security.BiometricResult
@@ -104,6 +105,9 @@ fun HomeScreen(
     val emergencyFund by viewModel.emergencyFundStatus.collectAsState()
     val budgetStatus by viewModel.budgetStatus.collectAsState()
 
+    val premiumManager: PremiumManager = koinInject()
+    val isPremium by premiumManager.status.collectAsState()
+
     val accountState by accountViewModel.uiState.collectAsState()
     val selectedId by accountViewModel.selectedAccountId.collectAsState()
     val reconciliationState by reconciliationViewModel.uiState.collectAsState()
@@ -164,6 +168,7 @@ fun HomeScreen(
                     accounts = accountState.accounts,
                     selectedAccountId = selectedId,
                     balancesHidden = balancesHidden,
+                    isPremium = isPremium.isPremium,
                     onToggleBalances = {
                         if (balancesHidden) {
                             balanceVisibility.requestShow {
@@ -322,6 +327,7 @@ fun HomeContent(
     accounts: List<Account>,
     selectedAccountId: String?,
     balancesHidden: Boolean,
+    isPremium: Boolean = true,
     onToggleBalances: () -> Unit,
     onAccountSelected: (String) -> Unit,
     onNavigateToAccountConfig: (String) -> Unit = {},
@@ -499,6 +505,7 @@ fun HomeContent(
                 onNavigateToCharts = onNavigateToCharts,
                 onNavigateToDebts = onNavigateToDebts,
                 onNavigateToFiscalReport = onNavigateToFiscalReport,
+                isPremium = isPremium,
                 hasDebts = balance.totalOwed > 0 || balance.totalOwing > 0,
                 modifier = Modifier.fillMaxWidth()
             )

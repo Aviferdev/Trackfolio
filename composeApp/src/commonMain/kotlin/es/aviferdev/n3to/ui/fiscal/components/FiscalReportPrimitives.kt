@@ -26,6 +26,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.TaxProfileSnapshot
 import es.aviferdev.n3to.platform.nowYear
+import es.aviferdev.n3to.ui.theme.HIDDEN_AMOUNT_MASK
+import es.aviferdev.n3to.ui.theme.LocalFiscalAmountsHidden
 import es.aviferdev.n3to.ui.theme.appColors
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.date_month_full_01
@@ -150,7 +152,7 @@ internal fun MetricCell(label: String, value: Double, color: Color, modifier: Mo
         )
         Spacer(Modifier.height(3.dp))
         Text(
-            formatAmt(value),
+            maskedAmt(value),
             fontSize = 12.sp,
             fontWeight = FontWeight.Bold,
             color = color,
@@ -177,7 +179,8 @@ internal fun FiscalMetricCell(
             Text(label, fontSize = 10.sp, color = MaterialTheme.appColors.textTertiary)
             Spacer(Modifier.height(3.dp))
             Text(
-                "${if (amount >= 0) "" else "−"}${formatAmt(abs(amount))} €",
+                if (LocalFiscalAmountsHidden.current) HIDDEN_AMOUNT_MASK
+                else "${if (amount >= 0) "" else "−"}${formatAmt(abs(amount))} €",
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Bold,
                 color = color
@@ -232,6 +235,10 @@ internal fun TaxProfileBadge(snapshot: TaxProfileSnapshot) {
         }
     }
 }
+
+@Composable
+internal fun maskedAmt(value: Double): String =
+    if (LocalFiscalAmountsHidden.current) HIDDEN_AMOUNT_MASK else formatAmt(value)
 
 internal fun formatAmt(value: Double): String {
     val sign = if (value < 0) "-" else ""

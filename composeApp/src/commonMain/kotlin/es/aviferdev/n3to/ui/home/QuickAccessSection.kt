@@ -2,6 +2,7 @@ package es.aviferdev.n3to.ui.home
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -27,6 +28,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import es.aviferdev.n3to.ui.common.component.BetaBadge
+import es.aviferdev.n3to.ui.common.component.PremiumBadge
 import es.aviferdev.n3to.ui.theme.appColors
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.home_quick_debts
@@ -39,6 +42,7 @@ fun QuickAccessSection(
     onNavigateToCharts: () -> Unit,
     onNavigateToDebts: () -> Unit,
     onNavigateToFiscalReport: () -> Unit,
+    isPremium: Boolean = true,
     hasDebts: Boolean = false,
     modifier: Modifier = Modifier
 ) {
@@ -60,12 +64,25 @@ fun QuickAccessSection(
                 showBadge = hasDebts,
                 modifier = Modifier.weight(1f)
             )
-            QuickCard(
-                icon = Icons.AutoMirrored.Outlined.Assignment,
-                label = stringResource(Res.string.home_quick_fiscal),
-                onClick = onNavigateToFiscalReport,
-                modifier = Modifier.weight(1f)
-            )
+            Box(modifier = Modifier.weight(1f)) {
+                QuickCard(
+                    icon = Icons.AutoMirrored.Outlined.Assignment,
+                    label = stringResource(Res.string.home_quick_fiscal),
+                    onClick = onNavigateToFiscalReport,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                if (!isPremium) {
+                    PremiumBadge(
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                    )
+                }
+                BetaBadge(
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .padding(5.dp)
+                )
+            }
         }
     }
 }

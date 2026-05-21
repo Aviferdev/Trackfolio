@@ -1488,6 +1488,6 @@
     <string name="language_chinese">中文</string>
     <string name="language_russian">俄语</string>
     <string name="language_japanese">日语</string>
-    <string name="language_beta">Beta</string>
+    <string name="badge_beta">测试版</string>
     <string name="language_select_title">选择语言</string>
 </resources>

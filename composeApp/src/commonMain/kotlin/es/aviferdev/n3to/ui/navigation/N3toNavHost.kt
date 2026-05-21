@@ -150,7 +150,7 @@ fun N3toContent() {
                         },
                         onNavigateToExpenseSettings = {
                             navController.navigate(ExpenseSettingsRoute) { launchSingleTop = true }
-                        }
+                        },
                     )
                     // Reabrir sheet al volver del CategoryPicker
                     val catPickerCatId = navController.currentBackStackEntry
@@ -218,7 +218,7 @@ fun N3toContent() {
                         },
                         onNavigateToExpenseSettings = {
                             navController.navigate(ExpenseSettingsRoute) { launchSingleTop = true }
-                        }
+                        },
                     )
                 }
                 composable<CategoryPickerRoute> { backStackEntry ->
@@ -466,7 +466,10 @@ fun N3toContent() {
                 }
                 composable<FiscalReportRoute> {
                     FiscalReportScreen(
-                        onBack = { navController.popBackStack() }
+                        onBack = { navController.popBackStack() },
+                        onNavigateToPremium = {
+                            navController.navigate(PremiumRoute) { launchSingleTop = true }
+                        }
                     )
                 }
                 composable<AssetHistoryRoute> { backStackEntry ->

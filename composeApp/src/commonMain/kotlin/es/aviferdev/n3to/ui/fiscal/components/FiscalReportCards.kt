@@ -24,6 +24,8 @@ import es.aviferdev.n3to.domain.model.FiscalIncomeTaxBreakdown
 import es.aviferdev.n3to.domain.model.FiscalReportData
 import es.aviferdev.n3to.domain.model.MonthlyTotals
 import es.aviferdev.n3to.ui.common.toMaterialIcon
+import es.aviferdev.n3to.ui.theme.HIDDEN_AMOUNT_MASK
+import es.aviferdev.n3to.ui.theme.LocalFiscalAmountsHidden
 import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.ui.theme.formatQty
 import n3to.composeapp.generated.resources.Res
@@ -223,6 +225,7 @@ internal fun IncomeTaxBreakdownCard(report: FiscalReportData) {
 
 @Composable
 private fun TaxBreakdownRow(item: FiscalIncomeTaxBreakdown) {
+    val hidden = LocalFiscalAmountsHidden.current
     Row(
         Modifier.fillMaxWidth().padding(vertical = 6.dp),
         verticalAlignment = Alignment.CenterVertically
@@ -256,14 +259,22 @@ private fun TaxBreakdownRow(item: FiscalIncomeTaxBreakdown) {
             }
         }
         Text(
-            formatAmt(item.grossTotal),
+            if (hidden) {
+                HIDDEN_AMOUNT_MASK
+            } else {
+                formatAmt(item.grossTotal)
+            },
             fontSize = 11.sp,
             color = MaterialTheme.appColors.textPrimary,
             modifier = Modifier.weight(2f),
             textAlign = TextAlign.End
         )
         Text(
-            formatAmt(item.irpfTotal),
+            if (hidden) {
+                HIDDEN_AMOUNT_MASK
+            } else {
+                formatAmt(item.irpfTotal)
+            },
             fontSize = 11.sp,
             color = MaterialTheme.appColors.expense,
             fontWeight = FontWeight.Medium,
@@ -271,7 +282,11 @@ private fun TaxBreakdownRow(item: FiscalIncomeTaxBreakdown) {
             textAlign = TextAlign.End
         )
         Text(
-            formatAmt(item.netTotal),
+            if (hidden) {
+                HIDDEN_AMOUNT_MASK
+            } else {
+                formatAmt(item.netTotal)
+            },
             fontSize = 11.sp,
             color = MaterialTheme.appColors.income,
             fontWeight = FontWeight.Medium,
@@ -279,7 +294,11 @@ private fun TaxBreakdownRow(item: FiscalIncomeTaxBreakdown) {
             textAlign = TextAlign.End
         )
         Text(
-            formatPct(item.avgIrpfPercent),
+            if (hidden) {
+                HIDDEN_AMOUNT_MASK
+            } else {
+                formatPct(item.avgIrpfPercent)
+            },
             fontSize = 11.sp,
             color = MaterialTheme.appColors.textSecondary,
             modifier = Modifier.weight(1f),
@@ -344,6 +363,7 @@ internal fun MonthlyBreakdownCard(report: FiscalReportData) {
 @Composable
 private fun MonthlyRow(month: Int, data: MonthlyTotals) {
     val balance = data.balance
+    val hidden = LocalFiscalAmountsHidden.current
     Row(
         Modifier.fillMaxWidth().padding(vertical = 6.dp),
         verticalAlignment = Alignment.CenterVertically
@@ -355,21 +375,33 @@ private fun MonthlyRow(month: Int, data: MonthlyTotals) {
             modifier = Modifier.weight(2f)
         )
         Text(
-            formatAmt(data.totalIncome),
+            if (hidden) {
+                HIDDEN_AMOUNT_MASK
+            } else {
+                formatAmt(data.totalIncome)
+            },
             fontSize = 11.sp,
             color = MaterialTheme.appColors.income,
             modifier = Modifier.weight(2f),
             textAlign = TextAlign.End
         )
         Text(
-            formatAmt(data.totalExpense),
+            if (hidden) {
+                HIDDEN_AMOUNT_MASK
+            } else {
+                formatAmt(data.totalExpense)
+            },
             fontSize = 11.sp,
             color = MaterialTheme.appColors.expense,
             modifier = Modifier.weight(2f),
             textAlign = TextAlign.End
         )
         Text(
-            "${if (balance >= 0) "+" else ""}${formatAmt(balance)}",
+            if (hidden) {
+                HIDDEN_AMOUNT_MASK
+            } else {
+                "${if (balance >= 0) "+" else ""}${formatAmt(balance)}"
+            },
             fontSize = 11.sp,
             color = if (balance >= 0) MaterialTheme.appColors.income else MaterialTheme.appColors.expense,
             fontWeight = FontWeight.SemiBold,
@@ -381,6 +413,7 @@ private fun MonthlyRow(month: Int, data: MonthlyTotals) {
 
 @Composable
 internal fun DebtsCard(report: FiscalReportData) {
+    val hidden = LocalFiscalAmountsHidden.current
     ReportCard(stringResource(Res.string.fiscal_debts_title)) {
         report.activeDebts.forEachIndexed { i, debt ->
             if (i > 0) HorizontalDivider(
@@ -415,7 +448,11 @@ internal fun DebtsCard(report: FiscalReportData) {
                     }
                 }
                 Text(
-                    formatAmt(debt.amount),
+                    if (hidden) {
+                        HIDDEN_AMOUNT_MASK
+                    } else {
+                        formatAmt(debt.amount)
+                    },
                     fontSize = 13.sp,
                     color = color,
                     fontWeight = FontWeight.Bold
@@ -427,6 +464,7 @@ internal fun DebtsCard(report: FiscalReportData) {
 
 @Composable
 internal fun PortfolioCard(report: FiscalReportData) {
+    val hidden = LocalFiscalAmountsHidden.current
     val positions =
         report.assetPositions.filter { it.netQuantity > 0 || it.totalBought > 0 || it.totalSold > 0 }
     val totalInvested = positions.sumOf { it.totalCost }
@@ -510,21 +548,33 @@ internal fun PortfolioCard(report: FiscalReportData) {
                     )
                 }
                 Text(
-                    formatQty(pos.netQuantity),
+                    if (hidden) {
+                        HIDDEN_AMOUNT_MASK
+                    } else {
+                        formatQty(pos.netQuantity)
+                    },
                     fontSize = 11.sp,
                     color = MaterialTheme.appColors.textPrimary,
                     modifier = Modifier.weight(1.5f),
                     textAlign = TextAlign.End
                 )
                 Text(
-                    formatAmt(pos.avgCostBasis),
+                    if (hidden) {
+                        HIDDEN_AMOUNT_MASK
+                    } else {
+                        formatAmt(pos.avgCostBasis)
+                    },
                     fontSize = 11.sp,
                     color = MaterialTheme.appColors.textSecondary,
                     modifier = Modifier.weight(1.5f),
                     textAlign = TextAlign.End
                 )
                 Text(
-                    formatAmt(totalPnl),
+                    if (hidden) {
+                        HIDDEN_AMOUNT_MASK
+                    } else {
+                        formatAmt(totalPnl)
+                    },
                     fontSize = 11.sp,
                     color = if (totalPnl >= 0) MaterialTheme.appColors.income else MaterialTheme.appColors.expense,
                     fontWeight = FontWeight.SemiBold,
@@ -592,21 +642,33 @@ internal fun PortfolioCard(report: FiscalReportData) {
                         modifier = Modifier.weight(2f)
                     )
                     Text(
-                        formatAmt(pos.totalBought),
+                        if (hidden) {
+                            HIDDEN_AMOUNT_MASK
+                        } else {
+                            formatAmt(pos.totalBought)
+                        },
                         fontSize = 11.sp,
                         color = MaterialTheme.appColors.income,
                         modifier = Modifier.weight(1.5f),
                         textAlign = TextAlign.End
                     )
                     Text(
-                        formatAmt(pos.totalSold),
+                        if (hidden) {
+                            HIDDEN_AMOUNT_MASK
+                        } else {
+                            formatAmt(pos.totalSold)
+                        },
                         fontSize = 11.sp,
                         color = MaterialTheme.appColors.expense,
                         modifier = Modifier.weight(1.5f),
                         textAlign = TextAlign.End
                     )
                     Text(
-                        formatAmt(pos.realizedPnl),
+                        if (hidden) {
+                            HIDDEN_AMOUNT_MASK
+                        } else {
+                            formatAmt(pos.realizedPnl)
+                        },
                         fontSize = 11.sp,
                         color = if (pos.realizedPnl >= 0) MaterialTheme.appColors.income else MaterialTheme.appColors.expense,
                         fontWeight = FontWeight.SemiBold,

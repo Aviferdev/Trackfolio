@@ -3,7 +3,6 @@ package es.aviferdev.n3to.ui.settings.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -27,10 +26,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.LanguageOption
+import es.aviferdev.n3to.ui.common.component.BetaBadge
 import es.aviferdev.n3to.ui.theme.appColors
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.common_cancel
-import n3to.composeapp.generated.resources.language_beta
 import n3to.composeapp.generated.resources.language_chinese
 import n3to.composeapp.generated.resources.language_english
 import n3to.composeapp.generated.resources.language_french
@@ -123,20 +122,7 @@ fun LanguageSelectorDialog(
                             modifier = Modifier.weight(1f)
                         )
                         if (option.isBeta) {
-                            Box(
-                                modifier = Modifier
-                                    .clip(RoundedCornerShape(4.dp))
-                                    .background(MaterialTheme.appColors.cyanAccent.copy(alpha = 0.15f))
-                                    .padding(horizontal = 6.dp, vertical = 2.dp)
-                            ) {
-                                Text(
-                                    text = stringResource(Res.string.language_beta),
-                                    fontSize = 9.sp,
-                                    fontWeight = FontWeight.SemiBold,
-                                    color = MaterialTheme.appColors.cyanAccent
-                                )
-                            }
-                            Spacer(Modifier.width(8.dp))
+                            BetaBadge()
                         }
                         if (isActive) {
                             Icon(

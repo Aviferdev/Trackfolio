@@ -1486,6 +1486,6 @@
     <string name="language_chinese">Китайский</string>
     <string name="language_russian">Русский</string>
     <string name="language_japanese">Японский</string>
-    <string name="language_beta">Бета</string>
+    <string name="badge_beta">БЕТА</string>
     <string name="language_select_title">Выберите язык</string>
 </resources>

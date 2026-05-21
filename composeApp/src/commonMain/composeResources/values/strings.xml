@@ -92,7 +92,7 @@
          HOME – HeroCard, accesos rápidos, secciones
          ===================================================================== -->
     <string name="home_hero_balance_label">Saldo en cuenta</string>
-    <string name="home_hero_net_with_debts">Neto con deudas</string>
+    <string name="home_hero_net_with_debts">Neto con deudas personales</string>
     <string name="home_show_balances">Mostrar saldos</string>
     <string name="home_hide_balances">Ocultar saldos</string>
     <string name="home_confirm_identity">Confirma tu identidad</string>
@@ -1494,6 +1494,6 @@
     <string name="language_portuguese">Português</string>
     <string name="language_italian">Italiano</string>
     <string name="language_korean">한국어</string>
-    <string name="language_beta">Beta</string>
+    <string name="badge_beta">Beta</string>
     <string name="language_select_title">Seleccionar idioma</string>
 </resources>

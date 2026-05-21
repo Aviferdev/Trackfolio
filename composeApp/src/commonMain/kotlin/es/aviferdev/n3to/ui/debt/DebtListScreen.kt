@@ -44,7 +44,7 @@ import es.aviferdev.n3to.domain.model.Debt
 import es.aviferdev.n3to.domain.model.DebtDirection
 import es.aviferdev.n3to.ui.common.InitialsAvatar
 import es.aviferdev.n3to.ui.common.N3toLabel
-import es.aviferdev.n3to.ui.common.button.LargeButtonApp
+import es.aviferdev.n3to.ui.common.button.ButtonLarge
 import es.aviferdev.n3to.ui.common.component.EmptyStateView
 import es.aviferdev.n3to.ui.common.row.SwipeRowApp
 import es.aviferdev.n3to.ui.common.separator.SpacerVerticalApp
@@ -297,10 +297,9 @@ fun DebtListContent(
 
                 item {
                     SpacerVerticalApp(8.dp)
-                    LargeButtonApp(
+                    ButtonLarge(
+                        text = Res.string.debt_add_title,
                         icon = Icons.Default.Add,
-                        contentDescription = stringResource(Res.string.debt_add_title),
-                        title = stringResource(Res.string.debt_add_title),
                         onClick = onAddClick
                     )
                 }
