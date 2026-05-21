@@ -117,7 +117,7 @@ class AnnualViewModel(
         _viewMode,
         _oldestYear
     ) { accountId, year, month, viewMode, oldest ->
-        arrayOf(accountId, year, month, viewMode, oldest)
+        arrayOf<Any?>(accountId, year, month, viewMode, oldest)
     }.flatMapLatest { arr ->
         @Suppress("UNCHECKED_CAST")
         val accountId = arr[0] as String?
