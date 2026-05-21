@@ -252,4 +252,42 @@ class TransactionLocalDataSourceImpl(
                     )
                 }
             }
+
+    override fun getExpensesByCategoryPerMonth(
+        accountId: String,
+        year: String,
+        month: String
+    ): Flow<List<CategoryBreakdown>> =
+        queries.getExpensesByCategoryPerMonth(accountId, year, month)
+            .asFlow()
+            .mapToList(Dispatchers.IO)
+            .map { rows ->
+                rows.map { row ->
+                    CategoryBreakdown(
+                        categoryId = row.categoryId,
+                        categoryName = row.categoryName,
+                        amount = row.totalAmount ?: 0.0
+                    )
+                }
+            }
+
+    override fun getIncomeByTypePerMonth(
+        accountId: String,
+        year: String,
+        month: String
+    ): Flow<List<IncomeTypeBreakdown>> =
+        queries.getIncomeByTypePerMonth(accountId, year, month)
+            .asFlow()
+            .mapToList(Dispatchers.IO)
+            .map { rows ->
+                rows.map { row ->
+                    val incomeType = IncomeType.fromName(row.incomeType)
+                    IncomeTypeBreakdown(
+                        incomeType = row.incomeType ?: "UNKNOWN",
+                        label = incomeType?.label ?: "Otro",
+                        emoji = incomeType?.emoji ?: "💰",
+                        amount = row.totalAmount ?: 0.0
+                    )
+                }
+            }
 }

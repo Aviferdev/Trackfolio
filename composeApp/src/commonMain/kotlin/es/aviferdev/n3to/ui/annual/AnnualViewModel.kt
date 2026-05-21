@@ -13,9 +13,12 @@ import es.aviferdev.n3to.domain.usecase.assettransaction.GetMonthlyInvestmentsUs
 import es.aviferdev.n3to.domain.usecase.budget.GetCategoryBudgetStatusUseCase
 import es.aviferdev.n3to.domain.usecase.goal.GetYearlyGoalProgressUseCase
 import es.aviferdev.n3to.domain.usecase.transaction.GetAnnualSummaryUseCase
+import es.aviferdev.n3to.domain.usecase.transaction.GetExpensesByCategoryByMonthUseCase
 import es.aviferdev.n3to.domain.usecase.transaction.GetExpensesByCategoryUseCase
+import es.aviferdev.n3to.domain.usecase.transaction.GetIncomeByTypeByMonthUseCase
 import es.aviferdev.n3to.domain.usecase.transaction.GetIncomeByTypeUseCase
 import es.aviferdev.n3to.domain.usecase.transaction.GetMonthlyBreakdownUseCase
+import es.aviferdev.n3to.domain.usecase.transaction.GetMonthlyTotalsUseCase
 import es.aviferdev.n3to.domain.usecase.transaction.GetOldestTransactionDateUseCase
 import es.aviferdev.n3to.platform.nowLocalDateTime
 import es.aviferdev.n3to.platform.nowYear
@@ -34,28 +37,33 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 
+enum class SummaryViewMode { ANNUAL, MONTHLY }
+
 data class AnnualUiState(
+    val viewMode: SummaryViewMode = SummaryViewMode.ANNUAL,
     val summary: AnnualSummary? = null,
+    val monthlyTotals: MonthlyTotals? = null,
     val monthlyBreakdown: List<MonthlyTotals> = emptyList(),
     val year: String = "",
+    val month: String = "",
+    val displayLabel: String = "",
     val isLoading: Boolean = true,
     val canGoBack: Boolean = true,
-    // Nuevos datos para gráficos
+    val canGoForward: Boolean = false,
     val expensesByCategory: List<DonutSlice> = emptyList(),
     val incomeByType: List<DonutSlice> = emptyList(),
     val monthlyInvestments: List<MonthlyInvestment> = emptyList(),
-    // Comparativas interanuales
     val categoryComparisons: List<CategoryExpenseComparison> = emptyList(),
     val incomeComparisons: List<CategoryExpenseComparison> = emptyList(),
-    // Progreso de objetivos anuales
     val goalProgress: List<MonthlyGoalProgress> = emptyList(),
-    // Estado de presupuestos por categoría
     val budgetStatus: List<CategoryBudgetStatus> = emptyList()
 )
 
-/**
- * Contenedor intermedio para los flows principales del combine.
- */
+private val SPANISH_MONTHS = listOf(
+    "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+    "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
+)
+
 private data class MainData(
     val summary: AnnualSummary?,
     val breakdown: List<MonthlyTotals>,
@@ -70,9 +78,12 @@ private data class MainData(
 class AnnualViewModel(
     private val getAnnualSummary: GetAnnualSummaryUseCase,
     private val getMonthlyBreakdown: GetMonthlyBreakdownUseCase,
+    private val getMonthlyTotals: GetMonthlyTotalsUseCase,
     private val getOldestDate: GetOldestTransactionDateUseCase,
     private val getExpensesByCategory: GetExpensesByCategoryUseCase,
+    private val getExpensesByCategoryByMonth: GetExpensesByCategoryByMonthUseCase,
     private val getIncomeByType: GetIncomeByTypeUseCase,
+    private val getIncomeByTypeByMonth: GetIncomeByTypeByMonthUseCase,
     private val getMonthlyInvestments: GetMonthlyInvestmentsUseCase,
     private val getYearlyGoalProgress: GetYearlyGoalProgressUseCase? = null,
     private val getCategoryBudgetStatus: GetCategoryBudgetStatusUseCase,
@@ -80,10 +91,9 @@ class AnnualViewModel(
 ) : ViewModel() {
 
     private val now = nowLocalDateTime()
+    private val _viewMode = MutableStateFlow(SummaryViewMode.ANNUAL)
     private val _year = MutableStateFlow(now.year.toString())
-    val year: StateFlow<String> = _year
-
-    /** Año de la transacción más antigua (límite inferior de navegación). */
+    private val _month = MutableStateFlow(now.monthNumber.toString().padStart(2, '0'))
     private val _oldestYear = MutableStateFlow<Int?>(null)
 
     init {
@@ -103,135 +113,260 @@ class AnnualViewModel(
     val uiState: StateFlow<AnnualUiState> = combine(
         session.selectedAccountId,
         _year,
+        _month,
+        _viewMode,
         _oldestYear
-    ) { accountId, year, oldest -> Triple(accountId, year, oldest) }
-        .flatMapLatest { (accountId, year, oldest) ->
-            val canGoBack = oldest == null || (year.toInt() - 1) >= oldest
-            if (accountId == null) {
-                flowOf(AnnualUiState(year = year, isLoading = false, canGoBack = canGoBack))
-            } else {
-                val prevYear = (year.toInt() - 1).toString()
-                val prevExpensesFlow = if (canGoBack) getExpensesByCategory(accountId, prevYear)
-                else flowOf(emptyList())
-                val prevIncomeFlow = if (canGoBack) getIncomeByType(accountId, prevYear)
-                else flowOf(emptyList())
+    ) { accountId, year, month, viewMode, oldest ->
+        arrayOf(accountId, year, month, viewMode, oldest)
+    }.flatMapLatest { arr ->
+        @Suppress("UNCHECKED_CAST")
+        val accountId = arr[0] as String?
+        val year = arr[1] as String
+        val month = arr[2] as String
+        val viewMode = arr[3] as SummaryViewMode
+        val oldest = arr[4] as Int?
 
-                // Flujo principal con 5 fuentes de datos
-                val mainFlow = combine(
-                    getAnnualSummary(accountId, year),
-                    getMonthlyBreakdown(accountId, year),
-                    getExpensesByCategory(accountId, year),
-                    getIncomeByType(accountId, year),
-                    getMonthlyInvestments(accountId, year)
-                ) { summary, breakdown, expenses, income, investments ->
-                    MainData(summary, breakdown, expenses, income, investments, emptyList(), emptyList())
-                }
+        val nowY = nowYear()
+        val nowM = now.monthNumber
 
-                // Estado de presupuestos (flow separado)
-                val budgetFlow = getCategoryBudgetStatus(accountId, year)
-
-                // Progreso de objetivos anuales (flow separado)
-                val goalFlow = if (getYearlyGoalProgress != null) {
-                    getYearlyGoalProgress(accountId, year)
-                } else {
-                    flowOf(emptyList())
-                }
-
-                combine(
-                    mainFlow,
-                    goalFlow,
-                    budgetFlow,
-                    prevExpensesFlow,
-                    prevIncomeFlow
-                ) { main, goals, budget, prevExpenses, prevIncomes ->
-                    val totalExpense = main.summary?.totalExpense ?: 0.0
-                    val totalIncome = main.summary?.totalIncome ?: 0.0
-
-                    val expenseSlices = main.expenses.mapIndexed { idx, item ->
-                        DonutSlice(
-                            name = item.categoryName,
-                            icon = "💰",
-                            amount = item.amount,
-                            percent = if (totalExpense > 0) (item.amount / totalExpense) * 100 else 0.0,
-                            color = CategoryPalette[idx % CategoryPalette.size]
-                        )
-                    }
-
-                    val incomeSlices = main.incomes.mapIndexed { idx, item ->
-                        DonutSlice(
-                            name = item.label,
-                            icon = item.emoji,
-                            amount = item.amount,
-                            percent = if (totalIncome > 0) (item.amount / totalIncome) * 100 else 0.0,
-                            color = CategoryPalette[idx % CategoryPalette.size]
-                        )
-                    }
-
-                    // Construir comparativas de gastos (año actual vs anterior)
-                    val prevExpenseMap = prevExpenses.associateBy { it.categoryName }
-                    val categoryComparisons = main.expenses.mapIndexed { idx, curr ->
-                        val prev = prevExpenseMap[curr.categoryName]
-                        CategoryExpenseComparison(
-                            name = curr.categoryName,
-                            icon = "💰",
-                            currentAmount = curr.amount,
-                            currentPercent = if (totalExpense > 0) (curr.amount / totalExpense) * 100 else 0.0,
-                            previousAmount = prev?.amount,
-                            changePercent = if (prev != null && prev.amount > 0)
-                                ((curr.amount - prev.amount) / prev.amount) * 100 else null,
-                            color = CategoryPalette[idx % CategoryPalette.size]
-                        )
-                    }.sortedByDescending { it.currentAmount }
-
-                    // Construir comparativas de ingresos (año actual vs anterior)
-                    val prevIncomeMap = prevIncomes.associateBy { it.incomeType }
-                    val incomeComparisons = main.incomes.mapIndexed { idx, curr ->
-                        val prev = prevIncomeMap[curr.incomeType]
-                        CategoryExpenseComparison(
-                            name = curr.label,
-                            icon = curr.emoji,
-                            currentAmount = curr.amount,
-                            currentPercent = if (totalIncome > 0) (curr.amount / totalIncome) * 100 else 0.0,
-                            previousAmount = prev?.amount,
-                            changePercent = if (prev != null && prev.amount > 0)
-                                ((curr.amount - prev.amount) / prev.amount) * 100 else null,
-                            color = CategoryPalette[idx % CategoryPalette.size]
-                        )
-                    }.sortedByDescending { it.currentAmount }
-
-                    AnnualUiState(
-                        summary = main.summary,
-                        monthlyBreakdown = main.breakdown,
-                        year = year,
-                        isLoading = false,
-                        canGoBack = canGoBack,
-                        expensesByCategory = expenseSlices,
-                        incomeByType = incomeSlices,
-                        monthlyInvestments = main.investments,
-                        categoryComparisons = categoryComparisons,
-                        incomeComparisons = incomeComparisons,
-                        goalProgress = goals,
-                        budgetStatus = budget
-                    )
-                }
-            }
+        val canGoBack: Boolean
+        val canGoForward: Boolean
+        if (viewMode == SummaryViewMode.ANNUAL) {
+            canGoBack = oldest == null || (year.toInt() - 1) >= oldest
+            canGoForward = year.toInt() < nowY
+        } else {
+            val yearInt = year.toInt()
+            val monthInt = month.toInt()
+            canGoBack = oldest == null || yearInt > oldest || (yearInt == oldest && monthInt > 1)
+            canGoForward = yearInt < nowY || (yearInt == nowY && monthInt < nowM)
         }
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = AnnualUiState(year = _year.value)
-        )
 
-    fun previousYear() {
-        val target = _year.value.toInt() - 1
-        val oldest = _oldestYear.value
-        if (oldest != null && target < oldest) return
-        _year.value = target.toString()
+        val displayLabel = if (viewMode == SummaryViewMode.MONTHLY) {
+            "${SPANISH_MONTHS[month.toInt() - 1]} $year"
+        } else {
+            year
+        }
+
+        if (accountId == null) {
+            flowOf(
+                AnnualUiState(
+                    viewMode = viewMode, year = year, month = month,
+                    displayLabel = displayLabel, isLoading = false,
+                    canGoBack = canGoBack, canGoForward = canGoForward
+                )
+            )
+        } else if (viewMode == SummaryViewMode.MONTHLY) {
+            buildMonthlyFlow(accountId, year, month, canGoBack, canGoForward, displayLabel)
+        } else {
+            buildAnnualFlow(accountId, year, oldest, canGoBack, canGoForward, displayLabel)
+        }
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = AnnualUiState(year = _year.value, month = _month.value)
+    )
+
+    private fun buildMonthlyFlow(
+        accountId: String,
+        year: String,
+        month: String,
+        canGoBack: Boolean,
+        canGoForward: Boolean,
+        displayLabel: String
+    ) = combine(
+        getMonthlyTotals(accountId, year, month),
+        getExpensesByCategoryByMonth(accountId, year, month),
+        getIncomeByTypeByMonth(accountId, year, month),
+        getCategoryBudgetStatus(accountId, year)
+    ) { totals, expenses, incomes, budget ->
+        val totalExpense = totals.totalExpense
+        val totalIncome = totals.totalIncome
+
+        val expenseComparisons = expenses.mapIndexed { idx, item ->
+            CategoryExpenseComparison(
+                name = item.categoryName,
+                icon = "💰",
+                currentAmount = item.amount,
+                currentPercent = if (totalExpense > 0) (item.amount / totalExpense) * 100 else 0.0,
+                previousAmount = null,
+                changePercent = null,
+                color = CategoryPalette[idx % CategoryPalette.size]
+            )
+        }.sortedByDescending { it.currentAmount }
+
+        val incomeComparisons = incomes.mapIndexed { idx, item ->
+            CategoryExpenseComparison(
+                name = item.label,
+                icon = item.emoji,
+                currentAmount = item.amount,
+                currentPercent = if (totalIncome > 0) (item.amount / totalIncome) * 100 else 0.0,
+                previousAmount = null,
+                changePercent = null,
+                color = CategoryPalette[idx % CategoryPalette.size]
+            )
+        }.sortedByDescending { it.currentAmount }
+
+        AnnualUiState(
+            viewMode = SummaryViewMode.MONTHLY,
+            monthlyTotals = totals,
+            year = year,
+            month = month,
+            displayLabel = displayLabel,
+            isLoading = false,
+            canGoBack = canGoBack,
+            canGoForward = canGoForward,
+            categoryComparisons = expenseComparisons,
+            incomeComparisons = incomeComparisons,
+            budgetStatus = budget
+        )
     }
 
-    fun nextYear() {
-        val nowYear = nowYear()
-        if (_year.value.toInt() >= nowYear) return
-        _year.value = (_year.value.toInt() + 1).toString()
+    private fun buildAnnualFlow(
+        accountId: String,
+        year: String,
+        oldest: Int?,
+        canGoBack: Boolean,
+        canGoForward: Boolean,
+        displayLabel: String
+    ) = run {
+        val prevYear = (year.toInt() - 1).toString()
+        val canFetchPrev = oldest == null || (year.toInt() - 1) >= oldest
+        val prevExpensesFlow = if (canFetchPrev) getExpensesByCategory(accountId, prevYear)
+        else flowOf(emptyList())
+        val prevIncomeFlow = if (canFetchPrev) getIncomeByType(accountId, prevYear)
+        else flowOf(emptyList())
+
+        val mainFlow = combine(
+            getAnnualSummary(accountId, year),
+            getMonthlyBreakdown(accountId, year),
+            getExpensesByCategory(accountId, year),
+            getIncomeByType(accountId, year),
+            getMonthlyInvestments(accountId, year)
+        ) { summary, breakdown, expenses, income, investments ->
+            MainData(summary, breakdown, expenses, income, investments, emptyList(), emptyList())
+        }
+
+        val budgetFlow = getCategoryBudgetStatus(accountId, year)
+        val goalFlow = if (getYearlyGoalProgress != null) {
+            getYearlyGoalProgress(accountId, year)
+        } else {
+            flowOf(emptyList())
+        }
+
+        combine(mainFlow, goalFlow, budgetFlow, prevExpensesFlow, prevIncomeFlow) { main, goals, budget, prevExpenses, prevIncomes ->
+            val totalExpense = main.summary?.totalExpense ?: 0.0
+            val totalIncome = main.summary?.totalIncome ?: 0.0
+
+            val expenseSlices = main.expenses.mapIndexed { idx, item ->
+                DonutSlice(
+                    name = item.categoryName, icon = "💰", amount = item.amount,
+                    percent = if (totalExpense > 0) (item.amount / totalExpense) * 100 else 0.0,
+                    color = CategoryPalette[idx % CategoryPalette.size]
+                )
+            }
+            val incomeSlices = main.incomes.mapIndexed { idx, item ->
+                DonutSlice(
+                    name = item.label, icon = item.emoji, amount = item.amount,
+                    percent = if (totalIncome > 0) (item.amount / totalIncome) * 100 else 0.0,
+                    color = CategoryPalette[idx % CategoryPalette.size]
+                )
+            }
+
+            val prevExpenseMap = prevExpenses.associateBy { it.categoryName }
+            val categoryComparisons = main.expenses.mapIndexed { idx, curr ->
+                val prev = prevExpenseMap[curr.categoryName]
+                CategoryExpenseComparison(
+                    name = curr.categoryName, icon = "💰",
+                    currentAmount = curr.amount,
+                    currentPercent = if (totalExpense > 0) (curr.amount / totalExpense) * 100 else 0.0,
+                    previousAmount = prev?.amount,
+                    changePercent = if (prev != null && prev.amount > 0)
+                        ((curr.amount - prev.amount) / prev.amount) * 100 else null,
+                    color = CategoryPalette[idx % CategoryPalette.size]
+                )
+            }.sortedByDescending { it.currentAmount }
+
+            val prevIncomeMap = prevIncomes.associateBy { it.incomeType }
+            val incomeComparisons = main.incomes.mapIndexed { idx, curr ->
+                val prev = prevIncomeMap[curr.incomeType]
+                CategoryExpenseComparison(
+                    name = curr.label, icon = curr.emoji,
+                    currentAmount = curr.amount,
+                    currentPercent = if (totalIncome > 0) (curr.amount / totalIncome) * 100 else 0.0,
+                    previousAmount = prev?.amount,
+                    changePercent = if (prev != null && prev.amount > 0)
+                        ((curr.amount - prev.amount) / prev.amount) * 100 else null,
+                    color = CategoryPalette[idx % CategoryPalette.size]
+                )
+            }.sortedByDescending { it.currentAmount }
+
+            AnnualUiState(
+                viewMode = SummaryViewMode.ANNUAL,
+                summary = main.summary,
+                monthlyBreakdown = main.breakdown,
+                year = year,
+                month = "",
+                displayLabel = displayLabel,
+                isLoading = false,
+                canGoBack = canGoBack,
+                canGoForward = canGoForward,
+                expensesByCategory = expenseSlices,
+                incomeByType = incomeSlices,
+                monthlyInvestments = main.investments,
+                categoryComparisons = categoryComparisons,
+                incomeComparisons = incomeComparisons,
+                goalProgress = goals,
+                budgetStatus = budget
+            )
+        }
+    }
+
+    fun toggleViewMode() {
+        val now = nowLocalDateTime()
+        _viewMode.value = when (_viewMode.value) {
+            SummaryViewMode.ANNUAL -> {
+                // Al pasar a mensual, resetear al mes actual del año seleccionado
+                _month.value = now.monthNumber.toString().padStart(2, '0')
+                _year.value = now.year.toString()
+                SummaryViewMode.MONTHLY
+            }
+            SummaryViewMode.MONTHLY -> {
+                // Al pasar a anual, resetear al año actual
+                _year.value = now.year.toString()
+                SummaryViewMode.ANNUAL
+            }
+        }
+    }
+
+    fun previousPeriod() {
+        if (_viewMode.value == SummaryViewMode.ANNUAL) {
+            val target = _year.value.toInt() - 1
+            val oldest = _oldestYear.value
+            if (oldest != null && target < oldest) return
+            _year.value = target.toString()
+        } else {
+            val y = _year.value.toInt()
+            val m = _month.value.toInt()
+            val oldest = _oldestYear.value
+            val (newY, newM) = if (m == 1) Pair(y - 1, 12) else Pair(y, m - 1)
+            if (oldest != null && newY < oldest) return
+            _year.value = newY.toString()
+            _month.value = newM.toString().padStart(2, '0')
+        }
+    }
+
+    fun nextPeriod() {
+        val now = nowLocalDateTime()
+        if (_viewMode.value == SummaryViewMode.ANNUAL) {
+            if (_year.value.toInt() >= nowYear()) return
+            _year.value = (_year.value.toInt() + 1).toString()
+        } else {
+            val y = _year.value.toInt()
+            val m = _month.value.toInt()
+            if (y > now.year || (y == now.year && m >= now.monthNumber)) return
+            val (newY, newM) = if (m == 12) Pair(y + 1, 1) else Pair(y, m + 1)
+            _year.value = newY.toString()
+            _month.value = newM.toString().padStart(2, '0')
+        }
     }
 }

@@ -226,3 +226,35 @@ WHERE t.accountId = :accountId
   AND strftime('%Y', t.date / 1000, 'unixepoch') = :year
 GROUP BY t.incomeType
 ORDER BY totalAmount DESC;
+
+-- ─── Desglose de gastos por categoría (mes) ──────────────────────────────────
+
+getExpensesByCategoryPerMonth:
+SELECT
+    t.categoryId,
+    COALESCE(c.name, 'Sin categoría') AS categoryName,
+    SUM(t.amount) AS totalAmount
+FROM TransactionEntity t
+LEFT JOIN CategoryEntity c ON t.categoryId = c.id
+WHERE t.accountId = :accountId
+  AND t.type = 'EXPENSE'
+  AND t.linkedAssetTransactionId IS NULL
+  AND strftime('%Y', t.date / 1000, 'unixepoch') = :year
+  AND strftime('%m', t.date / 1000, 'unixepoch') = :month
+GROUP BY t.categoryId
+ORDER BY totalAmount DESC;
+
+-- ─── Desglose de ingresos por tipo (mes) ─────────────────────────────────────
+
+getIncomeByTypePerMonth:
+SELECT
+    t.incomeType,
+    SUM(t.amount) AS totalAmount
+FROM TransactionEntity t
+WHERE t.accountId = :accountId
+  AND t.type = 'INCOME'
+  AND t.linkedAssetTransactionId IS NULL
+  AND strftime('%Y', t.date / 1000, 'unixepoch') = :year
+  AND strftime('%m', t.date / 1000, 'unixepoch') = :month
+GROUP BY t.incomeType
+ORDER BY totalAmount DESC;

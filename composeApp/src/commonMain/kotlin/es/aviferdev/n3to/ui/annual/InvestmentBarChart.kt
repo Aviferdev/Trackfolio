@@ -30,6 +30,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.MonthlyInvestment
+import es.aviferdev.n3to.ui.theme.MONTH_LABELS
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.ui.theme.formatAmountEuro
@@ -39,8 +40,6 @@ import n3to.composeapp.generated.resources.annual_investment_monthly_format
 import n3to.composeapp.generated.resources.annual_no_investments
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
-
-private val MONTH_LABELS = listOf("E", "F", "M", "A", "M", "J", "J", "A", "S", "O", "N", "D")
 
 /**
  * Gráfico de barras para mostrar inversión mensual (compras de activos).

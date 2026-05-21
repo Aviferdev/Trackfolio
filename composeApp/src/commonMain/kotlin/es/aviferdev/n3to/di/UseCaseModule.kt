@@ -151,7 +151,9 @@ import es.aviferdev.n3to.domain.usecase.taxprofile.SaveTaxProfileSnapshotUseCase
 import es.aviferdev.n3to.domain.usecase.transaction.DeleteTransactionUseCase
 import es.aviferdev.n3to.domain.usecase.transaction.GetAnnualSummaryUseCase
 import es.aviferdev.n3to.domain.usecase.transaction.GetDividendsByAssetIdsUseCase
+import es.aviferdev.n3to.domain.usecase.transaction.GetExpensesByCategoryByMonthUseCase
 import es.aviferdev.n3to.domain.usecase.transaction.GetExpensesByCategoryUseCase
+import es.aviferdev.n3to.domain.usecase.transaction.GetIncomeByTypeByMonthUseCase
 import es.aviferdev.n3to.domain.usecase.transaction.GetIncomeByTypeUseCase
 import es.aviferdev.n3to.domain.usecase.transaction.GetMonthlyBreakdownUseCase
 import es.aviferdev.n3to.domain.usecase.transaction.GetMonthlyTotalsUseCase
@@ -231,7 +233,9 @@ val useCaseModule = module {
     factory { GetMonthlyBreakdownUseCase(get()) }
     factory { GetOldestTransactionDateUseCase(get()) }
     factory { GetExpensesByCategoryUseCase(get()) }
+    factory { GetExpensesByCategoryByMonthUseCase(get()) }
     factory { GetIncomeByTypeUseCase(get()) }
+    factory { GetIncomeByTypeByMonthUseCase(get()) }
     factory { GetDividendsByAssetIdsUseCase(get()) }
     // ── Asset Price History ───────────────────────────────────────────────────
     factory { SaveAssetPriceHistoryUseCase(get()) }
@@ -497,9 +501,12 @@ val useCaseModule = module {
         AnnualViewModel(
             getAnnualSummary = get(),
             getMonthlyBreakdown = get(),
+            getMonthlyTotals = get(),
             getOldestDate = get(),
             getExpensesByCategory = get(),
+            getExpensesByCategoryByMonth = get(),
             getIncomeByType = get(),
+            getIncomeByTypeByMonth = get(),
             getMonthlyInvestments = get(),
             getYearlyGoalProgress = get(),
             getCategoryBudgetStatus = get(),

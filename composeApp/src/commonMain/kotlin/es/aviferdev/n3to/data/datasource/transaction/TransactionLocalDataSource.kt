@@ -31,8 +31,14 @@ interface TransactionLocalDataSource {
     /** Desglose de gastos por categoría para un año. */
     fun getExpensesByCategoryPerYear(accountId: String, year: String): Flow<List<CategoryBreakdown>>
 
+    /** Desglose de gastos por categoría para un mes. */
+    fun getExpensesByCategoryPerMonth(accountId: String, year: String, month: String): Flow<List<CategoryBreakdown>>
+
     /** Desglose de ingresos por tipo para un año. */
     fun getIncomeByTypePerYear(accountId: String, year: String): Flow<List<IncomeTypeBreakdown>>
+
+    /** Desglose de ingresos por tipo para un mes. */
+    fun getIncomeByTypePerMonth(accountId: String, year: String, month: String): Flow<List<IncomeTypeBreakdown>>
 
     /** Obtiene una transacción por su ID. */
     fun getById(id: String): Flow<Transaction?>

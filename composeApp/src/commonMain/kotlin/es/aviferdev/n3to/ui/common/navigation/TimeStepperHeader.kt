@@ -15,6 +15,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -36,6 +37,7 @@ fun TimeStepperHeader(
     currentValue: String,
     currentValueSecondary: String? = null,
     canGoBack: Boolean,
+    canGoForward: Boolean = true,
     onPrevious: () -> Unit,
     onNext: () -> Unit,
     containerColor: Color = MaterialTheme.appColors.surface,
@@ -71,18 +73,28 @@ fun TimeStepperHeader(
                 )
             }
         }
-        StepperArrowButton(enabled = true, onClick = onNext, label = "›")
+        StepperArrowButton(
+            enabled = canGoForward,
+            onClick = onNext,
+            label = "›",
+            modifier = Modifier.alpha(if (canGoForward) 1f else 0f)
+        )
         SpacerHorizontalApp(8.dp)
     }
     HorizontalDivider(color = dividerColor, thickness = 0.5.dp)
 }
 
 @Composable
-private fun StepperArrowButton(enabled: Boolean, onClick: () -> Unit, label: String) {
+private fun StepperArrowButton(
+    enabled: Boolean,
+    onClick: () -> Unit,
+    label: String,
+    modifier: Modifier = Modifier
+) {
     IconButton(
         onClick = onClick,
         enabled = enabled,
-        modifier = Modifier
+        modifier = modifier
             .size(34.dp)
             .clip(RoundedCornerShape(9.dp))
             .background(if (enabled) MaterialTheme.appColors.surfaceElevated else androidx.compose.ui.graphics.Color.Transparent)

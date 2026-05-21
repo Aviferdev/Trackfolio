@@ -2,25 +2,20 @@ package es.aviferdev.n3to.ui.annual.components
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.BarChart
 import androidx.compose.material3.Card
@@ -39,13 +34,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import es.aviferdev.n3to.domain.model.AnnualSummary
 import es.aviferdev.n3to.domain.model.CategoryBudgetStatus
-import es.aviferdev.n3to.domain.model.MonthlyGoalProgress
 import es.aviferdev.n3to.domain.model.MonthlyTotals
-import es.aviferdev.n3to.ui.annual.AnnualTab
 import es.aviferdev.n3to.ui.annual.CategoryExpenseComparison
-import es.aviferdev.n3to.ui.annual.GoalSummaryCard
 import es.aviferdev.n3to.ui.common.ProgressBar
 import es.aviferdev.n3to.ui.theme.MONTH_LABELS
 import es.aviferdev.n3to.ui.theme.appColors
@@ -53,168 +44,24 @@ import es.aviferdev.n3to.ui.theme.formatAmount
 import es.aviferdev.n3to.ui.theme.formatPercent
 import es.aviferdev.n3to.ui.theme.maskAmount
 import n3to.composeapp.generated.resources.Res
-import n3to.composeapp.generated.resources.annual_expense_categories_title
 import n3to.composeapp.generated.resources.annual_expense_legend
 import n3to.composeapp.generated.resources.annual_expenses_label
 import n3to.composeapp.generated.resources.annual_income_label
 import n3to.composeapp.generated.resources.annual_income_legend
-import n3to.composeapp.generated.resources.annual_income_types_title
 import n3to.composeapp.generated.resources.annual_monthly_evolution
 import n3to.composeapp.generated.resources.annual_new_badge
 import n3to.composeapp.generated.resources.annual_no_data_text
 import n3to.composeapp.generated.resources.annual_no_movements
 import n3to.composeapp.generated.resources.annual_savings_label
-import n3to.composeapp.generated.resources.annual_tab_expenses
-import n3to.composeapp.generated.resources.annual_tab_income
-import n3to.composeapp.generated.resources.annual_tab_investments
-import n3to.composeapp.generated.resources.annual_tab_summary
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-internal fun ResumenTab(
-    summary: AnnualSummary,
-    breakdown: List<MonthlyTotals>,
-    balancesHidden: Boolean,
-    goalProgress: List<MonthlyGoalProgress> = emptyList()
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(horizontal = 16.dp)
-            .padding(top = 16.dp, bottom = 40.dp),
-        verticalArrangement = Arrangement.spacedBy(14.dp)
-    ) {
-        YearTotalsCard(summary = summary, balancesHidden = balancesHidden)
-        GoalSummaryCard(
-            goalProgress = goalProgress,
-            modifier = Modifier.fillMaxWidth()
-        )
-        MonthlyBarChart(
-            breakdown = breakdown,
-            year = summary.year,
-            showIncome = true,
-            showExpense = true
-        )
-    }
-}
-
-@Composable
-internal fun GastosTab(
-    breakdown: List<MonthlyTotals>,
-    comparisons: List<CategoryExpenseComparison>,
-    year: String,
-    balancesHidden: Boolean,
-    budgetStatus: List<CategoryBudgetStatus> = emptyList(),
-    onConfigureBudgets: () -> Unit = {}
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(horizontal = 16.dp)
-            .padding(top = 16.dp, bottom = 40.dp),
-        verticalArrangement = Arrangement.spacedBy(14.dp)
-    ) {
-        MonthlyBarChart(
-            breakdown = breakdown,
-            year = year,
-            showIncome = false,
-            showExpense = true
-        )
-        CategoryExpenseList(
-            title = stringResource(Res.string.annual_expense_categories_title),
-            comparisons = comparisons,
-            isExpense = true,
-            balancesHidden = balancesHidden,
-            budgetStatus = budgetStatus,
-            onConfigureBudgets = onConfigureBudgets
-        )
-    }
-}
-
-@Composable
-internal fun IngresosTab(
-    breakdown: List<MonthlyTotals>,
-    comparisons: List<CategoryExpenseComparison>,
-    year: String,
+internal fun YearTotalsCard(
+    totalIncome: Double,
+    totalExpense: Double,
     balancesHidden: Boolean
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(horizontal = 16.dp)
-            .padding(top = 16.dp, bottom = 40.dp),
-        verticalArrangement = Arrangement.spacedBy(14.dp)
-    ) {
-        MonthlyBarChart(
-            breakdown = breakdown,
-            year = year,
-            showIncome = true,
-            showExpense = false
-        )
-        CategoryExpenseList(
-            title = stringResource(Res.string.annual_income_types_title),
-            comparisons = comparisons,
-            isExpense = false,
-            balancesHidden = balancesHidden
-        )
-    }
-}
-
-@Composable
-internal fun AnnualTabs(
-    selectedTab: AnnualTab,
-    onTabSelected: (AnnualTab) -> Unit
-) {
-    Surface(color = MaterialTheme.appColors.navySurface, shadowElevation = 0.dp) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 8.dp),
-            horizontalArrangement = Arrangement.SpaceEvenly
-        ) {
-            AnnualTab.entries.forEach { tab ->
-                val isSelected = tab == selectedTab
-                Column(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(8.dp))
-                        .clickable { onTabSelected(tab) }
-                        .padding(horizontal = 12.dp, vertical = 8.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(
-                        text = tab.displayName(),
-                        fontSize = 13.sp,
-                        color = if (isSelected) MaterialTheme.appColors.primary else MaterialTheme.appColors.textSecondary,
-                        fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal
-                    )
-                    Spacer(Modifier.height(4.dp))
-                    Box(
-                        modifier = Modifier
-                            .height(2.dp)
-                            .width(24.dp)
-                            .clip(RoundedCornerShape(1.dp))
-                            .background(if (isSelected) MaterialTheme.appColors.primary else Color.Transparent)
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
-internal fun AnnualTab.displayName(): String = when (this) {
-    AnnualTab.RESUMEN -> stringResource(Res.string.annual_tab_summary)
-    AnnualTab.GASTOS -> stringResource(Res.string.annual_tab_expenses)
-    AnnualTab.INGRESOS -> stringResource(Res.string.annual_tab_income)
-    AnnualTab.INVERSIONES -> stringResource(Res.string.annual_tab_investments)
-}
-
-@Composable
-internal fun YearTotalsCard(summary: AnnualSummary, balancesHidden: Boolean) {
-    val savings = summary.totalIncome - summary.totalExpense
+    val savings = totalIncome - totalExpense
 
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -241,7 +88,7 @@ internal fun YearTotalsCard(summary: AnnualSummary, balancesHidden: Boolean) {
                 )
                 Spacer(Modifier.height(4.dp))
                 Text(
-                    "+${maskAmount(formatAmount(summary.totalIncome), balancesHidden)} €",
+                    "+${maskAmount(formatAmount(totalIncome), balancesHidden)} €",
                     fontSize = 13.sp,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.appColors.income
@@ -267,7 +114,7 @@ internal fun YearTotalsCard(summary: AnnualSummary, balancesHidden: Boolean) {
                 )
                 Spacer(Modifier.height(4.dp))
                 Text(
-                    "−${maskAmount(formatAmount(summary.totalExpense), balancesHidden)} €",
+                    "−${maskAmount(formatAmount(totalExpense), balancesHidden)} €",
                     fontSize = 13.sp,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.appColors.expense
@@ -411,12 +258,10 @@ internal fun CategoryExpenseList(
                         )
                     }
                     Spacer(Modifier.height(5.dp))
-                    // Barra de progreso del gasto sobre el total
                     ProgressBar(
                         progress = (comp.currentPercent / 100.0).toFloat(),
                         color = comp.color
                     )
-                    // Barra de presupuesto si existe
                     if (budget != null && budget.effectiveLimit > 0.0) {
                         Spacer(Modifier.height(4.dp))
                         val budgetProgress = (budget.spent / budget.effectiveLimit).toFloat().coerceIn(0f, 1f)
@@ -485,7 +330,8 @@ internal fun VariationBadge(
                 stringResource(Res.string.annual_new_badge),
                 fontSize = 9.sp,
                 fontWeight = FontWeight.Medium,
-                color = MaterialTheme.appColors.textTertiary
+                color = MaterialTheme.appColors.textTertiary,
+                modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
             )
         }
     }
