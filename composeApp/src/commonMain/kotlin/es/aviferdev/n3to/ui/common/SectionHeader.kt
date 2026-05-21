@@ -13,9 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import es.aviferdev.n3to.ui.theme.N3toTheme
 import es.aviferdev.n3to.ui.theme.appColors
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun SectionHeader(
@@ -32,7 +30,9 @@ fun SectionHeader(
         verticalAlignment = Alignment.CenterVertically
     ) {
         N3toLabel(text = label)
-        if (actionLabel != null && onAction != null) {
+        if (actionLabel != null &&
+            onAction != null
+        ) {
             Text(
                 text = actionLabel,
                 fontSize = 11.sp,
@@ -41,25 +41,5 @@ fun SectionHeader(
                 modifier = Modifier.clickable { onAction() }
             )
         }
-    }
-}
-
-@Preview
-@Composable
-private fun SectionHeaderPreview() {
-    N3toTheme {
-        SectionHeader(label = "Últimos movimientos")
-    }
-}
-
-@Preview
-@Composable
-private fun SectionHeaderWithActionPreview() {
-    N3toTheme {
-        SectionHeader(
-            label = "Activos",
-            actionLabel = "Ver todos",
-            onAction = {}
-        )
     }
 }
