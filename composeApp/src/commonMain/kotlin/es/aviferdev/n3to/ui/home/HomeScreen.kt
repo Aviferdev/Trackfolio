@@ -63,6 +63,7 @@ import es.aviferdev.n3to.ui.settings.SetCategoryLimitSheet
 import es.aviferdev.n3to.ui.settings.backup.BackupPasswordSheet
 import es.aviferdev.n3to.ui.settings.backup.BackupViewModel
 import es.aviferdev.n3to.ui.theme.LocalBalanceHidden
+import es.aviferdev.n3to.ui.theme.LocalBottomNavPadding
 import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.ui.version.VersionUpdateBanner
 import n3to.composeapp.generated.resources.Res
@@ -359,7 +360,7 @@ fun HomeContent(
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
             .windowInsetsPadding(WindowInsets.statusBars)
-            .padding(bottom = 100.dp)
+            .padding(bottom = LocalBottomNavPadding.current)
     ) {
         TopBarWithoutActionsApp(
             onNavigateToSettings = onNavigateToSettings,

@@ -54,6 +54,7 @@ import es.aviferdev.n3to.ui.portfolio.PlatformError
 import es.aviferdev.n3to.ui.portfolio.PlatformViewModel
 import es.aviferdev.n3to.ui.portfolio.PortfolioTabContent
 import es.aviferdev.n3to.ui.portfolio.UpdateCurrentPriceSheet
+import es.aviferdev.n3to.ui.theme.LocalBottomNavPadding
 import es.aviferdev.n3to.ui.theme.appColors
 import kotlinx.coroutines.launch
 import n3to.composeapp.generated.resources.Res
@@ -168,7 +169,7 @@ private fun Empty(
         modifier = Modifier
             .fillMaxSize()
             .windowInsetsPadding(WindowInsets.statusBars)
-            .padding(bottom = 100.dp)
+            .padding(bottom = LocalBottomNavPadding.current)
     ) {
         TopBarWithoutActionsApp(
             onNavigateToSettings = onNavigateToSettings

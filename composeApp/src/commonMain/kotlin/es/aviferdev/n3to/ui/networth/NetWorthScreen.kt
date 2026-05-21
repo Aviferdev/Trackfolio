@@ -59,6 +59,7 @@ import es.aviferdev.n3to.ui.theme.DonutAccounts
 import es.aviferdev.n3to.ui.theme.DonutInvestments
 import es.aviferdev.n3to.ui.theme.DonutRealEstate
 import es.aviferdev.n3to.ui.theme.LocalBalanceHidden
+import es.aviferdev.n3to.ui.theme.LocalBottomNavPadding
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import es.aviferdev.n3to.ui.theme.WarnOrange
 import es.aviferdev.n3to.ui.theme.appColors
@@ -232,7 +233,7 @@ fun NetWorthContent(
         modifier = Modifier
             .fillMaxSize()
             .windowInsetsPadding(WindowInsets.statusBars)
-            .padding(bottom = 100.dp)
+            .padding(bottom = LocalBottomNavPadding.current)
     ) {
         TopBarWithoutActionsApp()
 

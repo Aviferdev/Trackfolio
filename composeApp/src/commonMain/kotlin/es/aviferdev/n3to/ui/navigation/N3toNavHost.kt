@@ -1,14 +1,20 @@
 package es.aviferdev.n3to.ui.navigation
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.unit.dp
+import es.aviferdev.n3to.ui.theme.LocalBottomNavPadding
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavHostController
@@ -86,6 +92,11 @@ fun N3toContent() {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
 
+    val systemNavInset = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
+    // 56dp (row) + 8dp (top padding) + 12dp (bottom padding) = 76dp fixed bar height
+    val bottomNavPadding = if (currentDestination.needShowBottomBar()) 76.dp + systemNavInset else 0.dp
+
+    CompositionLocalProvider(LocalBottomNavPadding provides bottomNavPadding) {
     Box(Modifier.fillMaxSize()) {
         Scaffold(
             bottomBar = {
@@ -525,6 +536,7 @@ fun N3toContent() {
             }
         }
     }
+    } // CompositionLocalProvider
 }
 
 @Composable

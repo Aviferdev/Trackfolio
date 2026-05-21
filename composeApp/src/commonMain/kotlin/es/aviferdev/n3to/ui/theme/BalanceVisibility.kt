@@ -1,6 +1,8 @@
 package es.aviferdev.n3to.ui.theme
 
 import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 
 /**
  * CompositionLocal que indica si los saldos deben ocultarse en la UI.
@@ -10,6 +12,15 @@ import androidx.compose.runtime.compositionLocalOf
  * `LocalBalanceHidden.current` sin necesidad de inyectar el manager directamente.
  */
 val LocalBalanceHidden = compositionLocalOf { false }
+
+/**
+ * CompositionLocal que expone el padding inferior que las screens deben aplicar
+ * para que su contenido no quede oculto detrás de la floating bottom nav bar.
+ *
+ * Se provee desde `N3toContent` únicamente en las rutas donde la barra es visible.
+ * Screens sin bottom bar reciben el valor por defecto (0.dp).
+ */
+val LocalBottomNavPadding = compositionLocalOf<Dp> { 0.dp }
 
 const val HIDDEN_AMOUNT_MASK: String = "•••••"
 
