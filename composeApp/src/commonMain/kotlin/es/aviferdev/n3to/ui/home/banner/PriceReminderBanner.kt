@@ -18,6 +18,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ShowChart
+import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -99,38 +100,13 @@ fun PriceReminderBanner(
                     .size(24.dp),
                 contentAlignment = Alignment.Center
             ) {
-                Text(
-                    "×",
-                    fontSize = 16.sp,
-                    color = MaterialTheme.appColors.warnAmber.copy(alpha = 0.6f)
+                Icon(
+                    imageVector = Icons.Outlined.Close,
+                    contentDescription = "Cerrar",
+                    tint = MaterialTheme.appColors.warnAmber.copy(alpha = 0.6f),
+                    modifier = Modifier.size(16.dp)
                 )
             }
         }
-    }
-}
-
-@Preview
-@Composable
-private fun PriceReminderBannerVisiblePreview() {
-    N3toTheme {
-        PriceReminderBanner(
-            outdatedCount = 3,
-            visible = true,
-            onUpdateNow = {},
-            onRemindLater = {}
-        )
-    }
-}
-
-@Preview
-@Composable
-private fun PriceReminderBannerHiddenPreview() {
-    N3toTheme {
-        PriceReminderBanner(
-            outdatedCount = 0,
-            visible = false,
-            onUpdateNow = {},
-            onRemindLater = {}
-        )
     }
 }
