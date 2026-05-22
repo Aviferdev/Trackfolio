@@ -35,11 +35,23 @@ import es.aviferdev.n3to.domain.usecase.assetcategory.GetAllAssetCategoriesInclu
 import es.aviferdev.n3to.domain.usecase.assetcategory.GetAssetCategoriesUseCase
 import es.aviferdev.n3to.domain.usecase.assetcategory.RenameAssetCategoryUseCase
 import es.aviferdev.n3to.domain.usecase.assetcategory.SaveAssetCategoryUseCase
+import es.aviferdev.n3to.domain.usecase.assetmetadata.DeleteAllRegionDistributionsUseCase
+import es.aviferdev.n3to.domain.usecase.assetmetadata.DeleteAllSectorLinksUseCase
+import es.aviferdev.n3to.domain.usecase.assetmetadata.DeleteAssetCompositionUseCase
 import es.aviferdev.n3to.domain.usecase.assetmetadata.DeleteRegionUseCase
 import es.aviferdev.n3to.domain.usecase.assetmetadata.DeleteSectorUseCase
+import es.aviferdev.n3to.domain.usecase.assetmetadata.GetAllCompositionsUseCase
+import es.aviferdev.n3to.domain.usecase.assetmetadata.GetAssetCompositionUseCase
+import es.aviferdev.n3to.domain.usecase.assetmetadata.GetRegionsByAssetUseCase
+import es.aviferdev.n3to.domain.usecase.assetmetadata.GetRegionsByAssetsUseCase
 import es.aviferdev.n3to.domain.usecase.assetmetadata.GetRegionsUseCase
+import es.aviferdev.n3to.domain.usecase.assetmetadata.GetSectorsByAssetUseCase
+import es.aviferdev.n3to.domain.usecase.assetmetadata.GetSectorsByAssetsUseCase
 import es.aviferdev.n3to.domain.usecase.assetmetadata.GetSectorsUseCase
+import es.aviferdev.n3to.domain.usecase.assetmetadata.SaveAssetCompositionUseCase
+import es.aviferdev.n3to.domain.usecase.assetmetadata.SaveRegionDistributionUseCase
 import es.aviferdev.n3to.domain.usecase.assetmetadata.SaveRegionUseCase
+import es.aviferdev.n3to.domain.usecase.assetmetadata.SaveSectorRelationUseCase
 import es.aviferdev.n3to.domain.usecase.assetmetadata.SaveSectorUseCase
 import es.aviferdev.n3to.domain.usecase.assetpricehistory.SaveAssetPriceHistoryUseCase
 import es.aviferdev.n3to.domain.usecase.assetplatform.GetPlatformsByAssetUseCase
@@ -72,8 +84,14 @@ import es.aviferdev.n3to.domain.usecase.backup.SaveBackupReminderIntervalUseCase
 import es.aviferdev.n3to.domain.usecase.backup.SaveLastBackupDateUseCase
 import es.aviferdev.n3to.domain.usecase.backup.ShouldShowBackupReminderUseCase
 import es.aviferdev.n3to.domain.usecase.budget.GetCategoryBudgetStatusUseCase
+import es.aviferdev.n3to.domain.usecase.category.DeleteCategoryBudgetUseCase
+import es.aviferdev.n3to.domain.usecase.category.DeleteCategoryUseCase
 import es.aviferdev.n3to.domain.usecase.category.GetAllCategoriesIncludingArchivedUseCase
 import es.aviferdev.n3to.domain.usecase.category.GetCategoriesByTypeUseCase
+import es.aviferdev.n3to.domain.usecase.category.GetCategoryBudgetUseCase
+import es.aviferdev.n3to.domain.usecase.category.RenameCategoryUseCase
+import es.aviferdev.n3to.domain.usecase.category.SaveCategoryBudgetUseCase
+import es.aviferdev.n3to.domain.usecase.category.SaveCategoryUseCase
 import es.aviferdev.n3to.domain.usecase.category.SeedDefaultCategoriesUseCase
 import es.aviferdev.n3to.domain.usecase.debt.DeleteDebtUseCase
 import es.aviferdev.n3to.domain.usecase.debt.GetActiveDebtsUseCase
@@ -348,6 +366,18 @@ val useCaseModule = module {
     factory { GetRegionsUseCase(get()) }
     factory { SaveRegionUseCase(get()) }
     factory { DeleteRegionUseCase(get()) }
+    factory { GetAssetCompositionUseCase(get()) }
+    factory { GetAllCompositionsUseCase(get()) }
+    factory { SaveAssetCompositionUseCase(get()) }
+    factory { DeleteAssetCompositionUseCase(get()) }
+    factory { GetSectorsByAssetUseCase(get()) }
+    factory { GetSectorsByAssetsUseCase(get()) }
+    factory { SaveSectorRelationUseCase(get()) }
+    factory { DeleteAllSectorLinksUseCase(get()) }
+    factory { GetRegionsByAssetUseCase(get()) }
+    factory { GetRegionsByAssetsUseCase(get()) }
+    factory { SaveRegionDistributionUseCase(get()) }
+    factory { DeleteAllRegionDistributionsUseCase(get()) }
     // ── Platform ──────────────────────────────────────────────────────────────
     factory { GetPlatformsUseCase(get()) }
     factory { GetAllPlatformsIncludingArchivedUseCase(get()) }
@@ -362,6 +392,12 @@ val useCaseModule = module {
     factory { GetCategoriesByTypeUseCase(get()) }
     factory { GetAllCategoriesIncludingArchivedUseCase(get()) }
     factory { SeedDefaultCategoriesUseCase(get()) }
+    factory { SaveCategoryUseCase(get()) }
+    factory { DeleteCategoryUseCase(get()) }
+    factory { RenameCategoryUseCase(get()) }
+    factory { GetCategoryBudgetUseCase(get()) }
+    factory { SaveCategoryBudgetUseCase(get()) }
+    factory { DeleteCategoryBudgetUseCase(get()) }
     // ── Budget / Presupuestos ──────────────────────────────────────────────────
     factory { GetCategoryBudgetStatusUseCase(get(), get(), get()) }
     // ── Issuer ────────────────────────────────────────────────────────────────
@@ -704,7 +740,18 @@ val useCaseModule = module {
             saveBackupReminderDismissed = get()
         )
     }
-    viewModel { CategoryViewModel(get(), get(), get()) }
+    viewModel {
+        CategoryViewModel(
+            getCategoriesByType = get(),
+            saveCategory = get(),
+            deleteCategory = get(),
+            renameCategory = get(),
+            getCategoryBudget = get(),
+            saveCategoryBudget = get(),
+            deleteCategoryBudget = get(),
+            session = get()
+        )
+    }
     viewModel {
         IssuerViewModel(
             getIssuers = get(),

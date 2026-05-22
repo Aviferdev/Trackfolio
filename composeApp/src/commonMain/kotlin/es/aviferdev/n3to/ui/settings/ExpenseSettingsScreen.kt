@@ -35,7 +35,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import es.aviferdev.n3to.data.database.CategoryEntity
+import es.aviferdev.n3to.domain.model.Category
 import es.aviferdev.n3to.domain.model.TransactionType
 import es.aviferdev.n3to.ui.common.SectionHeader
 import es.aviferdev.n3to.ui.common.topbar.TopBarWithActionsApp
@@ -188,11 +188,11 @@ fun ExpenseSettingsScreen(
 // ─── CONTENT ────────────────────────────────────────────────────────────────────
 @Composable
 fun ExpenseSettingsContent(
-    expenseCategories: List<CategoryEntity>,
+    expenseCategories: List<Category>,
     onAdd: () -> Unit,
-    onEdit: (CategoryEntity) -> Unit,
-    onEditLimit: (CategoryEntity) -> Unit,
-    onDelete: (CategoryEntity) -> Unit,
+    onEdit: (Category) -> Unit,
+    onEditLimit: (Category) -> Unit,
+    onDelete: (Category) -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -306,22 +306,8 @@ fun ExpenseSettingsContentPreview() {
     N3toTheme {
         ExpenseSettingsContent(
             expenseCategories = listOf(
-                CategoryEntity(
-                    id = "1",
-                    accountId = "preview",
-                    name = "Comida",
-                    type = "EXPENSE",
-                    isDefault = 0,
-                    archived = 0
-                ),
-                CategoryEntity(
-                    id = "2",
-                    accountId = "preview",
-                    name = "Transporte",
-                    type = "EXPENSE",
-                    isDefault = 0,
-                    archived = 0
-                )
+                Category(id = "1", accountId = "preview", name = "Comida", type = TransactionType.EXPENSE, isDefault = false),
+                Category(id = "2", accountId = "preview", name = "Transporte", type = TransactionType.EXPENSE, isDefault = false)
             ),
             onAdd = {},
             onEdit = {},

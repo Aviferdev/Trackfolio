@@ -2,11 +2,16 @@ package es.aviferdev.n3to.ui.settings
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import es.aviferdev.n3to.data.database.CategoryEntity
-import es.aviferdev.n3to.data.datasource.transaction.TransactionCategoryLocalDataSource
+import es.aviferdev.n3to.domain.model.Category
 import es.aviferdev.n3to.domain.model.LimitType
 import es.aviferdev.n3to.domain.model.TransactionType
-import es.aviferdev.n3to.domain.repository.CategoryBudgetRepository
+import es.aviferdev.n3to.domain.usecase.category.DeleteCategoryBudgetUseCase
+import es.aviferdev.n3to.domain.usecase.category.DeleteCategoryUseCase
+import es.aviferdev.n3to.domain.usecase.category.GetCategoriesByTypeUseCase
+import es.aviferdev.n3to.domain.usecase.category.GetCategoryBudgetUseCase
+import es.aviferdev.n3to.domain.usecase.category.RenameCategoryUseCase
+import es.aviferdev.n3to.domain.usecase.category.SaveCategoryBudgetUseCase
+import es.aviferdev.n3to.domain.usecase.category.SaveCategoryUseCase
 import es.aviferdev.n3to.platform.nowMillis
 import es.aviferdev.n3to.ui.account.AccountSession
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -26,16 +31,16 @@ sealed class CategoryError {
 }
 
 data class CategoryListUiState(
-    val expenseCategories: List<CategoryEntity> = emptyList(),
+    val expenseCategories: List<Category> = emptyList(),
     val showAddSheet: Boolean = false,
-    val editing: CategoryEntity? = null,
+    val editing: Category? = null,
     val editingLimit: Double = 0.0,
     val editingLimitType: LimitType = LimitType.FIXED,
     val showLimitSheet: Boolean = false,
-    val limitSheetCategory: CategoryEntity? = null,
+    val limitSheetCategory: Category? = null,
     val limitSheetCurrentLimit: Double = 0.0,
     val limitSheetCurrentLimitType: LimitType = LimitType.FIXED,
-    val pendingDelete: CategoryEntity? = null,
+    val pendingDelete: Category? = null,
     val error: CategoryError? = null
 )
 
@@ -43,20 +48,25 @@ private data class Quadruple<A, B, C, D>(val a: A, val b: B, val c: C, val d: D)
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class CategoryViewModel(
-    private val dataSource: TransactionCategoryLocalDataSource,
+    private val getCategoriesByType: GetCategoriesByTypeUseCase,
+    private val saveCategory: SaveCategoryUseCase,
+    private val deleteCategory: DeleteCategoryUseCase,
+    private val renameCategory: RenameCategoryUseCase,
+    private val getCategoryBudget: GetCategoryBudgetUseCase,
+    private val saveCategoryBudget: SaveCategoryBudgetUseCase,
+    private val deleteCategoryBudget: DeleteCategoryBudgetUseCase,
     private val session: AccountSession,
-    private val budgetRepository: CategoryBudgetRepository
 ) : ViewModel() {
 
     private val _showAddSheet = MutableStateFlow(false)
-    private val _editing = MutableStateFlow<CategoryEntity?>(null)
+    private val _editing = MutableStateFlow<Category?>(null)
     private val _editingLimit = MutableStateFlow(0.0)
     private val _editingLimitType = MutableStateFlow(LimitType.FIXED)
     private val _showLimitSheet = MutableStateFlow(false)
-    private val _limitSheetCategory = MutableStateFlow<CategoryEntity?>(null)
+    private val _limitSheetCategory = MutableStateFlow<Category?>(null)
     private val _limitSheetCurrentLimit = MutableStateFlow(0.0)
     private val _limitSheetCurrentLimitType = MutableStateFlow(LimitType.FIXED)
-    private val _pendingDelete = MutableStateFlow<CategoryEntity?>(null)
+    private val _pendingDelete = MutableStateFlow<Category?>(null)
     private val _error = MutableStateFlow<CategoryError?>(null)
 
     private val editingSheetState =
@@ -76,8 +86,8 @@ class CategoryViewModel(
 
     val uiState: StateFlow<CategoryListUiState> = combine(
         session.selectedAccountId.flatMapLatest { accountId ->
-            if (accountId == null) flowOf(emptyList<CategoryEntity>())
-            else dataSource.getByTypeAndAccount(accountId, TransactionType.EXPENSE.name)
+            if (accountId == null) flowOf(emptyList<Category>())
+            else getCategoriesByType(accountId, TransactionType.EXPENSE)
         },
         editingSheetState,
         limitSheetState,
@@ -123,15 +133,13 @@ class CategoryViewModel(
         }
 
         viewModelScope.launch {
-            val id = "cat_expense_${nowMillis()}"
-            dataSource.insert(
-                CategoryEntity(
-                    id = id,
+            saveCategory(
+                Category(
+                    id = "cat_expense_${nowMillis()}",
                     accountId = accountId,
                     name = trimmed,
-                    type = TransactionType.EXPENSE.name,
-                    isDefault = 0L,
-                    archived = 0L
+                    type = TransactionType.EXPENSE,
+                    isDefault = false
                 )
             ).onFailure { _error.value = CategoryError.Unknown(it.message) }
             _showAddSheet.value = false
@@ -139,10 +147,10 @@ class CategoryViewModel(
     }
 
     // ── Editar nombre + límite (sheet completo) ───────────────────────────────
-    fun openEditSheet(category: CategoryEntity) {
+    fun openEditSheet(category: Category) {
         _editing.value = category
         viewModelScope.launch {
-            budgetRepository.getBudgetByCategoryId(category.id).collect { budget ->
+            getCategoryBudget(category.id).collect { budget ->
                 _editingLimit.value = budget?.annualLimit ?: 0.0
                 _editingLimitType.value = try {
                     if (budget != null) LimitType.valueOf(budget.limitType) else LimitType.FIXED
@@ -170,17 +178,14 @@ class CategoryViewModel(
         if (trimmed.isBlank()) return
 
         if (uiState.value.expenseCategories.any {
-                it.id != id && it.name.equals(
-                    trimmed,
-                    ignoreCase = true
-                )
+                it.id != id && it.name.equals(trimmed, ignoreCase = true)
             }) {
             _error.value = CategoryError.AlreadyExists
             return
         }
 
         viewModelScope.launch {
-            dataSource.updateName(id, trimmed)
+            renameCategory(id, trimmed)
                 .onFailure { _error.value = CategoryError.Unknown(it.message) }
             saveOrDeleteBudget(id, annualLimit, limitType)
             _editing.value = null
@@ -190,11 +195,11 @@ class CategoryViewModel(
     }
 
     // ── Limit sheet inline (solo límite, sin nombre) ───────────────────────────
-    fun openLimitSheet(category: CategoryEntity) {
+    fun openLimitSheet(category: Category) {
         _limitSheetCategory.value = category
         _showLimitSheet.value = true
         viewModelScope.launch {
-            budgetRepository.getBudgetByCategoryId(category.id).collect { budget ->
+            getCategoryBudget(category.id).collect { budget ->
                 _limitSheetCurrentLimit.value = budget?.annualLimit ?: 0.0
                 _limitSheetCurrentLimitType.value = try {
                     if (budget != null) LimitType.valueOf(budget.limitType) else LimitType.FIXED
@@ -221,7 +226,7 @@ class CategoryViewModel(
     }
 
     // ── Eliminar (soft) ───────────────────────────────────────────────────────
-    fun requestDelete(category: CategoryEntity) {
+    fun requestDelete(category: Category) {
         _pendingDelete.value = category
     }
 
@@ -232,9 +237,9 @@ class CategoryViewModel(
     fun confirmDelete() {
         val cat = _pendingDelete.value ?: return
         viewModelScope.launch {
-            dataSource.archive(cat.id)
+            deleteCategory(cat.id)
                 .onFailure { _error.value = CategoryError.Unknown(it.message) }
-            budgetRepository.deleteBudget(cat.id)
+            deleteCategoryBudget(cat.id)
             _pendingDelete.value = null
         }
     }
@@ -246,10 +251,10 @@ class CategoryViewModel(
     // ── Helpers ────────────────────────────────────────────────────────────────
     private suspend fun saveOrDeleteBudget(id: String, annualLimit: Double, limitType: LimitType) {
         if (annualLimit > 0.0) {
-            budgetRepository.saveBudget(id, annualLimit, limitType)
+            saveCategoryBudget(id, annualLimit, limitType)
                 .onFailure { _error.value = CategoryError.Unknown(it.message) }
         } else {
-            budgetRepository.deleteBudget(id)
+            deleteCategoryBudget(id)
                 .onFailure { _error.value = CategoryError.Unknown(it.message) }
         }
     }

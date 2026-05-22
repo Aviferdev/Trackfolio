@@ -1,8 +1,11 @@
 package es.aviferdev.n3to.domain.usecase.assetmetadata
 
 import es.aviferdev.n3to.platform.nowMillis
+import es.aviferdev.n3to.domain.model.AssetComposition
 import es.aviferdev.n3to.domain.model.AssetRegion
+import es.aviferdev.n3to.domain.model.AssetRegionDistribution
 import es.aviferdev.n3to.domain.model.AssetSector
+import es.aviferdev.n3to.domain.model.AssetSectorRelation
 import es.aviferdev.n3to.domain.repository.AssetMetadataRepository
 import kotlinx.coroutines.flow.Flow
 
@@ -51,4 +54,69 @@ class SaveRegionUseCase(private val repository: AssetMetadataRepository) {
 
 class DeleteRegionUseCase(private val repository: AssetMetadataRepository) {
     suspend operator fun invoke(regionId: String): Result<Unit> = repository.deleteRegion(regionId)
+}
+
+// ── Composition ───────────────────────────────────────────────────────────────
+
+class GetAssetCompositionUseCase(private val repository: AssetMetadataRepository) {
+    operator fun invoke(assetId: String): Flow<AssetComposition?> =
+        repository.getCompositionByAssetId(assetId)
+}
+
+class GetAllCompositionsUseCase(private val repository: AssetMetadataRepository) {
+    operator fun invoke(): Flow<List<AssetComposition>> = repository.getAllCompositions()
+}
+
+class SaveAssetCompositionUseCase(private val repository: AssetMetadataRepository) {
+    suspend operator fun invoke(composition: AssetComposition): Result<Unit> =
+        repository.saveComposition(composition)
+}
+
+class DeleteAssetCompositionUseCase(private val repository: AssetMetadataRepository) {
+    suspend operator fun invoke(assetId: String): Result<Unit> =
+        repository.deleteComposition(assetId)
+}
+
+// ── Sector relations ──────────────────────────────────────────────────────────
+
+class GetSectorsByAssetUseCase(private val repository: AssetMetadataRepository) {
+    operator fun invoke(assetId: String): Flow<List<AssetSector>> =
+        repository.getSectorsByAssetId(assetId)
+}
+
+class GetSectorsByAssetsUseCase(private val repository: AssetMetadataRepository) {
+    operator fun invoke(assetIds: List<String>): Flow<List<AssetSectorRelation>> =
+        repository.getSectorsByAssetIds(assetIds)
+}
+
+class SaveSectorRelationUseCase(private val repository: AssetMetadataRepository) {
+    suspend operator fun invoke(relation: AssetSectorRelation): Result<Unit> =
+        repository.saveSectorRelation(relation)
+}
+
+class DeleteAllSectorLinksUseCase(private val repository: AssetMetadataRepository) {
+    suspend operator fun invoke(assetId: String): Result<Unit> =
+        repository.deleteAllSectorLinks(assetId)
+}
+
+// ── Region distributions ──────────────────────────────────────────────────────
+
+class GetRegionsByAssetUseCase(private val repository: AssetMetadataRepository) {
+    operator fun invoke(assetId: String): Flow<List<AssetRegionDistribution>> =
+        repository.getRegionDistributionsByAssetId(assetId)
+}
+
+class GetRegionsByAssetsUseCase(private val repository: AssetMetadataRepository) {
+    operator fun invoke(assetIds: List<String>): Flow<List<AssetRegionDistribution>> =
+        repository.getRegionDistributionsByAssetIds(assetIds)
+}
+
+class SaveRegionDistributionUseCase(private val repository: AssetMetadataRepository) {
+    suspend operator fun invoke(distribution: AssetRegionDistribution): Result<Unit> =
+        repository.saveRegionDistribution(distribution)
+}
+
+class DeleteAllRegionDistributionsUseCase(private val repository: AssetMetadataRepository) {
+    suspend operator fun invoke(assetId: String): Result<Unit> =
+        repository.deleteAllRegionDistributions(assetId)
 }
