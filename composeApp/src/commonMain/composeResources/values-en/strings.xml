@@ -1230,6 +1230,7 @@
     <string name="account_initial_balance_label">Initial balance</string>
     <string name="account_initial_balance_valid_hint">Enter a valid amount (can be 0)</string>
     <string name="account_initial_balance_required">Initial balance is required</string>
+    <string name="account_initial_balance_must_be_positive">Initial balance must be greater than 0</string>
     <string name="account_initial_balance_desc">Money you already have in this account today. Enter 0 if you have nothing.</string>
     <string name="account_delete_full_message">Delete «%1$s»? This will also delete all its transactions, assets and related data.</string>
     <string name="account_set_balance_btn">Set balance</string>

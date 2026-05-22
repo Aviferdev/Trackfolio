@@ -1226,6 +1226,7 @@
     <string name="account_initial_balance_label">Anfangssaldo</string>
     <string name="account_initial_balance_valid_hint">Gib einen gültigen Betrag ein (kann 0 sein)</string>
     <string name="account_initial_balance_required">Anfangssaldo ist erforderlich</string>
+    <string name="account_initial_balance_must_be_positive">Der Anfangssaldo muss größer als 0 sein</string>
     <string name="account_initial_balance_desc">Geld, das du bereits heute auf diesem Konto hast. Gib 0 ein, wenn du nichts hast.</string>
     <string name="account_delete_full_message">«%1$s» löschen? Dabei werden auch alle zugehörigen Transaktionen, Assets und verwandten Daten gelöscht.</string>
     <string name="account_set_balance_btn">Saldo festlegen</string>

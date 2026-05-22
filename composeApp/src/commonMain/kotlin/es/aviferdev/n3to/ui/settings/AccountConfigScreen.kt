@@ -21,7 +21,6 @@ import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.automirrored.outlined.TrendingDown
 import androidx.compose.material.icons.automirrored.outlined.TrendingUp
 import androidx.compose.material.icons.outlined.AccountBalance
-import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.GpsFixed
 import androidx.compose.material.icons.outlined.Shield
@@ -44,7 +43,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.ui.account.AddEditAccountBottomSheet
-import es.aviferdev.n3to.ui.common.dialog.DeleteConfirmDialog
 import es.aviferdev.n3to.ui.common.help.FirstTimeHelpBanner
 import es.aviferdev.n3to.ui.common.help.HelpContent
 import es.aviferdev.n3to.ui.common.help.HelpKeys
@@ -57,14 +55,11 @@ import es.aviferdev.n3to.ui.settings.components.SettingsSectionHeader
 import es.aviferdev.n3to.ui.theme.appColors
 import kotlinx.coroutines.delay
 import n3to.composeapp.generated.resources.Res
-import n3to.composeapp.generated.resources.account_delete_full_message
 import n3to.composeapp.generated.resources.home_section_emergency_fund
 import n3to.composeapp.generated.resources.settings_account_section_categories
 import n3to.composeapp.generated.resources.settings_account_section_fiscal
 import n3to.composeapp.generated.resources.settings_account_section_maintenance
 import n3to.composeapp.generated.resources.settings_account_section_planning
-import n3to.composeapp.generated.resources.settings_delete_account_label
-import n3to.composeapp.generated.resources.settings_delete_account_title
 import n3to.composeapp.generated.resources.settings_edit_account_label
 import n3to.composeapp.generated.resources.settings_expense_categories_label
 import n3to.composeapp.generated.resources.settings_income_types_label
@@ -87,11 +82,17 @@ fun AccountConfigScreen(
 ) {
     val viewModel: AccountConfigViewModel = koinViewModel { parametersOf(accountId) }
     val state by viewModel.uiState.collectAsState()
+    val deleted by viewModel.deleted.collectAsState()
 
     val account = state.account
 
     var contentVisible by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) { delay(60); contentVisible = true }
+
+    // Navegar atrás después de eliminar la cuenta
+    LaunchedEffect(deleted) {
+        if (deleted) onBack()
+    }
 
     Column(modifier = Modifier.fillMaxSize().background(MaterialTheme.appColors.navyDeep)) {
         TopBarWithActionsApp(
@@ -180,38 +181,19 @@ fun AccountConfigScreen(
                             color = MaterialTheme.appColors.cyanAccent,
                             showChevron = true
                         )
-                        SettingsRowDivider()
-                        ActionRow(
-                            icon = Icons.Outlined.Delete,
-                            label = stringResource(Res.string.settings_delete_account_label),
-                            onClick = { viewModel.requestDelete() },
-                            color = MaterialTheme.appColors.expense
-                        )
                     }
                 }
             }
         }
     }
 
-    // — Edit bottom sheet —
+    // — Edit bottom sheet (con opción de eliminar) —
     if (viewModel.showEditSheet.collectAsState().value && account != null) {
         AddEditAccountBottomSheet(
             account = account,
             onSave = { newName, _ -> viewModel.editAccount(account, newName) },
-            onDismiss = { viewModel.closeEditSheet() }
-        )
-    }
-
-    // — Delete confirm —
-    if (viewModel.showDeleteConfirm.collectAsState().value) {
-        DeleteConfirmDialog(
-            title = stringResource(Res.string.settings_delete_account_title),
-            message = stringResource(Res.string.account_delete_full_message, account?.name ?: ""),
-            onConfirm = {
-                viewModel.confirmDelete()
-                onBack()
-            },
-            onDismiss = { viewModel.cancelDelete() }
+            onDismiss = { viewModel.closeEditSheet() },
+            onDelete = { viewModel.confirmDelete() }
         )
     }
 }

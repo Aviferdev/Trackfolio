@@ -1230,6 +1230,7 @@
     <string name="account_initial_balance_label">Saldo inicial</string>
     <string name="account_initial_balance_valid_hint">Introduce un importe válido (puede ser 0)</string>
     <string name="account_initial_balance_required">El saldo inicial es obligatorio</string>
+    <string name="account_initial_balance_must_be_positive">El saldo inicial debe ser mayor que 0</string>
     <string name="account_initial_balance_desc">Dinero que ya tienes en esta cuenta hoy. Indica 0 si no tienes nada.</string>
     <string name="account_delete_full_message">¿Eliminar «%1$s»? Esto también eliminará todos sus movimientos, activos y datos asociados.</string>
     <string name="account_set_balance_btn">Establecer saldo</string>

@@ -1228,6 +1228,7 @@
     <string name="account_initial_balance_label">初期残高</string>
     <string name="account_initial_balance_valid_hint">有効な金額を入力してください（0可）</string>
     <string name="account_initial_balance_required">初期残高は必須です</string>
+    <string name="account_initial_balance_must_be_positive">初期残高は0より大きくなければなりません</string>
     <string name="account_initial_balance_desc">この口座にすでにある金額を入力してください。何もない場合は0を入力してください。</string>
     <string name="account_delete_full_message">「%1$s」を削除しますか？関連するすべての取引、資産、データも削除されます。</string>
     <string name="account_set_balance_btn">残高を設定</string>

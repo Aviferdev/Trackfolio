@@ -1,19 +1,23 @@
 package es.aviferdev.n3to.ui.account
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
@@ -26,6 +30,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
@@ -43,14 +48,17 @@ import n3to.composeapp.generated.resources.account_add_title
 import n3to.composeapp.generated.resources.account_edit_title
 import n3to.composeapp.generated.resources.account_initial_balance_desc
 import n3to.composeapp.generated.resources.account_initial_balance_label
+import n3to.composeapp.generated.resources.account_initial_balance_must_be_positive
 import n3to.composeapp.generated.resources.account_initial_balance_required
 import n3to.composeapp.generated.resources.account_initial_balance_valid_hint
 import n3to.composeapp.generated.resources.account_name_placeholder
 import n3to.composeapp.generated.resources.account_name_supporting_text
 import n3to.composeapp.generated.resources.common_cancel
+import n3to.composeapp.generated.resources.common_delete
 import n3to.composeapp.generated.resources.portfolio_add_asset_save
 import n3to.composeapp.generated.resources.portfolio_name_required
 import n3to.composeapp.generated.resources.portfolio_platform_name
+import n3to.composeapp.generated.resources.settings_delete_account_label
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -59,7 +67,8 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 fun AddEditAccountBottomSheet(
     account: Account?,
     onSave: (name: String, initialBalance: Double) -> Unit,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
+    onDelete: (() -> Unit)? = null
 ) {
     val isEditing = account != null
 
@@ -67,9 +76,13 @@ fun AddEditAccountBottomSheet(
     var nameError by remember { mutableStateOf(false) }
     var balanceText by remember { mutableStateOf("") }
     var balanceError by remember { mutableStateOf(false) }
+    var showDeleteConfirm by remember { mutableStateOf(false) }
 
     ModalBottomSheet(
-        onDismissRequest = onDismiss,
+        onDismissRequest = {
+            showDeleteConfirm = false
+            onDismiss()
+        },
         sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
         containerColor = MaterialTheme.appColors.navySurface,
         dragHandle = {
@@ -165,10 +178,12 @@ fun AddEditAccountBottomSheet(
                     isError = balanceError,
                     supportingText = if (balanceError) {
                         {
-                            val msg = if (balanceText.isBlank())
-                                stringResource(Res.string.account_initial_balance_required)
-                            else
-                                stringResource(Res.string.account_initial_balance_valid_hint)
+                            val msg = when {
+                                balanceText.isBlank() -> stringResource(Res.string.account_initial_balance_required)
+                                balanceText.replace(',', '.').toDoubleOrNull() == null ->
+                                    stringResource(Res.string.account_initial_balance_valid_hint)
+                                else -> stringResource(Res.string.account_initial_balance_must_be_positive)
+                            }
                             Text(msg)
                         }
                     } else {
@@ -211,7 +226,7 @@ fun AddEditAccountBottomSheet(
                             }
                             else -> {
                                 val parsed = balanceText.replace(',', '.').toDoubleOrNull()
-                                if (parsed == null) {
+                                if (parsed == null || parsed <= 0.0) {
                                     balanceError = true; valid = false; balance = 0.0
                                 } else {
                                     balance = parsed
@@ -240,12 +255,70 @@ fun AddEditAccountBottomSheet(
             }
 
             Spacer(Modifier.height(12.dp))
-            TextButton(onClick = onDismiss, modifier = Modifier.fillMaxWidth()) {
+            TextButton(onClick = {
+                showDeleteConfirm = false
+                onDismiss()
+            }, modifier = Modifier.fillMaxWidth()) {
                 Text(
                     stringResource(Res.string.common_cancel),
                     fontSize = 14.sp,
                     color = MaterialTheme.appColors.textSecondary
                 )
+            }
+
+            // ── Eliminar cuenta (solo modo edición) ────────────────────────
+            if (isEditing && onDelete != null) {
+                HorizontalDivider(
+                    color = MaterialTheme.appColors.navyBorder,
+                    modifier = Modifier.padding(top = 8.dp, bottom = 8.dp)
+                )
+
+                if (showDeleteConfirm) {
+                    // Estado de confirmación
+                    Text(
+                        text = "¿Estás seguro? Esta acción no se puede deshacer.",
+                        fontSize = 12.sp,
+                        color = MaterialTheme.appColors.textSecondary,
+                        modifier = Modifier.padding(horizontal = 4.dp, vertical = 8.dp)
+                    )
+                    Row(modifier = Modifier.fillMaxWidth()) {
+                        TextButton(
+                            onClick = { showDeleteConfirm = false },
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            Text(
+                                stringResource(Res.string.common_cancel),
+                                fontSize = 13.sp,
+                                color = MaterialTheme.appColors.textSecondary
+                            )
+                        }
+                        TextButton(onClick = onDelete) {
+                            Text(
+                                "Eliminar",
+                                fontSize = 13.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                color = MaterialTheme.appColors.expense
+                            )
+                        }
+                    }
+                } else {
+                    // Fila para iniciar eliminación
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { showDeleteConfirm = true }
+                            .padding(horizontal = 4.dp, vertical = 12.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = stringResource(Res.string.settings_delete_account_label),
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.Medium,
+                            color = MaterialTheme.appColors.expense,
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
+                }
             }
         }
     }

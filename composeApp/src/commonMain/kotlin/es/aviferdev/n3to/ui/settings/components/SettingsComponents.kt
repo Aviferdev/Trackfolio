@@ -18,9 +18,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.outlined.AccountBalance
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.Fingerprint
 import androidx.compose.material.icons.outlined.Language
 import androidx.compose.material.icons.outlined.Lightbulb
@@ -49,7 +47,6 @@ import es.aviferdev.n3to.ui.common.N3toLabel
 import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.ui.theme.formatAmount
 import n3to.composeapp.generated.resources.Res
-import n3to.composeapp.generated.resources.common_delete
 import n3to.composeapp.generated.resources.language_chinese
 import n3to.composeapp.generated.resources.language_english
 import n3to.composeapp.generated.resources.language_french
@@ -69,7 +66,6 @@ import n3to.composeapp.generated.resources.settings_biometric_enabled
 import n3to.composeapp.generated.resources.settings_biometric_lock
 import n3to.composeapp.generated.resources.settings_configure_cd
 import n3to.composeapp.generated.resources.settings_dark_theme
-import n3to.composeapp.generated.resources.settings_edit_cd
 import n3to.composeapp.generated.resources.settings_interval_15d
 import n3to.composeapp.generated.resources.settings_interval_30d
 import n3to.composeapp.generated.resources.settings_interval_7d
@@ -468,8 +464,6 @@ internal fun SettingsAccountCard(
     account: Account,
     isSelected: Boolean,
     onSelect: () -> Unit,
-    onEdit: () -> Unit,
-    onDelete: () -> Unit,
     onConfigure: () -> Unit = {}
 ) {
     val borderColor =
@@ -505,29 +499,10 @@ internal fun SettingsAccountCard(
                 modifier = Modifier.size(32.dp)
             ) {
                 Icon(
-                    Icons.Outlined.AccountBalance,
+                    Icons.Outlined.Settings,
                     contentDescription = stringResource(Res.string.settings_configure_cd),
                     tint = MaterialTheme.appColors.cyanAccent,
                     modifier = Modifier.size(18.dp)
-                )
-            }
-            IconButton(onClick = onEdit, modifier = Modifier.size(32.dp)) {
-                Icon(
-                    Icons.Default.Edit,
-                    contentDescription = stringResource(Res.string.settings_edit_cd),
-                    tint = MaterialTheme.appColors.textSecondary,
-                    modifier = Modifier.size(16.dp)
-                )
-            }
-            IconButton(
-                onClick = onDelete,
-                modifier = Modifier.size(32.dp)
-            ) {
-                Icon(
-                    Icons.Default.Delete,
-                    contentDescription = stringResource(Res.string.common_delete),
-                    tint = MaterialTheme.appColors.expense,
-                    modifier = Modifier.size(16.dp)
                 )
             }
         }

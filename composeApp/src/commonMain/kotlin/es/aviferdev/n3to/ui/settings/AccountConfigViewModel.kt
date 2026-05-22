@@ -19,7 +19,7 @@ data class AccountConfigUiState(
     val account: Account? = null,
     val reconciliationInterval: Int = 0,
     val showEditSheet: Boolean = false,
-    val showDeleteConfirm: Boolean = false
+    val deleted: Boolean = false
 )
 
 class AccountConfigViewModel(
@@ -41,10 +41,10 @@ class AccountConfigViewModel(
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), AccountConfigUiState())
 
     private val _showEditSheet = MutableStateFlow(false)
-    private val _showDeleteConfirm = MutableStateFlow(false)
+    private val _deleted = MutableStateFlow(false)
 
     val showEditSheet: StateFlow<Boolean> = _showEditSheet.asStateFlow()
-    val showDeleteConfirm: StateFlow<Boolean> = _showDeleteConfirm.asStateFlow()
+    val deleted: StateFlow<Boolean> = _deleted.asStateFlow()
 
     fun updateReconciliationInterval(days: Int) {
         getReminderInterval.set(accountId, days)
@@ -58,14 +58,6 @@ class AccountConfigViewModel(
         _showEditSheet.value = false
     }
 
-    fun requestDelete() {
-        _showDeleteConfirm.value = true
-    }
-
-    fun cancelDelete() {
-        _showDeleteConfirm.value = false
-    }
-
     fun editAccount(account: Account, newName: String) {
         viewModelScope.launch {
             updateAccount(account.copy(name = newName))
@@ -76,7 +68,8 @@ class AccountConfigViewModel(
     fun confirmDelete() {
         viewModelScope.launch {
             deleteAccount(accountId)
-            _showDeleteConfirm.value = false
+            closeEditSheet()
+            _deleted.value = true
         }
     }
 }

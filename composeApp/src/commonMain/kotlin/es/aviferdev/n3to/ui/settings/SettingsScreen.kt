@@ -120,8 +120,6 @@ fun SettingsScreen(
         biometricEnabled = state.biometricEnabled,
         onAddAccount = { viewModel.openAddSheet() },
         onSelectAccount = { viewModel.selectAccount(it) },
-        onEditAccount = { viewModel.openEditSheet(it) },
-        onDeleteAccount = { viewModel.requestDelete(it) },
         onToggleBiometric = { enabled ->
             viewModel.toggleBiometric(
                 enabled,
@@ -287,8 +285,6 @@ fun SettingsContent(
     biometricEnabled: Boolean,
     onAddAccount: () -> Unit,
     onSelectAccount: (String) -> Unit,
-    onEditAccount: (Account) -> Unit,
-    onDeleteAccount: (Account) -> Unit,
     onToggleBiometric: (Boolean) -> Unit,
     onNavigateToPrivacySettings: () -> Unit = {},
     onNavigateToPremium: () -> Unit = {},
@@ -341,8 +337,6 @@ fun SettingsContent(
                             account = account,
                             isSelected = account.id == selectedId,
                             onSelect = { onSelectAccount(account.id) },
-                            onEdit = { onEditAccount(account) },
-                            onDelete = { onDeleteAccount(account) },
                             onConfigure = { onNavigateToAccountConfig(account.id) }
                         )
                     }
@@ -466,8 +460,6 @@ fun SettingsContentPreview() {
             biometricEnabled = false,
             onAddAccount = {},
             onSelectAccount = {},
-            onEditAccount = {},
-            onDeleteAccount = {},
             onToggleBiometric = {},
             onNavigateToAbout = {}
         )
