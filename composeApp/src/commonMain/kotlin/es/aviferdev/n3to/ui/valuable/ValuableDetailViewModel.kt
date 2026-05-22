@@ -12,8 +12,8 @@ import es.aviferdev.n3to.domain.usecase.valuable.GetValuableDetailUseCase
 import es.aviferdev.n3to.domain.usecase.valuable.LinkLoanToValuableUseCase
 import es.aviferdev.n3to.domain.usecase.valuable.SaveValuableUseCase
 import es.aviferdev.n3to.domain.usecase.valuable.SellValuableUseCase
+import es.aviferdev.n3to.domain.usecase.loan.GetLoansByAccountUseCase
 import es.aviferdev.n3to.domain.usecase.valuable.UpdateValuableEstimatedValueUseCase
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -34,7 +34,6 @@ data class ValuableDetailUiState(
     val isLoading: Boolean = false
 )
 
-@OptIn(ExperimentalCoroutinesApi::class)
 class ValuableDetailViewModel(
     private val valuableId: String,
     private val getDetail: GetValuableDetailUseCase,
@@ -43,7 +42,7 @@ class ValuableDetailViewModel(
     private val deleteValuableUseCase: DeleteValuableUseCase,
     private val updateEstimatedValue: UpdateValuableEstimatedValueUseCase,
     private val linkLoanToValuable: LinkLoanToValuableUseCase,
-    private val loanRepository: es.aviferdev.n3to.domain.repository.LoanRepository
+    private val getLoansByAccount: GetLoansByAccountUseCase
 ) : ViewModel() {
 
     private val _showEditSheet = MutableStateFlow(false)
@@ -127,8 +126,8 @@ class ValuableDetailViewModel(
     fun showLoanPicker() {
         viewModelScope.launch {
             val summary = uiState.value.summary ?: return@launch
-            loanRepository.getByAccount(summary.valuable.accountId).firstOrNull()?.let {
-                _availableLoans.value = it.filter { loan -> !loan.archived }
+            getLoansByAccount(summary.valuable.accountId).firstOrNull()?.let {
+                _availableLoans.value = it
             }
             _showLoanPicker.value = true
         }

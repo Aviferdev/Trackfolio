@@ -2,6 +2,7 @@ package es.aviferdev.n3to.ui.fiscal
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import es.aviferdev.n3to.core.premium.PremiumManager
 import es.aviferdev.n3to.domain.model.FiscalReportData
 import es.aviferdev.n3to.domain.model.TaxProfileSnapshot
 import es.aviferdev.n3to.domain.pdf.PdfReportGenerator
@@ -11,10 +12,13 @@ import es.aviferdev.n3to.platform.nowLocalDate
 import es.aviferdev.n3to.platform.nowYear
 import es.aviferdev.n3to.ui.account.AccountSession
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 
@@ -27,7 +31,8 @@ data class FiscalReportUiState(
     val showPasswordSheet: Boolean = false,
     val successMessage: String? = null,
     val errorMessage: String? = null,
-    val hasNetOnlyIncomes: Boolean = false
+    val hasNetOnlyIncomes: Boolean = false,
+    val isPremium: Boolean = false
 )
 
 private fun currentYear(): String = nowYear().toString()
@@ -36,11 +41,17 @@ class FiscalReportViewModel(
     private val getFiscalReportData: GetFiscalReportDataUseCase,
     private val getActiveTaxProfile: GetActiveTaxProfileSnapshotUseCase,
     private val pdfGenerator: PdfReportGenerator,
-    private val session: AccountSession
+    private val session: AccountSession,
+    private val premiumManager: PremiumManager
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(FiscalReportUiState())
-    val uiState: StateFlow<FiscalReportUiState> = _uiState.asStateFlow()
+    val uiState: StateFlow<FiscalReportUiState> = combine(
+        _uiState,
+        premiumManager.status
+    ) { state, premiumStatus ->
+        state.copy(isPremium = premiumStatus.isPremium)
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), FiscalReportUiState())
 
     init {
         loadReport()

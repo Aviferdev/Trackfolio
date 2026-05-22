@@ -17,16 +17,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import es.aviferdev.n3to.domain.model.Category
 import es.aviferdev.n3to.domain.model.RealEstateProperty
 import es.aviferdev.n3to.domain.model.RentalStatus
-import es.aviferdev.n3to.domain.model.TransactionType
-import es.aviferdev.n3to.domain.usecase.category.GetCategoriesByTypeUseCase
 import es.aviferdev.n3to.ui.common.StatusTag
 import es.aviferdev.n3to.ui.common.dialog.DeleteConfirmDialog
 import es.aviferdev.n3to.ui.common.topbar.TopBarWithActionsApp
 import es.aviferdev.n3to.ui.theme.*
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
@@ -67,7 +63,6 @@ import n3to.composeapp.generated.resources.realestate_value_label
 import n3to.composeapp.generated.resources.realestate_view_label
 import n3to.composeapp.generated.resources.realestate_why_separate
 import org.jetbrains.compose.resources.stringResource
-import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -87,18 +82,6 @@ fun RealEstateDetailScreen(
     val financialSummary by viewModel.financialSummary.collectAsState()
 
     val property = state.property
-    var expenseCategories by remember { mutableStateOf(listOf<Category>()) }
-    val getCategoriesByType: GetCategoriesByTypeUseCase = koinInject()
-
-    // Cargar categorías para los bottom sheets
-    LaunchedEffect(property) {
-        if (property != null && expenseCategories.isEmpty()) {
-            val cats =
-                getCategoriesByType(property.accountId, TransactionType.EXPENSE).firstOrNull()
-                    ?: emptyList()
-            expenseCategories = cats.filter { it.name != "Ajuste de saldo" }
-        }
-    }
 
     // Bottom Sheets
     if (state.showEditSheet && property != null) {
@@ -136,7 +119,7 @@ fun RealEstateDetailScreen(
         SellPropertySheet(
             propertyName = property.name,
             propertyId = property.id,
-            categories = expenseCategories,
+            categories = state.expenseCategories,
             onDismiss = { viewModel.hideSellSheet() },
             onConfirm = { saleDate, saleValue, expenses ->
                 viewModel.sellProperty(saleDate, saleValue, expenses)

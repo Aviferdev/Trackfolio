@@ -38,7 +38,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import es.aviferdev.n3to.core.premium.PremiumManager
 import es.aviferdev.n3to.domain.model.TaxProfileSnapshot
 import es.aviferdev.n3to.ui.common.button.ButtonLarge
 import es.aviferdev.n3to.ui.common.button.ButtonLargePremium
@@ -60,7 +59,6 @@ import n3to.composeapp.generated.resources.fiscal_net_only_warning
 import n3to.composeapp.generated.resources.fiscal_no_data_year
 import n3to.composeapp.generated.resources.fiscal_title
 import org.jetbrains.compose.resources.stringResource
-import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -74,14 +72,12 @@ fun FiscalReportScreen(
     viewModel: FiscalReportViewModel = koinViewModel()
 ) {
     val state by viewModel.uiState.collectAsState()
-    val premiumManager: PremiumManager = koinInject()
-    val premiumStatus by premiumManager.status.collectAsState()
 
     state.successMessage?.let { LaunchedEffect(it) { viewModel.clearMessages() } }
 
     FiscalReportContent(
         state = state,
-        isPremium = premiumStatus.isPremium,
+        isPremium = state.isPremium,
         onBack = onBack,
         onPreviousYear = { viewModel.previousYear() },
         onNextYear = { viewModel.nextYear() },

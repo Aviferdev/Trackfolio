@@ -3,10 +3,10 @@ package es.aviferdev.n3to.ui.settings
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import es.aviferdev.n3to.domain.model.Account
-import es.aviferdev.n3to.domain.repository.AccountRepository
+import es.aviferdev.n3to.domain.usecase.account.DeleteAccountUseCase
+import es.aviferdev.n3to.domain.usecase.account.GetAccountByIdUseCase
 import es.aviferdev.n3to.domain.usecase.account.UpdateAccountUseCase
 import es.aviferdev.n3to.domain.usecase.reconciliation.GetReconciliationReminderIntervalUseCase
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -22,15 +22,15 @@ data class AccountConfigUiState(
     val showDeleteConfirm: Boolean = false
 )
 
-@OptIn(ExperimentalCoroutinesApi::class)
 class AccountConfigViewModel(
     private val accountId: String,
-    private val accountRepository: AccountRepository,
+    private val getAccountById: GetAccountByIdUseCase,
     private val getReminderInterval: GetReconciliationReminderIntervalUseCase,
-    private val updateAccount: UpdateAccountUseCase
+    private val updateAccount: UpdateAccountUseCase,
+    private val deleteAccount: DeleteAccountUseCase
 ) : ViewModel() {
 
-    val uiState: StateFlow<AccountConfigUiState> = accountRepository.getAccountById(accountId)
+    val uiState: StateFlow<AccountConfigUiState> = getAccountById(accountId)
         .map { account ->
             val interval = if (account != null) getReminderInterval.get(accountId) else 0
             AccountConfigUiState(
@@ -75,7 +75,7 @@ class AccountConfigViewModel(
 
     fun confirmDelete() {
         viewModelScope.launch {
-            accountRepository.deleteAccount(accountId)
+            deleteAccount(accountId)
             _showDeleteConfirm.value = false
         }
     }

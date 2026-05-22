@@ -4,8 +4,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import es.aviferdev.n3to.domain.model.Asset
 import es.aviferdev.n3to.domain.model.Platform
-import es.aviferdev.n3to.domain.repository.AssetPlatformRepository
-import es.aviferdev.n3to.domain.repository.AssetRepository
+import es.aviferdev.n3to.domain.usecase.asset.GetAssetByIdUseCase
+import es.aviferdev.n3to.domain.usecase.assetplatform.GetPlatformsByAssetUseCase
+import es.aviferdev.n3to.domain.usecase.assetplatform.LinkPlatformToAssetUseCase
+import es.aviferdev.n3to.domain.usecase.assetplatform.UnlinkPlatformFromAssetUseCase
 import es.aviferdev.n3to.domain.usecase.platform.GetPlatformsUseCase
 import es.aviferdev.n3to.domain.usecase.platform.SavePlatformUseCase
 import es.aviferdev.n3to.platform.nowMillis
@@ -29,8 +31,10 @@ data class AssetDetailUiState(
 @OptIn(ExperimentalCoroutinesApi::class)
 class AssetDetailViewModel(
     private val assetId: String,
-    private val assetRepository: AssetRepository,
-    private val assetPlatformRepository: AssetPlatformRepository,
+    private val getAssetById: GetAssetByIdUseCase,
+    private val getPlatformsByAsset: GetPlatformsByAssetUseCase,
+    private val linkPlatformToAsset: LinkPlatformToAssetUseCase,
+    private val unlinkPlatformFromAsset: UnlinkPlatformFromAssetUseCase,
     private val getPlatforms: GetPlatformsUseCase,
     private val savePlatform: SavePlatformUseCase
 ) : ViewModel() {
@@ -39,9 +43,9 @@ class AssetDetailViewModel(
     private val _error = MutableStateFlow<String?>(null)
 
     val uiState: StateFlow<AssetDetailUiState> = combine(
-        assetRepository.getAssetById(assetId),
+        getAssetById(assetId),
         getPlatforms(),
-        assetPlatformRepository.getPlatformsByAsset(assetId),
+        getPlatformsByAsset(assetId),
         _showAddPlatformSheet,
         _error
     ) { asset, allPlatforms, linkedPlatforms, showSheet, error ->
@@ -62,14 +66,14 @@ class AssetDetailViewModel(
 
     fun linkPlatform(platformId: String) {
         viewModelScope.launch {
-            assetPlatformRepository.link(assetId, platformId)
+            linkPlatformToAsset(assetId, platformId)
                 .onFailure { _error.value = it.message }
         }
     }
 
     fun unlinkPlatform(platformId: String) {
         viewModelScope.launch {
-            assetPlatformRepository.unlink(assetId, platformId)
+            unlinkPlatformFromAsset(assetId, platformId)
                 .onFailure { _error.value = it.message }
         }
     }
@@ -103,7 +107,7 @@ class AssetDetailViewModel(
             )
             savePlatform(platform)
                 .onSuccess {
-                    assetPlatformRepository.link(assetId, platform.id)
+                    linkPlatformToAsset(assetId, platform.id)
                 }
                 .onFailure { _error.value = it.message }
             _showAddPlatformSheet.value = false

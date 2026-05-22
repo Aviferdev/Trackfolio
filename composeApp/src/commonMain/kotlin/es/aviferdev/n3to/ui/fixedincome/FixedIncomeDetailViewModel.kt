@@ -9,7 +9,6 @@ import es.aviferdev.n3to.domain.model.FixedIncomeRow
 import es.aviferdev.n3to.domain.portfolio.FixedIncomeCalculator
 import es.aviferdev.n3to.domain.portfolio.MaturitySimulation
 import es.aviferdev.n3to.domain.portfolio.ScheduledCoupon
-import es.aviferdev.n3to.domain.repository.TransactionRepository
 import es.aviferdev.n3to.domain.usecase.fixedincome.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
@@ -44,8 +43,7 @@ class FixedIncomeDetailViewModel(
     private val closeFixedIncome: CloseFixedIncomeUseCase,
     private val deleteFixedIncomeEvent: DeleteFixedIncomeEventUseCase,
     private val updatePosition: UpdateFixedIncomePositionUseCase,
-    private val archivePosition: ArchiveFixedIncomePositionUseCase,
-    private val transactionRepository: TransactionRepository
+    private val archivePosition: ArchiveFixedIncomePositionUseCase
 ) : ViewModel() {
 
     private val _showRegisterCouponSheet = MutableStateFlow(false)

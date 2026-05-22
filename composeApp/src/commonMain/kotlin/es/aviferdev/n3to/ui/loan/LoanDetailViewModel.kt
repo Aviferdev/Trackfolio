@@ -5,10 +5,10 @@ import androidx.lifecycle.viewModelScope
 import es.aviferdev.n3to.domain.model.AmortizationEntry
 import es.aviferdev.n3to.domain.model.Loan
 import es.aviferdev.n3to.domain.model.LoanRateChange
-import es.aviferdev.n3to.domain.repository.LoanRateChangeRepository
-import es.aviferdev.n3to.domain.repository.LoanRepository
 import es.aviferdev.n3to.domain.usecase.loan.ArchiveLoanUseCase
 import es.aviferdev.n3to.domain.usecase.loan.GetAmortizationScheduleUseCase
+import es.aviferdev.n3to.domain.usecase.loan.GetLoanByIdUseCase
+import es.aviferdev.n3to.domain.usecase.loan.GetLoanRateChangesUseCase
 import es.aviferdev.n3to.domain.usecase.loan.UpdateLoanRateUseCase
 import es.aviferdev.n3to.domain.usecase.loan.UpdateLoanUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -29,12 +29,12 @@ data class LoanDetailUiState(
 
 class LoanDetailViewModel(
     private val loanId: String,
-    private val loanRepository: LoanRepository,
+    private val getLoanById: GetLoanByIdUseCase,
     private val getAmortizationSchedule: GetAmortizationScheduleUseCase,
     private val updateLoanRate: UpdateLoanRateUseCase,
     private val updateLoan: UpdateLoanUseCase,
     private val archiveLoan: ArchiveLoanUseCase,
-    private val rateChangeRepository: LoanRateChangeRepository
+    private val getLoanRateChanges: GetLoanRateChangesUseCase
 ) : ViewModel() {
 
     private val _showRateSheet = MutableStateFlow(false)
@@ -44,9 +44,9 @@ class LoanDetailViewModel(
     val showEditSheet: StateFlow<Boolean> = _showEditSheet.asStateFlow()
 
     val uiState: StateFlow<LoanDetailUiState> = combine(
-        loanRepository.getById(loanId),
+        getLoanById(loanId),
         getAmortizationSchedule(loanId),
-        rateChangeRepository.getByLoan(loanId),
+        getLoanRateChanges(loanId),
         _showEditSheet
     ) { loan, schedule, rateChanges, showEdit ->
         LoanDetailUiState(

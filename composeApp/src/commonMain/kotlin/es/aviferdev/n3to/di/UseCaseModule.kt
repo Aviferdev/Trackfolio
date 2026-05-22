@@ -8,6 +8,7 @@ import es.aviferdev.n3to.domain.usecase.account.SaveAccountUseCase
 import es.aviferdev.n3to.domain.usecase.account.SetInitialBalanceUseCase
 import es.aviferdev.n3to.domain.usecase.account.UpdateAccountUseCase
 import es.aviferdev.n3to.domain.usecase.asset.AppStartupRefreshUseCase
+import es.aviferdev.n3to.domain.usecase.asset.GetAssetByIdUseCase
 import es.aviferdev.n3to.domain.usecase.asset.ArchiveAssetUseCase
 import es.aviferdev.n3to.domain.usecase.asset.CheckAssetArchivableUseCase
 import es.aviferdev.n3to.domain.usecase.asset.ConvertPriceToEurUseCase
@@ -41,6 +42,11 @@ import es.aviferdev.n3to.domain.usecase.assetmetadata.GetSectorsUseCase
 import es.aviferdev.n3to.domain.usecase.assetmetadata.SaveRegionUseCase
 import es.aviferdev.n3to.domain.usecase.assetmetadata.SaveSectorUseCase
 import es.aviferdev.n3to.domain.usecase.assetpricehistory.SaveAssetPriceHistoryUseCase
+import es.aviferdev.n3to.domain.usecase.assetplatform.GetPlatformsByAssetUseCase
+import es.aviferdev.n3to.domain.usecase.assetplatform.GetPlatformsByAssetsUseCase
+import es.aviferdev.n3to.domain.usecase.assetplatform.LinkPlatformToAssetUseCase
+import es.aviferdev.n3to.domain.usecase.assetplatform.UnlinkAllPlatformsFromAssetUseCase
+import es.aviferdev.n3to.domain.usecase.assetplatform.UnlinkPlatformFromAssetUseCase
 import es.aviferdev.n3to.domain.usecase.assettag.ArchiveAssetTagUseCase
 import es.aviferdev.n3to.domain.usecase.assettag.GetAssetTagAssignmentsUseCase
 import es.aviferdev.n3to.domain.usecase.assettag.GetAssetTagsByCategoryUseCase
@@ -96,8 +102,11 @@ import es.aviferdev.n3to.domain.usecase.fixedincome.RecordSettlementTransactionU
 import es.aviferdev.n3to.domain.usecase.fixedincome.RegisterCouponUseCase
 import es.aviferdev.n3to.domain.usecase.fixedincome.UpdateFixedIncomePositionUseCase
 import es.aviferdev.n3to.domain.usecase.goal.GetCurrentMonthProgressUseCase
+import es.aviferdev.n3to.domain.usecase.goal.GetGoalBaseUseCase
+import es.aviferdev.n3to.domain.usecase.goal.GetGoalOverridesUseCase
 import es.aviferdev.n3to.domain.usecase.goal.GetMonthlyGoalsUseCase
 import es.aviferdev.n3to.domain.usecase.goal.GetYearlyGoalProgressUseCase
+import es.aviferdev.n3to.domain.usecase.goal.SaveGoalBaseAndOverridesUseCase
 import es.aviferdev.n3to.domain.usecase.goal.SaveMonthlyGoalUseCase
 import es.aviferdev.n3to.domain.usecase.goal.SaveMonthlyGoalsUseCase
 import es.aviferdev.n3to.domain.usecase.home.GetHomeBalanceUseCase
@@ -109,6 +118,8 @@ import es.aviferdev.n3to.domain.usecase.issuer.RenameIssuerUseCase
 import es.aviferdev.n3to.domain.usecase.issuer.SaveIssuerUseCase
 import es.aviferdev.n3to.domain.usecase.loan.ArchiveLoanUseCase
 import es.aviferdev.n3to.domain.usecase.loan.GetAmortizationScheduleUseCase
+import es.aviferdev.n3to.domain.usecase.loan.GetLoanByIdUseCase
+import es.aviferdev.n3to.domain.usecase.loan.GetLoanRateChangesUseCase
 import es.aviferdev.n3to.domain.usecase.loan.GetLoansByAccountUseCase
 import es.aviferdev.n3to.domain.usecase.loan.SaveLoanUseCase
 import es.aviferdev.n3to.domain.usecase.loan.UpdateLoanRateUseCase
@@ -133,6 +144,7 @@ import es.aviferdev.n3to.domain.usecase.realestate.ArchivePropertyUseCase
 import es.aviferdev.n3to.domain.usecase.realestate.ChangeRentalStatusUseCase
 import es.aviferdev.n3to.domain.usecase.realestate.DismissMortgageReminderUseCase
 import es.aviferdev.n3to.domain.usecase.realestate.GetPropertiesByAccountUseCase
+import es.aviferdev.n3to.domain.usecase.realestate.GetPropertyByIdUseCase
 import es.aviferdev.n3to.domain.usecase.realestate.GetPropertyFinancialSummaryUseCase
 import es.aviferdev.n3to.domain.usecase.realestate.GetRentalPeriodsUseCase
 import es.aviferdev.n3to.domain.usecase.realestate.GetTransactionsByPropertyUseCase
@@ -250,6 +262,9 @@ val useCaseModule = module {
     factory { GetMonthlyGoalsUseCase(get()) }
     factory { SaveMonthlyGoalUseCase(get()) }
     factory { SaveMonthlyGoalsUseCase(get()) }
+    factory { GetGoalBaseUseCase(get()) }
+    factory { GetGoalOverridesUseCase(get()) }
+    factory { SaveGoalBaseAndOverridesUseCase(get()) }
     factory { GetCurrentMonthProgressUseCase(get(), get(), get()) }
     factory { GetYearlyGoalProgressUseCase(get(), get(), get()) }
     // ── Emergency Fund ─────────────────────────────────────────────────────────
@@ -280,6 +295,14 @@ val useCaseModule = module {
     factory { ShouldShowPriceReminderUseCase(get()) }
     factory { SavePriceReminderShownUseCase(get()) }
     factory { GetPriceReminderIntervalUseCase(get()) }
+    factory { GetAssetByIdUseCase(get()) }
+
+    // ── Asset Platform ────────────────────────────────────────────────────────
+    factory { GetPlatformsByAssetUseCase(get()) }
+    factory { GetPlatformsByAssetsUseCase(get()) }
+    factory { LinkPlatformToAssetUseCase(get()) }
+    factory { UnlinkPlatformFromAssetUseCase(get()) }
+    factory { UnlinkAllPlatformsFromAssetUseCase(get()) }
 
     // ── Precios automáticos e ISIN ────────────────────────────────────────────
     factory { ShouldRefreshTodayUseCase(get()) }
@@ -385,6 +408,8 @@ val useCaseModule = module {
     factory { UpdateLoanUseCase(get()) }
     factory { UpdateLoanRateUseCase(get(), get()) }
     factory { GetLoansByAccountUseCase(get()) }
+    factory { GetLoanByIdUseCase(get()) }
+    factory { GetLoanRateChangesUseCase(get()) }
     factory { GetAmortizationScheduleUseCase(get(), get()) }
     factory { ArchiveLoanUseCase(get()) }
 
@@ -393,6 +418,7 @@ val useCaseModule = module {
     factory { UpdatePropertyValueUseCase(get()) }
     factory { ArchivePropertyUseCase(get()) }
     factory { GetPropertiesByAccountUseCase(get()) }
+    factory { GetPropertyByIdUseCase(get()) }
     factory { DismissMortgageReminderUseCase(get()) }
     factory { ChangeRentalStatusUseCase(get(), get()) }
     factory { GetRentalPeriodsUseCase(get()) }
@@ -431,9 +457,10 @@ val useCaseModule = module {
     viewModel { (accountId: String) ->
         AccountConfigViewModel(
             accountId = accountId,
-            accountRepository = get(),
+            getAccountById = get(),
             getReminderInterval = get(),
-            updateAccount = get()
+            updateAccount = get(),
+            deleteAccount = get()
         )
     }
     viewModel {
@@ -658,8 +685,10 @@ val useCaseModule = module {
     viewModel { (assetId: String) ->
         AssetDetailViewModel(
             assetId = assetId,
-            assetRepository = get(),
-            assetPlatformRepository = get(),
+            getAssetById = get(),
+            getPlatformsByAsset = get(),
+            linkPlatformToAsset = get(),
+            unlinkPlatformFromAsset = get(),
             getPlatforms = get(),
             savePlatform = get()
         )
@@ -691,7 +720,8 @@ val useCaseModule = module {
             getFiscalReportData = get(),
             getActiveTaxProfile = get(),
             pdfGenerator = get(),
-            session = get()
+            session = get(),
+            premiumManager = get()
         )
     }
     viewModel { (positionId: String) ->
@@ -703,8 +733,7 @@ val useCaseModule = module {
             closeFixedIncome = get(),
             deleteFixedIncomeEvent = get(),
             updatePosition = get(),
-            archivePosition = get(),
-            transactionRepository = get()
+            archivePosition = get()
         )
     }
 
@@ -723,12 +752,12 @@ val useCaseModule = module {
     viewModel { (loanId: String) ->
         LoanDetailViewModel(
             loanId = loanId,
-            loanRepository = get(),
+            getLoanById = get(),
             getAmortizationSchedule = get(),
             updateLoanRate = get(),
             updateLoan = get(),
             archiveLoan = get(),
-            rateChangeRepository = get()
+            getLoanRateChanges = get()
         )
     }
 
@@ -736,7 +765,7 @@ val useCaseModule = module {
     viewModel { (propertyId: String) ->
         RealEstateDetailViewModel(
             propertyId = propertyId,
-            propertyRepository = get(),
+            getPropertyById = get(),
             savePropertyUseCase = get(),
             updatePropertyValue = get(),
             archiveProperty = get(),
@@ -747,7 +776,8 @@ val useCaseModule = module {
             dismissMortgageReminder = get(),
             linkLoanUseCase = get(),
             getLoan = get(),
-            sellPropertyUseCase = get()
+            sellPropertyUseCase = get(),
+            getCategoriesByType = get()
         )
     }
 
@@ -764,7 +794,9 @@ val useCaseModule = module {
     // ── Goal Settings ────────────────────────────────────────────────────────────
     viewModel {
         GoalSettingsViewModel(
-            goalRepository = get(),
+            getGoalBase = get(),
+            getGoalOverrides = get(),
+            saveGoalBaseAndOverrides = get(),
             session = get()
         )
     }
@@ -798,7 +830,7 @@ val useCaseModule = module {
             deleteValuableUseCase = get(),
             updateEstimatedValue = get(),
             linkLoanToValuable = get(),
-            loanRepository = get()
+            getLoansByAccount = get()
         )
     }
 

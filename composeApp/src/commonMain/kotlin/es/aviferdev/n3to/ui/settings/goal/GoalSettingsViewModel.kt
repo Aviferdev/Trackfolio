@@ -3,7 +3,9 @@ package es.aviferdev.n3to.ui.settings.goal
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import es.aviferdev.n3to.domain.model.MonthlyGoal
-import es.aviferdev.n3to.domain.repository.GoalRepository
+import es.aviferdev.n3to.domain.usecase.goal.GetGoalBaseUseCase
+import es.aviferdev.n3to.domain.usecase.goal.GetGoalOverridesUseCase
+import es.aviferdev.n3to.domain.usecase.goal.SaveGoalBaseAndOverridesUseCase
 import es.aviferdev.n3to.platform.nowYear
 import es.aviferdev.n3to.ui.account.AccountSession
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -52,7 +54,9 @@ private val monthLabels = listOf(
 )
 
 class GoalSettingsViewModel(
-    private val goalRepository: GoalRepository,
+    private val getGoalBase: GetGoalBaseUseCase,
+    private val getGoalOverrides: GetGoalOverridesUseCase,
+    private val saveGoalBaseAndOverrides: SaveGoalBaseAndOverridesUseCase,
     private val session: AccountSession
 ) : ViewModel() {
 
@@ -69,8 +73,8 @@ class GoalSettingsViewModel(
         _state.value = _state.value.copy(year = year, isLoading = true)
         viewModelScope.launch {
             try {
-                val base = goalRepository.getBaseGoal(accountId, year).first()
-                val overrides = goalRepository.getOverrides(accountId, year).first()
+                val base = getGoalBase(accountId, year).first()
+                val overrides = getGoalOverrides(accountId, year).first()
                 val overridesByMonth = overrides.associateBy { it.month }
 
                 val months = monthLabels.mapIndexed { index, label ->
@@ -186,7 +190,7 @@ class GoalSettingsViewModel(
                         } else null
                     }
 
-                goalRepository.saveBaseAndOverrides(accountId, state.year, baseGoal, overrides)
+                saveGoalBaseAndOverrides(accountId, state.year, baseGoal, overrides)
                 _state.value = _state.value.copy(
                     isDirty = false,
                     isSaving = false,
