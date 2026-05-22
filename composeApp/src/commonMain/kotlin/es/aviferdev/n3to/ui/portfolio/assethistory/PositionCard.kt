@@ -28,7 +28,10 @@ import es.aviferdev.n3to.ui.theme.formatPercent
 import es.aviferdev.n3to.ui.theme.formatQty
 import es.aviferdev.n3to.ui.theme.maskAmount
 import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.portfolio_dividend_title_alt
+import n3to.composeapp.generated.resources.portfolio_summary_realized
 import n3to.composeapp.generated.resources.portfolio_summary_total_pnl
+import n3to.composeapp.generated.resources.portfolio_summary_unrealized
 import org.jetbrains.compose.resources.stringResource
 import kotlin.math.abs
 
@@ -147,14 +150,14 @@ fun PositionCard(
             if (position.realizedPnL != 0.0 || position.unrealizedPnL != 0.0 || position.dividendIncome != 0.0) {
                 Spacer(Modifier.height(10.dp))
                 Row(Modifier.fillMaxWidth(), Arrangement.SpaceBetween) {
-                    PnLChip("Realizado", position.realizedPnL, balancesHidden)
+                    PnLChip(stringResource(Res.string.portfolio_summary_realized), position.realizedPnL, balancesHidden)
                     if (position.dividendIncome != 0.0) PnLChip(
-                        "Dividendos",
+                        stringResource(Res.string.portfolio_dividend_title_alt),
                         position.dividendIncome,
                         balancesHidden
                     )
                     PnLChip(
-                        "Latente",
+                        stringResource(Res.string.portfolio_summary_unrealized),
                         position.unrealizedPnL,
                         balancesHidden,
                         unavailable = !position.hasCurrentPrice && isOpen

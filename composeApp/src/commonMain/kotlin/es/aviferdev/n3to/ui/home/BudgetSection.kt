@@ -40,6 +40,7 @@ import n3to.composeapp.generated.resources.budget_limit_exceeded
 import n3to.composeapp.generated.resources.budget_no_income
 import n3to.composeapp.generated.resources.budget_edit_limit_cd
 import n3to.composeapp.generated.resources.budget_remaining_format
+import n3to.composeapp.generated.resources.settings_configure_cd
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -231,7 +232,7 @@ private fun EmptyBudgetCard(
             onClick = onConfigure
         ) {
             Text(
-                "Configurar",
+                stringResource(Res.string.settings_configure_cd),
                 fontSize = 13.sp,
                 fontWeight = FontWeight.SemiBold,
                 color = MaterialTheme.appColors.cyanAccent

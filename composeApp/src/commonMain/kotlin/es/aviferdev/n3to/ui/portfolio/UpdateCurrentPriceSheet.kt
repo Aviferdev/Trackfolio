@@ -23,6 +23,8 @@ import es.aviferdev.n3to.domain.usecase.asset.DetectPriceAnomalyUseCase
 import es.aviferdev.n3to.ui.common.dialog.PriceAnomalyDialog
 import es.aviferdev.n3to.ui.theme.*
 import es.aviferdev.n3to.ui.theme.formatAmountEuro
+import n3to.composeapp.generated.resources.*
+import org.jetbrains.compose.resources.stringResource
 
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.common_cancel
@@ -64,6 +66,18 @@ fun UpdateCurrentPriceSheet(
         val result = anomalyResult as? DetectPriceAnomalyUseCase.Result.Suspicious
             ?: anomalyResult as? DetectPriceAnomalyUseCase.Result.Warning
         if (result != null) {
+            val changeStr = when (result) {
+                    is DetectPriceAnomalyUseCase.Result.Warning -> result.percentChange
+                    is DetectPriceAnomalyUseCase.Result.Suspicious -> result.percentChange
+                    else -> 0.0
+                }
+                val changeFormatted = "${(kotlin.math.abs(changeStr) * 10).toInt() / 10.0}"
+                val prevFormatted = formatAmountEuro(when (result) {
+                    is DetectPriceAnomalyUseCase.Result.Warning -> result.previousPrice
+                    is DetectPriceAnomalyUseCase.Result.Suspicious -> result.previousPrice
+                    else -> asset.currentPrice ?: 0.0
+                })
+                val newFormatted = formatAmountEuro(pendingPrice)
             PriceAnomalyDialog(
                 previousPrice = when (result) {
                     is DetectPriceAnomalyUseCase.Result.Warning -> result.previousPrice
@@ -71,16 +85,20 @@ fun UpdateCurrentPriceSheet(
                     else -> asset.currentPrice ?: 0.0
                 },
                 newPrice = pendingPrice,
-                percentChange = when (result) {
-                    is DetectPriceAnomalyUseCase.Result.Warning -> result.percentChange
-                    is DetectPriceAnomalyUseCase.Result.Suspicious -> result.percentChange
-                    else -> 0.0
-                },
+                percentChange = changeStr,
                 likelyCause = when (result) {
                     is DetectPriceAnomalyUseCase.Result.Suspicious -> result.likelyCause
                     else -> null
                 },
                 isBlocking = result is DetectPriceAnomalyUseCase.Result.Suspicious,
+                titleWarning = stringResource(Res.string.price_anomaly_unusual_title),
+                titleSuspicious = stringResource(Res.string.price_anomaly_suspicious_title),
+                bodyText = stringResource(Res.string.price_anomaly_body, newFormatted, changeFormatted, prevFormatted),
+                btnCorrect = stringResource(Res.string.price_anomaly_correct_div10),
+                btnUsePrevious = stringResource(Res.string.price_anomaly_use_previous),
+                btnKeepEntered = stringResource(Res.string.price_anomaly_keep_new),
+                btnForceSave = stringResource(Res.string.price_anomaly_force_save),
+                btnCancel = stringResource(Res.string.common_cancel),
                 onCorrect = { correctedPrice ->
                     showAnomalyDialog = false
                     anomalyResult = null

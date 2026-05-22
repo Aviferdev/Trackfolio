@@ -40,6 +40,8 @@ import es.aviferdev.n3to.ui.theme.formatAmount
 import es.aviferdev.n3to.ui.theme.maskAmount
 import kotlin.math.abs
 
+import n3to.composeapp.generated.resources.*
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -94,14 +96,14 @@ fun ClosedFixedIncomeCard(
                     maxLines = 1
                 )
                 Text(
-                    "Cerrada",
+                    stringResource(Res.string.portfolio_closed_badge),
                     fontSize = 10.sp,
                     color = MaterialTheme.appColors.textDisabled
                 )
             }
             Column(horizontalAlignment = Alignment.End) {
                 Text(
-                    "Realizado",
+                    stringResource(Res.string.portfolio_summary_realized),
                     fontSize = 10.sp,
                     color = MaterialTheme.appColors.textDisabled
                 )

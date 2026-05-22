@@ -313,6 +313,8 @@
     <string name="portfolio_asset_history_filter_buy">Buy</string>
     <string name="portfolio_asset_history_filter_sell">Sell</string>
     <string name="portfolio_asset_history_no_data">No historical data</string>
+    <string name="asset_history_title_fallback">Asset</string>
+    <string name="asset_history_new_movement">New movement</string>
 
     <!-- PORTFOLIO – Compound effect card -->
     <string name="portfolio_compound_effect_title">Compound effect</string>
@@ -628,6 +630,23 @@
     <string name="consent_privacy_policy">View Privacy Policy</string>
     <string name="consent_data_description">Your accounts, transactions and balances are stored locally on your device. We only share data if you give us permission.</string>
     <string name="consent_crash_description">If the app crashes, it notifies us so we can fix it quickly.</string>
+    <string name="consent_offline_description">Trackfolio works 100% offline. Your accounts, transactions and balances are stored only on your device. You own your data.</string>
+    <string name="consent_collect_title">✅ We collect (only if you help us):</string>
+    <string name="consent_collect_screens">• Screens you visit → to know what to improve</string>
+    <string name="consent_collect_crashes">• Error reports → to fix bugs fast</string>
+    <string name="consent_never_title">❌ We NEVER collect:</string>
+    <string name="consent_never_financial">• Your financial data (transactions, accounts, balances)</string>
+    <string name="consent_never_personal">• Your personal information (email, name, contacts)</string>
+    <string name="consent_never_location">• Your location</string>
+    <string name="consent_feedback_title">✍️ If you send feedback (voluntary):</string>
+    <string name="consent_feedback_suggestion">• We only receive your suggestion if you choose to send it from the in-app form</string>
+    <string name="consent_feedback_no_personal">• We recommend not including personal data in your message</string>
+    <string name="consent_premium_title">💳 If you get Trackfolio Premium:</string>
+    <string name="consent_premium_revenuecat">• RevenueCat processes an anonymous identifier and your subscription history to manage your purchase (required for the service)</string>
+    <string name="consent_premium_no_share">• We do not share your financial data with RevenueCat</string>
+    <string name="consent_data_stays_device">💡 Your financial data never leaves your device.</string>
+    <string name="consent_analytics_description">Knowing which features you use most helps us polish the app. Anonymous data.</string>
+    <string name="consent_both_buttons">Both buttons open the app. Choosing one or the other only changes whether you let us help you improve it.</string>
     <string name="security_locked_message">The app is locked.\nAuthenticate to continue.</string>
     <string name="security_unlock_button">Unlock</string>
     <string name="version_block_message">You need to update N3to to continue using the app.</string>
@@ -799,6 +818,8 @@
     <!-- PORTFOLIO - Add/Edit Asset (missing) -->
     <string name="portfolio_add_asset_desc">Define the asset profile and the platforms where you trade.</string>
     <string name="portfolio_add_asset_portfolio_label">Portfolio</string>
+    <string name="portfolio_add_asset_isin_label">ISIN (optional)</string>
+    <string name="portfolio_add_asset_isin_desc">ISIN code for automatic price retrieval</string>
     <string name="portfolio_add_asset_no_portfolio">No portfolio</string>
     <string name="portfolio_add_asset_ticker_placeholder">E.g. AAPL, BTC, IAG.MC</string>
     <string name="portfolio_add_asset_ticker_required">Required</string>
@@ -1273,6 +1294,21 @@
     <string name="category_help_examples">• Home → rent, mortgage, utilities\n• Leisure → restaurants, cinema, travel\n• Health → pharmacy, doctor, gym</string>
     <string name="category_name_placeholder">Category name</string>
     <string name="category_remove_limit">Remove limit</string>
+    <string name="category_edit_title">Edit category</string>
+    <string name="category_annual_limit">Annual limit</string>
+    <string name="category_limit_amount">Limit amount</string>
+    <string name="category_income_percentage">Income percentage</string>
+
+    <!-- PORTFOLIO - Asset type help -->
+    <string name="portfolio_asset_type_equity">Stocks / ETFs / Funds</string>
+    <string name="portfolio_asset_type_equity_desc">Traded with market price. Supports analysis by sectors and geographic regions.</string>
+    <string name="portfolio_asset_type_fi_desc">Bonds and deposits with agreed yield. Require maturity date; no automatic market price.</string>
+    <string name="portfolio_asset_type_alternative">Crypto / Commodities / Crowdlending</string>
+    <string name="portfolio_asset_type_alternative_desc">Alternative assets with market price but without sector analysis.</string>
+    <string name="portfolio_asset_type_realestate">Real Estate</string>
+    <string name="portfolio_asset_type_realestate_desc">Physical properties valued manually; no automatic market price.</string>
+    <string name="portfolio_asset_type_valuable">Valuables</string>
+    <string name="portfolio_asset_type_valuable_desc">Art, collectibles or other non-financial tangible assets.</string>
 
     <!-- HELP - missing -->
     <string name="help_account_title">What is an account?</string>
@@ -1317,11 +1353,15 @@
     <!-- EXPENSE SETTINGS - missing -->
     <string name="expense_categories_section">CATEGORIES</string>
     <string name="expense_no_categories">No expense categories</string>
+    <string name="expense_delete_category_title">Delete category</string>
+    <string name="expense_delete_category_message">«%1$s» will be removed from the list. Movements that already have this category assigned will keep their name and no data will be lost.</string>
 
     <!-- INCOME SETTINGS - missing -->
     <string name="income_types_section">INCOME TYPES</string>
     <string name="income_type_archive_title">Archive issuer</string>
+    <string name="income_type_archive_message">«%1$s» will be archived. It will not appear in new income selectors, but historical movements will keep the reference.</string>
     <string name="issuer_name_placeholder">Issuer name</string>
+    <string name="issuer_edit_title">Edit issuer</string>
 
     <!-- GOAL SETTINGS - missing -->
     <string name="goal_settings_title">Monthly goals</string>
@@ -1333,6 +1373,9 @@
     <string name="goal_saved_message">Goals saved</string>
     <string name="goal_onboarding_badge">FINANCIAL PLANNING</string>
     <string name="goal_onboarding_subtitle">Set how much you want to save and invest each month. Set an annual base and adjust months with exceptional income or expenses.</string>
+    <string name="goal_savings_description">What you set aside each month as liquid savings or in a savings account.</string>
+    <string name="goal_investment_description">What you allocate to buying assets: stocks, funds, ETFs, etc.</string>
+    <string name="goal_customize_months_section">CUSTOMIZE MONTHS</string>
 
     <!-- EMERGENCY FUND SETTINGS - missing -->
     <string name="ef_months_hint">Set how many months of expenses you want covered for your emergency fund.</string>
@@ -1623,4 +1666,118 @@
 
     <!-- ONBOARDING – additional -->
     <string name="onboarding_realestate_hint">Once inside, you can register it from </string>
+
+    <!-- =====================================================================
+         NEW i18n KEYS – Migrated from hardcoded strings
+         ===================================================================== -->
+    <string name="fi_no_issuers">No issuers. Create a new one.</string>
+    <string name="fi_commission_notes">Commission notes (optional)</string>
+    <string name="issuer_new">New issuer</string>
+    <string name="label_years">Years</string>
+    <string name="label_months">Months</string>
+    <string name="fi_auto_calculated">Auto-calculated</string>
+    <string name="fi_position_not_found">Position not found</string>
+    <string name="fi_close_type">Close type</string>
+    <string name="label_required">Required</string>
+    <string name="placeholder_ticker_example">e.g. AAPL, BTC, IAG.MC</string>
+    <string name="placeholder_asset_name_example">e.g. Apple Inc., Bitcoin</string>
+    <string name="placeholder_entity">e.g. Banco Santander</string>
+    <string name="transfer_source_fund">Source fund</string>
+    <string name="transfer_dest_fund">Destination fund</string>
+    <string name="transfer_source_platform">Source platform</string>
+    <string name="transfer_dest_platform">Destination platform</string>
+    <string name="label_value">Value</string>
+    <string name="action_view">View</string>
+    <string name="rental_status_change_desc">Select new status...</string>
+    <string name="rental_status_new">New status</string>
+    <string name="field_acquisition_date">Acquisition date</string>
+    <string name="rental_status_label">Rental status</string>
+    <string name="realestate_new_estimated_value">New estimated value (€)</string>
+    <string name="fi_collected">Collected</string>
+    <string name="income_net_only">Net only</string>
+    <string name="label_asset">Asset</string>
+    <string name="consent_reject">Reject and continue</string>
+    <string name="premium_restore_purchase">Restore purchase</string>
+    <string name="mortgage_only">Mortgages only</string>
+    <string name="portfolio_new_fixed_income">New bond/deposit</string>
+    <string name="label_realized">Realized</string>
+    <string name="account_active">Active</string>
+    <string name="set_balance_title">Set balance</string>
+    <string name="position_total_profit">Total profit</string>
+    <string name="add_mortgage">Add mortgage</string>
+    <string name="net_cashflow">Net cashflow</string>
+    <string name="no_expense_categories">No expense categories</string>
+
+    <!-- PORTFOLIO DISTRIBUTION – Tab titles -->
+    <string name="portfolio_distribution_by_category">Distribution by category</string>
+    <string name="portfolio_distribution_by_region">Distribution by region</string>
+    <string name="portfolio_distribution_by_sector">Distribution by sector</string>
+
+    <!-- PRICE ANOMALY – Dialog body -->
+    <string name="price_anomaly_body">The price you have entered (%1$s)\nvaries by %2$s%%\nfrom the previous price (%3$s).</string>
+
+    <!-- PRICE SOURCE -->
+    <string name="price_source_manual">Manual</string>
+    <string name="price_source_auto">Automatic</string>
+
+    <!-- RECONCILIATION ERRORS -->
+    <string name="reconciliation_error_invalid_amount">Enter a valid amount</string>
+    <string name="reconciliation_error_balanced">The balance is already squared</string>
+    <string name="reconciliation_error_generic">Error reconciling</string>
+
+    <!-- BACKUP ERRORS -->
+    <string name="backup_error_password_min_length">Password must be at least 6 characters</string>
+    <string name="backup_error_password_mismatch">Passwords do not match</string>
+    <string name="backup_error_password_required">Enter the backup password</string>
+
+    <!-- TRANSACTION ERRORS -->
+    <string name="transaction_error_no_account">No account selected</string>
+    <string name="transaction_error_invalid_net">Invalid net amount</string>
+    <string name="transaction_error_calculate_net">Could not calculate net amount</string>
+
+    <!-- ONBOARDING – Demo data labels -->
+    <string name="onboarding_demo_alquiler">Rent</string>
+    <string name="onboarding_demo_hogar">Home</string>
+    <string name="onboarding_demo_nomina">Salary</string>
+    <string name="onboarding_demo_trabajo">Work · 15% IRPF</string>
+    <string name="onboarding_demo_gasolina">Gas</string>
+    <string name="onboarding_demo_transporte">Transport</string>
+    <string name="onboarding_demo_mercadona">Mercadona</string>
+    <string name="onboarding_demo_alimentacion">Groceries</string>
+    <string name="onboarding_demo_netflix">Netflix</string>
+    <string name="onboarding_demo_ocio">Leisure</string>
+    <string name="onboarding_demo_factura">Freelance invoice</string>
+    <string name="onboarding_demo_nomina_marzo">March salary</string>
+    <string name="onboarding_demo_venta_aapl">AAPL sale (3 units)</string>
+
+    <!-- SAVINGS RATES – High-yield savings accounts -->
+    <string name="savings_rates_title">High-yield savings accounts</string>
+    <string name="savings_rates_short_term">Short term</string>
+    <string name="savings_rates_medium_term">Medium term</string>
+    <string name="savings_rates_offline">No connection — showing previous data</string>
+    <string name="savings_rates_updated_format">Updated: %1$s</string>
+    <string name="savings_rates_max">Max</string>
+    <string name="savings_rates_min">Min</string>
+    <string name="savings_rates_term">Term</string>
+    <string name="savings_rates_country">Country</string>
+    <string name="savings_rates_cancellation_yes">Cancellation: Yes</string>
+    <string name="savings_rates_cancellation_no">Cancellation: No</string>
+    <string name="savings_rates_preview_title">Where to invest</string>
+    <string name="savings_rates_view_all">View all</string>
+    <string name="savings_rates_loading">Loading best accounts…</string>
+    <string name="savings_rates_up_to_format">up to €%1$s</string>
+
+    <!-- REAL ESTATE – Ledger labels -->
+    <string name="realestate_income_ledger">Income (ledger)</string>
+    <string name="realestate_expenses_ledger">Expenses (ledger)</string>
+
+    <!-- =====================================================================
+         EXTRACTED HARDCODED STRINGS
+         ===================================================================== -->
+    <string name="account_create_button">Create account</string>
+    <string name="account_delete_confirm_message">Are you sure? This action cannot be undone.</string>
+    <string name="loan_picker_title">Select loan</string>
+    <string name="loan_picker_subtitle">Link an existing mortgage or loan</string>
+    <string name="reconciliation_amount_placeholder">E.g. 1250.00</string>
+
 </resources>

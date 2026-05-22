@@ -39,6 +39,9 @@ import es.aviferdev.n3to.ui.theme.SecondaryTeal
 
 import es.aviferdev.n3to.ui.theme.WarnAmber
 import kotlinx.coroutines.delay
+import n3to.composeapp.generated.resources.*
+import n3to.composeapp.generated.resources.*
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 /**
@@ -59,40 +62,40 @@ fun SlideMovimientos(modifier: Modifier = Modifier) {
     val transactions = listOf(
         TxRow(
             "🏠",
-            "Alquiler",
-            "Hogar",
+            stringResource(Res.string.onboarding_demo_alquiler),
+            stringResource(Res.string.onboarding_demo_hogar),
             "−850,00 €",
             MaterialTheme.appColors.expense,
             CategoryOrange.copy(alpha = 0.15f)
         ),
         TxRow(
             "💼",
-            "Nómina",
-            "Trabajo · 15% IRPF",
+            stringResource(Res.string.onboarding_demo_nomina),
+            stringResource(Res.string.onboarding_demo_trabajo),
             "+2.800,00 €",
             MaterialTheme.appColors.income,
             MaterialTheme.appColors.income.copy(alpha = 0.15f)
         ),
         TxRow(
             "🚗",
-            "Gasolina",
-            "Transporte",
+            stringResource(Res.string.onboarding_demo_gasolina),
+            stringResource(Res.string.onboarding_demo_transporte),
             "−65,40 €",
             MaterialTheme.appColors.expense,
             SecondaryTeal.copy(alpha = 0.15f)
         ),
         TxRow(
             "🛒",
-            "Mercadona",
-            "Alimentación",
+            stringResource(Res.string.onboarding_demo_mercadona),
+            stringResource(Res.string.onboarding_demo_alimentacion),
             "−112,30 €",
             MaterialTheme.appColors.expense,
             MaterialTheme.appColors.income.copy(alpha = 0.15f)
         ),
         TxRow(
             "🎬",
-            "Netflix",
-            "Ocio",
+            stringResource(Res.string.onboarding_demo_netflix),
+            stringResource(Res.string.onboarding_demo_ocio),
             "−15,99 €",
             MaterialTheme.appColors.expense,
             MaterialTheme.appColors.warnAmber.copy(alpha = 0.15f)

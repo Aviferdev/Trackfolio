@@ -56,7 +56,11 @@ data class PortfolioStateInput(
 
 class PortfolioStateBuilder {
 
-    fun build(input: PortfolioStateInput): PortfolioUiState = with(input) {
+    fun build(
+        input: PortfolioStateInput,
+        uncategorizedLabel: String = "No catalogados",
+        variableIncomeLabel: String = "Renta variable"
+    ): PortfolioUiState = with(input) {
         val filteredAssets = if (portfolioId == null) assets
         else assets.filter { it.portfolioId == portfolioId }
 
@@ -149,9 +153,9 @@ class PortfolioStateBuilder {
                 { it.displayName }
             )
         )
+        val regionGroups = buildRegionGroups(openRows, fiSummary?.positions.orEmpty(), uncategorizedLabel)
 
-        val regionGroups = buildRegionGroups(openRows, fiSummary?.positions.orEmpty())
-        val sectorGroups = buildSectorGroups(openRows, fiSummary?.positions.orEmpty())
+        val sectorGroups = buildSectorGroups(openRows, fiSummary?.positions.orEmpty(), uncategorizedLabel)
 
         val totalInvested = allGroups.sumOf { it.totalInvested }
         val totalCurrentValue = allGroups.sumOf { it.totalCurrentValue }
@@ -189,10 +193,7 @@ class PortfolioStateBuilder {
 
         val compositionByAsset = compositions.associateBy { it.assetId }
         val compositionSlices = buildCompositionDistribution(
-            allGroups,
-            compositionByAsset,
-            combinedCurrentValue,
-            fiSummary
+            allGroups, compositionByAsset, combinedCurrentValue, fiSummary, variableIncomeLabel
         )
 
         val assetCurrentValues = openRows.associate { it.asset.id to it.position.currentValue }
@@ -219,7 +220,7 @@ class PortfolioStateBuilder {
                     if (regionId == "__uncatalogued__") {
                         CategorySlice(
                             null,
-                            "No catalogados",
+                            uncategorizedLabel,
                             "❔",
                             value,
                             (value / combinedCurrentValue) * 100.0,
@@ -264,7 +265,7 @@ class PortfolioStateBuilder {
                     if (sectorId == "__uncatalogued__") {
                         CategorySlice(
                             null,
-                            "No catalogados",
+                            uncategorizedLabel,
                             "❔",
                             value,
                             (value / combinedCurrentValue) * 100.0,
@@ -343,14 +344,15 @@ class PortfolioStateBuilder {
 
     private fun buildRegionGroups(
         openRows: List<AssetRow>,
-        fiPositions: List<FixedIncomeRow>
+        fiPositions: List<FixedIncomeRow>,
+        uncategorizedLabel: String
     ): List<CategoryGroup> {
         val fiByRegion = fiPositions.groupBy { it.position.region }
         val assetsWithoutRegion = openRows  // assets don't have per-asset region metadata yet
 
         val allRegionKeys = mutableSetOf<String?>()
         allRegionKeys.addAll(fiByRegion.keys)
-        if (assetsWithoutRegion.isNotEmpty()) allRegionKeys.add("No catalogados")
+        if (assetsWithoutRegion.isNotEmpty()) allRegionKeys.add(uncategorizedLabel)
 
         return allRegionKeys.map { region ->
             val fiRows = fiByRegion[region].orEmpty()
@@ -366,7 +368,7 @@ class PortfolioStateBuilder {
 
             CategoryGroup(
                 category = null,
-                customName = region ?: "No catalogados",
+                customName = region ?: uncategorizedLabel,
                 rows = assetRows.sortedByDescending { it.position.currentValue },
                 fixedIncomeRows = fiRows,
                 totalInvested = invested + fiInvested,
@@ -382,14 +384,15 @@ class PortfolioStateBuilder {
 
     private fun buildSectorGroups(
         openRows: List<AssetRow>,
-        fiPositions: List<FixedIncomeRow>
+        fiPositions: List<FixedIncomeRow>,
+        uncategorizedLabel: String
     ): List<CategoryGroup> {
         val fiBySector = fiPositions.groupBy { it.position.sector }
         val assetsWithoutSector = openRows  // assets don't have per-asset sector metadata yet
 
         val allSectorKeys = mutableSetOf<String?>()
         allSectorKeys.addAll(fiBySector.keys)
-        if (assetsWithoutSector.isNotEmpty()) allSectorKeys.add("No catalogados")
+        if (assetsWithoutSector.isNotEmpty()) allSectorKeys.add(uncategorizedLabel)
 
         return allSectorKeys.map { sector ->
             val fiRows = fiBySector[sector].orEmpty()
@@ -405,7 +408,7 @@ class PortfolioStateBuilder {
 
             CategoryGroup(
                 category = null,
-                customName = sector ?: "No catalogados",
+                customName = sector ?: uncategorizedLabel,
                 rows = assetRows.sortedByDescending { it.position.currentValue },
                 fixedIncomeRows = fiRows,
                 totalInvested = invested + fiInvested,
@@ -423,7 +426,8 @@ class PortfolioStateBuilder {
         groups: List<CategoryGroup>,
         compositionByAsset: Map<String, AssetComposition>,
         totalValue: Double,
-        fiSummary: FixedIncomeSummary?
+        fiSummary: FixedIncomeSummary?,
+        variableIncomeLabel: String
     ): List<CategorySlice> {
         if (totalValue <= 0.0) return emptyList()
 
@@ -458,7 +462,7 @@ class PortfolioStateBuilder {
             if (rvValue > 0) add(
                 CategorySlice(
                     "rv",
-                    "Renta variable",
+                    variableIncomeLabel,
                     "📈",
                     rvValue,
                     (rvValue / totalValue) * 100.0,

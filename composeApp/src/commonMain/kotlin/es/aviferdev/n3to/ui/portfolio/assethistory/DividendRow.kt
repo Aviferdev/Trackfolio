@@ -31,6 +31,9 @@ import es.aviferdev.n3to.ui.portfolio.formatShortDate
 import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.ui.theme.formatAmount
 import es.aviferdev.n3to.ui.theme.maskAmount
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.portfolio_dividend_title_alt
+import org.jetbrains.compose.resources.stringResource
 
 // ─── Dividend row ─────────────────────────────────────────────────────────────
 @Composable
@@ -70,7 +73,7 @@ fun DividendRow(
             Spacer(Modifier.width(10.dp))
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    "Dividendo",
+                    stringResource(Res.string.portfolio_dividend_title_alt),
                     fontSize = 12.sp,
                     color = MaterialTheme.appColors.income,
                     fontWeight = FontWeight.SemiBold

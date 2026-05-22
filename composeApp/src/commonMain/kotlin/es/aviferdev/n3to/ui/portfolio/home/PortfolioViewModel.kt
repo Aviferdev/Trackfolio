@@ -134,18 +134,7 @@ data class CategorySlice(
 )
 
 enum class DistributionView {
-    CATEGORY,
-    COMPOSITION,
-    REGION,
-    SECTOR;
-
-    val displayName: String
-        get() = when (this) {
-            CATEGORY -> "Categoría"
-            COMPOSITION -> "Composición"
-            REGION -> "Región"
-            SECTOR -> "Sector"
-        }
+    CATEGORY, COMPOSITION, REGION, SECTOR
 }
 
 sealed class PortfolioSheetError {

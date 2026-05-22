@@ -13,13 +13,20 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
+sealed class ReconciliationError {
+    data object InvalidAmount : ReconciliationError()
+    data object AlreadyBalanced : ReconciliationError()
+    data class Generic(val message: String?) : ReconciliationError()
+    data class Success(val formattedMessage: String) : ReconciliationError()
+}
+
 data class ReconciliationUiState(
     val showBanner: Boolean = false,
     val showBottomSheet: Boolean = false,
     val computedBalance: Double = 0.0,
     val realBalanceInput: String = "",
     val isProcessing: Boolean = false,
-    val resultMessage: String? = null,
+    val resultMessage: ReconciliationError? = null,
     val isSuccess: Boolean = false
 )
 
@@ -76,7 +83,7 @@ class ReconciliationViewModel(
 
         if (realBalance == null) {
             _uiState.value = current.copy(
-                resultMessage = "Introduce un importe válido",
+                resultMessage = ReconciliationError.InvalidAmount,
                 isSuccess = false
             )
             return
@@ -97,19 +104,19 @@ class ReconciliationViewModel(
                     val sign = if (diff > 0) "+" else ""
                     _uiState.value = _uiState.value.copy(
                         isProcessing = false,
-                        resultMessage = "Ajuste de ${sign}${formatAmount(diff)}€ registrado",
+                        resultMessage = ReconciliationError.Success("Ajuste de ${sign}${formatAmount(diff)}€ registrado"),
                         isSuccess = true,
                         showBanner = false
                     )
                 },
                 onFailure = { error ->
-                    val msg = when (error) {
-                        is BalanceAlreadyMatchesException -> "El saldo ya está cuadrado"
-                        else -> "Error al reconciliar: ${error.message}"
+                    val resultError = when (error) {
+                        is BalanceAlreadyMatchesException -> ReconciliationError.AlreadyBalanced
+                        else -> ReconciliationError.Generic(error.message)
                     }
                     _uiState.value = _uiState.value.copy(
                         isProcessing = false,
-                        resultMessage = msg,
+                        resultMessage = resultError,
                         isSuccess = error is BalanceAlreadyMatchesException
                     )
                 }

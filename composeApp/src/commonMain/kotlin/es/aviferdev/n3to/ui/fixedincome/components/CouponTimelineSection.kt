@@ -76,7 +76,7 @@ internal fun CouponTimelineSection(
                         Spacer(Modifier.width(12.dp))
                         Column {
                             Text(
-                                text = formatDate(coupon.date),
+                                text = formatDateLocalized(coupon.date),
                                 fontSize = 13.sp,
                                 color = MaterialTheme.appColors.textPrimary
                             )

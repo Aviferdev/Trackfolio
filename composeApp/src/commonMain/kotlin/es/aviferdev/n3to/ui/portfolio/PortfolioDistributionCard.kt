@@ -44,7 +44,11 @@ import es.aviferdev.n3to.ui.theme.maskAmount
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.common_total
+import n3to.composeapp.generated.resources.portfolio_distribution_by_category
+import n3to.composeapp.generated.resources.portfolio_distribution_by_region
+import n3to.composeapp.generated.resources.portfolio_distribution_by_sector
 import n3to.composeapp.generated.resources.portfolio_distribution_subtitle
+import n3to.composeapp.generated.resources.portfolio_distribution_view_composition
 import org.jetbrains.compose.resources.stringResource
 
 /**
@@ -67,10 +71,10 @@ fun PortfolioDistributionCard(
     if (slices.isEmpty()) return
 
     val title = when (selectedView) {
-        DistributionView.CATEGORY -> "Distribución por categoría"
-        DistributionView.COMPOSITION -> "Composición"
-        DistributionView.REGION -> "Distribución por región"
-        DistributionView.SECTOR -> "Distribución por sector"
+        DistributionView.CATEGORY -> stringResource(Res.string.portfolio_distribution_by_category)
+        DistributionView.COMPOSITION -> stringResource(Res.string.portfolio_distribution_view_composition)
+        DistributionView.REGION -> stringResource(Res.string.portfolio_distribution_by_region)
+        DistributionView.SECTOR -> stringResource(Res.string.portfolio_distribution_by_sector)
     }
 
     Card(

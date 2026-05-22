@@ -31,6 +31,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import es.aviferdev.n3to.ui.theme.appColors
+import n3to.composeapp.generated.resources.*
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 /**
@@ -142,7 +144,7 @@ fun VersionBlockScreen(
             Spacer(Modifier.height(8.dp))
 
             Text(
-                text = "Versión mínima: $minVersion · Tu versión: $currentVersion",
+                text = stringResource(Res.string.version_block_version_info, minVersion, currentVersion),
                 fontSize = 12.sp,
                 color = appCTextTertiary,
                 textAlign = TextAlign.Center

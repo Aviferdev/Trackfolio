@@ -49,8 +49,6 @@ import es.aviferdev.n3to.domain.model.TaxProfileSnapshot
 import es.aviferdev.n3to.ui.common.AlertBanner
 import es.aviferdev.n3to.ui.common.SectionHeader
 import es.aviferdev.n3to.ui.common.component.SelectableChip
-import es.aviferdev.n3to.ui.common.help.HelpContent
-import es.aviferdev.n3to.ui.common.help.HelpKeys
 import es.aviferdev.n3to.ui.common.help.HelpTooltipIcon
 import es.aviferdev.n3to.ui.common.input.DatePickerRow
 import es.aviferdev.n3to.ui.common.topbar.TopBarWithActionsApp
@@ -61,6 +59,8 @@ import n3to.composeapp.generated.resources.common_cancel
 import n3to.composeapp.generated.resources.common_delete
 import n3to.composeapp.generated.resources.common_error
 import n3to.composeapp.generated.resources.common_save
+import n3to.composeapp.generated.resources.help_tax_system_body
+import n3to.composeapp.generated.resources.help_tax_system_title
 import n3to.composeapp.generated.resources.tax_profile_add_cd
 import n3to.composeapp.generated.resources.tax_profile_country_label
 import n3to.composeapp.generated.resources.tax_profile_delete_cd
@@ -354,8 +354,8 @@ private fun AddTaxProfileSheet(
                         color = MaterialTheme.appColors.textTertiary
                     )
                     HelpTooltipIcon(
-                        title = HelpContent.texts[HelpKeys.IRPF_SYSTEM]?.title ?: "",
-                        body = HelpContent.texts[HelpKeys.IRPF_SYSTEM]?.body ?: ""
+                        title = stringResource(Res.string.help_tax_system_title),
+                        body = stringResource(Res.string.help_tax_system_body)
                     )
                 }
                 TaxProfile.ALL.forEach { profile ->

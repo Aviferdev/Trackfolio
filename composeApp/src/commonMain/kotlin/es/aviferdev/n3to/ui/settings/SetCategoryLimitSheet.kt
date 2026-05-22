@@ -42,6 +42,9 @@ import es.aviferdev.n3to.ui.theme.N3toTheme
 import es.aviferdev.n3to.ui.theme.PrimaryAlpha
 import es.aviferdev.n3to.ui.theme.appColors
 import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.category_annual_limit
+import n3to.composeapp.generated.resources.category_income_percentage
+import n3to.composeapp.generated.resources.category_limit_amount
 import n3to.composeapp.generated.resources.category_remove_limit
 import n3to.composeapp.generated.resources.common_cancel
 import n3to.composeapp.generated.resources.common_close
@@ -101,7 +104,7 @@ fun SetCategoryLimitSheet(
             ) {
                 Column {
                     Text(
-                        "Límite anual",
+                        stringResource(Res.string.category_annual_limit),
                         fontSize = 16.sp,
                         fontWeight = FontWeight.SemiBold,
                         color = MaterialTheme.appColors.textPrimary
@@ -154,7 +157,7 @@ fun SetCategoryLimitSheet(
 
             // ── Campo de importe (AmountInputField) ────────────────────────────
             AmountInputField(
-                label = if (limitType == LimitType.FIXED) "Importe del límite" else "Porcentaje de ingresos",
+                label = if (limitType == LimitType.FIXED) stringResource(Res.string.category_limit_amount) else stringResource(Res.string.category_income_percentage),
                 value = limitText,
                 onChange = { newValue ->
                     val filtered = newValue.filter { it.isDigit() || it == ',' || it == '.' }

@@ -47,6 +47,7 @@ import n3to.composeapp.generated.resources.common_cancel
 import n3to.composeapp.generated.resources.common_close
 import n3to.composeapp.generated.resources.common_save
 import n3to.composeapp.generated.resources.fixedincome_new_issuer
+import n3to.composeapp.generated.resources.issuer_edit_title
 import n3to.composeapp.generated.resources.issuer_name_placeholder
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -99,7 +100,7 @@ fun AddEditIssuerSheet(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    if (isEditing) "Editar emisor" else stringResource(Res.string.fixedincome_new_issuer),
+                    if (isEditing) stringResource(Res.string.issuer_edit_title) else stringResource(Res.string.fixedincome_new_issuer),
                     fontSize = 16.sp,
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.appColors.textPrimary

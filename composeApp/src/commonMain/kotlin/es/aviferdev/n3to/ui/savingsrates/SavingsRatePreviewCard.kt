@@ -32,6 +32,12 @@ import es.aviferdev.n3to.domain.model.SavingsRateType
 import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.ui.theme.formatAmount
 import es.aviferdev.n3to.ui.theme.formatPercent
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.savings_rates_loading
+import n3to.composeapp.generated.resources.savings_rates_preview_title
+import n3to.composeapp.generated.resources.savings_rates_up_to_format
+import n3to.composeapp.generated.resources.savings_rates_view_all
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -68,7 +74,7 @@ fun SavingsRatePreviewCard(
                         modifier = Modifier.size(16.dp)
                     )
                     Text(
-                        text = "Dónde invertir",
+                        text = stringResource(Res.string.savings_rates_preview_title),
                         fontSize = 13.sp,
                         fontWeight = FontWeight.SemiBold,
                         color = MaterialTheme.appColors.textPrimary
@@ -79,7 +85,7 @@ fun SavingsRatePreviewCard(
                     horizontalArrangement = Arrangement.spacedBy(2.dp)
                 ) {
                     Text(
-                        text = "Ver todas",
+                        text = stringResource(Res.string.savings_rates_view_all),
                         fontSize = 11.sp,
                         color = MaterialTheme.appColors.cyanAccent
                     )
@@ -106,7 +112,7 @@ fun SavingsRatePreviewCard(
             } else if (state.isLoading) {
                 Spacer(Modifier.height(6.dp))
                 Text(
-                    text = "Cargando mejores cuentas...",
+                    text = stringResource(Res.string.savings_rates_loading),
                     fontSize = 11.sp,
                     color = MaterialTheme.appColors.textTertiary
                 )
@@ -131,7 +137,7 @@ private fun SavingsRatePreviewRow(rate: SavingsRate) {
             )
             rate.maxAmount?.let { max ->
                 Text(
-                    text = "hasta €${formatAmount(max)}",
+                    text = stringResource(Res.string.savings_rates_up_to_format, formatAmount(max)),
                     fontSize = 10.sp,
                     color = MaterialTheme.appColors.textTertiary
                 )

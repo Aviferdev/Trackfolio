@@ -138,7 +138,7 @@ internal fun FixedIncomeDetailHeader(
                 )
                 DetailCell(
                     label = stringResource(Res.string.fixedincome_maturity_label),
-                    value = formatDate(position.maturityDate),
+                    value = formatDateLocalized(position.maturityDate),
                     modifier = Modifier.weight(1f)
                 )
             }

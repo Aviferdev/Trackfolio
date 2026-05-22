@@ -48,7 +48,7 @@ import es.aviferdev.n3to.platform.nowMillis
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.ui.theme.formatAmount
-import es.aviferdev.n3to.ui.theme.formatDate
+import es.aviferdev.n3to.ui.theme.formatDateLocalized
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.common_close
 import n3to.composeapp.generated.resources.common_confirm
@@ -240,7 +240,7 @@ private fun AssetPriceUpdateRow(
                         Text(
                             text = stringResource(
                                 Res.string.portfolio_update_price_last_format,
-                                formatDate(asset.currentPriceUpdatedAt)
+                                formatDateLocalized(asset.currentPriceUpdatedAt)
                             ),
                             fontSize = 10.sp,
                             color = MaterialTheme.appColors.textSecondary.copy(alpha = 0.7f)

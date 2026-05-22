@@ -101,7 +101,7 @@ private fun EventItem(
                     color = MaterialTheme.appColors.textPrimary
                 )
                 Text(
-                    text = formatDate(event.date),
+                    text = formatDateLocalized(event.date),
                     fontSize = 11.sp,
                     color = MaterialTheme.appColors.textTertiary
                 )

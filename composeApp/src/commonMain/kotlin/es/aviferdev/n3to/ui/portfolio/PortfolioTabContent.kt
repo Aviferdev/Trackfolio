@@ -47,6 +47,10 @@ import es.aviferdev.n3to.ui.theme.LocalBalanceHidden
 import es.aviferdev.n3to.ui.theme.appColors
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.common_go_to_settings
+import n3to.composeapp.generated.resources.portfolio_distribution_view_category
+import n3to.composeapp.generated.resources.portfolio_distribution_view_composition
+import n3to.composeapp.generated.resources.portfolio_distribution_view_region
+import n3to.composeapp.generated.resources.portfolio_distribution_view_sector
 import n3to.composeapp.generated.resources.portfolio_empty_title
 import n3to.composeapp.generated.resources.portfolio_evolution_title
 import n3to.composeapp.generated.resources.portfolio_monthly_value
@@ -224,7 +228,12 @@ fun PortfolioTabContent(
                                         onClick = { onSelectDistributionView(view) },
                                         content = {
                                             Text(
-                                                text = view.displayName,
+                                                text = when (view) {
+                                                    DistributionView.CATEGORY -> stringResource(Res.string.portfolio_distribution_view_category)
+                                                    DistributionView.COMPOSITION -> stringResource(Res.string.portfolio_distribution_view_composition)
+                                                    DistributionView.REGION -> stringResource(Res.string.portfolio_distribution_view_region)
+                                                    DistributionView.SECTOR -> stringResource(Res.string.portfolio_distribution_view_sector)
+                                                },
                                                 fontSize = 12.sp,
                                                 fontWeight = if (state.selectedDistributionView == view) FontWeight.SemiBold else FontWeight.Normal,
                                                 color = if (state.selectedDistributionView == view) MaterialTheme.appColors.textPrimary else MaterialTheme.appColors.textSecondary

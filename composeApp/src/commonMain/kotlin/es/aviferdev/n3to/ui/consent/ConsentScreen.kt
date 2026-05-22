@@ -37,14 +37,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.core.browser.rememberUrlOpener
-import n3to.composeapp.generated.resources.Res
-import n3to.composeapp.generated.resources.consent_accept
-import n3to.composeapp.generated.resources.consent_crash_description
-import n3to.composeapp.generated.resources.consent_decline
-import n3to.composeapp.generated.resources.consent_privacy_policy
-import n3to.composeapp.generated.resources.onboarding_welcome_subtitle
-import n3to.composeapp.generated.resources.privacy_analytics_title
-import n3to.composeapp.generated.resources.privacy_crash_title
+import n3to.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -89,9 +82,7 @@ fun ConsentScreen(
             )
             Spacer(Modifier.height(12.dp))
             Text(
-                text = "Trackfolio funciona 100% sin internet. " +
-                        "Tus cuentas, transacciones y balances se guardan " +
-                        "solo en tu dispositivo. Eres el dueño de tus datos.",
+                text = stringResource(Res.string.consent_offline_description),
                 style = MaterialTheme.typography.bodyMedium,
                 textAlign = TextAlign.Center,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -108,76 +99,75 @@ fun ConsentScreen(
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     Text(
-                        "✅ Recopilamos (solo si nos ayudas):",
+                        stringResource(Res.string.consent_collect_title),
                         fontWeight = FontWeight.Bold,
                         style = MaterialTheme.typography.labelMedium,
                         color = MaterialTheme.colorScheme.primary
                     )
                     Spacer(Modifier.height(4.dp))
                     Text(
-                        "• Pantallas que visitas → para saber qué mejorar",
+                        stringResource(Res.string.consent_collect_screens),
                         style = MaterialTheme.typography.bodySmall
                     )
                     Text(
-                        "• Informes de errores → para arreglar fallos rápido",
+                        stringResource(Res.string.consent_collect_crashes),
                         style = MaterialTheme.typography.bodySmall
                     )
                     Spacer(Modifier.height(10.dp))
                     Text(
-                        "❌ NUNCA recopilamos:",
+                        stringResource(Res.string.consent_never_title),
                         fontWeight = FontWeight.Bold,
                         style = MaterialTheme.typography.labelMedium,
                         color = MaterialTheme.colorScheme.error
                     )
                     Spacer(Modifier.height(4.dp))
                     Text(
-                        "• Tus datos financieros (transacciones, cuentas, balances)",
+                        stringResource(Res.string.consent_never_financial),
                         style = MaterialTheme.typography.bodySmall
                     )
                     Text(
-                        "• Tu información personal (email, nombre, contactos)",
+                        stringResource(Res.string.consent_never_personal),
                         style = MaterialTheme.typography.bodySmall
                     )
                     Text(
-                        "• Tu ubicación",
+                        stringResource(Res.string.consent_never_location),
                         style = MaterialTheme.typography.bodySmall
                     )
                     Spacer(Modifier.height(10.dp))
                     Text(
-                        "✍️ Si envías feedback (voluntario):",
+                        stringResource(Res.string.consent_feedback_title),
                         fontWeight = FontWeight.Bold,
                         style = MaterialTheme.typography.labelMedium,
                         color = MaterialTheme.colorScheme.primary
                     )
                     Spacer(Modifier.height(4.dp))
                     Text(
-                        "• Solo recibimos tu sugerencia si decides enviarla desde el formulario de la app",
+                        stringResource(Res.string.consent_feedback_suggestion),
                         style = MaterialTheme.typography.bodySmall
                     )
                     Text(
-                        "• Te recomendamos no incluir datos personales en tu mensaje",
+                        stringResource(Res.string.consent_feedback_no_personal),
                         style = MaterialTheme.typography.bodySmall
                     )
                     Spacer(Modifier.height(10.dp))
                     Text(
-                        "💳 Si adquieres Trackfolio Premium:",
+                        stringResource(Res.string.consent_premium_title),
                         fontWeight = FontWeight.Bold,
                         style = MaterialTheme.typography.labelMedium,
                         color = MaterialTheme.colorScheme.primary
                     )
                     Spacer(Modifier.height(4.dp))
                     Text(
-                        "• RevenueCat procesa un identificador anónimo y tu historial de suscripción " +
-                                "para gestionar tu compra (necesario para el servicio)",
+                        stringResource(Res.string.consent_premium_revenuecat),
                         style = MaterialTheme.typography.bodySmall
                     )
                     Text(
-                        "• No compartimos tus datos financieros con RevenueCat",
+                        stringResource(Res.string.consent_premium_no_share),
                         style = MaterialTheme.typography.bodySmall
                     )
                     Spacer(Modifier.height(8.dp))
                     Text(
-                        "💡 Tus datos financieros nunca salen de tu dispositivo.",
+                        stringResource(Res.string.consent_data_stays_device),
                         fontWeight = FontWeight.Medium,
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -190,7 +180,7 @@ fun ConsentScreen(
             ConsentToggleItem(
                 icon = Icons.Default.Build,
                 title = stringResource(Res.string.privacy_analytics_title),
-                description = "Saber qué funciones usas más nos ayuda a pulir la app. Datos anónimos.",
+                description = stringResource(Res.string.consent_analytics_description),
                 checked = uiState.analytics,
                 onCheckedChange = viewModel::onAnalyticsToggle
             )
@@ -220,8 +210,7 @@ fun ConsentScreen(
             ) { Text(stringResource(Res.string.consent_decline), fontSize = 15.sp) }
             Spacer(Modifier.height(12.dp))
             Text(
-                "Ambos botones abren la app. Elegir uno u otro solo cambia " +
-                        "si nos dejas ayudarte a mejorarla.",
+                stringResource(Res.string.consent_both_buttons),
                 style = MaterialTheme.typography.labelSmall,
                 textAlign = TextAlign.Center,
                 color = MaterialTheme.colorScheme.onSurfaceVariant

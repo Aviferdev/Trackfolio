@@ -311,7 +311,7 @@ fun EditFixedIncomeBottomSheet(
 
             // ── Fecha de inicio ───────────────────────────────────────
             OutlinedTextField(
-                value = formatDate(startDateMillis),
+                value = formatDateLocalized(startDateMillis),
                 onValueChange = { },
                 label = { Text(stringResource(Res.string.fixedincome_start_date_label)) },
                 modifier = Modifier
@@ -325,7 +325,7 @@ fun EditFixedIncomeBottomSheet(
 
             // ── Fecha de vencimiento (auto-calculada) ──────────────────
             OutlinedTextField(
-                value = formatDate(maturityDateMillis),
+                value = formatDateLocalized(maturityDateMillis),
                 onValueChange = { },
                 label = { Text(stringResource(Res.string.fixedincome_maturity_date_label)) },
                 modifier = Modifier.fillMaxWidth(),

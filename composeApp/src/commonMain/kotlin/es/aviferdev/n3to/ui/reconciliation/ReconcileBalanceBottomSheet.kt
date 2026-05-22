@@ -39,7 +39,11 @@ import es.aviferdev.n3to.ui.theme.formatAmount
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.account_computed_balance
 import n3to.composeapp.generated.resources.reconciliation_adjust_label
+import n3to.composeapp.generated.resources.reconciliation_amount_placeholder
 import n3to.composeapp.generated.resources.reconciliation_done
+import n3to.composeapp.generated.resources.reconciliation_error_balanced
+import n3to.composeapp.generated.resources.reconciliation_error_generic
+import n3to.composeapp.generated.resources.reconciliation_error_invalid_amount
 import n3to.composeapp.generated.resources.reconciliation_real_balance
 import n3to.composeapp.generated.resources.reconciliation_title
 import org.jetbrains.compose.resources.stringResource
@@ -120,7 +124,7 @@ fun ReconcileBalanceBottomSheetContent(
             value = state.realBalanceInput,
             onValueChange = onRealBalanceChange,
             label = { Text(stringResource(Res.string.reconciliation_real_balance)) },
-            placeholder = { Text("Ej: 1250.00") },
+            placeholder = { Text(stringResource(Res.string.reconciliation_amount_placeholder)) },
             singleLine = true,
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Decimal,
@@ -167,7 +171,12 @@ fun ReconcileBalanceBottomSheetContent(
             val color =
                 if (state.isSuccess) MaterialTheme.appColors.primary else MaterialTheme.colorScheme.error
             Text(
-                text = msg,
+                text = when (msg) {
+                    is ReconciliationError.InvalidAmount -> stringResource(Res.string.reconciliation_error_invalid_amount)
+                    is ReconciliationError.AlreadyBalanced -> stringResource(Res.string.reconciliation_error_balanced)
+                    is ReconciliationError.Generic -> msg.message ?: stringResource(Res.string.reconciliation_error_generic)
+                    is ReconciliationError.Success -> msg.formattedMessage
+                },
                 fontSize = 13.sp,
                 color = color,
                 textAlign = TextAlign.Center,

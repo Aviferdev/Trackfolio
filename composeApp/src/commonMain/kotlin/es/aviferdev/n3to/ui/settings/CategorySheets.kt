@@ -45,6 +45,11 @@ import es.aviferdev.n3to.ui.theme.N3toTheme
 import es.aviferdev.n3to.ui.theme.PrimaryAlpha
 import es.aviferdev.n3to.ui.theme.appColors
 import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.category_annual_limit
+import n3to.composeapp.generated.resources.category_create_new
+import n3to.composeapp.generated.resources.category_edit_title
+import n3to.composeapp.generated.resources.category_income_percentage
+import n3to.composeapp.generated.resources.category_limit_amount
 import n3to.composeapp.generated.resources.category_name_placeholder
 import n3to.composeapp.generated.resources.category_remove_limit
 import n3to.composeapp.generated.resources.common_cancel
@@ -98,7 +103,7 @@ fun AddCategorySheet(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    "Nueva categoría",
+                    stringResource(Res.string.category_create_new),
                     fontSize = 16.sp,
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.appColors.textPrimary
@@ -222,7 +227,7 @@ fun EditCategorySheet(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    "Editar categoría",
+                    stringResource(Res.string.category_edit_title),
                     fontSize = 16.sp,
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.appColors.textPrimary
@@ -269,7 +274,7 @@ fun EditCategorySheet(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    "Límite anual",
+                    stringResource(Res.string.category_annual_limit),
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Medium,
                     color = MaterialTheme.appColors.textPrimary
@@ -309,7 +314,7 @@ fun EditCategorySheet(
 
             // ── AmountInputField (componente de importe nativo) ─────────────────
             AmountInputField(
-                label = if (limitType == LimitType.FIXED) "Importe del límite" else "Porcentaje de ingresos",
+                label = if (limitType == LimitType.FIXED) stringResource(Res.string.category_limit_amount) else stringResource(Res.string.category_income_percentage),
                 value = limitText,
                 onChange = { newValue ->
                     val filtered = newValue.filter { it.isDigit() || it == ',' || it == '.' }

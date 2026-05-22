@@ -49,6 +49,7 @@ import n3to.composeapp.generated.resources.common_delete
 import n3to.composeapp.generated.resources.common_edit
 import n3to.composeapp.generated.resources.common_error
 import n3to.composeapp.generated.resources.error_issuer_already_exists
+import n3to.composeapp.generated.resources.income_type_archive_message
 import n3to.composeapp.generated.resources.income_type_archive_title
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -114,7 +115,7 @@ fun IncomeTypeDetailScreen(
             },
             text = {
                 Text(
-                    "Se archivará «${pending.name}». No aparecerá en los selectores de ingresos nuevos, pero los movimientos históricos conservarán la referencia.",
+                    stringResource(Res.string.income_type_archive_message, pending.name),
                     fontSize = 14.sp, color = MaterialTheme.appColors.textSecondary
                 )
             },

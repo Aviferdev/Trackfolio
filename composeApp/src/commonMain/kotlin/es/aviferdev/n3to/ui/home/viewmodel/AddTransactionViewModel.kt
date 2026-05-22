@@ -34,11 +34,18 @@ import kotlinx.coroutines.launch
 import kotlin.math.abs
 import kotlin.math.floor
 
+sealed class AddTransactionError {
+    data object NoAccount : AddTransactionError()
+    data object InvalidNet : AddTransactionError()
+    data object CalculateNet : AddTransactionError()
+    data class Unknown(val message: String?) : AddTransactionError()
+}
+
 sealed class AddTransactionUiState {
     data object Idle : AddTransactionUiState()
     data object Loading : AddTransactionUiState()
     data object Success : AddTransactionUiState()
-    data class Error(val message: String) : AddTransactionUiState()
+    data class Error(val error: AddTransactionError) : AddTransactionUiState()
 }
 
 class AddTransactionViewModel(
@@ -398,7 +405,7 @@ class AddTransactionViewModel(
         _formUiState.value = AddTransactionUiState.Loading
         viewModelScope.launch {
             val accountId = session.selectedAccountId.value ?: run {
-                _formUiState.value = AddTransactionUiState.Error("No hay cuenta seleccionada")
+                _formUiState.value = AddTransactionUiState.Error(AddTransactionError.NoAccount)
                 return@launch
             }
             val now = nowMillis()
@@ -423,7 +430,7 @@ class AddTransactionViewModel(
         // Modo solo neto
         if (incomeInputMode == IncomeInputMode.NET_ONLY) {
             val net = netAmount.replace(',', '.').toDoubleOrNull() ?: run {
-                _formUiState.value = AddTransactionUiState.Error("Importe neto inválido")
+                _formUiState.value = AddTransactionUiState.Error(AddTransactionError.InvalidNet)
                 return
             }
             val finalIssuerName = issuers.find { it.id == selectedIssuerId }?.name
@@ -447,7 +454,7 @@ class AddTransactionViewModel(
         }
 
         val net = calculatedNet ?: run {
-            _formUiState.value = AddTransactionUiState.Error("No se pudo calcular el neto")
+            _formUiState.value = AddTransactionUiState.Error(AddTransactionError.CalculateNet)
             return
         }
 
@@ -538,7 +545,7 @@ class AddTransactionViewModel(
         }
         result
             .onSuccess { _formUiState.value = AddTransactionUiState.Success }
-            .onFailure { _formUiState.value = AddTransactionUiState.Error(it.message ?: "Error") }
+            .onFailure { _formUiState.value = AddTransactionUiState.Error(AddTransactionError.Unknown(it.message)) }
     }
 
     override fun clear() {

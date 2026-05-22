@@ -19,13 +19,21 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.ui.theme.appColors
-import es.aviferdev.n3to.ui.theme.formatAmountEuro
 
 /**
  * Diálogo que se muestra cuando se detecta un precio anómalo (sospechoso).
  *
  * - [Warning]: Variación >50%, pregunta si confirmar.
  * - [Suspicious]: Variación >500%, sugiere corrección y bloquea.
+ *
+ * @param titleWarning Título para modo warning (no bloqueante)
+ * @param titleSuspicious Título para modo sospechoso (bloqueante)
+ * @param bodyText Texto del cuerpo con formato: precio nuevo, cambio %, precio anterior
+ * @param btnCorrect Texto del botón "Corregir (÷10)"
+ * @param btnUsePrevious Texto del botón "Usar precio anterior"
+ * @param btnKeepEntered Texto del botón "Mantener precio introducido"
+ * @param btnForceSave Texto del botón "Sí, guardar de todas formas"
+ * @param btnCancel Texto del botón "Cancelar"
  */
 @Composable
 fun PriceAnomalyDialog(
@@ -34,6 +42,14 @@ fun PriceAnomalyDialog(
     percentChange: Double,
     likelyCause: String?,
     isBlocking: Boolean,
+    titleWarning: String,
+    titleSuspicious: String,
+    bodyText: String,
+    btnCorrect: String,
+    btnUsePrevious: String,
+    btnKeepEntered: String,
+    btnForceSave: String,
+    btnCancel: String,
     onCorrect: (Double) -> Unit,
     onForceSave: () -> Unit,
     onDismiss: () -> Unit
@@ -44,7 +60,7 @@ fun PriceAnomalyDialog(
         shape = RoundedCornerShape(16.dp),
         title = {
             Text(
-                text = if (isBlocking) "⚠️ Precio sospechoso" else "Precio inusual",
+                text = if (isBlocking) titleSuspicious else titleWarning,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.appColors.textPrimary
@@ -53,12 +69,7 @@ fun PriceAnomalyDialog(
         text = {
             Column {
                 Text(
-                    text = buildString {
-                        val changeStr = "${(kotlin.math.abs(percentChange) * 10).toInt() / 10.0}"
-                        appendLine("El precio que has introducido (${formatAmountEuro(newPrice)})")
-                        appendLine("varía un ${changeStr}%")
-                        appendLine("respecto al precio anterior (${formatAmountEuro(previousPrice)}).")
-                    },
+                    text = bodyText,
                     fontSize = 13.sp,
                     color = MaterialTheme.appColors.textSecondary,
                     lineHeight = 20.sp
@@ -78,7 +89,6 @@ fun PriceAnomalyDialog(
         },
         confirmButton = {
             if (isBlocking) {
-                // Para sospechoso: sugerir corrección
                 Button(
                     onClick = {
                         val corrected = if (newPrice / previousPrice in 9.0..11.0) {
@@ -98,9 +108,9 @@ fun PriceAnomalyDialog(
                 ) {
                     Text(
                         text = if (newPrice / previousPrice in 9.0..11.0 || newPrice / previousPrice in 0.09..0.11) {
-                            "Corregir (÷10)"
+                            btnCorrect
                         } else {
-                            "Usar precio anterior"
+                            btnUsePrevious
                         },
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Medium
@@ -113,13 +123,12 @@ fun PriceAnomalyDialog(
                     shape = RoundedCornerShape(10.dp)
                 ) {
                     Text(
-                        "Mantener precio introducido",
+                        btnKeepEntered,
                         fontSize = 14.sp,
                         color = MaterialTheme.appColors.textSecondary
                     )
                 }
             } else {
-                // Para warning: confirmar
                 Button(
                     onClick = onForceSave,
                     modifier = Modifier.fillMaxWidth(),
@@ -129,7 +138,7 @@ fun PriceAnomalyDialog(
                     )
                 ) {
                     Text(
-                        "Sí, guardar de todas formas",
+                        btnForceSave,
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Medium
                     )
@@ -138,7 +147,7 @@ fun PriceAnomalyDialog(
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("Cancelar", fontSize = 14.sp, color = MaterialTheme.appColors.textSecondary)
+                Text(btnCancel, fontSize = 14.sp, color = MaterialTheme.appColors.textSecondary)
             }
         }
     )

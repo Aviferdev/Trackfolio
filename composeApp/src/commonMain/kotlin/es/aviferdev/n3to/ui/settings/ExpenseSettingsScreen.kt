@@ -51,6 +51,8 @@ import n3to.composeapp.generated.resources.common_edit
 import n3to.composeapp.generated.resources.common_error
 import n3to.composeapp.generated.resources.error_category_already_exists
 import n3to.composeapp.generated.resources.expense_categories_section
+import n3to.composeapp.generated.resources.expense_delete_category_message
+import n3to.composeapp.generated.resources.expense_delete_category_title
 import n3to.composeapp.generated.resources.expense_no_categories
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -116,7 +118,7 @@ fun ExpenseSettingsScreen(
             icon = { Text("\uD83D\uDDC2\uFE0F", fontSize = 28.sp) },
             title = {
                 Text(
-                    "Eliminar categoría",
+                    stringResource(Res.string.expense_delete_category_title),
                     fontSize = 17.sp,
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.appColors.textPrimary
@@ -124,7 +126,7 @@ fun ExpenseSettingsScreen(
             },
             text = {
                 Text(
-                    "Se eliminará «${pending.name}» del listado. Los movimientos que ya tengan asignada esta categoría conservarán su nombre y no se perderán datos.",
+                    stringResource(Res.string.expense_delete_category_message, pending.name),
                     fontSize = 14.sp,
                     color = MaterialTheme.appColors.textSecondary
                 )

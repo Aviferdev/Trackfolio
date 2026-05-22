@@ -23,6 +23,13 @@ sealed class BackupUiState {
     data class Error(val message: String) : BackupUiState()
 }
 
+sealed class BackupError {
+    data object PasswordMinLength : BackupError()
+    data object PasswordMismatch : BackupError()
+    data object PasswordRequired : BackupError()
+    data class Unknown(val message: String?) : BackupError()
+}
+
 // Controla qué sheet de contraseña está abierto
 enum class BackupAction { NONE, EXPORT, IMPORT }
 
@@ -30,7 +37,7 @@ data class BackupSheetState(
     val action: BackupAction = BackupAction.NONE,
     val password: String = "",
     val confirmPassword: String = "",
-    val passwordError: String? = null,
+    val passwordError: BackupError? = null,
     val backupState: BackupUiState = BackupUiState.Idle
 )
 
@@ -118,13 +125,13 @@ class BackupViewModel(
             s.password.length < 6 -> {
                 println("[BackupVM] · password demasiado corta")
                 _state.value =
-                    s.copy(passwordError = "La contraseña debe tener al menos 6 caracteres")
+                    s.copy(passwordError = BackupError.PasswordMinLength)
                 return
             }
 
             s.password != s.confirmPassword -> {
                 println("[BackupVM] · contraseñas no coinciden")
-                _state.value = s.copy(passwordError = "Las contraseñas no coinciden")
+                _state.value = s.copy(passwordError = BackupError.PasswordMismatch)
                 return
             }
         }
@@ -161,7 +168,7 @@ class BackupViewModel(
     fun confirmImport() {
         val s = _state.value
         if (s.password.isBlank()) {
-            _state.value = s.copy(passwordError = "Introduce la contraseña del backup")
+            _state.value = s.copy(passwordError = BackupError.PasswordRequired)
             return
         }
         _state.value = s.copy(backupState = BackupUiState.Loading)
@@ -174,7 +181,7 @@ class BackupViewModel(
 
                     is BackupResult.Error -> _state.value.copy(
                         backupState = BackupUiState.Error(result.message),
-                        passwordError = result.message
+                        passwordError = BackupError.Unknown(result.message)
                     )
                 }
             }

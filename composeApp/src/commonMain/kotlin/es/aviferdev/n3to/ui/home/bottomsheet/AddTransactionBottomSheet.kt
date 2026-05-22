@@ -79,10 +79,14 @@ import n3to.composeapp.generated.resources.common_amount_label
 import n3to.composeapp.generated.resources.common_category_label
 import n3to.composeapp.generated.resources.common_close
 import n3to.composeapp.generated.resources.common_description_label
+import n3to.composeapp.generated.resources.common_error
 import n3to.composeapp.generated.resources.common_save_changes
 import n3to.composeapp.generated.resources.fiscal_commissions_short
 import n3to.composeapp.generated.resources.portfolio_add_tx_gross
 import n3to.composeapp.generated.resources.transaction_edit_title
+import n3to.composeapp.generated.resources.transaction_error_calculate_net
+import n3to.composeapp.generated.resources.transaction_error_invalid_net
+import n3to.composeapp.generated.resources.transaction_error_no_account
 import n3to.composeapp.generated.resources.transaction_income_type_label
 import n3to.composeapp.generated.resources.transaction_mode_fiscal
 import n3to.composeapp.generated.resources.transaction_mode_net_only
@@ -95,6 +99,7 @@ import n3to.composeapp.generated.resources.transaction_select_category
 import n3to.composeapp.generated.resources.transaction_select_income_type
 import n3to.composeapp.generated.resources.transaction_type_expense
 import n3to.composeapp.generated.resources.transaction_type_income
+import es.aviferdev.n3to.ui.home.viewmodel.AddTransactionError
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -519,7 +524,12 @@ private fun AddTransactionSheetContent(
         if (uiState is AddTransactionUiState.Error) {
             Spacer(Modifier.height(8.dp))
             Text(
-                text = uiState.message,
+                text = when (val err = uiState.error) {
+                    is AddTransactionError.NoAccount -> stringResource(Res.string.transaction_error_no_account)
+                    is AddTransactionError.InvalidNet -> stringResource(Res.string.transaction_error_invalid_net)
+                    is AddTransactionError.CalculateNet -> stringResource(Res.string.transaction_error_calculate_net)
+                    is AddTransactionError.Unknown -> err.message ?: stringResource(Res.string.common_error)
+                },
                 color = MaterialTheme.appColors.expense,
                 fontSize = 13.sp,
                 modifier = Modifier.padding(bottom = 8.dp)

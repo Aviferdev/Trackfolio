@@ -46,6 +46,12 @@ import es.aviferdev.n3to.ui.theme.N3toTheme
 
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.networth_title
+import n3to.composeapp.generated.resources.onboarding_example_label
+import n3to.composeapp.generated.resources.onboarding_realestate_contribution
+import n3to.composeapp.generated.resources.onboarding_realestate_mortgage_label
+import n3to.composeapp.generated.resources.onboarding_realestate_name
+import n3to.composeapp.generated.resources.onboarding_realestate_type
+import n3to.composeapp.generated.resources.onboarding_realestate_value_label
 import n3to.composeapp.generated.resources.onboarding_seccion_patrimonio
 import n3to.composeapp.generated.resources.realestate_detail_title
 import org.jetbrains.compose.resources.stringResource
@@ -192,13 +198,13 @@ private fun ViviendaMockCard() {
 
                 Column(Modifier.weight(1f)) {
                     Text(
-                        text = "Mi vivienda",
+                        text = stringResource(Res.string.onboarding_realestate_name),
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.appColors.textPrimary
                     )
                     Text(
-                        text = "Activo inmobiliario",
+                        text = stringResource(Res.string.onboarding_realestate_type),
                         fontSize = 10.sp,
                         color = MaterialTheme.appColors.textTertiary
                     )
@@ -206,7 +212,7 @@ private fun ViviendaMockCard() {
 
                 // Badge EJEMPLO
                 Text(
-                    text = "EJEMPLO",
+                    text = stringResource(Res.string.onboarding_example_label),
                     fontSize = 9.sp,
                     fontWeight = FontWeight.Bold,
                     letterSpacing = 0.6.sp,
@@ -228,7 +234,7 @@ private fun ViviendaMockCard() {
             ) {
                 Column(Modifier.weight(1f)) {
                     Text(
-                        text = "VALOR ESTIMADO",
+                        text = stringResource(Res.string.onboarding_realestate_value_label),
                         fontSize = 9.sp,
                         fontWeight = FontWeight.Bold,
                         letterSpacing = 0.5.sp,
@@ -245,7 +251,7 @@ private fun ViviendaMockCard() {
                 }
                 Column(Modifier.weight(1f)) {
                     Text(
-                        text = "HIPOTECA",
+                        text = stringResource(Res.string.onboarding_realestate_mortgage_label),
                         fontSize = 9.sp,
                         fontWeight = FontWeight.Bold,
                         letterSpacing = 0.5.sp,
@@ -271,8 +277,8 @@ private fun ViviendaMockCard() {
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.Bottom
             ) {
-                Text(
-                    text = "Aporta a tu patrimonio",
+                    Text(
+                        text = stringResource(Res.string.onboarding_realestate_contribution),
                     fontSize = 11.sp,
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.appColors.textSecondary
@@ -312,7 +318,7 @@ private fun HintPill() {
                         fontWeight = FontWeight.ExtraBold
                     )
                 ) {
-                    append("Patrimonio")
+                    append(stringResource(Res.string.networth_title))
                 }
                 append(".")
             },

@@ -59,8 +59,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.platform.nowMonth
 import es.aviferdev.n3to.platform.nowYear
-import es.aviferdev.n3to.ui.common.help.HelpContent
-import es.aviferdev.n3to.ui.common.help.HelpKeys
 import es.aviferdev.n3to.ui.common.help.HelpTooltipIcon
 import es.aviferdev.n3to.ui.common.input.InlineAmountField
 import es.aviferdev.n3to.ui.common.navigation.TimeStepperHeader
@@ -75,14 +73,19 @@ import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.common_close
 import n3to.composeapp.generated.resources.common_save
 import n3to.composeapp.generated.resources.goal_base_placeholder
+import n3to.composeapp.generated.resources.goal_customize_months_section
 import n3to.composeapp.generated.resources.goal_investment_base_label
+import n3to.composeapp.generated.resources.goal_investment_description
 import n3to.composeapp.generated.resources.goal_investment_placeholder
 import n3to.composeapp.generated.resources.goal_onboarding_badge
 import n3to.composeapp.generated.resources.goal_onboarding_subtitle
 import n3to.composeapp.generated.resources.goal_savings_base_label
+import n3to.composeapp.generated.resources.goal_savings_description
 import n3to.composeapp.generated.resources.goal_savings_placeholder
 import n3to.composeapp.generated.resources.home_goals_investment
 import n3to.composeapp.generated.resources.home_goals_savings
+import n3to.composeapp.generated.resources.help_customize_months_body
+import n3to.composeapp.generated.resources.help_customize_months_title
 import n3to.composeapp.generated.resources.settings_monthly_goals_label
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -172,7 +175,7 @@ fun GoalSettingsScreen(
                                 },
                                 iconBackground = MaterialTheme.appColors.income.copy(alpha = 0.12f),
                                 label = stringResource(Res.string.goal_savings_base_label),
-                                description = "Lo que reservas cada mes como ahorro líquido o en cuenta de ahorro."
+                                description = stringResource(Res.string.goal_savings_description)
                             )
                             Spacer(Modifier.height(12.dp))
                             OutlinedTextField(
@@ -222,7 +225,7 @@ fun GoalSettingsScreen(
                                 },
                                 iconBackground = MaterialTheme.appColors.cyanAccent.copy(alpha = 0.12f),
                                 label = stringResource(Res.string.goal_investment_base_label),
-                                description = "Lo que destinas a compra de activos: acciones, fondos, ETFs, etc."
+                                description = stringResource(Res.string.goal_investment_description)
                             )
                             Spacer(Modifier.height(12.dp))
                             OutlinedTextField(
@@ -269,7 +272,7 @@ fun GoalSettingsScreen(
                             ) {
                                 Column {
                                     Text(
-                                        "PERSONALIZAR MESES",
+                                        stringResource(Res.string.goal_customize_months_section),
                                         fontSize = 10.sp,
                                         fontWeight = FontWeight.SemiBold,
                                         letterSpacing = 0.8.sp,
@@ -285,8 +288,8 @@ fun GoalSettingsScreen(
                                     )
                                 }
                                 HelpTooltipIcon(
-                                    title = HelpContent.texts[HelpKeys.GOAL_CUSTOMIZE]?.title ?: "",
-                                    body = HelpContent.texts[HelpKeys.GOAL_CUSTOMIZE]?.body ?: ""
+                                    title = stringResource(Res.string.help_customize_months_title),
+                                    body = stringResource(Res.string.help_customize_months_body)
                                 )
                             }
 

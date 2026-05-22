@@ -62,6 +62,7 @@ import n3to.composeapp.generated.resources.account_delete_confirm_title
 import n3to.composeapp.generated.resources.account_delete_full_message
 import n3to.composeapp.generated.resources.account_empty_subtitle
 import n3to.composeapp.generated.resources.account_list_title
+import n3to.composeapp.generated.resources.account_initial_balance
 import n3to.composeapp.generated.resources.account_no_accounts
 import n3to.composeapp.generated.resources.common_delete
 import n3to.composeapp.generated.resources.common_edit
@@ -293,7 +294,7 @@ private fun AccountCard(
                             }
                         }
                         Text(
-                            text = if (account.needsInitialBalance) "Saldo inicial pendiente" else "€",
+                            text = if (account.needsInitialBalance) stringResource(Res.string.account_initial_balance) else "€",
                             fontSize = 12.sp,
                             color = if (account.needsInitialBalance) MaterialTheme.appColors.expense else MaterialTheme.appColors.textSecondary
                         )

@@ -37,7 +37,12 @@ import es.aviferdev.n3to.ui.portfolio.AssetHistoryUiState
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import es.aviferdev.n3to.ui.theme.appColors
 import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.asset_history_new_movement
+import n3to.composeapp.generated.resources.asset_history_title_fallback
 import n3to.composeapp.generated.resources.error_asset_not_found
+import n3to.composeapp.generated.resources.portfolio_dividend_register
+import n3to.composeapp.generated.resources.portfolio_dividend_title_alt
+import n3to.composeapp.generated.resources.portfolio_transfer_confirm
 import n3to.composeapp.generated.resources.portfolio_update_price_title
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -66,7 +71,7 @@ fun AssetHistoryContent(
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
             TopBarWithActionsApp(
-                title = state.asset?.ticker ?: "Activo",
+                title = state.asset?.ticker ?: stringResource(Res.string.asset_history_title_fallback),
                 subtitle = state.asset?.name,
                 navigateBack = onBack,
                 actions = {
@@ -166,7 +171,7 @@ fun AssetHistoryContent(
                     if (state.dividends.isNotEmpty()) {
                         item {
                             SectionLabel(
-                                "Dividendos",
+                                stringResource(Res.string.portfolio_dividend_title_alt),
                                 modifier = Modifier.padding(
                                     start = 16.dp,
                                     top = 18.dp,
@@ -211,7 +216,7 @@ fun AssetHistoryContent(
                         DropdownMenuItem(
                             text = {
                                 Text(
-                                    "Nuevo movimiento",
+                                    stringResource(Res.string.asset_history_new_movement),
                                     color = MaterialTheme.appColors.textPrimary,
                                     fontSize = 14.sp
                                 )
@@ -222,7 +227,7 @@ fun AssetHistoryContent(
                         DropdownMenuItem(
                             text = {
                                 Text(
-                                    "Registrar dividendo",
+                                    stringResource(Res.string.portfolio_dividend_register),
                                     color = MaterialTheme.appColors.textPrimary,
                                     fontSize = 14.sp
                                 )
@@ -241,7 +246,7 @@ fun AssetHistoryContent(
                         DropdownMenuItem(
                             text = {
                                 Text(
-                                    "Traspasar fondo",
+                                    stringResource(Res.string.portfolio_transfer_confirm),
                                     color = MaterialTheme.appColors.textPrimary,
                                     fontSize = 14.sp
                                 )

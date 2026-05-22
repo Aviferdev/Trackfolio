@@ -42,8 +42,22 @@ import es.aviferdev.n3to.ui.common.component.NavyTabRow
 import es.aviferdev.n3to.ui.common.topbar.TopBarWithActionsApp
 import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.ui.theme.formatAmount
-import es.aviferdev.n3to.ui.theme.formatDate
+import es.aviferdev.n3to.ui.theme.formatDateLocalized
 import es.aviferdev.n3to.ui.theme.formatPercent
+import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.common_update
+import n3to.composeapp.generated.resources.savings_rates_cancellation_no
+import n3to.composeapp.generated.resources.savings_rates_cancellation_yes
+import n3to.composeapp.generated.resources.savings_rates_country
+import n3to.composeapp.generated.resources.savings_rates_max
+import n3to.composeapp.generated.resources.savings_rates_medium_term
+import n3to.composeapp.generated.resources.savings_rates_min
+import n3to.composeapp.generated.resources.savings_rates_offline
+import n3to.composeapp.generated.resources.savings_rates_short_term
+import n3to.composeapp.generated.resources.savings_rates_term
+import n3to.composeapp.generated.resources.savings_rates_title
+import n3to.composeapp.generated.resources.savings_rates_updated_format
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -61,13 +75,13 @@ fun SavingsRatesScreen(
             .windowInsetsPadding(WindowInsets.statusBars)
     ) {
         TopBarWithActionsApp(
-            title = "Cuentas remuneradas",
+            title = stringResource(Res.string.savings_rates_title),
             navigateBack = onNavigateBack,
             actions = {
                 IconButton(onClick = { viewModel.refresh() }) {
                     Icon(
                         imageVector = Icons.Outlined.Refresh,
-                        contentDescription = "Actualizar",
+                        contentDescription = stringResource(Res.string.common_update),
                         tint = MaterialTheme.appColors.textSecondary
                     )
                 }
@@ -80,7 +94,7 @@ fun SavingsRatesScreen(
             onSelect = { viewModel.selectTab(it) },
             modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
             content = { tab ->
-                val text = if (tab == SavingsRateType.SHORT_TERM) "Corto plazo" else "Medio plazo"
+                val text = if (tab == SavingsRateType.SHORT_TERM) stringResource(Res.string.savings_rates_short_term) else stringResource(Res.string.savings_rates_medium_term)
                 Text(
                     text = text,
                     fontSize = 12.sp,
@@ -92,7 +106,7 @@ fun SavingsRatesScreen(
 
         if (state.isStale) {
             Text(
-                text = "Sin conexión — mostrando datos anteriores",
+                text = stringResource(Res.string.savings_rates_offline),
                 fontSize = 11.sp,
                 color = MaterialTheme.appColors.warnAmber,
                 modifier = Modifier
@@ -103,7 +117,7 @@ fun SavingsRatesScreen(
 
         state.lastUpdatedAt?.let { ts ->
             Text(
-                text = "Actualizado: ${formatDate(ts)}",
+                text = stringResource(Res.string.savings_rates_updated_format, formatDateLocalized(ts)),
                 fontSize = 11.sp,
                 color = MaterialTheme.appColors.textTertiary,
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 2.dp)
@@ -188,16 +202,16 @@ private fun SavingsRateCard(rate: SavingsRate, modifier: Modifier = Modifier) {
 
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 rate.maxAmount?.let { max ->
-                    MetaChip(label = "Máx", value = "€${formatAmount(max)}")
+                    MetaChip(label = stringResource(Res.string.savings_rates_max), value = "€${formatAmount(max)}")
                 }
                 rate.minAmount?.let { min ->
-                    MetaChip(label = "Mín", value = "€${formatAmount(min)}")
+                    MetaChip(label = stringResource(Res.string.savings_rates_min), value = "€${formatAmount(min)}")
                 }
                 rate.termMonths?.let { months ->
-                    MetaChip(label = "Plazo", value = "${months}m")
+                    MetaChip(label = stringResource(Res.string.savings_rates_term), value = "${months}m")
                 }
                 rate.country?.let { country ->
-                    MetaChip(label = "País", value = country)
+                    MetaChip(label = stringResource(Res.string.savings_rates_country), value = country)
                 }
             }
 
@@ -213,7 +227,7 @@ private fun SavingsRateCard(rate: SavingsRate, modifier: Modifier = Modifier) {
 
             if (rate.type == SavingsRateType.MEDIUM_TERM) {
                 val badges = buildList {
-                    rate.earlyRedemption?.let { if (it) add("Cancelación: Sí") else add("Cancelación: No") }
+                    rate.earlyRedemption?.let { if (it) add(stringResource(Res.string.savings_rates_cancellation_yes)) else add(stringResource(Res.string.savings_rates_cancellation_no)) }
                     rate.fgdGuaranteed?.let { if (it) add("FGD") }
                     rate.obligation720?.let { if (it) add("720") }
                 }

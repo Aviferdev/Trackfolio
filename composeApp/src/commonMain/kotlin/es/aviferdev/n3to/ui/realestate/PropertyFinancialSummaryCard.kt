@@ -18,7 +18,11 @@ import es.aviferdev.n3to.ui.common.SectionHeader
 import es.aviferdev.n3to.ui.theme.*
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.fixedincome_yield_current
+import n3to.composeapp.generated.resources.fixedincome_yield_gross
 import n3to.composeapp.generated.resources.realestate_cashflow_label
+import n3to.composeapp.generated.resources.realestate_expenses_ledger
+import n3to.composeapp.generated.resources.realestate_income_ledger
 import n3to.composeapp.generated.resources.realestate_profitability_label
 import n3to.composeapp.generated.resources.realestate_purchase_expenses
 import n3to.composeapp.generated.resources.realestate_sale_expenses
@@ -42,11 +46,11 @@ fun PropertyFinancialSummaryCard(
 
             if (summary.grossYieldOnPurchase > 0 || summary.grossYieldOnCurrent > 0) {
                 DataRowLabel(
-                    "Yield bruto s/ compra",
+                    stringResource(Res.string.fixedincome_yield_gross),
                     "${formatPercent(summary.grossYieldOnPurchase)}%"
                 )
                 DataRowLabel(
-                    "Yield bruto s/ valor actual",
+                    stringResource(Res.string.fixedincome_yield_current),
                     "${formatPercent(summary.grossYieldOnCurrent)}%"
                 )
                 Spacer(Modifier.height(8.dp))
@@ -54,8 +58,8 @@ fun PropertyFinancialSummaryCard(
                 Spacer(Modifier.height(8.dp))
             }
 
-            DataRowLabel("Ingresos (ledger)", formatAmountEuro(summary.totalIncome))
-            DataRowLabel("Gastos (ledger)", formatAmountEuro(summary.totalExpenses))
+            DataRowLabel(stringResource(Res.string.realestate_income_ledger), formatAmountEuro(summary.totalIncome))
+            DataRowLabel(stringResource(Res.string.realestate_expenses_ledger), formatAmountEuro(summary.totalExpenses))
 
             // Gastos de compra/venta
             if (summary.totalPurchaseExpenses > 0) {

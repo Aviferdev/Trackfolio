@@ -23,6 +23,8 @@ import es.aviferdev.n3to.ui.common.toMaterialIcon
 import es.aviferdev.n3to.ui.theme.*
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.common_none
+import n3to.composeapp.generated.resources.loan_picker_subtitle
+import n3to.composeapp.generated.resources.loan_picker_title
 import n3to.composeapp.generated.resources.realestate_loan_only_mortgages
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -64,14 +66,14 @@ fun LoanPickerSheet(
         ) {
             // Título
             Text(
-                "Seleccionar préstamo",
+                stringResource(Res.string.loan_picker_title),
                 fontWeight = FontWeight.Bold,
                 fontSize = 18.sp,
                 color = MaterialTheme.appColors.textPrimary
             )
             Spacer(Modifier.height(4.dp))
             Text(
-                "Vincula una hipoteca o préstamo existente",
+                stringResource(Res.string.loan_picker_subtitle),
                 fontSize = 13.sp,
                 color = MaterialTheme.appColors.textTertiary
             )

@@ -67,9 +67,10 @@ import es.aviferdev.n3to.ui.theme.PrimaryAlpha
 import es.aviferdev.n3to.ui.theme.PrimaryDark
 
 import es.aviferdev.n3to.ui.theme.formatAmount
-import es.aviferdev.n3to.ui.theme.formatDate
+import es.aviferdev.n3to.ui.theme.formatDateLocalized
 import es.aviferdev.n3to.ui.theme.maskAmount
 import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.common_delete
 import n3to.composeapp.generated.resources.common_search_cd
 import n3to.composeapp.generated.resources.realestate_detail_title
 import n3to.composeapp.generated.resources.transaction_filter_expense
@@ -242,7 +243,7 @@ internal fun TransactionCard(
         !transaction.notes.isNullOrBlank() -> transaction.notes
         else -> null
     }
-    val dateFormatted = formatDate(transaction.date)
+    val dateFormatted = formatDateLocalized(transaction.date)
 
     Row(
         modifier = Modifier.fillMaxWidth().background(MaterialTheme.appColors.surface)
@@ -415,7 +416,7 @@ internal fun SwipeToDeleteContainer(onDelete: () -> Unit, content: @Composable (
                 contentAlignment = Alignment.CenterEnd
             ) {
                 Text(
-                    "Eliminar",
+                    stringResource(Res.string.common_delete),
                     color = Color.White,
                     fontSize = 13.sp,
                     fontWeight = FontWeight.Medium

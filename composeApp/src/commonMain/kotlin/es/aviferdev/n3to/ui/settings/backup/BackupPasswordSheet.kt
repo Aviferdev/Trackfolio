@@ -46,6 +46,9 @@ import es.aviferdev.n3to.ui.theme.appColors
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.backup_confirm_password
 import n3to.composeapp.generated.resources.backup_encryption_password
+import n3to.composeapp.generated.resources.backup_error_password_min_length
+import n3to.composeapp.generated.resources.backup_error_password_mismatch
+import n3to.composeapp.generated.resources.backup_error_password_required
 import n3to.composeapp.generated.resources.backup_export_and_share
 import n3to.composeapp.generated.resources.backup_export_description
 import n3to.composeapp.generated.resources.backup_export_success
@@ -58,6 +61,7 @@ import n3to.composeapp.generated.resources.backup_restore
 import n3to.composeapp.generated.resources.backup_restore_password
 import n3to.composeapp.generated.resources.common_cancel
 import n3to.composeapp.generated.resources.common_close
+import n3to.composeapp.generated.resources.common_error
 import n3to.composeapp.generated.resources.common_hide
 import n3to.composeapp.generated.resources.common_show
 import n3to.composeapp.generated.resources.common_understood
@@ -224,7 +228,16 @@ fun BackupPasswordSheet(
                 // Error de validación de contraseña
                 state.passwordError?.let { err ->
                     Spacer(Modifier.height(6.dp))
-                    Text(err, fontSize = 12.sp, color = MaterialTheme.appColors.expense)
+                    Text(
+                        when (err) {
+                            is BackupError.PasswordMinLength -> stringResource(Res.string.backup_error_password_min_length)
+                            is BackupError.PasswordMismatch -> stringResource(Res.string.backup_error_password_mismatch)
+                            is BackupError.PasswordRequired -> stringResource(Res.string.backup_error_password_required)
+                            is BackupError.Unknown -> err.message ?: stringResource(Res.string.common_error)
+                        },
+                        fontSize = 12.sp,
+                        color = MaterialTheme.appColors.expense
+                    )
                 }
 
                 // Error devuelto por la operación de backup (no validación)

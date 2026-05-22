@@ -36,10 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.ui.theme.ErrorSoft
 import es.aviferdev.n3to.ui.theme.appColors
-import n3to.composeapp.generated.resources.Res
-import n3to.composeapp.generated.resources.security_biometric_not_available
-import n3to.composeapp.generated.resources.security_unlock_hint
-import n3to.composeapp.generated.resources.security_unlock_title
+import n3to.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -126,7 +123,7 @@ fun LockScreen(onUnlocked: () -> Unit) {
             )
             Spacer(Modifier.height(8.dp))
             Text(
-                "La app está bloqueada.\nAutentícate para continuar.",
+                stringResource(Res.string.security_locked_message),
                 fontSize = 14.sp,
                 color = appCTextSecondary,
                 textAlign = TextAlign.Center
@@ -172,7 +169,7 @@ fun LockScreen(onUnlocked: () -> Unit) {
                     )
                 } else {
                     Text(
-                        "Desbloquear",
+                        stringResource(Res.string.security_unlock_button),
                         fontSize = 16.sp,
                         fontWeight = FontWeight.SemiBold,
                         color = appCNavyDeep

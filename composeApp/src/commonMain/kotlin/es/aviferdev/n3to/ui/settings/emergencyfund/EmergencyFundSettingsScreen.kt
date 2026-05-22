@@ -56,9 +56,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.EmergencyFundMethod
-import es.aviferdev.n3to.ui.common.help.HelpContent
 import es.aviferdev.n3to.ui.common.input.StepSlider
-import es.aviferdev.n3to.ui.common.help.HelpKeys
 import es.aviferdev.n3to.ui.common.help.HelpTooltipIcon
 import es.aviferdev.n3to.ui.common.topbar.TopBarWithActionsApp
 import es.aviferdev.n3to.ui.settings.emergencyfund.components.CategoryExclusionRow
@@ -72,6 +70,8 @@ import kotlinx.coroutines.delay
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.common_save
 import n3to.composeapp.generated.resources.ef_average_expense_label
+import n3to.composeapp.generated.resources.help_emergency_fund_body
+import n3to.composeapp.generated.resources.help_emergency_fund_title
 import n3to.composeapp.generated.resources.ef_estimated_expense_label
 import n3to.composeapp.generated.resources.ef_exclude_categories_hint
 import n3to.composeapp.generated.resources.ef_expense_placeholder
@@ -191,8 +191,8 @@ fun EmergencyFundSettingsScreen(
                             ) {
                                 SectionLabel("Método de cálculo")
                                 HelpTooltipIcon(
-                                    title = HelpContent.texts[HelpKeys.EMERGENCY_FUND]?.title ?: "",
-                                    body = HelpContent.texts[HelpKeys.EMERGENCY_FUND]?.body ?: ""
+                                    title = stringResource(Res.string.help_emergency_fund_title),
+                                    body = stringResource(Res.string.help_emergency_fund_body)
                                 )
                             }
                             Spacer(Modifier.height(10.dp))

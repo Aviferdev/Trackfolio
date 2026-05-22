@@ -29,6 +29,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import es.aviferdev.n3to.ui.theme.SecondaryTeal
+import n3to.composeapp.generated.resources.*
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 /**
@@ -73,7 +75,7 @@ fun VersionUpdateBanner(
             )
             Spacer(Modifier.width(10.dp))
             Text(
-                text = "Versión $latestVersion disponible",
+                text = stringResource(Res.string.version_update_available, latestVersion),
                 fontSize = 12.sp,
                 color = SecondaryTeal,
                 fontWeight = FontWeight.Medium,
@@ -87,7 +89,7 @@ fun VersionUpdateBanner(
                     .padding(horizontal = 12.dp, vertical = 4.dp)
             ) {
                 Text(
-                    text = "Actualizar",
+                    text = stringResource(Res.string.version_update_now),
                     fontSize = 11.sp,
                     color = SecondaryTeal,
                     fontWeight = FontWeight.Bold

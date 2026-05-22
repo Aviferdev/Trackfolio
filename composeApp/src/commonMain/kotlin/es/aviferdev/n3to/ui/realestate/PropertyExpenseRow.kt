@@ -19,6 +19,7 @@ import es.aviferdev.n3to.domain.model.Category
 import es.aviferdev.n3to.domain.model.PropertyExpense
 import es.aviferdev.n3to.ui.theme.*
 import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.common_category_label
 import n3to.composeapp.generated.resources.common_note_placeholder
 import n3to.composeapp.generated.resources.realestate_expense_delete_cd
 import org.jetbrains.compose.resources.stringResource
@@ -72,7 +73,7 @@ fun PropertyExpenseRow(
                         modifier = Modifier.height(36.dp)
                     ) {
                         Text(
-                            text = selectedCategory?.name ?: "Categoría",
+                            text = selectedCategory?.name ?: stringResource(Res.string.common_category_label),
                             fontSize = 12.sp,
                             fontWeight = if (selectedCategory != null) FontWeight.Medium else FontWeight.Normal
                         )

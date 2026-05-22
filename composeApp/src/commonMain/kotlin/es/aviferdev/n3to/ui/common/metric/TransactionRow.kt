@@ -34,7 +34,7 @@ import es.aviferdev.n3to.ui.common.toMaterialIcon
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.ui.theme.formatAmount
-import es.aviferdev.n3to.ui.theme.formatDate
+import es.aviferdev.n3to.ui.theme.formatDateLocalized
 import es.aviferdev.n3to.ui.theme.maskAmount
 import n3to.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.stringResource
@@ -110,7 +110,7 @@ fun TransactionRow(
         !compact && !transaction.notes.isNullOrBlank() -> transaction.notes
         else -> null
     }
-    val dateFormatted = formatDate(transaction.date)
+    val dateFormatted = formatDateLocalized(transaction.date)
 
     Row(
         modifier = modifier

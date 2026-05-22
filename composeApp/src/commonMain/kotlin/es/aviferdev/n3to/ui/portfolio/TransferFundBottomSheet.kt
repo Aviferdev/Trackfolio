@@ -381,7 +381,7 @@ fun TransferFundBottomSheet(
             Spacer(Modifier.height(8.dp))
             if (platforms.isEmpty()) {
                 Text(
-                    text = "Sin plataformas disponibles.",
+                    text = stringResource(Res.string.portfolio_transfer_no_platforms),
                     fontSize = 12.sp,
                     color = MaterialTheme.appColors.textSecondary
                 )

@@ -105,6 +105,18 @@ import n3to.composeapp.generated.resources.portfolio_add_asset_ticker_placeholde
 import n3to.composeapp.generated.resources.portfolio_add_asset_ticker_required
 import n3to.composeapp.generated.resources.portfolio_add_asset_title_create
 import n3to.composeapp.generated.resources.portfolio_add_asset_title_edit
+import n3to.composeapp.generated.resources.portfolio_add_asset_isin_label
+import n3to.composeapp.generated.resources.portfolio_add_asset_isin_desc
+import n3to.composeapp.generated.resources.portfolio_asset_type_alternative
+import n3to.composeapp.generated.resources.portfolio_asset_type_alternative_desc
+import n3to.composeapp.generated.resources.portfolio_asset_type_equity
+import n3to.composeapp.generated.resources.portfolio_asset_type_equity_desc
+import n3to.composeapp.generated.resources.portfolio_asset_type_fi_desc
+import n3to.composeapp.generated.resources.portfolio_asset_type_realestate
+import n3to.composeapp.generated.resources.portfolio_asset_type_realestate_desc
+import n3to.composeapp.generated.resources.portfolio_asset_type_valuable
+import n3to.composeapp.generated.resources.portfolio_asset_type_valuable_desc
+import n3to.composeapp.generated.resources.portfolio_fixed_income_section
 import n3to.composeapp.generated.resources.common_understood
 import n3to.composeapp.generated.resources.help_asset_types_title
 import org.jetbrains.compose.resources.stringResource
@@ -380,12 +392,12 @@ fun AddEditAssetBottomSheet(
                             .filter { c -> c.isLetterOrDigit() || c == '-' || c == '.' }; isinValidationState =
                         IsinValidationState.Idle
                     },
-                    label = { Text("ISIN (opcional)") },
+                    label = { Text(stringResource(Res.string.portfolio_add_asset_isin_label)) },
                     placeholder = { Text("ES0173516115") },
                     supportingText = if (AssetCategoryType.isQuotable(selectedCategoryId)) {
                         {
                             Text(
-                                "Código ISIN para obtener precio automático",
+                                stringResource(Res.string.portfolio_add_asset_isin_desc),
                                 fontSize = 11.sp,
                                 color = MaterialTheme.appColors.textSecondary
                             )
@@ -958,28 +970,28 @@ fun AddEditAssetBottomSheet(
                 Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     AssetTypeHelpRow(
                         "📈",
-                        "Acciones / ETFs / Fondos",
-                        "Cotizados con precio de mercado. Admiten análisis por sectores y regiones geográficas."
+                        stringResource(Res.string.portfolio_asset_type_equity),
+                        stringResource(Res.string.portfolio_asset_type_equity_desc)
                     )
                     AssetTypeHelpRow(
                         "💶",
-                        "Renta fija",
-                        "Bonos y depósitos con rendimiento acordado. Requieren fecha de vencimiento; sin precio de mercado automático."
+                        stringResource(Res.string.portfolio_fixed_income_section),
+                        stringResource(Res.string.portfolio_asset_type_fi_desc)
                     )
                     AssetTypeHelpRow(
                         "₿",
-                        "Cripto / Materias primas / Crowdlending",
-                        "Activos alternativos con precio de mercado pero sin análisis sectorial."
+                        stringResource(Res.string.portfolio_asset_type_alternative),
+                        stringResource(Res.string.portfolio_asset_type_alternative_desc)
                     )
                     AssetTypeHelpRow(
                         "🏠",
-                        "Inmuebles",
-                        "Propiedades físicas valoradas manualmente; sin precio de mercado automático."
+                        stringResource(Res.string.portfolio_asset_type_realestate),
+                        stringResource(Res.string.portfolio_asset_type_realestate_desc)
                     )
                     AssetTypeHelpRow(
                         "💎",
-                        "Valiosos",
-                        "Arte, coleccionables u otros activos tangibles no financieros."
+                        stringResource(Res.string.portfolio_asset_type_valuable),
+                        stringResource(Res.string.portfolio_asset_type_valuable_desc)
                     )
                 }
             },

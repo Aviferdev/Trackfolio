@@ -280,7 +280,7 @@ fun FixedIncomePositionCard(
                 if (position.isOpen) {
                     val interestToShow =
                         if (row.collectedInterest > 0) row.collectedInterest else position.accruedInterestToDate
-                    val interestLabel = if (row.collectedInterest > 0) "Cobrado" else "Devengado"
+                    val interestLabel = if (row.collectedInterest > 0) stringResource(Res.string.fixedincome_coupon_paid) else "Devengado"
                     if (interestToShow > 0) {
                         Spacer(Modifier.height(4.dp))
                         Text(

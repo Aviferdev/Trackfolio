@@ -39,6 +39,12 @@ import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.ui.theme.N3toTheme
 
 import kotlinx.coroutines.delay
+import n3to.composeapp.generated.resources.*
+import n3to.composeapp.generated.resources.onboarding_fiscal_base_label
+import n3to.composeapp.generated.resources.onboarding_fiscal_operations_label
+import n3to.composeapp.generated.resources.onboarding_fiscal_rendimientos
+import n3to.composeapp.generated.resources.onboarding_fiscal_retenciones
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 /**
@@ -71,9 +77,9 @@ fun SlideFiscal(modifier: Modifier = Modifier) {
     data class OpRow(val emoji: String, val label: String, val value: String)
 
     val operations = listOf(
-        OpRow("📄", "Factura freelance", "−67,50 € IRPF"),
-        OpRow("💼", "Nómina marzo", "−450,00 € IRPF"),
-        OpRow("📈", "Venta AAPL (3 ud.)", "+134,70 € plusv.")
+        OpRow("📄", stringResource(Res.string.onboarding_demo_factura), "−67,50 € IRPF"),
+        OpRow("💼", stringResource(Res.string.onboarding_demo_nomina_marzo), "−450,00 € IRPF"),
+        OpRow("📈", stringResource(Res.string.onboarding_demo_venta_aapl), "+134,70 € plusv.")
     )
 
     Column(
@@ -101,7 +107,7 @@ fun SlideFiscal(modifier: Modifier = Modifier) {
         ) {
             Column {
                 Text(
-                    text = "BASE IMPONIBLE 2025",
+                    text = stringResource(Res.string.onboarding_fiscal_base_label),
                     fontSize = 10.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.White.copy(alpha = 0.7f),
@@ -125,12 +131,12 @@ fun SlideFiscal(modifier: Modifier = Modifier) {
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     GridCell(
-                        label = "RENDIMIENTOS",
+                        label = stringResource(Res.string.onboarding_fiscal_rendimientos),
                         value = "+33.600 €",
                         modifier = Modifier.weight(1f)
                     )
                     GridCell(
-                        label = "RETENCIONES",
+                        label = stringResource(Res.string.onboarding_fiscal_retenciones),
                         value = "−4.032 €",
                         modifier = Modifier.weight(1f)
                     )
@@ -151,7 +157,7 @@ fun SlideFiscal(modifier: Modifier = Modifier) {
         ) {
             Column {
                 Text(
-                    text = "OPERACIONES MARCADAS",
+                    text = stringResource(Res.string.onboarding_fiscal_operations_label),
                     fontSize = 10.sp,
                     fontWeight = FontWeight.Bold,
                     color = appCTextTertiary,

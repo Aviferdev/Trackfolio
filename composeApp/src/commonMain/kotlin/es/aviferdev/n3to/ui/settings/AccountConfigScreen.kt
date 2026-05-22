@@ -44,7 +44,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.ui.account.AddEditAccountBottomSheet
 import es.aviferdev.n3to.ui.common.help.FirstTimeHelpBanner
-import es.aviferdev.n3to.ui.common.help.HelpContent
 import es.aviferdev.n3to.ui.common.help.HelpKeys
 import es.aviferdev.n3to.ui.common.topbar.TopBarWithActionsApp
 import es.aviferdev.n3to.ui.settings.components.SettingsGroupCard
@@ -55,6 +54,7 @@ import es.aviferdev.n3to.ui.settings.components.SettingsSectionHeader
 import es.aviferdev.n3to.ui.theme.appColors
 import kotlinx.coroutines.delay
 import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.help_account_body
 import n3to.composeapp.generated.resources.home_section_emergency_fund
 import n3to.composeapp.generated.resources.settings_account_section_categories
 import n3to.composeapp.generated.resources.settings_account_section_fiscal
@@ -113,7 +113,7 @@ fun AccountConfigScreen(
                     FirstTimeHelpBanner(
                         key = HelpKeys.ACCOUNT_CONFIG,
                         icon = "ℹ️",
-                        label = HelpContent.texts[HelpKeys.ACCOUNT_CONFIG]?.body ?: ""
+                        label = stringResource(Res.string.help_account_body)
                     )
                 }
 

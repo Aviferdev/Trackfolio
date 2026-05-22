@@ -19,10 +19,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.LoanRateChange
 import es.aviferdev.n3to.ui.theme.appColors
+import es.aviferdev.n3to.ui.theme.formatDateLocalized
 import es.aviferdev.n3to.ui.theme.formatPercent
-import kotlinx.datetime.Instant
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
 
 @Composable
 fun LoanRateHistorySection(
@@ -60,7 +58,7 @@ private fun RateChangeRow(change: LoanRateChange) {
         ) {
             Column {
                 Text(
-                    formatDate(change.effectiveDate),
+                    formatDateLocalized(change.effectiveDate),
                     fontSize = 12.sp,
                     color = MaterialTheme.appColors.textSecondary
                 )
@@ -93,9 +91,4 @@ private fun RateChangeRow(change: LoanRateChange) {
     }
 }
 
-private fun formatDate(millis: Long): String {
-    val dt = Instant.fromEpochMilliseconds(millis).toLocalDateTime(TimeZone.currentSystemDefault())
-    return "${dt.dayOfMonth.toString().padStart(2, '0')}/${
-        dt.monthNumber.toString().padStart(2, '0')
-    }/${dt.year}"
-}
+

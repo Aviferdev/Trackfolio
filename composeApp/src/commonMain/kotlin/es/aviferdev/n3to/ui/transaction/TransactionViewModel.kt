@@ -31,6 +31,7 @@ import es.aviferdev.n3to.domain.usecase.transaction.GetTransactionsByMonthUseCas
 import es.aviferdev.n3to.domain.usecase.transaction.SaveTransactionUseCase
 import es.aviferdev.n3to.domain.usecase.transaction.UpdateTransactionUseCase
 import es.aviferdev.n3to.ui.account.AccountSession
+import es.aviferdev.n3to.ui.home.viewmodel.AddTransactionError
 import es.aviferdev.n3to.ui.home.viewmodel.AddTransactionUiState
 import es.aviferdev.n3to.ui.home.viewmodel.IAddTransactionForm
 import es.aviferdev.n3to.ui.home.viewmodel.IncomeInputMode
@@ -480,7 +481,7 @@ class TransactionViewModel(
         _formUiState.value = AddTransactionUiState.Loading
         viewModelScope.launch {
             val accountId = session.selectedAccountId.value ?: run {
-                _formUiState.value = AddTransactionUiState.Error("No hay cuenta seleccionada")
+                _formUiState.value = AddTransactionUiState.Error(AddTransactionError.NoAccount)
                 return@launch
             }
             val now = nowMillis()
@@ -498,7 +499,7 @@ class TransactionViewModel(
         val incType = selectedIncomeType!!
         if (incomeInputMode == IncomeInputMode.NET_ONLY) {
             val net = netAmount.replace(',', '.').toDoubleOrNull() ?: run {
-                _formUiState.value = AddTransactionUiState.Error("Importe neto inválido")
+                _formUiState.value = AddTransactionUiState.Error(AddTransactionError.InvalidNet)
                 return
             }
             val finalIssuerName = issuers.find { it.id == selectedIssuerId }?.name
@@ -508,7 +509,7 @@ class TransactionViewModel(
         val finalIssuerId = selectedIssuerId
         val finalIssuerName = finalIssuerId?.let { id -> issuers.find { it.id == id }?.name }
         val net = calculatedNet ?: run {
-            _formUiState.value = AddTransactionUiState.Error("No se pudo calcular el neto")
+            _formUiState.value = AddTransactionUiState.Error(AddTransactionError.CalculateNet)
             return
         }
         val gross = grossAmount.replace(',', '.').toDoubleOrNull()
@@ -560,7 +561,7 @@ class TransactionViewModel(
         val result = if (editingTransaction != null) updateTransaction(transaction) else saveTransaction(transaction)
         result
             .onSuccess { _formUiState.value = AddTransactionUiState.Success }
-            .onFailure { _formUiState.value = AddTransactionUiState.Error(it.message ?: "Error") }
+            .onFailure { _formUiState.value = AddTransactionUiState.Error(AddTransactionError.Unknown(it.message)) }
     }
 
     override fun clear() { _formUiState.value = AddTransactionUiState.Idle }

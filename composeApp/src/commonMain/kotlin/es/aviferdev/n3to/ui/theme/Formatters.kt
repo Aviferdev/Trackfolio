@@ -1,5 +1,16 @@
 package es.aviferdev.n3to.ui.theme
 
+/**
+ * FORMATTERS LEGACY – Non-localized formatters (Spanish hardcoded).
+ *
+ * These functions are retained for non-@Composable contexts (ViewModels, domain).
+ * For @Composable contexts, use the localized equivalents from [LocalizedFormatters]:
+ *   - [es.aviferdev.n3to.ui.theme.formatDateLocalized] instead of [formatDate]
+ *   - [es.aviferdev.n3to.ui.theme.formatRelativeTimeLocalized] instead of [formatRelativeTime]
+ *   - [es.aviferdev.n3to.ui.theme.formatDateFullLocalized] for full date format
+ *   - [es.aviferdev.n3to.ui.theme.localizedMonthNames] instead of [MONTH_NAMES]
+ *   - [es.aviferdev.n3to.ui.theme.localizedMonthShort] instead of [MONTH_SHORT]
+ */
 import es.aviferdev.n3to.platform.nowMillis
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
@@ -20,6 +31,7 @@ val MONTH_SHORT = listOf(
 /** Etiquetas ultra-cortas de 1 letra para gráficos de 12 columnas. */
 val MONTH_LABELS = listOf("E", "F", "M", "A", "M", "J", "J", "A", "S", "O", "N", "D")
 
+@Deprecated("Use formatDateLocalized() from LocalizedFormatters for localized output", ReplaceWith("formatDateLocalized(epochMillis)"))
 fun formatDate(epochMillis: Long): String {
     val todayMillis = nowMillis()
     val todayDays = todayMillis / 86_400_000L
@@ -127,6 +139,7 @@ fun formatAmountEuro(amount: Double): String =
  * «hace 2 meses» a partir de un epoch millis del pasado. Útil para mostrar
  * la frescura del precio actual de un activo.
  */
+@Deprecated("Use formatRelativeTimeLocalized() from LocalizedFormatters for localized output", ReplaceWith("formatRelativeTimeLocalized(epochMillis)"))
 fun formatRelativeTime(epochMillis: Long): String {
     val now = nowMillis()
     val diffMs = (now - epochMillis).coerceAtLeast(0L)

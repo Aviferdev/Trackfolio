@@ -43,6 +43,7 @@ import es.aviferdev.n3to.domain.model.DebtDirection
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import es.aviferdev.n3to.ui.theme.appColors
 import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.common_save
 import n3to.composeapp.generated.resources.common_save_changes
 import n3to.composeapp.generated.resources.debt_add_title
 import n3to.composeapp.generated.resources.debt_amount_label
@@ -292,7 +293,7 @@ fun AddDebtBottomSheetContent(
             )
         ) {
             Text(
-                if (isEditing) stringResource(Res.string.common_save_changes) else "Guardar deuda",
+                if (isEditing) stringResource(Res.string.common_save_changes) else stringResource(Res.string.common_save),
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Medium
             )

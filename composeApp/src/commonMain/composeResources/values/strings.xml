@@ -315,6 +315,8 @@
     <string name="portfolio_asset_history_filter_buy">Compra</string>
     <string name="portfolio_asset_history_filter_sell">Venta</string>
     <string name="portfolio_asset_history_no_data">Sin datos históricos</string>
+    <string name="asset_history_title_fallback">Activo</string>
+    <string name="asset_history_new_movement">Nuevo movimiento</string>
 
     <!-- PORTFOLIO – Compound effect card -->
     <string name="portfolio_compound_effect_title">Efecto compuesto</string>
@@ -630,6 +632,23 @@
     <string name="consent_privacy_policy">Ver Política de Privacidad</string>
     <string name="consent_data_description">Tus cuentas, transacciones y balances se guardan localmente en tu dispositivo. Solo compartimos datos si tú nos das permiso.</string>
     <string name="consent_crash_description">Si la app tiene un error, nos avisa para que podamos arreglarlo rápido.</string>
+    <string name="consent_offline_description">Trackfolio funciona 100% sin internet. Tus cuentas, transacciones y balances se guardan solo en tu dispositivo. Eres el dueño de tus datos.</string>
+    <string name="consent_collect_title">✅ Recopilamos (solo si nos ayudas):</string>
+    <string name="consent_collect_screens">• Pantallas que visitas → para saber qué mejorar</string>
+    <string name="consent_collect_crashes">• Informes de errores → para arreglar fallos rápido</string>
+    <string name="consent_never_title">❌ NUNCA recopilamos:</string>
+    <string name="consent_never_financial">• Tus datos financieros (transacciones, cuentas, balances)</string>
+    <string name="consent_never_personal">• Tu información personal (email, nombre, contactos)</string>
+    <string name="consent_never_location">• Tu ubicación</string>
+    <string name="consent_feedback_title">✍️ Si envías feedback (voluntario):</string>
+    <string name="consent_feedback_suggestion">• Solo recibimos tu sugerencia si decides enviarla desde el formulario de la app</string>
+    <string name="consent_feedback_no_personal">• Te recomendamos no incluir datos personales en tu mensaje</string>
+    <string name="consent_premium_title">💳 Si adquieres Trackfolio Premium:</string>
+    <string name="consent_premium_revenuecat">• RevenueCat procesa un identificador anónimo y tu historial de suscripción para gestionar tu compra (necesario para el servicio)</string>
+    <string name="consent_premium_no_share">• No compartimos tus datos financieros con RevenueCat</string>
+    <string name="consent_data_stays_device">💡 Tus datos financieros nunca salen de tu dispositivo.</string>
+    <string name="consent_analytics_description">Saber qué funciones usas más nos ayuda a pulir la app. Datos anónimos.</string>
+    <string name="consent_both_buttons">Ambos botones abren la app. Elegir uno u otro solo cambia si nos dejas ayudarte a mejorarla.</string>
     <string name="security_locked_message">La app está bloqueada.\nAutentícate para continuar.</string>
     <string name="security_unlock_button">Desbloquear</string>
     <string name="version_block_message">Debes actualizar N3to para continuar utilizando la aplicación.</string>
@@ -799,6 +818,8 @@
     <!-- PORTFOLIO - Add/Edit Asset (missing) -->
     <string name="portfolio_add_asset_desc">Define la ficha del activo y las plataformas donde operas.</string>
     <string name="portfolio_add_asset_portfolio_label">Cartera</string>
+    <string name="portfolio_add_asset_isin_label">ISIN (opcional)</string>
+    <string name="portfolio_add_asset_isin_desc">Código ISIN para obtener precio automático</string>
     <string name="portfolio_add_asset_no_portfolio">Sin cartera</string>
     <string name="portfolio_add_asset_ticker_placeholder">Ej. AAPL, BTC, IAG.MC</string>
     <string name="portfolio_add_asset_ticker_required">Obligatorio</string>
@@ -1273,6 +1294,21 @@
     <string name="category_help_examples">• Hogar → alquiler, hipoteca, suministros\n• Ocio → restaurantes, cine, viajes\n• Salud → farmacia, médico, gimnasio</string>
     <string name="category_name_placeholder">Nombre de la categoría</string>
     <string name="category_remove_limit">Quitar límite</string>
+    <string name="category_edit_title">Editar categoría</string>
+    <string name="category_annual_limit">Límite anual</string>
+    <string name="category_limit_amount">Importe del límite</string>
+    <string name="category_income_percentage">Porcentaje de ingresos</string>
+
+    <!-- PORTFOLIO - Asset type help -->
+    <string name="portfolio_asset_type_equity">Acciones / ETFs / Fondos</string>
+    <string name="portfolio_asset_type_equity_desc">Cotizados con precio de mercado. Admiten análisis por sectores y regiones geográficas.</string>
+    <string name="portfolio_asset_type_fi_desc">Bonos y depósitos con rendimiento acordado. Requieren fecha de vencimiento; sin precio de mercado automático.</string>
+    <string name="portfolio_asset_type_alternative">Cripto / Materias primas / Crowdlending</string>
+    <string name="portfolio_asset_type_alternative_desc">Activos alternativos con precio de mercado pero sin análisis sectorial.</string>
+    <string name="portfolio_asset_type_realestate">Inmuebles</string>
+    <string name="portfolio_asset_type_realestate_desc">Propiedades físicas valoradas manualmente; sin precio de mercado automático.</string>
+    <string name="portfolio_asset_type_valuable">Valiosos</string>
+    <string name="portfolio_asset_type_valuable_desc">Arte, coleccionables u otros activos tangibles no financieros.</string>
 
     <!-- HELP - missing -->
     <string name="help_account_title">¿Qué es una cuenta?</string>
@@ -1281,6 +1317,14 @@
     <string name="help_goals_title">Objetivos mensuales</string>
     <string name="help_customize_months_title">Personalizar meses</string>
     <string name="help_asset_types_title">Tipos de activo</string>
+    <string name="help_account_body">Una cuenta es un espacio independiente con su propia configuración fiscal, categorías de gastos, activos y movimientos. Puedes tener varias cuentas completamente separadas; por ejemplo, una personal y otra de empresa.</string>
+    <string name="help_tax_profile_body">El perfil fiscal define los tramos IRPF y tipos de rendimiento que se aplican al calcular tu declaración. Sin un perfil configurado, los cálculos fiscales no serán precisos.\n\nSi cambias de país de residencia fiscal, añade un nuevo perfil con la fecha de inicio del cambio — el sistema aplica siempre el más reciente.</string>
+    <string name="help_tax_system_body">Elige el país donde declaras tus rentas habitualmente. Cada sistema define sus propios tramos IRPF y tipos impositivos para dividendos, plusvalías y rendimientos del capital.\n\nSi cambias de país de residencia, crea un nuevo perfil con la fecha exacta del cambio.</string>
+    <string name="help_emergency_fund_title">Fondo de emergencia</string>
+    <string name="help_emergency_fund_body">Un colchón de dinero líquido para cubrir imprevistos sin endeudarte: pérdida de empleo, gastos médicos o reparaciones urgentes.\n\n• 3–6 meses con empleo estable\n• 6–12 meses si eres autónomo o tienes cargas familiares</string>
+    <string name="help_goals_body">Define cuánto quieres ahorrar e invertir cada mes. El valor base aplica a todos los meses del año. Después puedes personalizar meses concretos con ingresos o gastos excepcionales, como una paga extra o un mes de vacaciones.</string>
+    <string name="help_customize_months_body">Toca un mes futuro para ajustar su objetivo de ahorro o inversión de forma individual. Los meses pasados no son editables.\n\nUn punto azul indica que ese mes tiene un objetivo personalizado diferente del base anual.</string>
+    <string name="help_asset_types_body">• Acciones / ETFs / Fondos — renta variable cotizada. Admite análisis por sectores y regiones.\n• Renta fija — bonos y depósitos con rendimiento acordado. Requieren fecha de vencimiento.\n• Cripto / Materias primas — activos alternativos con precio de mercado.\n• Inmuebles / Otros — activos no cotizados.</string>
     <string name="help_asset_help_cd">Ayuda sobre tipos de activo</string>
 
     <!-- FIXED INCOME - missing -->
@@ -1322,11 +1366,15 @@
     <!-- EXPENSE SETTINGS - missing -->
     <string name="expense_categories_section">CATEGORÍAS</string>
     <string name="expense_no_categories">Sin categorías de gastos</string>
+    <string name="expense_delete_category_title">Eliminar categoría</string>
+    <string name="expense_delete_category_message">Se eliminará «%1$s» del listado. Los movimientos que ya tengan asignada esta categoría conservarán su nombre y no se perderán datos.</string>
 
     <!-- INCOME SETTINGS - missing -->
     <string name="income_types_section">TIPOS DE INGRESO</string>
     <string name="income_type_archive_title">Archivar emisor</string>
+    <string name="income_type_archive_message">Se archivará «%1$s». No aparecerá en los selectores de ingresos nuevos, pero los movimientos históricos conservarán la referencia.</string>
     <string name="issuer_name_placeholder">Nombre del emisor</string>
+    <string name="issuer_edit_title">Editar emisor</string>
 
     <!-- GOAL SETTINGS - missing -->
     <string name="goal_settings_title">Objetivos mensuales</string>
@@ -1338,6 +1386,9 @@
     <string name="goal_saved_message">Objetivos guardados</string>
     <string name="goal_onboarding_badge">PLANIFICACIÓN FINANCIERA</string>
     <string name="goal_onboarding_subtitle">Define cuánto quieres ahorrar e invertir cada mes. Establece una base anual y ajusta los meses con ingresos o gastos excepcionales.</string>
+    <string name="goal_savings_description">Lo que reservas cada mes como ahorro líquido o en cuenta de ahorro.</string>
+    <string name="goal_investment_description">Lo que destinas a compra de activos: acciones, fondos, ETFs, etc.</string>
+    <string name="goal_customize_months_section">PERSONALIZAR MESES</string>
 
     <!-- EMERGENCY FUND SETTINGS - missing -->
     <string name="ef_months_hint">Define cuántos meses de gastos quieres tener cubiertos para tu fondo de emergencia.</string>
@@ -1638,5 +1689,118 @@
 
     <!-- ONBOARDING – adicionales -->
     <string name="onboarding_realestate_hint">Cuando entres, podrás registrarla desde </string>
+
+    <!-- =====================================================================
+         NUEVAS KEYS i18n – Migración de strings hardcodeados
+         ===================================================================== -->
+    <string name="fi_no_issuers">No hay emisores. Crea uno nuevo.</string>
+    <string name="fi_commission_notes">Notas de comisiones (opcional)</string>
+    <string name="issuer_new">Nuevo emisor</string>
+    <string name="label_years">Años</string>
+    <string name="label_months">Meses</string>
+    <string name="fi_auto_calculated">Calculada automáticamente</string>
+    <string name="fi_position_not_found">Posición no encontrada</string>
+    <string name="fi_close_type">Tipo de cierre</string>
+    <string name="label_required">Obligatorio</string>
+    <string name="placeholder_ticker_example">Ej. AAPL, BTC, IAG.MC</string>
+    <string name="placeholder_asset_name_example">Ej. Apple Inc., Bitcoin</string>
+    <string name="placeholder_entity">Ej. Banco Santander</string>
+    <string name="transfer_source_fund">Fondo origen</string>
+    <string name="transfer_dest_fund">Fondo destino</string>
+    <string name="transfer_source_platform">Plataforma origen</string>
+    <string name="transfer_dest_platform">Plataforma destino</string>
+    <string name="label_value">Valor</string>
+    <string name="action_view">Ver</string>
+    <string name="rental_status_change_desc">Selecciona el nuevo estado...</string>
+    <string name="rental_status_new">Nuevo estado</string>
+    <string name="field_acquisition_date">Fecha de adquisición</string>
+    <string name="rental_status_label">Estado de alquiler</string>
+    <string name="realestate_new_estimated_value">Nuevo valor estimado (€)</string>
+    <string name="fi_collected">Cobrado</string>
+    <string name="income_net_only">Solo neto</string>
+    <string name="label_asset">Activo</string>
+    <string name="consent_reject">Rechazar y continuar</string>
+    <string name="premium_restore_purchase">Restaurar compra</string>
+    <string name="mortgage_only">Solo hipotecas</string>
+    <string name="portfolio_new_fixed_income">Nuevo bono/depósito</string>
+    <string name="label_realized">Realizado</string>
+    <string name="account_active">Activa</string>
+    <string name="set_balance_title">Establecer saldo</string>
+    <string name="position_total_profit">Beneficio total</string>
+    <string name="add_mortgage">Añadir hipoteca</string>
+    <string name="net_cashflow">Cashflow neto</string>
+    <string name="no_expense_categories">Sin categorías de gastos</string>
+
+    <!-- PORTFOLIO DISTRIBUTION – Títulos de pestañas -->
+    <string name="portfolio_distribution_by_category">Distribución por categoría</string>
+    <string name="portfolio_distribution_by_region">Distribución por región</string>
+    <string name="portfolio_distribution_by_sector">Distribución por sector</string>
+
+    <!-- PRICE ANOMALY – Cuerpo del diálogo -->
+    <string name="price_anomaly_body">El precio que has introducido (%1$s)\nvaría un %2$s%%\nrespecto al precio anterior (%3$s).</string>
+
+    <!-- PRICE SOURCE -->
+    <string name="price_source_manual">Manual</string>
+    <string name="price_source_auto">Automático</string>
+
+    <!-- RECONCILIATION ERRORS -->
+    <string name="reconciliation_error_invalid_amount">Introduce un importe válido</string>
+    <string name="reconciliation_error_balanced">El saldo ya está cuadrado</string>
+    <string name="reconciliation_error_generic">Error al reconciliar</string>
+
+    <!-- BACKUP ERRORS -->
+    <string name="backup_error_password_min_length">La contraseña debe tener al menos 6 caracteres</string>
+    <string name="backup_error_password_mismatch">Las contraseñas no coinciden</string>
+    <string name="backup_error_password_required">Introduce la contraseña del backup</string>
+
+    <!-- TRANSACTION ERRORS -->
+    <string name="transaction_error_no_account">No hay cuenta seleccionada</string>
+    <string name="transaction_error_invalid_net">Importe neto inválido</string>
+    <string name="transaction_error_calculate_net">No se pudo calcular el neto</string>
+
+    <!-- ONBOARDING – Demo data labels -->
+    <string name="onboarding_demo_alquiler">Alquiler</string>
+    <string name="onboarding_demo_hogar">Hogar</string>
+    <string name="onboarding_demo_nomina">Nómina</string>
+    <string name="onboarding_demo_trabajo">Trabajo · 15% IRPF</string>
+    <string name="onboarding_demo_gasolina">Gasolina</string>
+    <string name="onboarding_demo_transporte">Transporte</string>
+    <string name="onboarding_demo_mercadona">Mercadona</string>
+    <string name="onboarding_demo_alimentacion">Alimentación</string>
+    <string name="onboarding_demo_netflix">Netflix</string>
+    <string name="onboarding_demo_ocio">Ocio</string>
+    <string name="onboarding_demo_factura">Factura freelance</string>
+    <string name="onboarding_demo_nomina_marzo">Nómina marzo</string>
+    <string name="onboarding_demo_venta_aapl">Venta AAPL (3 ud.)</string>
+
+    <!-- SAVINGS RATES – Cuentas de ahorro de alto rendimiento -->
+    <string name="savings_rates_title">Cuentas remuneradas</string>
+    <string name="savings_rates_short_term">Corto plazo</string>
+    <string name="savings_rates_medium_term">Medio plazo</string>
+    <string name="savings_rates_offline">Sin conexión — mostrando datos anteriores</string>
+    <string name="savings_rates_updated_format">Actualizado: %1$s</string>
+    <string name="savings_rates_max">Máx</string>
+    <string name="savings_rates_min">Mín</string>
+    <string name="savings_rates_term">Plazo</string>
+    <string name="savings_rates_country">País</string>
+    <string name="savings_rates_cancellation_yes">Cancelación: Sí</string>
+    <string name="savings_rates_cancellation_no">Cancelación: No</string>
+    <string name="savings_rates_preview_title">Dónde invertir</string>
+    <string name="savings_rates_view_all">Ver todas</string>
+    <string name="savings_rates_loading">Cargando mejores cuentas…</string>
+    <string name="savings_rates_up_to_format">hasta €%1$s</string>
+
+    <!-- REAL ESTATE – Ledger labels -->
+    <string name="realestate_income_ledger">Ingresos (ledger)</string>
+    <string name="realestate_expenses_ledger">Gastos (ledger)</string>
+
+    <!-- =====================================================================
+         EXTRACTED HARDCODED STRINGS
+         ===================================================================== -->
+    <string name="account_create_button">Crear cuenta</string>
+    <string name="account_delete_confirm_message">¿Estás seguro? Esta acción no se puede deshacer.</string>
+    <string name="loan_picker_title">Seleccionar préstamo</string>
+    <string name="loan_picker_subtitle">Vincula una hipoteca o préstamo existente</string>
+    <string name="reconciliation_amount_placeholder">Ej: 1250.00</string>
 
 </resources>

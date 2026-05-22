@@ -27,7 +27,7 @@ import es.aviferdev.n3to.domain.model.Debt
 import es.aviferdev.n3to.domain.model.DebtDirection
 import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.ui.theme.formatAmount
-import es.aviferdev.n3to.ui.theme.formatDate
+import es.aviferdev.n3to.ui.theme.formatDateLocalized
 import es.aviferdev.n3to.ui.theme.maskAmount
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.common_edit
@@ -63,7 +63,7 @@ fun DebtCard(
                 )
                 Spacer(Modifier.height(2.dp))
                 Text(
-                    "${debt.notes ?: "Sin nota"} · ${formatDate(debt.date)}",
+                    "${debt.notes ?: "Sin nota"} · ${formatDateLocalized(debt.date)}",
                     fontSize = 11.sp,
                     color = MaterialTheme.appColors.textTertiary,
                     maxLines = 1

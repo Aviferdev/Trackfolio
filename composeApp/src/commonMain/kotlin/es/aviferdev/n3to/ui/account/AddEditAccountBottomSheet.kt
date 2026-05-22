@@ -49,6 +49,8 @@ import n3to.composeapp.generated.resources.account_edit_title
 import n3to.composeapp.generated.resources.account_initial_balance_desc
 import n3to.composeapp.generated.resources.account_initial_balance_label
 import n3to.composeapp.generated.resources.account_initial_balance_must_be_positive
+import n3to.composeapp.generated.resources.account_create_button
+import n3to.composeapp.generated.resources.account_delete_confirm_message
 import n3to.composeapp.generated.resources.account_initial_balance_required
 import n3to.composeapp.generated.resources.account_initial_balance_valid_hint
 import n3to.composeapp.generated.resources.account_name_placeholder
@@ -248,7 +250,7 @@ fun AddEditAccountBottomSheet(
             ) {
                 Text(
                     text = if (isEditing) stringResource(Res.string.portfolio_add_asset_save)
-                    else "Crear cuenta",
+                    else stringResource(Res.string.account_create_button),
                     fontSize = 16.sp,
                     fontWeight = FontWeight.SemiBold
                 )
@@ -276,7 +278,7 @@ fun AddEditAccountBottomSheet(
                 if (showDeleteConfirm) {
                     // Estado de confirmación
                     Text(
-                        text = "¿Estás seguro? Esta acción no se puede deshacer.",
+                        text = stringResource(Res.string.account_delete_confirm_message),
                         fontSize = 12.sp,
                         color = MaterialTheme.appColors.textSecondary,
                         modifier = Modifier.padding(horizontal = 4.dp, vertical = 8.dp)
@@ -294,7 +296,7 @@ fun AddEditAccountBottomSheet(
                         }
                         TextButton(onClick = onDelete) {
                             Text(
-                                "Eliminar",
+                                stringResource(Res.string.common_delete),
                                 fontSize = 13.sp,
                                 fontWeight = FontWeight.SemiBold,
                                 color = MaterialTheme.appColors.expense

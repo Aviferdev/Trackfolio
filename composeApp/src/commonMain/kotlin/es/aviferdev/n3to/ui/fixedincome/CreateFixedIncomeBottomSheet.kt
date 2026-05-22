@@ -355,7 +355,7 @@ fun CreateFixedIncomeBottomSheet(
 
             // ── Fecha de inicio ───────────────────────────────────────
             OutlinedTextField(
-                value = formatDate(startDateMillis),
+                value = formatDateLocalized(startDateMillis),
                 onValueChange = { },
                 label = { Text(stringResource(Res.string.fixedincome_start_date_label)) },
                 modifier = Modifier.fillMaxWidth(),
@@ -394,7 +394,7 @@ fun CreateFixedIncomeBottomSheet(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = formatDate(maturityDateMillis),
+                        text = formatDateLocalized(maturityDateMillis),
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Medium,
                         color = MaterialTheme.appColors.textPrimary
