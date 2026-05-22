@@ -31,6 +31,7 @@ import es.aviferdev.n3to.ui.theme.PositiveGreen
 import es.aviferdev.n3to.ui.theme.UncategorizedColor
 import es.aviferdev.n3to.ui.theme.WarnAmber
 
+
 data class PortfolioStateInput(
     val portfolioId: String?,
     val assets: List<Asset>,

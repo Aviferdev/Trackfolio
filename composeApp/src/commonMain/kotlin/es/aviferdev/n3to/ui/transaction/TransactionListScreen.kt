@@ -36,7 +36,6 @@ import es.aviferdev.n3to.ui.common.component.EmptyStateView
 import es.aviferdev.n3to.ui.common.dialog.DeleteConfirmDialog
 import es.aviferdev.n3to.ui.common.topbar.TopBarWithActionsApp
 import es.aviferdev.n3to.ui.home.bottomsheet.AddTransactionBottomSheet
-import es.aviferdev.n3to.ui.home.viewmodel.AddTransactionViewModel
 
 import es.aviferdev.n3to.ui.theme.LocalBalanceHidden
 import es.aviferdev.n3to.ui.theme.N3toTheme
@@ -70,7 +69,6 @@ fun TransactionListScreen(
     val balancesHidden = LocalBalanceHidden.current
     var txToDelete by remember { mutableStateOf<Transaction?>(null) }
     var txToEdit by remember { mutableStateOf<Transaction?>(null) }
-    val addViewModel: AddTransactionViewModel = koinViewModel()
     var contentVisible by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) { delay(60); contentVisible = true }
 
@@ -110,10 +108,10 @@ fun TransactionListScreen(
     }
 
     txToEdit?.let { tx ->
-        LaunchedEffect(tx.id) { addViewModel.loadForEdit(tx) }
+        LaunchedEffect(tx.id) { viewModel.loadForEdit(tx) }
         AddTransactionBottomSheet(
-            onDismiss = { addViewModel.resetForCreate(); txToEdit = null },
-            viewModel = addViewModel
+            onDismiss = { viewModel.resetForCreate(); txToEdit = null },
+            viewModel = viewModel
         )
     }
 }

@@ -48,10 +48,18 @@ import es.aviferdev.n3to.ui.home.viewmodel.CategoryPickerViewModel
 import es.aviferdev.n3to.ui.theme.CategoryPalette
 import es.aviferdev.n3to.ui.theme.appColors
 import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.category_all_section
+import n3to.composeapp.generated.resources.category_all_types_section
 import n3to.composeapp.generated.resources.category_create_cd
+import n3to.composeapp.generated.resources.category_create_new
+import n3to.composeapp.generated.resources.category_frequent_section
 import n3to.composeapp.generated.resources.category_help_examples
 import n3to.composeapp.generated.resources.category_help_text
 import n3to.composeapp.generated.resources.category_help_title
+import n3to.composeapp.generated.resources.category_no_search_results
+import n3to.composeapp.generated.resources.category_picker_title_expense
+import n3to.composeapp.generated.resources.category_picker_title_income
+import n3to.composeapp.generated.resources.category_withholding_applicable
 import n3to.composeapp.generated.resources.common_search_category_placeholder
 import n3to.composeapp.generated.resources.common_search_cd
 import org.jetbrains.compose.resources.stringResource
@@ -73,9 +81,9 @@ fun CategoryPickerScreen(
     Column(modifier = Modifier.fillMaxSize().background(MaterialTheme.appColors.background)) {
         TopBarWithActionsApp(
             title = if (uiState.type == TransactionType.EXPENSE) {
-                "Selecciona categoría"
+                stringResource(Res.string.category_picker_title_expense)
             } else {
-                "Selecciona tipo de ingreso"
+                stringResource(Res.string.category_picker_title_income)
             },
             navigateBack = onBack
         )
@@ -118,7 +126,7 @@ private fun CategoryPickerContent(
 
         if (uiState.type == TransactionType.EXPENSE) {
             if (uiState.frequentCategories.isNotEmpty()) {
-                SectionLabelC("Frecuentes")
+                SectionLabelC(stringResource(Res.string.category_frequent_section))
                 Spacer(Modifier.height(8.dp))
 
                 Row(
@@ -143,7 +151,7 @@ private fun CategoryPickerContent(
                 visible = uiState.allCategories.size > 6
             )
 
-            SectionLabelC("Todas las categorías")
+            SectionLabelC(stringResource(Res.string.category_all_section))
             Spacer(Modifier.height(8.dp))
 
             if (uiState.allCategories.isEmpty() && !uiState.isLoading) {
@@ -180,7 +188,7 @@ private fun CategoryPickerContent(
                                 contentAlignment = Alignment.Center
                             ) {
                                 Text(
-                                    "Sin resultados para \"${uiState.searchQuery}\"",
+                                    stringResource(Res.string.category_no_search_results, uiState.searchQuery),
                                     fontSize = 13.sp,
                                     color = MaterialTheme.appColors.textSecondary,
                                     textAlign = TextAlign.Center
@@ -197,7 +205,7 @@ private fun CategoryPickerContent(
                 }
             }
         } else {
-            SectionLabelC("Todos los tipos")
+            SectionLabelC(stringResource(Res.string.category_all_types_section))
             Spacer(Modifier.height(8.dp))
 
             LazyColumn(
@@ -381,7 +389,7 @@ private fun IncomeTypeRow(
             )
             if (incomeType.hasWithholdingTax) {
                 Text(
-                    "Retención fiscal aplicable",
+                    stringResource(Res.string.category_withholding_applicable),
                     fontSize = 11.sp,
                     color = MaterialTheme.appColors.textTertiary
                 )
@@ -414,7 +422,7 @@ private fun CreateCategoryButton(onClick: () -> Unit) {
         )
         Spacer(Modifier.width(6.dp))
         Text(
-            "Crear nueva categoría",
+            stringResource(Res.string.category_create_new),
             fontSize = 13.sp,
             fontWeight = FontWeight.Medium,
             color = MaterialTheme.appColors.primary

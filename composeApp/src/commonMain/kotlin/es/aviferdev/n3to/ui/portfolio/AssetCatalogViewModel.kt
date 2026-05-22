@@ -4,12 +4,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import es.aviferdev.n3to.domain.model.Asset
 import es.aviferdev.n3to.domain.model.AssetCategory
+import es.aviferdev.n3to.domain.model.AssetComposition
+import es.aviferdev.n3to.domain.model.AssetRegionDistribution
+import es.aviferdev.n3to.domain.model.AssetSectorRelation
 import es.aviferdev.n3to.domain.model.PriceQuote
 import es.aviferdev.n3to.domain.model.PriceSource
 import es.aviferdev.n3to.domain.portfolio.PortfolioCalculator
-import es.aviferdev.n3to.domain.repository.AssetMetadataRepository
-import es.aviferdev.n3to.domain.repository.AssetPlatformRepository
-import es.aviferdev.n3to.domain.repository.AssetTransactionRepository
 import es.aviferdev.n3to.domain.usecase.asset.ArchiveAssetUseCase
 import es.aviferdev.n3to.domain.usecase.asset.GetAssetsByAccountUseCase
 import es.aviferdev.n3to.domain.usecase.asset.SaveAssetUseCase
@@ -17,6 +17,21 @@ import es.aviferdev.n3to.domain.usecase.asset.UnarchiveAssetUseCase
 import es.aviferdev.n3to.domain.usecase.asset.UpdateAssetUseCase
 import es.aviferdev.n3to.domain.usecase.asset.ValidateAssetIdentifierUseCase
 import es.aviferdev.n3to.domain.usecase.assetcategory.GetAllAssetCategoriesIncludingArchivedUseCase
+import es.aviferdev.n3to.domain.usecase.assetmetadata.DeleteAllRegionDistributionsUseCase
+import es.aviferdev.n3to.domain.usecase.assetmetadata.DeleteAllSectorLinksUseCase
+import es.aviferdev.n3to.domain.usecase.assetmetadata.DeleteAssetCompositionUseCase
+import es.aviferdev.n3to.domain.usecase.assetmetadata.GetAssetCompositionUseCase
+import es.aviferdev.n3to.domain.usecase.assetmetadata.GetRegionsByAssetUseCase
+import es.aviferdev.n3to.domain.usecase.assetmetadata.GetRegionsUseCase
+import es.aviferdev.n3to.domain.usecase.assetmetadata.GetSectorsByAssetUseCase
+import es.aviferdev.n3to.domain.usecase.assetmetadata.GetSectorsUseCase
+import es.aviferdev.n3to.domain.usecase.assetmetadata.SaveAssetCompositionUseCase
+import es.aviferdev.n3to.domain.usecase.assetmetadata.SaveRegionDistributionUseCase
+import es.aviferdev.n3to.domain.usecase.assetmetadata.SaveSectorRelationUseCase
+import es.aviferdev.n3to.domain.usecase.assetplatform.GetPlatformsByAssetUseCase
+import es.aviferdev.n3to.domain.usecase.assetplatform.LinkPlatformToAssetUseCase
+import es.aviferdev.n3to.domain.usecase.assetplatform.UnlinkAllPlatformsFromAssetUseCase
+import es.aviferdev.n3to.domain.usecase.assettransaction.GetTransactionsByAssetUseCase
 import es.aviferdev.n3to.platform.nowMillis
 import es.aviferdev.n3to.ui.account.AccountSession
 import es.aviferdev.n3to.ui.theme.formatQty
@@ -63,10 +78,22 @@ class AssetCatalogViewModel(
     private val updateAsset: UpdateAssetUseCase,
     private val archiveAsset: ArchiveAssetUseCase,
     private val unarchiveAsset: UnarchiveAssetUseCase,
-    private val assetTransactionRepository: AssetTransactionRepository,
+    private val getTransactionsByAsset: GetTransactionsByAssetUseCase,
     private val getAssetCategoriesIncludingArchived: GetAllAssetCategoriesIncludingArchivedUseCase,
-    private val assetPlatformRepository: AssetPlatformRepository,
-    private val assetMetadataRepository: AssetMetadataRepository,
+    private val getPlatformsByAsset: GetPlatformsByAssetUseCase,
+    private val getSectors: GetSectorsUseCase,
+    private val getRegions: GetRegionsUseCase,
+    private val getSectorsByAsset: GetSectorsByAssetUseCase,
+    private val getRegionsByAsset: GetRegionsByAssetUseCase,
+    private val getAssetComposition: GetAssetCompositionUseCase,
+    private val saveAssetComposition: SaveAssetCompositionUseCase,
+    private val deleteAssetComposition: DeleteAssetCompositionUseCase,
+    private val deleteAllSectorLinks: DeleteAllSectorLinksUseCase,
+    private val saveSectorRelation: SaveSectorRelationUseCase,
+    private val deleteAllRegionDistributions: DeleteAllRegionDistributionsUseCase,
+    private val saveRegionDistribution: SaveRegionDistributionUseCase,
+    private val linkPlatformToAsset: LinkPlatformToAssetUseCase,
+    private val unlinkAllPlatformsFromAsset: UnlinkAllPlatformsFromAssetUseCase,
     private val session: AccountSession,
     private val validateAssetIdentifier: ValidateAssetIdentifierUseCase? = null
 ) : ViewModel() {
@@ -82,11 +109,11 @@ class AssetCatalogViewModel(
     private val _editingFixedIncomePercent = MutableStateFlow(0)
 
     private val allSectors: StateFlow<List<es.aviferdev.n3to.domain.model.AssetSector>> =
-        assetMetadataRepository.getAllSectors()
+        getSectors()
             .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     private val allRegions: StateFlow<List<es.aviferdev.n3to.domain.model.AssetRegion>> =
-        assetMetadataRepository.getAllRegions()
+        getRegions()
             .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     private val sheetStateFlowPart1 = combine(
@@ -165,16 +192,16 @@ class AssetCatalogViewModel(
     fun openEditSheet(asset: Asset) {
         _editing.value = asset
         viewModelScope.launch {
-            val platforms = assetPlatformRepository.getPlatformsByAsset(asset.id).first()
+            val platforms = getPlatformsByAsset(asset.id).first()
             _editingPlatformIds.value = platforms.map { it.id }.toSet()
 
-            val sectors = assetMetadataRepository.getSectorsByAssetId(asset.id).first()
+            val sectors = getSectorsByAsset(asset.id).first()
             _editingSectorIds.value = sectors.map { it.id }.toSet()
 
-            val regions = assetMetadataRepository.getRegionDistributionsByAssetId(asset.id).first()
+            val regions = getRegionsByAsset(asset.id).first()
             _editingRegionPercents.value = regions.associate { it.regionId to it.percent }
 
-            val composition = assetMetadataRepository.getCompositionByAssetId(asset.id).first()
+            val composition = getAssetComposition(asset.id).first()
             _editingFixedIncomePercent.value = composition?.fixedIncomePercent ?: 0
         }
     }
@@ -189,7 +216,7 @@ class AssetCatalogViewModel(
 
     fun requestArchive(asset: Asset) {
         viewModelScope.launch {
-            val txs = assetTransactionRepository.getByAsset(asset.id).first()
+            val txs = getTransactionsByAsset(asset.id).first()
             val position = PortfolioCalculator.calculate(txs, asset.currentPrice)
             if (position.netQuantity > 0.0) {
                 _error.value = CatalogError.CannotArchiveWithOpenPositions(
@@ -257,8 +284,8 @@ class AssetCatalogViewModel(
                 .onSuccess {
                     // Guardar composición RF/RV
                     if (fixedIncomePercent > 0) {
-                        assetMetadataRepository.saveComposition(
-                            es.aviferdev.n3to.domain.model.AssetComposition(
+                        saveAssetComposition(
+                            AssetComposition(
                                 assetId = asset.id,
                                 fixedIncomePercent = fixedIncomePercent,
                                 createdAt = now
@@ -267,8 +294,8 @@ class AssetCatalogViewModel(
                     }
                     // Vincular sectores
                     sectorIds.forEach { sectorId ->
-                        assetMetadataRepository.saveSectorRelation(
-                            es.aviferdev.n3to.domain.model.AssetSectorRelation(
+                        saveSectorRelation(
+                            AssetSectorRelation(
                                 assetId = asset.id,
                                 sectorId = sectorId
                             )
@@ -277,8 +304,8 @@ class AssetCatalogViewModel(
                     // Guardar distribución regional
                     regionPercents.forEach { (regionId, percent) ->
                         if (percent > 0) {
-                            assetMetadataRepository.saveRegionDistribution(
-                                es.aviferdev.n3to.domain.model.AssetRegionDistribution(
+                            saveRegionDistribution(
+                                AssetRegionDistribution(
                                     assetId = asset.id,
                                     regionId = regionId,
                                     percent = percent
@@ -288,7 +315,7 @@ class AssetCatalogViewModel(
                     }
                     // Vincular plataformas
                     platformIds.forEach { platId ->
-                        assetPlatformRepository.link(asset.id, platId)
+                        linkPlatformToAsset(asset.id, platId)
                     }
                 }
                 .onFailure { _error.value = CatalogError.Unknown(it.message) }
@@ -340,32 +367,32 @@ class AssetCatalogViewModel(
             ).onSuccess {
                 // Guardar composición RF/RV
                 if (fixedIncomePercent > 0) {
-                    assetMetadataRepository.saveComposition(
-                        es.aviferdev.n3to.domain.model.AssetComposition(
+                    saveAssetComposition(
+                        AssetComposition(
                             assetId = original.id,
                             fixedIncomePercent = fixedIncomePercent,
                             createdAt = nowMillis()
                         )
                     )
                 } else {
-                    assetMetadataRepository.deleteComposition(original.id)
+                    deleteAssetComposition(original.id)
                 }
                 // Actualizar sectores: borrar todos y recrear
-                assetMetadataRepository.deleteAllSectorLinks(original.id)
+                deleteAllSectorLinks(original.id)
                 sectorIds.forEach { sectorId ->
-                    assetMetadataRepository.saveSectorRelation(
-                        es.aviferdev.n3to.domain.model.AssetSectorRelation(
+                    saveSectorRelation(
+                        AssetSectorRelation(
                             assetId = original.id,
                             sectorId = sectorId
                         )
                     )
                 }
                 // Actualizar distribución regional
-                assetMetadataRepository.deleteAllRegionDistributions(original.id)
+                deleteAllRegionDistributions(original.id)
                 regionPercents.forEach { (regionId, percent) ->
                     if (percent > 0) {
-                        assetMetadataRepository.saveRegionDistribution(
-                            es.aviferdev.n3to.domain.model.AssetRegionDistribution(
+                        saveRegionDistribution(
+                            AssetRegionDistribution(
                                 assetId = original.id,
                                 regionId = regionId,
                                 percent = percent
@@ -374,9 +401,9 @@ class AssetCatalogViewModel(
                     }
                 }
                 // Actualizar plataformas: borrar todas y recrear
-                assetPlatformRepository.unlinkAllByAsset(original.id)
+                unlinkAllPlatformsFromAsset(original.id)
                 platformIds.forEach { platId ->
-                    assetPlatformRepository.link(original.id, platId)
+                    linkPlatformToAsset(original.id, platId)
                 }
             }.onFailure { _error.value = CatalogError.Unknown(it.message) }
             _editing.value = null

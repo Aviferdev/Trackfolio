@@ -38,6 +38,7 @@ import es.aviferdev.n3to.domain.model.CategoryBudgetStatus
 import es.aviferdev.n3to.domain.model.MonthlyTotals
 import es.aviferdev.n3to.ui.annual.CategoryExpenseComparison
 import es.aviferdev.n3to.ui.common.ProgressBar
+import es.aviferdev.n3to.ui.theme.CategoryPalette
 import es.aviferdev.n3to.ui.theme.MONTH_LABELS
 import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.ui.theme.formatAmount
@@ -213,7 +214,7 @@ internal fun CategoryExpenseList(
             )
             Spacer(Modifier.height(14.dp))
 
-            comparisons.forEach { comp ->
+            comparisons.forEachIndexed { idx, comp ->
                 Column(modifier = Modifier.padding(bottom = 10.dp)) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -240,7 +241,7 @@ internal fun CategoryExpenseList(
                     Spacer(Modifier.height(5.dp))
                     ProgressBar(
                         progress = (comp.currentPercent / 100.0).toFloat(),
-                        color = comp.color
+                        color = CategoryPalette[idx % CategoryPalette.size]
                     )
                 }
             }

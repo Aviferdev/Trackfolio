@@ -70,6 +70,7 @@ import es.aviferdev.n3to.ui.home.components.ModeChip
 import es.aviferdev.n3to.ui.home.components.TypePill
 import es.aviferdev.n3to.ui.home.viewmodel.AddTransactionUiState
 import es.aviferdev.n3to.ui.home.viewmodel.AddTransactionViewModel
+import es.aviferdev.n3to.ui.home.viewmodel.IAddTransactionForm
 import es.aviferdev.n3to.ui.home.viewmodel.IncomeInputMode
 import es.aviferdev.n3to.ui.home.viewmodel.IrpfInputMode
 import es.aviferdev.n3to.ui.theme.appColors
@@ -78,13 +79,20 @@ import n3to.composeapp.generated.resources.common_amount_label
 import n3to.composeapp.generated.resources.common_category_label
 import n3to.composeapp.generated.resources.common_close
 import n3to.composeapp.generated.resources.common_description_label
+import n3to.composeapp.generated.resources.common_save_changes
 import n3to.composeapp.generated.resources.fiscal_commissions_short
 import n3to.composeapp.generated.resources.portfolio_add_tx_gross
+import n3to.composeapp.generated.resources.transaction_edit_title
 import n3to.composeapp.generated.resources.transaction_income_type_label
 import n3to.composeapp.generated.resources.transaction_mode_fiscal
 import n3to.composeapp.generated.resources.transaction_mode_net_only
 import n3to.composeapp.generated.resources.transaction_net_amount_label
+import n3to.composeapp.generated.resources.transaction_new_title
+import n3to.composeapp.generated.resources.transaction_no_fiscal_detail_warning
 import n3to.composeapp.generated.resources.transaction_note_placeholder
+import n3to.composeapp.generated.resources.transaction_save
+import n3to.composeapp.generated.resources.transaction_select_category
+import n3to.composeapp.generated.resources.transaction_select_income_type
 import n3to.composeapp.generated.resources.transaction_type_expense
 import n3to.composeapp.generated.resources.transaction_type_income
 import org.jetbrains.compose.resources.stringResource
@@ -99,9 +107,9 @@ import org.koin.compose.viewmodel.koinViewModel
 fun AddTransactionBottomSheet(
     onDismiss: () -> Unit,
     onRequestCategoryPicker: ((TransactionType) -> Unit)? = null,
-    viewModel: AddTransactionViewModel = koinViewModel()
+    viewModel: IAddTransactionForm = koinViewModel<AddTransactionViewModel>()
 ) {
-    val uiState by viewModel.uiState.collectAsState()
+    val uiState by viewModel.formUiState.collectAsState()
 
     LaunchedEffect(uiState) {
         if (uiState is AddTransactionUiState.Success) {
@@ -240,7 +248,7 @@ private fun AddTransactionSheetContent(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = if (isEditing) "Editar transacción" else "Nueva transacción",
+                text = if (isEditing) stringResource(Res.string.transaction_edit_title) else stringResource(Res.string.transaction_new_title),
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Medium,
                 color = MaterialTheme.appColors.textPrimary,
@@ -295,14 +303,14 @@ private fun AddTransactionSheetContent(
             DarkTappableRow(
                 icon = Icons.Outlined.Folder,
                 label = stringResource(Res.string.common_category_label),
-                value = if (categoryName.isNotEmpty()) categoryName else "Seleccionar categoría…",
+                value = if (categoryName.isNotEmpty()) categoryName else stringResource(Res.string.transaction_select_category),
                 onClick = { onRequestCategoryPicker?.invoke(TransactionType.EXPENSE) }
             )
         } else {
             DarkTappableRow(
                 icon = Icons.Outlined.AccountBalance,
                 label = stringResource(Res.string.transaction_income_type_label),
-                value = selectedIncomeType?.label ?: "Seleccionar tipo…",
+                value = selectedIncomeType?.label ?: stringResource(Res.string.transaction_select_income_type),
                 onClick = onIncomeTypeTap
             )
         }
@@ -347,7 +355,7 @@ private fun AddTransactionSheetContent(
                 DarkAmountInput(
                     value = grossAmount,
                     onValueChange = onGrossAmountChange,
-                    label = "Importe",
+                    label = stringResource(Res.string.common_amount_label),
                     color = MaterialTheme.appColors.income
                 )
                 Spacer(Modifier.height(16.dp))
@@ -420,7 +428,7 @@ private fun AddTransactionSheetContent(
                             )
                             Spacer(Modifier.width(8.dp))
                             Text(
-                                "Sin detalle fiscal: este ingreso no aparecerá desglosado en el informe",
+                                stringResource(Res.string.transaction_no_fiscal_detail_warning),
                                 fontSize = 11.sp,
                                 color = MaterialTheme.appColors.warnAmber,
                                 lineHeight = 14.sp
@@ -538,7 +546,7 @@ private fun AddTransactionSheetContent(
                 )
             } else {
                 Text(
-                    if (isEditing) "Guardar cambios" else "Guardar transacción",
+                    if (isEditing) stringResource(Res.string.common_save_changes) else stringResource(Res.string.transaction_save),
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Medium
                 )

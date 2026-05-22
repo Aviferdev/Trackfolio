@@ -46,6 +46,7 @@ import es.aviferdev.n3to.ui.savingsrates.SavingsRatePreviewCard
 import es.aviferdev.n3to.ui.theme.LocalBalanceHidden
 import es.aviferdev.n3to.ui.theme.appColors
 import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.common_go_to_settings
 import n3to.composeapp.generated.resources.portfolio_empty_title
 import n3to.composeapp.generated.resources.portfolio_evolution_title
 import n3to.composeapp.generated.resources.portfolio_monthly_value
@@ -106,7 +107,7 @@ fun PortfolioTabContent(
                         icon = "📂",
                         title = stringResource(Res.string.portfolio_no_portfolios_title),
                         subtitle = stringResource(Res.string.portfolio_no_portfolios_subtitle),
-                        actionLabel = "Ir a ajustes",
+                        actionLabel = stringResource(Res.string.common_go_to_settings),
                         onAction = onNavigateToSettings
                     )
                 }

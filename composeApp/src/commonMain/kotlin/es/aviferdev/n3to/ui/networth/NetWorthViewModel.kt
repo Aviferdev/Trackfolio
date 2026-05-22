@@ -2,19 +2,14 @@ package es.aviferdev.n3to.ui.networth
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import es.aviferdev.n3to.domain.model.AssetBreakdown
 import es.aviferdev.n3to.domain.model.NetWorthHistoryPoint
 import es.aviferdev.n3to.domain.model.NetWorthScreenData
 import es.aviferdev.n3to.domain.usecase.loan.GetLoansByAccountUseCase
 import es.aviferdev.n3to.domain.usecase.networth.GetNetWorthDataUseCase
 import es.aviferdev.n3to.domain.usecase.networth.GetNetWorthHistoryUseCase
 import es.aviferdev.n3to.ui.account.AccountSession
-import es.aviferdev.n3to.ui.common.DonutSlice
 import es.aviferdev.n3to.ui.common.loading.GlobalLoadingManager
-import es.aviferdev.n3to.ui.theme.DonutAccounts
-import es.aviferdev.n3to.ui.theme.DonutInvestments
-import es.aviferdev.n3to.ui.theme.DonutRealEstate
-import es.aviferdev.n3to.ui.theme.DonutValuables
-import es.aviferdev.n3to.ui.theme.WarnOrange
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -30,7 +25,7 @@ sealed class NetWorthUiState {
     data class Success(
         val data: NetWorthScreenData,
         val netWorthHistory: List<NetWorthHistoryPoint> = emptyList(),
-        val assetDistribution: List<DonutSlice> = emptyList()
+        val assetDistribution: List<AssetBreakdown> = emptyList()
     ) : NetWorthUiState()
 
     data class Error(val message: String) : NetWorthUiState()
@@ -114,44 +109,63 @@ class NetWorthViewModel(
     }
 
     companion object {
-        private val AssetColors = listOf(
-            DonutAccounts,    // Cuentas — verde
-            DonutInvestments, // Inversiones — azul
-            WarnOrange,       // Renta fija — ámbar
-            DonutRealEstate,  // Inmuebles — marrón
-            DonutValuables    // Bienes — púrpura
-        )
-
-        private fun buildAssetDistribution(data: NetWorthScreenData): List<DonutSlice> {
+        private fun buildAssetDistribution(data: NetWorthScreenData): List<AssetBreakdown> {
             val total = data.totalAssets
             if (total <= 0.0) return emptyList()
 
-            val items = mutableListOf<Triple<String, String, Double>>() // icon, name, value
+            val items = mutableListOf<AssetBreakdown>()
             if (data.totalAccountBalance > 0.0) {
-                items.add(Triple("\uD83C\uDFE6", "Cuentas", data.totalAccountBalance))
-            }
-            if (data.totalPortfolioValue > 0.0) {
-                items.add(Triple("\uD83D\uDCC8", "Inversiones", data.totalPortfolioValue))
-            }
-            if (data.totalFixedIncomeValue > 0.0) {
-                items.add(Triple("\uD83C\uDFDB\uFE0F", "Renta fija", data.totalFixedIncomeValue))
-            }
-            if (data.totalRealEstateValue > 0.0) {
-                items.add(Triple("\uD83C\uDFE0", "Inmuebles", data.totalRealEstateValue))
-            }
-            if (data.totalValuablesValue > 0.0) {
-                items.add(Triple("\uD83D\uDC8E", "Bienes", data.totalValuablesValue))
-            }
-
-            return items.mapIndexed { idx, (icon, name, value) ->
-                DonutSlice(
-                    name = name,
-                    icon = icon,
-                    amount = value,
-                    percent = (value / total) * 100.0,
-                    color = AssetColors[idx % AssetColors.size]
+                items.add(
+                    AssetBreakdown(
+                        icon = "\uD83C\uDFE6",
+                        name = "Cuentas",
+                        amount = data.totalAccountBalance,
+                        percent = (data.totalAccountBalance / total) * 100.0
+                    )
                 )
             }
+            if (data.totalPortfolioValue > 0.0) {
+                items.add(
+                    AssetBreakdown(
+                        icon = "\uD83D\uDCC8",
+                        name = "Inversiones",
+                        amount = data.totalPortfolioValue,
+                        percent = (data.totalPortfolioValue / total) * 100.0
+                    )
+                )
+            }
+            if (data.totalFixedIncomeValue > 0.0) {
+                items.add(
+                    AssetBreakdown(
+                        icon = "\uD83C\uDFDB\uFE0F",
+                        name = "Renta fija",
+                        amount = data.totalFixedIncomeValue,
+                        percent = (data.totalFixedIncomeValue / total) * 100.0
+                    )
+                )
+            }
+            if (data.totalRealEstateValue > 0.0) {
+                items.add(
+                    AssetBreakdown(
+                        icon = "\uD83C\uDFE0",
+                        name = "Inmuebles",
+                        amount = data.totalRealEstateValue,
+                        percent = (data.totalRealEstateValue / total) * 100.0
+                    )
+                )
+            }
+            if (data.totalValuablesValue > 0.0) {
+                items.add(
+                    AssetBreakdown(
+                        icon = "\uD83D\uDC8E",
+                        name = "Bienes",
+                        amount = data.totalValuablesValue,
+                        percent = (data.totalValuablesValue / total) * 100.0
+                    )
+                )
+            }
+
+            return items
         }
     }
 }

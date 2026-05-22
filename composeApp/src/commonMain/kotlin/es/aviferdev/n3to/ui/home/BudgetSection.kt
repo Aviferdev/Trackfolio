@@ -38,6 +38,7 @@ import n3to.composeapp.generated.resources.budget_empty_subtitle
 import n3to.composeapp.generated.resources.budget_empty_title
 import n3to.composeapp.generated.resources.budget_limit_exceeded
 import n3to.composeapp.generated.resources.budget_no_income
+import n3to.composeapp.generated.resources.budget_edit_limit_cd
 import n3to.composeapp.generated.resources.budget_remaining_format
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -131,7 +132,7 @@ private fun BudgetRow(
             // Botón de editar límite inline
             Icon(
                 imageVector = Icons.Outlined.Edit,
-                contentDescription = "Editar límite",
+                contentDescription = stringResource(Res.string.budget_edit_limit_cd),
                 tint = MaterialTheme.appColors.textSecondary,
                 modifier = Modifier
                     .clickable(onClick = onEdit)

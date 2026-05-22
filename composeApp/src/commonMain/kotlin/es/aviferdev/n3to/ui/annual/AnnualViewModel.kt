@@ -23,8 +23,6 @@ import es.aviferdev.n3to.domain.usecase.transaction.GetOldestTransactionDateUseC
 import es.aviferdev.n3to.platform.nowLocalDateTime
 import es.aviferdev.n3to.platform.nowYear
 import es.aviferdev.n3to.ui.account.AccountSession
-import es.aviferdev.n3to.ui.common.DonutSlice
-import es.aviferdev.n3to.ui.theme.CategoryPalette
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -46,22 +44,16 @@ data class AnnualUiState(
     val monthlyBreakdown: List<MonthlyTotals> = emptyList(),
     val year: String = "",
     val month: String = "",
-    val displayLabel: String = "",
     val isLoading: Boolean = true,
     val canGoBack: Boolean = true,
     val canGoForward: Boolean = false,
-    val expensesByCategory: List<DonutSlice> = emptyList(),
-    val incomeByType: List<DonutSlice> = emptyList(),
+    val expensesByCategory: List<CategoryBreakdown> = emptyList(),
+    val incomeByType: List<IncomeTypeBreakdown> = emptyList(),
     val monthlyInvestments: List<MonthlyInvestment> = emptyList(),
     val categoryComparisons: List<CategoryExpenseComparison> = emptyList(),
     val incomeComparisons: List<CategoryExpenseComparison> = emptyList(),
     val goalProgress: List<MonthlyGoalProgress> = emptyList(),
     val budgetStatus: List<CategoryBudgetStatus> = emptyList()
-)
-
-private val SPANISH_MONTHS = listOf(
-    "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
-    "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
 )
 
 private data class MainData(
@@ -140,24 +132,17 @@ class AnnualViewModel(
             canGoForward = yearInt < nowY || (yearInt == nowY && monthInt < nowM)
         }
 
-        val displayLabel = if (viewMode == SummaryViewMode.MONTHLY) {
-            "${SPANISH_MONTHS[month.toInt() - 1]} $year"
-        } else {
-            year
-        }
-
         if (accountId == null) {
             flowOf(
                 AnnualUiState(
                     viewMode = viewMode, year = year, month = month,
-                    displayLabel = displayLabel, isLoading = false,
-                    canGoBack = canGoBack, canGoForward = canGoForward
+                    isLoading = false, canGoBack = canGoBack, canGoForward = canGoForward
                 )
             )
         } else if (viewMode == SummaryViewMode.MONTHLY) {
-            buildMonthlyFlow(accountId, year, month, canGoBack, canGoForward, displayLabel)
+            buildMonthlyFlow(accountId, year, month, canGoBack, canGoForward)
         } else {
-            buildAnnualFlow(accountId, year, oldest, canGoBack, canGoForward, displayLabel)
+            buildAnnualFlow(accountId, year, oldest, canGoBack, canGoForward)
         }
     }.stateIn(
         scope = viewModelScope,
@@ -170,8 +155,7 @@ class AnnualViewModel(
         year: String,
         month: String,
         canGoBack: Boolean,
-        canGoForward: Boolean,
-        displayLabel: String
+        canGoForward: Boolean
     ) = combine(
         getMonthlyTotals(accountId, year, month),
         getExpensesByCategoryByMonth(accountId, year, month),
@@ -181,27 +165,25 @@ class AnnualViewModel(
         val totalExpense = totals.totalExpense
         val totalIncome = totals.totalIncome
 
-        val expenseComparisons = expenses.mapIndexed { idx, item ->
+        val expenseComparisons = expenses.mapIndexed { _, item ->
             CategoryExpenseComparison(
                 name = item.categoryName,
                 icon = "💰",
                 currentAmount = item.amount,
                 currentPercent = if (totalExpense > 0) (item.amount / totalExpense) * 100 else 0.0,
                 previousAmount = null,
-                changePercent = null,
-                color = CategoryPalette[idx % CategoryPalette.size]
+                changePercent = null
             )
         }.sortedByDescending { it.currentAmount }
 
-        val incomeComparisons = incomes.mapIndexed { idx, item ->
+        val incomeComparisons = incomes.mapIndexed { _, item ->
             CategoryExpenseComparison(
                 name = item.label,
                 icon = item.emoji,
                 currentAmount = item.amount,
                 currentPercent = if (totalIncome > 0) (item.amount / totalIncome) * 100 else 0.0,
                 previousAmount = null,
-                changePercent = null,
-                color = CategoryPalette[idx % CategoryPalette.size]
+                changePercent = null
             )
         }.sortedByDescending { it.currentAmount }
 
@@ -210,7 +192,6 @@ class AnnualViewModel(
             monthlyTotals = totals,
             year = year,
             month = month,
-            displayLabel = displayLabel,
             isLoading = false,
             canGoBack = canGoBack,
             canGoForward = canGoForward,
@@ -225,8 +206,7 @@ class AnnualViewModel(
         year: String,
         oldest: Int?,
         canGoBack: Boolean,
-        canGoForward: Boolean,
-        displayLabel: String
+        canGoForward: Boolean
     ) = run {
         val prevYear = (year.toInt() - 1).toString()
         val canFetchPrev = oldest == null || (year.toInt() - 1) >= oldest
@@ -256,23 +236,8 @@ class AnnualViewModel(
             val totalExpense = main.summary?.totalExpense ?: 0.0
             val totalIncome = main.summary?.totalIncome ?: 0.0
 
-            val expenseSlices = main.expenses.mapIndexed { idx, item ->
-                DonutSlice(
-                    name = item.categoryName, icon = "💰", amount = item.amount,
-                    percent = if (totalExpense > 0) (item.amount / totalExpense) * 100 else 0.0,
-                    color = CategoryPalette[idx % CategoryPalette.size]
-                )
-            }
-            val incomeSlices = main.incomes.mapIndexed { idx, item ->
-                DonutSlice(
-                    name = item.label, icon = item.emoji, amount = item.amount,
-                    percent = if (totalIncome > 0) (item.amount / totalIncome) * 100 else 0.0,
-                    color = CategoryPalette[idx % CategoryPalette.size]
-                )
-            }
-
             val prevExpenseMap = prevExpenses.associateBy { it.categoryName }
-            val categoryComparisons = main.expenses.mapIndexed { idx, curr ->
+            val categoryComparisons = main.expenses.mapIndexed { _, curr ->
                 val prev = prevExpenseMap[curr.categoryName]
                 CategoryExpenseComparison(
                     name = curr.categoryName, icon = "💰",
@@ -280,13 +245,12 @@ class AnnualViewModel(
                     currentPercent = if (totalExpense > 0) (curr.amount / totalExpense) * 100 else 0.0,
                     previousAmount = prev?.amount,
                     changePercent = if (prev != null && prev.amount > 0)
-                        ((curr.amount - prev.amount) / prev.amount) * 100 else null,
-                    color = CategoryPalette[idx % CategoryPalette.size]
+                        ((curr.amount - prev.amount) / prev.amount) * 100 else null
                 )
             }.sortedByDescending { it.currentAmount }
 
             val prevIncomeMap = prevIncomes.associateBy { it.incomeType }
-            val incomeComparisons = main.incomes.mapIndexed { idx, curr ->
+            val incomeComparisons = main.incomes.mapIndexed { _, curr ->
                 val prev = prevIncomeMap[curr.incomeType]
                 CategoryExpenseComparison(
                     name = curr.label, icon = curr.emoji,
@@ -294,8 +258,7 @@ class AnnualViewModel(
                     currentPercent = if (totalIncome > 0) (curr.amount / totalIncome) * 100 else 0.0,
                     previousAmount = prev?.amount,
                     changePercent = if (prev != null && prev.amount > 0)
-                        ((curr.amount - prev.amount) / prev.amount) * 100 else null,
-                    color = CategoryPalette[idx % CategoryPalette.size]
+                        ((curr.amount - prev.amount) / prev.amount) * 100 else null
                 )
             }.sortedByDescending { it.currentAmount }
 
@@ -305,12 +268,11 @@ class AnnualViewModel(
                 monthlyBreakdown = main.breakdown,
                 year = year,
                 month = "",
-                displayLabel = displayLabel,
                 isLoading = false,
                 canGoBack = canGoBack,
                 canGoForward = canGoForward,
-                expensesByCategory = expenseSlices,
-                incomeByType = incomeSlices,
+                expensesByCategory = main.expenses,
+                incomeByType = main.incomes,
                 monthlyInvestments = main.investments,
                 categoryComparisons = categoryComparisons,
                 incomeComparisons = incomeComparisons,
@@ -324,13 +286,11 @@ class AnnualViewModel(
         val now = nowLocalDateTime()
         _viewMode.value = when (_viewMode.value) {
             SummaryViewMode.ANNUAL -> {
-                // Al pasar a mensual, resetear al mes actual del año seleccionado
                 _month.value = now.monthNumber.toString().padStart(2, '0')
                 _year.value = now.year.toString()
                 SummaryViewMode.MONTHLY
             }
             SummaryViewMode.MONTHLY -> {
-                // Al pasar a anual, resetear al año actual
                 _year.value = now.year.toString()
                 SummaryViewMode.ANNUAL
             }

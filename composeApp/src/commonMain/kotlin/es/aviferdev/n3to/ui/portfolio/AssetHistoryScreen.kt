@@ -28,6 +28,9 @@ import n3to.composeapp.generated.resources.common_cancel
 import n3to.composeapp.generated.resources.common_delete
 import n3to.composeapp.generated.resources.common_error
 import n3to.composeapp.generated.resources.error_asset_not_found
+import n3to.composeapp.generated.resources.portfolio_delete_transfer_message
+import n3to.composeapp.generated.resources.portfolio_delete_transfer_title
+import n3to.composeapp.generated.resources.portfolio_delete_tx_message
 import n3to.composeapp.generated.resources.transaction_delete_title
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -88,7 +91,7 @@ fun AssetHistoryScreen(
             icon = { Text("⚠️", fontSize = 26.sp) },
             title = {
                 Text(
-                    if (tx.isTransfer) "Eliminar traspaso" else stringResource(Res.string.transaction_delete_title),
+                    if (tx.isTransfer) stringResource(Res.string.portfolio_delete_transfer_title) else stringResource(Res.string.transaction_delete_title),
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.appColors.textPrimary
@@ -97,9 +100,9 @@ fun AssetHistoryScreen(
             text = {
                 Text(
                     if (tx.isTransfer)
-                        "Se eliminarán ambas patas del traspaso. El P&L se recalculará. Esta acción no se puede deshacer."
+                        stringResource(Res.string.portfolio_delete_transfer_message)
                     else
-                        "Se eliminará el movimiento del ${formatFullDate(tx.date)}. El P&L se recalculará. Esta acción no se puede deshacer.",
+                        stringResource(Res.string.portfolio_delete_tx_message, formatFullDate(tx.date)),
                     fontSize = 13.sp, color = MaterialTheme.appColors.textSecondary
                 )
             },

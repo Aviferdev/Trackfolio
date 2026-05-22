@@ -44,8 +44,23 @@ import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import es.aviferdev.n3to.ui.theme.appColors
 import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.backup_confirm_password
+import n3to.composeapp.generated.resources.backup_encryption_password
+import n3to.composeapp.generated.resources.backup_export_and_share
+import n3to.composeapp.generated.resources.backup_export_description
+import n3to.composeapp.generated.resources.backup_export_success
+import n3to.composeapp.generated.resources.backup_export_title
+import n3to.composeapp.generated.resources.backup_import_description
+import n3to.composeapp.generated.resources.backup_import_restart_hint
+import n3to.composeapp.generated.resources.backup_import_success
+import n3to.composeapp.generated.resources.backup_import_title
+import n3to.composeapp.generated.resources.backup_restore
+import n3to.composeapp.generated.resources.backup_restore_password
 import n3to.composeapp.generated.resources.common_cancel
 import n3to.composeapp.generated.resources.common_close
+import n3to.composeapp.generated.resources.common_hide
+import n3to.composeapp.generated.resources.common_show
+import n3to.composeapp.generated.resources.common_understood
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -103,7 +118,7 @@ fun BackupPasswordSheet(
             Spacer(Modifier.height(4.dp))
 
             Text(
-                text = if (isExport) "Exportar backup" else "Importar backup",
+                text = if (isExport) stringResource(Res.string.backup_export_title) else stringResource(Res.string.backup_import_title),
                 fontSize = 18.sp,
                 fontWeight = FontWeight.SemiBold,
                 color = MaterialTheme.appColors.textPrimary
@@ -112,10 +127,8 @@ fun BackupPasswordSheet(
             Spacer(Modifier.height(8.dp))
 
             Text(
-                text = if (isExport)
-                    "Elige una contraseña para cifrar tu backup.\nNecesitarás esta misma contraseña para restaurarlo."
-                else
-                    "Introduce la contraseña con la que se cifró el backup que quieres restaurar.",
+                text = if (isExport) stringResource(Res.string.backup_export_description)
+                else stringResource(Res.string.backup_import_description),
                 fontSize = 13.sp,
                 color = MaterialTheme.appColors.textSecondary,
                 textAlign = TextAlign.Center
@@ -131,7 +144,7 @@ fun BackupPasswordSheet(
                         pwd = newValue
                         onPasswordChange(newValue)
                     },
-                    label = { Text(if (isExport) "Contraseña de cifrado" else "Contraseña del backup") },
+                    label = { Text(if (isExport) stringResource(Res.string.backup_encryption_password) else stringResource(Res.string.backup_restore_password)) },
                     visualTransformation = if (showPwd) VisualTransformation.None
                     else PasswordVisualTransformation(),
                     trailingIcon = {
@@ -140,7 +153,7 @@ fun BackupPasswordSheet(
                             contentPadding = PaddingValues(horizontal = 8.dp)
                         ) {
                             Text(
-                                if (showPwd) "Ocultar" else "Mostrar",
+                                if (showPwd) stringResource(Res.string.common_hide) else stringResource(Res.string.common_show),
                                 fontSize = 11.sp,
                                 color = MaterialTheme.appColors.cyanAccent
                             )
@@ -173,7 +186,7 @@ fun BackupPasswordSheet(
                             confirmPwd = newValue
                             onConfirmPasswordChange(newValue)
                         },
-                        label = { Text("Confirmar contraseña") },
+                        label = { Text(stringResource(Res.string.backup_confirm_password)) },
                         visualTransformation = if (showConfirm) VisualTransformation.None
                         else PasswordVisualTransformation(),
                         trailingIcon = {
@@ -182,7 +195,7 @@ fun BackupPasswordSheet(
                                 contentPadding = PaddingValues(horizontal = 8.dp)
                             ) {
                                 Text(
-                                    if (showConfirm) "Ocultar" else "Mostrar",
+                                    if (showConfirm) stringResource(Res.string.common_hide) else stringResource(Res.string.common_show),
                                     fontSize = 11.sp,
                                     color = MaterialTheme.appColors.cyanAccent
                                 )
@@ -257,7 +270,7 @@ fun BackupPasswordSheet(
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            "✅  Backup exportado correctamente",
+                            stringResource(Res.string.backup_export_success),
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Medium,
                             color = MaterialTheme.appColors.income
@@ -299,7 +312,7 @@ fun BackupPasswordSheet(
                         ) {
                             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                                 Text(
-                                    "✅  Backup descifrado correctamente",
+                                    stringResource(Res.string.backup_import_success),
                                     fontSize = 14.sp,
                                     fontWeight = FontWeight.Medium,
                                     color = MaterialTheme.appColors.income,
@@ -307,7 +320,7 @@ fun BackupPasswordSheet(
                                 )
                                 Spacer(Modifier.height(8.dp))
                                 Text(
-                                    "Cierra y vuelve a abrir la aplicación para aplicar los datos restaurados.",
+                                    stringResource(Res.string.backup_import_restart_hint),
                                     fontSize = 12.sp,
                                     color = MaterialTheme.appColors.textSecondary,
                                     textAlign = TextAlign.Center
@@ -324,7 +337,7 @@ fun BackupPasswordSheet(
                                 contentColor = MaterialTheme.appColors.navyDeep
                             )
                         ) {
-                            Text("Entendido", fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
+                            Text(stringResource(Res.string.common_understood), fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
                         }
                     }
                 }
@@ -353,7 +366,7 @@ fun BackupPasswordSheet(
                             )
                         } else {
                             Text(
-                                text = if (isExport) "Exportar y compartir" else "Restaurar backup",
+                                text = if (isExport) stringResource(Res.string.backup_export_and_share) else stringResource(Res.string.backup_restore),
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.SemiBold
                             )

@@ -78,6 +78,8 @@ import n3to.composeapp.generated.resources.transaction_label_expense
 import n3to.composeapp.generated.resources.transaction_label_income
 import n3to.composeapp.generated.resources.transaction_label_investment
 import n3to.composeapp.generated.resources.transaction_search_hint
+import n3to.composeapp.generated.resources.transaction_portfolio_badge
+import n3to.composeapp.generated.resources.transaction_retention_badge_format
 import n3to.composeapp.generated.resources.transaction_type_adjustment
 import org.jetbrains.compose.resources.stringResource
 
@@ -329,7 +331,7 @@ internal fun TransactionCard(
             }
             if (isLinked) {
                 Text(
-                    "Portfolio",
+                    stringResource(Res.string.transaction_portfolio_badge),
                     fontSize = 9.sp,
                     color = MaterialTheme.appColors.primary.copy(alpha = 0.6f)
                 )
@@ -377,7 +379,7 @@ internal fun IncomeBadge(transaction: Transaction) {
         )
         val text = buildString {
             append(incType.label)
-            if (pct != null && pct > 0) append(" · ${pct.toLong()}% retención")
+            if (pct != null && pct > 0) append(stringResource(Res.string.transaction_retention_badge_format, pct.toLong()))
         }
         Text(
             text,

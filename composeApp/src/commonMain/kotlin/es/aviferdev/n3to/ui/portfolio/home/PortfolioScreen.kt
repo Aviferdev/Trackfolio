@@ -36,22 +36,22 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.Portfolio
-import es.aviferdev.n3to.ui.account.AccountViewModel
+import es.aviferdev.n3to.ui.common.*
 import es.aviferdev.n3to.ui.common.button.FloatingButtonAdd
-import es.aviferdev.n3to.ui.common.component.EmptyStateView
 import es.aviferdev.n3to.ui.common.component.NavyTabRow
 import es.aviferdev.n3to.ui.common.loading.GlobalLoadingManager
-import es.aviferdev.n3to.ui.common.toMaterialIcon
+import es.aviferdev.n3to.ui.common.topbar.TopBarWithActionsApp
 import es.aviferdev.n3to.ui.common.topbar.TopBarWithoutActionsApp
+import es.aviferdev.n3to.ui.portfolio.home.components.PortfolioEmptyStateNoAccount
+import es.aviferdev.n3to.ui.portfolio.home.components.PortfolioEmptyStateNoPortfolio
+import es.aviferdev.n3to.ui.portfolio.home.components.PortfolioErrorScreen
 import es.aviferdev.n3to.ui.fixedincome.CreateFixedIncomeBottomSheet
 import es.aviferdev.n3to.ui.fixedincome.RegisterCouponBottomSheet
 import es.aviferdev.n3to.ui.portfolio.AddEditAssetBottomSheet
 import es.aviferdev.n3to.ui.portfolio.AddEditAssetTransactionBottomSheet
 import es.aviferdev.n3to.ui.portfolio.AddEditPlatformSheet
-import es.aviferdev.n3to.ui.portfolio.AssetCatalogViewModel
 import es.aviferdev.n3to.ui.portfolio.CatalogError
 import es.aviferdev.n3to.ui.portfolio.PlatformError
-import es.aviferdev.n3to.ui.portfolio.PlatformViewModel
 import es.aviferdev.n3to.ui.portfolio.PortfolioTabContent
 import es.aviferdev.n3to.ui.portfolio.UpdateCurrentPriceSheet
 import es.aviferdev.n3to.ui.theme.LocalBottomNavPadding
@@ -73,6 +73,7 @@ import n3to.composeapp.generated.resources.error_platform_already_exists
 import n3to.composeapp.generated.resources.networth_no_account_subtitle
 import n3to.composeapp.generated.resources.networth_no_account_title
 import n3to.composeapp.generated.resources.portfolio_new_bond
+import n3to.composeapp.generated.resources.portfolio_tab_all
 import n3to.composeapp.generated.resources.portfolio_new_purchase
 import n3to.composeapp.generated.resources.portfolio_no_portfolios_subtitle
 import n3to.composeapp.generated.resources.portfolio_no_portfolios_title
@@ -108,13 +109,13 @@ fun PortfolioScreen(
         when (val state = uiState) {
             is PortfolioNewUiState.Loading -> Unit
 
-            is PortfolioNewUiState.Error -> ErrorScreen(state.message)
+            is PortfolioNewUiState.Error -> PortfolioErrorScreen(state.message)
 
-            is PortfolioNewUiState.Empty -> NotAccountCreated(
-                onNavigateToSettings
+            is PortfolioNewUiState.Empty -> PortfolioEmptyStateNoAccount(
+                onNavigateToSettings = onNavigateToSettings
             )
 
-            is PortfolioNewUiState.EmptyPortFolio -> NotAccountPortfolioCreated(
+            is PortfolioNewUiState.EmptyPortFolio -> PortfolioEmptyStateNoPortfolio(
                 onNavigateToSettings = onNavigateToSettings
             )
 
@@ -131,80 +132,19 @@ fun PortfolioScreen(
 }
 
 @Composable
-private fun ErrorScreen(message: String) {
-    Box(
-        Modifier.fillMaxSize().background(MaterialTheme.appColors.navyDeep),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            message,
-            color = MaterialTheme.appColors.expense
-        )
-    }
-}
-
-@Composable
-private fun NotAccountCreated(
-    onNavigateToSettings: () -> Unit,
-) {
-    Box(
-        Modifier.fillMaxSize().background(MaterialTheme.appColors.navyDeep),
-        contentAlignment = Alignment.Center
-    ) {
-        EmptyStateView(
-            icon = "\uD83C\uDFE6",
-            title = stringResource(Res.string.networth_no_account_title),
-            subtitle = stringResource(Res.string.networth_no_account_subtitle),
-            actionLabel = "Ir a Ajustes",
-            onAction = onNavigateToSettings
-        )
-    }
-}
-
-@Composable
-private fun NotAccountPortfolioCreated(
-    onNavigateToSettings: () -> Unit,
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .windowInsetsPadding(WindowInsets.statusBars)
-            .padding(bottom = LocalBottomNavPadding.current)
-    ) {
-        TopBarWithoutActionsApp(
-            onNavigateToSettings = onNavigateToSettings
-        )
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            EmptyStateView(
-                icon = "📂",
-                title = stringResource(Res.string.portfolio_no_portfolios_title),
-                subtitle = stringResource(Res.string.portfolio_no_portfolios_subtitle),
-                actionLabel = "Ir a ajustes",
-                onAction = onNavigateToSettings
-            )
-        }
-    }
-}
-
-@Composable
 private fun ListAllPortfolios(
     listPortfolio: List<Portfolio>,
     onClickPortfolio: (portfolioId: String?) -> Unit,
     onNavigateToSettings: () -> Unit,
-    onAssetClick: (String) -> Unit = {},
-    onFixedIncomeClick: (String) -> Unit = {},
-    onNavigateToSavingsRates: () -> Unit = {},
+    onAssetClick: (String) -> Unit,
+    onFixedIncomeClick: (String) -> Unit,
+    onNavigateToSavingsRates: () -> Unit,
     viewModel: PortfolioViewModel = koinViewModel(),
-    catalogViewModel: AssetCatalogViewModel = koinViewModel(),
-    platformViewModel: PlatformViewModel = koinViewModel(),
 ) {
 
     val state by viewModel.portfolioState.collectAsState()
-    val catalogState by catalogViewModel.uiState.collectAsState()
-    val platformState by platformViewModel.uiState.collectAsState()
+    val catalogState by viewModel.catalogSheetState.collectAsState()
+    val platformState by viewModel.platformSheetState.collectAsState()
     val availableCategories by viewModel.availableCategories.collectAsState()
     val valueHistory by viewModel.portfolioValueHistory.collectAsState()
     val selectedPortfolioId by viewModel.selectedPortfolioId.collectAsState()
@@ -252,7 +192,7 @@ private fun ListAllPortfolios(
                     },
                     modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
                     content = { portfolioId ->
-                        val name = if (portfolioId == null) "Todas"
+                        val name = if (portfolioId == null) stringResource(Res.string.portfolio_tab_all)
                         else listPortfolio.find { it.id == portfolioId }?.name ?: ""
                         Text(
                             text = name,
@@ -403,7 +343,6 @@ private fun ListAllPortfolios(
         AddEditAssetBottomSheet(
             asset = null,
             categories = availableCategories,
-
             allPlatforms = state.platforms,
             allSectors = state.allSectors,
             linkedSectorIds = emptySet(),
@@ -411,34 +350,18 @@ private fun ListAllPortfolios(
             linkedRegionPercents = emptyMap(),
             portfolios = listPortfolio,
             onValidateIsin = { identifier, categoryId ->
-                catalogViewModel.validateIsin(
-                    identifier,
-                    categoryId
-                )
+                viewModel.validateIsin(identifier, categoryId)
             },
             onSave = { ticker, name, notes, categoryId, currentPrice, isin, platformIds, _, fixedPct, sectorIds, regionPercents, portfolioId ->
-                catalogViewModel.addAsset(
-                    ticker,
-                    name,
-                    notes,
-                    categoryId,
-                    currentPrice,
-                    isin,
-                    platformIds,
-                    fixedPct,
-                    sectorIds,
-                    regionPercents,
-                    portfolioId
-                )
+                viewModel.addAsset(ticker, name, notes, categoryId, currentPrice, isin, platformIds, fixedPct, sectorIds, regionPercents, portfolioId)
             },
-            onDismiss = { catalogViewModel.closeAddSheet() }
+            onDismiss = { viewModel.closeAddAssetSheet() }
         )
     }
     catalogState.editing?.let { editing ->
         AddEditAssetBottomSheet(
             asset = editing,
             categories = availableCategories,
-
             allPlatforms = state.platforms,
             linkedPlatformIds = catalogState.editingPlatformIds,
             allSectors = state.allSectors,
@@ -449,35 +372,19 @@ private fun ListAllPortfolios(
             portfolios = listPortfolio,
             selectedPortfolioId = editing.portfolioId,
             onValidateIsin = { identifier, categoryId ->
-                catalogViewModel.validateIsin(
-                    identifier,
-                    categoryId
-                )
+                viewModel.validateIsin(identifier, categoryId)
             },
             onSave = { ticker, name, notes, categoryId, currentPrice, isin, platformIds, _, fixedPct, sectorIds, regionPercents, portfolioId ->
-                catalogViewModel.editAsset(
-                    editing,
-                    ticker,
-                    name,
-                    notes,
-                    categoryId,
-                    currentPrice,
-                    isin,
-                    platformIds,
-                    fixedPct,
-                    sectorIds,
-                    regionPercents,
-                    portfolioId
-                )
+                viewModel.editAsset(editing, ticker, name, notes, categoryId, currentPrice, isin, platformIds, fixedPct, sectorIds, regionPercents, portfolioId)
             },
-            onDismiss = { catalogViewModel.closeEditSheet() }
+            onDismiss = { viewModel.closeEditAssetSheet() }
         )
     }
     if (platformState.showAddSheet) {
         AddEditPlatformSheet(
             initial = null,
-            onSave = { name, icon, notes -> platformViewModel.addPlatform(name, icon, notes) },
-            onDismiss = { platformViewModel.closeAddSheet() }
+            onSave = { name, icon, notes -> viewModel.addPlatform(name, icon, notes) },
+            onDismiss = { viewModel.closeAddPlatformSheet() }
         )
     }
     val stateError = state.error
@@ -503,13 +410,11 @@ private fun ListAllPortfolios(
                     Res.string.error_asset_already_exists,
                     catalogError.ticker
                 )
-
                 is CatalogError.CannotArchiveWithOpenPositions -> stringResource(
                     Res.string.error_cannot_archive_with_open_positions_qty,
                     catalogError.ticker,
                     catalogError.qty
                 )
-
                 is CatalogError.Unknown -> catalogError.message
                     ?: stringResource(Res.string.common_error)
             }
@@ -523,17 +428,9 @@ private fun ListAllPortfolios(
             else -> stringResource(Res.string.common_error)
         }
         val clearFn: () -> Unit = when {
-            stateError != null -> {
-                { viewModel.clearError() }
-            }
-
-            catalogError != null -> {
-                { catalogViewModel.clearError() }
-            }
-
-            else -> {
-                { platformViewModel.clearError() }
-            }
+            stateError != null -> { { viewModel.clearError() } }
+            catalogError != null -> { { viewModel.clearCatalogError() } }
+            else -> { { viewModel.clearPlatformError() } }
         }
         AlertDialog(
             onDismissRequest = clearFn,

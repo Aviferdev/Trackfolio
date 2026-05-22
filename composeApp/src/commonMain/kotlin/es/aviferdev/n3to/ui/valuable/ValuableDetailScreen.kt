@@ -47,29 +47,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import es.aviferdev.n3to.ui.common.DeltaIndicator
 import es.aviferdev.n3to.ui.common.SectionHeader
 import es.aviferdev.n3to.ui.common.dialog.DeleteConfirmDialog
 import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.ui.theme.formatAmountEuro
-import es.aviferdev.n3to.ui.theme.formatPercentSigned
-import kotlinx.datetime.toLocalDateTime
+import es.aviferdev.n3to.ui.valuable.components.DetailRow
+import es.aviferdev.n3to.ui.valuable.components.MetricItem
+import es.aviferdev.n3to.ui.valuable.components.ValuableHeaderCard
+import es.aviferdev.n3to.ui.valuable.components.formatDate
 import n3to.composeapp.generated.resources.Res
-import n3to.composeapp.generated.resources.common_cancel
-import n3to.composeapp.generated.resources.common_close
-import n3to.composeapp.generated.resources.common_delete
-import n3to.composeapp.generated.resources.common_edit
-import n3to.composeapp.generated.resources.common_update
-import n3to.composeapp.generated.resources.valuable_back_cd
-import n3to.composeapp.generated.resources.valuable_balance_label
-import n3to.composeapp.generated.resources.valuable_delete_message
-import n3to.composeapp.generated.resources.valuable_delete_title
-import n3to.composeapp.generated.resources.valuable_link_loan_title
-import n3to.composeapp.generated.resources.valuable_new_value_label
-import n3to.composeapp.generated.resources.valuable_no_loans
-import n3to.composeapp.generated.resources.valuable_sell_cd
-import n3to.composeapp.generated.resources.valuable_update_value_btn
-import n3to.composeapp.generated.resources.valuable_update_value_title
+import n3to.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -226,7 +213,7 @@ fun ValuableDetailScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(summary?.valuable?.name ?: "Detalle bien") },
+                title = { Text(summary?.valuable?.name ?: stringResource(Res.string.valuable_detail_title_fallback)) },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(
@@ -284,70 +271,7 @@ fun ValuableDetailScreen(
                 Spacer(Modifier.height(4.dp))
 
                 // ── Hero card ──────────────────────────────────────────────
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(14.dp),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.navySurface),
-                    elevation = CardDefaults.cardElevation(0.dp)
-                ) {
-                    Column(Modifier.padding(20.dp)) {
-                        Row(
-                            Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Text(
-                                stringResource(Res.string.valuable_balance_label),
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 15.sp,
-                                color = MaterialTheme.appColors.textPrimary
-                            )
-                            if (valuable.isSold) {
-                                val profit = summary.realizedProfit
-                                val profitPct = summary.realizedProfitPercent
-                                Text(
-                                    text = if (profit != null) formatAmountEuro(profit) else "-",
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 18.sp,
-                                    color = if (profit != null && profit >= 0) MaterialTheme.appColors.income else MaterialTheme.appColors.expense
-                                )
-                            } else {
-                                Text(
-                                    text = formatAmountEuro(valuable.currentValue),
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 18.sp,
-                                    color = MaterialTheme.appColors.textPrimary
-                                )
-                            }
-                        }
-                        val profitPct = summary.realizedProfitPercent
-                        if (profitPct != null) {
-                            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-                                DeltaIndicator(
-                                    value = formatPercentSigned(profitPct),
-                                    isPositive = (summary.realizedProfit ?: 0.0) >= 0
-                                )
-                            }
-                        }
-                        Spacer(Modifier.height(12.dp))
-                        HorizontalDivider(
-                            color = MaterialTheme.appColors.border,
-                            thickness = 0.5.dp
-                        )
-                        Spacer(Modifier.height(12.dp))
-
-                        // Métricas
-                        Row(
-                            Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceEvenly
-                        ) {
-                            MetricItem("Compra", formatAmountEuro(valuable.purchasePrice))
-                            if (valuable.isSold) {
-                                MetricItem("Venta", formatAmountEuro(valuable.salePrice ?: 0.0))
-                            }
-                            MetricItem("Gastos", formatAmountEuro(summary.totalExpenses))
-                        }
-                    }
-                }
+                ValuableHeaderCard(summary = summary)
 
                 // ── Información general ────────────────────────────────────
                 Card(
@@ -357,29 +281,29 @@ fun ValuableDetailScreen(
                     elevation = CardDefaults.cardElevation(0.dp)
                 ) {
                     Column(Modifier.padding(16.dp)) {
-                        SectionHeader("Información")
+                        SectionHeader(stringResource(Res.string.valuable_information_section))
                         Spacer(Modifier.height(8.dp))
-                        DetailRow("Nombre", valuable.name)
+                        DetailRow(stringResource(Res.string.common_name), valuable.name)
                         if (valuable.description.isNotBlank()) {
                             DetailRow("Descripción", valuable.description)
                         }
-                        DetailRow("Fecha compra", formatDate(valuable.purchaseDate))
-                        DetailRow("Precio compra", formatAmountEuro(valuable.purchasePrice))
+                        DetailRow(stringResource(Res.string.valuable_purchase_date_short), formatDate(valuable.purchaseDate))
+                        DetailRow(stringResource(Res.string.valuable_purchase_price_short), formatAmountEuro(valuable.purchasePrice))
                         if (!valuable.isSold) {
-                            DetailRow("Valor actual", formatAmountEuro(valuable.currentValue))
+                            DetailRow(stringResource(Res.string.valuable_current_value), formatAmountEuro(valuable.currentValue))
                         }
                         if (valuable.isSold) {
-                            DetailRow("Fecha venta", formatDate(valuable.saleDate ?: 0L))
-                            DetailRow("Precio venta", formatAmountEuro(valuable.salePrice ?: 0.0))
+                            DetailRow(stringResource(Res.string.valuable_sale_date_short), formatDate(valuable.saleDate ?: 0L))
+                            DetailRow(stringResource(Res.string.valuable_sale_price_short), formatAmountEuro(valuable.salePrice ?: 0.0))
                         }
                         if (valuable.linkedLoanId != null) {
                             DetailRow(
-                                "Préstamo vinculado",
+                                stringResource(Res.string.valuable_linked_loan),
                                 summary.linkedLoan?.name ?: "ID: ${valuable.linkedLoanId}"
                             )
                         }
                         if (valuable.notes != null) {
-                            DetailRow("Notas", valuable.notes)
+                            DetailRow(stringResource(Res.string.valuable_notes), valuable.notes)
                         }
                         Spacer(Modifier.height(12.dp))
                         HorizontalDivider(
@@ -410,7 +334,7 @@ fun ValuableDetailScreen(
                                     colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.appColors.primary)
                                 ) {
                                     Text(
-                                        if (valuable.linkedLoanId != null) "Cambiar préstamo" else stringResource(
+                                        if (valuable.linkedLoanId != null) stringResource(Res.string.valuable_change_loan) else stringResource(
                                             Res.string.valuable_link_loan_title
                                         ),
                                         fontSize = 11.sp
@@ -430,29 +354,29 @@ fun ValuableDetailScreen(
                         elevation = CardDefaults.cardElevation(0.dp)
                     ) {
                         Column(Modifier.padding(16.dp)) {
-                            SectionHeader("Gastos")
+                            SectionHeader(stringResource(Res.string.valuable_expenses_section))
                             Spacer(Modifier.height(8.dp))
                             if (summary.purchaseExpenses > 0) {
                                 DetailRow(
-                                    "Gastos compra",
+                                    stringResource(Res.string.valuable_purchase_expenses_short),
                                     formatAmountEuro(summary.purchaseExpenses)
                                 )
                             }
                             if (summary.holdingExpenses > 0) {
                                 DetailRow(
-                                    "Gastos tenencia",
+                                    stringResource(Res.string.valuable_holding_expenses_short),
                                     formatAmountEuro(summary.holdingExpenses)
                                 )
                             }
                             if (summary.saleExpenses > 0) {
-                                DetailRow("Gastos venta", formatAmountEuro(summary.saleExpenses))
+                                DetailRow(stringResource(Res.string.valuable_sale_expenses_short), formatAmountEuro(summary.saleExpenses))
                             }
                             HorizontalDivider(
                                 color = MaterialTheme.appColors.border,
                                 thickness = 0.5.dp,
                                 modifier = Modifier.padding(vertical = 8.dp)
                             )
-                            DetailRow("Total gastos", formatAmountEuro(summary.totalExpenses))
+                            DetailRow(stringResource(Res.string.valuable_total_expenses), formatAmountEuro(summary.totalExpenses))
                         }
                     }
                 }
@@ -463,44 +387,4 @@ fun ValuableDetailScreen(
     }
 }
 
-@Composable
-private fun MetricItem(label: String, value: String) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(label, fontSize = 11.sp, color = MaterialTheme.appColors.textTertiary)
-        Text(
-            value,
-            fontWeight = FontWeight.SemiBold,
-            fontSize = 14.sp,
-            color = MaterialTheme.appColors.textPrimary
-        )
-    }
-}
-
-@Composable
-private fun DetailRow(label: String, value: String) {
-    Row(
-        modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        Text(label, fontSize = 13.sp, color = MaterialTheme.appColors.textSecondary)
-        Text(
-            value,
-            fontSize = 13.sp,
-            fontWeight = FontWeight.Medium,
-            color = MaterialTheme.appColors.textPrimary
-        )
-    }
-}
-
-private fun formatDate(millis: Long): String {
-    if (millis <= 0) return "-"
-    return try {
-        val instant = kotlinx.datetime.Instant.fromEpochMilliseconds(millis)
-        val local = instant.toLocalDateTime(kotlinx.datetime.TimeZone.currentSystemDefault())
-        "${local.dayOfMonth.toString().padStart(2, '0')}/" +
-                "${local.monthNumber.toString().padStart(2, '0')}/" +
-                "${local.year}"
-    } catch (_: Exception) {
-        "-"
-    }
-}
+// ── Secciones extraídas a valuable/components/ ────────────────────────────────

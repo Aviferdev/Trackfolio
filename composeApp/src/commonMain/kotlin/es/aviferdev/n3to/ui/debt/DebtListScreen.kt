@@ -49,6 +49,8 @@ import es.aviferdev.n3to.ui.common.component.EmptyStateView
 import es.aviferdev.n3to.ui.common.row.SwipeRowApp
 import es.aviferdev.n3to.ui.common.separator.SpacerVerticalApp
 import es.aviferdev.n3to.ui.common.topbar.TopBarWithActionsApp
+import es.aviferdev.n3to.ui.debt.components.DebtCard
+import es.aviferdev.n3to.ui.debt.components.DebtEmptyState
 import es.aviferdev.n3to.ui.theme.LocalBalanceHidden
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import es.aviferdev.n3to.ui.theme.appColors
@@ -286,13 +288,7 @@ fun DebtListContent(
                 }
 
                 if (uiState.debtsTheyOwe.isEmpty() && uiState.debtsIOwe.isEmpty()) {
-                    item {
-                        EmptyStateView(
-                            icon = Icons.Outlined.Handshake,
-                            title = stringResource(Res.string.debt_no_debts),
-                            subtitle = stringResource(Res.string.debt_empty_subtitle)
-                        )
-                    }
+                    item { DebtEmptyState() }
                 }
 
                 item {
@@ -445,77 +441,4 @@ private fun DebtSectionHeader(title: String, total: Double, color: Color, hidden
     }
 }
 
-@Composable
-private fun DebtCard(debt: Debt, hidden: Boolean, onMarkPaid: () -> Unit, onEdit: () -> Unit) {
-    Card(
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 6.dp),
-        shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.surface),
-        elevation = CardDefaults.cardElevation(0.dp)
-    ) {
-        Row(modifier = Modifier.fillMaxWidth().padding(12.dp), verticalAlignment = Alignment.Top) {
-            InitialsAvatar(
-                text = debt.personName.firstOrNull()?.uppercase() ?: "?",
-                bgColor = if (debt.direction == DebtDirection.THEY_OWE) MaterialTheme.appColors.income else MaterialTheme.appColors.expense,
-                size = 38.dp,
-                textSize = 15
-            )
-            Spacer(Modifier.width(12.dp))
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    debt.personName,
-                    fontSize = 13.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.appColors.textPrimary,
-                    maxLines = 1
-                )
-                Spacer(Modifier.height(2.dp))
-                Text(
-                    "${debt.notes ?: "Sin nota"} · ${formatDate(debt.date)}",
-                    fontSize = 11.sp,
-                    color = MaterialTheme.appColors.textTertiary,
-                    maxLines = 1
-                )
-            }
-            Column(horizontalAlignment = Alignment.End) {
-                Text(
-                    "${maskAmount(formatAmount(debt.amount), hidden)} €",
-                    fontSize = 13.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = if (debt.direction == DebtDirection.THEY_OWE) MaterialTheme.appColors.income else MaterialTheme.appColors.expense
-                )
-                Spacer(Modifier.height(4.dp))
-                Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                    Button(
-                        onClick = onMarkPaid,
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.appColors.income.copy(alpha = 0.15f),
-                            contentColor = MaterialTheme.appColors.income
-                        ),
-                        contentPadding = PaddingValues(horizontal = 7.dp, vertical = 3.dp),
-                        modifier = Modifier.height(24.dp)
-                    ) {
-                        Text(
-                            stringResource(Res.string.debt_paid),
-                            fontSize = 9.sp,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-                    TextButton(
-                        onClick = onEdit,
-                        colors = ButtonDefaults.textButtonColors(
-                            containerColor = MaterialTheme.appColors.surface4.copy(alpha = 0.15f),
-                            contentColor = MaterialTheme.appColors.textSecondary
-                        ),
-                        contentPadding = PaddingValues(horizontal = 7.dp, vertical = 3.dp),
-                        modifier = Modifier.height(24.dp)
-                    ) {
-                        Text(stringResource(Res.string.common_edit), fontSize = 9.sp)
-                    }
-                }
-            }
-        }
-    }
-}
-
-// EmptyState reemplazado por EmptyStateView de ui.common.component
+// ── Secciones extraídas a debt/components/ ─────────────────────────────────────

@@ -25,30 +25,21 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.core.VersionManager
-import es.aviferdev.n3to.core.premium.PremiumManager
-import es.aviferdev.n3to.core.security.BalanceVisibilityManager
-import es.aviferdev.n3to.core.security.BiometricAuthenticator
-import es.aviferdev.n3to.core.security.BiometricResult
 import es.aviferdev.n3to.domain.model.Account
 import es.aviferdev.n3to.domain.model.EmergencyFundStatus
 import es.aviferdev.n3to.domain.model.HomeBalance
 import es.aviferdev.n3to.domain.model.MonthlyGoalProgress
 import es.aviferdev.n3to.domain.model.TransactionType
-import es.aviferdev.n3to.ui.account.AccountViewModel
 import es.aviferdev.n3to.ui.common.SectionHeader
 import es.aviferdev.n3to.ui.common.component.LockedFeatureOverlay
 import es.aviferdev.n3to.ui.common.button.FloatingButtonAdd
 import es.aviferdev.n3to.ui.common.component.NavyTabRow
-import es.aviferdev.n3to.ui.common.loading.GlobalLoadingManager
 import es.aviferdev.n3to.ui.common.topbar.TopBarWithoutActionsApp
 import es.aviferdev.n3to.ui.home.banner.BackupReminderBanner
 import es.aviferdev.n3to.ui.home.banner.MaturityReminderBanner
@@ -56,7 +47,6 @@ import es.aviferdev.n3to.ui.home.banner.PriceReminderBanner
 import es.aviferdev.n3to.ui.home.bottomsheet.AddTransactionBottomSheet
 import es.aviferdev.n3to.ui.home.bottomsheet.PriceUpdateBottomSheet
 import es.aviferdev.n3to.ui.home.dialog.BackupReminderIntervalDialog
-import es.aviferdev.n3to.ui.home.viewmodel.AddTransactionViewModel
 import es.aviferdev.n3to.ui.home.viewmodel.GoalProgressState
 import es.aviferdev.n3to.ui.home.viewmodel.HomeUiState
 import es.aviferdev.n3to.ui.home.viewmodel.HomeViewModel
@@ -64,9 +54,7 @@ import es.aviferdev.n3to.ui.home.viewmodel.NearMaturityState
 import es.aviferdev.n3to.ui.home.viewmodel.PriceReminderState
 import es.aviferdev.n3to.ui.reconciliation.ReconcileBalanceBottomSheet
 import es.aviferdev.n3to.ui.reconciliation.ReconciliationReminderBanner
-import es.aviferdev.n3to.ui.reconciliation.ReconciliationViewModel
 import es.aviferdev.n3to.ui.settings.backup.BackupPasswordSheet
-import es.aviferdev.n3to.ui.settings.backup.BackupViewModel
 import es.aviferdev.n3to.ui.theme.LocalBalanceHidden
 import es.aviferdev.n3to.ui.theme.LocalBottomNavPadding
 import es.aviferdev.n3to.ui.theme.appColors
@@ -77,7 +65,6 @@ import n3to.composeapp.generated.resources.home_section_emergency_fund
 import n3to.composeapp.generated.resources.home_section_goals
 import n3to.composeapp.generated.resources.home_show_balances
 import org.jetbrains.compose.resources.stringResource
-import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
 
@@ -95,49 +82,30 @@ fun HomeScreen(
     onNavigateToAccountConfig: (String) -> Unit = {},
     reopenFromPicker: Boolean = false,
     onConsumeReopen: () -> Unit = {},
-    viewModel: HomeViewModel = koinViewModel(),
-    accountViewModel: AccountViewModel = koinViewModel(),
-    reconciliationViewModel: ReconciliationViewModel = koinViewModel(),
-    backupViewModel: BackupViewModel = koinViewModel()
+    viewModel: HomeViewModel = koinViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val priceReminder by viewModel.priceReminderState.collectAsState()
     val nearMaturity by viewModel.nearMaturityState.collectAsState()
     val goalProgress by viewModel.goalProgressState.collectAsState()
     val emergencyFund by viewModel.emergencyFundStatus.collectAsState()
-
-    val premiumManager: PremiumManager = koinInject()
-    val isPremium by premiumManager.status.collectAsState()
-
-    val accountState by accountViewModel.uiState.collectAsState()
-    val selectedId by accountViewModel.selectedAccountId.collectAsState()
-    val reconciliationState by reconciliationViewModel.uiState.collectAsState()
-    val backupSheetState by backupViewModel.state.collectAsState()
-    val backupReminderState by backupViewModel.reminderState.collectAsState()
+    val accounts by viewModel.accounts.collectAsState()
+    val selectedId by viewModel.selectedAccountId.collectAsState()
+    val isPremium by viewModel.isPremium.collectAsState()
+    val reconciliationState by viewModel.reconciliationUiState.collectAsState()
+    val backupSheetState by viewModel.backupSheetState.collectAsState()
+    val backupReminderState by viewModel.backupReminderState.collectAsState()
     val versionStatus by viewModel.versionStatus.collectAsState()
-    val balanceVisibility = koinInject<BalanceVisibilityManager>()
-    val authenticator: BiometricAuthenticator = koinInject()
+    val showAddTransaction by viewModel.showAddTransaction.collectAsState()
+
     val balancesHidden = LocalBalanceHidden.current
     val showBalancesText = stringResource(Res.string.home_show_balances)
     val confirmIdentityText = stringResource(Res.string.home_confirm_identity)
 
-    var showAddTransaction by remember { mutableStateOf(false) }
-    val addTransactionViewModel: AddTransactionViewModel = koinViewModel()
-
-    val loadingManager = koinInject<GlobalLoadingManager>()
-
     LaunchedEffect(reopenFromPicker) {
         if (reopenFromPicker) {
-            showAddTransaction = true
+            viewModel.openAddTransaction()
             onConsumeReopen()
-        }
-    }
-
-    LaunchedEffect(uiState) {
-        (uiState as? HomeUiState.Loading)?.let {
-            loadingManager.show(it.message)
-        } ?: run {
-            loadingManager.hide()
         }
     }
 
@@ -152,7 +120,7 @@ fun HomeScreen(
             is HomeUiState.Success -> {
                 val currentAccount = state.balance.selectedAccount
                 LaunchedEffect(currentAccount) {
-                    currentAccount?.let { reconciliationViewModel.checkReminder(it.id) }
+                    currentAccount?.let { viewModel.checkReconciliationReminder(it.id) }
                 }
 
                 val versionInfo = (versionStatus as? VersionManager.Status.UpdateAvailable)?.info
@@ -160,29 +128,18 @@ fun HomeScreen(
                 HomeContent(
                     balance = state.balance,
                     categoryNames = state.categoryNames,
-                    accounts = accountState.accounts,
+                    accounts = accounts,
                     selectedAccountId = selectedId,
                     balancesHidden = balancesHidden,
-                    isPremium = isPremium.isPremium,
+                    isPremium = isPremium,
                     onToggleBalances = {
                         if (balancesHidden) {
-                            balanceVisibility.requestShow {
-                                authenticator.authenticate(
-                                    showBalancesText,
-                                    confirmIdentityText
-                                ) { result ->
-                                    when (result) {
-                                        is BiometricResult.Success -> balanceVisibility.onBiometricSuccess()
-                                        is BiometricResult.UserCancelled -> Unit
-                                        else -> Unit
-                                    }
-                                }
-                            }
+                            viewModel.requestShowBalances(showBalancesText, confirmIdentityText)
                         } else {
-                            balanceVisibility.hide()
+                            viewModel.hideBalances()
                         }
                     },
-                    onAccountSelected = { id -> accountViewModel.selectAccount(id) },
+                    onAccountSelected = { id -> viewModel.selectAccount(id) },
                     onNavigateToAccountConfig = onNavigateToAccountConfig,
                     onNavigateToTransactions = onNavigateToTransactions,
                     onNavigateToCharts = onNavigateToCharts,
@@ -197,13 +154,13 @@ fun HomeScreen(
                     nearMaturityState = nearMaturity,
                     onDismissNearMaturity = { viewModel.dismissNearMaturityBanner() },
                     showReconciliationBanner = reconciliationState.showBanner,
-                    onReconcileNow = { reconciliationViewModel.openBottomSheet(state.balance.selectedAccountBalance) },
-                    onReconcileRemindLater = { reconciliationViewModel.dismissBanner() },
+                    onReconcileNow = { viewModel.openReconciliationSheet(state.balance.selectedAccountBalance) },
+                    onReconcileRemindLater = { viewModel.dismissReconciliationBanner() },
                     showBackupBanner = backupReminderState.showBanner,
                     neverBackup = backupReminderState.neverBackup,
                     daysSinceLastBackup = backupReminderState.daysSinceLastBackup,
-                    onBackupNow = { backupViewModel.openExport() },
-                    onBackupRemindLater = { backupViewModel.openIntervalDialog() },
+                    onBackupNow = { viewModel.openBackupExport() },
+                    onBackupRemindLater = { viewModel.openBackupIntervalDialog() },
                     showVersionBanner = (versionStatus is VersionManager.Status.UpdateAvailable),
                     versionLatestVersion = versionInfo?.latestVersion,
                     onVersionUpdateNow = onOpenStore,
@@ -223,8 +180,8 @@ fun HomeScreen(
         }
 
         FloatingButtonAdd(
-            onClick = { showAddTransaction = true },
-            enabled = accountState.accounts.isNotEmpty(),
+            onClick = { viewModel.openAddTransaction() },
+            enabled = accounts.isNotEmpty(),
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .padding(end = 20.dp, bottom = 136.dp)
@@ -235,12 +192,11 @@ fun HomeScreen(
     // ── Sheets ────────────────────────────────────────────────────────────────
     if (showAddTransaction) {
         AddTransactionBottomSheet(
-            onDismiss = { showAddTransaction = false },
+            onDismiss = { viewModel.closeAddTransaction() },
             onRequestCategoryPicker = { type ->
-                showAddTransaction = false
+                viewModel.closeAddTransaction()
                 onNavigateToCategoryPicker?.invoke(type)
-            },
-            viewModel = addTransactionViewModel
+            }
         )
     }
 
@@ -255,8 +211,10 @@ fun HomeScreen(
 
     if (reconciliationState.showBottomSheet) {
         ReconcileBalanceBottomSheet(
-            viewModel = reconciliationViewModel,
-            onDismiss = { reconciliationViewModel.closeBottomSheet() }
+            state = reconciliationState,
+            onRealBalanceChange = { viewModel.updateRealBalance(it) },
+            onReconcile = { viewModel.reconcile() },
+            onDismiss = { viewModel.closeReconciliationSheet() }
         )
     }
 
@@ -264,30 +222,29 @@ fun HomeScreen(
     if (backupReminderState.showIntervalDialog) {
         BackupReminderIntervalDialog(
             currentInterval = backupReminderState.currentInterval,
-            onIntervalSelected = { days -> backupViewModel.saveReminderInterval(days) },
-            onDismiss = { backupViewModel.dismissIntervalDialog() }
+            onIntervalSelected = { days -> viewModel.saveBackupInterval(days) },
+            onDismiss = { viewModel.dismissBackupIntervalDialog() }
         )
     }
 
     if (backupSheetState.action != es.aviferdev.n3to.ui.settings.backup.BackupAction.NONE) {
         BackupPasswordSheet(
             state = backupSheetState,
-            onPasswordChange = { backupViewModel.onPasswordChange(it) },
-            onConfirmPasswordChange = { backupViewModel.onConfirmPasswordChange(it) },
+            onPasswordChange = { viewModel.onBackupPasswordChange(it) },
+            onConfirmPasswordChange = { viewModel.onBackupConfirmPasswordChange(it) },
             onConfirm = {
                 when (backupSheetState.action) {
-                    es.aviferdev.n3to.ui.settings.backup.BackupAction.EXPORT -> backupViewModel.confirmExport()
-                    es.aviferdev.n3to.ui.settings.backup.BackupAction.IMPORT -> backupViewModel.confirmImport()
+                    es.aviferdev.n3to.ui.settings.backup.BackupAction.EXPORT -> viewModel.confirmBackupExport()
+                    es.aviferdev.n3to.ui.settings.backup.BackupAction.IMPORT -> viewModel.confirmBackupImport()
                     else -> {}
                 }
             },
             onDismiss = {
-                backupViewModel.dismiss()
-                backupViewModel.clearResult()
+                viewModel.dismissBackup()
+                viewModel.clearBackupResult()
             }
         )
     }
-
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

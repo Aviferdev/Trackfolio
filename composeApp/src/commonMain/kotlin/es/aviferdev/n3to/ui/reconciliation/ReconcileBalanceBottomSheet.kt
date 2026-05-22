@@ -23,8 +23,6 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -50,17 +48,15 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ReconcileBalanceBottomSheet(
-    viewModel: ReconciliationViewModel,
+    state: ReconciliationUiState,
+    onRealBalanceChange: (String) -> Unit,
+    onReconcile: () -> Unit,
     onDismiss: () -> Unit
 ) {
-    val state by viewModel.uiState.collectAsState()
     val keyboardController = LocalSoftwareKeyboardController.current
 
     ModalBottomSheet(
-        onDismissRequest = {
-            viewModel.closeBottomSheet()
-            onDismiss()
-        },
+        onDismissRequest = onDismiss,
         sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
         containerColor = MaterialTheme.appColors.surfaceElevated,
         shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp)
@@ -68,8 +64,8 @@ fun ReconcileBalanceBottomSheet(
         ReconcileBalanceBottomSheetContent(
             state = state,
             keyboardController = keyboardController,
-            onRealBalanceChange = { viewModel.updateRealBalance(it) },
-            onReconcile = { viewModel.reconcile() }
+            onRealBalanceChange = onRealBalanceChange,
+            onReconcile = onReconcile
         )
     }
 }

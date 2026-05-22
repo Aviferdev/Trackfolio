@@ -1,7 +1,6 @@
 package es.aviferdev.n3to.ui.annual
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.snapping.SnapPosition
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -37,11 +36,14 @@ import es.aviferdev.n3to.ui.common.navigation.TimeStepperHeader
 import es.aviferdev.n3to.ui.common.topbar.TopBarWithActionsApp
 import es.aviferdev.n3to.ui.theme.LocalBalanceHidden
 import es.aviferdev.n3to.ui.theme.appColors
+import es.aviferdev.n3to.ui.theme.localizedMonthNames
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.annual_expense_categories_title
 import n3to.composeapp.generated.resources.annual_income_types_title
 import n3to.composeapp.generated.resources.annual_no_data_subtitle
 import n3to.composeapp.generated.resources.annual_no_data_title
+import n3to.composeapp.generated.resources.annual_tab_month
+import n3to.composeapp.generated.resources.annual_tab_year
 import n3to.composeapp.generated.resources.annual_title
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -54,6 +56,12 @@ fun AnnualSummaryScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val balancesHidden = LocalBalanceHidden.current
+    val monthNames = localizedMonthNames().map { it.replaceFirstChar { c -> c.uppercase() } }
+    val displayLabel = if (uiState.viewMode == SummaryViewMode.MONTHLY) {
+        "${monthNames.getOrElse(uiState.month.toIntOrNull()?.minus(1) ?: 0) { uiState.month }} ${uiState.year}"
+    } else {
+        uiState.year
+    }
 
     Column(
         modifier = Modifier
@@ -65,7 +73,7 @@ fun AnnualSummaryScreen(
             navigateBack = navigateBack
         )
         TimeStepperHeader(
-            currentValue = uiState.displayLabel,
+            currentValue = displayLabel,
             canGoBack = uiState.canGoBack,
             canGoForward = uiState.canGoForward,
             onPrevious = { viewModel.previousPeriod() },
@@ -191,7 +199,7 @@ private fun ViewModeToggle(
             modifier = Modifier.weight(1f)
         ) {
             Text(
-                text = "Año",   //TODO
+                text = stringResource(Res.string.annual_tab_year),
                 fontSize = 13.sp,
                 fontWeight = if (viewMode == SummaryViewMode.ANNUAL) {
                     FontWeight.SemiBold
@@ -224,7 +232,7 @@ private fun ViewModeToggle(
             modifier = Modifier.weight(1f)
         ) {
             Text(
-                text = "Mes",   //TODO
+                text = stringResource(Res.string.annual_tab_month),
                 fontSize = 13.sp,
                 fontWeight = if (viewMode == SummaryViewMode.MONTHLY) {
                     FontWeight.SemiBold

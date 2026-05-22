@@ -36,6 +36,8 @@ import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.ui.theme.formatAmount
 import es.aviferdev.n3to.ui.theme.formatDate
 import es.aviferdev.n3to.ui.theme.maskAmount
+import n3to.composeapp.generated.resources.*
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import kotlin.math.abs
 
@@ -82,10 +84,10 @@ fun TransactionRow(
         else -> label.firstOrNull()?.uppercaseChar()?.toString() ?: "?"
     }
     val avatarContentDesc = when {
-        isAdjustment -> "Ajuste"
-        isLinked -> "Inversión"
-        isIncome -> "Ingreso"
-        else -> "Gasto"
+        isAdjustment -> stringResource(Res.string.transaction_type_adjustment)
+        isLinked -> stringResource(Res.string.transaction_label_investment)
+        isIncome -> stringResource(Res.string.transaction_type_income)
+        else -> stringResource(Res.string.transaction_type_expense)
     }
 
     // Importe
@@ -208,7 +210,7 @@ fun TransactionRow(
             )
             if (!compact && isIncome && transaction.grossAmount != null && !balancesHidden) {
                 Text(
-                    "Bruto: ${formatAmount(transaction.grossAmount)} €",
+                    stringResource(Res.string.transaction_gross_format, formatAmount(transaction.grossAmount)),
                     fontSize = 9.sp,
                     color = MaterialTheme.appColors.textTertiary,
                     maxLines = 1
@@ -216,7 +218,7 @@ fun TransactionRow(
             }
             if (!compact && isLinked) {
                 Text(
-                    "Portfolio",
+                    stringResource(Res.string.transaction_portfolio_badge),
                     fontSize = 9.sp,
                     color = MaterialTheme.appColors.primary.copy(alpha = 0.6f)
                 )

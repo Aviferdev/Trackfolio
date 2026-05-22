@@ -46,13 +46,18 @@ import es.aviferdev.n3to.domain.model.AssetRegion
 import es.aviferdev.n3to.domain.model.AssetSector
 import es.aviferdev.n3to.domain.model.Platform
 import es.aviferdev.n3to.domain.model.Portfolio
-import es.aviferdev.n3to.ui.common.SectionHeader
 import es.aviferdev.n3to.ui.common.topbar.TopBarWithActionsApp
 import es.aviferdev.n3to.ui.portfolio.AddEditPlatformSheet
 import es.aviferdev.n3to.ui.portfolio.AddEditPortfolioBottomSheet
 import es.aviferdev.n3to.ui.portfolio.PlatformError
 import es.aviferdev.n3to.ui.portfolio.RegionManagementSheet
 import es.aviferdev.n3to.ui.portfolio.SectorManagementSheet
+import es.aviferdev.n3to.ui.portfolio.settings.components.CategoryListSection
+import es.aviferdev.n3to.ui.portfolio.settings.components.PlatformListSection
+import es.aviferdev.n3to.ui.portfolio.settings.components.PortfolioListSection
+import es.aviferdev.n3to.ui.portfolio.settings.components.RegionListSection
+import es.aviferdev.n3to.ui.portfolio.settings.components.ReminderIntervalSection
+import es.aviferdev.n3to.ui.portfolio.settings.components.SectorListSection
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import es.aviferdev.n3to.ui.theme.appColors
 import n3to.composeapp.generated.resources.Res
@@ -284,345 +289,22 @@ fun PortfolioSettingsContent(
             contentPadding = PaddingValues(horizontal = 20.dp, vertical = 20.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            // ── Carteras ──────────────────────────────────────────────────────
-            item {
-                SectionHeader(
-                    label = stringResource(Res.string.portfolio_settings_portfolio_section),
-                    actionLabel = stringResource(Res.string.portfolio_settings_add),
-                    onAction = onAddPortfolio
-                )
-            }
-            item {
-                SettingsGroupCard {
-                    if (state.portfolios.isEmpty()) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth()
-                                .clickable { onAddPortfolio() }
-                                .padding(16.dp),
-                            horizontalArrangement = Arrangement.Center,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Icon(
-                                Icons.Default.Add,
-                                contentDescription = stringResource(Res.string.portfolio_settings_add),
-                                tint = MaterialTheme.appColors.primary,
-                                modifier = Modifier.size(20.dp)
-                            )
-                            Spacer(Modifier.width(8.dp))
-                            Text(
-                                stringResource(Res.string.portfolio_settings_add),
-                                fontSize = 13.sp,
-                                fontWeight = FontWeight.Medium,
-                                color = MaterialTheme.appColors.primary
-                            )
-                        }
-                    } else {
-                        state.portfolios.forEachIndexed { index, portfolio ->
-                            Row(
-                                modifier = Modifier.fillMaxWidth()
-                                    .padding(horizontal = 16.dp, vertical = 10.dp),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Column(modifier = Modifier.weight(1f)) {
-                                    Text(
-                                        portfolio.name,
-                                        fontSize = 14.sp,
-                                        fontWeight = FontWeight.Medium,
-                                        color = MaterialTheme.appColors.textPrimary
-                                    )
-                                    if (portfolio.description != null) {
-                                        Text(
-                                            portfolio.description,
-                                            fontSize = 11.sp,
-                                            color = MaterialTheme.appColors.textSecondary
-                                        )
-                                    }
-                                }
-                                Spacer(Modifier.width(8.dp))
-                                IconButton(onClick = { onEditPortfolio(portfolio) }, modifier = Modifier.size(32.dp)) {
-                                    Icon(
-                                        Icons.Default.Edit,
-                                        contentDescription = stringResource(Res.string.portfolio_settings_edit_cd),
-                                        tint = MaterialTheme.appColors.textSecondary,
-                                        modifier = Modifier.size(16.dp)
-                                    )
-                                }
-                                IconButton(onClick = { onDeletePortfolio(portfolio) }, modifier = Modifier.size(32.dp)) {
-                                    Icon(
-                                        Icons.Default.Delete,
-                                        contentDescription = stringResource(Res.string.portfolio_settings_delete_cd),
-                                        tint = MaterialTheme.appColors.expense,
-                                        modifier = Modifier.size(16.dp)
-                                    )
-                                }
-                            }
-                            if (index < state.portfolios.lastIndex) {
-                                HorizontalDivider(
-                                    color = MaterialTheme.appColors.border,
-                                    thickness = 0.5.dp,
-                                    modifier = Modifier.padding(start = 52.dp)
-                                )
-                            }
-                        }
-                    }
-                }
-            }
+            item { PortfolioListSection(portfolios = state.portfolios, onAdd = onAddPortfolio, onEdit = onEditPortfolio, onDelete = onDeletePortfolio) }
 
-            // ── Categorías de activo ──────────────────────────────────────────
             item { Spacer(Modifier.height(8.dp)) }
-            item {
-                Text(
-                    stringResource(Res.string.portfolio_settings_category_section),
-                    fontSize = 11.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.appColors.textSecondary
-                )
-            }
-            item {
-                SettingsGroupCard {
-                    state.categories.forEachIndexed { index, category ->
-                        val count = assetsByCategory[category.id]?.size ?: 0
-                        Row(
-                            modifier = Modifier.fillMaxWidth()
-                                .clickable { onNavigateToCategoryDetail(category.id) }
-                                .padding(horizontal = 16.dp, vertical = 14.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(category.icon, fontSize = 18.sp, modifier = Modifier.size(28.dp))
-                            Spacer(Modifier.width(12.dp))
-                            Column(modifier = Modifier.weight(1f)) {
-                                Text(
-                                    text = category.name,
-                                    fontSize = 15.sp,
-                                    color = MaterialTheme.appColors.textPrimary
-                                )
-                                Text(
-                                    text = if (count == 1)
-                                        stringResource(Res.string.portfolio_settings_category_count_one, count)
-                                    else
-                                        stringResource(Res.string.portfolio_settings_category_count_many, count),
-                                    fontSize = 11.sp,
-                                    color = MaterialTheme.appColors.textSecondary
-                                )
-                            }
-                            Text("›", fontSize = 18.sp, color = MaterialTheme.appColors.textSecondary)
-                        }
-                        if (index < state.categories.lastIndex) {
-                            HorizontalDivider(
-                                color = MaterialTheme.appColors.border,
-                                thickness = 0.5.dp,
-                                modifier = Modifier.padding(start = 52.dp)
-                            )
-                        }
-                    }
-                }
-            }
+            item { CategoryListSection(categories = state.categories, assetsByCategory = assetsByCategory, onCategoryClick = onNavigateToCategoryDetail) }
 
-            // ── Recordatorio de precio ────────────────────────────────────────
             item { Spacer(Modifier.height(8.dp)) }
-            item {
-                Text(
-                    stringResource(Res.string.portfolio_settings_reminder_section),
-                    fontSize = 11.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.appColors.textSecondary
-                )
-            }
-            item {
-                SettingsGroupCard {
-                    Column(
-                        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 14.dp)
-                    ) {
-                        Text(
-                            stringResource(Res.string.portfolio_settings_reminder_title),
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.Medium,
-                            color = MaterialTheme.appColors.textPrimary
-                        )
-                        Spacer(Modifier.height(4.dp))
-                        Text(
-                            stringResource(Res.string.portfolio_settings_reminder_desc),
-                            fontSize = 12.sp,
-                            color = MaterialTheme.appColors.textSecondary
-                        )
-                        Spacer(Modifier.height(14.dp))
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            listOf(7, 14, 30).forEach { days ->
-                                val isSelected = state.priceReminderInterval == days
-                                OutlinedButton(
-                                    onClick = { onIntervalChange(days) },
-                                    shape = RoundedCornerShape(8.dp),
-                                    colors = ButtonDefaults.outlinedButtonColors(
-                                        containerColor = if (isSelected) MaterialTheme.appColors.primary else Color.Transparent,
-                                        contentColor = if (isSelected) Color.White else MaterialTheme.appColors.textPrimary
-                                    ),
-                                    border = BorderStroke(
-                                        width = 1.dp,
-                                        color = if (isSelected) MaterialTheme.appColors.primary else MaterialTheme.appColors.border
-                                    ),
-                                    modifier = Modifier.weight(1f)
-                                ) {
-                                    Text(
-                                        text = "${days}d",
-                                        fontSize = 13.sp,
-                                        fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+            item { ReminderIntervalSection(currentInterval = state.priceReminderInterval, onIntervalChange = onIntervalChange) }
 
-            // ── Plataformas ────────────────────────────────────────────────────
             item { Spacer(Modifier.height(8.dp)) }
-            item {
-                SectionHeader(
-                    label = stringResource(Res.string.portfolio_settings_platform_section),
-                    actionLabel = stringResource(Res.string.portfolio_settings_add),
-                    onAction = onOpenPlatformAdd
-                )
-            }
-            item {
-                SettingsGroupCard {
-                    if (state.platforms.isEmpty()) {
-                        Text(
-                            stringResource(Res.string.portfolio_settings_platform_empty),
-                            fontSize = 13.sp,
-                            color = MaterialTheme.appColors.textSecondary,
-                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 18.dp)
-                        )
-                    } else {
-                        state.platforms.forEachIndexed { index, platform ->
-                            Row(
-                                modifier = Modifier.fillMaxWidth()
-                                    .clickable { onOpenPlatformEdit(platform) }
-                                    .padding(horizontal = 16.dp, vertical = 14.dp),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Text(platform.icon, fontSize = 18.sp, modifier = Modifier.size(28.dp))
-                                Spacer(Modifier.width(12.dp))
-                                Column(modifier = Modifier.weight(1f)) {
-                                    Text(
-                                        text = platform.name,
-                                        fontSize = 15.sp,
-                                        color = MaterialTheme.appColors.textPrimary
-                                    )
-                                    if (!platform.notes.isNullOrBlank()) {
-                                        Text(
-                                            text = platform.notes,
-                                            fontSize = 11.sp,
-                                            color = MaterialTheme.appColors.textSecondary,
-                                            maxLines = 1
-                                        )
-                                    }
-                                }
-                                Text("›", fontSize = 18.sp, color = MaterialTheme.appColors.textSecondary)
-                            }
-                            if (index < state.platforms.lastIndex) {
-                                HorizontalDivider(
-                                    color = MaterialTheme.appColors.border,
-                                    thickness = 0.5.dp,
-                                    modifier = Modifier.padding(start = 52.dp)
-                                )
-                            }
-                        }
-                    }
-                }
-            }
+            item { PlatformListSection(platforms = state.platforms, onAdd = onOpenPlatformAdd, onEdit = onOpenPlatformEdit) }
 
-            // ── Sectores ───────────────────────────────────────────────────────
             item { Spacer(Modifier.height(8.dp)) }
-            item {
-                SectionHeader(
-                    label = stringResource(Res.string.portfolio_settings_sector_section),
-                    actionLabel = stringResource(Res.string.portfolio_settings_manage),
-                    onAction = onOpenSectorSheet
-                )
-            }
-            item {
-                SettingsGroupCard {
-                    if (state.allSectors.isEmpty()) {
-                        Text(
-                            stringResource(Res.string.portfolio_settings_sector_empty),
-                            fontSize = 13.sp,
-                            color = MaterialTheme.appColors.textSecondary,
-                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 18.dp)
-                        )
-                    } else {
-                        state.allSectors.forEachIndexed { index, sector ->
-                            Row(
-                                modifier = Modifier.fillMaxWidth()
-                                    .padding(horizontal = 16.dp, vertical = 14.dp),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Text(sector.icon, fontSize = 18.sp, modifier = Modifier.size(28.dp))
-                                Spacer(Modifier.width(12.dp))
-                                Text(
-                                    text = sector.name,
-                                    fontSize = 15.sp,
-                                    color = MaterialTheme.appColors.textPrimary,
-                                    modifier = Modifier.weight(1f)
-                                )
-                            }
-                            if (index < state.allSectors.lastIndex) {
-                                HorizontalDivider(
-                                    color = MaterialTheme.appColors.border,
-                                    thickness = 0.5.dp,
-                                    modifier = Modifier.padding(start = 52.dp)
-                                )
-                            }
-                        }
-                    }
-                }
-            }
+            item { SectorListSection(sectors = state.allSectors, onManage = onOpenSectorSheet) }
 
-            // ── Regiones ───────────────────────────────────────────────────────
             item { Spacer(Modifier.height(8.dp)) }
-            item {
-                SectionHeader(
-                    label = stringResource(Res.string.portfolio_settings_region_section),
-                    actionLabel = stringResource(Res.string.portfolio_settings_manage),
-                    onAction = onOpenRegionSheet
-                )
-            }
-            item {
-                SettingsGroupCard {
-                    if (state.allRegions.isEmpty()) {
-                        Text(
-                            stringResource(Res.string.portfolio_settings_region_empty),
-                            fontSize = 13.sp,
-                            color = MaterialTheme.appColors.textSecondary,
-                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 18.dp)
-                        )
-                    } else {
-                        state.allRegions.forEachIndexed { index, region ->
-                            Row(
-                                modifier = Modifier.fillMaxWidth()
-                                    .padding(horizontal = 16.dp, vertical = 14.dp),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Text(
-                                    text = region.name,
-                                    fontSize = 15.sp,
-                                    color = MaterialTheme.appColors.textPrimary,
-                                    modifier = Modifier.weight(1f)
-                                )
-                            }
-                            if (index < state.allRegions.lastIndex) {
-                                HorizontalDivider(
-                                    color = MaterialTheme.appColors.border,
-                                    thickness = 0.5.dp,
-                                    modifier = Modifier.padding(start = 16.dp)
-                                )
-                            }
-                        }
-                    }
-                }
-            }
+            item { RegionListSection(regions = state.allRegions, onManage = onOpenRegionSheet) }
 
             item { Spacer(Modifier.height(20.dp)) }
         }
@@ -662,13 +344,4 @@ private fun PortfolioSettingsContentPreview() {
     }
 }
 
-@Composable
-private fun SettingsGroupCard(content: @Composable ColumnScope.() -> Unit) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(14.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.surface),
-        border = BorderStroke(0.5.dp, MaterialTheme.appColors.border),
-        elevation = CardDefaults.cardElevation(0.dp)
-    ) { Column(content = content) }
-}
+

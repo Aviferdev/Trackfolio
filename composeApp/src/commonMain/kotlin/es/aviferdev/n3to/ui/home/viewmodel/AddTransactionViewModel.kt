@@ -50,58 +50,58 @@ class AddTransactionViewModel(
     private val calculateIrpf: CalculateIrpfUseCase,
     private val calculateNetIncome: CalculateNetIncomeUseCase,
     private val session: AccountSession
-) : ViewModel() {
+) : ViewModel(), IAddTransactionForm {
 
-    private val _uiState = MutableStateFlow<AddTransactionUiState>(AddTransactionUiState.Idle)
-    val uiState: StateFlow<AddTransactionUiState> = _uiState.asStateFlow()
+    private val _formUiState = MutableStateFlow<AddTransactionUiState>(AddTransactionUiState.Idle)
+    override val formUiState: StateFlow<AddTransactionUiState> = _formUiState.asStateFlow()
 
     private var editingTransaction: Transaction? = null
-    val isEditing: Boolean get() = editingTransaction != null
+    override val isEditing: Boolean get() = editingTransaction != null
 
     // ── Campos base ───────────────────────────────────────────────────────────
-    var amount by mutableStateOf("")
+    override var amount by mutableStateOf("")
         private set
-    var type by mutableStateOf(TransactionType.EXPENSE)
+    override var type by mutableStateOf(TransactionType.EXPENSE)
         private set
-    var notes by mutableStateOf("")
+    override var notes by mutableStateOf("")
         private set
-    var dateMillis by mutableStateOf(nowMillis())
+    override var dateMillis by mutableStateOf(nowMillis())
         private set
 
     // ── Gastos: categorías ────────────────────────────────────────────────────
-    var categories by mutableStateOf<List<Category>>(emptyList())
+    override var categories by mutableStateOf<List<Category>>(emptyList())
         private set
-    var selectedCategoryId by mutableStateOf("")
+    override var selectedCategoryId by mutableStateOf("")
         private set
 
     // ── Ingresos: tipo de ingreso ─────────────────────────────────────────────
-    var selectedIncomeType by mutableStateOf<IncomeType?>(null)
+    override var selectedIncomeType by mutableStateOf<IncomeType?>(null)
         private set
 
     // ── Modo de entrada de ingresos ──────────────────────────────────────────
-    var incomeInputMode by mutableStateOf(IncomeInputMode.FISCAL)
+    override var incomeInputMode by mutableStateOf(IncomeInputMode.FISCAL)
         private set
-    var netAmount by mutableStateOf("")
+    override var netAmount by mutableStateOf("")
         private set
 
     // ── Campos fiscales de ingreso ────────────────────────────────────────────
-    var grossAmount by mutableStateOf("")
+    override var grossAmount by mutableStateOf("")
         private set
-    var irpfPercent by mutableStateOf("")
+    override var irpfPercent by mutableStateOf("")
         private set
-    var irpfFixedAmount by mutableStateOf("")
+    override var irpfFixedAmount by mutableStateOf("")
         private set
-    var irpfInputMode by mutableStateOf(IrpfInputMode.PERCENT)
+    override var irpfInputMode by mutableStateOf(IrpfInputMode.PERCENT)
         private set
-    var socialSecurityAmount by mutableStateOf("")
+    override var socialSecurityAmount by mutableStateOf("")
         private set
-    var commissionAmount by mutableStateOf("")
+    override var commissionAmount by mutableStateOf("")
         private set
 
     // ── Emisor ────────────────────────────────────────────────────────────────
-    var issuers by mutableStateOf<List<Issuer>>(emptyList())
+    override var issuers by mutableStateOf<List<Issuer>>(emptyList())
         private set
-    var selectedIssuerId by mutableStateOf<String?>(null)
+    override var selectedIssuerId by mutableStateOf<String?>(null)
         private set
     var newIssuerName by mutableStateOf("")
         private set
@@ -115,7 +115,7 @@ class AddTransactionViewModel(
         private set
 
     /** Nombre de la retención sobre la renta según el perfil activo (IRPF, Income Tax, Federal Tax…). */
-    val withholdingTaxLabel: String
+    override val withholdingTaxLabel: String
         get() {
             val incType = selectedIncomeType ?: return "Retención fiscal"
             val profile = activeTaxProfile ?: return "Retención fiscal"
@@ -125,7 +125,7 @@ class AddTransactionViewModel(
         }
 
     /** Nombres de las cotizaciones sociales según el perfil activo (Seg. Social, NI, FICA…). */
-    val socialContributionLabel: String
+    override val socialContributionLabel: String
         get() {
             val incType = selectedIncomeType ?: return "Cotizaciones sociales"
             val profile = activeTaxProfile ?: return "Cotizaciones sociales"
@@ -139,7 +139,7 @@ class AddTransactionViewModel(
      * Si el perfil activo tiene template de INCOME_TAX para este tipo → muestra campo retención.
      * Si no hay perfil (o es CUSTOM sin templates) → cae al flag del enum.
      */
-    val showWithholdingField: Boolean
+    override val showWithholdingField: Boolean
         get() {
             val incType = selectedIncomeType ?: return false
             val profile = activeTaxProfile
@@ -148,7 +148,7 @@ class AddTransactionViewModel(
         }
 
     /** Igual que showWithholdingField pero para cotizaciones sociales. */
-    val showSocialContributionField: Boolean
+    override val showSocialContributionField: Boolean
         get() {
             val incType = selectedIncomeType ?: return false
             val profile = activeTaxProfile
@@ -160,7 +160,7 @@ class AddTransactionViewModel(
     // ── Cálculos ──────────────────────────────────────────────────────────────
 
     /** Neto calculado según el tipo de ingreso seleccionado. */
-    val calculatedNet: Double?
+    override val calculatedNet: Double?
         get() {
             val incType = selectedIncomeType ?: return null
             val gross = grossAmount.replace(',', '.').toDoubleOrNull() ?: return null
@@ -180,7 +180,7 @@ class AddTransactionViewModel(
         }
 
     // ── Validación ────────────────────────────────────────────────────────────
-    val isValid: Boolean
+    override val isValid: Boolean
         get() {
             if (type == TransactionType.EXPENSE) {
                 val amtOk = amount.replace(',', '.').toDoubleOrNull()?.let { it > 0 } == true
@@ -225,7 +225,7 @@ class AddTransactionViewModel(
 
     // ── Acciones de tipo ──────────────────────────────────────────────────────
 
-    fun onTypeChange(newType: TransactionType) {
+    override fun onTypeChange(newType: TransactionType) {
         type = newType
         if (newType == TransactionType.EXPENSE) {
             clearIncomeFields()
@@ -236,7 +236,7 @@ class AddTransactionViewModel(
         }
     }
 
-    fun onIncomeTypeChange(incomeType: IncomeType) {
+    override fun onIncomeTypeChange(incomeType: IncomeType) {
         selectedIncomeType = incomeType
         // Resetear modo de entrada
         incomeInputMode = IncomeInputMode.FISCAL
@@ -271,23 +271,23 @@ class AddTransactionViewModel(
 
     // ── Acciones de campos ────────────────────────────────────────────────────
 
-    fun onAmountChange(value: String) {
+    override fun onAmountChange(value: String) {
         amount = filterDecimal(value)
     }
 
-    fun onGrossAmountChange(value: String) {
+    override fun onGrossAmountChange(value: String) {
         grossAmount = filterDecimal(value)
     }
 
-    fun onIrpfPercentChange(value: String) {
+    override fun onIrpfPercentChange(value: String) {
         irpfPercent = filterDecimal(value)
     }
 
-    fun onIrpfFixedAmountChange(value: String) {
+    override fun onIrpfFixedAmountChange(value: String) {
         irpfFixedAmount = filterDecimal(value)
     }
 
-    fun onIrpfInputModeChange(mode: IrpfInputMode) {
+    override fun onIrpfInputModeChange(mode: IrpfInputMode) {
         irpfInputMode = mode
         // Limpiar el campo del modo contrario para evitar confusión
         when (mode) {
@@ -296,27 +296,27 @@ class AddTransactionViewModel(
         }
     }
 
-    fun onSocialSecurityChange(value: String) {
+    override fun onSocialSecurityChange(value: String) {
         socialSecurityAmount = filterDecimal(value)
     }
 
-    fun onCommissionChange(value: String) {
+    override fun onCommissionChange(value: String) {
         commissionAmount = filterDecimal(value)
     }
 
-    fun onCategoryChange(categoryId: String) {
+    override fun onCategoryChange(categoryId: String) {
         selectedCategoryId = categoryId
     }
 
-    fun onNotesChange(value: String) {
+    override fun onNotesChange(value: String) {
         notes = value
     }
 
-    fun onDateChange(millis: Long) {
+    override fun onDateChange(millis: Long) {
         dateMillis = millis
     }
 
-    fun onIncomeModeChange(mode: IncomeInputMode) {
+    override fun onIncomeModeChange(mode: IncomeInputMode) {
         incomeInputMode = mode
         if (mode == IncomeInputMode.NET_ONLY) {
             grossAmount = ""
@@ -329,11 +329,11 @@ class AddTransactionViewModel(
         }
     }
 
-    fun onNetAmountChange(value: String) {
+    override fun onNetAmountChange(value: String) {
         netAmount = filterDecimal(value)
     }
 
-    fun onIssuerSelected(issuerId: String) {
+    override fun onIssuerSelected(issuerId: String) {
         selectedIssuerId = issuerId
         showNewIssuerField = false
         newIssuerName = ""
@@ -393,12 +393,12 @@ class AddTransactionViewModel(
 
     // ── Guardar ───────────────────────────────────────────────────────────────
 
-    fun save() {
+    override fun save() {
         if (!isValid) return
-        _uiState.value = AddTransactionUiState.Loading
+        _formUiState.value = AddTransactionUiState.Loading
         viewModelScope.launch {
             val accountId = session.selectedAccountId.value ?: run {
-                _uiState.value = AddTransactionUiState.Error("No hay cuenta seleccionada")
+                _formUiState.value = AddTransactionUiState.Error("No hay cuenta seleccionada")
                 return@launch
             }
             val now = nowMillis()
@@ -412,12 +412,8 @@ class AddTransactionViewModel(
     }
 
     private suspend fun saveExpense(accountId: String, now: Long) {
-        val netAmount = amount.replace(',', '.').toDouble()
-        val transaction = buildTransaction(
-            accountId = accountId,
-            netAmount = netAmount,
-            now = now
-        )
+        val netAmt = amount.replace(',', '.').toDouble()
+        val transaction = buildTransaction(accountId = accountId, netAmount = netAmt, now = now)
         persistTransaction(transaction)
     }
 
@@ -427,7 +423,7 @@ class AddTransactionViewModel(
         // Modo solo neto
         if (incomeInputMode == IncomeInputMode.NET_ONLY) {
             val net = netAmount.replace(',', '.').toDoubleOrNull() ?: run {
-                _uiState.value = AddTransactionUiState.Error("Importe neto inválido")
+                _formUiState.value = AddTransactionUiState.Error("Importe neto inválido")
                 return
             }
             val finalIssuerName = issuers.find { it.id == selectedIssuerId }?.name
@@ -451,7 +447,7 @@ class AddTransactionViewModel(
         }
 
         val net = calculatedNet ?: run {
-            _uiState.value = AddTransactionUiState.Error("No se pudo calcular el neto")
+            _formUiState.value = AddTransactionUiState.Error("No se pudo calcular el neto")
             return
         }
 
@@ -541,12 +537,12 @@ class AddTransactionViewModel(
             saveTransaction(transaction)
         }
         result
-            .onSuccess { _uiState.value = AddTransactionUiState.Success }
-            .onFailure { _uiState.value = AddTransactionUiState.Error(it.message ?: "Error") }
+            .onSuccess { _formUiState.value = AddTransactionUiState.Success }
+            .onFailure { _formUiState.value = AddTransactionUiState.Error(it.message ?: "Error") }
     }
 
-    fun clear() {
-        _uiState.value = AddTransactionUiState.Idle
+    override fun clear() {
+        _formUiState.value = AddTransactionUiState.Idle
     }
 
     // ── Helpers ───────────────────────────────────────────────────────────────

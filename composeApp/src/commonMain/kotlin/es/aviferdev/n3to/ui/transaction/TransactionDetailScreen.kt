@@ -28,23 +28,12 @@ import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.Transaction
 import es.aviferdev.n3to.ui.common.topbar.TopBarWithActionsApp
 import es.aviferdev.n3to.ui.theme.*
-import kotlinx.datetime.Instant
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
-import n3to.composeapp.generated.resources.Res
-import n3to.composeapp.generated.resources.common_cancel
-import n3to.composeapp.generated.resources.common_category_label
-import n3to.composeapp.generated.resources.common_date_label
-import n3to.composeapp.generated.resources.common_delete
-import n3to.composeapp.generated.resources.common_retry
-import n3to.composeapp.generated.resources.fiscal_commissions_short
-import n3to.composeapp.generated.resources.transaction_delete_message
-import n3to.composeapp.generated.resources.transaction_detail_account_label
-import n3to.composeapp.generated.resources.transaction_detail_delete_cd
-import n3to.composeapp.generated.resources.transaction_detail_edit_cd
-import n3to.composeapp.generated.resources.transaction_detail_issuer_label
-import n3to.composeapp.generated.resources.transaction_detail_notes_label
-import n3to.composeapp.generated.resources.transaction_detail_title
+import es.aviferdev.n3to.ui.transaction.components.DetailRow
+import es.aviferdev.n3to.ui.transaction.components.DetailSectionHeader
+import es.aviferdev.n3to.ui.transaction.components.formatAmountAbs
+import es.aviferdev.n3to.ui.theme.formatDateFullLocalized
+import es.aviferdev.n3to.ui.transaction.components.shouldShowIncomeDetails
+import n3to.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -203,11 +192,11 @@ private fun TransactionDetailContent(
         // ── Card superior con tipo, importe y categoría ────────────────────
         val isPropertyTransaction = transaction.linkedPropertyId != null
         val (typeLabel, typeColor) = when {
-            transaction.isAdjustment -> "AJUSTE" to MaterialTheme.appColors.primary
-            transaction.isLinkedToAsset -> "INVERSIÓN" to MaterialTheme.appColors.primary
-            isPropertyTransaction -> "INMUEBLE" to MaterialTheme.appColors.income
-            transaction.isIncome -> "INGRESO" to MaterialTheme.appColors.income
-            else -> "GASTO" to MaterialTheme.appColors.expense
+            transaction.isAdjustment -> stringResource(Res.string.transaction_badge_adjustment) to MaterialTheme.appColors.primary
+            transaction.isLinkedToAsset -> stringResource(Res.string.transaction_badge_investment) to MaterialTheme.appColors.primary
+            isPropertyTransaction -> stringResource(Res.string.transaction_badge_property) to MaterialTheme.appColors.income
+            transaction.isIncome -> stringResource(Res.string.transaction_badge_income) to MaterialTheme.appColors.income
+            else -> stringResource(Res.string.transaction_badge_expense) to MaterialTheme.appColors.expense
         }
         val isLinkedToProperty = transaction.linkedPropertyId != null
         val isNegativeAmount = when {
@@ -293,7 +282,7 @@ private fun TransactionDetailContent(
         Spacer(Modifier.height(24.dp))
 
         // ── Details section ────────────────────────────────────────────────
-        DetailSectionHeader("Detalles")
+        DetailSectionHeader(stringResource(Res.string.common_details))
 
         Spacer(Modifier.height(12.dp))
 
@@ -321,7 +310,7 @@ private fun TransactionDetailContent(
                 // Fecha
                 DetailRow(
                     label = stringResource(Res.string.common_date_label),
-                    value = formatDetailDate(transaction.date),
+                    value = formatDateFullLocalized(transaction.date),
                     isLast = false
                 )
 
@@ -340,7 +329,7 @@ private fun TransactionDetailContent(
                     val grossAmount = transaction.grossAmount
                     if (grossAmount != null) {
                         DetailRow(
-                            label = "Importe bruto",
+                            label = stringResource(Res.string.portfolio_add_tx_gross),
                             value = "${formatAmount(grossAmount)} €",
                             isLast = false
                         )
@@ -437,9 +426,9 @@ private fun TransactionDetailContent(
             } else {
                 // Para linked-to-asset o linked-to-property: mostrar indicador
                 val linkedLabel = when {
-                    transaction.isLinkedToAsset -> "Movimiento del Portfolio"
-                    isPropertyTxFinal -> "Gestionable desde la propiedad"
-                    else -> "Movimiento vinculado"
+                    transaction.isLinkedToAsset -> stringResource(Res.string.transaction_linked_portfolio)
+                    isPropertyTxFinal -> stringResource(Res.string.transaction_linked_property)
+                    else -> stringResource(Res.string.transaction_linked_generic)
                 }
                 Surface(
                     modifier = Modifier.fillMaxWidth().height(50.dp),
@@ -460,90 +449,4 @@ private fun TransactionDetailContent(
     }
 }
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// Helper Composables
-// ═══════════════════════════════════════════════════════════════════════════════
-
-@Composable
-private fun DetailSectionHeader(text: String) {
-    Text(
-        text = text.uppercase(),
-        fontSize = 10.sp,
-        fontWeight = FontWeight.Bold,
-        color = MaterialTheme.appColors.textTertiary,
-        letterSpacing = 0.7.sp
-    )
-}
-
-@Composable
-private fun DetailRow(
-    label: String,
-    value: String,
-    isLast: Boolean,
-) {
-    Column {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 14.dp, vertical = 12.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            // Label
-            Text(
-                text = label,
-                fontSize = 12.sp,
-                color = MaterialTheme.appColors.textSecondary,
-                modifier = Modifier.width(100.dp)
-            )
-            // Value — alineado a la izquierda
-            Text(
-                text = value,
-                fontSize = 13.sp,
-                fontWeight = FontWeight.Medium,
-                color = MaterialTheme.appColors.textPrimary,
-                modifier = Modifier.weight(1f),
-                textAlign = TextAlign.Start
-            )
-        }
-        if (!isLast) {
-            HorizontalDivider(
-                modifier = Modifier.padding(start = 14.dp),
-                color = MaterialTheme.appColors.border,
-                thickness = 0.5.dp
-            )
-        }
-    }
-}
-
-// ═══════════════════════════════════════════════════════════════════════════════
-// Helpers
-// ═══════════════════════════════════════════════════════════════════════════════
-
-/** Determina si la transacción tiene campos de ingreso que mostrar. */
-private fun shouldShowIncomeDetails(transaction: Transaction): Boolean {
-    if (!transaction.isIncome) return false
-    return transaction.grossAmount != null
-            || transaction.taxLines.isNotEmpty()
-            || transaction.commissionAmount != null
-            || !transaction.issuerName.isNullOrBlank()
-}
-
-/** Formatea el valor absoluto sin signo: "1.500,00" */
-private fun formatAmountAbs(amount: Double): String {
-    val rounded = (amount * 100).toLong()
-    val euros = rounded / 100
-    val cents = rounded % 100
-    val eurosStr = euros.toString().reversed().chunked(3).joinToString(".").reversed()
-    return "$eurosStr,${cents.toString().padStart(2, '0')}"
-}
-
-/** Formatea fecha larga: "12 de mayo de 2026" */
-private fun formatDetailDate(epochMillis: Long): String {
-    val months = listOf(
-        "enero", "febrero", "marzo", "abril", "mayo", "junio",
-        "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"
-    )
-    val ld = Instant.fromEpochMilliseconds(epochMillis)
-        .toLocalDateTime(TimeZone.currentSystemDefault()).date
-    return "${ld.dayOfMonth} de ${months[ld.monthNumber - 1]} de ${ld.year}"
-}
+// ── Secciones extraídas a transaction/components/TransactionDetailComponents.kt

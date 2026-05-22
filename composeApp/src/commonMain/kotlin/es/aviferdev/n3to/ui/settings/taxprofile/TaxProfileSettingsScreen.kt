@@ -69,6 +69,14 @@ import n3to.composeapp.generated.resources.tax_profile_empty_subtitle
 import n3to.composeapp.generated.resources.tax_profile_empty_title
 import n3to.composeapp.generated.resources.tax_profile_history_hint
 import n3to.composeapp.generated.resources.tax_profile_history_section
+import n3to.composeapp.generated.resources.tax_profile_add_hint
+import n3to.composeapp.generated.resources.tax_profile_country_custom
+import n3to.composeapp.generated.resources.tax_profile_country_de
+import n3to.composeapp.generated.resources.tax_profile_country_es
+import n3to.composeapp.generated.resources.tax_profile_country_gb
+import n3to.composeapp.generated.resources.tax_profile_country_us
+import n3to.composeapp.generated.resources.tax_profile_delete_message
+import n3to.composeapp.generated.resources.tax_profile_empty_description
 import n3to.composeapp.generated.resources.tax_profile_new_title
 import n3to.composeapp.generated.resources.tax_profile_title
 import n3to.composeapp.generated.resources.tax_profile_valid_from_label
@@ -125,7 +133,7 @@ fun TaxProfileSettingsScreen(
                     )
                     Spacer(Modifier.height(16.dp))
                     Text(
-                        "El perfil fiscal define los tramos IRPF y tipos de rendimiento que se aplican en el informe fiscal. Sin él, los cálculos no serán precisos.",
+                        stringResource(Res.string.tax_profile_empty_description),
                         fontSize = 12.sp,
                         color = MaterialTheme.appColors.textTertiary,
                         modifier = Modifier.padding(horizontal = 40.dp)
@@ -188,7 +196,7 @@ fun TaxProfileSettingsScreen(
             },
             text = {
                 Text(
-                    "Se eliminará este perfil fiscal. Los movimientos ya registrados no se verán afectados.",
+                    stringResource(Res.string.tax_profile_delete_message),
                     fontSize = 13.sp, color = MaterialTheme.appColors.textSecondary
                 )
             },
@@ -368,7 +376,7 @@ private fun AddTaxProfileSheet(
                 onDateSelected = onDateChange
             )
             Text(
-                "Si cambias de sistema fiscal (p. ej. al mudarte de país), añade un nuevo perfil con la fecha en que comenzó el cambio.",
+                stringResource(Res.string.tax_profile_add_hint),
                 fontSize = 11.sp,
                 color = MaterialTheme.appColors.textTertiary
             )
@@ -401,12 +409,13 @@ private fun AddTaxProfileSheet(
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
+@Composable
 private fun profileLabel(countryCode: String?): String = when (countryCode) {
-    "ES" -> "España"
-    "GB" -> "Reino Unido"
-    "US" -> "Estados Unidos"
-    "DE" -> "Alemania"
-    else -> "Personalizado"
+    "ES" -> stringResource(Res.string.tax_profile_country_es)
+    "GB" -> stringResource(Res.string.tax_profile_country_gb)
+    "US" -> stringResource(Res.string.tax_profile_country_us)
+    "DE" -> stringResource(Res.string.tax_profile_country_de)
+    else -> stringResource(Res.string.tax_profile_country_custom)
 }
 
 private fun profileFlag(countryCode: String?): String = when (countryCode) {

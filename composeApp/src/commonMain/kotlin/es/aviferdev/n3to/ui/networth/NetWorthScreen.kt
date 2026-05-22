@@ -39,6 +39,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import es.aviferdev.n3to.domain.model.AssetBreakdown
 import es.aviferdev.n3to.domain.model.NetWorthHistoryPoint
 import es.aviferdev.n3to.domain.model.NetWorthScreenData
 import es.aviferdev.n3to.ui.annual.DonutChartCard
@@ -58,6 +59,7 @@ import es.aviferdev.n3to.ui.splash.SplashLoader
 import es.aviferdev.n3to.ui.theme.DonutAccounts
 import es.aviferdev.n3to.ui.theme.DonutInvestments
 import es.aviferdev.n3to.ui.theme.DonutRealEstate
+import es.aviferdev.n3to.ui.theme.DonutValuables
 import es.aviferdev.n3to.ui.theme.LocalBalanceHidden
 import es.aviferdev.n3to.ui.theme.LocalBottomNavPadding
 import es.aviferdev.n3to.ui.theme.N3toTheme
@@ -70,6 +72,7 @@ import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
 import n3to.composeapp.generated.resources.Res
+import n3to.composeapp.generated.resources.common_go_to_settings
 import n3to.composeapp.generated.resources.networth_add_loan_cd
 import n3to.composeapp.generated.resources.networth_add_property_cd
 import n3to.composeapp.generated.resources.networth_add_valuable_cd
@@ -163,7 +166,7 @@ fun NetWorthScreen(
                     icon = "\uD83C\uDFE6",
                     title = stringResource(Res.string.networth_no_account_title),
                     subtitle = stringResource(Res.string.networth_no_account_subtitle),
-                    actionLabel = "Ir a Ajustes",
+                    actionLabel = stringResource(Res.string.common_go_to_settings),
                     onAction = onNavigateToSettings
                 )
             }
@@ -193,12 +196,31 @@ fun NetWorthScreen(
     }
 }
 
+private val AssetSliceColors = listOf(
+    DonutAccounts,    // Cuentas — verde
+    DonutInvestments, // Inversiones — azul
+    WarnOrange,       // Renta fija — ámbar
+    DonutRealEstate,  // Inmuebles — marrón
+    DonutValuables    // Bienes — púrpura
+)
+
+private fun List<AssetBreakdown>.toDonutSlices(): List<DonutSlice> =
+    mapIndexed { idx, item ->
+        DonutSlice(
+            name = item.name,
+            icon = item.icon,
+            amount = item.amount,
+            percent = item.percent,
+            color = AssetSliceColors[idx % AssetSliceColors.size]
+        )
+    }
+
 @OptIn(ExperimentalTime::class)
 @Composable
 fun NetWorthContent(
     data: NetWorthScreenData,
     netWorthHistory: List<NetWorthHistoryPoint>,
-    assetDistribution: List<DonutSlice>,
+    assetDistribution: List<AssetBreakdown>,
     balancesHidden: Boolean,
     onLoanClick: (String) -> Unit,
     onPropertyClick: (String) -> Unit = {},
@@ -283,7 +305,7 @@ fun NetWorthContent(
                             DonutChartCard(
                                 title = stringResource(Res.string.networth_assets_label_alt),
                                 subtitle = "",
-                                slices = assetDistribution,
+                                slices = assetDistribution.toDonutSlices(),
                                 totalAmount = data.totalAssets,
                                 balancesHidden = balancesHidden
                             )
@@ -528,10 +550,10 @@ fun NetWorthContentPreview() {
                 NetWorthHistoryPoint("2026-03", 83000.0, 118000.0, 35000.0)
             ),
             assetDistribution = listOf(
-                DonutSlice("Cuentas", "🏦", 25000.0, 21.74, DonutAccounts),
-                DonutSlice("Inversiones", "📈", 75000.0, 65.22, DonutInvestments),
-                DonutSlice("Renta fija", "🏛️", 15000.0, 13.04, WarnOrange),
-                DonutSlice("Inmuebles", "🏠", 250000.0, 68.49, DonutRealEstate)
+                AssetBreakdown("\uD83C\uDFE6", "Cuentas", 25000.0, 21.74),
+                AssetBreakdown("\uD83D\uDCC8", "Inversiones", 75000.0, 65.22),
+                AssetBreakdown("\uD83C\uDFDB\uFE0F", "Renta fija", 15000.0, 13.04),
+                AssetBreakdown("\uD83C\uDFE0", "Inmuebles", 250000.0, 68.49)
             ),
             balancesHidden = false,
             onLoanClick = {},

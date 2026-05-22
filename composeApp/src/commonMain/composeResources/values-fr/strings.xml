@@ -1492,4 +1492,126 @@
     <string name="language_japanese">日本語</string>
     <string name="badge_beta">BÊTA</string>
     <string name="language_select_title">Sélectionner la langue</string>
+
+    <!-- MISSING STRINGS – Added from hardcoded in code -->
+
+    <!-- COMMON – additional -->
+    <string name="common_details">Details</string>
+    <string name="common_hide">Hide</string>
+    <string name="common_show">Show</string>
+    <string name="common_information">Information</string>
+
+    <!-- TRANSACTION – Badges and titles -->
+    <string name="transaction_badge_adjustment">ADJUSTMENT</string>
+    <string name="transaction_badge_investment">INVESTMENT</string>
+    <string name="transaction_badge_property">PROPERTY</string>
+    <string name="transaction_badge_income">INCOME</string>
+    <string name="transaction_badge_expense">EXPENSE</string>
+    <string name="transaction_edit_title">Edit transaction</string>
+    <string name="transaction_new_title">New transaction</string>
+    <string name="transaction_select_category">Select category…</string>
+    <string name="transaction_select_income_type">Select type…</string>
+    <string name="transaction_no_fiscal_detail_warning">No fiscal detail: this income will not appear broken down in the report</string>
+    <string name="transaction_save">Save transaction</string>
+    <string name="transaction_linked_portfolio">Portfolio movement</string>
+    <string name="transaction_linked_property">Manageable from the property</string>
+    <string name="transaction_linked_generic">Linked movement</string>
+    <string name="transaction_account_unknown">Unknown account</string>
+    <string name="transaction_fallback_label">Movement</string>
+    <string name="transaction_social_contribution_default">Social contributions</string>
+    <string name="transaction_taxline_social_contribution">Social Contribution</string>
+    <string name="transaction_portfolio_badge">Portfolio</string>
+    <string name="transaction_gross_format">Gross: %1$s €</string>
+    <string name="transaction_retention_badge_format"> · %1$d%% withholding</string>
+
+    <!-- HOME – additional -->
+    <string name="home_loading">Loading home…</string>
+
+    <!-- BUDGET – additional -->
+    <string name="budget_edit_limit_cd">Edit limit</string>
+
+    <!-- CATEGORY PICKER – additional -->
+    <string name="category_picker_title_expense">Select category</string>
+    <string name="category_picker_title_income">Select income type</string>
+    <string name="category_frequent_section">Frequent</string>
+    <string name="category_all_section">All categories</string>
+    <string name="category_no_search_results">No results for «%1$s»</string>
+    <string name="category_all_types_section">All types</string>
+    <string name="category_withholding_applicable">Applicable tax withholding</string>
+    <string name="category_create_new">Create new category</string>
+
+    <!-- VALUABLE – additional -->
+    <string name="valuable_detail_title_fallback">Asset detail</string>
+    <string name="valuable_information_section">Information</string>
+    <string name="valuable_purchase_date_short">Purchase date</string>
+    <string name="valuable_purchase_price_short">Purchase price</string>
+    <string name="valuable_current_value">Current value</string>
+    <string name="valuable_sale_date_short">Sale date</string>
+    <string name="valuable_sale_price_short">Sale price</string>
+    <string name="valuable_linked_loan">Linked loan</string>
+    <string name="valuable_notes">Notes</string>
+    <string name="valuable_change_loan">Change loan</string>
+    <string name="valuable_expenses_section">Expenses</string>
+    <string name="valuable_purchase_expenses_short">Purchase expenses</string>
+    <string name="valuable_holding_expenses_short">Holding expenses</string>
+    <string name="valuable_sale_expenses_short">Sale expenses</string>
+    <string name="valuable_total_expenses">Total expenses</string>
+
+    <!-- LOAN – additional -->
+    <string name="loan_archive_confirm_message">Are you sure you want to archive «%1$s»? It will disappear from the main screen but its data will be kept.</string>
+
+    <!-- PORTFOLIO – additional -->
+    <string name="portfolio_uncategorized">Uncategorized</string>
+    <string name="portfolio_composition_variable_income">Variable income</string>
+    <string name="portfolio_delete_transfer_title">Delete transfer</string>
+    <string name="portfolio_delete_transfer_message">Both legs of the transfer will be deleted. P&amp;L will be recalculated. This action cannot be undone.</string>
+    <string name="portfolio_delete_tx_message">The %1$s movement will be deleted. P&amp;L will be recalculated. This action cannot be undone.</string>
+
+    <!-- PRICE ANOMALY – additional -->
+    <string name="price_anomaly_suspicious_title">⚠️ Suspicious price</string>
+    <string name="price_anomaly_unusual_title">Unusual price</string>
+    <string name="price_anomaly_correct_div10">Correct (÷10)</string>
+    <string name="price_anomaly_use_previous">Use previous price</string>
+    <string name="price_anomaly_keep_new">Keep entered price</string>
+    <string name="price_anomaly_force_save">Yes, save anyway</string>
+
+    <!-- RECONCILIATION – additional -->
+    <string name="reconciliation_invalid_amount">Enter a valid amount</string>
+    <string name="reconciliation_adjustment_registered">Adjustment of %1$s registered</string>
+
+    <!-- BACKUP – additional -->
+    <string name="backup_password_min_length">Password must be at least 6 characters</string>
+    <string name="backup_password_mismatch">Passwords do not match</string>
+    <string name="backup_password_required">Enter the backup password</string>
+    <string name="backup_export_title">Export backup</string>
+    <string name="backup_import_title">Import backup</string>
+    <string name="backup_export_description">Choose a password to encrypt your backup.\nYou will need this same password to restore it.</string>
+    <string name="backup_import_description">Enter the password used to encrypt the backup you want to restore.</string>
+    <string name="backup_encryption_password">Encryption password</string>
+    <string name="backup_restore_password">Backup password</string>
+    <string name="backup_confirm_password">Confirm password</string>
+    <string name="backup_export_success">✅ Backup exported successfully</string>
+    <string name="backup_import_success">✅ Backup decrypted successfully</string>
+    <string name="backup_import_restart_hint">Close and reopen the app to apply the restored data.</string>
+    <string name="backup_export_and_share">Export and share</string>
+    <string name="backup_restore">Restore backup</string>
+
+    <!-- TAX PROFILE – additional -->
+    <string name="tax_profile_country_es">Spain</string>
+    <string name="tax_profile_country_gb">United Kingdom</string>
+    <string name="tax_profile_country_us">United States</string>
+    <string name="tax_profile_country_de">Germany</string>
+    <string name="tax_profile_country_custom">Custom</string>
+    <string name="tax_profile_empty_description">The tax profile defines the IRPF brackets and yield types applied in the tax report. Without it, calculations will not be accurate.</string>
+    <string name="tax_profile_delete_message">This tax profile will be deleted. Existing movements will not be affected.</string>
+    <string name="tax_profile_add_hint">If you change tax systems (e.g. when moving to another country), add a new profile with the date the change started.</string>
+
+    <!-- FIXED INCOME – additional -->
+    <string name="fixedincome_event_acquisition_note">Acquisition of %1$s</string>
+
+    <!-- NET WORTH – additional -->
+    <string name="networth_loading">Loading net worth…</string>
+
+    <!-- ONBOARDING – additional -->
+    <string name="onboarding_realestate_hint">Once inside, you can register it from </string>
 </resources>

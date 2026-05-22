@@ -3,6 +3,11 @@ package es.aviferdev.n3to.ui.home.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import es.aviferdev.n3to.core.VersionManager
+import es.aviferdev.n3to.core.premium.PremiumManager
+import es.aviferdev.n3to.core.security.BalanceVisibilityManager
+import es.aviferdev.n3to.core.security.BiometricAuthenticator
+import es.aviferdev.n3to.core.security.BiometricResult
+import es.aviferdev.n3to.domain.model.Account
 import es.aviferdev.n3to.domain.model.Asset
 import es.aviferdev.n3to.domain.model.CategoryBudgetStatus
 import es.aviferdev.n3to.domain.model.EmergencyFundStatus
@@ -11,14 +16,16 @@ import es.aviferdev.n3to.domain.model.HomeBalance
 import es.aviferdev.n3to.domain.model.LimitType
 import es.aviferdev.n3to.domain.model.MonthlyGoalProgress
 import es.aviferdev.n3to.domain.model.TransactionType
-import es.aviferdev.n3to.domain.repository.CategoryBudgetRepository
+import es.aviferdev.n3to.domain.usecase.account.GetAccountsUseCase
 import es.aviferdev.n3to.domain.usecase.account.SetInitialBalanceUseCase
 import es.aviferdev.n3to.domain.usecase.asset.GetOutdatedAssetsUseCase
 import es.aviferdev.n3to.domain.usecase.asset.SavePriceReminderShownUseCase
 import es.aviferdev.n3to.domain.usecase.asset.ShouldShowPriceReminderUseCase
 import es.aviferdev.n3to.domain.usecase.asset.UpdateAssetCurrentPriceUseCase
 import es.aviferdev.n3to.domain.usecase.budget.GetCategoryBudgetStatusUseCase
+import es.aviferdev.n3to.domain.usecase.category.DeleteCategoryBudgetUseCase
 import es.aviferdev.n3to.domain.usecase.category.GetCategoriesByTypeUseCase
+import es.aviferdev.n3to.domain.usecase.category.SaveCategoryBudgetUseCase
 import es.aviferdev.n3to.domain.usecase.emergencyfund.GetEmergencyFundStatusUseCase
 import es.aviferdev.n3to.domain.usecase.fixedincome.GetNearMaturityPositionsUseCase
 import es.aviferdev.n3to.domain.usecase.goal.GetCurrentMonthProgressUseCase
@@ -28,6 +35,11 @@ import es.aviferdev.n3to.platform.nowMillis
 import es.aviferdev.n3to.platform.nowYear
 import es.aviferdev.n3to.ui.account.AccountSession
 import es.aviferdev.n3to.ui.common.loading.GlobalLoadingManager
+import es.aviferdev.n3to.ui.reconciliation.ReconciliationUiState
+import es.aviferdev.n3to.ui.reconciliation.ReconciliationViewModel
+import es.aviferdev.n3to.ui.settings.backup.BackupReminderState
+import es.aviferdev.n3to.ui.settings.backup.BackupSheetState
+import es.aviferdev.n3to.ui.settings.backup.BackupViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -36,6 +48,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -83,8 +96,17 @@ class HomeViewModel(
     private val getCurrentMonthProgress: GetCurrentMonthProgressUseCase? = null,
     private val getEmergencyFundStatus: GetEmergencyFundStatusUseCase,
     private val getCategoryBudgetStatus: GetCategoryBudgetStatusUseCase,
-    private val categoryBudgetRepository: CategoryBudgetRepository
+    private val saveCategoryBudget: SaveCategoryBudgetUseCase,
+    private val deleteCategoryBudget: DeleteCategoryBudgetUseCase,
+    private val getAccounts: GetAccountsUseCase,
+    private val reconciliationDelegate: ReconciliationViewModel,
+    private val backupDelegate: BackupViewModel,
+    private val premiumManager: PremiumManager,
+    private val balanceVisibility: BalanceVisibilityManager,
+    private val authenticator: BiometricAuthenticator
 ) : ViewModel() {
+
+    // ── Balance principal ─────────────────────────────────────────────────────
 
     val uiState: StateFlow<HomeUiState> = session.selectedAccountId
         .flatMapLatest { accountId ->
@@ -105,28 +127,70 @@ class HomeViewModel(
             initialValue = HomeUiState.Loading("")
         )
 
+    // ── Cuentas ───────────────────────────────────────────────────────────────
+
+    private val _accounts = MutableStateFlow<List<Account>>(emptyList())
+    val accounts: StateFlow<List<Account>> = _accounts.asStateFlow()
+
+    val selectedAccountId: StateFlow<String?> = session.selectedAccountId
+
+    // ── Premium ───────────────────────────────────────────────────────────────
+
+    val isPremium: StateFlow<Boolean> = premiumManager.status
+        .map { it.isPremium }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = false
+        )
+
+    // ── Recordatorio de precio ────────────────────────────────────────────────
+
     private val _priceReminderState = MutableStateFlow(PriceReminderState())
     val priceReminderState: StateFlow<PriceReminderState> = _priceReminderState.asStateFlow()
+
+    // ── Vencimientos próximos ─────────────────────────────────────────────────
 
     private val _nearMaturityState = MutableStateFlow(NearMaturityState())
     val nearMaturityState: StateFlow<NearMaturityState> = _nearMaturityState.asStateFlow()
 
+    // ── Progreso de objetivo mensual ──────────────────────────────────────────
+
     private val _goalProgressState = MutableStateFlow(GoalProgressState())
     val goalProgressState: StateFlow<GoalProgressState> = _goalProgressState.asStateFlow()
+
+    // ── Fondo de emergencia ───────────────────────────────────────────────────
 
     private val _emergencyFundStatusState = MutableStateFlow(EmergencyFundStatus.NOT_CONFIGURED)
     val emergencyFundStatus: StateFlow<EmergencyFundStatus> =
         _emergencyFundStatusState.asStateFlow()
 
-    // ── Presupuestos ─────────────────────────────────────────────────────────────
+    // ── Presupuestos ──────────────────────────────────────────────────────────
+
     private val _budgetStatus = MutableStateFlow<List<CategoryBudgetStatus>>(emptyList())
     val budgetStatus: StateFlow<List<CategoryBudgetStatus>> = _budgetStatus.asStateFlow()
 
-    /** Estado de actualización de versión (delegado en [VersionManager]). */
+    // ── Versión ───────────────────────────────────────────────────────────────
+
     val versionStatus: StateFlow<VersionManager.Status> = versionManager.status
 
+    // ── Reconciliación (delegada) ─────────────────────────────────────────────
+
+    val reconciliationUiState: StateFlow<ReconciliationUiState> = reconciliationDelegate.uiState
+
+    // ── Backup (delegado) ─────────────────────────────────────────────────────
+
+    val backupSheetState: StateFlow<BackupSheetState> = backupDelegate.state
+    val backupReminderState: StateFlow<BackupReminderState> = backupDelegate.reminderState
+
+    // ── Formulario de nueva transacción ───────────────────────────────────────
+
+    private val _showAddTransaction = MutableStateFlow(false)
+    val showAddTransaction: StateFlow<Boolean> = _showAddTransaction.asStateFlow()
+
+    // ── Init ──────────────────────────────────────────────────────────────────
+
     init {
-        // Observar cambios de estado para mostrar/ocultar loading global
         viewModelScope.launch {
             uiState.collect { state ->
                 when (state) {
@@ -135,12 +199,79 @@ class HomeViewModel(
                 }
             }
         }
+        viewModelScope.launch {
+            getAccounts().collect { _accounts.value = it }
+        }
         checkPriceReminder()
         loadNearMaturityPositions()
         loadGoalProgress()
         loadEmergencyFundStatus()
         loadBudgetStatus()
     }
+
+    // ── Cuentas ───────────────────────────────────────────────────────────────
+
+    fun selectAccount(id: String) {
+        session.selectAccount(id)
+    }
+
+    // ── Visibilidad de saldos ─────────────────────────────────────────────────
+
+    fun requestShowBalances(titleText: String, subtitleText: String) {
+        balanceVisibility.requestShow {
+            authenticator.authenticate(titleText, subtitleText) { result ->
+                when (result) {
+                    is BiometricResult.Success -> balanceVisibility.onBiometricSuccess()
+                    else -> Unit
+                }
+            }
+        }
+    }
+
+    fun hideBalances() {
+        balanceVisibility.hide()
+    }
+
+    // ── Formulario de transacción ─────────────────────────────────────────────
+
+    fun openAddTransaction() {
+        _showAddTransaction.value = true
+    }
+
+    fun closeAddTransaction() {
+        _showAddTransaction.value = false
+    }
+
+    // ── Reconciliación ────────────────────────────────────────────────────────
+
+    fun checkReconciliationReminder(accountId: String) =
+        reconciliationDelegate.checkReminder(accountId)
+
+    fun openReconciliationSheet(computedBalance: Double) =
+        reconciliationDelegate.openBottomSheet(computedBalance)
+
+    fun closeReconciliationSheet() = reconciliationDelegate.closeBottomSheet()
+
+    fun dismissReconciliationBanner() = reconciliationDelegate.dismissBanner()
+
+    fun updateRealBalance(input: String) = reconciliationDelegate.updateRealBalance(input)
+
+    fun reconcile() = reconciliationDelegate.reconcile()
+
+    // ── Backup ────────────────────────────────────────────────────────────────
+
+    fun openBackupIntervalDialog() = backupDelegate.openIntervalDialog()
+    fun dismissBackupIntervalDialog() = backupDelegate.dismissIntervalDialog()
+    fun saveBackupInterval(days: Int) = backupDelegate.saveReminderInterval(days)
+    fun openBackupExport() = backupDelegate.openExport()
+    fun dismissBackup() = backupDelegate.dismiss()
+    fun onBackupPasswordChange(value: String) = backupDelegate.onPasswordChange(value)
+    fun onBackupConfirmPasswordChange(value: String) = backupDelegate.onConfirmPasswordChange(value)
+    fun confirmBackupExport() = backupDelegate.confirmExport()
+    fun confirmBackupImport() = backupDelegate.confirmImport()
+    fun clearBackupResult() = backupDelegate.clearResult()
+
+    // ── Price reminder ────────────────────────────────────────────────────────
 
     private fun loadBudgetStatus() {
         viewModelScope.launch {
@@ -228,11 +359,9 @@ class HomeViewModel(
     fun updateAssetPrice(assetId: String, newPrice: Double) {
         viewModelScope.launch {
             val now = nowMillis()
-            // Obtener el activo para pasar su categoryId
             val asset = _priceReminderState.value.outdatedAssets.find { it.id == assetId }
             val result = updateAssetCurrentPrice(assetId, newPrice, now, asset?.assetCategoryId)
             if (result.isSuccess) {
-                // Forzar refresco del histórico de la gráfica de portfolio
                 getPortfolioValueHistory.triggerRefresh()
 
                 val current = _priceReminderState.value
@@ -241,7 +370,6 @@ class HomeViewModel(
                     updatedAssetIds = newUpdatedIds
                 )
 
-                // Si todos los activos se han actualizado, marcar como completado
                 val allDone = current.outdatedAssets.all { it.id in newUpdatedIds }
                 if (allDone) {
                     savePriceReminderShown()
@@ -303,9 +431,9 @@ class HomeViewModel(
     fun saveBudgetLimit(categoryId: String, annualLimit: Double, limitType: LimitType) {
         viewModelScope.launch {
             if (annualLimit > 0.0) {
-                categoryBudgetRepository.saveBudget(categoryId, annualLimit, limitType)
+                saveCategoryBudget(categoryId, annualLimit, limitType)
             } else {
-                categoryBudgetRepository.deleteBudget(categoryId)
+                deleteCategoryBudget(categoryId)
             }
         }
     }
