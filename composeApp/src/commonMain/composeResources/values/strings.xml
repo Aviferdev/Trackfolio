@@ -1229,7 +1229,8 @@
     <string name="account_name_supporting_text">Nombre que verás en toda la app. Ej: Cuenta corriente, Efectivo, Degiro...</string>
     <string name="account_initial_balance_label">Saldo inicial</string>
     <string name="account_initial_balance_valid_hint">Introduce un importe válido (puede ser 0)</string>
-    <string name="account_initial_balance_desc">Dinero que ya tienes en esta cuenta hoy. Pon 0 si está vacía.</string>
+    <string name="account_initial_balance_required">El saldo inicial es obligatorio</string>
+    <string name="account_initial_balance_desc">Dinero que ya tienes en esta cuenta hoy. Indica 0 si no tienes nada.</string>
     <string name="account_delete_full_message">¿Eliminar «%1$s»? Esto también eliminará todos sus movimientos, activos y datos asociados.</string>
     <string name="account_set_balance_btn">Establecer saldo</string>
     <string name="account_set_balance_title">Saldo inicial</string>

@@ -1225,7 +1225,8 @@
     <string name="account_name_supporting_text">Nom que vous verrez dans l\'application. Ex. Compte courant, Espèces, Degiro...</string>
     <string name="account_initial_balance_label">Solde initial</string>
     <string name="account_initial_balance_valid_hint">Saisissez un montant valide (peut être 0)</string>
-    <string name="account_initial_balance_desc">Argent que vous avez déjà sur ce compte aujourd\'hui. Mettez 0 si vide.</string>
+    <string name="account_initial_balance_required">Le solde initial est requis</string>
+    <string name="account_initial_balance_desc">Argent que vous avez déjà sur ce compte aujourd\'hui. Indiquez 0 si vous n\'avez rien.</string>
     <string name="account_delete_full_message">Supprimer «%1$s» ? Cela supprimera également toutes ses transactions, actifs et données associées.</string>
     <string name="account_set_balance_btn">Définir le solde</string>
     <string name="account_set_balance_title">Solde initial</string>

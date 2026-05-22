@@ -1227,7 +1227,8 @@
     <string name="account_name_supporting_text">应用中显示的名称。例如：活期账户、现金、Degiro…</string>
     <string name="account_initial_balance_label">初始余额</string>
     <string name="account_initial_balance_valid_hint">请输入有效金额（可以为0）</string>
-    <string name="account_initial_balance_desc">您今日在此账户中已有的资金。若无余额请设为0。</string>
+    <string name="account_initial_balance_required">初始余额为必填项</string>
+    <string name="account_initial_balance_desc">您今日在此账户中已有的资金。若无资金请输入0。</string>
     <string name="account_delete_full_message">删除«%1$s»？此操作也将删除其所有交易、资产和相关数据。</string>
     <string name="account_set_balance_btn">设置余额</string>
     <string name="account_set_balance_title">初始余额</string>

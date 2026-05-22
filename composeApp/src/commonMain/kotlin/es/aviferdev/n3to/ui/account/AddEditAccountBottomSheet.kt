@@ -43,6 +43,7 @@ import n3to.composeapp.generated.resources.account_add_title
 import n3to.composeapp.generated.resources.account_edit_title
 import n3to.composeapp.generated.resources.account_initial_balance_desc
 import n3to.composeapp.generated.resources.account_initial_balance_label
+import n3to.composeapp.generated.resources.account_initial_balance_required
 import n3to.composeapp.generated.resources.account_initial_balance_valid_hint
 import n3to.composeapp.generated.resources.account_name_placeholder
 import n3to.composeapp.generated.resources.account_name_supporting_text
@@ -163,7 +164,13 @@ fun AddEditAccountBottomSheet(
                     },
                     isError = balanceError,
                     supportingText = if (balanceError) {
-                        { Text(stringResource(Res.string.account_initial_balance_valid_hint)) }
+                        {
+                            val msg = if (balanceText.isBlank())
+                                stringResource(Res.string.account_initial_balance_required)
+                            else
+                                stringResource(Res.string.account_initial_balance_valid_hint)
+                            Text(msg)
+                        }
                     } else {
                         { Text(stringResource(Res.string.account_initial_balance_desc)) }
                     },
@@ -198,13 +205,19 @@ fun AddEditAccountBottomSheet(
                     }
                     val balance: Double
                     if (!isEditing) {
-                        val parsed = balanceText.replace(',', '.').toDoubleOrNull()
-                        if (balanceText.isNotBlank() && parsed == null) {
-                            balanceError = true; valid = false
+                        when {
+                            balanceText.isBlank() -> {
+                                balanceError = true; valid = false; balance = 0.0
+                            }
+                            else -> {
+                                val parsed = balanceText.replace(',', '.').toDoubleOrNull()
+                                if (parsed == null) {
+                                    balanceError = true; valid = false; balance = 0.0
+                                } else {
+                                    balance = parsed
+                                }
+                            }
                         }
-                        balance = if (balanceText.isBlank()) 0.0 else (parsed ?: run {
-                            valid = false; 0.0
-                        })
                     } else {
                         balance = 0.0
                     }

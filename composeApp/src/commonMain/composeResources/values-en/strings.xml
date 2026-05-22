@@ -1229,7 +1229,8 @@
     <string name="account_name_supporting_text">Name you\'ll see across the app. E.g. Checking account, Cash, Degiro...</string>
     <string name="account_initial_balance_label">Initial balance</string>
     <string name="account_initial_balance_valid_hint">Enter a valid amount (can be 0)</string>
-    <string name="account_initial_balance_desc">Money you already have in this account today. Set 0 if empty.</string>
+    <string name="account_initial_balance_required">Initial balance is required</string>
+    <string name="account_initial_balance_desc">Money you already have in this account today. Enter 0 if you have nothing.</string>
     <string name="account_delete_full_message">Delete «%1$s»? This will also delete all its transactions, assets and related data.</string>
     <string name="account_set_balance_btn">Set balance</string>
     <string name="account_set_balance_title">Initial balance</string>

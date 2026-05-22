@@ -1225,7 +1225,8 @@
     <string name="account_name_supporting_text">Название, которое вы будете видеть в приложении. Напр. Расчётный счёт, Наличные, Degiro...</string>
     <string name="account_initial_balance_label">Начальный баланс</string>
     <string name="account_initial_balance_valid_hint">Введите корректную сумму (может быть 0)</string>
-    <string name="account_initial_balance_desc">Деньги, которые уже есть на этом счёте сегодня. Укажите 0, если счёт пуст.</string>
+    <string name="account_initial_balance_required">Начальный баланс обязателен</string>
+    <string name="account_initial_balance_desc">Деньги, которые уже есть на этом счёте сегодня. Укажите 0, если ничего нет.</string>
     <string name="account_delete_full_message">Удалить «%1$s»? Это также удалит все его операции, активы и связанные данные.</string>
     <string name="account_set_balance_btn">Установить баланс</string>
     <string name="account_set_balance_title">Начальный баланс</string>
