@@ -311,8 +311,9 @@ fun SettingsContent(
                 item {
                     SettingsSectionHeader(label = stringResource(Res.string.settings_section_appearance))
                     SettingsGroupCard {
-                        SettingsThemeRow(isDark = isDarkTheme, onToggle = onToggleTheme)
-                        SettingsRowDivider()
+                        //TODO Comento el tema claro hasta tenerlo solucionado
+                        //SettingsThemeRow(isDark = isDarkTheme, onToggle = onToggleTheme)
+                        //SettingsRowDivider()
                         SettingsLanguageRow(
                             currentLanguage = currentLanguage,
                             isSystemDefault = isSystemDefault,
