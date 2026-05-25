@@ -30,7 +30,7 @@ fun EmptyStateView(
     icon: Any,
     title: String,
     subtitle: String,
-    iconTint: Color = MaterialTheme.appColors.primary,
+    iconTint: Color = MaterialTheme.appColors.cyanAccent,
     actionLabel: String? = null,
     onAction: (() -> Unit)? = null,
     modifier: Modifier = Modifier
@@ -75,8 +75,8 @@ fun EmptyStateView(
                     onClick = onAction,
                     shape = RoundedCornerShape(12.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.appColors.primary,
-                        contentColor = androidx.compose.ui.graphics.Color.White
+                        containerColor = MaterialTheme.appColors.cyanAccent,
+                        contentColor = MaterialTheme.appColors.navyDeep
                     )
                 ) {
                     Text(

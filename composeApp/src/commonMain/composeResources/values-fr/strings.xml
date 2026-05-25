@@ -278,6 +278,19 @@
     <string name="portfolio_settings_add">Ajouter</string>
     <string name="portfolio_settings_delete_portfolio_title">Supprimer le portefeuille</string>
     <string name="portfolio_settings_delete_portfolio_message">Supprimer «%1$s» ? Les actifs seront déplacés vers «Aucun portefeuille».</string>
+    <string name="portfolio_settings_management_section">GESTION</string>
+    <string name="portfolio_settings_assets_available">Actifs disponibles</string>
+    <string name="portfolio_settings_platforms_row">Plateformes</string>
+    <string name="portfolio_settings_sectors_row">Secteurs</string>
+    <string name="portfolio_settings_regions_row">Régions</string>
+    <string name="portfolio_settings_categories_count_one">%1$d catégorie</string>
+    <string name="portfolio_settings_categories_count_many">%1$d catégories</string>
+    <string name="portfolio_settings_platforms_count_one">%1$d plateforme</string>
+    <string name="portfolio_settings_platforms_count_many">%1$d plateformes</string>
+    <string name="portfolio_settings_sectors_count_one">%1$d secteur</string>
+    <string name="portfolio_settings_sectors_count_many">%1$d secteurs</string>
+    <string name="portfolio_settings_regions_count_one">%1$d région</string>
+    <string name="portfolio_settings_regions_count_many">%1$d régions</string>
     <string name="portfolio_error_no_account_title">Aucun compte sélectionné</string>
     <string name="portfolio_error_no_account_message">Vous devez créer ou sélectionner un compte avant d'ajouter des portefeuilles. Allez dans Paramètres &gt; Comptes pour en créer un.</string>
 

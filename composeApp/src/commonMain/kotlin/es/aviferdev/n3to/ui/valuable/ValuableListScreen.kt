@@ -61,12 +61,12 @@ fun ValuableListScreen(
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.appColors.background,
+                    containerColor = MaterialTheme.appColors.navyDeep,
                     titleContentColor = MaterialTheme.appColors.textPrimary
                 )
             )
         },
-        containerColor = MaterialTheme.appColors.background
+        containerColor = MaterialTheme.appColors.navyDeep
     ) { padding ->
         Box(Modifier.fillMaxSize().padding(padding)) {
             if (uiState.isLoading) {

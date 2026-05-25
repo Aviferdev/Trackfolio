@@ -280,6 +280,19 @@
     <string name="portfolio_settings_add">Añadir</string>
     <string name="portfolio_settings_delete_portfolio_title">Eliminar cartera</string>
     <string name="portfolio_settings_delete_portfolio_message">¿Eliminar «%1$s»? Los activos pasarán a «Sin cartera».</string>
+    <string name="portfolio_settings_management_section">GESTIÓN</string>
+    <string name="portfolio_settings_assets_available">Activos disponibles</string>
+    <string name="portfolio_settings_platforms_row">Plataformas</string>
+    <string name="portfolio_settings_sectors_row">Sectores</string>
+    <string name="portfolio_settings_regions_row">Regiones</string>
+    <string name="portfolio_settings_categories_count_one">%1$d categoría</string>
+    <string name="portfolio_settings_categories_count_many">%1$d categorías</string>
+    <string name="portfolio_settings_platforms_count_one">%1$d plataforma</string>
+    <string name="portfolio_settings_platforms_count_many">%1$d plataformas</string>
+    <string name="portfolio_settings_sectors_count_one">%1$d sector</string>
+    <string name="portfolio_settings_sectors_count_many">%1$d sectores</string>
+    <string name="portfolio_settings_regions_count_one">%1$d región</string>
+    <string name="portfolio_settings_regions_count_many">%1$d regiones</string>
     <string name="portfolio_error_no_account_title">Sin cuenta seleccionada</string>
     <string name="portfolio_error_no_account_message">Necesitas crear o seleccionar una cuenta antes de añadir carteras. Ve a Ajustes &gt; Cuentas para crear una.</string>
 

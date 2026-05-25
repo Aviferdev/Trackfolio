@@ -67,7 +67,7 @@ fun AssetHistoryContent(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(MaterialTheme.appColors.background)
+            .background(MaterialTheme.appColors.navyDeep)
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
             TopBarWithActionsApp(

@@ -270,7 +270,7 @@ fun AssetCategoryDetailContent(
     modifier: Modifier = Modifier
 ) {
     Column(
-        modifier = modifier.fillMaxSize().background(MaterialTheme.appColors.background)
+        modifier = modifier.fillMaxSize().background(MaterialTheme.appColors.navyDeep)
     ) {
         TopBarWithActionsApp(
             title = state.category?.name ?: stringResource(Res.string.portfolio_category_title),

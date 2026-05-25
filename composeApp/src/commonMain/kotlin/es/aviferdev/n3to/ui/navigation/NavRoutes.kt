@@ -63,3 +63,11 @@ data class RealEstateDetailRoute(val propertyId: String)
 data class ValuableDetailRoute(val valuableId: String)
 @Serializable
 data class LoanDetailRoute(val loanId: String)
+@Serializable
+data object PortfolioAssetTypesRoute
+@Serializable
+data object PortfolioPlatformsRoute
+@Serializable
+data object PortfolioSectorsRoute
+@Serializable
+data object PortfolioRegionsRoute

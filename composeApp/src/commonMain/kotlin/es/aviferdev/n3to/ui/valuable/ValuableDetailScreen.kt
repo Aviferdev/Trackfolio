@@ -247,12 +247,12 @@ fun ValuableDetailScreen(
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.appColors.background,
+                    containerColor = MaterialTheme.appColors.navyDeep,
                     titleContentColor = MaterialTheme.appColors.textPrimary
                 )
             )
         },
-        containerColor = MaterialTheme.appColors.background
+        containerColor = MaterialTheme.appColors.navyDeep
     ) { padding ->
         if (summary == null) {
             Box(Modifier.fillMaxSize().padding(padding), contentAlignment = Alignment.Center) {

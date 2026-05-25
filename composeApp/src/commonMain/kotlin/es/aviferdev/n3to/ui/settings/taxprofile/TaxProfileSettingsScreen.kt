@@ -91,7 +91,7 @@ fun TaxProfileSettingsScreen(
     val state by viewModel.uiState.collectAsState()
 
     Scaffold(
-        containerColor = MaterialTheme.appColors.background,
+        containerColor = MaterialTheme.appColors.navyDeep,
         topBar = {
             TopBarWithActionsApp(
                 title = stringResource(Res.string.tax_profile_title),

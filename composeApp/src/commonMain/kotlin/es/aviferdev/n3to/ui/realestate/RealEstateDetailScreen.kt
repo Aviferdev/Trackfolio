@@ -130,7 +130,7 @@ fun RealEstateDetailScreen(
     }
 
     Column(
-        modifier = Modifier.fillMaxSize().background(MaterialTheme.appColors.background)
+        modifier = Modifier.fillMaxSize().background(MaterialTheme.appColors.navyDeep)
     ) {
         TopBarWithActionsApp(
             title = property?.name ?: stringResource(Res.string.realestate_detail_title),

@@ -280,6 +280,19 @@
     <string name="portfolio_settings_add">添加</string>
     <string name="portfolio_settings_delete_portfolio_title">删除投资组合</string>
     <string name="portfolio_settings_delete_portfolio_message">删除«%1$s»？资产将被移至«无投资组合»。</string>
+    <string name="portfolio_settings_management_section">管理</string>
+    <string name="portfolio_settings_assets_available">可用资产</string>
+    <string name="portfolio_settings_platforms_row">平台</string>
+    <string name="portfolio_settings_sectors_row">行业</string>
+    <string name="portfolio_settings_regions_row">地区</string>
+    <string name="portfolio_settings_categories_count_one">%1$d 个分类</string>
+    <string name="portfolio_settings_categories_count_many">%1$d 个分类</string>
+    <string name="portfolio_settings_platforms_count_one">%1$d 个平台</string>
+    <string name="portfolio_settings_platforms_count_many">%1$d 个平台</string>
+    <string name="portfolio_settings_sectors_count_one">%1$d 个行业</string>
+    <string name="portfolio_settings_sectors_count_many">%1$d 个行业</string>
+    <string name="portfolio_settings_regions_count_one">%1$d 个地区</string>
+    <string name="portfolio_settings_regions_count_many">%1$d 个地区</string>
     <string name="portfolio_error_no_account_title">未选择账户</string>
     <string name="portfolio_error_no_account_message">在添加投资组合之前，您需要创建或选择一个账户。前往设置 &gt; 账户创建一个。</string>
 

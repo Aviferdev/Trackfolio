@@ -78,7 +78,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 /** URL de la política de privacidad */
-const val PRIVACY_POLICY_URL = "https://www.n3to.avifer.dev/privacy-policy"
+const val PRIVACY_POLICY_URL = "https://n3to.avifer.dev/#privacy"
 
 /**
  * Pantalla unificada de Privacidad y datos — Dark Fintech / Navy Dashboard style.

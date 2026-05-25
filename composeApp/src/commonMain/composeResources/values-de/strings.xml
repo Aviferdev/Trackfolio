@@ -278,6 +278,19 @@
     <string name="portfolio_settings_add">Hinzufügen</string>
     <string name="portfolio_settings_delete_portfolio_title">Portfolio löschen</string>
     <string name="portfolio_settings_delete_portfolio_message">«%1$s» löschen? Assets werden zu «Kein Portfolio» verschoben.</string>
+    <string name="portfolio_settings_management_section">VERWALTUNG</string>
+    <string name="portfolio_settings_assets_available">Verfügbare Assets</string>
+    <string name="portfolio_settings_platforms_row">Plattformen</string>
+    <string name="portfolio_settings_sectors_row">Sektoren</string>
+    <string name="portfolio_settings_regions_row">Regionen</string>
+    <string name="portfolio_settings_categories_count_one">%1$d Kategorie</string>
+    <string name="portfolio_settings_categories_count_many">%1$d Kategorien</string>
+    <string name="portfolio_settings_platforms_count_one">%1$d Plattform</string>
+    <string name="portfolio_settings_platforms_count_many">%1$d Plattformen</string>
+    <string name="portfolio_settings_sectors_count_one">%1$d Sektor</string>
+    <string name="portfolio_settings_sectors_count_many">%1$d Sektoren</string>
+    <string name="portfolio_settings_regions_count_one">%1$d Region</string>
+    <string name="portfolio_settings_regions_count_many">%1$d Regionen</string>
     <string name="portfolio_error_no_account_title">Kein Konto ausgewählt</string>
     <string name="portfolio_error_no_account_message">Du musst ein Konto erstellen oder auswählen, bevor du Portfolios hinzufügen kannst. Gehe zu Einstellungen &gt; Konten, um eines zu erstellen.</string>
 

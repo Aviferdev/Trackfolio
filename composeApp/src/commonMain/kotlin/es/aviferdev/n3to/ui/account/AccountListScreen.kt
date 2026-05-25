@@ -50,7 +50,6 @@ import es.aviferdev.n3to.ui.common.topbar.TopBarWithActionsApp
 import es.aviferdev.n3to.ui.home.bottomsheet.SetInitialBalanceBottomSheet
 import es.aviferdev.n3to.ui.theme.LocalBalanceHidden
 import es.aviferdev.n3to.ui.theme.N3toTheme
-import es.aviferdev.n3to.ui.theme.SelectionLight
 import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.ui.theme.formatAmount
 import es.aviferdev.n3to.ui.theme.maskAmount
@@ -146,7 +145,7 @@ fun AccountListContent(
     onDeleteAccount: (Account) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(modifier = modifier.fillMaxSize().background(MaterialTheme.appColors.background)) {
+    Column(modifier = modifier.fillMaxSize().background(MaterialTheme.appColors.navyDeep)) {
         TopBarWithActionsApp(
             title = stringResource(Res.string.account_list_title),
             actions = {
@@ -246,7 +245,7 @@ private fun AccountCard(
         label = "borderColor"
     )
     val containerColor by animateColorAsState(
-        targetValue = if (isSelected) SelectionLight else MaterialTheme.appColors.surface,
+        targetValue = if (isSelected) MaterialTheme.appColors.navySelected else MaterialTheme.appColors.surface,
         label = "containerColor"
     )
 
@@ -269,7 +268,7 @@ private fun AccountCard(
                         modifier = Modifier
                             .size(44.dp)
                             .clip(CircleShape)
-                            .background(if (isSelected) MaterialTheme.appColors.primary else MaterialTheme.appColors.background),
+                            .background(if (isSelected) MaterialTheme.appColors.primary else MaterialTheme.appColors.navySurface),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(

@@ -151,8 +151,8 @@ fun ReconcileBalanceBottomSheetContent(
             val diff = realBalance - state.computedBalance
             val sign = if (diff > 0) "+" else ""
             val color = when {
-                diff > 0 -> MaterialTheme.colorScheme.primary
-                diff < 0 -> MaterialTheme.colorScheme.error
+                diff > 0 -> MaterialTheme.appColors.primary
+                diff < 0 -> MaterialTheme.appColors.expense
                 else -> MaterialTheme.appColors.textSecondary
             }
             Text(
@@ -169,7 +169,7 @@ fun ReconcileBalanceBottomSheetContent(
 
         state.resultMessage?.let { msg ->
             val color =
-                if (state.isSuccess) MaterialTheme.appColors.primary else MaterialTheme.colorScheme.error
+                if (state.isSuccess) MaterialTheme.appColors.primary else MaterialTheme.appColors.expense
             Text(
                 text = when (msg) {
                     is ReconciliationError.InvalidAmount -> stringResource(Res.string.reconciliation_error_invalid_amount)
@@ -194,7 +194,7 @@ fun ReconcileBalanceBottomSheetContent(
         ) {
             if (state.isProcessing) {
                 CircularProgressIndicator(
-                    color = MaterialTheme.colorScheme.onPrimary,
+                    color = MaterialTheme.appColors.navyDeep,
                     strokeWidth = 2.dp,
                     modifier = Modifier.height(20.dp)
                 )

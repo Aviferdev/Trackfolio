@@ -206,7 +206,7 @@ fun DebtListContent(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(MaterialTheme.appColors.background)
+            .background(MaterialTheme.appColors.navyDeep)
     ) {
         if (uiState.isLoading) {
             CircularProgressIndicator(
@@ -360,7 +360,7 @@ fun DebtListContentPreview() {
 
 @Composable
 private fun HeaderDebtListScreen(totalTheyOwe: Double, totalIOwe: Double, hidden: Boolean) {
-    Surface(color = MaterialTheme.appColors.background, shadowElevation = 0.dp) {
+    Surface(color = MaterialTheme.appColors.navyDeep, shadowElevation = 0.dp) {
         Card(
             modifier = Modifier.fillMaxWidth()
                 .padding(horizontal = 14.dp)

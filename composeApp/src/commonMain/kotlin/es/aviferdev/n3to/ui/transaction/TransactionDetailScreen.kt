@@ -61,7 +61,7 @@ fun TransactionDetailScreen(
         }
     }
 
-    Column(modifier = Modifier.fillMaxSize().background(MaterialTheme.appColors.background)) {
+    Column(modifier = Modifier.fillMaxSize().background(MaterialTheme.appColors.navyDeep)) {
         TopBarWithActionsApp(
             title = stringResource(Res.string.transaction_detail_title),
             navigateBack = onBack

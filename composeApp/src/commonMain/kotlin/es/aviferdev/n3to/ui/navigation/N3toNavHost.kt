@@ -41,7 +41,11 @@ import es.aviferdev.n3to.ui.portfolio.AssetCategoryDetailScreen
 import es.aviferdev.n3to.ui.portfolio.AssetDetailScreen
 import es.aviferdev.n3to.ui.portfolio.AssetHistoryScreen
 import es.aviferdev.n3to.ui.portfolio.home.PortfolioScreen
+import es.aviferdev.n3to.ui.portfolio.settings.PortfolioAssetTypesScreen
+import es.aviferdev.n3to.ui.portfolio.settings.PortfolioPlatformsScreen
 import es.aviferdev.n3to.ui.portfolio.settings.PortfolioSettingsScreen
+import es.aviferdev.n3to.ui.portfolio.settings.RegionManagementScreen
+import es.aviferdev.n3to.ui.portfolio.settings.SectorManagementScreen
 import es.aviferdev.n3to.ui.realestate.RealEstateDetailScreen
 import es.aviferdev.n3to.ui.savingsrates.SavingsRatesScreen
 import es.aviferdev.n3to.ui.settings.AboutScreen
@@ -439,14 +443,43 @@ fun N3toContent() {
                 composable<PortfolioSettingsRoute> {
                     PortfolioSettingsScreen(
                         onBack = { navController.popBackStack() },
-                        onNavigateToCategoryDetail = { categoryId ->
+                        onNavigateToAssetTypes = {
+                            navController.navigate(PortfolioAssetTypesRoute) { launchSingleTop = true }
+                        },
+                        onNavigateToPlatforms = {
+                            navController.navigate(PortfolioPlatformsRoute) { launchSingleTop = true }
+                        },
+                        onNavigateToSectors = {
+                            navController.navigate(PortfolioSectorsRoute) { launchSingleTop = true }
+                        },
+                        onNavigateToRegions = {
+                            navController.navigate(PortfolioRegionsRoute) { launchSingleTop = true }
+                        }
+                    )
+                }
+                composable<PortfolioAssetTypesRoute> {
+                    PortfolioAssetTypesScreen(
+                        onBack = { navController.popBackStack() },
+                        onCategoryClick = { categoryId ->
                             navController.navigate(AssetCategoryDetailRoute(categoryId)) {
                                 launchSingleTop = true
                             }
-                        },
-                        onNavigateToPlatformDetail = { _ ->
-                            // TODO: Implementar navegación a detalle de plataforma
                         }
+                    )
+                }
+                composable<PortfolioPlatformsRoute> {
+                    PortfolioPlatformsScreen(
+                        onBack = { navController.popBackStack() }
+                    )
+                }
+                composable<PortfolioSectorsRoute> {
+                    SectorManagementScreen(
+                        onBack = { navController.popBackStack() }
+                    )
+                }
+                composable<PortfolioRegionsRoute> {
+                    RegionManagementScreen(
+                        onBack = { navController.popBackStack() }
                     )
                 }
                 composable<FiscalReportRoute> {

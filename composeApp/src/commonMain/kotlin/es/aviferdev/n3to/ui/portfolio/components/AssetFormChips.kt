@@ -37,7 +37,7 @@ internal fun CategoryChip(
         if (isSelected) MaterialTheme.appColors.primary else MaterialTheme.appColors.surfaceElevated
     val border = if (isSelected) MaterialTheme.appColors.primary else MaterialTheme.appColors.border
     val text =
-        if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.appColors.textPrimary
+        if (isSelected) MaterialTheme.appColors.navyDeep else MaterialTheme.appColors.textPrimary
 
     Row(
         modifier = Modifier

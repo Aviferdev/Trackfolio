@@ -62,7 +62,10 @@ class CategoryPickerViewModel(
                 isLoading = false,
             )
         } else {
-            val accountId = session.selectedAccountId.value ?: return
+            val accountId = session.selectedAccountId.value ?: run {
+                _uiState.value = _uiState.value.copy(isLoading = false)
+                return
+            }
             viewModelScope.launch {
                 getCategoriesByType(accountId, type)
                     .onStart { _uiState.value = _uiState.value.copy(isLoading = true) }

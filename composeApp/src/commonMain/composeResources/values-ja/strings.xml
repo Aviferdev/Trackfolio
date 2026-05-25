@@ -280,6 +280,19 @@
     <string name="portfolio_settings_add">追加</string>
     <string name="portfolio_settings_delete_portfolio_title">ポートフォリオを削除</string>
     <string name="portfolio_settings_delete_portfolio_message">「%1$s」を削除しますか？資産は「ポートフォリオなし」に移動されます。</string>
+    <string name="portfolio_settings_management_section">管理</string>
+    <string name="portfolio_settings_assets_available">利用可能な資産</string>
+    <string name="portfolio_settings_platforms_row">プラットフォーム</string>
+    <string name="portfolio_settings_sectors_row">セクター</string>
+    <string name="portfolio_settings_regions_row">地域</string>
+    <string name="portfolio_settings_categories_count_one">%1$d カテゴリ</string>
+    <string name="portfolio_settings_categories_count_many">%1$d カテゴリ</string>
+    <string name="portfolio_settings_platforms_count_one">%1$d プラットフォーム</string>
+    <string name="portfolio_settings_platforms_count_many">%1$d プラットフォーム</string>
+    <string name="portfolio_settings_sectors_count_one">%1$d セクター</string>
+    <string name="portfolio_settings_sectors_count_many">%1$d セクター</string>
+    <string name="portfolio_settings_regions_count_one">%1$d 地域</string>
+    <string name="portfolio_settings_regions_count_many">%1$d 地域</string>
     <string name="portfolio_error_no_account_title">口座が選択されていません</string>
     <string name="portfolio_error_no_account_message">ポートフォリオを追加する前に、口座を作成または選択する必要があります。設定 &gt; 口座に移動して作成してください。</string>
 

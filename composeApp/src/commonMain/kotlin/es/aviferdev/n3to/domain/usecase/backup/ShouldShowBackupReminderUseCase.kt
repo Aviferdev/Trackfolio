@@ -22,11 +22,18 @@ class ShouldShowBackupReminderUseCase(
         val lastDismissed = appSettings.getLong(KEY_LAST_BANNER_DISMISSED_DATE, 0L)
         val referenceDate = maxOf(lastBackup, lastDismissed)
 
-        // Nunca ha hecho backup ni descartado el banner → mostrar
-        if (referenceDate == 0L) return true
-
         val now = nowMillis()
         val intervalMillis = intervalDays.toLong() * 24 * 60 * 60 * 1000
+
+        if (referenceDate == 0L) {
+            // Nunca ha hecho backup ni descartado: usar fecha del primer lanzamiento como referencia
+            var firstLaunch = appSettings.getLong(KEY_FIRST_LAUNCH_DATE, 0L)
+            if (firstLaunch == 0L) {
+                firstLaunch = now
+                appSettings.putLong(KEY_FIRST_LAUNCH_DATE, firstLaunch)
+            }
+            return (now - firstLaunch) >= intervalMillis
+        }
 
         return (now - referenceDate) >= intervalMillis
     }
@@ -35,6 +42,7 @@ class ShouldShowBackupReminderUseCase(
         const val KEY_LAST_BACKUP_DATE = "last_backup_date"
         const val KEY_LAST_BANNER_DISMISSED_DATE = "backup_reminder_dismissed_date"
         const val KEY_BACKUP_REMINDER_INTERVAL = "backup_reminder_interval_days"
+        const val KEY_FIRST_LAUNCH_DATE = "backup_reminder_first_launch_date"
         const val DEFAULT_INTERVAL_DAYS = 30
         val VALID_INTERVALS = listOf(0, 7, 15, 30) // 0 = desactivado
     }

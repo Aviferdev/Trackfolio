@@ -158,17 +158,21 @@ fun NetWorthScreen(
                 contentAlignment = Alignment.Center
             ) { SplashLoader() }
 
-            is NetWorthUiState.Empty -> Box(
-                Modifier.fillMaxSize().background(MaterialTheme.appColors.navyDeep),
-                contentAlignment = Alignment.Center
+            is NetWorthUiState.Empty -> Column(
+                Modifier.fillMaxSize()
+                    .windowInsetsPadding(WindowInsets.statusBars)
+                    .padding(bottom = LocalBottomNavPadding.current)
             ) {
-                EmptyStateView(
-                    icon = "\uD83C\uDFE6",
-                    title = stringResource(Res.string.networth_no_account_title),
-                    subtitle = stringResource(Res.string.networth_no_account_subtitle),
-                    actionLabel = stringResource(Res.string.common_go_to_settings),
-                    onAction = onNavigateToSettings
-                )
+                TopBarWithoutActionsApp()
+                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    EmptyStateView(
+                        icon = "\uD83C\uDFE6",
+                        title = stringResource(Res.string.networth_no_account_title),
+                        subtitle = stringResource(Res.string.networth_no_account_subtitle),
+                        actionLabel = stringResource(Res.string.common_go_to_settings),
+                        onAction = onNavigateToSettings
+                    )
+                }
             }
 
             is NetWorthUiState.Error -> Box(

@@ -72,7 +72,7 @@ fun SellValuableBottomSheet(
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
-        containerColor = MaterialTheme.appColors.background
+        containerColor = MaterialTheme.appColors.navySurface
     ) {
         Column(
             modifier = Modifier

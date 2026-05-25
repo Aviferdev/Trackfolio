@@ -126,14 +126,14 @@ fun AddTransactionBottomSheet(
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-        containerColor = MaterialTheme.appColors.surface,
+        containerColor = MaterialTheme.appColors.navySurface,
         dragHandle = {
             Box(
                 modifier = Modifier
                     .padding(top = 12.dp, bottom = 4.dp)
                     .width(40.dp).height(4.dp)
                     .clip(RoundedCornerShape(2.dp))
-                    .background(MaterialTheme.appColors.border2)
+                    .background(MaterialTheme.appColors.dragHandle)
             )
         }
     ) {
@@ -254,8 +254,8 @@ private fun AddTransactionSheetContent(
         ) {
             Text(
                 text = if (isEditing) stringResource(Res.string.transaction_edit_title) else stringResource(Res.string.transaction_new_title),
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Medium,
+                fontSize = 18.sp,
+                fontWeight = FontWeight.SemiBold,
                 color = MaterialTheme.appColors.textPrimary,
                 modifier = Modifier.weight(1f)
             )
@@ -351,7 +351,7 @@ private fun AddTransactionSheetContent(
 
         if (type == TransactionType.INCOME && selectedIncomeType != null) {
             Spacer(Modifier.height(4.dp))
-            HorizontalDivider(color = MaterialTheme.appColors.border, thickness = 0.5.dp)
+            HorizontalDivider(color = MaterialTheme.appColors.navyBorder, thickness = 0.5.dp)
             Spacer(Modifier.height(12.dp))
 
             val incType = selectedIncomeType

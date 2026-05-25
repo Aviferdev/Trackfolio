@@ -278,6 +278,19 @@
     <string name="portfolio_settings_add">Добавить</string>
     <string name="portfolio_settings_delete_portfolio_title">Удалить портфель</string>
     <string name="portfolio_settings_delete_portfolio_message">Удалить «%1$s»? Активы будут перемещены в «Без портфеля».</string>
+    <string name="portfolio_settings_management_section">УПРАВЛЕНИЕ</string>
+    <string name="portfolio_settings_assets_available">Доступные активы</string>
+    <string name="portfolio_settings_platforms_row">Платформы</string>
+    <string name="portfolio_settings_sectors_row">Секторы</string>
+    <string name="portfolio_settings_regions_row">Регионы</string>
+    <string name="portfolio_settings_categories_count_one">%1$d категория</string>
+    <string name="portfolio_settings_categories_count_many">%1$d категорий</string>
+    <string name="portfolio_settings_platforms_count_one">%1$d платформа</string>
+    <string name="portfolio_settings_platforms_count_many">%1$d платформ</string>
+    <string name="portfolio_settings_sectors_count_one">%1$d сектор</string>
+    <string name="portfolio_settings_sectors_count_many">%1$d секторов</string>
+    <string name="portfolio_settings_regions_count_one">%1$d регион</string>
+    <string name="portfolio_settings_regions_count_many">%1$d регионов</string>
     <string name="portfolio_error_no_account_title">Не выбран счёт</string>
     <string name="portfolio_error_no_account_message">Сначала необходимо создать или выбрать счёт. Перейдите в Настройки &gt; Счета, чтобы создать новый.</string>
 

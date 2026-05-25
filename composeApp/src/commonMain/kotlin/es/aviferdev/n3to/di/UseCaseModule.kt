@@ -222,6 +222,7 @@ import es.aviferdev.n3to.ui.portfolio.AssetHistoryViewModel
 import es.aviferdev.n3to.ui.portfolio.PlatformViewModel
 import es.aviferdev.n3to.ui.portfolio.PortfolioStateBuilder
 import es.aviferdev.n3to.ui.portfolio.home.PortfolioViewModel
+import es.aviferdev.n3to.ui.portfolio.settings.PortfolioAssetTypesViewModel
 import es.aviferdev.n3to.ui.portfolio.settings.PortfolioSettingsViewModel
 import es.aviferdev.n3to.ui.realestate.RealEstateDetailViewModel
 import es.aviferdev.n3to.ui.reconciliation.ReconciliationViewModel
@@ -663,15 +664,18 @@ val useCaseModule = module {
             savePortfolio = get(),
             updatePortfolio = get(),
             deletePortfolio = get(),
-            getAssetsByAccount = get(),
             getAssetCategoriesIncludingArchived = get(),
             getSectors = get(),
             getRegions = get(),
             getPlatforms = get(),
-            savePlatform = get(),
-            renamePlatform = get(),
-            archivePlatform = get(),
             getPriceReminderInterval = get()
+        )
+    }
+    viewModel {
+        PortfolioAssetTypesViewModel(
+            session = get(),
+            getAssetCategoriesIncludingArchived = get(),
+            getAssetsByAccount = get()
         )
     }
     viewModel {

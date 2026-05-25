@@ -154,7 +154,7 @@ fun LoanDetailContent(
     modifier: Modifier = Modifier
 ) {
     Column(
-        modifier = modifier.fillMaxSize().background(MaterialTheme.appColors.background)
+        modifier = modifier.fillMaxSize().background(MaterialTheme.appColors.navyDeep)
     ) {
         TopBarWithActionsApp(
             title = uiState.loan?.name ?: stringResource(Res.string.loan_detail_title),

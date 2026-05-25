@@ -138,7 +138,7 @@ fun TransactionListContent(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(MaterialTheme.appColors.background)
+            .background(MaterialTheme.appColors.navyDeep)
     ) {
         val monthNames = localizedMonthNames().map { it.replaceFirstChar { c -> c.uppercase() } }
 

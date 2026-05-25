@@ -78,7 +78,7 @@ fun CategoryPickerScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
-    Column(modifier = Modifier.fillMaxSize().background(MaterialTheme.appColors.background)) {
+    Column(modifier = Modifier.fillMaxSize().background(MaterialTheme.appColors.navyDeep)) {
         TopBarWithActionsApp(
             title = if (uiState.type == TransactionType.EXPENSE) {
                 stringResource(Res.string.category_picker_title_expense)
