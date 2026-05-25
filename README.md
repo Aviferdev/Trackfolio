@@ -74,7 +74,6 @@ con tipo de compilación (`debug`/`release`).
 | `prodRelease` | Prod | `…n3to` | Minify + R8 | Release |
 
 La variable `BuildConfig.ENVIRONMENT` expone `"dev"` o `"prod"` en tiempo de ejecución.
-La clave de RevenueCat se inyecta por flavor desde `revenuecat.properties`.
 
 ### iOS — Xcode build configurations × schemes
 
@@ -94,16 +93,15 @@ Cada configuración:
 - Copia automáticamente el `GoogleService-Info.plist` correcto al bundle
   (build phase **"Copy Firebase Config"**)
 - Llama al Gradle task `syncFramework` (vía CocoaPods) con el tipo de build
-  y el entorno de RevenueCat adecuado (`sandbox` o `prod`)
+  correcto
 
-El objeto `AppConfig` (KMP `expect/actual`) expone `environment`, `isDebug` y
-`revenueCatApiKey` en código compartido con el mismo valor que en Android:
+El objeto `AppConfig` (KMP `expect/actual`) expone `environment` e `isDebug`
+en código compartido con el mismo valor que en Android:
 
 ```kotlin
 // commonMain — igual en ambas plataformas
 AppConfig.environment    // "dev" | "prod"
 AppConfig.isDebug        // true | false
-AppConfig.revenueCatApiKey
 ```
 
 ---
@@ -199,68 +197,6 @@ Equivalente al `keystore.properties` de Android:
    con `#include?`, por lo que si no existe la firma cae al valor vacío sin romper
    el build local de debug.
 
-### RevenueCat (compras in-app)
-
-Un único fichero `composeApp/revenuecat.properties` contiene las claves para ambas
-plataformas. No está versionado (`.gitignore`).
-
-1. **Copia la plantilla:**
-
-   ```bash
-   cp composeApp/revenuecat.properties.example composeApp/revenuecat.properties
-   ```
-
-2. **Obtén tus claves en [RevenueCat Dashboard](https://app.revenuecat.com):**
-   (Project Settings → API Keys)
-
-   | Propiedad | Prefijo | Plataforma / Entorno |
-   |-----------|---------|----------------------|
-   | `REVENUECAT_ANDROID_SANDBOX` | `test_` | Android — flavor `dev` |
-   | `REVENUECAT_ANDROID_PROD`    | `goog_` | Android — flavor `prod` |
-   | `REVENUECAT_IOS_SANDBOX`     | `test_` | iOS — configuraciones `Dev*` |
-   | `REVENUECAT_IOS_PROD`        | `appl_` | iOS — configuraciones `Prod*` |
-
-3. **Edita `revenuecat.properties`** y pega cada clave.
-
-4. **Verifica que está ignorado por Git:**
-
-   ```bash
-   git check-ignore composeApp/revenuecat.properties
-   ```
-
-**Android:** las claves se inyectan vía `buildConfigField` en cada flavor.
-
-**iOS:** el build phase de Xcode llama al Gradle task correspondiente con
-`-Prevenuecat.ios.env=sandbox` o `-Prevenuecat.ios.env=prod` según el scheme,
-que genera `AppConfig.ios.kt` con la clave correcta antes de compilar el framework.
-No es necesario pasar este parámetro manualmente.
-
-> ⚠️ Ninguna clave debe estar hardcodeada en el código ni en los ficheros de
-> configuración versionados. Todas se leen en tiempo de build desde
-> `revenuecat.properties`.
-
-#### CI/CD
-
-```yaml
-# GitHub Actions — crear revenuecat.properties antes del build
-- name: Configure secrets
-  run: |
-    cat > composeApp/revenuecat.properties << 'EOF'
-    REVENUECAT_ANDROID_SANDBOX=${{ secrets.REVENUECAT_ANDROID_SANDBOX }}
-    REVENUECAT_ANDROID_PROD=${{ secrets.REVENUECAT_ANDROID_PROD }}
-    REVENUECAT_IOS_SANDBOX=${{ secrets.REVENUECAT_IOS_SANDBOX }}
-    REVENUECAT_IOS_PROD=${{ secrets.REVENUECAT_IOS_PROD }}
-    EOF
-
-# Para iOS también se necesitan los GoogleService-Info.plist
-- name: Configure Firebase iOS
-  run: |
-    echo "${{ secrets.GOOGLE_SERVICE_INFO_DEV }}" > \
-      iosApp/Configuration/Firebase/Dev/GoogleService-Info.plist
-    echo "${{ secrets.GOOGLE_SERVICE_INFO_PROD }}" > \
-      iosApp/Configuration/Firebase/Prod/GoogleService-Info.plist
-```
-
 ---
 
 ## Build
@@ -353,16 +289,16 @@ composeApp/build/reports/translations/missing-keys.txt
 ```
    Locale   Name           Keys    Missing    Coverage
    ------   ----           ----    -------    -------
-   es       Español        1208    —          100.0% ★
-   en       English        1208    0          100.0% ✅
-   de       Deutsch        1205    3          99.8%  ⚠️
-   fr       Français       1205    3          99.8%  ⚠️
-   it       Italiano       1208    0          100.0% ✅
-   ja       日本語            1205    3          99.8%  ⚠️
-   ko       한국어            1208    0          100.0% ✅
-   pt       Português      1208    0          100.0% ✅
-   ru       Русский        1205    3          99.8%  ⚠️
-   zh       中文             1205    3          99.8%  ⚠️
+   es       Español        1144    —          100.0% ★
+   en       English        1144    0          100.0% ✅
+   de       Deutsch        1141    3          99.7%  ⚠️
+   fr       Français       1141    3          99.7%  ⚠️
+   it       Italiano       1144    0          100.0% ✅
+   ja       日本語            1141    3          99.7%  ⚠️
+   ko       한국어            1144    0          100.0% ✅
+   pt       Português      1144    0          100.0% ✅
+   ru       Русский        1141    3          99.7%  ⚠️
+   zh       中文             1141    3          99.7%  ⚠️
 ```
 
 | Icono | Significado |

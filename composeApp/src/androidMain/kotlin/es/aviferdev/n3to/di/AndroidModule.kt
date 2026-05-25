@@ -16,7 +16,6 @@ import es.aviferdev.n3to.domain.pdf.PdfReportGenerator
 import es.aviferdev.n3to.platform.AnalyticsTracker
 import es.aviferdev.n3to.platform.CrashlyticsTracker
 import es.aviferdev.n3to.platform.FeedbackSender
-import es.aviferdev.n3to.platform.PurchaseManager
 import es.aviferdev.n3to.platform.VersionRemoteConfig
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.qualifier.named
@@ -34,7 +33,6 @@ val androidModule = module {
     single { PdfReportGenerator(androidContext()) }
     single { AnalyticsTracker() }
     single { CrashlyticsTracker() }
-    single { PurchaseManager() }
     single { VersionRemoteConfig() }
     single { FeedbackSender(get(named("appVersion"))) }
     single(named("appVersion")) {

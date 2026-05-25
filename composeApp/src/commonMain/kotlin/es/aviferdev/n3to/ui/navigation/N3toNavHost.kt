@@ -42,7 +42,6 @@ import es.aviferdev.n3to.ui.portfolio.AssetDetailScreen
 import es.aviferdev.n3to.ui.portfolio.AssetHistoryScreen
 import es.aviferdev.n3to.ui.portfolio.home.PortfolioScreen
 import es.aviferdev.n3to.ui.portfolio.settings.PortfolioSettingsScreen
-import es.aviferdev.n3to.ui.premium.PremiumScreen
 import es.aviferdev.n3to.ui.realestate.RealEstateDetailScreen
 import es.aviferdev.n3to.ui.savingsrates.SavingsRatesScreen
 import es.aviferdev.n3to.ui.settings.AboutScreen
@@ -331,9 +330,6 @@ fun N3toContent() {
                         onNavigateToPrivacySettings = {
                             navController.navigate(PrivacySettingsRoute) { launchSingleTop = true }
                         },
-                        onNavigateToPremium = {
-                            navController.navigate(PremiumRoute) { launchSingleTop = true }
-                        },
                         onNavigateToAccountConfig = { accountId ->
                             navController.navigate(AccountConfigRoute(accountId)) {
                                 launchSingleTop = true
@@ -403,14 +399,6 @@ fun N3toContent() {
                 }
                 composable<PrivacySettingsRoute> {
                     PrivacySettingsScreen(
-                        onBack = { navController.popBackStack() },
-                        onNavigateToPremium = {
-                            navController.navigate(PremiumRoute) { launchSingleTop = true }
-                        }
-                    )
-                }
-                composable<PremiumRoute> {
-                    PremiumScreen(
                         onBack = { navController.popBackStack() }
                     )
                 }
@@ -463,10 +451,7 @@ fun N3toContent() {
                 }
                 composable<FiscalReportRoute> {
                     FiscalReportScreen(
-                        onBack = { navController.popBackStack() },
-                        onNavigateToPremium = {
-                            navController.navigate(PremiumRoute) { launchSingleTop = true }
-                        }
+                        onBack = { navController.popBackStack() }
                     )
                 }
                 composable<AssetHistoryRoute> { backStackEntry ->

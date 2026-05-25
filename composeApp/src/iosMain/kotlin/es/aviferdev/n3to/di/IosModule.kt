@@ -12,7 +12,6 @@ import es.aviferdev.n3to.domain.pdf.PdfReportGenerator
 import es.aviferdev.n3to.platform.AnalyticsTracker
 import es.aviferdev.n3to.platform.CrashlyticsTracker
 import es.aviferdev.n3to.platform.FeedbackSender
-import es.aviferdev.n3to.platform.PurchaseManager
 import es.aviferdev.n3to.platform.VersionRemoteConfig
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
@@ -36,7 +35,6 @@ val iosModule = module {
     single { PdfReportGenerator() }
     single { AnalyticsTracker() }
     single { CrashlyticsTracker() }
-    single { PurchaseManager() }
     single { VersionRemoteConfig() }
     single { FeedbackSender() }
     single(named("appVersion")) {

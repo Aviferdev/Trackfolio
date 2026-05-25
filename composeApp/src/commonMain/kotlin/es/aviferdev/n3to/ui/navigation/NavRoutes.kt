@@ -32,8 +32,6 @@ data object AboutRoute
 @Serializable
 data object PrivacySettingsRoute
 @Serializable
-data object PremiumRoute
-@Serializable
 data object SavingsRatesRoute
 @Serializable
 data object GoalSettingsRoute

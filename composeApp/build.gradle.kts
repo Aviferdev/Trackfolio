@@ -90,7 +90,6 @@ kotlin {
             implementation(libs.uuid)
             implementation(libs.kotlinx.datetime)
             implementation(libs.navigation.compose)
-            implementation(libs.revenuecat.purchases.kmp)
             implementation(libs.ktor.client.core)
             implementation(libs.ktor.client.content.negotiation)
             implementation(libs.ktor.serialization.kotlinx.json)
@@ -119,16 +118,6 @@ android {
         versionCode = 1
         versionName = "0.0.1"
     }
-
-    // ─── RevenueCat secrets (archivo NO versionado) ───────────
-    val revenuecatPropertiesFile = file("revenuecat.properties")
-    val revenuecatProperties = if (revenuecatPropertiesFile.exists()) {
-        Properties().apply { load(revenuecatPropertiesFile.inputStream()) }
-    } else {
-        null
-    }
-    fun revenuecatProp(key: String): String =
-        revenuecatProperties?.getProperty(key)?.takeIf { it.isNotBlank() } ?: ""
 
     // ─── Signing (lectura de keystore.properties) ──────────────
     val keystorePropertiesFile = file("keystore.properties")
@@ -159,16 +148,12 @@ android {
             buildConfigField("String", "ENVIRONMENT", "\"dev\"")
             buildConfigField("boolean", "IS_DEBUG", "true")
             buildConfigField("String", "APP_DISPLAY_NAME", "\"N3to DEV\"")
-            buildConfigField("String", "REVENUECAT_API_KEY",
-                "\"${revenuecatProp("REVENUECAT_ANDROID_SANDBOX")}\"")
         }
         create("prod") {
             resValue("string", "app_name", "N3to")
             buildConfigField("String", "ENVIRONMENT", "\"prod\"")
             buildConfigField("boolean", "IS_DEBUG", "false")
             buildConfigField("String", "APP_DISPLAY_NAME", "\"N3to\"")
-            buildConfigField("String", "REVENUECAT_API_KEY",
-                "\"${revenuecatProp("REVENUECAT_ANDROID_PROD")}\"")
         }
     }
 
@@ -212,72 +197,6 @@ android {
     }
 }
 
-// ─── Generar AppConfig.ios.kt desde revenuecat.properties ──
-val generateIosAppConfig by tasks.registering {
-    group = "ios"
-    description = "Genera AppConfig.ios.kt desde revenuecat.properties"
-
-    val sourceRoot = layout.buildDirectory.dir("generated/iosAppConfig")
-    val outputFile = sourceRoot.map { it.file("es/aviferdev/n3to/core/AppConfig.ios.kt") }
-
-    // Resolve everything at configuration time — only serializable types leak into doLast
-    val envProvider = providers.gradleProperty("revenuecat.ios.env")
-        .orElse(providers.environmentVariable("REVENUECAT_IOS_ENV"))
-        .orElse("sandbox")
-
-    val rcProps = Properties().also { p ->
-        val f = layout.projectDirectory.file("revenuecat.properties").asFile
-        if (f.exists()) p.load(f.inputStream())
-    }
-    val revenueCatSandboxKey = rcProps.getProperty("REVENUECAT_IOS_SANDBOX")?.takeIf { it.isNotBlank() } ?: ""
-    val revenueCatProdKey    = rcProps.getProperty("REVENUECAT_IOS_PROD")?.takeIf { it.isNotBlank() } ?: ""
-
-    inputs.property("env", envProvider)
-    inputs.property("revenueCatSandboxKey", revenueCatSandboxKey)
-    inputs.property("revenueCatProdKey", revenueCatProdKey)
-    outputs.dir(sourceRoot)
-
-    doLast {
-        val env = envProvider.get()
-        val revenueCatApiKey = if (env == "prod") revenueCatProdKey else revenueCatSandboxKey
-
-        val isDebug = env != "prod"
-        val environment = if (isDebug) "dev" else "prod"
-        val appDisplayName = if (isDebug) "N3to DEV" else "N3to"
-
-        outputFile.get().asFile.parentFile.mkdirs()
-
-        outputFile.get().asFile.writeText("""
-            package es.aviferdev.n3to.core
-
-            /**
-             * Implementación iOS de AppConfig.
-             * GENERADO AUTOMÁTICAMENTE por la tarea generateIosAppConfig.
-             * NO modificar manualmente.
-             *
-             * Entorno iOS: $env
-             */
-            actual object AppConfig {
-                actual val environment: String = "$environment"
-                actual val isDebug: Boolean = $isDebug
-                actual val appDisplayName: String = "$appDisplayName"
-                actual val revenueCatApiKey: String = "$revenueCatApiKey"
-            }
-        """.trimIndent())
-    }
-}
-
-// Enganchar la generación antes de compilar Kotlin para iOS
-tasks.matching { it.name.startsWith("compileKotlinIos") }.configureEach {
-    dependsOn(generateIosAppConfig)
-}
-
-// Añadir el directorio generado a los source sets de iOS
-kotlin.sourceSets {
-    val iosMain by getting {
-        kotlin.srcDir(layout.buildDirectory.dir("generated/iosAppConfig"))
-    }
-}
 
 afterEvaluate {
     tasks.matching { it.name.startsWith("uploadCrashlyticsMappingFile") && it.name.contains("Dev") }

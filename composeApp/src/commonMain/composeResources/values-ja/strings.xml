@@ -174,12 +174,6 @@
     <string name="settings_theme_disabled">無効</string>
 
     <!-- Settings – Premium -->
-    <string name="settings_premium_title">Trackfolio Premium</string>
-    <string name="settings_premium_lifetime">永久</string>
-    <string name="settings_premium_active">有効</string>
-    <string name="settings_premium_cta">Premiumを入手</string>
-    <string name="settings_premium_limit_title">無料アカウント数の制限</string>
-    <string name="settings_premium_limit_message">無料プランの%1$d口座の上限に達しました。Premiumで無制限の口座をご利用いただけます。</string>
 
     <!-- Settings – Privacy -->
     <string name="settings_privacy_data">プライバシー＆データ</string>
@@ -202,7 +196,6 @@
     <!-- Settings – Dialogs -->
     <string name="settings_delete_account_title">口座を削除</string>
     <string name="settings_delete_account_message">「%1$s」を削除しますか？関連するすべての取引も削除されます。</string>
-    <string name="settings_not_now">今はしない</string>
     <string name="settings_configure_cd">設定</string>
     <string name="settings_edit_cd">編集</string>
 
@@ -250,15 +243,6 @@
     <string name="privacy_consent_date_format">%1$sに同意を記録</string>
 
     <!-- Privacy – Premium -->
-    <string name="privacy_premium_active_label">Premium有効</string>
-    <string name="privacy_premium_lifetime_value">永久アクセス</string>
-    <string name="privacy_premium_subscription_value">アクティブなサブスクリプション</string>
-    <string name="privacy_premium_valid_until">有効期限</string>
-    <string name="privacy_premium_manage">サブスクリプションを管理</string>
-    <string name="privacy_premium_plan">現在のプラン</string>
-    <string name="privacy_premium_free">無料</string>
-    <string name="privacy_premium_no_ads_value">Premiumにアップグレードすると</string>
-    <string name="privacy_premium_restore">購入を復元</string>
 
     <!-- Privacy – Data collected -->
     <string name="privacy_section_data_collected">収集されるデータ</string>
@@ -266,7 +250,6 @@
     <string name="privacy_data_crash_reports">エラーレポート</string>
     <string name="privacy_data_financial">財務データ</string>
     <string name="privacy_data_personal">個人情報</string>
-    <string name="privacy_data_revenuecat">サブスクリプション管理 (RevenueCat)</string>
 
     <!-- Privacy – Actions -->
     <string name="privacy_revoke_all_button">すべての同意を取り消す</string>
@@ -606,20 +589,6 @@
     <!-- =====================================================================
          PREMIUM – Premium screen
          ===================================================================== -->
-    <string name="premium_title">Trackfolio Premium</string>
-    <string name="premium_already_premium">すでにPremiumです</string>
-    <string name="premium_unlock_features">すべての機能をアンロック</string>
-    <string name="premium_unlimited_accounts">無制限の口座</string>
-    <string name="premium_themes">限定テーマ</string>
-    <string name="premium_ad_free">中断のないアプリ体験</string>
-    <string name="premium_manage_accounts">制限なくすべての口座を管理</string>
-    <string name="premium_customize">ライト/ダークテーマでカスタマイズ</string>
-    <string name="premium_subscribe">Premiumを入手</string>
-    <string name="premium_overlay_title">プレミアム機能</string>
-    <string name="premium_overlay_subtitle">この機能を解放するにはプレミアムへ</string>
-    <string name="premium_restore">購入を復元</string>
-    <string name="premium_restore_success">購入が正常に復元されました</string>
-    <string name="premium_restore_cancelled">復元がキャンセルされました</string>
 
     <!-- =====================================================================
          CONSENT – Consent
@@ -962,18 +931,6 @@
     <string name="loan_interest_only_hint">利息のみ: 元本は償却されません</string>
 
     <!-- PREMIUM -->
-    <string name="premium_trackfolio_title">Trackfolio Premium</string>
-    <string name="premium_already_premium_subtitle">すでにPremiumです</string>
-    <string name="premium_features_title">Premium機能</string>
-    <string name="premium_multiple_accounts">複数口座</string>
-    <string name="premium_fiscal_report">税務レポート</string>
-    <string name="premium_backup">バックアップ</string>
-    <string name="premium_priority_support">優先サポート</string>
-    <string name="premium_coming_soon">近日公開</string>
-    <string name="premium_already_purchased">すでにPremiumをご購入いただいています。ご支援ありがとうございます！</string>
-    <string name="premium_purchase_error">購入処理中にエラーが発生しました</string>
-    <string name="premium_restore_error">購入の復元中にエラーが発生しました</string>
-    <string name="premium_restoring">購入を復元中…</string>
 
     <!-- PORTFOLIO - Dividends -->
     <string name="portfolio_dividend_save">配当金を保存</string>
@@ -1017,19 +974,6 @@
     <string name="common_no_data">データなし</string>
 
     <!-- PREMIUM - missing -->
-    <string name="premium_multiple_accounts_desc">制限なくすべての口座を管理</string>
-    <string name="premium_ad_free_desc">中断のないアプリ体験</string>
-    <string name="premium_themes_desc">ライト/ダークテーマでカスタマイズ</string>
-    <string name="premium_welcome">Trackfolio Premiumへようこそ！</string>
-    <string name="premium_error_format">エラー: %1$s</string>
-    <string name="premium_restore_error_format">復元エラー: %1$s</string>
-    <string name="premium_restore_cd">購入を復元</string>
-    <string name="premium_best_value">ベストバリュー</string>
-    <string name="premium_monthly_label">月額</string>
-    <string name="premium_annual_label">年額</string>
-    <string name="premium_lifetime_label">永久</string>
-    <string name="premium_lifetime_value">永久アクセス</string>
-    <string name="premium_back_cd">戻る</string>
 
     <!-- PORTFOLIO - Update price -->
     <string name="portfolio_update_previous_price">前回価格: %1$s</string>
@@ -1202,8 +1146,6 @@
     <string name="realestate_why_separate">不動産は独自の指標（賃貸利回り、リンクされた住宅ローン、異なる税務影響）があるため、個別に管理されます。</string>
 
     <!-- PREMIUM – Feature descriptions -->
-    <string name="premium_fiscal_report_desc">年間のキャピタルゲインと源泉徴収レポートを生成</string>
-    <string name="premium_backup_desc">すべてのデータのローカルバックアップを保存および復元</string>
 
     <!-- COMMON - missing -->
     <string name="common_total">合計</string>
@@ -1382,7 +1324,6 @@
     <string name="about_title">このアプリについて</string>
     <string name="about_section_app">アプリ</string>
     <string name="about_version_label">バージョン</string>
-    <string name="about_revenuecat_id_label">RevenueCat ID</string>
     <string name="about_section_dev">開発</string>
     <string name="about_developer_label">開発者</string>
     <string name="about_developer_value">AviferDev</string>
@@ -1479,7 +1420,6 @@
     <string name="onboarding_portfolio_example_badge">例</string>
 
     <!-- PRIVACY - missing -->
-    <string name="privacy_section_premium">Trackfolio Premium</string>
 
     <!-- COMMON - search category placeholder -->
     <string name="common_search_category_placeholder">カテゴリを検索…</string>
@@ -1704,9 +1644,6 @@
     <string name="consent_never_personal">• Tu información personal (email, nombre, contactos)</string>
     <string name="consent_never_title">❌ NUNCA recopilamos:</string>
     <string name="consent_offline_description">Trackfolio funciona 100% sin internet. Tus cuentas, transacciones y balances se guardan solo en tu dispositivo. Eres el dueño de tus datos.</string>
-    <string name="consent_premium_no_share">• No compartimos tus datos financieros con RevenueCat</string>
-    <string name="consent_premium_revenuecat">• RevenueCat procesa un identificador anónimo y tu historial de suscripción para gestionar tu compra (necesario para el servicio)</string>
-    <string name="consent_premium_title">💳 Si adquieres Trackfolio Premium:</string>
     <string name="consent_reject">Rechazar y continuar</string>
     <string name="expense_delete_category_message">Se eliminará «%1$s» del listado. Los movimientos que ya tengan asignada esta categoría conservarán su nombre y no se perderán datos.</string>
     <string name="expense_delete_category_title">Eliminar categoría</string>
@@ -1756,7 +1693,6 @@
     <string name="portfolio_tab_all">Todas</string>
     <string name="portfolio_update_price_last_format">Último: %1$s</string>
     <string name="position_total_profit">Beneficio total</string>
-    <string name="premium_restore_purchase">Restaurar compra</string>
     <string name="realestate_expenses_ledger">Gastos (ledger)</string>
     <string name="realestate_income_ledger">Ingresos (ledger)</string>
     <string name="realestate_new_estimated_value">Nuevo valor estimado (€)</string>

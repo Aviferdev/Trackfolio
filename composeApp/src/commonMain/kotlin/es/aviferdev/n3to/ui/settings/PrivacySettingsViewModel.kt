@@ -2,27 +2,20 @@ package es.aviferdev.n3to.ui.settings
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import es.aviferdev.n3to.core.premium.PremiumManager
-import es.aviferdev.n3to.core.premium.PremiumStatus
 import es.aviferdev.n3to.domain.model.ConsentPreferences
 import es.aviferdev.n3to.domain.usecase.consent.GetConsentUseCase
 import es.aviferdev.n3to.domain.usecase.consent.RevokeConsentUseCase
 import es.aviferdev.n3to.domain.usecase.consent.SaveConsentUseCase
 import es.aviferdev.n3to.platform.AnalyticsTracker
 import es.aviferdev.n3to.platform.CrashlyticsTracker
-import es.aviferdev.n3to.platform.PurchaseResult
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 data class PrivacySettingsUiState(
     val preferences: ConsentPreferences = ConsentPreferences(),
-    val premiumStatus: PremiumStatus = PremiumStatus(),
     val isLoading: Boolean = true,
     val showRevokeConfirmation: Boolean = false,
     val revokeCompleted: Boolean = false
@@ -33,8 +26,7 @@ class PrivacySettingsViewModel(
     private val saveConsentUseCase: SaveConsentUseCase,
     private val revokeConsentUseCase: RevokeConsentUseCase,
     private val analyticsTracker: AnalyticsTracker,
-    private val crashlyticsTracker: CrashlyticsTracker,
-    private val premiumManager: PremiumManager
+    private val crashlyticsTracker: CrashlyticsTracker
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(PrivacySettingsUiState())
@@ -42,21 +34,12 @@ class PrivacySettingsViewModel(
 
     init {
         loadPreferences()
-        observePremium()
     }
 
     private fun loadPreferences() {
         viewModelScope.launch {
             val prefs = getConsentUseCase()
             _uiState.update { it.copy(preferences = prefs, isLoading = false) }
-        }
-    }
-
-    private fun observePremium() {
-        viewModelScope.launch {
-            premiumManager.status.collect { status ->
-                _uiState.update { it.copy(premiumStatus = status) }
-            }
         }
     }
 
@@ -92,24 +75,4 @@ class PrivacySettingsViewModel(
     }
 
     fun onRevokeCompletedHandled() = _uiState.update { it.copy(revokeCompleted = false) }
-
-    // ─── Restore purchases ────────────────────────────────────────
-
-    private val _restoreEvent = MutableSharedFlow<RestoreResult>()
-    val restoreEvent: SharedFlow<RestoreResult> = _restoreEvent.asSharedFlow()
-
-    fun restorePurchases() {
-        viewModelScope.launch {
-            when (val result = premiumManager.restorePurchases()) {
-                is PurchaseResult.Success -> _restoreEvent.emit(RestoreResult.Success)
-                is PurchaseResult.Error -> _restoreEvent.emit(RestoreResult.Error(result.message))
-                is PurchaseResult.Cancelled -> _restoreEvent.emit(RestoreResult.Error("Restauración cancelada"))
-            }
-        }
-    }
-}
-
-sealed class RestoreResult {
-    data object Success : RestoreResult()
-    data class Error(val message: String) : RestoreResult()
 }

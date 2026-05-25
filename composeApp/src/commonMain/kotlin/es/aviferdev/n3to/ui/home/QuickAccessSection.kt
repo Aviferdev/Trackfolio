@@ -29,7 +29,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.ui.common.component.BetaBadge
-import es.aviferdev.n3to.ui.common.component.PremiumBadge
 import es.aviferdev.n3to.ui.theme.appColors
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.home_quick_debts
@@ -42,7 +41,6 @@ fun QuickAccessSection(
     onNavigateToCharts: () -> Unit,
     onNavigateToDebts: () -> Unit,
     onNavigateToFiscalReport: () -> Unit,
-    isPremium: Boolean = true,
     hasDebts: Boolean = false,
     modifier: Modifier = Modifier
 ) {
@@ -71,13 +69,6 @@ fun QuickAccessSection(
                     onClick = onNavigateToFiscalReport,
                     modifier = Modifier.fillMaxWidth()
                 )
-                if (!isPremium) {
-                    PremiumBadge(
-                        modifier = Modifier
-                            .align(Alignment.TopEnd)
-                            .padding(5.dp)
-                    )
-                }
                 BetaBadge(
                     modifier = Modifier
                         .align(Alignment.BottomEnd)

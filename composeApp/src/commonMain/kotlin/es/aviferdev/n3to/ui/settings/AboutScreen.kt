@@ -32,7 +32,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -64,7 +63,6 @@ import n3to.composeapp.generated.resources.about_developer_value
 import n3to.composeapp.generated.resources.about_license_label
 import n3to.composeapp.generated.resources.about_license_value
 import n3to.composeapp.generated.resources.about_rate_app_label
-import n3to.composeapp.generated.resources.about_revenuecat_id_label
 import n3to.composeapp.generated.resources.about_section_app
 import n3to.composeapp.generated.resources.about_section_dev
 import n3to.composeapp.generated.resources.about_section_rate
@@ -75,7 +73,6 @@ import n3to.composeapp.generated.resources.about_version_label
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.koinInject
-import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.qualifier.named
 
 // ─── WRAPPER ────────────────────────────────────────────────────────────────────
@@ -85,15 +82,12 @@ fun AboutScreen(
     onOpenStore: () -> Unit = koinInject(named("openStore")),
     onShareApp: () -> Unit = koinInject(named("shareApp")),
     appVersion: String = koinInject(named("appVersion")),
-    viewModel: AboutViewModel = koinViewModel()
 ) {
-    val appUserId by viewModel.appUserId.collectAsState()
     AboutContent(
         onBack = onBack,
         onOpenStore = onOpenStore,
         onShareApp = onShareApp,
-        appVersion = appVersion,
-        appUserId = appUserId
+        appVersion = appVersion
     )
 }
 
@@ -104,31 +98,14 @@ fun AboutContent(
     onOpenStore: () -> Unit = {},
     onShareApp: () -> Unit = {},
     appVersion: String = "1.0.0",
-    appUserId: String = "",
     modifier: Modifier = Modifier
 ) {
     val appCCyanAccent = MaterialTheme.appColors.cyanAccent
     val appCNavyDeep = MaterialTheme.appColors.navyDeep
     val appCTextPrimary = MaterialTheme.appColors.textPrimary
     val appCTextTertiary = MaterialTheme.appColors.textTertiary
-    var tapCount by remember { mutableIntStateOf(0) }
-    var showDevInfo by remember { mutableStateOf(false) }
-    var copiedToClipboard by remember { mutableStateOf(false) }
     var copiedEmail by remember { mutableStateOf(false) }
     val clipboardManager = LocalClipboardManager.current
-
-    LaunchedEffect(tapCount) {
-        if (tapCount > 0) {
-            delay(1500)
-            tapCount = 0
-        }
-    }
-    LaunchedEffect(copiedToClipboard) {
-        if (copiedToClipboard) {
-            delay(1500)
-            copiedToClipboard = false
-        }
-    }
     LaunchedEffect(copiedEmail) {
         if (copiedEmail) {
             delay(1500)
@@ -153,48 +130,10 @@ fun AboutContent(
                 N3toLabel(text = stringResource(Res.string.about_section_app))
                 Spacer(Modifier.height(8.dp))
                 AboutGroupCard {
-                    AboutClickableInfoRow(
+                    AboutInfoRow(
                         label = stringResource(Res.string.about_version_label),
-                        value = appVersion,
-                        onClick = {
-                            tapCount++
-                            if (tapCount >= 5 && !showDevInfo) {
-                                showDevInfo = true
-                                tapCount = 0
-                            }
-                        }
+                        value = appVersion
                     )
-                    AnimatedVisibility(visible = showDevInfo && appUserId.isNotBlank()) {
-                        Column {
-                            AboutRowDivider()
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .clickable {
-                                        clipboardManager.setText(AnnotatedString(appUserId))
-                                        copiedToClipboard = true
-                                    }
-                                    .padding(horizontal = 16.dp, vertical = 12.dp),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Column(modifier = Modifier.weight(1f)) {
-                                    Text(
-                                        text = stringResource(Res.string.about_revenuecat_id_label),
-                                        fontSize = 13.sp,
-                                        fontWeight = FontWeight.Medium,
-                                        color = appCTextPrimary
-                                    )
-                                    Spacer(Modifier.height(4.dp))
-                                    Text(
-                                        text = if (copiedToClipboard) "¡Copiado!" else appUserId,
-                                        fontSize = 11.sp,
-                                        color = if (copiedToClipboard) appCCyanAccent else appCTextTertiary,
-                                        textAlign = TextAlign.Start
-                                    )
-                                }
-                            }
-                        }
-                    }
                 }
             }
 
@@ -444,8 +383,7 @@ private fun AboutContentPreview() {
             onBack = {},
             onOpenStore = {},
             onShareApp = {},
-            appVersion = "1.2.3",
-            appUserId = "ECBD1234ABCD5678"
+            appVersion = "1.2.3"
         )
     }
 }

@@ -172,12 +172,6 @@
     <string name="settings_theme_disabled">Désactivé</string>
 
     <!-- Settings – Premium -->
-    <string name="settings_premium_title">Trackfolio Premium</string>
-    <string name="settings_premium_lifetime">À vie</string>
-    <string name="settings_premium_active">Actif</string>
-    <string name="settings_premium_cta">Obtenir Premium</string>
-    <string name="settings_premium_limit_title">Limite des comptes gratuits</string>
-    <string name="settings_premium_limit_message">Vous avez atteint la limite de %1$d comptes du forfait gratuit. Obtenez Premium pour des comptes illimités.</string>
 
     <!-- Settings – Privacy -->
     <string name="settings_privacy_data">Confidentialité &amp; données</string>
@@ -200,7 +194,6 @@
     <!-- Settings – Dialogs -->
     <string name="settings_delete_account_title">Supprimer le compte</string>
     <string name="settings_delete_account_message">Supprimer «%1$s» ? Cela supprimera également toutes ses transactions.</string>
-    <string name="settings_not_now">Pas maintenant</string>
     <string name="settings_configure_cd">Configurer</string>
     <string name="settings_edit_cd">Modifier</string>
 
@@ -248,15 +241,6 @@
     <string name="privacy_consent_date_format">Consentement enregistré le %1$s</string>
 
     <!-- Privacy – Premium -->
-    <string name="privacy_premium_active_label">Premium actif</string>
-    <string name="privacy_premium_lifetime_value">Accès à vie</string>
-    <string name="privacy_premium_subscription_value">Abonnement actif</string>
-    <string name="privacy_premium_valid_until">Valide jusqu\'au</string>
-    <string name="privacy_premium_manage">Gérer l\'abonnement</string>
-    <string name="privacy_premium_plan">Forfait actuel</string>
-    <string name="privacy_premium_free">Gratuit</string>
-    <string name="privacy_premium_no_ads_value">Quand vous passez à Premium</string>
-    <string name="privacy_premium_restore">Restaurer l\'achat</string>
 
     <!-- Privacy – Data collected -->
     <string name="privacy_section_data_collected">Données collectées</string>
@@ -264,7 +248,6 @@
     <string name="privacy_data_crash_reports">Rapports d\'erreur</string>
     <string name="privacy_data_financial">Données financières</string>
     <string name="privacy_data_personal">Informations personnelles</string>
-    <string name="privacy_data_revenuecat">Gestion des abonnements (RevenueCat)</string>
 
     <!-- Privacy – Actions -->
     <string name="privacy_revoke_all_button">Révoquer tous les consentements</string>
@@ -604,20 +587,6 @@
     <!-- =====================================================================
          PREMIUM – Premium screen
          ===================================================================== -->
-    <string name="premium_title">Trackfolio Premium</string>
-    <string name="premium_already_premium">Vous êtes déjà Premium</string>
-    <string name="premium_unlock_features">Débloquez toutes les fonctionnalités</string>
-    <string name="premium_unlimited_accounts">Comptes illimités</string>
-    <string name="premium_themes">Thèmes exclusifs</string>
-    <string name="premium_ad_free">Profitez de l\'application sans interruptions</string>
-    <string name="premium_manage_accounts">Gérez tous vos comptes sans restrictions</string>
-    <string name="premium_customize">Personnalisez l\'application avec des thèmes clairs et sombres</string>
-    <string name="premium_subscribe">Obtenir Premium</string>
-    <string name="premium_overlay_title">Fonction Premium</string>
-    <string name="premium_overlay_subtitle">Passez Premium pour débloquer cette fonctionnalité</string>
-    <string name="premium_restore">Restaurer l\'achat</string>
-    <string name="premium_restore_success">Achats restaurés avec succès</string>
-    <string name="premium_restore_cancelled">Restauration annulée</string>
 
     <!-- =====================================================================
          CONSENT – Consent
@@ -812,7 +781,6 @@
     <string name="about_license_label">Licencia</string>
     <string name="about_license_value">Propietaria</string>
     <string name="about_rate_app_label">Valorar la app</string>
-    <string name="about_revenuecat_id_label">ID RevenueCat</string>
     <string name="about_section_app">Aplicación</string>
     <string name="about_section_dev">Desarrollo</string>
     <string name="about_section_rate">¿Te gusta N3to?</string>
@@ -943,9 +911,6 @@
     <string name="consent_never_personal">• Tu información personal (email, nombre, contactos)</string>
     <string name="consent_never_title">❌ NUNCA recopilamos:</string>
     <string name="consent_offline_description">Trackfolio funciona 100% sin internet. Tus cuentas, transacciones y balances se guardan solo en tu dispositivo. Eres el dueño de tus datos.</string>
-    <string name="consent_premium_no_share">• No compartimos tus datos financieros con RevenueCat</string>
-    <string name="consent_premium_revenuecat">• RevenueCat procesa un identificador anónimo y tu historial de suscripción para gestionar tu compra (necesario para el servicio)</string>
-    <string name="consent_premium_title">💳 Si adquieres Trackfolio Premium:</string>
     <string name="consent_reject">Rechazar y continuar</string>
     <string name="debt_edit_label">Editar</string>
     <string name="debt_empty_subtitle">Pulsa "Nueva deuda" para registrar\nuna deuda pendiente</string>
@@ -1378,34 +1343,6 @@
     <string name="portfolio_update_save">Guardar precio</string>
     <string name="portfolio_update_save_hint">Quedará registrado con la fecha y hora actual.</string>
     <string name="position_total_profit">Beneficio total</string>
-    <string name="premium_ad_free_desc">Disfruta de la app sin interrupciones</string>
-    <string name="premium_already_premium_subtitle">Ya eres Premium</string>
-    <string name="premium_already_purchased">Ya has adquirido Premium. ¡Gracias por tu apoyo!</string>
-    <string name="premium_annual_label">Anual</string>
-    <string name="premium_back_cd">Volver</string>
-    <string name="premium_backup">Copia de seguridad</string>
-    <string name="premium_backup_desc">Guarda y restaura copias de seguridad locales de todos tus datos</string>
-    <string name="premium_best_value">Mejor valor</string>
-    <string name="premium_coming_soon">Próximamente</string>
-    <string name="premium_error_format">Error: %1$s</string>
-    <string name="premium_features_title">Funcionalidades Premium</string>
-    <string name="premium_fiscal_report">Informe fiscal</string>
-    <string name="premium_fiscal_report_desc">Genera el informe anual de plusvalías y retenciones del capital mobiliario</string>
-    <string name="premium_lifetime_label">Vitalicio</string>
-    <string name="premium_lifetime_value">Acceso vitalicio</string>
-    <string name="premium_monthly_label">Mensual</string>
-    <string name="premium_multiple_accounts">Múltiples cuentas</string>
-    <string name="premium_multiple_accounts_desc">Gestiona todas tus cuentas sin restricciones</string>
-    <string name="premium_priority_support">Soporte prioritario</string>
-    <string name="premium_purchase_error">Error al procesar la compra</string>
-    <string name="premium_restore_cd">Restaurar compra</string>
-    <string name="premium_restore_error">Error al restaurar la compra</string>
-    <string name="premium_restore_error_format">Error al restaurar: %1$s</string>
-    <string name="premium_restore_purchase">Restaurar compra</string>
-    <string name="premium_restoring">Restaurando compra…</string>
-    <string name="premium_themes_desc">Personaliza la app con temas claro y oscuro</string>
-    <string name="premium_trackfolio_title">Trackfolio Premium</string>
-    <string name="premium_welcome">¡Bienvenido a Trackfolio Premium!</string>
     <string name="price_anomaly_body">El precio que has introducido (%1$s)\nvaría un %2$s%%\nrespecto al precio anterior (%3$s).</string>
     <string name="price_anomaly_correct_div10">Corregir (÷10)</string>
     <string name="price_anomaly_force_save">Sí, guardar de todas formas</string>
@@ -1417,7 +1354,6 @@
     <string name="price_source_manual">Manual</string>
     <string name="price_update_bulk_title">Actualizar precios</string>
     <string name="privacy_data_feedback">Sugerencias y feedback</string>
-    <string name="privacy_section_premium">Trackfolio Premium</string>
     <string name="property_type_investment">Inversión</string>
     <string name="property_type_primary_home">Vivienda habitual</string>
     <string name="property_type_secondary_home">Segunda residencia</string>

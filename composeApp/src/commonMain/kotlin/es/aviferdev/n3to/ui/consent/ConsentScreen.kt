@@ -149,22 +149,6 @@ fun ConsentScreen(
                         stringResource(Res.string.consent_feedback_no_personal),
                         style = MaterialTheme.typography.bodySmall
                     )
-                    Spacer(Modifier.height(10.dp))
-                    Text(
-                        stringResource(Res.string.consent_premium_title),
-                        fontWeight = FontWeight.Bold,
-                        style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                    Spacer(Modifier.height(4.dp))
-                    Text(
-                        stringResource(Res.string.consent_premium_revenuecat),
-                        style = MaterialTheme.typography.bodySmall
-                    )
-                    Text(
-                        stringResource(Res.string.consent_premium_no_share),
-                        style = MaterialTheme.typography.bodySmall
-                    )
                     Spacer(Modifier.height(8.dp))
                     Text(
                         stringResource(Res.string.consent_data_stays_device),

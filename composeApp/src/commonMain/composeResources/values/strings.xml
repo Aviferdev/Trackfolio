@@ -174,12 +174,6 @@
     <string name="settings_theme_disabled">Desactivado</string>
 
     <!-- Settings – Premium -->
-    <string name="settings_premium_title">Trackfolio Premium</string>
-    <string name="settings_premium_lifetime">Vitalicio</string>
-    <string name="settings_premium_active">Activo</string>
-    <string name="settings_premium_cta">Hazte Premium</string>
-    <string name="settings_premium_limit_title">Límite de cuentas gratuitas</string>
-    <string name="settings_premium_limit_message">Has alcanzado el límite de %1$d cuentas del plan gratuito. Hazte Premium para añadir cuentas ilimitadas.</string>
 
     <!-- Settings – Privacidad -->
     <string name="settings_privacy_data">Privacidad y datos</string>
@@ -202,7 +196,6 @@
     <!-- Settings – Diálogos -->
     <string name="settings_delete_account_title">Eliminar cuenta</string>
     <string name="settings_delete_account_message">¿Eliminar «%1$s»? Esto también eliminará todos sus movimientos.</string>
-    <string name="settings_not_now">Ahora no</string>
     <string name="settings_configure_cd">Configurar</string>
     <string name="settings_edit_cd">Editar</string>
 
@@ -250,15 +243,6 @@
     <string name="privacy_consent_date_format">Consentimiento registrado el %1$s</string>
 
     <!-- Privacy – Premium -->
-    <string name="privacy_premium_active_label">Premium activo</string>
-    <string name="privacy_premium_lifetime_value">Acceso vitalicio</string>
-    <string name="privacy_premium_subscription_value">Suscripción activa</string>
-    <string name="privacy_premium_valid_until">Válido hasta</string>
-    <string name="privacy_premium_manage">Gestionar suscripción</string>
-    <string name="privacy_premium_plan">Plan actual</string>
-    <string name="privacy_premium_free">Gratuito</string>
-    <string name="privacy_premium_no_ads_value">Al hacerte Premium</string>
-    <string name="privacy_premium_restore">Restaurar compra</string>
 
     <!-- Privacy – Datos recopilados -->
     <string name="privacy_section_data_collected">Datos recopilados</string>
@@ -266,7 +250,6 @@
     <string name="privacy_data_crash_reports">Informes de errores</string>
     <string name="privacy_data_financial">Datos financieros</string>
     <string name="privacy_data_personal">Información personal</string>
-    <string name="privacy_data_revenuecat">Gestión de suscripción (RevenueCat)</string>
 
     <!-- Privacy – Acciones -->
     <string name="privacy_revoke_all_button">Revocar todo el consentimiento</string>
@@ -608,20 +591,6 @@
     <!-- =====================================================================
          PREMIUM – Pantalla Premium
          ===================================================================== -->
-    <string name="premium_title">Trackfolio Premium</string>
-    <string name="premium_already_premium">Ya eres Premium</string>
-    <string name="premium_unlock_features">Desbloquea todas las funcionalidades</string>
-    <string name="premium_unlimited_accounts">Cuentas ilimitadas</string>
-    <string name="premium_themes">Temas exclusivos</string>
-    <string name="premium_ad_free">Disfruta de la app sin interrupciones</string>
-    <string name="premium_manage_accounts">Gestiona todas tus cuentas sin restricciones</string>
-    <string name="premium_customize">Personaliza la app con temas claro y oscuro</string>
-    <string name="premium_subscribe">Hazte Premium</string>
-    <string name="premium_overlay_title">Función Premium</string>
-    <string name="premium_overlay_subtitle">Hazte Premium para desbloquear esta función</string>
-    <string name="premium_restore">Restaurar compra</string>
-    <string name="premium_restore_success">Compras restauradas correctamente</string>
-    <string name="premium_restore_cancelled">Restauración cancelada</string>
 
     <!-- =====================================================================
          CONSENT – Consentimiento
@@ -643,9 +612,6 @@
     <string name="consent_feedback_title">✍️ Si envías feedback (voluntario):</string>
     <string name="consent_feedback_suggestion">• Solo recibimos tu sugerencia si decides enviarla desde el formulario de la app</string>
     <string name="consent_feedback_no_personal">• Te recomendamos no incluir datos personales en tu mensaje</string>
-    <string name="consent_premium_title">💳 Si adquieres Trackfolio Premium:</string>
-    <string name="consent_premium_revenuecat">• RevenueCat procesa un identificador anónimo y tu historial de suscripción para gestionar tu compra (necesario para el servicio)</string>
-    <string name="consent_premium_no_share">• No compartimos tus datos financieros con RevenueCat</string>
     <string name="consent_data_stays_device">💡 Tus datos financieros nunca salen de tu dispositivo.</string>
     <string name="consent_analytics_description">Saber qué funciones usas más nos ayuda a pulir la app. Datos anónimos.</string>
     <string name="consent_both_buttons">Ambos botones abren la app. Elegir uno u otro solo cambia si nos dejas ayudarte a mejorarla.</string>
@@ -985,18 +951,6 @@
     <string name="loan_interest_only_hint">Solo intereses: el capital no se amortiza</string>
 
     <!-- PREMIUM -->
-    <string name="premium_trackfolio_title">Trackfolio Premium</string>
-    <string name="premium_already_premium_subtitle">Ya eres Premium</string>
-    <string name="premium_features_title">Funcionalidades Premium</string>
-    <string name="premium_multiple_accounts">Múltiples cuentas</string>
-    <string name="premium_fiscal_report">Informe fiscal</string>
-    <string name="premium_backup">Copia de seguridad</string>
-    <string name="premium_priority_support">Soporte prioritario</string>
-    <string name="premium_coming_soon">Próximamente</string>
-    <string name="premium_already_purchased">Ya has adquirido Premium. ¡Gracias por tu apoyo!</string>
-    <string name="premium_purchase_error">Error al procesar la compra</string>
-    <string name="premium_restore_error">Error al restaurar la compra</string>
-    <string name="premium_restoring">Restaurando compra…</string>
 
     <!-- PORTFOLIO - Dividends -->
     <string name="portfolio_dividend_save">Guardar dividendo</string>
@@ -1040,19 +994,6 @@
     <string name="common_no_data">Sin datos</string>
 
     <!-- PREMIUM - missing -->
-    <string name="premium_multiple_accounts_desc">Gestiona todas tus cuentas sin restricciones</string>
-    <string name="premium_ad_free_desc">Disfruta de la app sin interrupciones</string>
-    <string name="premium_themes_desc">Personaliza la app con temas claro y oscuro</string>
-    <string name="premium_welcome">¡Bienvenido a Trackfolio Premium!</string>
-    <string name="premium_error_format">Error: %1$s</string>
-    <string name="premium_restore_error_format">Error al restaurar: %1$s</string>
-    <string name="premium_restore_cd">Restaurar compra</string>
-    <string name="premium_best_value">Mejor valor</string>
-    <string name="premium_monthly_label">Mensual</string>
-    <string name="premium_annual_label">Anual</string>
-    <string name="premium_lifetime_label">Vitalicio</string>
-    <string name="premium_lifetime_value">Acceso vitalicio</string>
-    <string name="premium_back_cd">Volver</string>
 
     <!-- PORTFOLIO - Update price -->
     <string name="portfolio_update_previous_price">Precio anterior: %1$s</string>
@@ -1225,8 +1166,6 @@
     <string name="realestate_why_separate">Los inmuebles se gestionan por separado porque tienen métricas propias: rentabilidad por alquiler, hipoteca vinculada e implicaciones fiscales distintas a las de los activos financieros.</string>
 
     <!-- PREMIUM – Descripciones de funcionalidades adicionales -->
-    <string name="premium_fiscal_report_desc">Genera el informe anual de plusvalías y retenciones del capital mobiliario</string>
-    <string name="premium_backup_desc">Guarda y restaura copias de seguridad locales de todos tus datos</string>
 
     <!-- COMMON - missing -->
     <string name="common_total">Total</string>
@@ -1440,7 +1379,6 @@
     <string name="about_title">Acerca de</string>
     <string name="about_section_app">Aplicación</string>
     <string name="about_version_label">Versión</string>
-    <string name="about_revenuecat_id_label">ID RevenueCat</string>
     <string name="about_section_dev">Desarrollo</string>
     <string name="about_developer_label">Desarrollador</string>
     <string name="about_developer_value">AviferDev</string>
@@ -1537,7 +1475,6 @@
     <string name="onboarding_portfolio_example_badge">EJEMPLO</string>
 
     <!-- PRIVACY - missing -->
-    <string name="privacy_section_premium">Trackfolio Premium</string>
 
     <!-- COMMON - search category placeholder -->
     <string name="common_search_category_placeholder">Buscar categoría…</string>
@@ -1720,7 +1657,6 @@
     <string name="income_net_only">Solo neto</string>
     <string name="label_asset">Activo</string>
     <string name="consent_reject">Rechazar y continuar</string>
-    <string name="premium_restore_purchase">Restaurar compra</string>
     <string name="mortgage_only">Solo hipotecas</string>
     <string name="portfolio_new_fixed_income">Nuevo bono/depósito</string>
     <string name="label_realized">Realizado</string>

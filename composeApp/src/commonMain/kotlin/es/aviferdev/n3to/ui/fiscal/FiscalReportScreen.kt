@@ -28,7 +28,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -40,7 +39,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.TaxProfileSnapshot
 import es.aviferdev.n3to.ui.common.button.ButtonLarge
-import es.aviferdev.n3to.ui.common.button.ButtonLargePremium
 import es.aviferdev.n3to.ui.common.topbar.TopBarWithActionsApp
 import es.aviferdev.n3to.ui.fiscal.components.AnnualSummaryCard
 import es.aviferdev.n3to.ui.fiscal.components.DebtsCard
@@ -50,7 +48,6 @@ import es.aviferdev.n3to.ui.fiscal.components.PdfPasswordSheet
 import es.aviferdev.n3to.ui.fiscal.components.PortfolioCard
 import es.aviferdev.n3to.ui.fiscal.components.TaxProfileBadge
 import es.aviferdev.n3to.ui.fiscal.components.YearStepper
-import es.aviferdev.n3to.ui.theme.LocalFiscalAmountsHidden
 import es.aviferdev.n3to.ui.theme.appColors
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.fiscal_generate_title
@@ -68,7 +65,6 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun FiscalReportScreen(
     onBack: () -> Unit,
-    onNavigateToPremium: () -> Unit = {},
     viewModel: FiscalReportViewModel = koinViewModel()
 ) {
     val state by viewModel.uiState.collectAsState()
@@ -77,12 +73,10 @@ fun FiscalReportScreen(
 
     FiscalReportContent(
         state = state,
-        isPremium = state.isPremium,
         onBack = onBack,
         onPreviousYear = { viewModel.previousYear() },
         onNextYear = { viewModel.nextYear() },
-        onGeneratePdf = { viewModel.generatePdf() },
-        onNavigateToPremium = onNavigateToPremium
+        onGeneratePdf = { viewModel.generatePdf() }
     )
 
     if (state.showPasswordSheet) {
@@ -100,12 +94,10 @@ fun FiscalReportScreen(
 @Composable
 fun FiscalReportContent(
     state: FiscalReportUiState,
-    isPremium: Boolean = true,
     onBack: () -> Unit,
     onPreviousYear: () -> Unit,
     onNextYear: () -> Unit,
     onGeneratePdf: () -> Unit,
-    onNavigateToPremium: () -> Unit = {},
     modifier: Modifier = Modifier,
     taxProfile: TaxProfileSnapshot? = state.activeTaxProfile
 ) {
@@ -162,93 +154,83 @@ fun FiscalReportContent(
                 CircularProgressIndicator(color = MaterialTheme.appColors.cyanAccent)
             }
         } else {
-            CompositionLocalProvider(LocalFiscalAmountsHidden provides !isPremium) {
-                Column(modifier = Modifier.weight(1f)) {
+            Column(modifier = Modifier.weight(1f)) {
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .verticalScroll(rememberScrollState())
+                        .padding(horizontal = 16.dp, vertical = 14.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    val report = state.reportData
+                    if (report != null) {
+                        if (taxProfile != null) TaxProfileBadge(taxProfile)
+                        AnnualSummaryCard(report)
+                        if (report.incomeTaxBreakdown.isNotEmpty()) IncomeTaxBreakdownCard(report)
+                        MonthlyBreakdownCard(report)
+                        if (report.activeDebts.isNotEmpty()) DebtsCard(report)
+                        if (report.assetPositions.any { it.netQuantity > 0 || it.totalBought > 0 || it.totalSold > 0 }) {
+                            PortfolioCard(report)
+                        }
+                    } else {
+                        Box(
+                            Modifier.fillMaxWidth().padding(top = 80.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                Icon(
+                                    Icons.AutoMirrored.Outlined.Assignment,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(44.dp),
+                                    tint = MaterialTheme.appColors.cyanAccent.copy(alpha = 0.5f)
+                                )
+                                Spacer(Modifier.height(12.dp))
+                                Text(
+                                    stringResource(
+                                        Res.string.fiscal_no_data_year,
+                                        state.selectedYear
+                                    ),
+                                    fontSize = 15.sp,
+                                    color = MaterialTheme.appColors.textTertiary,
+                                    textAlign = TextAlign.Center
+                                )
+                            }
+                        }
+                    }
+                    Spacer(Modifier.height(8.dp))
+                }
+
+                Box(
+                    modifier = Modifier.fillMaxWidth()
+                        .background(MaterialTheme.appColors.navySurface)
+                ) {
                     Column(
                         modifier = Modifier
-                            .weight(1f)
-                            .verticalScroll(rememberScrollState())
-                            .padding(horizontal = 16.dp, vertical = 14.dp),
-                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                            .fillMaxWidth()
+                            .windowInsetsPadding(WindowInsets.navigationBars)
+                            .padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        val report = state.reportData
-                        if (report != null) {
-                            if (taxProfile != null) TaxProfileBadge(taxProfile)
-                            AnnualSummaryCard(report)
-                            if (report.incomeTaxBreakdown.isNotEmpty()) IncomeTaxBreakdownCard(
-                                report
+                        HorizontalDivider(
+                            color = MaterialTheme.appColors.navyBorder,
+                            thickness = .5.dp,
+                            modifier = Modifier.padding(bottom = 8.dp)
+                        )
+                        state.errorMessage?.let { err ->
+                            Text(
+                                err,
+                                fontSize = 11.sp,
+                                color = MaterialTheme.appColors.expense,
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier.fillMaxWidth()
                             )
-                            MonthlyBreakdownCard(report)
-                            if (report.activeDebts.isNotEmpty()) DebtsCard(report)
-                            if (report.assetPositions.any { it.netQuantity > 0 || it.totalBought > 0 || it.totalSold > 0 }) {
-                                PortfolioCard(report)
-                            }
-                        } else {
-                            Box(
-                                Modifier.fillMaxWidth().padding(top = 80.dp),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                    Icon(
-                                        Icons.AutoMirrored.Outlined.Assignment,
-                                        contentDescription = null,
-                                        modifier = Modifier.size(44.dp),
-                                        tint = MaterialTheme.appColors.cyanAccent.copy(alpha = 0.5f)
-                                    )
-                                    Spacer(Modifier.height(12.dp))
-                                    Text(
-                                        stringResource(
-                                            Res.string.fiscal_no_data_year,
-                                            state.selectedYear
-                                        ),
-                                        fontSize = 15.sp,
-                                        color = MaterialTheme.appColors.textTertiary,
-                                        textAlign = TextAlign.Center
-                                    )
-                                }
-                            }
                         }
-                        Spacer(Modifier.height(8.dp))
-                    }
-
-                    Box(
-                        modifier = Modifier.fillMaxWidth()
-                            .background(MaterialTheme.appColors.navySurface)
-                    ) {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .windowInsetsPadding(WindowInsets.navigationBars)
-                                .padding(16.dp),
-                            verticalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            HorizontalDivider(
-                                color = MaterialTheme.appColors.navyBorder,
-                                thickness = .5.dp,
-                                modifier = Modifier.padding(bottom = 8.dp)
-                            )
-                            state.errorMessage?.let { err ->
-                                Text(
-                                    err,
-                                    fontSize = 11.sp,
-                                    color = MaterialTheme.appColors.expense,
-                                    textAlign = TextAlign.Center,
-                                    modifier = Modifier.fillMaxWidth()
-                                )
-                            }
-                            if (!isPremium) {
-                                ButtonLargePremium(
-                                    onClick = onNavigateToPremium
-                                )
-                            } else {
-                                ButtonLarge(
-                                    text = Res.string.fiscal_generate_title,
-                                    textLoading = Res.string.fiscal_generating_pdf,
-                                    loading = state.isGenerating,
-                                    onClick = onGeneratePdf
-                                )
-                            }
-                        }
+                        ButtonLarge(
+                            text = Res.string.fiscal_generate_title,
+                            textLoading = Res.string.fiscal_generating_pdf,
+                            loading = state.isGenerating,
+                            onClick = onGeneratePdf
+                        )
                     }
                 }
             }

@@ -206,7 +206,6 @@ import es.aviferdev.n3to.ui.account.AccountSession
 import es.aviferdev.n3to.ui.account.AccountViewModel
 import es.aviferdev.n3to.ui.annual.AnnualViewModel
 import es.aviferdev.n3to.ui.security.LockViewModel
-import es.aviferdev.n3to.ui.settings.AboutViewModel
 import es.aviferdev.n3to.ui.debt.DebtViewModel
 import es.aviferdev.n3to.ui.fiscal.FiscalReportViewModel
 import es.aviferdev.n3to.ui.fixedincome.FixedIncomeDetailViewModel
@@ -507,8 +506,7 @@ val useCaseModule = module {
             deleteAccount = get(),
             setInitialBalance = get(),
             seedCategories = get(),
-            session = get(),
-            premiumManager = get()
+            session = get()
         )
     }
     viewModel {
@@ -520,7 +518,6 @@ val useCaseModule = module {
             setInitialBalance = get(),
             seedCategories = get(),
             session = get(),
-            premiumManager = get(),
             getBackupReminderInterval = get(),
             backupViewModel = get(),
             authenticator = get(),
@@ -551,7 +548,6 @@ val useCaseModule = module {
             getAccounts = get(),
             reconciliationDelegate = get(),
             backupDelegate = get(),
-            premiumManager = get(),
             balanceVisibility = get(),
             authenticator = get()
         )
@@ -812,8 +808,7 @@ val useCaseModule = module {
             getFiscalReportData = get(),
             getActiveTaxProfile = get(),
             pdfGenerator = get(),
-            session = get(),
-            premiumManager = get()
+            session = get()
         )
     }
     viewModel { (positionId: String) ->
@@ -942,6 +937,4 @@ val useCaseModule = module {
     // ── Security / Lock ──────────────────────────────────────────────────────────
     viewModel { LockViewModel(get()) }
 
-    // ── About ─────────────────────────────────────────────────────────────────────
-    viewModel { AboutViewModel(get()) }
 }

@@ -1,11 +1,8 @@
 package es.aviferdev.n3to.ui.settings
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,22 +15,14 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.BugReport
 import androidx.compose.material.icons.filled.Build
-import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.Restore
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.filled.WorkspacePremium
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -61,9 +50,6 @@ import es.aviferdev.n3to.ui.settings.components.SettingsGroupCard
 import es.aviferdev.n3to.ui.settings.components.SettingsRowDivider
 import es.aviferdev.n3to.ui.settings.components.SettingsSectionHeader
 import es.aviferdev.n3to.ui.theme.appColors
-import kotlinx.datetime.Instant
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.common_cancel
 import n3to.composeapp.generated.resources.privacy_analytics_desc
@@ -75,17 +61,8 @@ import n3to.composeapp.generated.resources.privacy_data_crash_reports
 import n3to.composeapp.generated.resources.privacy_data_feedback
 import n3to.composeapp.generated.resources.privacy_data_financial
 import n3to.composeapp.generated.resources.privacy_data_personal
-import n3to.composeapp.generated.resources.privacy_data_revenuecat
 import n3to.composeapp.generated.resources.privacy_data_screens
 import n3to.composeapp.generated.resources.privacy_policy_link
-import n3to.composeapp.generated.resources.privacy_premium_active_label
-import n3to.composeapp.generated.resources.privacy_premium_free
-import n3to.composeapp.generated.resources.privacy_premium_lifetime_value
-import n3to.composeapp.generated.resources.privacy_premium_manage
-import n3to.composeapp.generated.resources.privacy_premium_plan
-import n3to.composeapp.generated.resources.privacy_premium_restore
-import n3to.composeapp.generated.resources.privacy_premium_subscription_value
-import n3to.composeapp.generated.resources.privacy_premium_valid_until
 import n3to.composeapp.generated.resources.privacy_revoke_all_button
 import n3to.composeapp.generated.resources.privacy_revoke_all_hint
 import n3to.composeapp.generated.resources.privacy_revoke_confirm
@@ -93,8 +70,10 @@ import n3to.composeapp.generated.resources.privacy_revoke_message
 import n3to.composeapp.generated.resources.privacy_revoke_title
 import n3to.composeapp.generated.resources.privacy_section_consent
 import n3to.composeapp.generated.resources.privacy_section_data_collected
-import n3to.composeapp.generated.resources.privacy_section_premium
 import n3to.composeapp.generated.resources.settings_privacy_data
+import kotlinx.datetime.Instant
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -114,7 +93,6 @@ const val PRIVACY_POLICY_URL = "https://www.n3to.avifer.dev/privacy-policy"
 @Composable
 fun PrivacySettingsScreen(
     onBack: () -> Unit,
-    onNavigateToPremium: () -> Unit = {},
     viewModel: PrivacySettingsViewModel = koinViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -125,18 +103,6 @@ fun PrivacySettingsScreen(
         if (uiState.revokeCompleted) {
             viewModel.onRevokeCompletedHandled()
             onBack()
-        }
-    }
-
-    LaunchedEffect(Unit) {
-        viewModel.restoreEvent.collect { result ->
-            when (result) {
-                is RestoreResult.Success ->
-                    snackbarHostState.showSnackbar("Compras restauradas correctamente")
-
-                is RestoreResult.Error ->
-                    snackbarHostState.showSnackbar("Error: ${result.message}")
-            }
         }
     }
 
@@ -236,63 +202,7 @@ fun PrivacySettingsScreen(
 
                     Spacer(Modifier.height(20.dp))
 
-                    // ── Sección 2: Trackfolio Premium ──────────────────────────
-                    SettingsSectionHeader(label = stringResource(Res.string.privacy_section_premium))
-                    PrivacyPremiumCard(isPremium = uiState.premiumStatus.isPremium) {
-                        if (uiState.premiumStatus.isPremium) {
-                            PrivacyInfoRow(
-                                icon = Icons.Default.Star,
-                                label = stringResource(Res.string.privacy_premium_active_label),
-                                value = if (uiState.premiumStatus.isLifetime) stringResource(Res.string.privacy_premium_lifetime_value) else stringResource(
-                                    Res.string.privacy_premium_subscription_value
-                                )
-                            )
-                            if (!uiState.premiumStatus.isLifetime) {
-                                val expiryDate = uiState.premiumStatus.expiryDate
-                                if (expiryDate != null) {
-                                    val expiry = Instant.fromEpochMilliseconds(expiryDate)
-                                        .toLocalDateTime(TimeZone.currentSystemDefault())
-                                    SettingsRowDivider()
-                                    PrivacyInfoRow(
-                                        icon = Icons.Default.CalendarMonth,
-                                        label = stringResource(Res.string.privacy_premium_valid_until),
-                                        value = "${expiry.date}"
-                                    )
-                                }
-                            }
-                            if (uiState.premiumStatus.managementUrl != null) {
-                                SettingsRowDivider()
-                                PrivacyNavigableRow(
-                                    icon = Icons.Default.Settings,
-                                    label = stringResource(Res.string.privacy_premium_manage),
-                                    onClick = { urlOpener.openUrl(uiState.premiumStatus.managementUrl!!) }
-                                )
-                            }
-                        } else {
-                            PrivacyInfoRow(
-                                icon = Icons.Default.WorkspacePremium,
-                                label = stringResource(Res.string.privacy_premium_plan),
-                                value = stringResource(Res.string.privacy_premium_free)
-                            )
-                            SettingsRowDivider()
-                            PrivacyNavigableRow(
-                                icon = Icons.Default.Star,
-                                label = "Hazte Premium",
-                                onClick = onNavigateToPremium
-                            )
-                            SettingsRowDivider()
-                        }
-                        SettingsRowDivider()
-                        PrivacyNavigableRow(
-                            icon = Icons.Default.Restore,
-                            label = stringResource(Res.string.privacy_premium_restore),
-                            onClick = { viewModel.restorePurchases() }
-                        )
-                    }
-
-                    Spacer(Modifier.height(20.dp))
-
-                    // ── Sección 3: Datos recopilados ───────────────────────────
+                    // ── Sección 2: Datos recopilados ───────────────────────────
                     SettingsSectionHeader(label = stringResource(Res.string.privacy_section_data_collected))
                     SettingsGroupCard {
                         PrivacyDataRow(
@@ -317,13 +227,6 @@ fun PrivacySettingsScreen(
                             icon = Icons.Default.Cancel,
                             label = stringResource(Res.string.privacy_data_personal),
                             active = false
-                        )
-                        SettingsRowDivider()
-                        PrivacyDataRow(
-                            icon = Icons.Default.Info,
-                            label = stringResource(Res.string.privacy_data_revenuecat),
-                            active = true,
-                            isInfo = true
                         )
                         SettingsRowDivider()
                         PrivacyDataRow(
@@ -382,24 +285,6 @@ fun PrivacySettingsScreen(
     }
 }
 
-// ─── Premium card — resalta el borde con MaterialTheme.appColors.cyanAccent cuando premium está activo ──
-@Composable
-private fun PrivacyPremiumCard(
-    isPremium: Boolean,
-    content: @Composable ColumnScope.() -> Unit
-) {
-    val borderColor =
-        if (isPremium) MaterialTheme.appColors.cyanAccent.copy(alpha = 0.35f) else MaterialTheme.appColors.navyBorder
-    Card(
-        modifier = Modifier.fillMaxWidth().border(0.5.dp, borderColor, RoundedCornerShape(11.dp)),
-        shape = RoundedCornerShape(11.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.navySurface),
-        elevation = CardDefaults.cardElevation(0.dp)
-    ) {
-        Column(content = content)
-    }
-}
-
 // ─── Toggle item ──────────────────────────────────────────────────────────────
 @Composable
 private fun PrivacyToggleItem(
@@ -439,56 +324,6 @@ private fun PrivacyToggleItem(
                 uncheckedThumbColor = Color.White,
                 uncheckedTrackColor = MaterialTheme.appColors.navySurface
             )
-        )
-    }
-}
-
-// ─── Fila informativa con label + valor ───────────────────────────────────────
-@Composable
-private fun PrivacyInfoRow(icon: ImageVector, label: String, value: String) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 12.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Icon(icon, null, tint = MaterialTheme.appColors.cyanAccent, modifier = Modifier.size(20.dp))
-        Spacer(Modifier.width(14.dp))
-        Text(
-            label,
-            fontSize = 13.sp,
-            fontWeight = FontWeight.Medium,
-            color = MaterialTheme.appColors.textPrimary,
-            modifier = Modifier.weight(1f)
-        )
-        Text(value, fontSize = 13.sp, color = MaterialTheme.appColors.cyanSubtle)
-    }
-}
-
-// ─── Fila navegable con chevron ───────────────────────────────────────────────
-@Composable
-private fun PrivacyNavigableRow(icon: ImageVector, label: String, onClick: () -> Unit) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick)
-            .padding(horizontal = 16.dp, vertical = 12.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Icon(icon, null, tint = MaterialTheme.appColors.cyanAccent, modifier = Modifier.size(20.dp))
-        Spacer(Modifier.width(14.dp))
-        Text(
-            label,
-            fontSize = 13.sp,
-            fontWeight = FontWeight.Medium,
-            color = MaterialTheme.appColors.textPrimary,
-            modifier = Modifier.weight(1f)
-        )
-        Icon(
-            Icons.AutoMirrored.Filled.KeyboardArrowRight,
-            null,
-            tint = MaterialTheme.appColors.textTertiary,
-            modifier = Modifier.size(18.dp)
         )
     }
 }

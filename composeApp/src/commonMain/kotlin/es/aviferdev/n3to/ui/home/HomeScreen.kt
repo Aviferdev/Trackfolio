@@ -91,7 +91,6 @@ fun HomeScreen(
     val emergencyFund by viewModel.emergencyFundStatus.collectAsState()
     val accounts by viewModel.accounts.collectAsState()
     val selectedId by viewModel.selectedAccountId.collectAsState()
-    val isPremium by viewModel.isPremium.collectAsState()
     val reconciliationState by viewModel.reconciliationUiState.collectAsState()
     val backupSheetState by viewModel.backupSheetState.collectAsState()
     val backupReminderState by viewModel.backupReminderState.collectAsState()
@@ -131,7 +130,6 @@ fun HomeScreen(
                     accounts = accounts,
                     selectedAccountId = selectedId,
                     balancesHidden = balancesHidden,
-                    isPremium = isPremium,
                     onToggleBalances = {
                         if (balancesHidden) {
                             viewModel.requestShowBalances(showBalancesText, confirmIdentityText)
@@ -257,7 +255,6 @@ fun HomeContent(
     accounts: List<Account>,
     selectedAccountId: String?,
     balancesHidden: Boolean,
-    isPremium: Boolean = true,
     onToggleBalances: () -> Unit,
     onAccountSelected: (String) -> Unit,
     onNavigateToAccountConfig: (String) -> Unit = {},
@@ -436,7 +433,6 @@ fun HomeContent(
                 onNavigateToCharts = onNavigateToCharts,
                 onNavigateToDebts = onNavigateToDebts,
                 onNavigateToFiscalReport = onNavigateToFiscalReport,
-                isPremium = isPremium,
                 hasDebts = balance.totalOwed > 0 || balance.totalOwing > 0,
                 modifier = Modifier.fillMaxWidth()
             )

@@ -2,8 +2,6 @@ package es.aviferdev.n3to.ui.settings
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import es.aviferdev.n3to.core.premium.PremiumManager
-import es.aviferdev.n3to.core.premium.PremiumStatus
 import es.aviferdev.n3to.core.security.AppLockManager
 import es.aviferdev.n3to.core.security.BiometricAuthenticator
 import es.aviferdev.n3to.core.security.BiometricResult
@@ -12,7 +10,6 @@ import es.aviferdev.n3to.core.security.ThemeManager
 import es.aviferdev.n3to.core.security.getSystemLanguage
 import es.aviferdev.n3to.core.security.setPlatformLanguage
 import es.aviferdev.n3to.domain.model.Account
-import es.aviferdev.n3to.domain.model.PremiumConstants
 import es.aviferdev.n3to.domain.usecase.account.DeleteAccountUseCase
 import es.aviferdev.n3to.domain.usecase.account.GetAccountsUseCase
 import es.aviferdev.n3to.domain.usecase.account.SaveAccountUseCase
@@ -37,14 +34,11 @@ import kotlinx.coroutines.launch
 data class SettingsUiState(
     val accounts: List<Account> = emptyList(),
     val selectedAccountId: String? = null,
-    val isPremium: Boolean = false,
-    val isLifetimePremium: Boolean = false,
     val showAddSheet: Boolean = false,
     val showEditSheet: Boolean = false,
     val editingAccount: Account? = null,
     val showDeleteConfirm: Boolean = false,
     val accountToDelete: Account? = null,
-    val showPremiumLimitWarning: Boolean = false,
     val biometricEnabled: Boolean = false,
     val biometricError: String? = null,
     val isDarkTheme: Boolean = true,
@@ -63,7 +57,6 @@ class SettingsViewModel(
     private val setInitialBalance: SetInitialBalanceUseCase,
     private val seedCategories: SeedDefaultCategoriesUseCase,
     private val session: AccountSession,
-    private val premiumManager: PremiumManager,
     private val getBackupReminderInterval: GetBackupReminderIntervalUseCase,
     private val backupViewModel: BackupViewModel,
     private val authenticator: BiometricAuthenticator,
@@ -79,7 +72,6 @@ class SettingsViewModel(
         val editingAccount: Account? = null,
         val showDeleteConfirm: Boolean = false,
         val accountToDelete: Account? = null,
-        val showPremiumLimitWarning: Boolean = false,
         val biometricEnabled: Boolean = false,
         val biometricError: String? = null,
         val showLanguageDialog: Boolean = false
@@ -89,10 +81,9 @@ class SettingsViewModel(
         combine(
             getAccounts(),
             session.selectedAccountId,
-            premiumManager.status,
             themeManager.isDark
-        ) { accounts, selectedId, premiumStatus, isDark ->
-            DataPart(accounts, selectedId, premiumStatus, isDark)
+        ) { accounts, selectedId, isDark ->
+            DataPart(accounts, selectedId, isDark)
         },
         combine(
             languageManager.languageCode,
@@ -105,8 +96,6 @@ class SettingsViewModel(
         SettingsUiState(
             accounts = data.accounts,
             selectedAccountId = data.selectedId,
-            isPremium = data.premiumStatus.isPremium,
-            isLifetimePremium = data.premiumStatus.isLifetime,
             isDarkTheme = data.isDark,
             currentLanguage = extra.langCode,
             isSystemDefault = languageManager.isSystemDefault,
@@ -117,7 +106,6 @@ class SettingsViewModel(
             editingAccount = extra.local.editingAccount,
             showDeleteConfirm = extra.local.showDeleteConfirm,
             accountToDelete = extra.local.accountToDelete,
-            showPremiumLimitWarning = extra.local.showPremiumLimitWarning,
             biometricEnabled = extra.local.biometricEnabled,
             biometricError = extra.local.biometricError,
             showLanguageDialog = extra.local.showLanguageDialog
@@ -149,12 +137,7 @@ class SettingsViewModel(
     }
 
     fun openAddSheet() {
-        val state = uiState.value
-        if (!state.isPremium && state.accounts.size >= PremiumConstants.MAX_FREE_ACCOUNTS) {
-            _local.update { it.copy(showPremiumLimitWarning = true) }
-        } else {
-            _local.update { it.copy(showAddSheet = true) }
-        }
+        _local.update { it.copy(showAddSheet = true) }
     }
 
     fun closeAddSheet() {
@@ -175,10 +158,6 @@ class SettingsViewModel(
 
     fun cancelDelete() {
         _local.update { it.copy(showDeleteConfirm = false, accountToDelete = null) }
-    }
-
-    fun dismissPremiumLimitWarning() {
-        _local.update { it.copy(showPremiumLimitWarning = false) }
     }
 
     fun addAccount(name: String, initialBalance: Double) {
@@ -285,7 +264,6 @@ class SettingsViewModel(
     private data class DataPart(
         val accounts: List<Account>,
         val selectedId: String?,
-        val premiumStatus: PremiumStatus,
         val isDark: Boolean
     )
 

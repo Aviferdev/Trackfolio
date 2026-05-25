@@ -27,9 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import es.aviferdev.n3to.core.AppConfig
 import es.aviferdev.n3to.core.VersionManager
-import es.aviferdev.n3to.core.premium.PremiumManager
 import es.aviferdev.n3to.core.security.AppLockManager
 import es.aviferdev.n3to.core.security.BalanceVisibilityManager
 import es.aviferdev.n3to.core.security.LanguageManager
@@ -76,7 +74,6 @@ fun App() {
     val versionManager = koinInject<VersionManager>()
     val openStore: () -> Unit = koinInject(named("openStore"))
     val currentVersion: String = koinInject(named("appVersion"))
-    val premiumManager = koinInject<PremiumManager>()
 
     val isOnboardingCompleted = koinInject<IsOnboardingCompletedUseCase>()
     val resetOnboarding = koinInject<ResetOnboardingUseCase>()
@@ -93,7 +90,6 @@ fun App() {
 
     val balancesHidden by balanceVisibility.balancesHidden.collectAsState()
     val versionStatus by versionManager.status.collectAsState()
-    val premiumStatus by premiumManager.status.collectAsState()
 
     val scope = rememberCoroutineScope()
 
@@ -125,13 +121,7 @@ fun App() {
         versionManager.checkVersion()
     }
 
-    // Lanzar inicialización de PremiumManager una vez que consent está resuelto
     val appReady = !(needsConsent ?: true)
-    LaunchedEffect(appReady) {
-        if (appReady) {
-            premiumManager.initialize(AppConfig.revenueCatApiKey)
-        }
-    }
 
     // ── Refresco diario de precios al abrir la app ─────────────────────────
     val priceRefreshUseCase = koinInject<AppStartupRefreshUseCase>()

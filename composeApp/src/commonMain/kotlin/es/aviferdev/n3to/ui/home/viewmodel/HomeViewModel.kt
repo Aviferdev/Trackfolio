@@ -3,7 +3,6 @@ package es.aviferdev.n3to.ui.home.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import es.aviferdev.n3to.core.VersionManager
-import es.aviferdev.n3to.core.premium.PremiumManager
 import es.aviferdev.n3to.core.security.BalanceVisibilityManager
 import es.aviferdev.n3to.core.security.BiometricAuthenticator
 import es.aviferdev.n3to.core.security.BiometricResult
@@ -48,7 +47,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -101,7 +99,6 @@ class HomeViewModel(
     private val getAccounts: GetAccountsUseCase,
     private val reconciliationDelegate: ReconciliationViewModel,
     private val backupDelegate: BackupViewModel,
-    private val premiumManager: PremiumManager,
     private val balanceVisibility: BalanceVisibilityManager,
     private val authenticator: BiometricAuthenticator
 ) : ViewModel() {
@@ -133,16 +130,6 @@ class HomeViewModel(
     val accounts: StateFlow<List<Account>> = _accounts.asStateFlow()
 
     val selectedAccountId: StateFlow<String?> = session.selectedAccountId
-
-    // ── Premium ───────────────────────────────────────────────────────────────
-
-    val isPremium: StateFlow<Boolean> = premiumManager.status
-        .map { it.isPremium }
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = false
-        )
 
     // ── Recordatorio de precio ────────────────────────────────────────────────
 

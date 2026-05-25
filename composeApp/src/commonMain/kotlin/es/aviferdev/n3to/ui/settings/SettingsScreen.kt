@@ -14,7 +14,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.WorkspacePremium
 import androidx.compose.material.icons.outlined.Email
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Refresh
@@ -34,9 +33,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import es.aviferdev.n3to.core.premium.PremiumStatus
 import es.aviferdev.n3to.domain.model.Account
-import es.aviferdev.n3to.domain.model.PremiumConstants
 import es.aviferdev.n3to.ui.account.AddEditAccountBottomSheet
 import es.aviferdev.n3to.ui.common.topbar.TopBarWithActionsApp
 import es.aviferdev.n3to.ui.settings.backup.BackupAction
@@ -47,7 +44,6 @@ import es.aviferdev.n3to.ui.settings.components.SettingsAccountCard
 import es.aviferdev.n3to.ui.settings.components.SettingsBackupReminderIntervalRow
 import es.aviferdev.n3to.ui.settings.components.SettingsBiometricRow
 import es.aviferdev.n3to.ui.settings.components.SettingsGroupCard
-import es.aviferdev.n3to.ui.settings.components.SettingsInfoRow
 import es.aviferdev.n3to.ui.settings.components.SettingsLanguageRow
 import es.aviferdev.n3to.ui.settings.components.SettingsNavigableRow
 import es.aviferdev.n3to.ui.settings.components.SettingsRowDivider
@@ -70,13 +66,6 @@ import n3to.composeapp.generated.resources.settings_biometric_unavailable
 import n3to.composeapp.generated.resources.settings_delete_account_message
 import n3to.composeapp.generated.resources.settings_delete_account_title
 import n3to.composeapp.generated.resources.settings_feedback
-import n3to.composeapp.generated.resources.settings_not_now
-import n3to.composeapp.generated.resources.settings_premium_active
-import n3to.composeapp.generated.resources.settings_premium_cta
-import n3to.composeapp.generated.resources.settings_premium_lifetime
-import n3to.composeapp.generated.resources.settings_premium_limit_message
-import n3to.composeapp.generated.resources.settings_premium_limit_title
-import n3to.composeapp.generated.resources.settings_premium_title
 import n3to.composeapp.generated.resources.settings_privacy_data
 import n3to.composeapp.generated.resources.settings_section_accounts
 import n3to.composeapp.generated.resources.settings_section_appearance
@@ -96,7 +85,6 @@ import org.koin.compose.viewmodel.koinViewModel
 fun SettingsScreen(
     navigateBack: () -> Unit = {},
     onNavigateToPrivacySettings: () -> Unit = {},
-    onNavigateToPremium: () -> Unit = {},
     onNavigateToAccountConfig: (String) -> Unit = {},
     onNavigateToFeedback: () -> Unit = {},
     onNavigateToAbout: () -> Unit = {},
@@ -130,12 +118,10 @@ fun SettingsScreen(
         },
         onBackupClick = { viewModel.openBackupExport() },
         onNavigateToPrivacySettings = onNavigateToPrivacySettings,
-        onNavigateToPremium = onNavigateToPremium,
         onNavigateToAccountConfig = onNavigateToAccountConfig,
         onNavigateToFeedback = onNavigateToFeedback,
         onNavigateToAbout = onNavigateToAbout,
         onResetOnboarding = onResetOnboarding,
-        premiumStatus = PremiumStatus(isPremium = state.isPremium, isLifetime = state.isLifetimePremium),
         isDarkTheme = state.isDarkTheme,
         onToggleTheme = { viewModel.toggleTheme() },
         currentLanguage = state.currentLanguage,
@@ -213,41 +199,6 @@ fun SettingsScreen(
         )
     }
 
-    // ── Premium limit warning ────────────────────────────────────────────────
-    if (state.showPremiumLimitWarning) {
-        AlertDialog(
-            onDismissRequest = { viewModel.dismissPremiumLimitWarning() },
-            containerColor = MaterialTheme.appColors.navySurface,
-            title = {
-                Text(
-                    stringResource(Res.string.settings_premium_limit_title),
-                    fontSize = 16.sp, fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.appColors.textPrimary
-                )
-            },
-            text = {
-                Text(
-                    stringResource(Res.string.settings_premium_limit_message, PremiumConstants.MAX_FREE_ACCOUNTS),
-                    fontSize = 13.sp, color = MaterialTheme.appColors.textSecondary
-                )
-            },
-            confirmButton = {
-                TextButton(onClick = { viewModel.dismissPremiumLimitWarning(); onNavigateToPremium() }) {
-                    Text(
-                        stringResource(Res.string.settings_premium_cta),
-                        color = MaterialTheme.appColors.cyanAccent, fontWeight = FontWeight.SemiBold
-                    )
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { viewModel.dismissPremiumLimitWarning() }) {
-                    Text(stringResource(Res.string.settings_not_now), color = MaterialTheme.appColors.textTertiary)
-                }
-            },
-            shape = RoundedCornerShape(16.dp)
-        )
-    }
-
     // ── Language dialog ──────────────────────────────────────────────────────
     if (state.showLanguageDialog) {
         LanguageSelectorDialog(
@@ -287,7 +238,6 @@ fun SettingsContent(
     onSelectAccount: (String) -> Unit,
     onToggleBiometric: (Boolean) -> Unit,
     onNavigateToPrivacySettings: () -> Unit = {},
-    onNavigateToPremium: () -> Unit = {},
     onNavigateToAccountConfig: (String) -> Unit = {},
     onNavigateToFeedback: () -> Unit = {},
     onNavigateToAbout: () -> Unit = {},
@@ -296,7 +246,6 @@ fun SettingsContent(
     backupInterval: Int = 30,
     onBackupIntervalChange: (Int) -> Unit = {},
     onBackupClick: () -> Unit = {},
-    premiumStatus: PremiumStatus = PremiumStatus(),
     isDarkTheme: Boolean = true,
     onToggleTheme: (Boolean) -> Unit = {},
     currentLanguage: String = "es",
@@ -375,23 +324,6 @@ fun SettingsContent(
                 item {
                     SettingsSectionHeader(label = stringResource(Res.string.settings_section_privacy))
                     SettingsGroupCard {
-                        if (premiumStatus.isPremium) {
-                            SettingsInfoRow(
-                                label = stringResource(Res.string.settings_premium_title),
-                                value = if (premiumStatus.isLifetime)
-                                    stringResource(Res.string.settings_premium_lifetime)
-                                else
-                                    stringResource(Res.string.settings_premium_active)
-                            )
-                            SettingsRowDivider()
-                        } else {
-                            SettingsNavigableRow(
-                                icon = Icons.Default.WorkspacePremium,
-                                label = stringResource(Res.string.settings_premium_cta),
-                                onClick = onNavigateToPremium
-                            )
-                            SettingsRowDivider()
-                        }
                         SettingsNavigableRow(
                             icon = Icons.Outlined.Info,
                             label = stringResource(Res.string.settings_privacy_data),
