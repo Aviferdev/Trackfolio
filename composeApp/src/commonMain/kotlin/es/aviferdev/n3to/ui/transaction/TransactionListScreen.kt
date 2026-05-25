@@ -40,6 +40,7 @@ import es.aviferdev.n3to.ui.home.bottomsheet.AddTransactionBottomSheet
 import es.aviferdev.n3to.ui.theme.LocalBalanceHidden
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import es.aviferdev.n3to.ui.theme.localizedMonthNames
+import es.aviferdev.n3to.ui.common.input.SearchBar
 import es.aviferdev.n3to.ui.transaction.components.*
 import kotlinx.coroutines.delay
 import n3to.composeapp.generated.resources.Res
@@ -153,8 +154,11 @@ fun TransactionListContent(
             ) { uiState.month },
             currentValueSecondary = uiState.year,
             canGoBack = uiState.canGoBack,
+            canGoForward = uiState.canGoForward,
             onPrevious = onPreviousMonth,
             onNext = onNextMonth,
+            containerColor = MaterialTheme.appColors.navySurface,
+            dividerColor = MaterialTheme.appColors.navyBorder,
         )
 
         AnimatedVisibility(
@@ -162,7 +166,12 @@ fun TransactionListContent(
             enter = fadeIn() + slideInVertically(initialOffsetY = { it / 10 })
         ) {
             Column {
-                SearchBar(query = searchQuery, onChange = onSearchQueryChange)
+                SearchBar(
+                    query = searchQuery,
+                    onChange = onSearchQueryChange,
+                    backgroundColor = MaterialTheme.appColors.navySurface,
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp)
+                )
 
                 uiState.totals?.let { totals ->
                     TotalsRow(
@@ -231,7 +240,7 @@ fun TransactionListContent(
                     if (index < uiState.filteredTransactions.lastIndex) {
                         HorizontalDivider(
                             modifier = Modifier.padding(start = 68.dp),
-                            color = MaterialTheme.appColors.border,
+                            color = MaterialTheme.appColors.navyBorder,
                             thickness = 0.5.dp
                         )
                     }

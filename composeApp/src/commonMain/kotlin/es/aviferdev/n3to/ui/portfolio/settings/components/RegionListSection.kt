@@ -55,7 +55,7 @@ fun RegionListSection(
                 }
                 if (index < regions.lastIndex) {
                     HorizontalDivider(
-                        color = MaterialTheme.appColors.border,
+                        color = MaterialTheme.appColors.navyBorder,
                         thickness = 0.5.dp,
                         modifier = Modifier.padding(start = 16.dp)
                     )

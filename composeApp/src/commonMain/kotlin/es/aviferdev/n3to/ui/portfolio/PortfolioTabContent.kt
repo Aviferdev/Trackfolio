@@ -44,6 +44,7 @@ import es.aviferdev.n3to.ui.portfolio.home.DistributionView
 import es.aviferdev.n3to.ui.portfolio.home.PortfolioUiState
 import es.aviferdev.n3to.ui.savingsrates.SavingsRatePreviewCard
 import es.aviferdev.n3to.ui.theme.LocalBalanceHidden
+import es.aviferdev.n3to.ui.theme.LocalBottomNavPadding
 import es.aviferdev.n3to.ui.theme.appColors
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.common_go_to_settings
@@ -102,7 +103,7 @@ fun PortfolioTabContent(
     ) {
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(bottom = 100.dp)
+            contentPadding = PaddingValues(bottom = LocalBottomNavPadding.current + 16.dp)
         ) {
             // ── Caso 1: No hay carteras creadas ──────────────────────────────
             if (isTodasTab && portfolios.isEmpty()) {
@@ -158,12 +159,12 @@ fun PortfolioTabContent(
             // PortfolioSummaryCard
             item {
                 PortfolioSummaryCard(
-                    totalInvested = state.totalInvested,
-                    totalCurrentValue = state.totalCurrentValue,
-                    totalPnL = state.totalPnL,
-                    totalPnLPercent = state.totalPnLPercent,
-                    totalRealizedPnL = state.totalRealizedPnL,
-                    totalUnrealizedPnL = state.totalUnrealizedPnL,
+                    totalInvested = state.combinedInvested,
+                    totalCurrentValue = state.combinedCurrentValue,
+                    totalPnL = state.combinedPnL,
+                    totalPnLPercent = state.combinedPnLPercent,
+                    totalRealizedPnL = state.combinedRealizedPnL,
+                    totalUnrealizedPnL = state.combinedUnrealizedPnL,
                     positionsCount = state.openPositionsCount,
                     balancesHidden = balancesHidden,
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)

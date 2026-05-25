@@ -178,7 +178,6 @@ private fun ListAllPortfolios(
             Modifier
                 .fillMaxSize()
                 .windowInsetsPadding(WindowInsets.statusBars)
-                .padding(bottom = LocalBottomNavPadding.current)
         ) {
             TopBarWithoutActionsApp(
                 onNavigateToSettings = onNavigateToSettings

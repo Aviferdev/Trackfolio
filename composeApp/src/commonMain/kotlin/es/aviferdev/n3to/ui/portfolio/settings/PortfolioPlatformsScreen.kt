@@ -66,7 +66,7 @@ fun PortfolioPlatformsScreen(
                     Icon(
                         Icons.Default.Add,
                         contentDescription = stringResource(Res.string.portfolio_settings_add),
-                        tint = MaterialTheme.appColors.primary
+                        tint = MaterialTheme.appColors.cyanAccent
                     )
                 }
             }
@@ -119,7 +119,7 @@ fun PortfolioPlatformsScreen(
                             }
                             if (index < state.platforms.lastIndex) {
                                 HorizontalDivider(
-                                    color = MaterialTheme.appColors.border,
+                                    color = MaterialTheme.appColors.navyBorder,
                                     thickness = 0.5.dp,
                                     modifier = Modifier.padding(start = 56.dp)
                                 )

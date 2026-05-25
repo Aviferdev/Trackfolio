@@ -64,7 +64,8 @@ data class TransactionListUiState(
     val month: String = "",
     val searchQuery: String = "",
     val isLoading: Boolean = true,
-    val canGoBack: Boolean = true
+    val canGoBack: Boolean = true,
+    val canGoForward: Boolean = false
 )
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -100,6 +101,9 @@ class TransactionViewModel(
     val searchQuery: StateFlow<String> = _searchQuery
 
     private val _oldestYearMonth = MutableStateFlow<Pair<Int, Int>?>(null)
+
+    override var type by mutableStateOf(TransactionType.EXPENSE)
+        private set
 
     init {
         viewModelScope.launch {
@@ -140,6 +144,8 @@ class TransactionViewModel(
         )
         val canGoBack =
             oldest == null || prevMonth.first > oldest.first || (prevMonth.first == oldest.first && prevMonth.second >= oldest.second)
+        val nowDate = nowLocalDateTime()
+        val canGoForward = !(year.toInt() == nowDate.year && month.toInt() == nowDate.monthNumber)
 
         val accountId = params.accountId
         if (accountId == null) {
@@ -151,7 +157,8 @@ class TransactionViewModel(
                     month = month,
                     searchQuery = query,
                     isLoading = false,
-                    canGoBack = canGoBack
+                    canGoBack = canGoBack,
+                    canGoForward = canGoForward
                 )
             }
         } else {
@@ -178,7 +185,8 @@ class TransactionViewModel(
                     month = month,
                     searchQuery = query,
                     isLoading = false,
-                    canGoBack = canGoBack
+                    canGoBack = canGoBack,
+                    canGoForward = canGoForward
                 )
             }
         }
@@ -255,8 +263,6 @@ class TransactionViewModel(
     private var editingTransaction: Transaction? = null
     override val isEditing: Boolean get() = editingTransaction != null
 
-    override var type by mutableStateOf(TransactionType.EXPENSE)
-        private set
     override var amount by mutableStateOf("")
         private set
     override var notes by mutableStateOf("")

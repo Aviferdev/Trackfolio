@@ -18,8 +18,8 @@ fun SettingsGroupCard(content: @Composable ColumnScope.() -> Unit) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(14.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.surface),
-        border = BorderStroke(0.5.dp, MaterialTheme.appColors.border),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.navySurface),
+        border = BorderStroke(0.5.dp, MaterialTheme.appColors.navyBorder),
         elevation = CardDefaults.cardElevation(0.dp)
     ) { Column(content = content) }
 }

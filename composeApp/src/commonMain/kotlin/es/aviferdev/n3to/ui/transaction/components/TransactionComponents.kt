@@ -8,7 +8,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,7 +17,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ShowChart
 import androidx.compose.material.icons.outlined.AccountBalance
@@ -31,18 +29,15 @@ import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material.icons.outlined.EmojiEvents
 import androidx.compose.material.icons.outlined.House
 import androidx.compose.material.icons.outlined.RequestQuote
-import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.SwapHoriz
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Surface
 import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -71,67 +66,16 @@ import es.aviferdev.n3to.ui.theme.formatDateLocalized
 import es.aviferdev.n3to.ui.theme.maskAmount
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.common_delete
-import n3to.composeapp.generated.resources.common_search_cd
 import n3to.composeapp.generated.resources.realestate_detail_title
 import n3to.composeapp.generated.resources.transaction_filter_expense
 import n3to.composeapp.generated.resources.transaction_filter_income
 import n3to.composeapp.generated.resources.transaction_label_expense
 import n3to.composeapp.generated.resources.transaction_label_income
 import n3to.composeapp.generated.resources.transaction_label_investment
-import n3to.composeapp.generated.resources.transaction_search_hint
 import n3to.composeapp.generated.resources.transaction_portfolio_badge
 import n3to.composeapp.generated.resources.transaction_retention_badge_format
 import n3to.composeapp.generated.resources.transaction_type_adjustment
 import org.jetbrains.compose.resources.stringResource
-
-@Composable
-internal fun SearchBar(query: String, onChange: (String) -> Unit) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 10.dp)
-            .clip(RoundedCornerShape(9.dp))
-            .background(MaterialTheme.appColors.surface)
-            .padding(horizontal = 10.dp, vertical = 7.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Icon(
-            imageVector = Icons.Outlined.Search,
-            contentDescription = stringResource(Res.string.common_search_cd),
-            tint = MaterialTheme.appColors.textTertiary,
-            modifier = Modifier.size(16.dp)
-        )
-        Spacer(Modifier.width(8.dp))
-        BasicTextField(
-            value = query,
-            onValueChange = onChange,
-            singleLine = true,
-            modifier = Modifier.weight(1f),
-            textStyle = LocalTextStyle.current.copy(
-                color = MaterialTheme.appColors.textPrimary,
-                fontSize = 12.sp
-            ),
-            decorationBox = { inner ->
-                if (query.isEmpty()) {
-                    Text(
-                        stringResource(Res.string.transaction_search_hint),
-                        fontSize = 12.sp,
-                        color = MaterialTheme.appColors.textTertiary
-                    )
-                }
-                inner()
-            }
-        )
-        if (query.isNotBlank()) {
-            TextButton(
-                onClick = { onChange("") },
-                contentPadding = PaddingValues(horizontal = 4.dp)
-            ) {
-                Text("×", fontSize = 16.sp, color = MaterialTheme.appColors.textTertiary)
-            }
-        }
-    }
-}
 
 @Composable
 internal fun TotalsRow(totalIncome: Double, totalExpense: Double, balancesHidden: Boolean) {
@@ -141,7 +85,7 @@ internal fun TotalsRow(totalIncome: Double, totalExpense: Double, balancesHidden
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 12.dp),
         shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.surface),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.navySurface),
         elevation = CardDefaults.cardElevation(0.dp)
     ) {
         Row(
@@ -246,7 +190,7 @@ internal fun TransactionCard(
     val dateFormatted = formatDateLocalized(transaction.date)
 
     Row(
-        modifier = Modifier.fillMaxWidth().background(MaterialTheme.appColors.surface)
+        modifier = Modifier.fillMaxWidth().background(MaterialTheme.appColors.navySurface)
             .then(
                 if (onClick != null) Modifier.clickable { onClick() }
                 else Modifier
@@ -423,5 +367,5 @@ internal fun SwipeToDeleteContainer(onDelete: () -> Unit, content: @Composable (
                 )
             }
         }
-    ) { Surface(color = MaterialTheme.appColors.surface) { content() } }
+    ) { Surface(color = MaterialTheme.appColors.navySurface) { content() } }
 }

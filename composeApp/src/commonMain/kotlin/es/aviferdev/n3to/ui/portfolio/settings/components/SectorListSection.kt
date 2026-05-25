@@ -60,7 +60,7 @@ fun SectorListSection(
                 }
                 if (index < sectors.lastIndex) {
                     HorizontalDivider(
-                        color = MaterialTheme.appColors.border,
+                        color = MaterialTheme.appColors.navyBorder,
                         thickness = 0.5.dp,
                         modifier = Modifier.padding(start = 52.dp)
                     )

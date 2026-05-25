@@ -21,10 +21,10 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.clickable
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -259,13 +259,17 @@ fun NetWorthContent(
         modifier = Modifier
             .fillMaxSize()
             .windowInsetsPadding(WindowInsets.statusBars)
-            .padding(bottom = LocalBottomNavPadding.current)
     ) {
         TopBarWithoutActionsApp()
 
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+            contentPadding = PaddingValues(
+                start = 16.dp,
+                end = 16.dp,
+                top = 8.dp,
+                bottom = LocalBottomNavPadding.current + 8.dp
+            ),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
 
@@ -331,12 +335,13 @@ fun NetWorthContent(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         N3toLabel(text = stringResource(Res.string.networth_realestate_label))
-                        IconButton(
-                            onClick = onAddProperty,
+                        Box(
                             modifier = Modifier
                                 .size(28.dp)
                                 .clip(RoundedCornerShape(8.dp))
                                 .background(MaterialTheme.appColors.navySelected)
+                                .clickable { onAddProperty() },
+                            contentAlignment = Alignment.Center
                         ) {
                             Icon(
                                 imageVector = Icons.Outlined.Add,
@@ -398,12 +403,13 @@ fun NetWorthContent(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         N3toLabel(text = stringResource(Res.string.networth_valuables_label))
-                        IconButton(
-                            onClick = onAddValuable,
+                        Box(
                             modifier = Modifier
                                 .size(28.dp)
                                 .clip(RoundedCornerShape(8.dp))
                                 .background(MaterialTheme.appColors.navySelected)
+                                .clickable { onAddValuable() },
+                            contentAlignment = Alignment.Center
                         ) {
                             Icon(
                                 imageVector = Icons.Outlined.Add,
@@ -463,12 +469,13 @@ fun NetWorthContent(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         N3toLabel(text = stringResource(Res.string.networth_liabilities_label_alt))
-                        IconButton(
-                            onClick = onAddLoan,
+                        Box(
                             modifier = Modifier
                                 .size(28.dp)
                                 .clip(RoundedCornerShape(8.dp))
                                 .background(MaterialTheme.appColors.navySelected)
+                                .clickable { onAddLoan() },
+                            contentAlignment = Alignment.Center
                         ) {
                             Icon(
                                 imageVector = Icons.Outlined.Add,
@@ -528,7 +535,6 @@ fun NetWorthContent(
                 }
             }
 
-            item { Spacer(Modifier.height(80.dp)) }
         }
     }
 }

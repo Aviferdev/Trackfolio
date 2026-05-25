@@ -170,8 +170,8 @@ class PortfolioStateBuilder {
         val fiTotalCurrentValue = fiSummary?.totalCurrentValue ?: 0.0
         val fiTotalNetProfit = fiSummary?.totalNetProfit ?: 0.0
 
-        val combinedInvested = totalInvested + fiTotalPrincipal
-        val combinedCurrentValue = totalCurrentValue + fiTotalCurrentValue
+        val combinedInvested = totalInvested
+        val combinedCurrentValue = totalCurrentValue
         val combinedPnL = totalPnL + fiTotalNetProfit
         val combinedPnLPercent =
             if (combinedInvested > 0.0) (combinedPnL / combinedInvested) * 100.0 else 0.0

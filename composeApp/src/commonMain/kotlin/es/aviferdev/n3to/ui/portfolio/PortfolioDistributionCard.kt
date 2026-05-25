@@ -22,6 +22,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -49,6 +50,7 @@ import n3to.composeapp.generated.resources.portfolio_distribution_by_region
 import n3to.composeapp.generated.resources.portfolio_distribution_by_sector
 import n3to.composeapp.generated.resources.portfolio_distribution_subtitle
 import n3to.composeapp.generated.resources.portfolio_distribution_view_composition
+import n3to.composeapp.generated.resources.portfolio_uncategorized
 import org.jetbrains.compose.resources.stringResource
 
 /**
@@ -68,8 +70,6 @@ fun PortfolioDistributionCard(
     modifier: Modifier = Modifier,
     viewSelector: (@Composable () -> Unit)? = null
 ) {
-    if (slices.isEmpty()) return
-
     val title = when (selectedView) {
         DistributionView.CATEGORY -> stringResource(Res.string.portfolio_distribution_by_category)
         DistributionView.COMPOSITION -> stringResource(Res.string.portfolio_distribution_view_composition)
@@ -118,46 +118,62 @@ fun PortfolioDistributionCard(
 
             Spacer(Modifier.height(16.dp))
 
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                // ── Donut ────────────────────────────────────────────────
+            if (slices.isEmpty()) {
                 Box(
                     modifier = Modifier
-                        .size(140.dp)
-                        .padding(4.dp),
+                        .fillMaxWidth()
+                        .padding(vertical = 16.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    DonutCanvas(
-                        slices = slices,
-                        modifier = Modifier.fillMaxWidth().aspectRatio(1f)
+                    Text(
+                        text = stringResource(Res.string.portfolio_uncategorized),
+                        fontSize = 13.sp,
+                        color = MaterialTheme.appColors.textTertiary,
+                        textAlign = TextAlign.Center
                     )
-                    // Total al centro
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text(
-                            text = stringResource(Res.string.common_total),
-                            fontSize = 10.sp,
-                            color = MaterialTheme.appColors.textSecondary
-                        )
-                        Text(
-                            text = maskAmount(
-                                formatAmountEuro(totalCurrentValue),
-                                balancesHidden
-                            ),
-                            fontSize = 13.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            color = MaterialTheme.appColors.textPrimary
-                        )
-                    }
                 }
+            } else {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    // ── Donut ────────────────────────────────────────────────
+                    Box(
+                        modifier = Modifier
+                            .size(140.dp)
+                            .padding(4.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        DonutCanvas(
+                            slices = slices,
+                            modifier = Modifier.fillMaxWidth().aspectRatio(1f)
+                        )
+                        // Total al centro
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Text(
+                                text = stringResource(Res.string.common_total),
+                                fontSize = 10.sp,
+                                color = MaterialTheme.appColors.textSecondary
+                            )
+                            Text(
+                                text = maskAmount(
+                                    formatAmountEuro(totalCurrentValue),
+                                    balancesHidden
+                                ),
+                                fontSize = 13.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                color = MaterialTheme.appColors.textPrimary
+                            )
+                        }
+                    }
 
-                Spacer(Modifier.width(16.dp))
+                    Spacer(Modifier.width(16.dp))
 
-                // ── Leyenda ─────────────────────────────────────────────
-                Column(
-                    modifier = Modifier.weight(1f),
-                    verticalArrangement = Arrangement.spacedBy(6.dp)
-                ) {
-                    slices.forEach { slice ->
-                        LegendRow(slice = slice)
+                    // ── Leyenda ─────────────────────────────────────────────
+                    Column(
+                        modifier = Modifier.weight(1f),
+                        verticalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        slices.forEach { slice ->
+                            LegendRow(slice = slice)
+                        }
                     }
                 }
             }

@@ -189,7 +189,13 @@ selectByLinkedValuable:
 SELECT * FROM TransactionEntity WHERE linkedValuableId = :valuableId ORDER BY date DESC;
 
 getOldestDateByAccount:
-SELECT MIN(date) AS oldestDate FROM TransactionEntity WHERE accountId = :accountId;
+SELECT MIN(d) AS oldestDate FROM (
+    SELECT date AS d FROM TransactionEntity WHERE accountId = :accountId
+    UNION ALL
+    SELECT t.date AS d FROM AssetTransactionEntity t
+    JOIN AssetEntity a ON a.id = t.assetId
+    WHERE a.accountId = :accountId
+);
 
 getDividendsByAssetId:
 SELECT * FROM TransactionEntity

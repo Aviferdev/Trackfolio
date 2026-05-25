@@ -42,7 +42,7 @@ fun PortfolioSettingsNavigableRow(
             Icon(
                 icon,
                 contentDescription = null,
-                tint = MaterialTheme.appColors.primary,
+                tint = MaterialTheme.appColors.cyanAccent,
                 modifier = Modifier.size(20.dp)
             )
             Spacer(Modifier.width(14.dp))
@@ -68,7 +68,7 @@ fun PortfolioSettingsNavigableRow(
         }
         if (showDivider) {
             HorizontalDivider(
-                color = MaterialTheme.appColors.border,
+                color = MaterialTheme.appColors.navyBorder,
                 thickness = 0.5.dp,
                 modifier = Modifier.padding(start = 50.dp)
             )

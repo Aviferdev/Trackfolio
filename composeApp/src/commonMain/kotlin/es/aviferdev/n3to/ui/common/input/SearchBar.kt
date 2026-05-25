@@ -22,6 +22,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -49,6 +50,7 @@ fun SearchBar(
     query: String,
     onChange: (String) -> Unit,
     placeholder: String = stringResource(Res.string.common_search_placeholder),
+    backgroundColor: Color = MaterialTheme.appColors.surface,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -56,7 +58,7 @@ fun SearchBar(
             .fillMaxWidth()
             .height(42.dp)
             .clip(RoundedCornerShape(9.dp))
-            .background(MaterialTheme.appColors.surface)
+            .background(backgroundColor)
             .padding(horizontal = 10.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
