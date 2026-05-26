@@ -10,5 +10,6 @@ interface AccountRepository {
     suspend fun saveAccount(account: Account): Result<Unit>
     suspend fun updateAccount(account: Account): Result<Unit>
     suspend fun setInitialBalance(accountId: String, amount: Double): Result<Unit>
+    suspend fun archiveAccount(accountId: String): Result<Unit>
     suspend fun deleteAccount(accountId: String): Result<Unit>
 }

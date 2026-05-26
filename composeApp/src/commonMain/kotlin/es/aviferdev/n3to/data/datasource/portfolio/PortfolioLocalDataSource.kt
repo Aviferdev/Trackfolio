@@ -9,5 +9,6 @@ interface PortfolioLocalDataSource {
     fun countByAccount(accountId: String): Flow<Long>
     suspend fun insert(entity: PortfolioEntity)
     suspend fun update(entity: PortfolioEntity)
+    suspend fun archive(id: String)
     suspend fun delete(id: String)
 }

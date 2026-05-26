@@ -3,7 +3,9 @@ package es.aviferdev.n3to.ui.settings
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import es.aviferdev.n3to.domain.model.Account
-import es.aviferdev.n3to.domain.usecase.account.DeleteAccountUseCase
+import es.aviferdev.n3to.domain.usecase.account.AccountOpenItems
+import es.aviferdev.n3to.domain.usecase.account.ArchiveAccountUseCase
+import es.aviferdev.n3to.domain.usecase.account.CheckAccountCanBeArchivedUseCase
 import es.aviferdev.n3to.domain.usecase.account.GetAccountByIdUseCase
 import es.aviferdev.n3to.domain.usecase.account.UpdateAccountUseCase
 import es.aviferdev.n3to.domain.usecase.reconciliation.GetReconciliationReminderIntervalUseCase
@@ -19,7 +21,8 @@ data class AccountConfigUiState(
     val account: Account? = null,
     val reconciliationInterval: Int = 0,
     val showEditSheet: Boolean = false,
-    val deleted: Boolean = false
+    val deleted: Boolean = false,
+    val archiveWarning: AccountOpenItems? = null,
 )
 
 class AccountConfigViewModel(
@@ -27,7 +30,8 @@ class AccountConfigViewModel(
     private val getAccountById: GetAccountByIdUseCase,
     private val getReminderInterval: GetReconciliationReminderIntervalUseCase,
     private val updateAccount: UpdateAccountUseCase,
-    private val deleteAccount: DeleteAccountUseCase
+    private val deleteAccount: ArchiveAccountUseCase,
+    private val checkCanArchive: CheckAccountCanBeArchivedUseCase
 ) : ViewModel() {
 
     val uiState: StateFlow<AccountConfigUiState> = getAccountById(accountId)
@@ -42,9 +46,11 @@ class AccountConfigViewModel(
 
     private val _showEditSheet = MutableStateFlow(false)
     private val _deleted = MutableStateFlow(false)
+    private val _archiveWarning = MutableStateFlow<AccountOpenItems?>(null)
 
     val showEditSheet: StateFlow<Boolean> = _showEditSheet.asStateFlow()
     val deleted: StateFlow<Boolean> = _deleted.asStateFlow()
+    val archiveWarning: StateFlow<AccountOpenItems?> = _archiveWarning.asStateFlow()
 
     fun updateReconciliationInterval(days: Int) {
         getReminderInterval.set(accountId, days)
@@ -65,11 +71,29 @@ class AccountConfigViewModel(
         }
     }
 
-    fun confirmDelete() {
+    fun requestDelete() {
         viewModelScope.launch {
-            deleteAccount(accountId)
-            closeEditSheet()
-            _deleted.value = true
+            val openItems = checkCanArchive(accountId)
+            if (openItems.isEmpty) {
+                doArchive()
+            } else {
+                _archiveWarning.value = openItems
+            }
         }
+    }
+
+    fun dismissArchiveWarning() {
+        _archiveWarning.value = null
+    }
+
+    fun confirmArchiveAnyway() {
+        _archiveWarning.value = null
+        viewModelScope.launch { doArchive() }
+    }
+
+    private suspend fun doArchive() {
+        deleteAccount(accountId)
+        closeEditSheet()
+        _deleted.value = true
     }
 }

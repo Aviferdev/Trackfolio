@@ -5,7 +5,8 @@ CREATE TABLE PortfolioEntity (
     description TEXT,
     color       TEXT,
     sortOrder   INTEGER NOT NULL DEFAULT 0,
-    createdAt   INTEGER NOT NULL
+    createdAt   INTEGER NOT NULL,
+    archived    INTEGER NOT NULL DEFAULT 0
 );
 
 CREATE INDEX idx_portfolio_account ON PortfolioEntity(accountId);
@@ -14,25 +15,28 @@ CREATE INDEX idx_portfolio_account ON PortfolioEntity(accountId);
 
 selectByAccount:
 SELECT * FROM PortfolioEntity
-WHERE accountId = :accountId
+WHERE accountId = :accountId AND archived = 0
 ORDER BY sortOrder ASC, name ASC;
 
 selectById:
 SELECT * FROM PortfolioEntity WHERE id = :id;
 
 countByAccount:
-SELECT COUNT(*) FROM PortfolioEntity WHERE accountId = :accountId;
+SELECT COUNT(*) FROM PortfolioEntity WHERE accountId = :accountId AND archived = 0;
 
 -- ─── Escritura ────────────────────────────────────────────────────────────────
 
 insert:
-INSERT INTO PortfolioEntity(id, accountId, name, description, color, sortOrder, createdAt)
-VALUES (?, ?, ?, ?, ?, ?, ?);
+INSERT INTO PortfolioEntity(id, accountId, name, description, color, sortOrder, createdAt, archived)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?);
 
 update:
 UPDATE PortfolioEntity
 SET name = :name, description = :description, color = :color, sortOrder = :sortOrder
 WHERE id = :id;
+
+archive:
+UPDATE PortfolioEntity SET archived = 1 WHERE id = :id;
 
 delete:
 DELETE FROM PortfolioEntity WHERE id = :id;

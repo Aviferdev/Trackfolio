@@ -10,7 +10,8 @@ fun PortfolioEntity.toDomain(): Portfolio = Portfolio(
     description = description,
     color = color,
     sortOrder = sortOrder.toInt(),
-    createdAt = createdAt
+    createdAt = createdAt,
+    archived = archived != 0L
 )
 
 fun Portfolio.toEntity(): PortfolioEntity = PortfolioEntity(
@@ -20,5 +21,6 @@ fun Portfolio.toEntity(): PortfolioEntity = PortfolioEntity(
     description = description,
     color = color,
     sortOrder = sortOrder.toLong(),
-    createdAt = createdAt
+    createdAt = createdAt,
+    archived = if (archived) 1L else 0L
 )

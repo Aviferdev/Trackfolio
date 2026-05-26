@@ -70,6 +70,12 @@ class AccountLocalDataSourceImpl(
         }
     }
 
+    override suspend fun archiveAccount(accountId: String) {
+        withContext(Dispatchers.IO) {
+            queries.archive(accountId)
+        }
+    }
+
     override suspend fun deleteAccount(accountId: String) {
         withContext(Dispatchers.IO) {
             queries.delete(accountId)

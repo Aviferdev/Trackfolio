@@ -27,6 +27,9 @@ class AccountRepositoryImpl(
     override suspend fun setInitialBalance(accountId: String, amount: Double): Result<Unit> =
         runCatching { dataSource.updateInitialBalance(accountId, amount) }
 
+    override suspend fun archiveAccount(accountId: String): Result<Unit> =
+        runCatching { dataSource.archiveAccount(accountId) }
+
     override suspend fun deleteAccount(accountId: String): Result<Unit> =
         runCatching { dataSource.deleteAccount(accountId) }
 }

@@ -1,6 +1,8 @@
 package es.aviferdev.n3to.di
 
 import es.aviferdev.n3to.core.VersionManager
+import es.aviferdev.n3to.domain.usecase.account.ArchiveAccountUseCase
+import es.aviferdev.n3to.domain.usecase.account.CheckAccountCanBeArchivedUseCase
 import es.aviferdev.n3to.domain.usecase.account.DeleteAccountUseCase
 import es.aviferdev.n3to.domain.usecase.account.GetAccountByIdUseCase
 import es.aviferdev.n3to.domain.usecase.account.GetAccountsUseCase
@@ -155,10 +157,13 @@ import es.aviferdev.n3to.domain.usecase.platform.LinkPlatformToCategoryUseCase
 import es.aviferdev.n3to.domain.usecase.platform.RenamePlatformUseCase
 import es.aviferdev.n3to.domain.usecase.platform.SavePlatformUseCase
 import es.aviferdev.n3to.domain.usecase.platform.UnlinkPlatformFromCategoryUseCase
+import es.aviferdev.n3to.domain.usecase.portfolio.ArchivePortfolioUseCase
+import es.aviferdev.n3to.domain.usecase.portfolio.CheckPortfolioCanBeArchivedUseCase
 import es.aviferdev.n3to.domain.usecase.portfolio.DeletePortfolioUseCase
 import es.aviferdev.n3to.domain.usecase.portfolio.GetPortfolioValueHistoryUseCase
 import es.aviferdev.n3to.domain.usecase.portfolio.GetPortfoliosByAccountUseCase
 import es.aviferdev.n3to.domain.usecase.portfolio.SavePortfolioUseCase
+import es.aviferdev.n3to.domain.usecase.portfolio.TransferAssetToPortfolioUseCase
 import es.aviferdev.n3to.domain.usecase.portfolio.UpdatePortfolioUseCase
 import es.aviferdev.n3to.domain.usecase.realestate.ArchivePropertyUseCase
 import es.aviferdev.n3to.domain.usecase.realestate.ChangeRentalStatusUseCase
@@ -255,6 +260,8 @@ val useCaseModule = module {
     factory { SaveAccountUseCase(get()) }
     factory { UpdateAccountUseCase(get()) }
     factory { DeleteAccountUseCase(get()) }
+    factory { ArchiveAccountUseCase(get()) }
+    factory { CheckAccountCanBeArchivedUseCase(get(), get(), get(), get()) }
     factory { SetInitialBalanceUseCase(get()) }
 
     // ── Transaction ───────────────────────────────────────────────────────────
@@ -337,6 +344,9 @@ val useCaseModule = module {
     factory { SavePortfolioUseCase(get()) }
     factory { UpdatePortfolioUseCase(get()) }
     factory { DeletePortfolioUseCase(get()) }
+    factory { ArchivePortfolioUseCase(get()) }
+    factory { CheckPortfolioCanBeArchivedUseCase(get(), get(), get()) }
+    factory { TransferAssetToPortfolioUseCase(get()) }
     // ── Asset Transaction ─────────────────────────────────────────────────────
     factory { GetTransactionsByAssetUseCase(get()) }
     factory { GetTransactionsByAssetDescUseCase(get()) }
@@ -502,7 +512,8 @@ val useCaseModule = module {
             getAccountById = get(),
             getReminderInterval = get(),
             updateAccount = get(),
-            deleteAccount = get()
+            deleteAccount = get<ArchiveAccountUseCase>(),
+            checkCanArchive = get()
         )
     }
     viewModel {
@@ -510,7 +521,8 @@ val useCaseModule = module {
             getAccounts = get(),
             saveAccount = get(),
             updateAccount = get(),
-            deleteAccount = get(),
+            deleteAccount = get<ArchiveAccountUseCase>(),
+            checkCanArchive = get(),
             setInitialBalance = get(),
             seedCategories = get(),
             session = get()
@@ -521,7 +533,8 @@ val useCaseModule = module {
             getAccounts = get(),
             saveAccount = get(),
             updateAccount = get(),
-            deleteAccount = get(),
+            deleteAccount = get<ArchiveAccountUseCase>(),
+            checkCanArchive = get(),
             setInitialBalance = get(),
             seedCategories = get(),
             session = get(),
@@ -669,7 +682,9 @@ val useCaseModule = module {
             getPortfoliosByAccount = get(),
             savePortfolio = get(),
             updatePortfolio = get(),
-            deletePortfolio = get(),
+            archivePortfolio = get(),
+            checkCanArchive = get(),
+            transferAsset = get(),
             getAssetCategoriesIncludingArchived = get(),
             getSectors = get(),
             getRegions = get(),

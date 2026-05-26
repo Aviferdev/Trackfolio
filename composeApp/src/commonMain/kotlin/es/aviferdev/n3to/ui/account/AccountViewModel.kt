@@ -3,7 +3,9 @@ package es.aviferdev.n3to.ui.account
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import es.aviferdev.n3to.domain.model.Account
-import es.aviferdev.n3to.domain.usecase.account.DeleteAccountUseCase
+import es.aviferdev.n3to.domain.usecase.account.AccountOpenItems
+import es.aviferdev.n3to.domain.usecase.account.ArchiveAccountUseCase
+import es.aviferdev.n3to.domain.usecase.account.CheckAccountCanBeArchivedUseCase
 import es.aviferdev.n3to.domain.usecase.account.GetAccountsUseCase
 import es.aviferdev.n3to.domain.usecase.account.SaveAccountUseCase
 import es.aviferdev.n3to.domain.usecase.account.SetInitialBalanceUseCase
@@ -25,13 +27,15 @@ data class AccountUiState(
     val showDeleteConfirm: Boolean = false,
     val accountToDelete: Account? = null,
     val pendingInitialBalanceAccount: Account? = null,
+    val archiveWarning: Pair<Account, AccountOpenItems>? = null,
 )
 
 class AccountViewModel(
     private val getAccounts: GetAccountsUseCase,
     private val saveAccount: SaveAccountUseCase,
     private val updateAccount: UpdateAccountUseCase,
-    private val deleteAccount: DeleteAccountUseCase,
+    private val deleteAccount: ArchiveAccountUseCase,
+    private val checkCanArchive: CheckAccountCanBeArchivedUseCase,
     private val setInitialBalance: SetInitialBalanceUseCase,
     private val seedCategories: SeedDefaultCategoriesUseCase,
     private val session: AccountSession
@@ -102,11 +106,29 @@ class AccountViewModel(
     }
 
     fun requestDelete(account: Account) {
-        _uiState.value = _uiState.value.copy(showDeleteConfirm = true, accountToDelete = account)
+        viewModelScope.launch {
+            _uiState.value = _uiState.value.copy(isLoading = true)
+            val openItems = checkCanArchive(account.id)
+            _uiState.value = _uiState.value.copy(isLoading = false)
+            if (openItems.isEmpty) {
+                _uiState.value = _uiState.value.copy(showDeleteConfirm = true, accountToDelete = account)
+            } else {
+                _uiState.value = _uiState.value.copy(archiveWarning = Pair(account, openItems))
+            }
+        }
     }
 
     fun cancelDelete() {
         _uiState.value = _uiState.value.copy(showDeleteConfirm = false, accountToDelete = null)
+    }
+
+    fun dismissArchiveWarning() {
+        _uiState.value = _uiState.value.copy(archiveWarning = null)
+    }
+
+    fun confirmArchiveAnyway() {
+        val account = _uiState.value.archiveWarning?.first ?: return
+        _uiState.value = _uiState.value.copy(archiveWarning = null, accountToDelete = account, showDeleteConfirm = true)
     }
 
     fun addAccount(name: String, initialBalance: Double) {

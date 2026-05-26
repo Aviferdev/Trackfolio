@@ -35,7 +35,8 @@ class PortfolioLocalDataSourceImpl(
                 description = entity.description,
                 color = entity.color,
                 sortOrder = entity.sortOrder,
-                createdAt = entity.createdAt
+                createdAt = entity.createdAt,
+                archived = entity.archived
             )
         }
     }
@@ -49,6 +50,12 @@ class PortfolioLocalDataSourceImpl(
                 sortOrder = entity.sortOrder,
                 id = entity.id
             )
+        }
+    }
+
+    override suspend fun archive(id: String) {
+        withContext(Dispatchers.IO) {
+            queries.archive(id)
         }
     }
 

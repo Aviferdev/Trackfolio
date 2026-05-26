@@ -8,5 +8,6 @@ interface PortfolioRepository {
     fun getById(id: String): Flow<Portfolio?>
     suspend fun save(portfolio: Portfolio): Result<Unit>
     suspend fun update(portfolio: Portfolio): Result<Unit>
+    suspend fun archive(id: String): Result<Unit>
     suspend fun delete(id: String): Result<Unit>
 }

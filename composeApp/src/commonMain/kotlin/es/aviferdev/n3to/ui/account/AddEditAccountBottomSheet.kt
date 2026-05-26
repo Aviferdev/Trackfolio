@@ -55,8 +55,8 @@ import n3to.composeapp.generated.resources.account_initial_balance_required
 import n3to.composeapp.generated.resources.account_initial_balance_valid_hint
 import n3to.composeapp.generated.resources.account_name_placeholder
 import n3to.composeapp.generated.resources.account_name_supporting_text
+import n3to.composeapp.generated.resources.account_archive_anyway
 import n3to.composeapp.generated.resources.common_cancel
-import n3to.composeapp.generated.resources.common_delete
 import n3to.composeapp.generated.resources.portfolio_add_asset_save
 import n3to.composeapp.generated.resources.portfolio_name_required
 import n3to.composeapp.generated.resources.portfolio_platform_name
@@ -296,7 +296,7 @@ fun AddEditAccountBottomSheet(
                         }
                         TextButton(onClick = onDelete) {
                             Text(
-                                stringResource(Res.string.common_delete),
+                                stringResource(Res.string.account_archive_anyway),
                                 fontSize = 13.sp,
                                 fontWeight = FontWeight.SemiBold,
                                 color = MaterialTheme.appColors.expense

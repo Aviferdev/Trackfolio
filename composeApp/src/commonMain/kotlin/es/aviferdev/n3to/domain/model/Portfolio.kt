@@ -7,5 +7,6 @@ data class Portfolio(
     val description: String? = null,
     val color: String? = null,
     val sortOrder: Int = 0,
-    val createdAt: Long
+    val createdAt: Long,
+    val archived: Boolean = false
 )

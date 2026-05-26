@@ -57,12 +57,18 @@ import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.account_active_badge
 import n3to.composeapp.generated.resources.account_add_title
 import n3to.composeapp.generated.resources.account_balance_short
+import n3to.composeapp.generated.resources.account_archive_anyway
+import n3to.composeapp.generated.resources.account_archive_warning_assets_only
+import n3to.composeapp.generated.resources.account_archive_warning_both
+import n3to.composeapp.generated.resources.account_archive_warning_fi_only
+import n3to.composeapp.generated.resources.account_archive_warning_title
 import n3to.composeapp.generated.resources.account_delete_confirm_title
 import n3to.composeapp.generated.resources.account_delete_full_message
 import n3to.composeapp.generated.resources.account_empty_subtitle
 import n3to.composeapp.generated.resources.account_list_title
 import n3to.composeapp.generated.resources.account_initial_balance
 import n3to.composeapp.generated.resources.account_no_accounts
+import n3to.composeapp.generated.resources.common_cancel
 import n3to.composeapp.generated.resources.common_delete
 import n3to.composeapp.generated.resources.common_edit
 import org.jetbrains.compose.resources.stringResource
@@ -121,8 +127,27 @@ fun AccountListScreen(
                 Res.string.account_delete_full_message,
                 uiState.accountToDelete!!.name
             ),
+            confirmLabel = stringResource(Res.string.account_archive_anyway),
             onConfirm = { viewModel.confirmDelete() },
             onDismiss = { viewModel.cancelDelete() }
+        )
+    }
+    uiState.archiveWarning?.let { (account, openItems) ->
+        val message = when {
+            openItems.openAssetsCount > 0 && openItems.openFixedIncomeCount > 0 ->
+                stringResource(Res.string.account_archive_warning_both, openItems.openAssetsCount, openItems.openFixedIncomeCount)
+            openItems.openAssetsCount > 0 ->
+                stringResource(Res.string.account_archive_warning_assets_only, openItems.openAssetsCount)
+            else ->
+                stringResource(Res.string.account_archive_warning_fi_only, openItems.openFixedIncomeCount)
+        }
+        DeleteConfirmDialog(
+            title = stringResource(Res.string.account_archive_warning_title),
+            message = message,
+            confirmLabel = stringResource(Res.string.account_archive_anyway),
+            dismissLabel = stringResource(Res.string.common_cancel),
+            onConfirm = { viewModel.confirmArchiveAnyway() },
+            onDismiss = { viewModel.dismissArchiveWarning() }
         )
     }
     uiState.error?.let {

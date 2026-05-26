@@ -203,8 +203,8 @@
     <string name="settings_show_onboarding">Ver introducción</string>
 
     <!-- Settings – Diálogos -->
-    <string name="settings_delete_account_title">Eliminar cuenta</string>
-    <string name="settings_delete_account_message">¿Eliminar «%1$s»? Esto también eliminará todos sus movimientos.</string>
+    <string name="settings_delete_account_title">Archivar cuenta</string>
+    <string name="settings_delete_account_message">¿Archivar «%1$s»? La cuenta se ocultará pero su historial quedará conservado.</string>
     <string name="settings_configure_cd">Configurar</string>
     <string name="settings_edit_cd">Editar</string>
 
@@ -290,6 +290,17 @@
     <string name="portfolio_settings_add">Añadir</string>
     <string name="portfolio_settings_delete_portfolio_title">Eliminar cartera</string>
     <string name="portfolio_settings_delete_portfolio_message">¿Eliminar «%1$s»? Los activos pasarán a «Sin cartera».</string>
+    <string name="portfolio_settings_archive_confirm_title">Archivar cartera</string>
+    <string name="portfolio_settings_archive_confirm_message">¿Archivar «%1$s»? Todo el historial de operaciones se conservará.</string>
+    <string name="portfolio_settings_archive_action">Archivar</string>
+    <string name="portfolio_settings_blocked_title">Posiciones abiertas</string>
+    <string name="portfolio_settings_blocked_message">La cartera «%1$s» tiene activos con posición abierta. Liquídalos o traspásalos antes de archivar.</string>
+    <string name="portfolio_settings_transfer_title">Traspasar activo</string>
+    <string name="portfolio_settings_transfer_message">Selecciona la cartera de destino para «%1$s»</string>
+    <string name="portfolio_settings_transfer_action">Traspasar</string>
+    <string name="portfolio_settings_transfer_no_portfolios">No hay otras carteras disponibles. Crea una primera.</string>
+    <string name="portfolio_settings_blocked_fixed_income_section">Renta fija activa:</string>
+    <string name="portfolio_settings_blocked_assets_section">Activos con posición abierta:</string>
     <string name="portfolio_settings_management_section">GESTIÓN</string>
     <string name="portfolio_settings_assets_available">Activos disponibles</string>
     <string name="portfolio_settings_platforms_row">Plataformas</string>
@@ -439,7 +450,7 @@
     <string name="account_empty_subtitle">Crea tu primera cuenta desde\nAjustes para empezar</string>
     <string name="account_balance_label">Saldo actual</string>
     <string name="account_computed_balance">Saldo actual calculado</string>
-    <string name="account_delete_confirm_title">Eliminar cuenta</string>
+    <string name="account_delete_confirm_title">Archivar cuenta</string>
     <string name="account_configure_cd">Configurar</string>
     <string name="account_edit_cd">Editar</string>
     <string name="account_delete_cd">Eliminar</string>
@@ -1215,7 +1226,7 @@
     <string name="account_initial_balance_required">El saldo inicial es obligatorio</string>
     <string name="account_initial_balance_must_be_positive">El saldo inicial debe ser mayor que 0</string>
     <string name="account_initial_balance_desc">Dinero que ya tienes en esta cuenta hoy. Indica 0 si no tienes nada.</string>
-    <string name="account_delete_full_message">¿Eliminar «%1$s»? Esto también eliminará todos sus movimientos, activos y datos asociados.</string>
+    <string name="account_delete_full_message">¿Archivar «%1$s»? La cuenta se ocultará de la lista pero todo su historial, movimientos y activos quedarán conservados.</string>
     <string name="account_set_balance_btn">Establecer saldo</string>
     <string name="account_set_balance_title">Saldo inicial</string>
     <string name="account_set_balance_desc">Introduce el saldo actual de esta cuenta.\nEsto es obligatorio antes de poder registrar movimientos.</string>
@@ -1396,7 +1407,7 @@
     <string name="settings_monthly_goals_label">Objetivos mensuales</string>
     <string name="settings_account_section_maintenance">Mantenimiento</string>
     <string name="settings_edit_account_label">Editar cuenta</string>
-    <string name="settings_delete_account_label">Eliminar cuenta</string>
+    <string name="settings_delete_account_label">Archivar cuenta</string>
 
     <!-- ABOUT SCREEN - missing -->
     <string name="about_title">Acerca de</string>
@@ -1757,7 +1768,12 @@
          EXTRACTED HARDCODED STRINGS
          ===================================================================== -->
     <string name="account_create_button">Crear cuenta</string>
-    <string name="account_delete_confirm_message">¿Estás seguro? Esta acción no se puede deshacer.</string>
+    <string name="account_delete_confirm_message">La cuenta se ocultará pero su historial, movimientos y activos quedarán conservados.</string>
+    <string name="account_archive_warning_title">Posiciones abiertas</string>
+    <string name="account_archive_warning_assets_only">Esta cuenta tiene %1$d activo(s) con posición abierta. Si la archivas, los activos quedarán conservados en el historial pero no serán accesibles.</string>
+    <string name="account_archive_warning_fi_only">Esta cuenta tiene %1$d posición(es) de renta fija activa(s). Si la archivas, quedarán conservadas en el historial pero no serán accesibles.</string>
+    <string name="account_archive_warning_both">Esta cuenta tiene %1$d activo(s) abierto(s) y %2$d posición(es) de renta fija activa(s). Si la archivas, quedarán conservados en el historial pero no serán accesibles.</string>
+    <string name="account_archive_anyway">Archivar de todas formas</string>
     <string name="loan_picker_title">Seleccionar préstamo</string>
     <string name="loan_picker_subtitle">Vincula una hipoteca o préstamo existente</string>
     <string name="reconciliation_amount_placeholder">Ej: 1250.00</string>

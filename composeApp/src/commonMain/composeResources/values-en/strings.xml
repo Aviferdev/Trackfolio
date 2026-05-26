@@ -201,8 +201,8 @@
     <string name="settings_show_onboarding">Show intro</string>
 
     <!-- Settings – Dialogs -->
-    <string name="settings_delete_account_title">Delete account</string>
-    <string name="settings_delete_account_message">Delete «%1$s»? This will also delete all its transactions.</string>
+    <string name="settings_delete_account_title">Archive account</string>
+    <string name="settings_delete_account_message">Archive «%1$s»? The account will be hidden but its history will be preserved.</string>
     <string name="settings_configure_cd">Configure</string>
     <string name="settings_edit_cd">Edit</string>
 
@@ -288,6 +288,17 @@
     <string name="portfolio_settings_add">Add</string>
     <string name="portfolio_settings_delete_portfolio_title">Delete portfolio</string>
     <string name="portfolio_settings_delete_portfolio_message">Delete «%1$s»? Assets will be moved to «No portfolio».</string>
+    <string name="portfolio_settings_archive_confirm_title">Archive portfolio</string>
+    <string name="portfolio_settings_archive_confirm_message">Archive «%1$s»? All operation history will be preserved.</string>
+    <string name="portfolio_settings_archive_action">Archive</string>
+    <string name="portfolio_settings_blocked_title">Open positions</string>
+    <string name="portfolio_settings_blocked_message">Portfolio «%1$s» has assets with open positions. Close or transfer them before archiving.</string>
+    <string name="portfolio_settings_transfer_title">Transfer asset</string>
+    <string name="portfolio_settings_transfer_message">Select a destination portfolio for «%1$s»</string>
+    <string name="portfolio_settings_transfer_action">Transfer</string>
+    <string name="portfolio_settings_transfer_no_portfolios">No other portfolios available. Create one first.</string>
+    <string name="portfolio_settings_blocked_fixed_income_section">Active fixed income:</string>
+    <string name="portfolio_settings_blocked_assets_section">Assets with open position:</string>
     <string name="portfolio_settings_management_section">MANAGEMENT</string>
     <string name="portfolio_settings_assets_available">Available assets</string>
     <string name="portfolio_settings_platforms_row">Platforms</string>
@@ -437,7 +448,7 @@
     <string name="account_empty_subtitle">Create your first account from\nSettings to get started</string>
     <string name="account_balance_label">Current balance</string>
     <string name="account_computed_balance">Calculated balance</string>
-    <string name="account_delete_confirm_title">Delete account</string>
+    <string name="account_delete_confirm_title">Archive account</string>
     <string name="account_configure_cd">Configure</string>
     <string name="account_edit_cd">Edit</string>
     <string name="account_delete_cd">Delete</string>
@@ -1215,7 +1226,7 @@
     <string name="account_initial_balance_required">Initial balance is required</string>
     <string name="account_initial_balance_must_be_positive">Initial balance must be greater than 0</string>
     <string name="account_initial_balance_desc">Money you already have in this account today. Enter 0 if you have nothing.</string>
-    <string name="account_delete_full_message">Delete «%1$s»? This will also delete all its transactions, assets and related data.</string>
+    <string name="account_delete_full_message">Archive «%1$s»? The account will be hidden from the list, but all its history, transactions and assets will be preserved.</string>
     <string name="account_set_balance_btn">Set balance</string>
     <string name="account_set_balance_title">Initial balance</string>
     <string name="account_set_balance_desc">Enter the current balance of this account.\nThis is required before you can register transactions.</string>
@@ -1383,7 +1394,7 @@
     <string name="settings_monthly_goals_label">Monthly goals</string>
     <string name="settings_account_section_maintenance">Maintenance</string>
     <string name="settings_edit_account_label">Edit account</string>
-    <string name="settings_delete_account_label">Delete account</string>
+    <string name="settings_delete_account_label">Archive account</string>
 
     <!-- ABOUT SCREEN - missing -->
     <string name="about_title">About</string>
@@ -1733,7 +1744,12 @@
          EXTRACTED HARDCODED STRINGS
          ===================================================================== -->
     <string name="account_create_button">Create account</string>
-    <string name="account_delete_confirm_message">Are you sure? This action cannot be undone.</string>
+    <string name="account_delete_confirm_message">The account will be hidden, but its history, transactions and assets will be preserved.</string>
+    <string name="account_archive_warning_title">Open positions</string>
+    <string name="account_archive_warning_assets_only">This account has %1$d open asset position(s). If archived, they will be preserved in history but won't be accessible.</string>
+    <string name="account_archive_warning_fi_only">This account has %1$d active fixed income position(s). If archived, they will be preserved in history but won't be accessible.</string>
+    <string name="account_archive_warning_both">This account has %1$d open asset(s) and %2$d active fixed income position(s). If archived, they will be preserved in history but won't be accessible.</string>
+    <string name="account_archive_anyway">Archive anyway</string>
     <string name="loan_picker_title">Select loan</string>
     <string name="loan_picker_subtitle">Link an existing mortgage or loan</string>
     <string name="reconciliation_amount_placeholder">E.g. 1250.00</string>

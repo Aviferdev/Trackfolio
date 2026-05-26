@@ -2,15 +2,20 @@ package es.aviferdev.n3to.ui.portfolio.settings
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import es.aviferdev.n3to.domain.model.Asset
+import es.aviferdev.n3to.domain.model.FixedIncomePosition
 import es.aviferdev.n3to.domain.model.Portfolio
+import es.aviferdev.n3to.domain.usecase.portfolio.PortfolioOpenItems
 import es.aviferdev.n3to.domain.usecase.asset.GetPriceReminderIntervalUseCase
 import es.aviferdev.n3to.domain.usecase.assetcategory.GetAllAssetCategoriesIncludingArchivedUseCase
 import es.aviferdev.n3to.domain.usecase.assetmetadata.GetRegionsUseCase
 import es.aviferdev.n3to.domain.usecase.assetmetadata.GetSectorsUseCase
 import es.aviferdev.n3to.domain.usecase.platform.GetPlatformsUseCase
-import es.aviferdev.n3to.domain.usecase.portfolio.DeletePortfolioUseCase
+import es.aviferdev.n3to.domain.usecase.portfolio.ArchivePortfolioUseCase
+import es.aviferdev.n3to.domain.usecase.portfolio.CheckPortfolioCanBeArchivedUseCase
 import es.aviferdev.n3to.domain.usecase.portfolio.GetPortfoliosByAccountUseCase
 import es.aviferdev.n3to.domain.usecase.portfolio.SavePortfolioUseCase
+import es.aviferdev.n3to.domain.usecase.portfolio.TransferAssetToPortfolioUseCase
 import es.aviferdev.n3to.domain.usecase.portfolio.UpdatePortfolioUseCase
 import es.aviferdev.n3to.ui.account.AccountSession
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -25,6 +30,18 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
+data class PortfolioArchiveBlockState(
+    val portfolio: Portfolio,
+    val openAssets: List<Asset>,
+    val openFixedIncome: List<FixedIncomePosition>
+)
+
+data class PortfolioTransferState(
+    val asset: Asset,
+    val sourcePortfolio: Portfolio,
+    val availablePortfolios: List<Portfolio>
+)
+
 data class PortfolioSettingsUiState(
     val portfolios: List<Portfolio> = emptyList(),
     val categoriesCount: Int = 0,
@@ -34,7 +51,10 @@ data class PortfolioSettingsUiState(
     val priceReminderInterval: Int = 7,
     val showAddPortfolioSheet: Boolean = false,
     val editingPortfolio: Portfolio? = null,
-    val deletingPortfolio: Portfolio? = null,
+    val confirmingArchivePortfolio: Portfolio? = null,
+    val archiveBlockedState: PortfolioArchiveBlockState? = null,
+    val transferState: PortfolioTransferState? = null,
+    val isCheckingArchive: Boolean = false,
     val noAccountError: Boolean = false
 )
 
@@ -48,7 +68,10 @@ private data class CountsSnapshot(
 private data class PortfolioSheetState(
     val showAddSheet: Boolean = false,
     val editing: Portfolio? = null,
-    val deleting: Portfolio? = null,
+    val confirmingArchive: Portfolio? = null,
+    val archiveBlockedState: PortfolioArchiveBlockState? = null,
+    val transferState: PortfolioTransferState? = null,
+    val isCheckingArchive: Boolean = false,
     val noAccountError: Boolean = false
 )
 
@@ -58,7 +81,9 @@ class PortfolioSettingsViewModel(
     private val getPortfoliosByAccount: GetPortfoliosByAccountUseCase,
     private val savePortfolio: SavePortfolioUseCase,
     private val updatePortfolio: UpdatePortfolioUseCase,
-    private val deletePortfolio: DeletePortfolioUseCase,
+    private val archivePortfolio: ArchivePortfolioUseCase,
+    private val checkCanArchive: CheckPortfolioCanBeArchivedUseCase,
+    private val transferAsset: TransferAssetToPortfolioUseCase,
     getAssetCategoriesIncludingArchived: GetAllAssetCategoriesIncludingArchivedUseCase,
     getSectors: GetSectorsUseCase,
     getRegions: GetRegionsUseCase,
@@ -78,16 +103,15 @@ class PortfolioSettingsViewModel(
         CountsSnapshot(categories, platforms, sectors, regions)
     }
 
+    private val portfoliosFlow = session.selectedAccountId.flatMapLatest { id ->
+        if (id == null) flowOf(emptyList()) else getPortfoliosByAccount(id)
+    }
+
     val uiState: StateFlow<PortfolioSettingsUiState> = combine(
-        combine(
-            session.selectedAccountId.flatMapLatest { id ->
-                if (id == null) flowOf(emptyList()) else getPortfoliosByAccount(id)
-            },
-            countsFlow
-        ) { portfolios, counts -> portfolios to counts },
+        combine(portfoliosFlow, countsFlow) { portfolios, counts -> portfolios to counts },
         _portfolioSheet,
         _priceReminderInterval
-    ) { (portfolios, counts), portfolioSheet, interval ->
+    ) { (portfolios, counts), sheet, interval ->
         PortfolioSettingsUiState(
             portfolios = portfolios,
             categoriesCount = counts.categories,
@@ -95,10 +119,13 @@ class PortfolioSettingsViewModel(
             sectorsCount = counts.sectors,
             regionsCount = counts.regions,
             priceReminderInterval = interval,
-            showAddPortfolioSheet = portfolioSheet.showAddSheet,
-            editingPortfolio = portfolioSheet.editing,
-            deletingPortfolio = portfolioSheet.deleting,
-            noAccountError = portfolioSheet.noAccountError
+            showAddPortfolioSheet = sheet.showAddSheet,
+            editingPortfolio = sheet.editing,
+            confirmingArchivePortfolio = sheet.confirmingArchive,
+            archiveBlockedState = sheet.archiveBlockedState,
+            transferState = sheet.transferState,
+            isCheckingArchive = sheet.isCheckingArchive,
+            noAccountError = sheet.noAccountError
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), PortfolioSettingsUiState())
 
@@ -108,7 +135,7 @@ class PortfolioSettingsViewModel(
         _priceReminderInterval.value = days
     }
 
-    // ── Portfolio actions ─────────────────────────────────────────────────────
+    // ── Portfolio add/edit ────────────────────────────────────────────────────
     fun openAddPortfolioSheet() {
         _portfolioSheet.update { it.copy(showAddSheet = true) }
     }
@@ -123,18 +150,6 @@ class PortfolioSettingsViewModel(
 
     fun closeEditPortfolioSheet() {
         _portfolioSheet.update { it.copy(editing = null) }
-    }
-
-    fun requestDeletePortfolio(portfolio: Portfolio) {
-        _portfolioSheet.update { it.copy(deleting = portfolio) }
-    }
-
-    fun cancelDeletePortfolio() {
-        _portfolioSheet.update { it.copy(deleting = null) }
-    }
-
-    fun dismissNoAccountError() {
-        _portfolioSheet.update { it.copy(noAccountError = false) }
     }
 
     fun addPortfolio(name: String) {
@@ -156,10 +171,81 @@ class PortfolioSettingsViewModel(
         }
     }
 
-    fun deletePortfolioEntry(portfolioId: String) {
+    // ── Archive flow ──────────────────────────────────────────────────────────
+
+    fun requestArchivePortfolio(portfolio: Portfolio) {
         viewModelScope.launch {
-            deletePortfolio(portfolioId)
-            cancelDeletePortfolio()
+            _portfolioSheet.update { it.copy(isCheckingArchive = true) }
+            val open = checkCanArchive(portfolio.id)
+            if (open.isEmpty) {
+                _portfolioSheet.update {
+                    it.copy(isCheckingArchive = false, confirmingArchive = portfolio)
+                }
+            } else {
+                _portfolioSheet.update {
+                    it.copy(
+                        isCheckingArchive = false,
+                        archiveBlockedState = PortfolioArchiveBlockState(
+                            portfolio, open.openAssets, open.openFixedIncome
+                        )
+                    )
+                }
+            }
         }
+    }
+
+    fun confirmArchivePortfolio(portfolioId: String) {
+        viewModelScope.launch {
+            archivePortfolio(portfolioId)
+            _portfolioSheet.update { it.copy(confirmingArchive = null, archiveBlockedState = null) }
+        }
+    }
+
+    fun cancelArchive() {
+        _portfolioSheet.update {
+            it.copy(confirmingArchive = null, archiveBlockedState = null, transferState = null)
+        }
+    }
+
+    // ── Transfer flow ─────────────────────────────────────────────────────────
+
+    fun requestTransferAsset(asset: Asset, sourcePortfolio: Portfolio) {
+        val available = uiState.value.portfolios.filter { it.id != sourcePortfolio.id }
+        _portfolioSheet.update {
+            it.copy(transferState = PortfolioTransferState(asset, sourcePortfolio, available))
+        }
+    }
+
+    fun confirmTransfer(assetId: String, targetPortfolioId: String?) {
+        val sourcePortfolio = _portfolioSheet.value.transferState?.sourcePortfolio ?: return
+        viewModelScope.launch {
+            transferAsset(assetId, targetPortfolioId)
+            val remaining = checkCanArchive(sourcePortfolio.id)
+            _portfolioSheet.update { state ->
+                if (remaining.isEmpty) {
+                    state.copy(
+                        transferState = null,
+                        archiveBlockedState = null,
+                        confirmingArchive = sourcePortfolio
+                    )
+                } else {
+                    state.copy(
+                        transferState = null,
+                        archiveBlockedState = state.archiveBlockedState?.copy(
+                            openAssets = remaining.openAssets,
+                            openFixedIncome = remaining.openFixedIncome
+                        )
+                    )
+                }
+            }
+        }
+    }
+
+    fun cancelTransfer() {
+        _portfolioSheet.update { it.copy(transferState = null) }
+    }
+
+    fun dismissNoAccountError() {
+        _portfolioSheet.update { it.copy(noAccountError = false) }
     }
 }

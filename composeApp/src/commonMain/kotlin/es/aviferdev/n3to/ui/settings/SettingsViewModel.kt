@@ -10,7 +10,9 @@ import es.aviferdev.n3to.core.security.ThemeManager
 import es.aviferdev.n3to.core.security.getSystemLanguage
 import es.aviferdev.n3to.core.security.setPlatformLanguage
 import es.aviferdev.n3to.domain.model.Account
-import es.aviferdev.n3to.domain.usecase.account.DeleteAccountUseCase
+import es.aviferdev.n3to.domain.usecase.account.AccountOpenItems
+import es.aviferdev.n3to.domain.usecase.account.ArchiveAccountUseCase
+import es.aviferdev.n3to.domain.usecase.account.CheckAccountCanBeArchivedUseCase
 import es.aviferdev.n3to.domain.usecase.account.GetAccountsUseCase
 import es.aviferdev.n3to.domain.usecase.account.SaveAccountUseCase
 import es.aviferdev.n3to.domain.usecase.account.SetInitialBalanceUseCase
@@ -39,6 +41,7 @@ data class SettingsUiState(
     val editingAccount: Account? = null,
     val showDeleteConfirm: Boolean = false,
     val accountToDelete: Account? = null,
+    val archiveWarning: Pair<Account, AccountOpenItems>? = null,
     val biometricEnabled: Boolean = false,
     val biometricError: String? = null,
     val isDarkTheme: Boolean = true,
@@ -53,7 +56,8 @@ class SettingsViewModel(
     private val getAccounts: GetAccountsUseCase,
     private val saveAccount: SaveAccountUseCase,
     private val updateAccount: UpdateAccountUseCase,
-    private val deleteAccount: DeleteAccountUseCase,
+    private val deleteAccount: ArchiveAccountUseCase,
+    private val checkCanArchive: CheckAccountCanBeArchivedUseCase,
     private val setInitialBalance: SetInitialBalanceUseCase,
     private val seedCategories: SeedDefaultCategoriesUseCase,
     private val session: AccountSession,
@@ -72,6 +76,7 @@ class SettingsViewModel(
         val editingAccount: Account? = null,
         val showDeleteConfirm: Boolean = false,
         val accountToDelete: Account? = null,
+        val archiveWarning: Pair<Account, AccountOpenItems>? = null,
         val biometricEnabled: Boolean = false,
         val biometricError: String? = null,
         val showLanguageDialog: Boolean = false
@@ -106,6 +111,7 @@ class SettingsViewModel(
             editingAccount = extra.local.editingAccount,
             showDeleteConfirm = extra.local.showDeleteConfirm,
             accountToDelete = extra.local.accountToDelete,
+            archiveWarning = extra.local.archiveWarning,
             biometricEnabled = extra.local.biometricEnabled,
             biometricError = extra.local.biometricError,
             showLanguageDialog = extra.local.showLanguageDialog
@@ -153,11 +159,27 @@ class SettingsViewModel(
     }
 
     fun requestDelete(account: Account) {
-        _local.update { it.copy(showDeleteConfirm = true, accountToDelete = account) }
+        viewModelScope.launch {
+            val openItems = checkCanArchive(account.id)
+            if (openItems.isEmpty) {
+                _local.update { it.copy(showDeleteConfirm = true, accountToDelete = account) }
+            } else {
+                _local.update { it.copy(archiveWarning = Pair(account, openItems)) }
+            }
+        }
     }
 
     fun cancelDelete() {
         _local.update { it.copy(showDeleteConfirm = false, accountToDelete = null) }
+    }
+
+    fun dismissArchiveWarning() {
+        _local.update { it.copy(archiveWarning = null) }
+    }
+
+    fun confirmArchiveAnyway() {
+        val account = _local.value.archiveWarning?.first ?: return
+        _local.update { it.copy(archiveWarning = null, showDeleteConfirm = true, accountToDelete = account) }
     }
 
     fun addAccount(name: String, initialBalance: Double) {

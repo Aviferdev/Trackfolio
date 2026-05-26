@@ -24,6 +24,9 @@ class PortfolioRepositoryImpl(
     override suspend fun update(portfolio: Portfolio): Result<Unit> =
         runCatching { dataSource.update(portfolio.toEntity()) }
 
+    override suspend fun archive(id: String): Result<Unit> =
+        runCatching { dataSource.archive(id) }
+
     override suspend fun delete(id: String): Result<Unit> =
         runCatching { dataSource.delete(id) }
 }

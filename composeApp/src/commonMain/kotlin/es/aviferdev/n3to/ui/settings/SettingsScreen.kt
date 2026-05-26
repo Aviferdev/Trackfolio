@@ -55,7 +55,11 @@ import kotlinx.coroutines.delay
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.common_accept
 import n3to.composeapp.generated.resources.common_cancel
-import n3to.composeapp.generated.resources.common_delete
+import n3to.composeapp.generated.resources.account_archive_anyway
+import n3to.composeapp.generated.resources.account_archive_warning_assets_only
+import n3to.composeapp.generated.resources.account_archive_warning_both
+import n3to.composeapp.generated.resources.account_archive_warning_fi_only
+import n3to.composeapp.generated.resources.account_archive_warning_title
 import n3to.composeapp.generated.resources.home_confirm_identity
 import n3to.composeapp.generated.resources.settings_about
 import n3to.composeapp.generated.resources.settings_add
@@ -164,13 +168,49 @@ fun SettingsScreen(
             confirmButton = {
                 TextButton(onClick = { viewModel.confirmDelete() }) {
                     Text(
-                        stringResource(Res.string.common_delete),
+                        stringResource(Res.string.account_archive_anyway),
                         color = MaterialTheme.appColors.expense, fontWeight = FontWeight.SemiBold
                     )
                 }
             },
             dismissButton = {
                 TextButton(onClick = { viewModel.cancelDelete() }) {
+                    Text(stringResource(Res.string.common_cancel), color = MaterialTheme.appColors.cyanAccent)
+                }
+            },
+            shape = RoundedCornerShape(16.dp)
+        )
+    }
+    state.archiveWarning?.let { (account, openItems) ->
+        val message = when {
+            openItems.openAssetsCount > 0 && openItems.openFixedIncomeCount > 0 ->
+                stringResource(Res.string.account_archive_warning_both, openItems.openAssetsCount, openItems.openFixedIncomeCount)
+            openItems.openAssetsCount > 0 ->
+                stringResource(Res.string.account_archive_warning_assets_only, openItems.openAssetsCount)
+            else ->
+                stringResource(Res.string.account_archive_warning_fi_only, openItems.openFixedIncomeCount)
+        }
+        AlertDialog(
+            onDismissRequest = { viewModel.dismissArchiveWarning() },
+            containerColor = MaterialTheme.appColors.navySurface,
+            title = {
+                Text(
+                    stringResource(Res.string.account_archive_warning_title),
+                    fontSize = 16.sp, fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.appColors.textPrimary
+                )
+            },
+            text = { Text(message, fontSize = 13.sp, color = MaterialTheme.appColors.textSecondary) },
+            confirmButton = {
+                TextButton(onClick = { viewModel.confirmArchiveAnyway() }) {
+                    Text(
+                        stringResource(Res.string.account_archive_anyway),
+                        color = MaterialTheme.appColors.expense, fontWeight = FontWeight.SemiBold
+                    )
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { viewModel.dismissArchiveWarning() }) {
                     Text(stringResource(Res.string.common_cancel), color = MaterialTheme.appColors.cyanAccent)
                 }
             },
