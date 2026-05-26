@@ -52,6 +52,7 @@ import es.aviferdev.n3to.ui.security.LockScreen
 import es.aviferdev.n3to.ui.splash.SplashScreen
 import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.ui.theme.LocalBalanceHidden
+import es.aviferdev.n3to.ui.theme.LocalFiscalAmountsHidden
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import es.aviferdev.n3to.ui.theme.PrimaryDark
 import es.aviferdev.n3to.ui.theme.formatAmountEuro
@@ -175,7 +176,10 @@ fun App() {
     // con el nuevo locale activo.
     key(languageCode) {
         N3toTheme(darkTheme = isDarkTheme) {
-            CompositionLocalProvider(LocalBalanceHidden provides balancesHidden) {
+            CompositionLocalProvider(
+                LocalBalanceHidden provides balancesHidden,
+                LocalFiscalAmountsHidden provides balancesHidden
+            ) {
                 when {
                     // Paso 0: Splash screen con el icono de la app
                     !splashFinished -> {

@@ -29,6 +29,8 @@ import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.MonthlyGoalProgress
 import es.aviferdev.n3to.platform.nowLocalDate
 import es.aviferdev.n3to.ui.common.ProgressBar
+import es.aviferdev.n3to.ui.theme.HIDDEN_AMOUNT_MASK
+import es.aviferdev.n3to.ui.theme.LocalBalanceHidden
 import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.ui.theme.formatAmount
 import es.aviferdev.n3to.ui.theme.formatAmountEuro
@@ -146,6 +148,7 @@ private fun GoalProgressRow(
     progress: Float,
 ) {
     val projection = rememberProjection(target, actual)
+    val hidden = LocalBalanceHidden.current
 
     Column(modifier = Modifier.fillMaxWidth()) {
         Row(
@@ -177,7 +180,7 @@ private fun GoalProgressRow(
                     )
                     Spacer(Modifier.width(4.dp))
                     Text(
-                        text = formatAmountEuro(actual),
+                        text = if (hidden) HIDDEN_AMOUNT_MASK else formatAmountEuro(actual),
                         fontSize = 11.sp,
                         fontWeight = FontWeight.Medium,
                         color = MaterialTheme.appColors.income
@@ -185,7 +188,7 @@ private fun GoalProgressRow(
                 }
             } else {
                 Text(
-                    text = "${formatAmountEuro(actual)} / ${formatAmountEuro(target)}",
+                    text = if (hidden) HIDDEN_AMOUNT_MASK else "${formatAmountEuro(actual)} / ${formatAmountEuro(target)}",
                     fontSize = 11.sp,
                     fontWeight = FontWeight.Medium,
                     color = MaterialTheme.appColors.textTertiary
@@ -209,7 +212,7 @@ private fun GoalProgressRow(
         )
 
         // Proyección
-        if (!achieved && target > 0.0) {
+        if (!achieved && target > 0.0 && !hidden) {
             Spacer(Modifier.height(4.dp))
             projection?.let { proj ->
                 Text(

@@ -27,6 +27,8 @@ import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.EmergencyFundMethod
 import es.aviferdev.n3to.domain.model.EmergencyFundStatus
 import es.aviferdev.n3to.ui.common.ProgressBar
+import es.aviferdev.n3to.ui.theme.HIDDEN_AMOUNT_MASK
+import es.aviferdev.n3to.ui.theme.LocalBalanceHidden
 import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.ui.theme.formatAmountEuro
 import n3to.composeapp.generated.resources.Res
@@ -91,6 +93,8 @@ fun EmergencyFundCard(
         }
         return
     }
+
+    val hidden = LocalBalanceHidden.current
 
     Card(
         modifier = modifier.fillMaxWidth(),
@@ -160,7 +164,7 @@ fun EmergencyFundCard(
                         color = MaterialTheme.appColors.textTertiary
                     )
                     Text(
-                        text = formatAmountEuro(status.currentBalance),
+                        text = if (hidden) HIDDEN_AMOUNT_MASK else formatAmountEuro(status.currentBalance),
                         fontSize = 12.sp,
                         fontWeight = FontWeight.SemiBold,
                         color = MaterialTheme.appColors.textPrimary
@@ -173,7 +177,7 @@ fun EmergencyFundCard(
                         color = MaterialTheme.appColors.textTertiary
                     )
                     Text(
-                        text = formatAmountEuro(status.targetAmount),
+                        text = if (hidden) HIDDEN_AMOUNT_MASK else formatAmountEuro(status.targetAmount),
                         fontSize = 12.sp,
                         fontWeight = FontWeight.SemiBold,
                         color = MaterialTheme.appColors.textPrimary
@@ -185,7 +189,7 @@ fun EmergencyFundCard(
             if (status.missingAmount > 0.0 && !status.isCovered) {
                 Spacer(Modifier.height(6.dp))
                 Text(
-                    text = stringResource(
+                    text = if (hidden) HIDDEN_AMOUNT_MASK else stringResource(
                         Res.string.home_ef_missing_format,
                         formatAmountEuro(status.missingAmount)
                     ),
@@ -199,7 +203,7 @@ fun EmergencyFundCard(
             if (status.calculationMethod == EmergencyFundMethod.AUTO && status.monthlyAverage != null) {
                 Spacer(Modifier.height(4.dp))
                 Text(
-                    text = stringResource(
+                    text = if (hidden) HIDDEN_AMOUNT_MASK else stringResource(
                         Res.string.home_ef_monthly_avg_format,
                         formatAmountEuro(status.monthlyAverage)
                     ),
