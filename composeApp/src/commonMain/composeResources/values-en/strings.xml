@@ -291,6 +291,11 @@
     <string name="portfolio_settings_archive_confirm_title">Archive portfolio</string>
     <string name="portfolio_settings_archive_confirm_message">Archive «%1$s»? All operation history will be preserved.</string>
     <string name="portfolio_settings_archive_action">Archive</string>
+    <string name="portfolio_settings_archived_section">ARCHIVED PORTFOLIOS</string>
+    <string name="portfolio_settings_unarchive_action">Restore</string>
+    <string name="portfolio_settings_unarchive_cd">Restore portfolio</string>
+    <string name="portfolio_settings_unarchive_confirm_title">Restore portfolio</string>
+    <string name="portfolio_settings_unarchive_confirm_message">Restore «%1$s»? It will appear again in your active portfolios.</string>
     <string name="portfolio_settings_blocked_title">Open positions</string>
     <string name="portfolio_settings_blocked_message">Portfolio «%1$s» has assets with open positions. Close or transfer them before archiving.</string>
     <string name="portfolio_settings_transfer_title">Transfer asset</string>

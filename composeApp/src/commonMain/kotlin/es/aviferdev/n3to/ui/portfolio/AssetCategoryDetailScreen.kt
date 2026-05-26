@@ -105,6 +105,7 @@ fun AssetCategoryDetailScreen(
             linkedSectorIds = emptySet(),
             allRegions = state.allRegions,
             linkedRegionPercents = emptyMap(),
+            portfolios = state.allPortfolios,
             onValidateIsin = { identifier, catId -> viewModel.validateIsin(identifier, catId) },
             onSave = { ticker, name, notes, _, currentPrice, isin, platformIds, maturityDate, fixedPct, sectorIds, regionPercents, portfolioId ->
                 viewModel.addAsset(

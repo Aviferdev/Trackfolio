@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import es.aviferdev.n3to.domain.model.Asset
 import es.aviferdev.n3to.domain.model.AssetCategory
 import es.aviferdev.n3to.domain.model.FixedIncomeRow
+import es.aviferdev.n3to.domain.model.Portfolio
 import es.aviferdev.n3to.domain.model.PriceSource
 import es.aviferdev.n3to.domain.model.Platform
 import es.aviferdev.n3to.domain.model.PriceQuote
@@ -24,6 +25,7 @@ import es.aviferdev.n3to.domain.usecase.platform.GetPlatformsByCategoryUseCase
 import es.aviferdev.n3to.domain.usecase.platform.GetPlatformsUseCase
 import es.aviferdev.n3to.domain.usecase.platform.LinkPlatformToCategoryUseCase
 import es.aviferdev.n3to.domain.usecase.platform.UnlinkPlatformFromCategoryUseCase
+import es.aviferdev.n3to.domain.usecase.portfolio.GetPortfoliosByAccountUseCase
 import es.aviferdev.n3to.ui.account.AccountSession
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -61,7 +63,8 @@ data class AssetCategoryDetailUiState(
     val showLinkPlatformSheet: Boolean = false,
     val error: CategoryDetailError? = null,
     val allSectors: List<es.aviferdev.n3to.domain.model.AssetSector> = emptyList(),
-    val allRegions: List<es.aviferdev.n3to.domain.model.AssetRegion> = emptyList()
+    val allRegions: List<es.aviferdev.n3to.domain.model.AssetRegion> = emptyList(),
+    val allPortfolios: List<Portfolio> = emptyList()
 )
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -81,6 +84,7 @@ class AssetCategoryDetailViewModel(
     private val linkPlatformToCategory: LinkPlatformToCategoryUseCase,
     private val unlinkPlatformFromCategory: UnlinkPlatformFromCategoryUseCase,
     private val createAndLinkPlatform: CreateAndLinkPlatformUseCase,
+    private val getPortfoliosByAccount: GetPortfoliosByAccountUseCase,
     private val session: AccountSession,
     private val validateAssetIdentifier: ValidateAssetIdentifierUseCase? = null
 ) : ViewModel() {
@@ -145,8 +149,9 @@ class AssetCategoryDetailViewModel(
                     assetsAndCategoriesFlow,
                     platformsFlow,
                     getFixedIncomeRowsByCategory(accountId, categoryId),
-                    uiControlFlow
-                ) { data, platforms, fiRows, ui ->
+                    uiControlFlow,
+                    getPortfoliosByAccount(accountId)
+                ) { data, platforms, fiRows, ui, portfolios ->
                     val (allAssets, categories) = data
                     val (allPlatforms, categoryPlatforms) = platforms
                     val category = categories.firstOrNull { it.id == categoryId }
@@ -167,7 +172,8 @@ class AssetCategoryDetailViewModel(
                         editingFixedIncomePercent = ui.editing.fiPct,
                         pendingArchive = ui.pendingArchive,
                         showLinkPlatformSheet = ui.showLinkPlatformSheet,
-                        error = ui.error
+                        error = ui.error,
+                        allPortfolios = portfolios.filter { !it.archived }
                     )
                 }
             }

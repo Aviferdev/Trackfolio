@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -13,6 +14,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.outlined.Unarchive
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -29,17 +31,21 @@ import es.aviferdev.n3to.ui.common.SectionHeader
 import es.aviferdev.n3to.ui.theme.appColors
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.portfolio_settings_add
+import n3to.composeapp.generated.resources.portfolio_settings_archived_section
 import n3to.composeapp.generated.resources.portfolio_settings_delete_cd
 import n3to.composeapp.generated.resources.portfolio_settings_edit_cd
 import n3to.composeapp.generated.resources.portfolio_settings_portfolio_section
+import n3to.composeapp.generated.resources.portfolio_settings_unarchive_cd
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun PortfolioListSection(
     portfolios: List<Portfolio>,
+    archivedPortfolios: List<Portfolio> = emptyList(),
     onAdd: () -> Unit,
     onEdit: (Portfolio) -> Unit,
-    onDelete: (Portfolio) -> Unit
+    onDelete: (Portfolio) -> Unit,
+    onUnarchive: (Portfolio) -> Unit = {}
 ) {
     SectionHeader(
         label = stringResource(Res.string.portfolio_settings_portfolio_section),
@@ -114,6 +120,44 @@ fun PortfolioListSection(
                         color = MaterialTheme.appColors.navyBorder,
                         thickness = 0.5.dp,
                         modifier = Modifier.padding(start = 52.dp)
+                    )
+                }
+            }
+        }
+    }
+
+    if (archivedPortfolios.isNotEmpty()) {
+        Spacer(Modifier.height(16.dp))
+        SectionHeader(label = stringResource(Res.string.portfolio_settings_archived_section))
+        SettingsGroupCard {
+            archivedPortfolios.forEachIndexed { index, portfolio ->
+                Row(
+                    modifier = Modifier.fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 10.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        portfolio.name,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = MaterialTheme.appColors.textSecondary,
+                        modifier = Modifier.weight(1f)
+                    )
+                    Spacer(Modifier.width(8.dp))
+                    IconButton(onClick = { onUnarchive(portfolio) }, modifier = Modifier.size(32.dp)) {
+                        Icon(
+                            Icons.Outlined.Unarchive,
+                            contentDescription = stringResource(Res.string.portfolio_settings_unarchive_cd),
+                            tint = MaterialTheme.appColors.primary,
+                            modifier = Modifier.size(18.dp)
+                        )
+                    }
+                }
+                if (index < archivedPortfolios.lastIndex) {
+                    HorizontalDivider(
+                        color = MaterialTheme.appColors.navyBorder,
+                        thickness = 0.5.dp,
+                        modifier = Modifier.padding(start = 16.dp)
                     )
                 }
             }

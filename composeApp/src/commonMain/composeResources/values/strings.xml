@@ -293,6 +293,11 @@
     <string name="portfolio_settings_archive_confirm_title">Archivar cartera</string>
     <string name="portfolio_settings_archive_confirm_message">¿Archivar «%1$s»? Todo el historial de operaciones se conservará.</string>
     <string name="portfolio_settings_archive_action">Archivar</string>
+    <string name="portfolio_settings_archived_section">CARTERAS ARCHIVADAS</string>
+    <string name="portfolio_settings_unarchive_action">Restaurar</string>
+    <string name="portfolio_settings_unarchive_cd">Restaurar cartera</string>
+    <string name="portfolio_settings_unarchive_confirm_title">Restaurar cartera</string>
+    <string name="portfolio_settings_unarchive_confirm_message">¿Restaurar «%1$s»? Volverá a aparecer en tus carteras activas.</string>
     <string name="portfolio_settings_blocked_title">Posiciones abiertas</string>
     <string name="portfolio_settings_blocked_message">La cartera «%1$s» tiene activos con posición abierta. Liquídalos o traspásalos antes de archivar.</string>
     <string name="portfolio_settings_transfer_title">Traspasar activo</string>

@@ -160,10 +160,12 @@ import es.aviferdev.n3to.domain.usecase.platform.UnlinkPlatformFromCategoryUseCa
 import es.aviferdev.n3to.domain.usecase.portfolio.ArchivePortfolioUseCase
 import es.aviferdev.n3to.domain.usecase.portfolio.CheckPortfolioCanBeArchivedUseCase
 import es.aviferdev.n3to.domain.usecase.portfolio.DeletePortfolioUseCase
+import es.aviferdev.n3to.domain.usecase.portfolio.GetArchivedPortfoliosByAccountUseCase
 import es.aviferdev.n3to.domain.usecase.portfolio.GetPortfolioValueHistoryUseCase
 import es.aviferdev.n3to.domain.usecase.portfolio.GetPortfoliosByAccountUseCase
 import es.aviferdev.n3to.domain.usecase.portfolio.SavePortfolioUseCase
 import es.aviferdev.n3to.domain.usecase.portfolio.TransferAssetToPortfolioUseCase
+import es.aviferdev.n3to.domain.usecase.portfolio.UnarchivePortfolioUseCase
 import es.aviferdev.n3to.domain.usecase.portfolio.UpdatePortfolioUseCase
 import es.aviferdev.n3to.domain.usecase.realestate.ArchivePropertyUseCase
 import es.aviferdev.n3to.domain.usecase.realestate.ChangeRentalStatusUseCase
@@ -341,10 +343,12 @@ val useCaseModule = module {
     factory { AppStartupRefreshUseCase(get(), get()) }
     // ── Portfolio ────────────────────────────────────────────────────────────────
     factory { GetPortfoliosByAccountUseCase(get()) }
+    factory { GetArchivedPortfoliosByAccountUseCase(get()) }
     factory { SavePortfolioUseCase(get()) }
     factory { UpdatePortfolioUseCase(get()) }
     factory { DeletePortfolioUseCase(get()) }
     factory { ArchivePortfolioUseCase(get()) }
+    factory { UnarchivePortfolioUseCase(get()) }
     factory { CheckPortfolioCanBeArchivedUseCase(get(), get(), get()) }
     factory { TransferAssetToPortfolioUseCase(get()) }
     // ── Asset Transaction ─────────────────────────────────────────────────────
@@ -680,9 +684,11 @@ val useCaseModule = module {
         PortfolioSettingsViewModel(
             session = get(),
             getPortfoliosByAccount = get(),
+            getArchivedPortfoliosByAccount = get(),
             savePortfolio = get(),
             updatePortfolio = get(),
             archivePortfolio = get(),
+            unarchivePortfolio = get(),
             checkCanArchive = get(),
             transferAsset = get(),
             getAssetCategoriesIncludingArchived = get(),
@@ -780,6 +786,7 @@ val useCaseModule = module {
             linkPlatformToCategory = get(),
             unlinkPlatformFromCategory = get(),
             createAndLinkPlatform = get(),
+            getPortfoliosByAccount = get(),
             session = get(),
             validateAssetIdentifier = get()
         )

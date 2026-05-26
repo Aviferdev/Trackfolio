@@ -44,6 +44,9 @@ import n3to.composeapp.generated.resources.portfolio_error_no_account_title
 import n3to.composeapp.generated.resources.portfolio_settings_archive_action
 import n3to.composeapp.generated.resources.portfolio_settings_archive_confirm_message
 import n3to.composeapp.generated.resources.portfolio_settings_archive_confirm_title
+import n3to.composeapp.generated.resources.portfolio_settings_unarchive_action
+import n3to.composeapp.generated.resources.portfolio_settings_unarchive_confirm_message
+import n3to.composeapp.generated.resources.portfolio_settings_unarchive_confirm_title
 import n3to.composeapp.generated.resources.portfolio_settings_assets_available
 import n3to.composeapp.generated.resources.portfolio_settings_blocked_assets_section
 import n3to.composeapp.generated.resources.portfolio_settings_blocked_fixed_income_section
@@ -95,7 +98,8 @@ fun PortfolioSettingsScreen(
         onIntervalChange = { viewModel.setReminderInterval(it) },
         onEditPortfolio = { viewModel.openEditPortfolioSheet(it) },
         onDeletePortfolio = { viewModel.requestArchivePortfolio(it) },
-        onAddPortfolio = { viewModel.openAddPortfolioSheet() }
+        onAddPortfolio = { viewModel.openAddPortfolioSheet() },
+        onUnarchivePortfolio = { viewModel.requestUnarchivePortfolio(it) }
     )
 
     if (state.showAddPortfolioSheet) {
@@ -147,6 +151,47 @@ fun PortfolioSettingsScreen(
                     Text(
                         stringResource(Res.string.common_cancel),
                         color = MaterialTheme.appColors.primary
+                    )
+                }
+            },
+            shape = RoundedCornerShape(16.dp)
+        )
+    }
+
+    // ── Confirmación de desarchivado ──────────────────────────────────────────
+    state.confirmingUnarchivePortfolio?.let { portfolio ->
+        AlertDialog(
+            onDismissRequest = { viewModel.cancelUnarchive() },
+            containerColor = MaterialTheme.appColors.navySurface,
+            title = {
+                Text(
+                    stringResource(Res.string.portfolio_settings_unarchive_confirm_title),
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.appColors.textPrimary
+                )
+            },
+            text = {
+                Text(
+                    stringResource(Res.string.portfolio_settings_unarchive_confirm_message, portfolio.name),
+                    fontSize = 13.sp,
+                    color = MaterialTheme.appColors.textSecondary
+                )
+            },
+            confirmButton = {
+                TextButton(onClick = { viewModel.confirmUnarchivePortfolio(portfolio.id) }) {
+                    Text(
+                        stringResource(Res.string.portfolio_settings_unarchive_action),
+                        color = MaterialTheme.appColors.primary,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { viewModel.cancelUnarchive() }) {
+                    Text(
+                        stringResource(Res.string.common_cancel),
+                        color = MaterialTheme.appColors.textSecondary
                     )
                 }
             },
@@ -385,6 +430,7 @@ fun PortfolioSettingsContent(
     onEditPortfolio: (Portfolio) -> Unit = {},
     onDeletePortfolio: (Portfolio) -> Unit = {},
     onAddPortfolio: () -> Unit = {},
+    onUnarchivePortfolio: (Portfolio) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -404,9 +450,11 @@ fun PortfolioSettingsContent(
             item {
                 PortfolioListSection(
                     portfolios = state.portfolios,
+                    archivedPortfolios = state.archivedPortfolios,
                     onAdd = onAddPortfolio,
                     onEdit = onEditPortfolio,
-                    onDelete = onDeletePortfolio
+                    onDelete = onDeletePortfolio,
+                    onUnarchive = onUnarchivePortfolio
                 )
             }
 

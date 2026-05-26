@@ -82,6 +82,7 @@ class AssetLocalDataSourceImpl(
                     name = e.name,
                     notes = e.notes,
                     assetCategoryId = e.assetCategoryId,
+                    portfolioId = e.portfolioId,
                     currentPrice = e.currentPrice,
                     currentPriceUpdatedAt = e.currentPriceUpdatedAt,
                     maturityDate = e.maturityDate,

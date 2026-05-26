@@ -20,6 +20,9 @@ class PortfolioLocalDataSourceImpl(
     override fun getByAccount(accountId: String): Flow<List<PortfolioEntity>> =
         queries.selectByAccount(accountId).asFlow().mapToList(Dispatchers.IO)
 
+    override fun getArchivedByAccount(accountId: String): Flow<List<PortfolioEntity>> =
+        queries.selectArchivedByAccount(accountId).asFlow().mapToList(Dispatchers.IO)
+
     override fun getById(id: String): Flow<PortfolioEntity?> =
         queries.selectById(id).asFlow().mapToOneOrNull(Dispatchers.IO)
 
@@ -56,6 +59,12 @@ class PortfolioLocalDataSourceImpl(
     override suspend fun archive(id: String) {
         withContext(Dispatchers.IO) {
             queries.archive(id)
+        }
+    }
+
+    override suspend fun unarchive(id: String) {
+        withContext(Dispatchers.IO) {
+            queries.unarchive(id)
         }
     }
 

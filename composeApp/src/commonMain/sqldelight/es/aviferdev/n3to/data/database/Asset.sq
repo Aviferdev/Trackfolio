@@ -79,6 +79,7 @@ update:
 UPDATE AssetEntity
 SET ticker = :ticker, name = :name, notes = :notes,
     assetCategoryId = :assetCategoryId,
+    portfolioId = :portfolioId,
     currentPrice = :currentPrice, currentPriceUpdatedAt = :currentPriceUpdatedAt,
     maturityDate = :maturityDate,
     isin = :isin, priceSource = :priceSource,

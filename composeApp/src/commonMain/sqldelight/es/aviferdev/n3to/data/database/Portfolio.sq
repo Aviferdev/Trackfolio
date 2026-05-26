@@ -18,6 +18,11 @@ SELECT * FROM PortfolioEntity
 WHERE accountId = :accountId AND archived = 0
 ORDER BY sortOrder ASC, name ASC;
 
+selectArchivedByAccount:
+SELECT * FROM PortfolioEntity
+WHERE accountId = :accountId AND archived = 1
+ORDER BY name ASC;
+
 selectById:
 SELECT * FROM PortfolioEntity WHERE id = :id;
 
@@ -37,6 +42,9 @@ WHERE id = :id;
 
 archive:
 UPDATE PortfolioEntity SET archived = 1 WHERE id = :id;
+
+unarchive:
+UPDATE PortfolioEntity SET archived = 0 WHERE id = :id;
 
 delete:
 DELETE FROM PortfolioEntity WHERE id = :id;

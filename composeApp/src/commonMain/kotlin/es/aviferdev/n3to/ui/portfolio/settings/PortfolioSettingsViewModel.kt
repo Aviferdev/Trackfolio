@@ -13,9 +13,11 @@ import es.aviferdev.n3to.domain.usecase.assetmetadata.GetSectorsUseCase
 import es.aviferdev.n3to.domain.usecase.platform.GetPlatformsUseCase
 import es.aviferdev.n3to.domain.usecase.portfolio.ArchivePortfolioUseCase
 import es.aviferdev.n3to.domain.usecase.portfolio.CheckPortfolioCanBeArchivedUseCase
+import es.aviferdev.n3to.domain.usecase.portfolio.GetArchivedPortfoliosByAccountUseCase
 import es.aviferdev.n3to.domain.usecase.portfolio.GetPortfoliosByAccountUseCase
 import es.aviferdev.n3to.domain.usecase.portfolio.SavePortfolioUseCase
 import es.aviferdev.n3to.domain.usecase.portfolio.TransferAssetToPortfolioUseCase
+import es.aviferdev.n3to.domain.usecase.portfolio.UnarchivePortfolioUseCase
 import es.aviferdev.n3to.domain.usecase.portfolio.UpdatePortfolioUseCase
 import es.aviferdev.n3to.ui.account.AccountSession
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -44,6 +46,7 @@ data class PortfolioTransferState(
 
 data class PortfolioSettingsUiState(
     val portfolios: List<Portfolio> = emptyList(),
+    val archivedPortfolios: List<Portfolio> = emptyList(),
     val categoriesCount: Int = 0,
     val platformsCount: Int = 0,
     val sectorsCount: Int = 0,
@@ -52,6 +55,7 @@ data class PortfolioSettingsUiState(
     val showAddPortfolioSheet: Boolean = false,
     val editingPortfolio: Portfolio? = null,
     val confirmingArchivePortfolio: Portfolio? = null,
+    val confirmingUnarchivePortfolio: Portfolio? = null,
     val archiveBlockedState: PortfolioArchiveBlockState? = null,
     val transferState: PortfolioTransferState? = null,
     val isCheckingArchive: Boolean = false,
@@ -69,6 +73,7 @@ private data class PortfolioSheetState(
     val showAddSheet: Boolean = false,
     val editing: Portfolio? = null,
     val confirmingArchive: Portfolio? = null,
+    val confirmingUnarchive: Portfolio? = null,
     val archiveBlockedState: PortfolioArchiveBlockState? = null,
     val transferState: PortfolioTransferState? = null,
     val isCheckingArchive: Boolean = false,
@@ -79,9 +84,11 @@ private data class PortfolioSheetState(
 class PortfolioSettingsViewModel(
     private val session: AccountSession,
     private val getPortfoliosByAccount: GetPortfoliosByAccountUseCase,
+    private val getArchivedPortfoliosByAccount: GetArchivedPortfoliosByAccountUseCase,
     private val savePortfolio: SavePortfolioUseCase,
     private val updatePortfolio: UpdatePortfolioUseCase,
     private val archivePortfolio: ArchivePortfolioUseCase,
+    private val unarchivePortfolio: UnarchivePortfolioUseCase,
     private val checkCanArchive: CheckPortfolioCanBeArchivedUseCase,
     private val transferAsset: TransferAssetToPortfolioUseCase,
     getAssetCategoriesIncludingArchived: GetAllAssetCategoriesIncludingArchivedUseCase,
@@ -107,13 +114,20 @@ class PortfolioSettingsViewModel(
         if (id == null) flowOf(emptyList()) else getPortfoliosByAccount(id)
     }
 
+    private val archivedPortfoliosFlow = session.selectedAccountId.flatMapLatest { id ->
+        if (id == null) flowOf(emptyList()) else getArchivedPortfoliosByAccount(id)
+    }
+
     val uiState: StateFlow<PortfolioSettingsUiState> = combine(
-        combine(portfoliosFlow, countsFlow) { portfolios, counts -> portfolios to counts },
+        combine(portfoliosFlow, archivedPortfoliosFlow, countsFlow) { portfolios, archived, counts ->
+            Triple(portfolios, archived, counts)
+        },
         _portfolioSheet,
         _priceReminderInterval
-    ) { (portfolios, counts), sheet, interval ->
+    ) { (portfolios, archived, counts), sheet, interval ->
         PortfolioSettingsUiState(
             portfolios = portfolios,
+            archivedPortfolios = archived,
             categoriesCount = counts.categories,
             platformsCount = counts.platforms,
             sectorsCount = counts.sectors,
@@ -122,6 +136,7 @@ class PortfolioSettingsViewModel(
             showAddPortfolioSheet = sheet.showAddSheet,
             editingPortfolio = sheet.editing,
             confirmingArchivePortfolio = sheet.confirmingArchive,
+            confirmingUnarchivePortfolio = sheet.confirmingUnarchive,
             archiveBlockedState = sheet.archiveBlockedState,
             transferState = sheet.transferState,
             isCheckingArchive = sheet.isCheckingArchive,
@@ -205,6 +220,23 @@ class PortfolioSettingsViewModel(
         _portfolioSheet.update {
             it.copy(confirmingArchive = null, archiveBlockedState = null, transferState = null)
         }
+    }
+
+    // ── Unarchive flow ────────────────────────────────────────────────────────
+
+    fun requestUnarchivePortfolio(portfolio: Portfolio) {
+        _portfolioSheet.update { it.copy(confirmingUnarchive = portfolio) }
+    }
+
+    fun confirmUnarchivePortfolio(portfolioId: String) {
+        viewModelScope.launch {
+            unarchivePortfolio(portfolioId)
+            _portfolioSheet.update { it.copy(confirmingUnarchive = null) }
+        }
+    }
+
+    fun cancelUnarchive() {
+        _portfolioSheet.update { it.copy(confirmingUnarchive = null) }
     }
 
     // ── Transfer flow ─────────────────────────────────────────────────────────

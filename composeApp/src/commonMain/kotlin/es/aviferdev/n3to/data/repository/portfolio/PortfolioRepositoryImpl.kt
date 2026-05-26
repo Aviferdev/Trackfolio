@@ -15,6 +15,9 @@ class PortfolioRepositoryImpl(
     override fun getByAccount(accountId: String): Flow<List<Portfolio>> =
         dataSource.getByAccount(accountId).map { list -> list.map { it.toDomain() } }
 
+    override fun getArchivedByAccount(accountId: String): Flow<List<Portfolio>> =
+        dataSource.getArchivedByAccount(accountId).map { list -> list.map { it.toDomain() } }
+
     override fun getById(id: String): Flow<Portfolio?> =
         dataSource.getById(id).map { it?.toDomain() }
 
@@ -26,6 +29,9 @@ class PortfolioRepositoryImpl(
 
     override suspend fun archive(id: String): Result<Unit> =
         runCatching { dataSource.archive(id) }
+
+    override suspend fun unarchive(id: String): Result<Unit> =
+        runCatching { dataSource.unarchive(id) }
 
     override suspend fun delete(id: String): Result<Unit> =
         runCatching { dataSource.delete(id) }

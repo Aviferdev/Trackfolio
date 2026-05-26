@@ -4,14 +4,13 @@ import androidx.compose.material3.MaterialTheme
 import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.platform.nowMillis
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -19,7 +18,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.Asset
@@ -29,20 +27,17 @@ import es.aviferdev.n3to.domain.model.AssetTransaction
 import es.aviferdev.n3to.domain.model.AssetTransactionType
 import es.aviferdev.n3to.domain.model.Platform
 import es.aviferdev.n3to.domain.portfolio.PortfolioCalculator
+import es.aviferdev.n3to.ui.home.components.DateRow
+import es.aviferdev.n3to.ui.home.components.DarkInlineField
+import es.aviferdev.n3to.ui.home.components.DarkTextField
+import es.aviferdev.n3to.ui.home.components.TypePill
 import es.aviferdev.n3to.ui.theme.*
 
-import kotlinx.datetime.Instant
-import kotlinx.datetime.LocalDate
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
 import n3to.composeapp.generated.resources.Res
 import es.aviferdev.n3to.ui.portfolio.components.*
-import n3to.composeapp.generated.resources.portfolio_add_tx_accept
 import n3to.composeapp.generated.resources.portfolio_add_tx_available
-import n3to.composeapp.generated.resources.portfolio_add_tx_cancel
 import n3to.composeapp.generated.resources.portfolio_add_tx_category_all
 import n3to.composeapp.generated.resources.portfolio_add_tx_category_filter
-import n3to.composeapp.generated.resources.portfolio_add_tx_date_label
 import n3to.composeapp.generated.resources.portfolio_add_tx_fee_hint
 import n3to.composeapp.generated.resources.portfolio_add_tx_fee_label
 import n3to.composeapp.generated.resources.portfolio_add_tx_fee_placeholder
@@ -134,7 +129,6 @@ fun AddEditAssetTransactionBottomSheet(
     var notes by remember(transaction) {
         mutableStateOf(transaction?.notes ?: "")
     }
-    var showDatePicker by remember { mutableStateOf(false) }
     var selectedCategoryId by remember { mutableStateOf<String?>(null) }
 
     // Filtrar activos por categoría seleccionada (excluir Renta Fija - no admiten compra/venta)
@@ -268,14 +262,14 @@ fun AddEditAssetTransactionBottomSheet(
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-        containerColor = MaterialTheme.appColors.surface,
+        containerColor = MaterialTheme.appColors.navySurface,
         dragHandle = {
             Box(
                 modifier = Modifier
                     .padding(top = 12.dp, bottom = 4.dp)
                     .width(40.dp).height(4.dp)
                     .clip(RoundedCornerShape(2.dp))
-                    .background(MaterialTheme.appColors.border)
+                    .background(MaterialTheme.appColors.dragHandle)
             )
         }
     ) {
@@ -287,40 +281,50 @@ fun AddEditAssetTransactionBottomSheet(
                 .padding(bottom = 32.dp)
                 .verticalScroll(rememberScrollState())
         ) {
-            Spacer(Modifier.height(4.dp))
-            Text(
-                text = if (isEditing) stringResource(Res.string.portfolio_add_tx_title_edit) else stringResource(
-                    Res.string.portfolio_add_tx_title_new
-                ),
-                fontSize = 18.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.appColors.textPrimary,
-                modifier = Modifier.padding(bottom = 16.dp)
-            )
+            Spacer(Modifier.height(8.dp))
+
+            // ── Header con título y cierre ────────────────────────────────────
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = if (isEditing) stringResource(Res.string.portfolio_add_tx_title_edit)
+                    else stringResource(Res.string.portfolio_add_tx_title_new),
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.appColors.textPrimary,
+                    modifier = Modifier.weight(1f)
+                )
+                IconButton(onClick = onDismiss, modifier = Modifier.size(32.dp)) {
+                    Icon(
+                        imageVector = Icons.Outlined.Close,
+                        contentDescription = null,
+                        tint = MaterialTheme.appColors.textSecondary,
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
+            }
 
             // ── Tipo BUY/SELL (oculto en modo buyOnly) ────────────────────────
             if (!buyOnly) {
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(10.dp))
-                        .background(MaterialTheme.appColors.surfaceElevated)
-                        .padding(4.dp),
-                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    TypeToggle(
+                    TypePill(
                         label = stringResource(Res.string.portfolio_add_tx_type_buy),
-                        isSel = type == AssetTransactionType.BUY,
-                        selColor = MaterialTheme.appColors.income,
-                        modifier = Modifier.weight(1f),
-                        onClick = { type = AssetTransactionType.BUY }
+                        selected = type == AssetTransactionType.BUY,
+                        selectedColor = MaterialTheme.appColors.income,
+                        onClick = { type = AssetTransactionType.BUY },
+                        modifier = Modifier.weight(1f)
                     )
-                    TypeToggle(
+                    TypePill(
                         label = stringResource(Res.string.portfolio_add_tx_type_sell),
-                        isSel = type == AssetTransactionType.SELL,
-                        selColor = MaterialTheme.appColors.expense,
-                        modifier = Modifier.weight(1f),
-                        onClick = { type = AssetTransactionType.SELL }
+                        selected = type == AssetTransactionType.SELL,
+                        selectedColor = MaterialTheme.appColors.expense,
+                        onClick = { type = AssetTransactionType.SELL },
+                        modifier = Modifier.weight(1f)
                     )
                 }
                 Spacer(Modifier.height(16.dp))
@@ -404,7 +408,7 @@ fun AddEditAssetTransactionBottomSheet(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(10.dp))
-                        .background(MaterialTheme.appColors.surfaceElevated)
+                        .background(MaterialTheme.appColors.navySurfaceLight)
                         .padding(horizontal = 12.dp, vertical = 10.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -500,45 +504,20 @@ fun AddEditAssetTransactionBottomSheet(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                OutlinedTextField(
+                DarkInlineField(
+                    label = stringResource(Res.string.portfolio_add_tx_qty_label),
                     value = quantity,
-                    onValueChange = {
-                        quantity = it.filter { c -> c.isDigit() || c == ',' || c == '.' }
-                    },
-                    label = { Text(stringResource(Res.string.portfolio_add_tx_qty_label)) },
-                    placeholder = { Text("0") },
-                    isError = sellExceeds,
-                    modifier = Modifier.weight(1f),
-                    singleLine = true,
-                    shape = RoundedCornerShape(10.dp),
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = if (sellExceeds) MaterialTheme.appColors.expense else MaterialTheme.appColors.primary,
-                        unfocusedBorderColor = if (sellExceeds) MaterialTheme.appColors.expense else MaterialTheme.appColors.border
-                    )
+                    onValueChange = { quantity = it.filter { c -> c.isDigit() || c == ',' || c == '.' } },
+                    placeholder = "0",
+                    modifier = Modifier.weight(1f)
                 )
-                OutlinedTextField(
+                DarkInlineField(
+                    label = stringResource(Res.string.portfolio_add_tx_price_label),
                     value = pricePerUnit,
-                    onValueChange = {
-                        pricePerUnit = it.filter { c -> c.isDigit() || c == ',' || c == '.' }
-                    },
-                    label = { Text(stringResource(Res.string.portfolio_add_tx_price_label)) },
-                    placeholder = { Text("0,00") },
-                    trailingIcon = {
-                        Text(
-                            "€",
-                            color = MaterialTheme.appColors.textSecondary,
-                            modifier = Modifier.padding(end = 12.dp)
-                        )
-                    },
-                    modifier = Modifier.weight(1f),
-                    singleLine = true,
-                    shape = RoundedCornerShape(10.dp),
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = MaterialTheme.appColors.primary,
-                        unfocusedBorderColor = MaterialTheme.appColors.border
-                    )
+                    onValueChange = { pricePerUnit = it.filter { c -> c.isDigit() || c == ',' || c == '.' } },
+                    placeholder = "0,00",
+                    suffix = "€",
+                    modifier = Modifier.weight(1f)
                 )
             }
             if (isSell && selectedAssetId != null) {
@@ -568,67 +547,45 @@ fun AddEditAssetTransactionBottomSheet(
                     color = if (sellExceeds) MaterialTheme.appColors.expense else MaterialTheme.appColors.textSecondary
                 )
             }
-            Spacer(Modifier.height(12.dp))
+            Spacer(Modifier.height(16.dp))
 
             // ── Fecha ────────────────────────────────────────────────────────
+            DateRow(dateMillis = dateMillis, onDateSelected = { dateMillis = it })
+            Spacer(Modifier.height(12.dp))
+
+            // ── Comisión informativa ────────────────────────────────────────
             Text(
-                stringResource(Res.string.portfolio_add_tx_date_label),
+                stringResource(Res.string.portfolio_add_tx_fee_label),
                 fontSize = 12.sp,
                 color = MaterialTheme.appColors.textSecondary,
                 fontWeight = FontWeight.Medium
             )
             Spacer(Modifier.height(6.dp))
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(10.dp))
-                    .border(0.5.dp, MaterialTheme.appColors.border, RoundedCornerShape(10.dp))
-                    .clickable { showDatePicker = true }
-                    .padding(horizontal = 14.dp, vertical = 14.dp)
-            ) {
-                Text(
-                    text = formatFullDate(dateMillis),
-                    fontSize = 14.sp,
-                    color = MaterialTheme.appColors.textPrimary
-                )
-            }
-            Spacer(Modifier.height(12.dp))
-
-            // ── Comisión informativa ────────────────────────────────────────
-            OutlinedTextField(
+            DarkTextField(
                 value = feeNote,
                 onValueChange = { feeNote = it },
-                label = { Text(stringResource(Res.string.portfolio_add_tx_fee_label)) },
-                placeholder = { Text(stringResource(Res.string.portfolio_add_tx_fee_placeholder)) },
-                supportingText = {
-                    Text(
-                        text = stringResource(Res.string.portfolio_add_tx_fee_hint),
-                        fontSize = 11.sp,
-                        color = MaterialTheme.appColors.textSecondary
-                    )
-                },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
-                shape = RoundedCornerShape(10.dp),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = MaterialTheme.appColors.primary,
-                    unfocusedBorderColor = MaterialTheme.appColors.border
-                )
+                placeholder = stringResource(Res.string.portfolio_add_tx_fee_placeholder)
+            )
+            Text(
+                text = stringResource(Res.string.portfolio_add_tx_fee_hint),
+                fontSize = 11.sp,
+                color = MaterialTheme.appColors.textTertiary,
+                modifier = Modifier.padding(top = 4.dp)
             )
             Spacer(Modifier.height(12.dp))
 
             // ── Notas ───────────────────────────────────────────────────────
-            OutlinedTextField(
+            Text(
+                stringResource(Res.string.portfolio_add_tx_notes_label),
+                fontSize = 12.sp,
+                color = MaterialTheme.appColors.textSecondary,
+                fontWeight = FontWeight.Medium
+            )
+            Spacer(Modifier.height(6.dp))
+            DarkTextField(
                 value = notes,
                 onValueChange = { notes = it },
-                label = { Text(stringResource(Res.string.portfolio_add_tx_notes_label)) },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
-                shape = RoundedCornerShape(10.dp),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = MaterialTheme.appColors.primary,
-                    unfocusedBorderColor = MaterialTheme.appColors.border
-                )
+                placeholder = ""
             )
 
             Spacer(Modifier.height(28.dp))
@@ -653,62 +610,19 @@ fun AddEditAssetTransactionBottomSheet(
                 },
                 enabled = isValid,
                 modifier = Modifier.fillMaxWidth().height(52.dp),
-                shape = RoundedCornerShape(10.dp),
+                shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.appColors.primary,
                     disabledContainerColor = MaterialTheme.appColors.primary.copy(alpha = 0.38f)
                 )
             ) {
                 Text(
-                    text = if (isEditing) stringResource(Res.string.portfolio_add_tx_save_changes) else stringResource(
-                        Res.string.portfolio_add_tx_new
-                    ),
+                    text = if (isEditing) stringResource(Res.string.portfolio_add_tx_save_changes)
+                    else stringResource(Res.string.portfolio_add_tx_new),
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Medium
                 )
             }
         }
     }
-
-    // ── Date picker ──────────────────────────────────────────────────────────
-    if (showDatePicker) {
-        val pickerState = rememberDatePickerState(
-            initialSelectedDateMillis = dateMillis
-        )
-        DatePickerDialog(
-            onDismissRequest = { showDatePicker = false },
-            confirmButton = {
-                TextButton(onClick = {
-                    val selected = pickerState.selectedDateMillis
-                    if (selected != null && selected <= nowMillis()) {
-                        dateMillis = selected
-                    }
-                    showDatePicker = false
-                }) {
-                    Text(
-                        stringResource(Res.string.portfolio_add_tx_accept),
-                        color = MaterialTheme.appColors.primary
-                    )
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { showDatePicker = false }) {
-                    Text(
-                        stringResource(Res.string.portfolio_add_tx_cancel),
-                        color = MaterialTheme.appColors.textSecondary
-                    )
-                }
-            },
-            colors = DatePickerDefaults.colors(containerColor = MaterialTheme.appColors.surface)
-        ) {
-            DatePicker(
-                state = pickerState,
-                colors = DatePickerDefaults.colors(
-                    selectedDayContainerColor = MaterialTheme.appColors.primary,
-                    todayDateBorderColor = MaterialTheme.appColors.primary
-                )
-            )
-        }
-    }
 }
-
