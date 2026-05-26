@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.ui.theme.appColors
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.portfolio_settings_reminder_desc
+import n3to.composeapp.generated.resources.portfolio_settings_reminder_off
 import n3to.composeapp.generated.resources.portfolio_settings_reminder_section
 import n3to.composeapp.generated.resources.portfolio_settings_reminder_title
 import org.jetbrains.compose.resources.stringResource
@@ -58,7 +59,8 @@ fun ReminderIntervalSection(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                listOf(7, 14, 30).forEach { days ->
+                val offLabel = stringResource(Res.string.portfolio_settings_reminder_off)
+                listOf(0, 7, 14, 30).forEach { days ->
                     val isSelected = currentInterval == days
                     OutlinedButton(
                         onClick = { onIntervalChange(days) },
@@ -74,7 +76,7 @@ fun ReminderIntervalSection(
                         modifier = Modifier.weight(1f)
                     ) {
                         Text(
-                            text = "${days}d",
+                            text = if (days == 0) offLabel else "${days}d",
                             fontSize = 13.sp,
                             fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal
                         )

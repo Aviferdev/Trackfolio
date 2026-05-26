@@ -270,6 +270,7 @@
     <string name="portfolio_settings_reminder_section">价格提醒</string>
     <string name="portfolio_settings_reminder_title">提醒频率</string>
     <string name="portfolio_settings_reminder_desc">我会定期提醒您更新资产价格。</string>
+    <string name="portfolio_settings_reminder_off">关闭</string>
     <string name="portfolio_settings_platform_section">平台</string>
     <string name="portfolio_settings_platform_empty">暂无平台。添加券商、交易所或银行以关联您的交易。</string>
     <string name="portfolio_settings_sector_section">行业</string>

@@ -8,10 +8,12 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.outlined.Archive
+import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material3.*
+import es.aviferdev.n3to.ui.common.toMaterialIcon
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,6 +33,8 @@ import org.koin.core.parameter.parametersOf
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.common_accept
+import n3to.composeapp.generated.resources.common_archive
+import n3to.composeapp.generated.resources.common_edit
 import n3to.composeapp.generated.resources.error_account_required
 import n3to.composeapp.generated.resources.error_asset_ticker_required
 import n3to.composeapp.generated.resources.error_cannot_archive_asset
@@ -411,18 +415,20 @@ fun AssetCategoryDetailContent(
                                     Row(
                                         modifier = Modifier
                                             .fillMaxWidth()
-                                            .padding(horizontal = 16.dp, vertical = 12.dp),
+                                            .padding(horizontal = 16.dp, vertical = 13.dp),
                                         verticalAlignment = Alignment.CenterVertically
                                     ) {
-                                        Text(
-                                            platform.icon,
-                                            fontSize = 18.sp,
-                                            modifier = Modifier.size(28.dp)
+                                        Icon(
+                                            imageVector = platform.icon.toMaterialIcon(),
+                                            contentDescription = null,
+                                            tint = MaterialTheme.appColors.cyanAccent,
+                                            modifier = Modifier.size(20.dp)
                                         )
-                                        Spacer(Modifier.width(12.dp))
+                                        Spacer(Modifier.width(14.dp))
                                         Text(
                                             platform.name,
-                                            fontSize = 15.sp,
+                                            fontSize = 14.sp,
+                                            fontWeight = FontWeight.Medium,
                                             color = MaterialTheme.appColors.textPrimary,
                                             modifier = Modifier.weight(1f)
                                         )
@@ -431,7 +437,7 @@ fun AssetCategoryDetailContent(
                                         HorizontalDivider(
                                             color = MaterialTheme.appColors.border,
                                             thickness = 0.5.dp,
-                                            modifier = Modifier.padding(start = 52.dp)
+                                            modifier = Modifier.padding(start = 50.dp)
                                         )
                                     }
                                 }
@@ -568,54 +574,98 @@ private fun AssetRow(
     onEdit: () -> Unit,
     onArchive: () -> Unit
 ) {
+    var showMenu by remember { mutableStateOf(false) }
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = onClick)
-            .padding(horizontal = 16.dp, vertical = 12.dp),
+            .padding(start = 16.dp, end = 8.dp, top = 10.dp, bottom = 10.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Box(
             modifier = Modifier
-                .size(34.dp)
+                .size(36.dp)
                 .clip(RoundedCornerShape(8.dp))
                 .background(MaterialTheme.appColors.primary),
             contentAlignment = Alignment.Center
         ) {
             Text(
                 text = asset.ticker.take(3),
-                fontSize = if (asset.ticker.length > 3) 8.sp else 10.sp,
+                fontSize = if (asset.ticker.length > 3) 9.sp else 11.sp,
                 color = Color.White,
                 fontWeight = FontWeight.Bold
             )
         }
-        Spacer(Modifier.width(10.dp))
+        Spacer(Modifier.width(12.dp))
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 asset.name,
                 fontSize = 14.sp,
+                fontWeight = FontWeight.Medium,
                 color = MaterialTheme.appColors.textPrimary,
                 maxLines = 1
             )
-            Text(asset.ticker, fontSize = 11.sp, color = MaterialTheme.appColors.textSecondary)
-        }
-        IconButton(onClick = onEdit, modifier = Modifier.size(28.dp)) {
-            Icon(
-                Icons.Default.Edit,
-                stringResource(Res.string.portfolio_category_edit_cd),
-                modifier = Modifier.size(14.dp),
-                tint = MaterialTheme.appColors.textSecondary
+            Text(
+                asset.ticker,
+                fontSize = 12.sp,
+                color = MaterialTheme.appColors.textSecondary
             )
         }
-        IconButton(onClick = onArchive, modifier = Modifier.size(28.dp)) {
-            Icon(
-                Icons.Default.Delete,
-                stringResource(Res.string.portfolio_category_archive_cd),
-                modifier = Modifier.size(14.dp),
-                tint = MaterialTheme.appColors.textSecondary
-            )
+        Box {
+            IconButton(onClick = { showMenu = true }, modifier = Modifier.size(36.dp)) {
+                Icon(
+                    Icons.Outlined.MoreVert,
+                    contentDescription = null,
+                    modifier = Modifier.size(18.dp),
+                    tint = MaterialTheme.appColors.textSecondary
+                )
+            }
+            DropdownMenu(
+                expanded = showMenu,
+                onDismissRequest = { showMenu = false },
+                containerColor = MaterialTheme.appColors.surfaceElevated
+            ) {
+                DropdownMenuItem(
+                    text = {
+                        Text(
+                            stringResource(Res.string.common_edit),
+                            color = MaterialTheme.appColors.textPrimary
+                        )
+                    },
+                    leadingIcon = {
+                        Icon(
+                            Icons.Outlined.Edit,
+                            contentDescription = null,
+                            tint = MaterialTheme.appColors.textSecondary
+                        )
+                    },
+                    onClick = { showMenu = false; onEdit() }
+                )
+                DropdownMenuItem(
+                    text = {
+                        Text(
+                            stringResource(Res.string.common_archive),
+                            color = MaterialTheme.appColors.expense
+                        )
+                    },
+                    leadingIcon = {
+                        Icon(
+                            Icons.Outlined.Archive,
+                            contentDescription = null,
+                            tint = MaterialTheme.appColors.expense
+                        )
+                    },
+                    onClick = { showMenu = false; onArchive() }
+                )
+            }
         }
-        Text("›", fontSize = 18.sp, color = MaterialTheme.appColors.textSecondary)
+        Icon(
+            Icons.AutoMirrored.Filled.KeyboardArrowRight,
+            contentDescription = null,
+            tint = MaterialTheme.appColors.textTertiary,
+            modifier = Modifier.size(18.dp)
+        )
     }
 }
 

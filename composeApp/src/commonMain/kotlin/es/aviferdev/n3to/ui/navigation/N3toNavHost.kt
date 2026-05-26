@@ -114,44 +114,6 @@ fun N3toContent() {
                 startDestination = HomeRoute,
             ) {
                 composable<HomeRoute> {
-                    HomeScreen(
-                        onOpenStore = openStore,
-                        onNavigateToTransactions = {
-                            navController.navigate(TransactionsRoute) { launchSingleTop = true }
-                        },
-                        onNavigateToCharts = {
-                            navController.navigate(ChartsRoute) { launchSingleTop = true }
-                        },
-                        onNavigateToDebts = {
-                            navController.navigate(DebtsRoute) { launchSingleTop = true }
-                        },
-                        onNavigateToFiscalReport = {
-                            navController.navigate(FiscalReportRoute) { launchSingleTop = true }
-                        },
-                        onNavigateToSettings = {
-                            navController.navigate(SettingsRoute) { launchSingleTop = true }
-                        },
-                        onNavigateToEmergencyFundSettings = {
-                            navController.navigate(EmergencyFundSettingsRoute) {
-                                launchSingleTop = true
-                            }
-                        },
-                        onNavigateToFixedIncomeDetail = { positionId ->
-                            navController.navigate(FixedIncomeDetailRoute(positionId)) {
-                                launchSingleTop = true
-                            }
-                        },
-                        onNavigateToCategoryPicker = { type ->
-                            navController.navigate(CategoryPickerRoute(type.name)) {
-                                launchSingleTop = true
-                            }
-                        },
-                        onNavigateToAccountConfig = { accountId ->
-                            navController.navigate(AccountConfigRoute(accountId)) {
-                                launchSingleTop = true
-                            }
-                        },
-                    )
                     // Reabrir sheet al volver del CategoryPicker
                     val catPickerCatId = navController.currentBackStackEntry
                         ?.savedStateHandle?.get<String>("selected_category_id")
@@ -195,6 +157,9 @@ fun N3toContent() {
                         },
                         onNavigateToSettings = {
                             navController.navigate(SettingsRoute) { launchSingleTop = true }
+                        },
+                        onNavigateToGoalSettings = {
+                            navController.navigate(GoalSettingsRoute) { launchSingleTop = true }
                         },
                         onNavigateToEmergencyFundSettings = {
                             navController.navigate(EmergencyFundSettingsRoute) {

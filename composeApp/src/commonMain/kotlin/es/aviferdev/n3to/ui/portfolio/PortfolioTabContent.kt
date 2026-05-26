@@ -213,9 +213,6 @@ fun PortfolioTabContent(
                         totalCurrentValue = state.combinedCurrentValue,
                         balancesHidden = balancesHidden,
                         selectedView = state.selectedDistributionView,
-                        fixedIncomePercent = state.fixedIncomeSummary?.let { fi ->
-                            if (state.combinedCurrentValue > 0) (fi.totalCurrentValue / state.combinedCurrentValue) * 100 else 0.0
-                        } ?: 0.0,
                         viewSelector = {
                             Row(
                                 modifier = Modifier

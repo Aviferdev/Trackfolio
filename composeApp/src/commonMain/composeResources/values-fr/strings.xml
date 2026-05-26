@@ -268,6 +268,7 @@
     <string name="portfolio_settings_reminder_section">RAPPEL DE PRIX</string>
     <string name="portfolio_settings_reminder_title">Fréquence des rappels</string>
     <string name="portfolio_settings_reminder_desc">Je vous rappellerai de mettre à jour périodiquement les prix de vos actifs.</string>
+    <string name="portfolio_settings_reminder_off">Désact.</string>
     <string name="portfolio_settings_platform_section">PLATEFORMES</string>
     <string name="portfolio_settings_platform_empty">Aucune plateforme. Ajoutez des courtiers, bourses ou banques pour les associer à vos transactions.</string>
     <string name="portfolio_settings_sector_section">SECTEURS</string>

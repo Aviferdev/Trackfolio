@@ -270,6 +270,7 @@
     <string name="portfolio_settings_reminder_section">価格リマインダー</string>
     <string name="portfolio_settings_reminder_title">リマインダー頻度</string>
     <string name="portfolio_settings_reminder_desc">定期的に資産価格の更新をリマインドします。</string>
+    <string name="portfolio_settings_reminder_off">オフ</string>
     <string name="portfolio_settings_platform_section">プラットフォーム</string>
     <string name="portfolio_settings_platform_empty">プラットフォームがありません。取引に関連付ける証券会社、取引所、銀行を追加してください。</string>
     <string name="portfolio_settings_sector_section">セクター</string>

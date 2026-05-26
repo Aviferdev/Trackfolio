@@ -75,6 +75,7 @@ fun HomeScreen(
     onNavigateToDebts: () -> Unit = {},
     onNavigateToFiscalReport: () -> Unit = {},
     onNavigateToSettings: () -> Unit = {},
+    onNavigateToGoalSettings: () -> Unit = {},
     onNavigateToEmergencyFundSettings: () -> Unit = {},
     onOpenStore: () -> Unit = {},
     onNavigateToFixedIncomeDetail: (String) -> Unit = {},
@@ -144,6 +145,7 @@ fun HomeScreen(
                     onNavigateToDebts = onNavigateToDebts,
                     onNavigateToFiscalReport = onNavigateToFiscalReport,
                     onNavigateToSettings = onNavigateToSettings,
+                    onNavigateToGoalSettings = onNavigateToGoalSettings,
                     onNavigateToEmergencyFundSettings = onNavigateToEmergencyFundSettings,
                     onNavigateToFixedIncomeDetail = onNavigateToFixedIncomeDetail,
                     priceReminderState = priceReminder,
@@ -263,6 +265,7 @@ fun HomeContent(
     onNavigateToDebts: () -> Unit,
     onNavigateToFiscalReport: () -> Unit,
     onNavigateToSettings: () -> Unit,
+    onNavigateToGoalSettings: () -> Unit = {},
     onNavigateToEmergencyFundSettings: () -> Unit = {},
     onNavigateToFixedIncomeDetail: (String) -> Unit = {},
     priceReminderState: PriceReminderState = PriceReminderState(),
@@ -402,7 +405,7 @@ fun HomeContent(
                     savingsActual = 0.0,
                     investmentActual = 0.0
                 ),
-                onNavigateToSettings = onNavigateToSettings,
+                onNavigateToSettings = onNavigateToGoalSettings,
                 modifier = Modifier.fillMaxWidth()
             )
         }

@@ -5,7 +5,7 @@ import es.aviferdev.n3to.domain.model.ValidationError
 
 /**
  * Lee y escribe el intervalo (en días) del recordatorio de precios.
- * Opciones válidas: 7, 14, 30. Cualquier otro valor se trata como 14.
+ * Opciones válidas: 0 (desactivado), 7, 14, 30. Cualquier otro valor se trata como 14.
  */
 class GetPriceReminderIntervalUseCase(
     private val appSettings: AppSettings
@@ -25,6 +25,6 @@ class GetPriceReminderIntervalUseCase(
     }
 
     companion object {
-        val VALID_INTERVALS = listOf(7, 14, 30)
+        val VALID_INTERVALS = listOf(0, 7, 14, 30)
     }
 }

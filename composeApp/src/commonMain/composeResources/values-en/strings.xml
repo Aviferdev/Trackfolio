@@ -268,6 +268,7 @@
     <string name="portfolio_settings_reminder_section">PRICE REMINDER</string>
     <string name="portfolio_settings_reminder_title">Reminder frequency</string>
     <string name="portfolio_settings_reminder_desc">I\'ll remind you to update your asset prices periodically.</string>
+    <string name="portfolio_settings_reminder_off">Off</string>
     <string name="portfolio_settings_platform_section">PLATFORMS</string>
     <string name="portfolio_settings_platform_empty">No platforms. Add brokers, exchanges or banks to associate them with your transactions.</string>
     <string name="portfolio_settings_sector_section">SECTORS</string>

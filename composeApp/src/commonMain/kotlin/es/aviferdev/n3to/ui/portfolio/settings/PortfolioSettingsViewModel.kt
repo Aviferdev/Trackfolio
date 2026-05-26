@@ -67,6 +67,7 @@ class PortfolioSettingsViewModel(
 ) : ViewModel() {
 
     private val _portfolioSheet = MutableStateFlow(PortfolioSheetState())
+    private val _priceReminderInterval = MutableStateFlow(getPriceReminderInterval.get())
 
     private val countsFlow = combine(
         getAssetCategoriesIncludingArchived().map { list -> list.count { !it.archived } },
@@ -84,15 +85,16 @@ class PortfolioSettingsViewModel(
             },
             countsFlow
         ) { portfolios, counts -> portfolios to counts },
-        _portfolioSheet
-    ) { (portfolios, counts), portfolioSheet ->
+        _portfolioSheet,
+        _priceReminderInterval
+    ) { (portfolios, counts), portfolioSheet, interval ->
         PortfolioSettingsUiState(
             portfolios = portfolios,
             categoriesCount = counts.categories,
             platformsCount = counts.platforms,
             sectorsCount = counts.sectors,
             regionsCount = counts.regions,
-            priceReminderInterval = getPriceReminderInterval.get(),
+            priceReminderInterval = interval,
             showAddPortfolioSheet = portfolioSheet.showAddSheet,
             editingPortfolio = portfolioSheet.editing,
             deletingPortfolio = portfolioSheet.deleting,
@@ -103,6 +105,7 @@ class PortfolioSettingsViewModel(
     // ── Price reminder ────────────────────────────────────────────────────────
     fun setReminderInterval(days: Int) {
         getPriceReminderInterval.set(days)
+        _priceReminderInterval.value = days
     }
 
     // ── Portfolio actions ─────────────────────────────────────────────────────

@@ -270,6 +270,7 @@
     <string name="portfolio_settings_reminder_section">RECORDATORIO DE PRECIOS</string>
     <string name="portfolio_settings_reminder_title">Frecuencia de recordatorio</string>
     <string name="portfolio_settings_reminder_desc">Te recordaré actualizar los precios de tus activos cada cierto tiempo.</string>
+    <string name="portfolio_settings_reminder_off">Off</string>
     <string name="portfolio_settings_platform_section">PLATAFORMAS</string>
     <string name="portfolio_settings_platform_empty">Sin plataformas. Añade brokers, exchanges o bancos para asociarlos a tus movimientos.</string>
     <string name="portfolio_settings_sector_section">SECTORES</string>

@@ -193,7 +193,8 @@ class PortfolioStateBuilder {
 
         val compositionByAsset = compositions.associateBy { it.assetId }
         val compositionSlices = buildCompositionDistribution(
-            allGroups, compositionByAsset, combinedCurrentValue, fiSummary, variableIncomeLabel
+            allGroups, compositionByAsset, combinedCurrentValue,
+            fiRows.sumOf { it.currentValue }, variableIncomeLabel
         )
 
         val assetCurrentValues = openRows.associate { it.asset.id to it.position.currentValue }
@@ -211,6 +212,14 @@ class PortfolioStateBuilder {
         for ((assetId, value) in assetCurrentValues) {
             if (assetId !in catalogedAssetIds) {
                 regionValues["__uncatalogued__"] = (regionValues["__uncatalogued__"] ?: 0.0) + value
+            }
+        }
+        for (fiRow in fiRows) {
+            val regionKey = fiRow.position.region
+            if (regionKey != null) {
+                regionValues[regionKey] = (regionValues[regionKey] ?: 0.0) + fiRow.currentValue
+            } else {
+                regionValues["__uncatalogued__"] = (regionValues["__uncatalogued__"] ?: 0.0) + fiRow.currentValue
             }
         }
 
@@ -256,6 +265,14 @@ class PortfolioStateBuilder {
         for ((assetId, value) in assetCurrentValues) {
             if (assetId !in catalogedAssetIdsForSector) {
                 sectorValues["__uncatalogued__"] = (sectorValues["__uncatalogued__"] ?: 0.0) + value
+            }
+        }
+        for (fiRow in fiRows) {
+            val sectorKey = fiRow.position.sector
+            if (sectorKey != null) {
+                sectorValues[sectorKey] = (sectorValues[sectorKey] ?: 0.0) + fiRow.currentValue
+            } else {
+                sectorValues["__uncatalogued__"] = (sectorValues["__uncatalogued__"] ?: 0.0) + fiRow.currentValue
             }
         }
 
@@ -426,12 +443,12 @@ class PortfolioStateBuilder {
         groups: List<CategoryGroup>,
         compositionByAsset: Map<String, AssetComposition>,
         totalValue: Double,
-        fiSummary: FixedIncomeSummary?,
+        fiCurrentValue: Double,
         variableIncomeLabel: String
     ): List<CategorySlice> {
         if (totalValue <= 0.0) return emptyList()
 
-        var rfValue = fiSummary?.totalCurrentValue ?: 0.0
+        var rfValue = fiCurrentValue
         var rvValue = 0.0
 
         groups.forEach { group ->

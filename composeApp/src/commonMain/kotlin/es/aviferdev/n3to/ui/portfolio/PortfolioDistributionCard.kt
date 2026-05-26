@@ -66,7 +66,6 @@ fun PortfolioDistributionCard(
     totalCurrentValue: Double,
     balancesHidden: Boolean,
     selectedView: DistributionView = DistributionView.CATEGORY,
-    fixedIncomePercent: Double = 0.0,
     modifier: Modifier = Modifier,
     viewSelector: (@Composable () -> Unit)? = null
 ) {
@@ -96,14 +95,6 @@ fun PortfolioDistributionCard(
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.appColors.textPrimary
                 )
-                if (fixedIncomePercent > 0) {
-                    Text(
-                        text = "RF: ${fixedIncomePercent.toInt()}%",
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.appColors.warnAmber
-                    )
-                }
             }
             Spacer(Modifier.height(2.dp))
             Text(
@@ -195,8 +186,10 @@ private fun DonutCanvas(
         val gapDeg = 1.5f      // separación visual entre slices
         var startAngle = -90f      // empezar arriba (12 en punto)
 
-        slices.forEach { slice ->
-            val sweep = (slice.percent.toFloat() * 360f / 100f) - gapDeg
+        slices.forEachIndexed { index, slice ->
+            val fullSweep = slice.percent.toFloat() * 360f / 100f
+            val isLast = index == slices.lastIndex
+            val sweep = if (isLast) fullSweep else fullSweep - gapDeg
             if (sweep > 0f) {
                 drawArc(
                     color = slice.color,
@@ -208,7 +201,7 @@ private fun DonutCanvas(
                     style = Stroke(width = strokeW)
                 )
             }
-            startAngle += (slice.percent.toFloat() * 360f / 100f)
+            startAngle += fullSweep
         }
     }
 }

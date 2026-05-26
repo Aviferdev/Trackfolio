@@ -268,6 +268,7 @@
     <string name="portfolio_settings_reminder_section">PROMEMORIA PREZZO</string>
     <string name="portfolio_settings_reminder_title">Frequenza promemoria</string>
     <string name="portfolio_settings_reminder_desc">Ti ricorderò di aggiornare periodicamente i prezzi dei tuoi asset.</string>
+    <string name="portfolio_settings_reminder_off">Off</string>
     <string name="portfolio_settings_platform_section">PIATTAFORME</string>
     <string name="portfolio_settings_platform_empty">Nessuna piattaforma. Aggiungi broker, exchange o banche per associarli alle tue transazioni.</string>
     <string name="portfolio_settings_sector_section">SETTORI</string>

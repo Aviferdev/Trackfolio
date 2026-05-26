@@ -12,7 +12,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -23,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import es.aviferdev.n3to.ui.common.toMaterialIcon
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import es.aviferdev.n3to.domain.model.Asset
@@ -111,12 +115,13 @@ fun PortfolioAssetTypesScreen(
                                     .padding(horizontal = 16.dp, vertical = 14.dp),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Text(
-                                    category.icon,
-                                    fontSize = 18.sp,
-                                    modifier = Modifier.size(28.dp)
+                                Icon(
+                                    imageVector = category.icon.toMaterialIcon(),
+                                    contentDescription = null,
+                                    tint = MaterialTheme.appColors.cyanAccent,
+                                    modifier = Modifier.size(22.dp)
                                 )
-                                Spacer(Modifier.width(12.dp))
+                                Spacer(Modifier.width(14.dp))
                                 Column(modifier = Modifier.weight(1f)) {
                                     Text(
                                         text = category.name,
@@ -133,7 +138,12 @@ fun PortfolioAssetTypesScreen(
                                         color = MaterialTheme.appColors.textSecondary
                                     )
                                 }
-                                Text("›", fontSize = 18.sp, color = MaterialTheme.appColors.textSecondary)
+                                Icon(
+                                    Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.appColors.textTertiary,
+                                    modifier = Modifier.size(18.dp)
+                                )
                             }
                             if (index < state.categories.lastIndex) {
                                 HorizontalDivider(

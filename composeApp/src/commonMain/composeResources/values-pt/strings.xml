@@ -270,6 +270,7 @@
     <string name="portfolio_settings_reminder_section">LEMBRETE DE PREÇO</string>
     <string name="portfolio_settings_reminder_title">Frequência do lembrete</string>
     <string name="portfolio_settings_reminder_desc">Lembrarei você de atualizar os preços dos seus ativos periodicamente.</string>
+    <string name="portfolio_settings_reminder_off">Off</string>
     <string name="portfolio_settings_platform_section">PLATAFORMAS</string>
     <string name="portfolio_settings_platform_empty">Nenhuma plataforma. Adicione corretoras, bancos ou exchanges para associá-los às suas transações.</string>
     <string name="portfolio_settings_sector_section">SETORES</string>

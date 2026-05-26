@@ -268,6 +268,7 @@
     <string name="portfolio_settings_reminder_section">НАПОМИНАНИЕ О ЦЕНАХ</string>
     <string name="portfolio_settings_reminder_title">Периодичность напоминаний</string>
     <string name="portfolio_settings_reminder_desc">Я буду напоминать вам регулярно обновлять цены активов.</string>
+    <string name="portfolio_settings_reminder_off">Откл.</string>
     <string name="portfolio_settings_platform_section">ПЛАТФОРМЫ</string>
     <string name="portfolio_settings_platform_empty">Нет платформ. Добавьте брокеров, биржи или банки, чтобы связать их с вашими операциями.</string>
     <string name="portfolio_settings_sector_section">СЕКТОРА</string>

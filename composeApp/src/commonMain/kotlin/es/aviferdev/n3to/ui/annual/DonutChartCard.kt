@@ -148,8 +148,10 @@ private fun DonutCanvas(
         val gapDeg = 1.5f
         var startAngle = -90f
 
-        slices.forEach { slice ->
-            val sweep = (slice.percent.toFloat() * 360f / 100f) - gapDeg
+        slices.forEachIndexed { index, slice ->
+            val fullSweep = slice.percent.toFloat() * 360f / 100f
+            val isLast = index == slices.lastIndex
+            val sweep = if (isLast) fullSweep else fullSweep - gapDeg
             if (sweep > 0f) {
                 drawArc(
                     color = slice.color,
@@ -161,7 +163,7 @@ private fun DonutCanvas(
                     style = Stroke(width = strokeW)
                 )
             }
-            startAngle += (slice.percent.toFloat() * 360f / 100f)
+            startAngle += fullSweep
         }
     }
 }

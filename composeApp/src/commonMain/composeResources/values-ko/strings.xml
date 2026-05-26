@@ -270,6 +270,7 @@
     <string name="portfolio_settings_reminder_section">가격 알림</string>
     <string name="portfolio_settings_reminder_title">알림 빈도</string>
     <string name="portfolio_settings_reminder_desc">주기적으로 자산 가격 업데이트를 알려드립니다.</string>
+    <string name="portfolio_settings_reminder_off">끄기</string>
     <string name="portfolio_settings_platform_section">플랫폼</string>
     <string name="portfolio_settings_platform_empty">플랫폼이 없습니다. 브로커, 거래소 또는 은행을 추가하여 거래와 연결하세요.</string>
     <string name="portfolio_settings_sector_section">섹터</string>

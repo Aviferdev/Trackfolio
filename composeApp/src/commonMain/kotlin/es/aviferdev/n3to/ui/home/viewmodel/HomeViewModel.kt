@@ -187,7 +187,18 @@ class HomeViewModel(
             }
         }
         viewModelScope.launch {
-            getAccounts().collect { _accounts.value = it }
+            getAccounts().collect { accounts ->
+                _accounts.value = accounts
+                if (session.selectedAccountId.value == null && accounts.isNotEmpty()) {
+                    val ready = accounts.firstOrNull { !it.needsInitialBalance } ?: accounts.firstOrNull()
+                    ready?.let { session.selectAccount(it.id) }
+                }
+                val currentId = session.selectedAccountId.value
+                if (currentId != null && accounts.none { it.id == currentId }) {
+                    val ready = accounts.firstOrNull { !it.needsInitialBalance }
+                    ready?.let { session.selectAccount(it.id) } ?: session.clearSelection()
+                }
+            }
         }
         checkPriceReminder()
         loadNearMaturityPositions()

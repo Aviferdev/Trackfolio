@@ -1,9 +1,6 @@
 package es.aviferdev.n3to.ui.portfolio.settings
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,7 +16,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
@@ -46,12 +42,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.AssetSector
-import es.aviferdev.n3to.ui.common.toMaterialIcon
 import es.aviferdev.n3to.domain.usecase.assetmetadata.DeleteSectorUseCase
 import es.aviferdev.n3to.domain.usecase.assetmetadata.GetSectorsUseCase
 import es.aviferdev.n3to.domain.usecase.assetmetadata.SaveSectorUseCase
 import es.aviferdev.n3to.ui.common.topbar.TopBarWithActionsApp
 import es.aviferdev.n3to.ui.theme.appColors
+import io.ktor.client.request.invoke
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import n3to.composeapp.generated.resources.Res
@@ -62,11 +58,6 @@ import n3to.composeapp.generated.resources.portfolio_settings_sector_empty
 import n3to.composeapp.generated.resources.portfolio_settings_sector_section
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
-
-private val SECTOR_ICONS = listOf(
-    "💻", "🏥", "⚡", "🏦", "🛒", "🏭", "🏠", "📡", "💎", "💡",
-    "🚀", "🎮", "📱", "🚗", "🍔", "💊", "📚", "🎬", "🔧", "🌾"
-)
 
 @Composable
 fun SectorManagementScreen(
@@ -79,7 +70,6 @@ fun SectorManagementScreen(
 
     var sectors by remember { mutableStateOf<List<AssetSector>>(emptyList()) }
     var newName by remember { mutableStateOf("") }
-    var newIcon by remember { mutableStateOf("💻") }
     var isLoading by remember { mutableStateOf(true) }
     var errorMsg by remember { mutableStateOf<String?>(null) }
 
@@ -102,7 +92,7 @@ fun SectorManagementScreen(
         )
 
         LazyColumn(
-            contentPadding = PaddingValues(horizontal = 20.dp, vertical = 20.dp),
+            contentPadding = PaddingValues(start = 20.dp, top = 20.dp, end = 20.dp, bottom = 48.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             item {
@@ -126,22 +116,6 @@ fun SectorManagementScreen(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Box(
-                        modifier = Modifier
-                            .size(40.dp)
-                            .clip(RoundedCornerShape(8.dp))
-                            .background(MaterialTheme.appColors.surface)
-                            .border(1.dp, MaterialTheme.appColors.border, RoundedCornerShape(8.dp)),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            newIcon.toMaterialIcon(),
-                            contentDescription = null,
-                            tint = MaterialTheme.appColors.primary,
-                            modifier = Modifier.size(22.dp)
-                        )
-                    }
-                    Spacer(Modifier.width(12.dp))
                     OutlinedTextField(
                         value = newName,
                         onValueChange = { newName = it },
@@ -164,7 +138,7 @@ fun SectorManagementScreen(
                         onClick = {
                             if (newName.isBlank()) return@Button
                             scope.launch {
-                                saveSectorUseCase(newName, newIcon)
+                                saveSectorUseCase(newName, "")
                                     .onSuccess { newName = "" }
                                     .onFailure { errorMsg = it.message }
                             }
@@ -174,40 +148,6 @@ fun SectorManagementScreen(
                         colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.appColors.primary)
                     ) {
                         Text("+", fontSize = 18.sp)
-                    }
-                }
-
-                Spacer(Modifier.height(8.dp))
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .horizontalScroll(rememberScrollState()),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    SECTOR_ICONS.forEach { icon ->
-                        Box(
-                            modifier = Modifier
-                                .size(36.dp)
-                                .clip(RoundedCornerShape(8.dp))
-                                .background(
-                                    if (newIcon == icon) MaterialTheme.appColors.primary.copy(alpha = 0.1f)
-                                    else MaterialTheme.appColors.surface
-                                )
-                                .border(
-                                    if (newIcon == icon) 1.5.dp else 0.5.dp,
-                                    if (newIcon == icon) MaterialTheme.appColors.primary else MaterialTheme.appColors.border,
-                                    RoundedCornerShape(8.dp)
-                                )
-                                .clickable { newIcon = icon },
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(
-                                icon.toMaterialIcon(),
-                                contentDescription = null,
-                                tint = if (newIcon == icon) MaterialTheme.appColors.primary else MaterialTheme.appColors.textSecondary,
-                                modifier = Modifier.size(20.dp)
-                            )
-                        }
                     }
                 }
 
@@ -257,13 +197,6 @@ private fun SectorScreenItem(
             .padding(horizontal = 12.dp, vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Icon(
-            sector.icon.toMaterialIcon(),
-            contentDescription = null,
-            tint = MaterialTheme.appColors.textPrimary,
-            modifier = Modifier.size(24.dp)
-        )
-        Spacer(Modifier.width(12.dp))
         Text(
             sector.name,
             fontSize = 14.sp,

@@ -1,11 +1,8 @@
 package es.aviferdev.n3to.ui.portfolio.settings.components
 
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -49,8 +46,6 @@ fun SectorListSection(
                         .padding(horizontal = 16.dp, vertical = 14.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(sector.icon, fontSize = 18.sp, modifier = Modifier.size(28.dp))
-                    Spacer(Modifier.width(12.dp))
                     Text(
                         text = sector.name,
                         fontSize = 15.sp,
@@ -62,7 +57,7 @@ fun SectorListSection(
                     HorizontalDivider(
                         color = MaterialTheme.appColors.navyBorder,
                         thickness = 0.5.dp,
-                        modifier = Modifier.padding(start = 52.dp)
+                        modifier = Modifier.padding(start = 16.dp)
                     )
                 }
             }
