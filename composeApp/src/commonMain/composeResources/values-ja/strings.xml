@@ -98,6 +98,15 @@
     <string name="home_confirm_identity">本人確認</string>
     <string name="home_section_goals">目標</string>
     <string name="home_section_emergency_fund">緊急予備資金</string>
+    <string name="home_section_inflation">インフレ推移</string>
+    <string name="home_quick_inflation">インフレ</string>
+    <string name="inflation_screen_title">インフレ推移</string>
+    <string name="inflation_card_title">年間インフレ率</string>
+    <string name="inflation_card_subtitle">CPI · 年率%</string>
+    <string name="inflation_card_no_data">データなし</string>
+    <string name="inflation_tab_summary">概要</string>
+    <string name="inflation_tab_history">推移</string>
+    <string name="inflation_history_year_col">年</string>
     <string name="home_section_recent">最近の取引</string>
     <string name="home_view_all">すべて表示</string>
     <string name="home_no_movements_title">取引なし</string>

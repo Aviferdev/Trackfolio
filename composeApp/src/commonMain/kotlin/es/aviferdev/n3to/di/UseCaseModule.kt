@@ -99,6 +99,8 @@ import es.aviferdev.n3to.domain.usecase.debt.MarkDebtAsPaidUseCase
 import es.aviferdev.n3to.domain.usecase.debt.SaveDebtUseCase
 import es.aviferdev.n3to.domain.usecase.debt.UpdateDebtUseCase
 import es.aviferdev.n3to.domain.usecase.emergencyfund.GetEmergencyFundStatusUseCase
+import es.aviferdev.n3to.domain.usecase.inflation.GetInflationHistoryUseCase
+import es.aviferdev.n3to.ui.inflation.InflationViewModel
 import es.aviferdev.n3to.domain.usecase.emergencyfund.GetEmergencyFundUseCase
 import es.aviferdev.n3to.domain.usecase.emergencyfund.SaveEmergencyFundUseCase
 import es.aviferdev.n3to.domain.usecase.fiscal.CalculateIrpfUseCase
@@ -438,6 +440,10 @@ val useCaseModule = module {
     factory { GetFiscalReportDataUseCase(get(), get(), get(), get(), get(), get()) }
     factory { CalculateIrpfUseCase() }
     factory { CalculateNetIncomeUseCase(get()) }
+
+    // ── Inflation ─────────────────────────────────────────────────────────────
+    factory { GetInflationHistoryUseCase(get()) }
+    viewModel { InflationViewModel(get(), get()) }
 
     // ── Loan ─────────────────────────────────────────────────────────────────────
     factory { SaveLoanUseCase(get()) }

@@ -13,6 +13,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Assignment
 import androidx.compose.material.icons.outlined.BarChart
 import androidx.compose.material.icons.outlined.Handshake
+import androidx.compose.material.icons.outlined.ShowChart
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Card
@@ -33,6 +34,7 @@ import es.aviferdev.n3to.ui.theme.appColors
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.home_quick_debts
 import n3to.composeapp.generated.resources.home_quick_fiscal
+import n3to.composeapp.generated.resources.home_quick_inflation
 import n3to.composeapp.generated.resources.home_quick_resumen
 import org.jetbrains.compose.resources.stringResource
 
@@ -41,10 +43,14 @@ fun QuickAccessSection(
     onNavigateToCharts: () -> Unit,
     onNavigateToDebts: () -> Unit,
     onNavigateToFiscalReport: () -> Unit,
+    onNavigateToInflation: () -> Unit = {},
     hasDebts: Boolean = false,
     modifier: Modifier = Modifier
 ) {
-    Column(modifier = modifier) {
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(10.dp)
+    ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(10.dp)
@@ -62,11 +68,29 @@ fun QuickAccessSection(
                 showBadge = hasDebts,
                 modifier = Modifier.weight(1f)
             )
+        }
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
             Box(modifier = Modifier.weight(1f)) {
                 QuickCard(
                     icon = Icons.AutoMirrored.Outlined.Assignment,
                     label = stringResource(Res.string.home_quick_fiscal),
                     onClick = onNavigateToFiscalReport,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                BetaBadge(
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .padding(5.dp)
+                )
+            }
+            Box(modifier = Modifier.weight(1f)) {
+                QuickCard(
+                    icon = Icons.Outlined.ShowChart,
+                    label = stringResource(Res.string.home_quick_inflation),
+                    onClick = onNavigateToInflation,
                     modifier = Modifier.fillMaxWidth()
                 )
                 BetaBadge(

@@ -51,6 +51,7 @@ import es.aviferdev.n3to.data.datasource.transaction.TransactionLocalDataSourceI
 import es.aviferdev.n3to.data.datasource.valuable.ValuableLocalDataSource
 import es.aviferdev.n3to.data.datasource.valuable.ValuableLocalDataSourceImpl
 import es.aviferdev.n3to.data.repository.GoalRepositoryImpl
+import es.aviferdev.n3to.data.repository.inflation.InflationRepositoryImpl
 import es.aviferdev.n3to.data.repository.account.AccountRepositoryImpl
 import es.aviferdev.n3to.data.repository.asset.AssetCategoryRepositoryImpl
 import es.aviferdev.n3to.data.repository.asset.AssetMetadataRepositoryImpl
@@ -79,6 +80,7 @@ import es.aviferdev.n3to.data.repository.savingsrates.SavingsRatesRepositoryImpl
 import es.aviferdev.n3to.data.repository.taxprofile.TaxProfileSnapshotRepositoryImpl
 import es.aviferdev.n3to.data.repository.transaction.TransactionRepositoryImpl
 import es.aviferdev.n3to.data.repository.valuable.ValuableRepositoryImpl
+import es.aviferdev.n3to.domain.repository.InflationRepository
 import es.aviferdev.n3to.domain.repository.AccountRepository
 import es.aviferdev.n3to.domain.repository.AssetCategoryRepository
 import es.aviferdev.n3to.domain.repository.AssetMetadataRepository
@@ -187,4 +189,7 @@ val repositoryModule = module {
 
     // ── Savings Rates Repository ────────────────────────────────────────────────
     single<SavingsRatesRepository> { SavingsRatesRepositoryImpl(get(), get()) }
+
+    // ── Inflation Repository ────────────────────────────────────────────────────
+    single<InflationRepository> { InflationRepositoryImpl(get()) }
 }

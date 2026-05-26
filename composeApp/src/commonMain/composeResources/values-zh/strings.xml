@@ -98,6 +98,15 @@
     <string name="home_confirm_identity">确认身份</string>
     <string name="home_section_goals">目标</string>
     <string name="home_section_emergency_fund">应急基金</string>
+    <string name="home_section_inflation">通货膨胀历史</string>
+    <string name="home_quick_inflation">通货膨胀</string>
+    <string name="inflation_screen_title">通货膨胀历史</string>
+    <string name="inflation_card_title">年度通胀率</string>
+    <string name="inflation_card_subtitle">CPI · 年率%</string>
+    <string name="inflation_card_no_data">暂无数据</string>
+    <string name="inflation_tab_summary">摘要</string>
+    <string name="inflation_tab_history">历史</string>
+    <string name="inflation_history_year_col">年份</string>
     <string name="home_section_recent">最近交易</string>
     <string name="home_view_all">查看全部</string>
     <string name="home_no_movements_title">无交易</string>

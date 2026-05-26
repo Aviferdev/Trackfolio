@@ -24,7 +24,7 @@ actual class VersionRemoteConfig {
         )
 
         val settings = FIRRemoteConfigSettings()
-        settings.minimumFetchInterval = 43200.0
+        settings.minimumFetchInterval = 0.0
         config.configSettings = settings
     }
 

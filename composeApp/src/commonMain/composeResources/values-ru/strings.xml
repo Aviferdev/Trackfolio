@@ -98,6 +98,15 @@
     <string name="home_confirm_identity">Подтвердите личность</string>
     <string name="home_section_goals">Цели</string>
     <string name="home_section_emergency_fund">Резервный фонд</string>
+    <string name="home_section_inflation">История инфляции</string>
+    <string name="home_quick_inflation">Инфляция</string>
+    <string name="inflation_screen_title">История инфляции</string>
+    <string name="inflation_card_title">Годовая инфляция</string>
+    <string name="inflation_card_subtitle">ИПЦ · % годовых</string>
+    <string name="inflation_card_no_data">Данные недоступны</string>
+    <string name="inflation_tab_summary">Обзор</string>
+    <string name="inflation_tab_history">История</string>
+    <string name="inflation_history_year_col">Год</string>
     <string name="home_section_recent">Последние операции</string>
     <string name="home_view_all">Смотреть всё</string>
     <string name="home_no_movements_title">Нет операций</string>

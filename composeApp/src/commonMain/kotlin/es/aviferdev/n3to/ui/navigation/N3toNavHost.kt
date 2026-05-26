@@ -34,6 +34,7 @@ import es.aviferdev.n3to.ui.fiscal.FiscalReportScreen
 import es.aviferdev.n3to.ui.fixedincome.FixedIncomeDetailScreen
 import es.aviferdev.n3to.ui.home.CategoryPickerScreen
 import es.aviferdev.n3to.ui.home.HomeScreen
+import es.aviferdev.n3to.ui.inflation.InflationScreen
 import es.aviferdev.n3to.ui.home.viewmodel.AddTransactionViewModel
 import es.aviferdev.n3to.ui.loan.LoanDetailScreen
 import es.aviferdev.n3to.ui.networth.NetWorthScreen
@@ -155,6 +156,9 @@ fun N3toContent() {
                         onNavigateToFiscalReport = {
                             navController.navigate(FiscalReportRoute) { launchSingleTop = true }
                         },
+                        onNavigateToInflation = {
+                            navController.navigate(InflationRoute) { launchSingleTop = true }
+                        },
                         onNavigateToSettings = {
                             navController.navigate(SettingsRoute) { launchSingleTop = true }
                         },
@@ -262,6 +266,9 @@ fun N3toContent() {
                             navController.navigate(SavingsRatesRoute) { launchSingleTop = true }
                         }
                     )
+                }
+                composable<InflationRoute> {
+                    InflationScreen(onBack = { navController.popBackStack() })
                 }
                 composable<SavingsRatesRoute> {
                     SavingsRatesScreen(

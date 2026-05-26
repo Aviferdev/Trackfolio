@@ -34,6 +34,8 @@ data object PrivacySettingsRoute
 @Serializable
 data object SavingsRatesRoute
 @Serializable
+data object InflationRoute
+@Serializable
 data object GoalSettingsRoute
 @Serializable
 data object EmergencyFundSettingsRoute

@@ -4,7 +4,6 @@ import com.google.android.gms.tasks.Tasks
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.remoteconfig.ktx.remoteConfig
 import com.google.firebase.remoteconfig.ktx.remoteConfigSettings
-import es.aviferdev.n3to.BuildConfig
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -25,10 +24,9 @@ actual class VersionRemoteConfig {
             )
         )
 
-        // Fetch interval: 0 en debug, 12h en release
         config.setConfigSettingsAsync(
             remoteConfigSettings {
-                minimumFetchIntervalInSeconds = if (BuildConfig.DEBUG) 0L else 43200L
+                minimumFetchIntervalInSeconds = 0L
             }
         )
     }

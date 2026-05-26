@@ -98,6 +98,15 @@
     <string name="home_confirm_identity">본인 확인</string>
     <string name="home_section_goals">목표</string>
     <string name="home_section_emergency_fund">비상금</string>
+    <string name="home_section_inflation">인플레이션 추이</string>
+    <string name="home_quick_inflation">인플레이션</string>
+    <string name="inflation_screen_title">인플레이션 추이</string>
+    <string name="inflation_card_title">연간 인플레이션</string>
+    <string name="inflation_card_subtitle">CPI · 연율%</string>
+    <string name="inflation_card_no_data">데이터 없음</string>
+    <string name="inflation_tab_summary">요약</string>
+    <string name="inflation_tab_history">이력</string>
+    <string name="inflation_history_year_col">연도</string>
     <string name="home_section_recent">최근 거래</string>
     <string name="home_view_all">전체 보기</string>
     <string name="home_no_movements_title">거래 없음</string>

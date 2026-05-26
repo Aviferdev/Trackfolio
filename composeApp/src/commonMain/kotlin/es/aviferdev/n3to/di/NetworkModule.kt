@@ -1,5 +1,7 @@
 package es.aviferdev.n3to.di
 
+import es.aviferdev.n3to.data.datasource.inflation.InflationRemoteDataSource
+import es.aviferdev.n3to.data.datasource.inflation.InflationRemoteDataSourceImpl
 import es.aviferdev.n3to.data.datasource.price.ExchangeRateRemoteDataSource
 import es.aviferdev.n3to.data.datasource.price.ExchangeRateRemoteDataSourceImpl
 import es.aviferdev.n3to.data.datasource.price.PriceRemoteDataSource
@@ -35,4 +37,5 @@ val networkModule = module {
     single<PriceRemoteDataSource> { PriceRemoteDataSourceImpl(get()) }
     single<ExchangeRateRemoteDataSource> { ExchangeRateRemoteDataSourceImpl(get()) }
     single<SavingsRatesRemoteDataSource> { SavingsRatesRemoteDataSourceImpl(get()) }
+    single<InflationRemoteDataSource> { InflationRemoteDataSourceImpl(get()) }
 }

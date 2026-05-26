@@ -98,6 +98,15 @@
     <string name="home_confirm_identity">Confirme sua identidade</string>
     <string name="home_section_goals">Metas</string>
     <string name="home_section_emergency_fund">Fundo de emergência</string>
+    <string name="home_section_inflation">Inflação histórica</string>
+    <string name="home_quick_inflation">Inflação</string>
+    <string name="inflation_screen_title">Inflação histórica</string>
+    <string name="inflation_card_title">Inflação anual</string>
+    <string name="inflation_card_subtitle">IPC · % anual</string>
+    <string name="inflation_card_no_data">Dados indisponíveis</string>
+    <string name="inflation_tab_summary">Resumo</string>
+    <string name="inflation_tab_history">Histórico</string>
+    <string name="inflation_history_year_col">Ano</string>
     <string name="home_section_recent">Transações recentes</string>
     <string name="home_view_all">Ver tudo</string>
     <string name="home_no_movements_title">Sem transações</string>

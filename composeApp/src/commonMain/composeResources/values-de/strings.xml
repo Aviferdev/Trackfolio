@@ -98,6 +98,15 @@
     <string name="home_confirm_identity">Identität bestätigen</string>
     <string name="home_section_goals">Ziele</string>
     <string name="home_section_emergency_fund">Notfallfonds</string>
+    <string name="home_section_inflation">Historische Inflation</string>
+    <string name="home_quick_inflation">Inflation</string>
+    <string name="inflation_screen_title">Historische Inflation</string>
+    <string name="inflation_card_title">Jährliche Inflation</string>
+    <string name="inflation_card_subtitle">VPI · % jährlich</string>
+    <string name="inflation_card_no_data">Keine Daten verfügbar</string>
+    <string name="inflation_tab_summary">Übersicht</string>
+    <string name="inflation_tab_history">Historisch</string>
+    <string name="inflation_history_year_col">Jahr</string>
     <string name="home_section_recent">Letzte Transaktionen</string>
     <string name="home_view_all">Alle anzeigen</string>
     <string name="home_no_movements_title">Keine Transaktionen</string>

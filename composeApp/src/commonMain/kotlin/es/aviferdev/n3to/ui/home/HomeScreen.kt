@@ -74,6 +74,7 @@ fun HomeScreen(
     onNavigateToCharts: () -> Unit = {},
     onNavigateToDebts: () -> Unit = {},
     onNavigateToFiscalReport: () -> Unit = {},
+    onNavigateToInflation: () -> Unit = {},
     onNavigateToSettings: () -> Unit = {},
     onNavigateToGoalSettings: () -> Unit = {},
     onNavigateToEmergencyFundSettings: () -> Unit = {},
@@ -144,6 +145,7 @@ fun HomeScreen(
                     onNavigateToCharts = onNavigateToCharts,
                     onNavigateToDebts = onNavigateToDebts,
                     onNavigateToFiscalReport = onNavigateToFiscalReport,
+                    onNavigateToInflation = onNavigateToInflation,
                     onNavigateToSettings = onNavigateToSettings,
                     onNavigateToGoalSettings = onNavigateToGoalSettings,
                     onNavigateToEmergencyFundSettings = onNavigateToEmergencyFundSettings,
@@ -264,6 +266,7 @@ fun HomeContent(
     onNavigateToCharts: () -> Unit,
     onNavigateToDebts: () -> Unit,
     onNavigateToFiscalReport: () -> Unit,
+    onNavigateToInflation: () -> Unit = {},
     onNavigateToSettings: () -> Unit,
     onNavigateToGoalSettings: () -> Unit = {},
     onNavigateToEmergencyFundSettings: () -> Unit = {},
@@ -436,6 +439,7 @@ fun HomeContent(
                 onNavigateToCharts = onNavigateToCharts,
                 onNavigateToDebts = onNavigateToDebts,
                 onNavigateToFiscalReport = onNavigateToFiscalReport,
+                onNavigateToInflation = onNavigateToInflation,
                 hasDebts = balance.totalOwed > 0 || balance.totalOwing > 0,
                 modifier = Modifier.fillMaxWidth()
             )

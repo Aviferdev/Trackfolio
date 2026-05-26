@@ -98,6 +98,15 @@
     <string name="home_confirm_identity">Confirm your identity</string>
     <string name="home_section_goals">Goals</string>
     <string name="home_section_emergency_fund">Emergency fund</string>
+    <string name="home_section_inflation">Historical inflation</string>
+    <string name="home_quick_inflation">Inflation</string>
+    <string name="inflation_screen_title">Historical inflation</string>
+    <string name="inflation_card_title">Annual inflation</string>
+    <string name="inflation_card_subtitle">CPI · % annual</string>
+    <string name="inflation_card_no_data">No data available</string>
+    <string name="inflation_tab_summary">Summary</string>
+    <string name="inflation_tab_history">Historical</string>
+    <string name="inflation_history_year_col">Year</string>
     <string name="home_section_recent">Recent transactions</string>
     <string name="home_view_all">View all</string>
     <string name="home_no_movements_title">No transactions</string>
