@@ -1744,7 +1744,7 @@
     <string name="savings_rates_country">País</string>
     <string name="savings_rates_cancellation_yes">Cancelación: Sí</string>
     <string name="savings_rates_cancellation_no">Cancelación: No</string>
-    <string name="savings_rates_preview_title">Dónde invertir</string>
+    <string name="savings_rates_preview_title">Oportunidades de renta fija</string>
     <string name="savings_rates_view_all">Ver todas</string>
     <string name="savings_rates_loading">Cargando mejores cuentas…</string>
     <string name="savings_rates_up_to_format">hasta €%1$s</string>

@@ -1721,7 +1721,6 @@
     <string name="savings_rates_country">Country</string>
     <string name="savings_rates_cancellation_yes">Cancellation: Yes</string>
     <string name="savings_rates_cancellation_no">Cancellation: No</string>
-    <string name="savings_rates_preview_title">Where to invest</string>
     <string name="savings_rates_view_all">View all</string>
     <string name="savings_rates_loading">Loading best accounts…</string>
     <string name="savings_rates_up_to_format">up to €%1$s</string>
