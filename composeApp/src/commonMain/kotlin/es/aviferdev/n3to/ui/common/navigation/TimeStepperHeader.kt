@@ -97,7 +97,7 @@ fun TimeStepperHeader(
 }
 
 @Composable
-private fun StepperArrowButton(
+fun StepperArrowButton(
     enabled: Boolean,
     onClick: () -> Unit,
     icon: ImageVector,

@@ -109,6 +109,8 @@ fun FiscalReportContent(
             actions = {
                 YearStepper(
                     year = state.selectedYear,
+                    canGoBack = state.canGoBack,
+                    canGoForward = state.canGoForward,
                     onPrevious = onPreviousYear,
                     onNext = onNextYear
                 )

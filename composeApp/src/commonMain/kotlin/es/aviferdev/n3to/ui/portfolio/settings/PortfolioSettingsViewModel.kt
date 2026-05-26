@@ -137,21 +137,21 @@ class PortfolioSettingsViewModel(
         _portfolioSheet.update { it.copy(noAccountError = false) }
     }
 
-    fun addPortfolio(name: String, description: String?) {
+    fun addPortfolio(name: String) {
         val accountId = session.selectedAccountId.value
         if (accountId == null) {
             _portfolioSheet.update { it.copy(showAddSheet = false, noAccountError = true) }
             return
         }
         viewModelScope.launch {
-            savePortfolio(accountId, name, description)
+            savePortfolio(accountId, name)
             closeAddPortfolioSheet()
         }
     }
 
-    fun updatePortfolioEntry(portfolio: Portfolio, name: String, description: String?) {
+    fun updatePortfolioEntry(portfolio: Portfolio, name: String) {
         viewModelScope.launch {
-            updatePortfolio(portfolio.copy(name = name, description = description))
+            updatePortfolio(portfolio.copy(name = name, description = null))
             closeEditPortfolioSheet()
         }
     }

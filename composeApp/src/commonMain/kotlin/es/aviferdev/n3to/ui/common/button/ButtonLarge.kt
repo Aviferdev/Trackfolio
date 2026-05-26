@@ -65,9 +65,9 @@ fun ButtonLarge(
         Text(
             text = stringResource(
                 resource = if (loading) {
-                    text
-                } else {
                     textLoading
+                } else {
+                    text
                 }
             ),
             fontSize = 14.sp,

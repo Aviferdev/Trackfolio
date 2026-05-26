@@ -293,6 +293,17 @@ private fun TransactionDetailContent(
             elevation = CardDefaults.cardElevation(0.dp)
         ) {
             Column(modifier = Modifier.padding(vertical = 4.dp)) {
+                val notes = transaction.notes
+                val hasIncomeDetails = shouldShowIncomeDetails(transaction)
+                val grossAmount = transaction.grossAmount
+                val commissionAmount = transaction.commissionAmount
+                val issuerName = transaction.issuerName
+                val hasGross = grossAmount != null
+                val hasTaxLines = transaction.taxLines.isNotEmpty()
+                val hasCommission = commissionAmount != null && commissionAmount > 0
+                val hasIssuer = !issuerName.isNullOrBlank()
+                val hasNotes = !notes.isNullOrBlank()
+
                 // Categoría
                 DetailRow(
                     label = stringResource(Res.string.common_category_label),
@@ -311,47 +322,48 @@ private fun TransactionDetailContent(
                 DetailRow(
                     label = stringResource(Res.string.common_date_label),
                     value = formatDateFullLocalized(transaction.date),
-                    isLast = false
+                    isLast = !hasNotes && !hasIncomeDetails
                 )
 
                 // Notas (si existen)
-                val notes = transaction.notes
-                if (!notes.isNullOrBlank()) {
+                if (hasNotes) {
                     DetailRow(
                         label = stringResource(Res.string.transaction_detail_notes_label),
-                        value = notes,
-                        isLast = !shouldShowIncomeDetails(transaction)
+                        value = notes!!,
+                        isLast = !hasIncomeDetails
                     )
                 }
 
                 // ── Income-specific fields ──────────────────────────────────
-                if (shouldShowIncomeDetails(transaction)) {
-                    val grossAmount = transaction.grossAmount
-                    if (grossAmount != null) {
+                if (hasIncomeDetails) {
+                    if (hasGross) {
                         DetailRow(
                             label = stringResource(Res.string.portfolio_add_tx_gross),
-                            value = "${formatAmount(grossAmount)} €",
-                            isLast = false
+                            value = "${formatAmount(grossAmount!!)} €",
+                            isLast = !hasTaxLines && !hasCommission && !hasIssuer
                         )
                     }
-                    transaction.taxLines.forEach { taxLine ->
+                    transaction.taxLines.forEachIndexed { index, taxLine ->
+                        val isLastTaxLine = index == transaction.taxLines.lastIndex
                         val lineText = if (taxLine.percent != null) {
                             "${taxLine.percent}% (${formatAmount(taxLine.amount)} €)"
                         } else {
                             "${formatAmount(taxLine.amount)} €"
                         }
-                        DetailRow(label = taxLine.name, value = lineText, isLast = false)
-                    }
-                    val commissionAmount = transaction.commissionAmount
-                    if (commissionAmount != null && commissionAmount > 0) {
                         DetailRow(
-                            label = stringResource(Res.string.fiscal_commissions_short),
-                            value = "${formatAmount(commissionAmount)} €",
-                            isLast = false
+                            label = taxLine.name,
+                            value = lineText,
+                            isLast = isLastTaxLine && !hasCommission && !hasIssuer
                         )
                     }
-                    val issuerName = transaction.issuerName
-                    if (!issuerName.isNullOrBlank()) {
+                    if (hasCommission) {
+                        DetailRow(
+                            label = stringResource(Res.string.fiscal_commissions_short),
+                            value = "${formatAmount(commissionAmount!!)} €",
+                            isLast = !hasIssuer
+                        )
+                    }
+                    if (hasIssuer) {
                         DetailRow(
                             label = stringResource(Res.string.transaction_detail_issuer_label),
                             value = issuerName,
@@ -359,8 +371,6 @@ private fun TransactionDetailContent(
                         )
                     }
                 }
-
-                // Si no hay notas ni income details, Fecha será el último elemento visible.
             }
         }
 

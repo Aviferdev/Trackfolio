@@ -85,21 +85,21 @@ fun PortfolioSettingsScreen(
     if (state.showAddPortfolioSheet) {
         AddEditPortfolioBottomSheet(
             existing = null,
-            onSave = { name, desc -> viewModel.addPortfolio(name, desc) },
+            onSave = { name -> viewModel.addPortfolio(name) },
             onDismiss = { viewModel.closeAddPortfolioSheet() }
         )
     }
     state.editingPortfolio?.let { portfolio ->
         AddEditPortfolioBottomSheet(
             existing = portfolio,
-            onSave = { name, desc -> viewModel.updatePortfolioEntry(portfolio, name, desc) },
+            onSave = { name -> viewModel.updatePortfolioEntry(portfolio, name) },
             onDismiss = { viewModel.closeEditPortfolioSheet() }
         )
     }
     state.deletingPortfolio?.let { portfolio ->
         AlertDialog(
             onDismissRequest = { viewModel.cancelDeletePortfolio() },
-            containerColor = MaterialTheme.appColors.surface,
+            containerColor = MaterialTheme.appColors.navySurface,
             title = {
                 Text(
                     stringResource(Res.string.portfolio_settings_delete_portfolio_title),
@@ -139,7 +139,7 @@ fun PortfolioSettingsScreen(
     if (state.noAccountError) {
         AlertDialog(
             onDismissRequest = { viewModel.dismissNoAccountError() },
-            containerColor = MaterialTheme.appColors.surface,
+            containerColor = MaterialTheme.appColors.navySurface,
             title = {
                 Text(
                     stringResource(Res.string.portfolio_error_no_account_title),

@@ -133,9 +133,10 @@ private fun CategoryPickerContent(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    uiState.frequentCategories.forEach { category ->
+                    uiState.frequentCategories.forEachIndexed { index, category ->
                         FrequentChip(
                             label = category.name,
+                            colorIndex = index,
                             onClick = { onCategoryClick(category.id) },
                             modifier = Modifier.weight(1f)
                         )
@@ -234,14 +235,16 @@ private fun CategoryPickerContent(
 @Composable
 private fun FrequentChip(
     label: String,
+    colorIndex: Int,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val chipColor = CategoryPalette[colorIndex % CategoryPalette.size]
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(10.dp))
-            .background(MaterialTheme.appColors.surfaceElevated)
-            .border(0.5.dp, MaterialTheme.appColors.border, RoundedCornerShape(10.dp))
+            .background(MaterialTheme.appColors.navySurfaceLight)
+            .border(0.5.dp, MaterialTheme.appColors.navyBorder, RoundedCornerShape(10.dp))
             .clickable { onClick() }
             .height(60.dp)
             .padding(horizontal = 4.dp, vertical = 8.dp),
@@ -251,11 +254,21 @@ private fun FrequentChip(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            Text(
-                text = label.firstOrNull()?.toString() ?: "",
-                modifier = Modifier.size(22.dp)
-            )
-            Spacer(Modifier.height(2.dp))
+            Box(
+                modifier = Modifier
+                    .size(22.dp)
+                    .clip(RoundedCornerShape(6.dp))
+                    .background(chipColor.copy(alpha = 0.2f)),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = label.firstOrNull()?.toString() ?: "",
+                    fontSize = 12.sp,
+                    color = chipColor,
+                    fontWeight = FontWeight.SemiBold
+                )
+            }
+            Spacer(Modifier.height(4.dp))
             Text(
                 label,
                 fontSize = 10.sp,

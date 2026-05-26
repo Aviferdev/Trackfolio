@@ -7,6 +7,7 @@ import es.aviferdev.n3to.domain.model.TaxProfileSnapshot
 import es.aviferdev.n3to.domain.pdf.PdfReportGenerator
 import es.aviferdev.n3to.domain.usecase.fiscal.GetFiscalReportDataUseCase
 import es.aviferdev.n3to.domain.usecase.taxprofile.GetActiveTaxProfileSnapshotUseCase
+import es.aviferdev.n3to.domain.usecase.transaction.GetOldestTransactionDateUseCase
 import es.aviferdev.n3to.platform.nowLocalDate
 import es.aviferdev.n3to.platform.nowYear
 import es.aviferdev.n3to.ui.account.AccountSession
@@ -15,13 +16,20 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
+import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 
 data class FiscalReportUiState(
     val isLoading: Boolean = true,
     val reportData: FiscalReportData? = null,
     val selectedYear: String = currentYear(),
+    val canGoBack: Boolean = true,
+    val canGoForward: Boolean = false,
     val activeTaxProfile: TaxProfileSnapshot? = null,
     val isGenerating: Boolean = false,
     val showPasswordSheet: Boolean = false,
@@ -35,6 +43,7 @@ private fun currentYear(): String = nowYear().toString()
 class FiscalReportViewModel(
     private val getFiscalReportData: GetFiscalReportDataUseCase,
     private val getActiveTaxProfile: GetActiveTaxProfileSnapshotUseCase,
+    private val getOldestDate: GetOldestTransactionDateUseCase,
     private val pdfGenerator: PdfReportGenerator,
     private val session: AccountSession
 ) : ViewModel() {
@@ -42,8 +51,31 @@ class FiscalReportViewModel(
     private val _uiState = MutableStateFlow(FiscalReportUiState())
     val uiState: StateFlow<FiscalReportUiState> = _uiState.asStateFlow()
 
+    private val _oldestYear = MutableStateFlow<Int?>(null)
+
     init {
+        viewModelScope.launch {
+            session.selectedAccountId.flatMapLatest { accountId ->
+                if (accountId == null) flowOf(null)
+                else getOldestDate(accountId)
+            }.collect { epochMillis ->
+                _oldestYear.value = epochMillis?.let {
+                    Instant.fromEpochMilliseconds(it)
+                        .toLocalDateTime(TimeZone.currentSystemDefault()).year
+                }
+                recomputeNavFlags()
+            }
+        }
         loadReport()
+    }
+
+    private fun recomputeNavFlags() {
+        val yearInt = _uiState.value.selectedYear.toIntOrNull() ?: return
+        val oldest = _oldestYear.value
+        _uiState.value = _uiState.value.copy(
+            canGoBack = oldest == null || yearInt > oldest,
+            canGoForward = yearInt < currentYear().toInt()
+        )
     }
 
     private fun loadReport() {
@@ -82,7 +114,14 @@ class FiscalReportViewModel(
 
     fun selectYear(year: String) {
         if (year == _uiState.value.selectedYear) return
-        _uiState.value = _uiState.value.copy(selectedYear = year, reportData = null)
+        val yearInt = year.toIntOrNull() ?: return
+        val oldest = _oldestYear.value
+        _uiState.value = _uiState.value.copy(
+            selectedYear = year,
+            reportData = null,
+            canGoBack = oldest == null || yearInt > oldest,
+            canGoForward = yearInt < currentYear().toInt()
+        )
         loadReport()
     }
 
@@ -93,8 +132,7 @@ class FiscalReportViewModel(
 
     fun nextYear() {
         val next = (_uiState.value.selectedYear.toIntOrNull() ?: return) + 1
-        val now = currentYear().toInt()
-        if (next > now) return
+        if (next > currentYear().toInt()) return
         selectYear(next.toString())
     }
 

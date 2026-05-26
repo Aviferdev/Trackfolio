@@ -2,6 +2,7 @@ package es.aviferdev.n3to.ui.fiscal.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,20 +13,26 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.IconButton
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.ChevronLeft
+import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.TaxProfileSnapshot
-import es.aviferdev.n3to.platform.nowYear
+import es.aviferdev.n3to.ui.common.navigation.StepperArrowButton
 import es.aviferdev.n3to.ui.theme.HIDDEN_AMOUNT_MASK
 import es.aviferdev.n3to.ui.theme.LocalFiscalAmountsHidden
 import es.aviferdev.n3to.ui.theme.appColors
@@ -65,55 +72,35 @@ internal fun monthName(month: Int): String = when (month) {
 }
 
 @Composable
-internal fun YearStepper(year: String, onPrevious: () -> Unit, onNext: () -> Unit) {
-    val nowYear = nowYear()
-    val isMax = year.toIntOrNull() == nowYear
+internal fun YearStepper(
+    year: String,
+    canGoBack: Boolean,
+    canGoForward: Boolean = true,
+    onPrevious: () -> Unit,
+    onNext: () -> Unit,
+) {
     Row(verticalAlignment = Alignment.CenterVertically) {
-        IconButton(
+        StepperArrowButton(
+            enabled = canGoBack,
             onClick = onPrevious,
-            modifier = Modifier
-                .size(32.dp)
-                .clip(RoundedCornerShape(9.dp))
-                .background(MaterialTheme.appColors.navySurfaceLight)
-                .border(0.5.dp, MaterialTheme.appColors.navyBorder, RoundedCornerShape(9.dp))
-        ) {
-            Text(
-                "‹",
-                fontSize = 20.sp,
-                color = MaterialTheme.appColors.cyanAccent,
-                fontWeight = FontWeight.Light
-            )
-        }
-        Text(
-            year,
-            fontSize = 13.sp,
-            fontWeight = FontWeight.SemiBold,
-            color = MaterialTheme.appColors.textPrimary,
-            modifier = Modifier.padding(horizontal = 8.dp)
+            icon = Icons.Default.ChevronLeft,
+            modifier = Modifier.alpha(if (canGoBack) 1f else 0f)
         )
-        IconButton(
+        Spacer(Modifier.width(14.dp))
+        Text(
+            text = year,
+            fontSize = 13.sp,
+            fontWeight = FontWeight.Medium,
+            color = MaterialTheme.appColors.textPrimary,
+            modifier = Modifier.padding(horizontal = 12.dp)
+        )
+        Spacer(Modifier.width(14.dp))
+        StepperArrowButton(
+            enabled = canGoForward,
             onClick = onNext,
-            enabled = !isMax,
-            modifier = Modifier
-                .size(32.dp)
-                .clip(RoundedCornerShape(9.dp))
-                .background(if (!isMax) MaterialTheme.appColors.navySurfaceLight else Color.Transparent)
-                .then(
-                    if (!isMax) Modifier.border(
-                        0.5.dp,
-                        MaterialTheme.appColors.navyBorder,
-                        RoundedCornerShape(9.dp)
-                    )
-                    else Modifier
-                )
-        ) {
-            Text(
-                "›",
-                fontSize = 20.sp,
-                color = if (!isMax) MaterialTheme.appColors.cyanAccent else MaterialTheme.appColors.textTertiary,
-                fontWeight = FontWeight.Light
-            )
-        }
+            icon = Icons.Default.ChevronRight,
+            modifier = Modifier.alpha(if (canGoForward) 1f else 0f)
+        )
     }
 }
 

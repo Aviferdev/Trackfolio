@@ -136,6 +136,14 @@ fun PortfolioTabContent(
 
             // ── Caso 3: Sin posiciones (cartera vacía) ───────────────────────
             if (state.groups.isEmpty() && state.closedPositions.isEmpty()) {
+                if (isTodasTab) {
+                    item(key = "savings_rates_preview") {
+                        SavingsRatePreviewCard(
+                            onNavigateToSavingsRates = onNavigateToSavingsRates,
+                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                        )
+                    }
+                }
                 item {
                     if (isTodasTab) {
                         EmptyStateView(
@@ -155,6 +163,15 @@ fun PortfolioTabContent(
             }
 
             // ── Caso 4: Con posiciones — contenido completo ──────────────────
+
+            if (isTodasTab) {
+                item(key = "savings_rates_preview") {
+                    SavingsRatePreviewCard(
+                        onNavigateToSavingsRates = onNavigateToSavingsRates,
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                    )
+                }
+            }
 
             // PortfolioSummaryCard
             item {
@@ -323,14 +340,6 @@ fun PortfolioTabContent(
                 }
             }
 
-            if (isTodasTab) {
-                item(key = "savings_rates_preview") {
-                    SavingsRatePreviewCard(
-                        onNavigateToSavingsRates = onNavigateToSavingsRates,
-                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-                    )
-                }
-            }
         }
     }
 }

@@ -817,6 +817,7 @@ val useCaseModule = module {
         FiscalReportViewModel(
             getFiscalReportData = get(),
             getActiveTaxProfile = get(),
+            getOldestDate = get(),
             pdfGenerator = get(),
             session = get()
         )
