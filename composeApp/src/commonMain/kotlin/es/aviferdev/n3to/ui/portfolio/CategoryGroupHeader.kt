@@ -23,6 +23,7 @@ import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.ui.theme.formatAmount
 import es.aviferdev.n3to.ui.theme.formatPercent
 import es.aviferdev.n3to.ui.theme.maskAmount
+import es.aviferdev.n3to.ui.theme.LocalCurrencySymbol
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.portfolio_category_current_format
 import n3to.composeapp.generated.resources.portfolio_category_invested_format
@@ -35,6 +36,7 @@ fun CategoryGroupHeader(
     group: CategoryGroup,
     balancesHidden: Boolean
 ) {
+    val currency = LocalCurrencySymbol.current
     val pnlColor = when {
         group.totalPnL > 0 -> MaterialTheme.appColors.income
         group.totalPnL < 0 -> MaterialTheme.appColors.expense
@@ -85,7 +87,8 @@ fun CategoryGroupHeader(
             Text(
                 stringResource(
                     Res.string.portfolio_category_invested_format,
-                    maskAmount(formatAmount(group.totalInvested), balancesHidden)
+                    maskAmount(formatAmount(group.totalInvested), balancesHidden),
+                    currency
                 ),
                 fontSize = 11.sp,
                 color = MaterialTheme.appColors.textTertiary
@@ -93,7 +96,8 @@ fun CategoryGroupHeader(
             Text(
                 stringResource(
                     Res.string.portfolio_category_current_format,
-                    maskAmount(formatAmount(group.totalCurrentValue), balancesHidden)
+                    maskAmount(formatAmount(group.totalCurrentValue), balancesHidden),
+                    currency
                 ),
                 fontSize = 11.sp,
                 color = MaterialTheme.appColors.textTertiary

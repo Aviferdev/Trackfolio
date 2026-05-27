@@ -38,6 +38,7 @@ import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.ui.theme.formatAmount
 import es.aviferdev.n3to.ui.theme.formatPercent
 import es.aviferdev.n3to.ui.theme.maskAmount
+import es.aviferdev.n3to.ui.theme.LocalCurrencySymbol
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.portfolio_compound_effect_estimated
 import n3to.composeapp.generated.resources.portfolio_compound_effect_title
@@ -127,6 +128,7 @@ private fun CompactHeader(
     balancesHidden: Boolean,
     expanded: Boolean
 ) {
+    val currency = LocalCurrencySymbol.current
     val showPositive = compoundEffect.totalReturn > 0.0
             && compoundEffect.compoundEffect > 0.0
 
@@ -145,7 +147,7 @@ private fun CompactHeader(
                 Column {
                     Text(
                         maskAmount(
-                            "+${formatAmount(compoundEffect.compoundEffect)} €",
+                            "+${formatAmount(compoundEffect.compoundEffect)} $currency",
                             balancesHidden
                         ),
                         fontSize = 18.sp,
@@ -221,8 +223,9 @@ private fun ExpandedContent(
 
 @Composable
 private fun EmptyState(message: String) {
+    val currency = LocalCurrencySymbol.current
     Text(
-        "+0,00 €",
+        "+0,00 $currency",
         fontSize = 28.sp,
         fontWeight = FontWeight.Bold,
         color = Color.White.copy(alpha = 0.4f),
@@ -242,6 +245,7 @@ private fun MainMetric(
     compoundEffect: CompoundEffect,
     balancesHidden: Boolean
 ) {
+    val currency = LocalCurrencySymbol.current
     Text(
         stringResource(Res.string.portfolio_compound_effect_estimated),
         fontSize = 13.sp,
@@ -250,7 +254,7 @@ private fun MainMetric(
     Spacer(Modifier.height(4.dp))
     Text(
         maskAmount(
-            "+${formatAmount(compoundEffect.compoundEffect)} €",
+            "+${formatAmount(compoundEffect.compoundEffect)} $currency",
             balancesHidden
         ),
         fontSize = 36.sp,
@@ -285,6 +289,7 @@ private fun ProjectionSection(
     compoundEffect: CompoundEffect,
     balancesHidden: Boolean
 ) {
+    val currency = LocalCurrencySymbol.current
     if (compoundEffect.avgCagr <= 0.0) return
 
     val cagrDecimal = compoundEffect.avgCagr / 100.0
@@ -307,7 +312,7 @@ private fun ProjectionSection(
 
     Text(
         maskAmount(
-            "+${formatAmount(futureCompoundEffect)} €",
+            "+${formatAmount(futureCompoundEffect)} $currency",
             balancesHidden
         ),
         fontSize = 36.sp,

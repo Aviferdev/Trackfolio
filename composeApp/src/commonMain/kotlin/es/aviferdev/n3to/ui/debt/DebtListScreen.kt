@@ -52,6 +52,7 @@ import es.aviferdev.n3to.ui.common.topbar.TopBarWithActionsApp
 import es.aviferdev.n3to.ui.debt.components.DebtCard
 import es.aviferdev.n3to.ui.debt.components.DebtEmptyState
 import es.aviferdev.n3to.ui.theme.LocalBalanceHidden
+import es.aviferdev.n3to.ui.theme.LocalCurrencySymbol
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.ui.theme.formatAmount
@@ -404,6 +405,7 @@ private fun DebtSummaryCell(
     hidden: Boolean,
     modifier: Modifier,
 ) {
+    val currency = LocalCurrencySymbol.current
     Column(
         modifier = modifier.padding(horizontal = 10.dp),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -414,7 +416,7 @@ private fun DebtSummaryCell(
             modifier = Modifier.padding(bottom = 4.dp)
         )
         Text(
-            "${maskAmount(formatAmount(amount), hidden)} €",
+            "${maskAmount(formatAmount(amount), hidden)} $currency",
             fontSize = 16.sp,
             fontWeight = FontWeight.ExtraBold,
             color = color
@@ -424,6 +426,7 @@ private fun DebtSummaryCell(
 
 @Composable
 private fun DebtSectionHeader(title: String, total: Double, color: Color, hidden: Boolean) {
+    val currency = LocalCurrencySymbol.current
     Row(
         modifier = Modifier.fillMaxWidth()
             .padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 8.dp),
@@ -432,7 +435,7 @@ private fun DebtSectionHeader(title: String, total: Double, color: Color, hidden
     ) {
         N3toLabel(text = title)
         Text(
-            "Total: ${maskAmount(formatAmount(total), hidden)} €",
+            "Total: ${maskAmount(formatAmount(total), hidden)} $currency",
             fontSize = 11.sp,
             fontWeight = FontWeight.Bold,
             color = color,

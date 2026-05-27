@@ -26,6 +26,7 @@ import com.benasher44.uuid.uuid4
 import es.aviferdev.n3to.domain.model.Category
 import es.aviferdev.n3to.domain.model.PropertyExpense
 import es.aviferdev.n3to.ui.theme.*
+import es.aviferdev.n3to.ui.theme.LocalCurrencySymbol
 
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.common_accept
@@ -61,6 +62,7 @@ fun SellPropertySheet(
     onDismiss: () -> Unit,
     onConfirm: (saleDate: Long, saleValue: Double, expenses: List<PropertyExpense>) -> Unit
 ) {
+    val currency = LocalCurrencySymbol.current
     var saleValueText by remember { mutableStateOf("") }
     var saleDateMillis by remember { mutableStateOf(nowMillis()) }
     var showDatePicker by remember { mutableStateOf(false) }
@@ -171,7 +173,7 @@ fun SellPropertySheet(
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                 trailingIcon = {
                     Text(
-                        "€",
+                        currency,
                         fontSize = 16.sp,
                         color = MaterialTheme.appColors.textSecondary,
                         modifier = Modifier.padding(end = 12.dp)
@@ -310,7 +312,7 @@ fun SellPropertySheet(
                                 color = MaterialTheme.appColors.textSecondary
                             )
                             Text(
-                                formatAmountEuro(saleValue),
+                                formatAmountEuro(saleValue, currency),
                                 fontSize = 12.sp,
                                 color = MaterialTheme.appColors.income,
                                 fontWeight = FontWeight.Medium
@@ -327,7 +329,7 @@ fun SellPropertySheet(
                                     color = MaterialTheme.appColors.textSecondary
                                 )
                                 Text(
-                                    "-${formatAmountEuro(totalExpenses)}",
+                                    "-${formatAmountEuro(totalExpenses, currency)}",
                                     fontSize = 12.sp,
                                     color = MaterialTheme.appColors.expense,
                                     fontWeight = FontWeight.Medium
@@ -349,7 +351,7 @@ fun SellPropertySheet(
                                 color = MaterialTheme.appColors.textPrimary
                             )
                             Text(
-                                formatAmountEuro(netProceeds),
+                                formatAmountEuro(netProceeds, currency),
                                 fontWeight = FontWeight.Bold, fontSize = 13.sp,
                                 color = if (netProceeds >= 0) MaterialTheme.appColors.income else MaterialTheme.appColors.expense
                             )

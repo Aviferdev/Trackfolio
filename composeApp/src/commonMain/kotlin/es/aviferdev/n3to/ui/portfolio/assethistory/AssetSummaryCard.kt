@@ -23,6 +23,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.portfolio.AssetPosition
+import es.aviferdev.n3to.ui.theme.LocalCurrencySymbol
 import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.ui.theme.formatAmount
 import es.aviferdev.n3to.ui.theme.formatPercent
@@ -37,6 +38,7 @@ fun AssetSummaryCard(
     position: AssetPosition?,
     modifier: Modifier = Modifier
 ) {
+    val currency = LocalCurrencySymbol.current
     val isOpen = position?.netQuantity ?: 0.0 > 0.0
 
     Card(
@@ -74,7 +76,7 @@ fun AssetSummaryCard(
                             formatAmount(
                                 kotlin.math.abs(position?.totalPnL ?: 0.0)
                             )
-                        } €",
+                        } $currency",
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Bold,
                         color = pnlColor
@@ -130,7 +132,7 @@ fun AssetSummaryCard(
                             formatAmount(
                                 position.averageCostOfRemaining
                             )
-                        } €" else "—",
+                        } $currency" else "—",
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.appColors.textSecondary
@@ -154,7 +156,7 @@ fun AssetSummaryCard(
                 )
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
-                        currentPrice?.let { "${formatAmount(it)} €" } ?: "—",
+                        currentPrice?.let { "${formatAmount(it)} $currency" } ?: "—",
                         fontSize = 13.sp,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.appColors.textPrimary

@@ -94,6 +94,7 @@ fun CreateFixedIncomeBottomSheet(
     var newIssuerIcon by remember { mutableStateOf("🏦") }
     var feeNote by remember { mutableStateOf("") }
     var showDatePicker by remember { mutableStateOf(false) }
+    val currency = LocalCurrencySymbol.current
 
     // Región y sector para distribución
     var selectedRegion by remember { mutableStateOf<String?>(null) }
@@ -555,7 +556,7 @@ fun CreateFixedIncomeBottomSheet(
                         onValueChange = {
                             principalStr = it.filter { c -> c.isDigit() || c == '.' }
                         },
-                        label = { Text(stringResource(Res.string.fixedincome_capital_invested_label)) },
+                        label = { Text(stringResource(Res.string.fixedincome_capital_invested_label, currency)) },
                         modifier = Modifier.weight(1f),
                         singleLine = true,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
@@ -566,7 +567,7 @@ fun CreateFixedIncomeBottomSheet(
                         onValueChange = {
                             nominalPerUnitStr = it.filter { c -> c.isDigit() || c == '.' }
                         },
-                        label = { Text(stringResource(Res.string.fixedincome_nominal_value_label)) },
+                        label = { Text(stringResource(Res.string.fixedincome_nominal_value_label, currency)) },
                         modifier = Modifier.weight(1f),
                         singleLine = true,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
@@ -583,7 +584,7 @@ fun CreateFixedIncomeBottomSheet(
                 OutlinedTextField(
                     value = principalStr,
                     onValueChange = { principalStr = it.filter { c -> c.isDigit() || c == '.' } },
-                    label = { Text(stringResource(Res.string.fixedincome_capital_label)) },
+                    label = { Text(stringResource(Res.string.fixedincome_capital_label, currency)) },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),

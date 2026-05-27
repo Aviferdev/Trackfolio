@@ -1,6 +1,7 @@
 package es.aviferdev.n3to.ui.fixedincome
 
 import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.LocalCurrencySymbol
 import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.platform.nowMillis
 import androidx.compose.foundation.layout.*
@@ -15,6 +16,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import es.aviferdev.n3to.domain.model.AppCurrency
 import es.aviferdev.n3to.domain.model.FixedIncomeEvent
 import es.aviferdev.n3to.domain.model.FixedIncomeEventType
 import es.aviferdev.n3to.ui.theme.*
@@ -30,10 +32,10 @@ import n3to.composeapp.generated.resources.portfolio_add_tx_notes_label
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
-private fun formatEuro(value: Double): String {
+private fun formatEuro(value: Double, currencySymbol: String = AppCurrency.EUR.symbol): String {
     val intPart = value.toLong()
     val decPart = ((value - intPart) * 100).toInt()
-    return "$intPart,${decPart.toString().padStart(2, '0')} €"
+    return "$intPart,${decPart.toString().padStart(2, '0')} $currencySymbol"
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -43,6 +45,7 @@ fun RegisterCouponBottomSheet(
     onSave: (FixedIncomeEvent) -> Unit,
     onDismiss: () -> Unit
 ) {
+    val currency = LocalCurrencySymbol.current
     var grossAmountStr by remember { mutableStateOf("") }
     var irpfPercentStr by remember { mutableStateOf("19") }
     var commissionStr by remember { mutableStateOf("") }
@@ -92,7 +95,7 @@ fun RegisterCouponBottomSheet(
             OutlinedTextField(
                 value = grossAmountStr,
                 onValueChange = { grossAmountStr = it.filter { c -> c.isDigit() || c == '.' } },
-                label = { Text(stringResource(Res.string.fixedincome_coupon_amount_label)) },
+                label = { Text(stringResource(Res.string.fixedincome_coupon_amount_label, currency)) },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
@@ -117,7 +120,7 @@ fun RegisterCouponBottomSheet(
                 OutlinedTextField(
                     value = commissionStr,
                     onValueChange = { commissionStr = it.filter { c -> c.isDigit() || c == '.' } },
-                    label = { Text(stringResource(Res.string.fixedincome_commission_eur_label)) },
+                    label = { Text(stringResource(Res.string.fixedincome_commission_eur_label, currency)) },
                     modifier = Modifier.weight(1f),
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
@@ -161,7 +164,7 @@ fun RegisterCouponBottomSheet(
                         color = MaterialTheme.appColors.textSecondary
                     )
                     Text(
-                        text = formatEuro(netAmount),
+                        text = formatEuro(netAmount, currency),
                         fontSize = 15.sp,
                         fontWeight = FontWeight.SemiBold,
                         color = MaterialTheme.appColors.cyanAccent

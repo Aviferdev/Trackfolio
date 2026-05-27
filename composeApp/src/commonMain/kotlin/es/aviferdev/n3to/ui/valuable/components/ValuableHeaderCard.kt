@@ -22,6 +22,7 @@ import es.aviferdev.n3to.domain.model.ValuableSummary
 import es.aviferdev.n3to.ui.common.DeltaIndicator
 import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.ui.theme.formatAmountEuro
+import es.aviferdev.n3to.ui.theme.LocalCurrencySymbol
 import es.aviferdev.n3to.ui.theme.formatPercentSigned
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.valuable_balance_label
@@ -31,6 +32,7 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun ValuableHeaderCard(summary: ValuableSummary) {
     val valuable = summary.valuable
+    val currency = LocalCurrencySymbol.current
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(14.dp),
@@ -51,14 +53,14 @@ fun ValuableHeaderCard(summary: ValuableSummary) {
                 if (valuable.isSold) {
                     val profit = summary.realizedProfit
                     Text(
-                        text = if (profit != null) formatAmountEuro(profit) else "-",
+                        text = if (profit != null) formatAmountEuro(profit, currency) else "-",
                         fontWeight = FontWeight.Bold,
                         fontSize = 18.sp,
                         color = if (profit != null && profit >= 0) MaterialTheme.appColors.income else MaterialTheme.appColors.expense
                     )
                 } else {
                     Text(
-                        text = formatAmountEuro(valuable.currentValue),
+                        text = formatAmountEuro(valuable.currentValue, currency),
                         fontWeight = FontWeight.Bold,
                         fontSize = 18.sp,
                         color = MaterialTheme.appColors.textPrimary
@@ -81,11 +83,11 @@ fun ValuableHeaderCard(summary: ValuableSummary) {
                 Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-                MetricItem("Compra", formatAmountEuro(valuable.purchasePrice))
+                MetricItem("Compra", formatAmountEuro(valuable.purchasePrice, currency))
                 if (valuable.isSold) {
-                    MetricItem("Venta", formatAmountEuro(valuable.salePrice ?: 0.0))
+                    MetricItem("Venta", formatAmountEuro(valuable.salePrice ?: 0.0, currency))
                 }
-                MetricItem("Gastos", formatAmountEuro(summary.totalExpenses))
+                MetricItem("Gastos", formatAmountEuro(summary.totalExpenses, currency))
             }
         }
     }

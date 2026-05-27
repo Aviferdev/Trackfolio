@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.portfolio.FifoSaleMatch
 import es.aviferdev.n3to.ui.portfolio.formatShortDate
+import es.aviferdev.n3to.ui.theme.LocalCurrencySymbol
 import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.ui.theme.formatAmount
 import es.aviferdev.n3to.ui.theme.formatQty
@@ -29,6 +30,7 @@ import kotlin.math.abs
 
 @Composable
 fun FifoSaleMatchBlock(sale: FifoSaleMatch, masked: Boolean) {
+    val currency = LocalCurrencySymbol.current
     val pnlColor = when {
         sale.realizedPnL > 0 -> MaterialTheme.appColors.income
         sale.realizedPnL < 0 -> MaterialTheme.appColors.expense
@@ -64,7 +66,7 @@ fun FifoSaleMatchBlock(sale: FifoSaleMatch, masked: Boolean) {
                             formatAmount(sale.salePrice),
                             masked
                         )
-                    } €/u.", fontSize = 10.sp, color = MaterialTheme.appColors.textTertiary
+                    } $currency/u.", fontSize = 10.sp, color = MaterialTheme.appColors.textTertiary
                 )
             }
             Column(horizontalAlignment = Alignment.End) {
@@ -75,7 +77,7 @@ fun FifoSaleMatchBlock(sale: FifoSaleMatch, masked: Boolean) {
                             formatAmount(abs(sale.realizedPnL)),
                             masked
                         )
-                    } €",
+                    } $currency",
                     fontSize = 12.sp, color = pnlColor, fontWeight = FontWeight.Bold
                 )
             }
@@ -103,7 +105,7 @@ fun FifoSaleMatchBlock(sale: FifoSaleMatch, masked: Boolean) {
                                     formatAmount(c.purchasePrice),
                                     masked
                                 )
-                            } €/u.", fontSize = 9.sp, color = MaterialTheme.appColors.textTertiary
+                            } $currency/u.", fontSize = 9.sp, color = MaterialTheme.appColors.textTertiary
                         )
                     }
                     Text(
@@ -112,7 +114,7 @@ fun FifoSaleMatchBlock(sale: FifoSaleMatch, masked: Boolean) {
                                 formatAmount(abs(c.pnl)),
                                 masked
                             )
-                        } €",
+                        } $currency",
                         fontSize = 10.sp, color = cColor, fontWeight = FontWeight.Medium
                     )
                 }

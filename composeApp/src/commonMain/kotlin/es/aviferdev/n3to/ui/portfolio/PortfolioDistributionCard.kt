@@ -42,6 +42,7 @@ import es.aviferdev.n3to.ui.theme.CategoryPalette
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import es.aviferdev.n3to.ui.theme.formatAmountEuro
 import es.aviferdev.n3to.ui.theme.maskAmount
+import es.aviferdev.n3to.ui.theme.LocalCurrencySymbol
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.common_total
@@ -69,6 +70,7 @@ fun PortfolioDistributionCard(
     modifier: Modifier = Modifier,
     viewSelector: (@Composable () -> Unit)? = null
 ) {
+    val currency = LocalCurrencySymbol.current
     val title = when (selectedView) {
         DistributionView.CATEGORY -> stringResource(Res.string.portfolio_distribution_by_category)
         DistributionView.COMPOSITION -> stringResource(Res.string.portfolio_distribution_view_composition)
@@ -145,7 +147,7 @@ fun PortfolioDistributionCard(
                             )
                             Text(
                                 text = maskAmount(
-                                    formatAmountEuro(totalCurrentValue),
+                                    formatAmountEuro(totalCurrentValue, currency),
                                     balancesHidden
                                 ),
                                 fontSize = 13.sp,

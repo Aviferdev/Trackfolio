@@ -3,6 +3,7 @@ package es.aviferdev.n3to.domain.usecase.reconciliation
 import es.aviferdev.n3to.platform.nowMillis
 import com.benasher44.uuid.uuid4
 import es.aviferdev.n3to.data.database.DatabaseInitializer
+import es.aviferdev.n3to.domain.model.AppCurrency
 import es.aviferdev.n3to.domain.model.Transaction
 import es.aviferdev.n3to.domain.model.TransactionType
 import es.aviferdev.n3to.domain.repository.TransactionRepository
@@ -23,7 +24,8 @@ class ReconcileBalanceUseCase(
     suspend operator fun invoke(
         accountId: String,
         computedBalance: Double,
-        realBalance: Double
+        realBalance: Double,
+        currencySymbol: String = AppCurrency.EUR.symbol
     ): Result<Transaction> {
         val difference = realBalance - computedBalance
 
@@ -45,7 +47,7 @@ class ReconcileBalanceUseCase(
             type = TransactionType.ADJUSTMENT,
             categoryId = DatabaseInitializer.ADJUSTMENT_CATEGORY_ID,
             date = now,
-            notes = "Reconciliación: esperado ${formattedExpected}€, real ${formattedReal}€ (${formattedDiff}€)",
+            notes = "Reconciliación: esperado ${formattedExpected}$currencySymbol, real ${formattedReal}$currencySymbol (${formattedDiff}$currencySymbol)",
             createdAt = now,
             excludeFromFiscal = true
         )

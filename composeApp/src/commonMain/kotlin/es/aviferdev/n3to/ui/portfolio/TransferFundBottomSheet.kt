@@ -28,6 +28,7 @@ import es.aviferdev.n3to.domain.model.Platform
 import es.aviferdev.n3to.domain.portfolio.PortfolioCalculator
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import es.aviferdev.n3to.ui.theme.*
+import es.aviferdev.n3to.ui.theme.LocalCurrencySymbol
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.common_accept
 import n3to.composeapp.generated.resources.common_cancel
@@ -93,6 +94,7 @@ fun TransferFundBottomSheet(
     var destinationVL by remember { mutableStateOf("") }
     var dateMillis by remember { mutableStateOf(nowMillis()) }
     var showDatePicker by remember { mutableStateOf(false) }
+    val currency = LocalCurrencySymbol.current
 
     // ── Validación ───────────────────────────────────────────────────────────
     val parsedQty = quantity.replace(',', '.').toDoubleOrNull()
@@ -298,7 +300,7 @@ fun TransferFundBottomSheet(
                 placeholder = { Text("0,00") },
                 trailingIcon = {
                     Text(
-                        "€",
+                        currency,
                         color = MaterialTheme.appColors.textSecondary,
                         modifier = Modifier.padding(end = 12.dp)
                     )

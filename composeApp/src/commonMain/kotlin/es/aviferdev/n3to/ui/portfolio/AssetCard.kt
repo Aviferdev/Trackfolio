@@ -31,6 +31,7 @@ import es.aviferdev.n3to.domain.portfolio.AssetPosition
 import es.aviferdev.n3to.ui.common.component.IconActionButton
 import es.aviferdev.n3to.ui.common.component.PriceSourceBadge
 import es.aviferdev.n3to.ui.portfolio.home.AssetRow
+import es.aviferdev.n3to.ui.theme.LocalCurrencySymbol
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.ui.theme.formatAmount
@@ -50,6 +51,7 @@ fun AssetCard(
     onUpdatePrice: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val currency = LocalCurrencySymbol.current
     val asset = row.asset
     val pos = row.position
     val pnlColor = when {
@@ -104,7 +106,7 @@ fun AssetCard(
                             formatAmount(pos.averageCostOfRemaining),
                             balancesHidden
                         )
-                    } €",
+                    } $currency",
                     fontSize = 11.sp,
                     color = MaterialTheme.appColors.textTertiary
                 )
@@ -118,7 +120,7 @@ fun AssetCard(
                                 formatAmount(pos.currentValue),
                                 balancesHidden
                             )
-                        } €" else "—",
+                        } $currency" else "—",
                         fontSize = 13.sp,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.appColors.textPrimary
@@ -138,7 +140,7 @@ fun AssetCard(
                                 formatAmount(abs(pos.totalPnL)),
                                 balancesHidden
                             )
-                        } €",
+                        } $currency",
                         fontSize = 11.sp,
                         color = pnlColor,
                         fontWeight = FontWeight.SemiBold

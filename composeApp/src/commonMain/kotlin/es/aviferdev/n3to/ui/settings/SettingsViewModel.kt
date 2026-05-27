@@ -182,14 +182,15 @@ class SettingsViewModel(
         _local.update { it.copy(archiveWarning = null, showDeleteConfirm = true, accountToDelete = account) }
     }
 
-    fun addAccount(name: String, initialBalance: Double) {
+    fun addAccount(name: String, initialBalance: Double, currency: String = "EUR") {
         viewModelScope.launch {
             val newAccount = Account(
                 id = "acc_" + (1..28).map { "abcdefghijklmnopqrstuvwxyz0123456789".random() }.joinToString(""),
                 name = name,
                 initialBalance = 0.0,
                 computedBalance = 0.0,
-                createdAt = nowMillis()
+                createdAt = nowMillis(),
+                currency = currency
             )
             saveAccount(newAccount)
                 .onSuccess {

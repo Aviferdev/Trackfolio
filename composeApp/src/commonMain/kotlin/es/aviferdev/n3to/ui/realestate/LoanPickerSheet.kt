@@ -21,6 +21,7 @@ import es.aviferdev.n3to.domain.model.Loan
 import es.aviferdev.n3to.domain.model.LoanType
 import es.aviferdev.n3to.ui.common.toMaterialIcon
 import es.aviferdev.n3to.ui.theme.*
+import es.aviferdev.n3to.ui.theme.LocalCurrencySymbol
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.common_none
 import n3to.composeapp.generated.resources.loan_picker_subtitle
@@ -146,6 +147,7 @@ private fun LoanPickerItem(
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
+    val currency = LocalCurrencySymbol.current
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -180,13 +182,13 @@ private fun LoanPickerItem(
         }
         Column(horizontalAlignment = Alignment.End) {
             Text(
-                formatAmountEuro(loan.outstandingPrincipal),
+                formatAmountEuro(loan.outstandingPrincipal, currency),
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 12.sp,
                 color = MaterialTheme.appColors.expense
             )
             Text(
-                "${formatAmountEuro(loan.monthlyPayment)}/mes",
+                "${formatAmountEuro(loan.monthlyPayment, currency)}/mes",
                 fontSize = 10.sp,
                 color = MaterialTheme.appColors.textTertiary
             )

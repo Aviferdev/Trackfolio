@@ -1,6 +1,7 @@
 package es.aviferdev.n3to.ui.onboarding
 
 import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.LocalCurrencySymbol
 import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.animation.core.EaseInOutCubic
 import androidx.compose.animation.core.animateFloatAsState
@@ -52,6 +53,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
  */
 @Composable
 fun SlideFiscal(modifier: Modifier = Modifier) {
+    val cs = LocalCurrencySymbol.current
     val heroCardBg1 = MaterialTheme.appColors.heroCardStart
     val heroCardBg2 = MaterialTheme.appColors.heroCardEnd
     val appCNavyBorder = MaterialTheme.appColors.navyBorder
@@ -77,9 +79,9 @@ fun SlideFiscal(modifier: Modifier = Modifier) {
     data class OpRow(val emoji: String, val label: String, val value: String)
 
     val operations = listOf(
-        OpRow("📄", stringResource(Res.string.onboarding_demo_factura), "−67,50 € IRPF"),
-        OpRow("💼", stringResource(Res.string.onboarding_demo_nomina_marzo), "−450,00 € IRPF"),
-        OpRow("📈", stringResource(Res.string.onboarding_demo_venta_aapl), "+134,70 € plusv.")
+        OpRow("📄", stringResource(Res.string.onboarding_demo_factura), "−67,50 $cs IRPF"),
+        OpRow("💼", stringResource(Res.string.onboarding_demo_nomina_marzo), "−450,00 $cs IRPF"),
+        OpRow("📈", stringResource(Res.string.onboarding_demo_venta_aapl), "+134,70 $cs plusv.")
     )
 
     Column(
@@ -117,7 +119,7 @@ fun SlideFiscal(modifier: Modifier = Modifier) {
                 Spacer(Modifier.height(8.dp))
 
                 Text(
-                    text = "29.955 €",
+                    text = "29.955 $cs",
                     fontSize = 32.sp,
                     fontWeight = FontWeight.ExtraBold,
                     color = Color.White,
@@ -132,12 +134,12 @@ fun SlideFiscal(modifier: Modifier = Modifier) {
                 ) {
                     GridCell(
                         label = stringResource(Res.string.onboarding_fiscal_rendimientos),
-                        value = "+33.600 €",
+                        value = "+33.600 $cs",
                         modifier = Modifier.weight(1f)
                     )
                     GridCell(
                         label = stringResource(Res.string.onboarding_fiscal_retenciones),
-                        value = "−4.032 €",
+                        value = "−4.032 $cs",
                         modifier = Modifier.weight(1f)
                     )
                 }

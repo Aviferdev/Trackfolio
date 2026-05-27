@@ -17,6 +17,7 @@ import es.aviferdev.n3to.domain.model.AssetTransactionType
 import es.aviferdev.n3to.domain.model.DebtDirection
 import es.aviferdev.n3to.domain.model.FiscalIncomeTaxBreakdown
 import es.aviferdev.n3to.domain.model.FiscalReportData
+import es.aviferdev.n3to.domain.model.AppCurrency
 import es.aviferdev.n3to.domain.model.IncomeType
 import es.aviferdev.n3to.domain.model.MonthlyTotals
 import es.aviferdev.n3to.domain.model.TaxRole
@@ -54,8 +55,8 @@ actual class PdfReportGenerator(private val context: Context) {
     private val fmt = NumberFormat.getNumberInstance(Locale("es", "ES")).apply {
         minimumFractionDigits = 2; maximumFractionDigits = 2
     }
-    private fun fmtAmt(v: Double) =
-        "${fmt.format(v)} €"
+    private fun fmtAmt(v: Double, currencySymbol: String = AppCurrency.EUR.symbol) =
+        "${fmt.format(v)} $currencySymbol"
     private fun fmtPct(v: Double) = "${"%.1f".format(v)}%"
     private fun fmtQty(v: Double) = NumberFormat.getNumberInstance(Locale("es", "ES"))
         .apply { minimumFractionDigits = 0; maximumFractionDigits = 6 }.format(v)
@@ -116,6 +117,8 @@ actual class PdfReportGenerator(private val context: Context) {
 
     private inner class Renderer(val doc: PdfDocument, val data: FiscalReportData) {
 
+        private fun fmtAmt(v: Double) = this@PdfReportGenerator.fmtAmt(v, data.currencySymbol)
+
         var currentPage: PdfDocument.Page = newPage()
         var canvas: Canvas = currentPage.canvas
         var y = MARGIN
@@ -171,7 +174,7 @@ actual class PdfReportGenerator(private val context: Context) {
             pRect.color = C_BG_HEADER
             canvas.drawRect(0f, 0f, PAGE_W.toFloat(), 70f, pRect)
             canvas.drawText("INFORME FISCAL ${data.year}", MARGIN, 28f, pTitle)
-            canvas.drawText("Cuenta: ${data.accountName}  ·  Moneda: €", MARGIN, 44f, pSub)
+            canvas.drawText("Cuenta: ${data.accountName}  ·  Moneda: ${data.currencySymbol}", MARGIN, 44f, pSub)
             canvas.drawText("Generado: ${formatDate(data.generatedAt)}", MARGIN, 58f, pSub)
             y = 86f
         }

@@ -30,11 +30,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import es.aviferdev.n3to.domain.model.AppCurrency
 import es.aviferdev.n3to.domain.model.Loan
 import es.aviferdev.n3to.domain.model.NetWorthScreenData
 import es.aviferdev.n3to.ui.common.N3toLabel
 import es.aviferdev.n3to.ui.common.ProgressBar
 import es.aviferdev.n3to.ui.common.toMaterialIcon
+import es.aviferdev.n3to.ui.theme.LocalCurrencySymbol
 import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.ui.theme.formatAmount
 import es.aviferdev.n3to.ui.theme.maskAmount
@@ -56,6 +58,7 @@ import kotlin.math.abs
 
 @Composable
 internal fun NetWorthHeroCard(data: NetWorthScreenData, balancesHidden: Boolean) {
+    val currency = LocalCurrencySymbol.current
     val heroCardBg1 = MaterialTheme.appColors.heroCardStart
     val heroCardBg2 = MaterialTheme.appColors.heroCardEnd
     val appCCyanGlow = MaterialTheme.appColors.cyanGlow
@@ -95,7 +98,7 @@ internal fun NetWorthHeroCard(data: NetWorthScreenData, balancesHidden: Boolean)
         )
         Spacer(Modifier.height(6.dp))
         Text(
-            maskAmount(formatCurrency(data.netWorth), balancesHidden),
+            maskAmount(formatCurrency(data.netWorth, currency), balancesHidden),
             fontSize = 28.sp,
             fontWeight = FontWeight.ExtraBold,
             color = Color.White,
@@ -110,7 +113,7 @@ internal fun NetWorthHeroCard(data: NetWorthScreenData, balancesHidden: Boolean)
         ) {
             NetWorthMetric(
                 label = stringResource(Res.string.networth_assets_label_alt),
-                value = "+${maskAmount(formatCurrency(data.totalAssets), balancesHidden)}",
+                value = "+${maskAmount(formatCurrency(data.totalAssets, currency), balancesHidden)}",
                 color = appCPnlPositiveSoft
             )
             Box(
@@ -122,7 +125,7 @@ internal fun NetWorthHeroCard(data: NetWorthScreenData, balancesHidden: Boolean)
             )
             NetWorthMetric(
                 label = stringResource(Res.string.networth_liabilities_label_alt),
-                value = "−${maskAmount(formatCurrency(data.totalLiabilities), balancesHidden)}",
+                value = "−${maskAmount(formatCurrency(data.totalLiabilities, currency), balancesHidden)}",
                 color = appCPnlNegativeSoft
             )
         }
@@ -140,6 +143,7 @@ private fun NetWorthMetric(label: String, value: String, color: Color) {
 
 @Composable
 internal fun AssetsSummaryCard(data: NetWorthScreenData, balancesHidden: Boolean) {
+    val currency = LocalCurrencySymbol.current
     val heroCardBg1 = MaterialTheme.appColors.heroCardStart
     val appCCyanAccent = MaterialTheme.appColors.cyanAccent
     val appCNavyBorder = MaterialTheme.appColors.navyBorder
@@ -203,7 +207,7 @@ internal fun AssetsSummaryCard(data: NetWorthScreenData, balancesHidden: Boolean
                     color = appCCyanAccent
                 )
                 Text(
-                    maskAmount(formatCurrency(data.totalAssets), balancesHidden),
+                    maskAmount(formatCurrency(data.totalAssets, currency), balancesHidden),
                     fontWeight = FontWeight.Bold,
                     fontSize = 13.sp,
                     color = appCCyanAccent
@@ -215,6 +219,7 @@ internal fun AssetsSummaryCard(data: NetWorthScreenData, balancesHidden: Boolean
 
 @Composable
 private fun AssetRow(label: String, amount: Double, balancesHidden: Boolean) {
+    val currency = LocalCurrencySymbol.current
     val appCTextPrimary = MaterialTheme.appColors.textPrimary
     val appCTextSecondary = MaterialTheme.appColors.textSecondary
     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
@@ -222,7 +227,7 @@ private fun AssetRow(label: String, amount: Double, balancesHidden: Boolean) {
         val appCTextSecondary = MaterialTheme.appColors.textSecondary
         Text(label, fontSize = 13.sp, color = appCTextSecondary)
         Text(
-            maskAmount(formatCurrency(amount), balancesHidden),
+            maskAmount(formatCurrency(amount, currency), balancesHidden),
             fontSize = 13.sp,
             color = appCTextPrimary,
             fontWeight = FontWeight.SemiBold
@@ -232,6 +237,7 @@ private fun AssetRow(label: String, amount: Double, balancesHidden: Boolean) {
 
 @Composable
 internal fun EverydayDebtsRow(amount: Double, balancesHidden: Boolean) {
+    val currency = LocalCurrencySymbol.current
     val heroCardBg1 = MaterialTheme.appColors.heroCardStart
     val appCTextSecondary = MaterialTheme.appColors.textSecondary
     Card(
@@ -252,7 +258,7 @@ internal fun EverydayDebtsRow(amount: Double, balancesHidden: Boolean) {
                 color = appCTextSecondary
             )
             Text(
-                "−${maskAmount(formatCurrency(amount), balancesHidden)}",
+                "−${maskAmount(formatCurrency(amount, currency), balancesHidden)}",
                 fontSize = 13.sp,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.appColors.expense
@@ -263,6 +269,7 @@ internal fun EverydayDebtsRow(amount: Double, balancesHidden: Boolean) {
 
 @Composable
 internal fun LoanCard(loan: Loan, onClick: () -> Unit) {
+    val currency = LocalCurrencySymbol.current
     val heroCardBg1 = MaterialTheme.appColors.heroCardStart
     val appCCyanAccent = MaterialTheme.appColors.cyanAccent
     val appCTextPrimary = MaterialTheme.appColors.textPrimary
@@ -305,7 +312,7 @@ internal fun LoanCard(loan: Loan, onClick: () -> Unit) {
                 }
                 Column(horizontalAlignment = Alignment.End) {
                     Text(
-                        "−${formatCurrency(loan.outstandingPrincipal)}",
+                        "−${formatCurrency(loan.outstandingPrincipal, currency)}",
                         fontWeight = FontWeight.Bold,
                         fontSize = 13.sp,
                         color = MaterialTheme.appColors.expense
@@ -313,7 +320,7 @@ internal fun LoanCard(loan: Loan, onClick: () -> Unit) {
                     Text(
                         stringResource(
                             Res.string.networth_of_format,
-                            formatCurrency(loan.totalAmount)
+                            formatCurrency(loan.totalAmount, currency)
                         ), fontSize = 10.sp, color = appCTextTertiary
                     )
                 }
@@ -339,7 +346,7 @@ internal fun LoanCard(loan: Loan, onClick: () -> Unit) {
                 Text(
                     stringResource(
                         Res.string.networth_monthly_format,
-                        formatCurrency(loan.monthlyPayment)
+                        formatCurrency(loan.monthlyPayment, currency)
                     ), fontSize = 10.sp, color = appCTextTertiary
                 )
                 Text("${loan.currentInterestRate}%", fontSize = 10.sp, color = appCTextTertiary)
@@ -348,8 +355,8 @@ internal fun LoanCard(loan: Loan, onClick: () -> Unit) {
     }
 }
 
-internal fun formatCurrency(amount: Double): String {
+internal fun formatCurrency(amount: Double, currencySymbol: String = AppCurrency.EUR.symbol): String {
     val absVal = abs(amount)
     val prefix = if (amount < 0) "-" else ""
-    return "$prefix${formatAmount(absVal)} €"
+    return "$prefix${formatAmount(absVal)} $currencySymbol"
 }

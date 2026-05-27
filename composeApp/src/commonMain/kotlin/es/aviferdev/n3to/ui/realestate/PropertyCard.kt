@@ -24,6 +24,7 @@ import es.aviferdev.n3to.ui.common.DeltaIndicator
 import es.aviferdev.n3to.ui.common.ProgressBar
 import es.aviferdev.n3to.ui.common.StatusTag
 import es.aviferdev.n3to.ui.theme.*
+import es.aviferdev.n3to.ui.theme.LocalCurrencySymbol
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.realestate_mortgage_amount_format
@@ -39,6 +40,7 @@ fun PropertyCard(
     showMortgageReminder: Boolean = false,
     modifier: Modifier = Modifier
 ) {
+    val currency = LocalCurrencySymbol.current
     Card(
         modifier = modifier.fillMaxWidth().clickable(onClick = onClick),
         shape = RoundedCornerShape(12.dp),
@@ -75,7 +77,7 @@ fun PropertyCard(
                 Column(horizontalAlignment = Alignment.End) {
                     if (property.isSold) {
                         Text(
-                            formatAmountEuro(property.saleValue ?: 0.0),
+                            formatAmountEuro(property.saleValue ?: 0.0, currency),
                             fontWeight = FontWeight.Bold,
                             fontSize = 13.sp,
                             color = MaterialTheme.appColors.income
@@ -86,7 +88,7 @@ fun PropertyCard(
                         )
                     } else {
                         Text(
-                            formatAmountEuro(property.effectiveValue),
+                            formatAmountEuro(property.effectiveValue, currency),
                             fontWeight = FontWeight.Bold,
                             fontSize = 13.sp,
                             color = MaterialTheme.appColors.income
@@ -138,7 +140,7 @@ fun PropertyCard(
                     Text(
                         stringResource(
                             Res.string.realestate_mortgage_amount_format,
-                            formatAmountEuro(linkedLoan.outstandingPrincipal)
+                            formatAmountEuro(linkedLoan.outstandingPrincipal, currency)
                         ), fontSize = 10.sp, color = MaterialTheme.appColors.textTertiary
                     )
                     Text(

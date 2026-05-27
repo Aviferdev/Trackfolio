@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import es.aviferdev.n3to.domain.model.AppCurrency
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import es.aviferdev.n3to.ui.theme.appColors
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -94,7 +95,7 @@ private fun InfoRowPreview() {
                 },
                 right = {
                     Text(
-                        "+1.234,56 €",
+                        "+1.234,56 ${AppCurrency.EUR.symbol}",
                         fontSize = 13.sp,
                         fontWeight = FontWeight.SemiBold,
                         color = MaterialTheme.appColors.income
@@ -122,7 +123,7 @@ private fun InfoRowPreview() {
                 },
                 right = {
                     Text(
-                        "-456,78 €",
+                        "-456,78 ${AppCurrency.EUR.symbol}",
                         fontSize = 13.sp,
                         fontWeight = FontWeight.SemiBold,
                         color = MaterialTheme.appColors.expense

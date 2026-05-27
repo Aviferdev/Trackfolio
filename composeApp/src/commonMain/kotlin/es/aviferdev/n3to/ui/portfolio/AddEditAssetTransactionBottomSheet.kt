@@ -1,6 +1,7 @@
 package es.aviferdev.n3to.ui.portfolio
 
 import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.LocalCurrencySymbol
 import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.platform.nowMillis
 import androidx.compose.foundation.background
@@ -102,6 +103,7 @@ fun AddEditAssetTransactionBottomSheet(
     ) -> Unit,
     onDismiss: () -> Unit
 ) {
+    val currency = LocalCurrencySymbol.current
     val isEditing = transaction != null
 
     // ── Estado del formulario ────────────────────────────────────────────────
@@ -516,7 +518,7 @@ fun AddEditAssetTransactionBottomSheet(
                     value = pricePerUnit,
                     onValueChange = { pricePerUnit = it.filter { c -> c.isDigit() || c == ',' || c == '.' } },
                     placeholder = "0,00",
-                    suffix = "€",
+                    suffix = currency,
                     modifier = Modifier.weight(1f)
                 )
             }
@@ -564,7 +566,7 @@ fun AddEditAssetTransactionBottomSheet(
             DarkTextField(
                 value = feeNote,
                 onValueChange = { feeNote = it },
-                placeholder = stringResource(Res.string.portfolio_add_tx_fee_placeholder)
+                placeholder = stringResource(Res.string.portfolio_add_tx_fee_placeholder, currency)
             )
             Text(
                 text = stringResource(Res.string.portfolio_add_tx_fee_hint),

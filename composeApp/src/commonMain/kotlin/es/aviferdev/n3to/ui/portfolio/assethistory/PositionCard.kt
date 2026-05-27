@@ -22,6 +22,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.portfolio.AssetPosition
+import es.aviferdev.n3to.ui.theme.LocalCurrencySymbol
 import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.ui.theme.formatAmount
 import es.aviferdev.n3to.ui.theme.formatPercent
@@ -42,6 +43,7 @@ fun PositionCard(
     balancesHidden: Boolean,
     modifier: Modifier = Modifier
 ) {
+    val currency = LocalCurrencySymbol.current
     val isOpen = position.netQuantity > 0.0
     val pnlColor = when {
         position.totalPnL > 0 -> MaterialTheme.appColors.pnlPositive
@@ -69,7 +71,7 @@ fun PositionCard(
                             formatAmount(position.averageCostOfRemaining),
                             balancesHidden
                         )
-                    } €" else "—",
+                    } $currency" else "—",
                     Color.White,
                     alignEnd = true
                 )
@@ -85,7 +87,7 @@ fun PositionCard(
                             formatAmount(position.totalInvestedRemaining),
                             balancesHidden
                         )
-                    } €" else "—",
+                    } $currency" else "—",
                     Color.White.copy(.8f)
                 )
                 PositionMetric(
@@ -97,7 +99,7 @@ fun PositionCard(
                                 formatAmount(position.currentValue),
                                 balancesHidden
                             )
-                        } €"
+                        } $currency"
 
                         else -> "Sin precio"
                     },
@@ -126,7 +128,7 @@ fun PositionCard(
                                 )
                             ), balancesHidden
                         )
-                    } €",
+                    } $currency",
                     fontSize = 22.sp,
                     fontWeight = FontWeight.Bold,
                     color = pnlColor

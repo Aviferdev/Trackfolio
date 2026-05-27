@@ -44,6 +44,7 @@ import es.aviferdev.n3to.ui.common.input.AmountInputField
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import es.aviferdev.n3to.ui.theme.PrimaryAlpha
 import es.aviferdev.n3to.ui.theme.appColors
+import es.aviferdev.n3to.ui.theme.LocalCurrencySymbol
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.category_annual_limit
 import n3to.composeapp.generated.resources.category_create_new
@@ -188,6 +189,7 @@ fun EditCategorySheet(
     onSave: (name: String, annualLimit: Double, limitType: LimitType) -> Unit,
     onDismiss: () -> Unit
 ) {
+    val currency = LocalCurrencySymbol.current
     var name by remember { mutableStateOf(currentName) }
     var limitText by remember {
         mutableStateOf(
@@ -289,7 +291,7 @@ fun EditCategorySheet(
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 SelectableChip(
-                    label = LimitType.FIXED.label,
+                    label = "${LimitType.FIXED.label} ($currency)",
                     selected = limitType == LimitType.FIXED,
                     onClick = { limitType = LimitType.FIXED },
                     accentColor = MaterialTheme.appColors.primary,

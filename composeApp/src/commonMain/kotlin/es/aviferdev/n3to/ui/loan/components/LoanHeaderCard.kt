@@ -23,6 +23,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.Loan
+import es.aviferdev.n3to.ui.theme.LocalCurrencySymbol
 import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.ui.theme.formatAmount
 import es.aviferdev.n3to.ui.theme.formatPercent
@@ -36,6 +37,7 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun LoanHeaderCard(loan: Loan) {
+    val currency = LocalCurrencySymbol.current
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
@@ -64,7 +66,7 @@ fun LoanHeaderCard(loan: Loan) {
                 color = Color.White.copy(.5f)
             )
             Text(
-                "−${formatAmount(loan.outstandingPrincipal)} €",
+                "−${formatAmount(loan.outstandingPrincipal)} $currency",
                 fontSize = 30.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.White,
@@ -78,7 +80,7 @@ fun LoanHeaderCard(loan: Loan) {
             Row(Modifier.fillMaxWidth(), Arrangement.SpaceBetween) {
                 HeroMetric(
                     stringResource(Res.string.loan_monthly_payment),
-                    "${formatAmount(loan.monthlyPayment)} €"
+                    "${formatAmount(loan.monthlyPayment)} $currency"
                 )
                 HeroMetric(
                     stringResource(Res.string.fixedincome_interest_label),

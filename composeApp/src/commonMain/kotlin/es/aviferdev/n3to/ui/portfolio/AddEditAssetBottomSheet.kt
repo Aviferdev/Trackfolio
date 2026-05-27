@@ -69,6 +69,7 @@ import es.aviferdev.n3to.ui.theme.ExpenseRed
 import es.aviferdev.n3to.ui.theme.PrimaryDark
 
 import es.aviferdev.n3to.ui.theme.N3toTheme
+import es.aviferdev.n3to.ui.theme.LocalCurrencySymbol
 import n3to.composeapp.generated.resources.Res
 import es.aviferdev.n3to.ui.portfolio.components.*
 import n3to.composeapp.generated.resources.common_accept
@@ -189,6 +190,7 @@ fun AddEditAssetBottomSheet(
     }
     var currentPortfolioId by remember { mutableStateOf(selectedPortfolioId ?: asset?.portfolioId) }
     var showPortfolioMenu by remember { mutableStateOf(false) }
+    val currency = LocalCurrencySymbol.current
     var selectedSectorIds by remember(linkedSectorIds) { mutableStateOf(linkedSectorIds) }
     var regionPercents by remember(allRegions, linkedRegionPercents) {
         mutableStateOf(
@@ -685,7 +687,7 @@ fun AddEditAssetBottomSheet(
                     placeholder = { Text(stringResource(Res.string.portfolio_add_asset_price_placeholder_val)) },
                     trailingIcon = {
                         Text(
-                            "€",
+                            currency,
                             color = MaterialTheme.appColors.textSecondary,
                             modifier = Modifier.padding(end = 12.dp)
                         )

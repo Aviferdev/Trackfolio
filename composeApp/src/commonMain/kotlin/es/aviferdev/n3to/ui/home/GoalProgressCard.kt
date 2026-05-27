@@ -31,6 +31,7 @@ import es.aviferdev.n3to.platform.nowLocalDate
 import es.aviferdev.n3to.ui.common.ProgressBar
 import es.aviferdev.n3to.ui.theme.HIDDEN_AMOUNT_MASK
 import es.aviferdev.n3to.ui.theme.LocalBalanceHidden
+import es.aviferdev.n3to.ui.theme.LocalCurrencySymbol
 import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.ui.theme.formatAmount
 import es.aviferdev.n3to.ui.theme.formatAmountEuro
@@ -149,6 +150,7 @@ private fun GoalProgressRow(
 ) {
     val projection = rememberProjection(target, actual)
     val hidden = LocalBalanceHidden.current
+    val currency = LocalCurrencySymbol.current
 
     Column(modifier = Modifier.fillMaxWidth()) {
         Row(
@@ -180,7 +182,7 @@ private fun GoalProgressRow(
                     )
                     Spacer(Modifier.width(4.dp))
                     Text(
-                        text = if (hidden) HIDDEN_AMOUNT_MASK else formatAmountEuro(actual),
+                        text = if (hidden) HIDDEN_AMOUNT_MASK else formatAmountEuro(actual, currency),
                         fontSize = 11.sp,
                         fontWeight = FontWeight.Medium,
                         color = MaterialTheme.appColors.income
@@ -188,7 +190,7 @@ private fun GoalProgressRow(
                 }
             } else {
                 Text(
-                    text = if (hidden) HIDDEN_AMOUNT_MASK else "${formatAmountEuro(actual)} / ${formatAmountEuro(target)}",
+                    text = if (hidden) HIDDEN_AMOUNT_MASK else "${formatAmountEuro(actual, currency)} / ${formatAmountEuro(target, currency)}",
                     fontSize = 11.sp,
                     fontWeight = FontWeight.Medium,
                     color = MaterialTheme.appColors.textTertiary
@@ -233,6 +235,7 @@ private fun GoalProgressRow(
 @Composable
 private fun rememberProjection(target: Double, actual: Double): String? {
     val today = nowLocalDate()
+    val currency = LocalCurrencySymbol.current
     val dayOfMonth = today.dayOfMonth
     val daysInMonth = daysInMonth(today.year, today.monthNumber)
 
@@ -251,15 +254,16 @@ private fun rememberProjection(target: Double, actual: Double): String? {
         val margin = projected - target
         stringResource(
             Res.string.home_goals_projection_above,
-            formatAmountEuro(projected),
-            formatAmountEuro(margin)
+            formatAmountEuro(projected, currency),
+            formatAmountEuro(margin, currency)
         )
     } else if (dailyAverage > 0.0) {
         val neededDaily = (target - actual) / daysRemaining
         stringResource(
             Res.string.home_goals_pace_needed,
             formatAmount(dailyAverage),
-            formatAmount(neededDaily)
+            formatAmount(neededDaily),
+            currency
         )
     } else {
         stringResource(Res.string.home_goals_no_movement)

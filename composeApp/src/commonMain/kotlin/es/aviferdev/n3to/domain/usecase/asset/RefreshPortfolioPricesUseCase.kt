@@ -1,5 +1,6 @@
 package es.aviferdev.n3to.domain.usecase.asset
 
+import es.aviferdev.n3to.domain.model.AppCurrency
 import es.aviferdev.n3to.domain.model.AssetCategoryType
 import es.aviferdev.n3to.domain.model.ExchangeRate
 import es.aviferdev.n3to.domain.model.PriceRefreshResult
@@ -81,7 +82,7 @@ class RefreshPortfolioPricesUseCase(
                 )
                 assetRepository.markIsinValidationError(asset.id, null)
                 updated++
-                println("[PriceRefresh] ✅ ${asset.ticker} → ${priceEur} € ${if (wasConverted) "(convertido de ${quote.currency})" else ""}")
+                println("[PriceRefresh] ✅ ${asset.ticker} → ${priceEur} ${AppCurrency.EUR.symbol} ${if (wasConverted) "(convertido de ${quote.currency})" else ""}")
             }.onFailure { error ->
                 val msg = error.message ?: ""
                 if (msg.contains("Not Found", ignoreCase = true) ||

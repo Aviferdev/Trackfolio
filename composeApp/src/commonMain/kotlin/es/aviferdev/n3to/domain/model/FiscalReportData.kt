@@ -8,6 +8,7 @@ data class FiscalReportData(
     val accountName: String,
     val year: String,
     val generatedAt: Long,
+    val currencySymbol: String = AppCurrency.EUR.symbol,
     val annualSummary: AnnualSummary?,
     val monthlyBreakdown: List<MonthlyTotals>,
     val activeDebts: List<Debt>,

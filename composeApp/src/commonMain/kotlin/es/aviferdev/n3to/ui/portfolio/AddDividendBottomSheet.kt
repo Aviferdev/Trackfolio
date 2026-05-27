@@ -1,6 +1,7 @@
 package es.aviferdev.n3to.ui.portfolio
 
 import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.LocalCurrencySymbol
 import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.platform.nowMillis
 import androidx.compose.foundation.background
@@ -59,6 +60,7 @@ fun AddDividendBottomSheet(
     onSave: (assetId: String?, grossAmount: Double, irpfPercent: Double, date: Long) -> Unit,
     onDismiss: () -> Unit
 ) {
+    val currency = LocalCurrencySymbol.current
     val showAssetSelector = fixedAssetName == null && allAssets.isNotEmpty()
 
     var selectedAssetId by remember { mutableStateOf(allAssets.firstOrNull()?.id) }
@@ -160,7 +162,7 @@ fun AddDividendBottomSheet(
             // \u2500\u2500 Neto calculado \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
             if (netAmount != null) {
                 Text(
-                    text = "+ ${formatAmount(netAmount)} €",
+                    text = "+ ${formatAmount(netAmount)} $currency",
                     fontSize = 28.sp,
                     color = MaterialTheme.appColors.income,
                     fontWeight = FontWeight.Bold
@@ -200,7 +202,7 @@ fun AddDividendBottomSheet(
                     },
                     suffix = {
                         Text(
-                            "€",
+                            currency,
                             color = MaterialTheme.appColors.textSecondary,
                             fontSize = 14.sp
                         )
@@ -341,10 +343,11 @@ fun AddDividendBottomSheet(
 
 @Composable
 private fun SummaryItem(label: String, value: Double, color: Color) {
+    val currency = LocalCurrencySymbol.current
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Text(label, fontSize = 10.sp, color = MaterialTheme.appColors.textSecondary)
         Text(
-            text = "${formatAmount(value)} €",
+            text = "${formatAmount(value)} $currency",
             fontSize = 12.sp,
             fontWeight = FontWeight.SemiBold,
             color = color

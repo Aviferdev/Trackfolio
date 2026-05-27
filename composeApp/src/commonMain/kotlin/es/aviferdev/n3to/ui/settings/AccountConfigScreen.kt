@@ -200,7 +200,7 @@ fun AccountConfigScreen(
     if (viewModel.showEditSheet.collectAsState().value && account != null) {
         AddEditAccountBottomSheet(
             account = account,
-            onSave = { newName, _ -> viewModel.editAccount(account, newName) },
+            onSave = { newName, _, _ -> viewModel.editAccount(account, newName) },
             onDismiss = { viewModel.closeEditSheet() },
             onDelete = { viewModel.requestDelete() }
         )

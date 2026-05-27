@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import es.aviferdev.n3to.ui.theme.appColors
+import es.aviferdev.n3to.ui.theme.LocalCurrencySymbol
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.account_set_balance_btn
 import n3to.composeapp.generated.resources.account_set_balance_desc
@@ -55,6 +56,7 @@ fun SetInitialBalanceBottomSheet(
     onConfirm: (Double) -> Unit
 ) {
     var amount by remember { mutableStateOf("") }
+    val currency = LocalCurrencySymbol.current
     val isValid = amount.isNotBlank() &&
             amount.replace(',', '.').toDoubleOrNull()?.let { it >= 0 } == true
 
@@ -128,7 +130,7 @@ fun SetInitialBalanceBottomSheet(
                 ),
                 trailingIcon = {
                     Text(
-                        "€",
+                        currency,
                         fontSize = 20.sp,
                         color = MaterialTheme.appColors.textSecondary,
                         modifier = Modifier.padding(end = 16.dp)

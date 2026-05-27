@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.Category
 import es.aviferdev.n3to.domain.model.PropertyExpense
 import es.aviferdev.n3to.ui.theme.*
+import es.aviferdev.n3to.ui.theme.LocalCurrencySymbol
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.common_category_label
 import n3to.composeapp.generated.resources.common_note_placeholder
@@ -46,6 +47,7 @@ fun PropertyExpenseRow(
     }
     var showCategoryMenu by remember { mutableStateOf(false) }
     var notesText by remember(expense.notes) { mutableStateOf(expense.notes ?: "") }
+    val currency = LocalCurrencySymbol.current
 
     Card(
         modifier = modifier.fillMaxWidth(),
@@ -146,7 +148,7 @@ fun PropertyExpenseRow(
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                     trailingIcon = {
                         Text(
-                            "€",
+                            currency,
                             fontSize = 14.sp,
                             color = MaterialTheme.appColors.textSecondary,
                             modifier = Modifier.padding(end = 8.dp)

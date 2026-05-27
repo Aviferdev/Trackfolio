@@ -24,6 +24,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import es.aviferdev.n3to.domain.model.AppCurrency
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import es.aviferdev.n3to.ui.theme.appColors
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -112,7 +113,7 @@ private fun InlineAmountFieldPreview() {
             value = "1250",
             onChange = {},
             placeholder = "0,00",
-            suffix = "€"
+            suffix = AppCurrency.EUR.symbol
         )
     }
 }

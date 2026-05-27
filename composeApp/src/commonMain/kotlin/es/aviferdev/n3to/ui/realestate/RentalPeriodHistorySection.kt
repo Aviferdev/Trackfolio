@@ -29,6 +29,7 @@ fun RentalPeriodHistorySection(
     modifier: Modifier = Modifier
 ) {
     if (periods.isEmpty()) return
+    val currency = LocalCurrencySymbol.current
 
     Card(
         modifier = modifier.fillMaxWidth(),
@@ -48,7 +49,7 @@ fun RentalPeriodHistorySection(
                     Column {
                         Row {
                             Text(
-                                "${period.monthlyRent.toInt()} €/mes",
+                                "${period.monthlyRent.toInt()} $currency/mes",
                                 fontWeight = FontWeight.SemiBold,
                                 fontSize = 13.sp,
                                 color = MaterialTheme.appColors.textPrimary

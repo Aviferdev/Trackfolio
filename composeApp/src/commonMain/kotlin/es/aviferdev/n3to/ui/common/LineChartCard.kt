@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.ui.theme.formatAxisLabel
+import es.aviferdev.n3to.ui.theme.LocalCurrencySymbol
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
@@ -134,6 +135,7 @@ private fun LineChartCanvas(
     rotateXLabels: Boolean = false,
     modifier: Modifier = Modifier
 ) {
+    val currency = LocalCurrencySymbol.current
     val guideColor = MaterialTheme.appColors.textSecondary.copy(alpha = 0.15f)
     val axisColor = MaterialTheme.appColors.textSecondary.copy(alpha = 0.35f)
     val labelColor = MaterialTheme.appColors.textSecondary
@@ -194,7 +196,7 @@ private fun LineChartCanvas(
             ySteps.forEach { value ->
                 val yRatio = ((value - minVal) / range).toFloat()
                 val y = topPad + chartH * (1f - yRatio)
-                val label = formatAxisLabel(value)
+                val label = formatAxisLabel(value, currency)
                 val textResult = textMeasurer.measure(label, labelStyle)
                 drawText(
                     textLayoutResult = textResult,

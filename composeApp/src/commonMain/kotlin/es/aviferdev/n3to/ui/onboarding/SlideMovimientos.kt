@@ -1,6 +1,7 @@
 package es.aviferdev.n3to.ui.onboarding
 
 import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.LocalCurrencySymbol
 import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.animation.core.EaseInOutCubic
 import androidx.compose.animation.core.animateFloatAsState
@@ -49,6 +50,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
  */
 @Composable
 fun SlideMovimientos(modifier: Modifier = Modifier) {
+    val cs = LocalCurrencySymbol.current
 
     data class TxRow(
         val emoji: String,
@@ -64,7 +66,7 @@ fun SlideMovimientos(modifier: Modifier = Modifier) {
             "🏠",
             stringResource(Res.string.onboarding_demo_alquiler),
             stringResource(Res.string.onboarding_demo_hogar),
-            "−850,00 €",
+            "−850,00 $cs",
             MaterialTheme.appColors.expense,
             CategoryOrange.copy(alpha = 0.15f)
         ),
@@ -72,7 +74,7 @@ fun SlideMovimientos(modifier: Modifier = Modifier) {
             "💼",
             stringResource(Res.string.onboarding_demo_nomina),
             stringResource(Res.string.onboarding_demo_trabajo),
-            "+2.800,00 €",
+            "+2.800,00 $cs",
             MaterialTheme.appColors.income,
             MaterialTheme.appColors.income.copy(alpha = 0.15f)
         ),
@@ -80,7 +82,7 @@ fun SlideMovimientos(modifier: Modifier = Modifier) {
             "🚗",
             stringResource(Res.string.onboarding_demo_gasolina),
             stringResource(Res.string.onboarding_demo_transporte),
-            "−65,40 €",
+            "−65,40 $cs",
             MaterialTheme.appColors.expense,
             SecondaryTeal.copy(alpha = 0.15f)
         ),
@@ -88,7 +90,7 @@ fun SlideMovimientos(modifier: Modifier = Modifier) {
             "🛒",
             stringResource(Res.string.onboarding_demo_mercadona),
             stringResource(Res.string.onboarding_demo_alimentacion),
-            "−112,30 €",
+            "−112,30 $cs",
             MaterialTheme.appColors.expense,
             MaterialTheme.appColors.income.copy(alpha = 0.15f)
         ),
@@ -96,7 +98,7 @@ fun SlideMovimientos(modifier: Modifier = Modifier) {
             "🎬",
             stringResource(Res.string.onboarding_demo_netflix),
             stringResource(Res.string.onboarding_demo_ocio),
-            "−15,99 €",
+            "−15,99 $cs",
             MaterialTheme.appColors.expense,
             MaterialTheme.appColors.warnAmber.copy(alpha = 0.15f)
         )

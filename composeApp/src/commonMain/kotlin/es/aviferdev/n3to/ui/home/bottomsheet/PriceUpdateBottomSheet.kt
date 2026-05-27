@@ -45,6 +45,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.Asset
 import es.aviferdev.n3to.platform.nowMillis
+import es.aviferdev.n3to.ui.theme.LocalCurrencySymbol
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.ui.theme.formatAmount
@@ -179,6 +180,7 @@ private fun AssetPriceUpdateRow(
     onPriceInputChange: (String) -> Unit,
     onConfirm: () -> Unit
 ) {
+    val currency = LocalCurrencySymbol.current
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
@@ -230,7 +232,7 @@ private fun AssetPriceUpdateRow(
                         )
                         if (asset.currentPrice != null) {
                             Text(
-                                text = " · ${formatAmount(asset.currentPrice)} €",
+                                text = " · ${formatAmount(asset.currentPrice)} $currency",
                                 fontSize = 11.sp,
                                 color = MaterialTheme.appColors.textSecondary
                             )

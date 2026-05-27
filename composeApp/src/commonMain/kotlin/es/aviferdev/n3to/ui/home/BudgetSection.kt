@@ -28,9 +28,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import es.aviferdev.n3to.domain.model.AppCurrency
 import es.aviferdev.n3to.domain.model.CategoryBudgetStatus
 import es.aviferdev.n3to.domain.model.LimitType
 import es.aviferdev.n3to.ui.common.ProgressBar
+import es.aviferdev.n3to.ui.theme.LocalCurrencySymbol
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import es.aviferdev.n3to.ui.theme.appColors
 import n3to.composeapp.generated.resources.Res
@@ -99,6 +101,7 @@ private fun BudgetRow(
     onEdit: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val currency = LocalCurrencySymbol.current
     val barColor = when {
         status.isOverBudget -> MaterialTheme.appColors.expense
         status.isNearLimit -> MaterialTheme.appColors.warnAmber
@@ -169,14 +172,14 @@ private fun BudgetRow(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = "${formatAmount(status.spent)} de ${formatAmount(status.effectiveLimit)}",
+                    text = "${formatAmount(status.spent, currency)} de ${formatAmount(status.effectiveLimit, currency)}",
                     fontSize = 11.sp,
                     color = MaterialTheme.appColors.textSecondary
                 )
                 Text(
                     text = stringResource(
                         Res.string.budget_remaining_format,
-                        formatAmount(status.remaining)
+                        formatAmount(status.remaining, currency)
                     ),
                     fontSize = 11.sp,
                     color = if (status.isOverBudget) MaterialTheme.appColors.expense else MaterialTheme.appColors.textTertiary
@@ -245,11 +248,11 @@ private fun EmptyBudgetCard(
 /**
  * Formatea un valor double a moneda local (simplificado).
  */
-private fun formatAmount(amount: Double): String {
+private fun formatAmount(amount: Double, currencySymbol: String = AppCurrency.EUR.symbol): String {
     val absAmount = kotlin.math.abs(amount)
     val cents = ((absAmount * 100).toLong() % 100).toInt()
     val euros = absAmount.toLong()
-    return "${euros},${cents.toString().padStart(2, '0')} €"
+    return "${euros},${cents.toString().padStart(2, '0')} $currencySymbol"
 }
 
 // ─── PREVIEWS ────────────────────────────────────────────────────────────────────

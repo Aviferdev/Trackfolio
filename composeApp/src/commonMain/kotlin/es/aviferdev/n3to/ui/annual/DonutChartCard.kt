@@ -41,6 +41,7 @@ import es.aviferdev.n3to.ui.theme.N3toTheme
 import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.ui.theme.formatAmountEuro
 import es.aviferdev.n3to.ui.theme.maskAmount
+import es.aviferdev.n3to.ui.theme.LocalCurrencySymbol
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.common_total
 import n3to.composeapp.generated.resources.networth_no_data
@@ -60,6 +61,7 @@ fun DonutChartCard(
     balancesHidden: Boolean,
     modifier: Modifier = Modifier
 ) {
+    val currency = LocalCurrencySymbol.current
     if (slices.isEmpty()) {
         EmptyDonutState(title = title, subtitle = subtitle)
         return
@@ -108,7 +110,7 @@ fun DonutChartCard(
                         )
                         Text(
                             text = maskAmount(
-                                formatAmountEuro(totalAmount),
+                                formatAmountEuro(totalAmount, currency),
                                 balancesHidden
                             ),
                             fontSize = 12.sp,
@@ -170,6 +172,7 @@ private fun DonutCanvas(
 
 @Composable
 private fun DonutLegendRow(slice: DonutSlice, balancesHidden: Boolean) {
+    val currency = LocalCurrencySymbol.current
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
@@ -195,7 +198,7 @@ private fun DonutLegendRow(slice: DonutSlice, balancesHidden: Boolean) {
             overflow = TextOverflow.Ellipsis
         )
         Text(
-            text = maskAmount(formatAmountEuro(slice.amount), balancesHidden),
+            text = maskAmount(formatAmountEuro(slice.amount, currency), balancesHidden),
             fontSize = 11.sp,
             color = MaterialTheme.appColors.textSecondary,
             fontWeight = FontWeight.Normal,

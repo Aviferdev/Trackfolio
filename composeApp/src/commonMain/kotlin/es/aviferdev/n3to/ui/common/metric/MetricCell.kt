@@ -16,6 +16,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import es.aviferdev.n3to.domain.model.AppCurrency
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import es.aviferdev.n3to.ui.theme.appColors
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -111,8 +112,8 @@ private fun MetricGrid2Preview() {
     N3toTheme {
         MetricGrid2(
             items = listOf(
-                "Ingresos" to "25.000,00 €",
-                "Gastos" to "18.500,00 €"
+                "Ingresos" to "25.000,00 ${AppCurrency.EUR.symbol}",
+                "Gastos" to "18.500,00 ${AppCurrency.EUR.symbol}"
             )
         )
     }
@@ -124,7 +125,7 @@ private fun MetricCellVerticalPreview() {
     N3toTheme {
         MetricCell(
             label = "Invertido",
-            value = "10.000,00 €",
+            value = "10.000,00 ${AppCurrency.EUR.symbol}",
             valueColor = MaterialTheme.appColors.textPrimary
         )
     }
@@ -136,7 +137,7 @@ private fun MetricCellHorizontalPreview() {
     N3toTheme {
         MetricCell(
             label = "Total ingresos:",
-            value = "25.000,00 €",
+            value = "25.000,00 ${AppCurrency.EUR.symbol}",
             horizontal = true
         )
     }

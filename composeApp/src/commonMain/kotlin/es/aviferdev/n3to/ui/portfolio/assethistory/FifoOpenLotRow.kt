@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.portfolio.FifoOpenLot
 import es.aviferdev.n3to.ui.portfolio.formatShortDate
+import es.aviferdev.n3to.ui.theme.LocalCurrencySymbol
 import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.ui.theme.formatAmount
 import es.aviferdev.n3to.ui.theme.formatQty
@@ -28,6 +29,7 @@ import es.aviferdev.n3to.ui.theme.maskAmount
 
 @Composable
 fun FifoOpenLotRow(index: Int, lot: FifoOpenLot, masked: Boolean) {
+    val currency = LocalCurrencySymbol.current
     val partial = lot.remainingQuantity < lot.originalQuantity
     Row(
         modifier = Modifier.fillMaxWidth().padding(horizontal = 14.dp, vertical = 5.dp),
@@ -53,7 +55,7 @@ fun FifoOpenLotRow(index: Int, lot: FifoOpenLot, masked: Boolean) {
                         formatAmount(lot.pricePerUnit),
                         masked
                     )
-                } €",
+                } $currency",
                 fontSize = 12.sp,
                 color = MaterialTheme.appColors.textPrimary,
                 fontWeight = FontWeight.Medium
@@ -70,7 +72,7 @@ fun FifoOpenLotRow(index: Int, lot: FifoOpenLot, masked: Boolean) {
             )
         }
         Text(
-            "${maskAmount(formatAmount(lot.remainingCost), masked)} €",
+            "${maskAmount(formatAmount(lot.remainingCost), masked)} $currency",
             fontSize = 11.sp,
             color = MaterialTheme.appColors.textPrimary,
             fontWeight = FontWeight.SemiBold

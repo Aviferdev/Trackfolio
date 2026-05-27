@@ -39,6 +39,7 @@ import es.aviferdev.n3to.domain.model.MonthlyTotals
 import es.aviferdev.n3to.ui.annual.CategoryExpenseComparison
 import es.aviferdev.n3to.ui.common.ProgressBar
 import es.aviferdev.n3to.ui.theme.CategoryPalette
+import es.aviferdev.n3to.ui.theme.LocalCurrencySymbol
 import es.aviferdev.n3to.ui.theme.MONTH_LABELS
 import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.ui.theme.formatAmount
@@ -66,6 +67,7 @@ internal fun YearTotalsCard(
     totalExpense: Double,
     balancesHidden: Boolean
 ) {
+    val currency = LocalCurrencySymbol.current
     val savings = totalIncome - totalExpense
 
     Card(
@@ -93,7 +95,7 @@ internal fun YearTotalsCard(
                 )
                 Spacer(Modifier.height(4.dp))
                 Text(
-                    "+${maskAmount(formatAmount(totalIncome), balancesHidden)} €",
+                    "+${maskAmount(formatAmount(totalIncome), balancesHidden)} $currency",
                     fontSize = 13.sp,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.appColors.income
@@ -119,7 +121,7 @@ internal fun YearTotalsCard(
                 )
                 Spacer(Modifier.height(4.dp))
                 Text(
-                    "−${maskAmount(formatAmount(totalExpense), balancesHidden)} €",
+                    "−${maskAmount(formatAmount(totalExpense), balancesHidden)} $currency",
                     fontSize = 13.sp,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.appColors.expense
@@ -145,7 +147,7 @@ internal fun YearTotalsCard(
                 )
                 Spacer(Modifier.height(4.dp))
                 Text(
-                    "${maskAmount(formatAmount(savings), balancesHidden)} €",
+                    "${maskAmount(formatAmount(savings), balancesHidden)} $currency",
                     fontSize = 13.sp,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.appColors.primary
@@ -162,6 +164,7 @@ internal fun CategoryExpenseList(
     isExpense: Boolean,
     balancesHidden: Boolean
 ) {
+    val currency = LocalCurrencySymbol.current
     if (comparisons.isEmpty()) {
         Card(
             modifier = Modifier.fillMaxWidth(),
@@ -227,7 +230,7 @@ internal fun CategoryExpenseList(
                             modifier = Modifier.weight(1f)
                         )
                         Text(
-                            "${maskAmount(formatAmount(comp.currentAmount), balancesHidden)} €",
+                            "${maskAmount(formatAmount(comp.currentAmount), balancesHidden)} $currency",
                             fontSize = 11.sp,
                             color = MaterialTheme.appColors.textTertiary,
                             modifier = Modifier.padding(end = 6.dp)
@@ -255,6 +258,7 @@ internal fun BudgetStatusCard(
     balancesHidden: Boolean,
     onConfigureBudgets: () -> Unit = {}
 ) {
+    val currency = LocalCurrencySymbol.current
     val itemsWithLimit = budgetStatus.filter { it.effectiveLimit > 0.0 }
 
     Card(
@@ -333,7 +337,7 @@ internal fun BudgetStatusCard(
                             Text(
                                 "${maskAmount(formatAmount(budget.spent), balancesHidden)} / ${
                                     maskAmount(formatAmount(budget.effectiveLimit), balancesHidden)
-                                } €",
+                                } $currency",
                                 fontSize = 11.sp,
                                 color = barColor,
                                 fontWeight = FontWeight.Medium

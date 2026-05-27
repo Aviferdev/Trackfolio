@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.ui.theme.formatAmountEuro
+import es.aviferdev.n3to.ui.theme.LocalCurrencySymbol
 
 @Composable
 fun EmergencyFundProgressSection(
@@ -27,6 +28,7 @@ fun EmergencyFundProgressSection(
     targetAmount: Double,
     progressPercent: Float
 ) {
+    val currency = LocalCurrencySymbol.current
     NavySectionCard {
         SectionLabel(text = "Estado del fondo")
         Spacer(Modifier.height(12.dp))
@@ -41,7 +43,7 @@ fun EmergencyFundProgressSection(
                     color = MaterialTheme.appColors.textTertiary
                 )
                 Text(
-                    formatAmountEuro(savedAmount),
+                    formatAmountEuro(savedAmount, currency),
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.appColors.cyanAccent
@@ -54,7 +56,7 @@ fun EmergencyFundProgressSection(
                     color = MaterialTheme.appColors.textTertiary
                 )
                 Text(
-                    formatAmountEuro(targetAmount),
+                    formatAmountEuro(targetAmount, currency),
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.appColors.textPrimary

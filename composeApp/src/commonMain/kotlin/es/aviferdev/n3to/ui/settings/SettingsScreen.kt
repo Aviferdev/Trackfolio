@@ -137,14 +137,14 @@ fun SettingsScreen(
     if (state.showAddSheet) {
         AddEditAccountBottomSheet(
             account = null,
-            onSave = { name, balance -> viewModel.addAccount(name, balance) },
+            onSave = { name, balance, currency -> viewModel.addAccount(name, balance, currency) },
             onDismiss = { viewModel.closeAddSheet() }
         )
     }
     if (state.showEditSheet && state.editingAccount != null) {
         AddEditAccountBottomSheet(
             account = state.editingAccount,
-            onSave = { name, _ -> viewModel.editAccount(state.editingAccount!!, name) },
+            onSave = { name, _, _ -> viewModel.editAccount(state.editingAccount!!, name) },
             onDismiss = { viewModel.closeEditSheet() }
         )
     }

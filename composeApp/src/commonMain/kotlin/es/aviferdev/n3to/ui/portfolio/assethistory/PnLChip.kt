@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import es.aviferdev.n3to.ui.theme.LocalCurrencySymbol
 import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.ui.theme.formatAmount
 import es.aviferdev.n3to.ui.theme.maskAmount
@@ -22,6 +23,7 @@ fun PnLChip(
     masked: Boolean,
     unavailable: Boolean = false
 ) {
+    val currency = LocalCurrencySymbol.current
     val text = when {
         unavailable -> "Sin precio"
         amount == 0.0 -> "—"
@@ -30,7 +32,7 @@ fun PnLChip(
                 formatAmount(abs(amount)),
                 masked
             )
-        } €"
+        } $currency"
     }
     val color = when {
         unavailable -> MaterialTheme.appColors.textTertiary

@@ -49,6 +49,7 @@ import es.aviferdev.n3to.ui.common.dialog.DeleteConfirmDialog
 import es.aviferdev.n3to.ui.common.topbar.TopBarWithActionsApp
 import es.aviferdev.n3to.ui.home.bottomsheet.SetInitialBalanceBottomSheet
 import es.aviferdev.n3to.ui.theme.LocalBalanceHidden
+import es.aviferdev.n3to.ui.theme.LocalCurrencySymbol
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.ui.theme.formatAmount
@@ -101,7 +102,7 @@ fun AccountListScreen(
     if (uiState.showAddSheet) {
         AddEditAccountBottomSheet(
             account = null,
-            onSave = { name, balance -> viewModel.addAccount(name, balance) },
+            onSave = { name, balance, currency -> viewModel.addAccount(name, balance, currency) },
             onDismiss = { viewModel.closeAddSheet() }
         )
     }
@@ -114,7 +115,7 @@ fun AccountListScreen(
     if (uiState.showEditSheet && uiState.editingAccount != null) {
         AddEditAccountBottomSheet(
             account = uiState.editingAccount,
-            onSave = { name, _ ->
+            onSave = { name, _, _ ->
                 viewModel.editAccount(uiState.editingAccount!!, name)
             },
             onDismiss = { viewModel.closeEditSheet() }
@@ -265,6 +266,7 @@ private fun AccountCard(
     onEdit: () -> Unit,
     onDelete: () -> Unit
 ) {
+    val currency = LocalCurrencySymbol.current
     val borderColor by animateColorAsState(
         targetValue = if (isSelected) MaterialTheme.appColors.primary.copy(alpha = 0.6f) else MaterialTheme.appColors.border,
         label = "borderColor"
@@ -318,7 +320,7 @@ private fun AccountCard(
                             }
                         }
                         Text(
-                            text = if (account.needsInitialBalance) stringResource(Res.string.account_initial_balance) else "€",
+                            text = if (account.needsInitialBalance) stringResource(Res.string.account_initial_balance) else currency,
                             fontSize = 12.sp,
                             color = if (account.needsInitialBalance) MaterialTheme.appColors.expense else MaterialTheme.appColors.textSecondary
                         )
@@ -365,7 +367,7 @@ private fun AccountCard(
                                     formatAmount(account.computedBalance),
                                     balancesHidden
                                 )
-                            } €",
+                            } $currency",
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Bold,
                             color = if (account.computedBalance >= 0) MaterialTheme.appColors.primary else MaterialTheme.appColors.expense

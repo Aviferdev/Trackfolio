@@ -48,6 +48,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.Issuer
 import es.aviferdev.n3to.ui.home.viewmodel.IrpfInputMode
+import es.aviferdev.n3to.ui.theme.LocalCurrencySymbol
 import es.aviferdev.n3to.ui.theme.PrimaryAlpha
 import es.aviferdev.n3to.ui.theme.appColors
 import kotlinx.datetime.Instant
@@ -176,6 +177,7 @@ internal fun DarkAmountInput(
     label: String,
     color: Color,
 ) {
+    val currency = LocalCurrencySymbol.current
     Column(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -209,7 +211,7 @@ internal fun DarkAmountInput(
                 ),
                 decorationBox = {
                     Text(
-                        text = if (value.isEmpty()) "0,00 €" else "$value €",
+                        text = if (value.isEmpty()) "0,00 $currency" else "$value $currency",
                         fontSize = 28.sp,
                         fontWeight = FontWeight.Bold,
                         color = if (value.isEmpty()) MaterialTheme.appColors.textTertiary else color,
@@ -404,6 +406,7 @@ internal fun IrpfCompactField(
     onIrpfFixedAmountChange: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val currency = LocalCurrencySymbol.current
     Column(modifier = modifier) {
         Text(
             label,
@@ -446,7 +449,7 @@ internal fun IrpfCompactField(
                                     if (irpfInputMode == IrpfInputMode.PERCENT) irpfPercent else irpfFixedAmount
                                 if (currentValue.isEmpty()) {
                                     Text(
-                                        if (irpfInputMode == IrpfInputMode.PERCENT) "0 %" else "0,00 €",
+                                        if (irpfInputMode == IrpfInputMode.PERCENT) "0 %" else "0,00 $currency",
                                         fontSize = 14.sp,
                                         color = MaterialTheme.appColors.textTertiary
                                     )
@@ -459,7 +462,7 @@ internal fun IrpfCompactField(
                                     )
                                 }
                                 Text(
-                                    if (irpfInputMode == IrpfInputMode.PERCENT) "%" else "€",
+                                    if (irpfInputMode == IrpfInputMode.PERCENT) "%" else currency,
                                     fontSize = 14.sp,
                                     color = MaterialTheme.appColors.textSecondary,
                                     fontWeight = FontWeight.Medium
@@ -476,7 +479,7 @@ internal fun IrpfCompactField(
                 onClick = { onIrpfInputModeChange(IrpfInputMode.PERCENT) }
             )
             IrpfModeChip(
-                label = "€",
+                label = currency,
                 selected = irpfInputMode == IrpfInputMode.AMOUNT,
                 onClick = { onIrpfInputModeChange(IrpfInputMode.AMOUNT) }
             )
@@ -514,6 +517,7 @@ private fun IrpfModeChip(
 
 @Composable
 internal fun CalculatedNetRow(net: Double) {
+    val currency = LocalCurrencySymbol.current
     val formatted = formatAmount(net)
     Surface(
         modifier = Modifier.fillMaxWidth(),
@@ -532,7 +536,7 @@ internal fun CalculatedNetRow(net: Double) {
                 color = MaterialTheme.appColors.income
             )
             Text(
-                "$formatted €",
+                "$formatted $currency",
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.appColors.income

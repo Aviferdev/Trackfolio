@@ -46,6 +46,7 @@ import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.Asset
 import es.aviferdev.n3to.domain.model.Platform
 import es.aviferdev.n3to.ui.common.topbar.TopBarWithActionsApp
+import es.aviferdev.n3to.ui.theme.LocalCurrencySymbol
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.ui.theme.formatAmount
@@ -265,6 +266,7 @@ fun AssetDetailContent(
 
 @Composable
 private fun AssetHeroCard(asset: Asset, modifier: Modifier = Modifier) {
+    val currency = LocalCurrencySymbol.current
     val heroCardBg1 = MaterialTheme.appColors.heroCardStart
     val heroCardBg2 = MaterialTheme.appColors.heroCardEnd
     val appCCyanGlow = MaterialTheme.appColors.cyanGlow
@@ -337,7 +339,7 @@ private fun AssetHeroCard(asset: Asset, modifier: Modifier = Modifier) {
                     color = Color.White.copy(alpha = 0.45f)
                 )
                 Text(
-                    text = "${formatAmount(price)} €",
+                    text = "${formatAmount(price)} $currency",
                     fontSize = 13.sp,
                     fontWeight = FontWeight.SemiBold,
                     color = appCCyanSubtle

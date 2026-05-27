@@ -51,6 +51,7 @@ fun ChangeRentalStatusSheet(
     var effectiveDateMillis by remember { mutableStateOf(nowMillis()) }
     var monthlyRentText by remember { mutableStateOf("") }
     var showDatePicker by remember { mutableStateOf(false) }
+    val currency = LocalCurrencySymbol.current
 
     val monthlyRent = monthlyRentText.replace(',', '.').toDoubleOrNull()
     val isValid = selectedStatus != currentStatus &&
@@ -166,7 +167,7 @@ fun ChangeRentalStatusSheet(
                 OutlinedTextField(
                     value = monthlyRentText,
                     onValueChange = { monthlyRentText = it },
-                    label = { Text(stringResource(Res.string.realestate_monthly_rent_label)) },
+                    label = { Text(stringResource(Res.string.realestate_monthly_rent_label, currency)) },
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                     colors = OutlinedTextFieldDefaults.colors(

@@ -35,6 +35,7 @@ import es.aviferdev.n3to.ui.theme.N3toTheme
 import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.ui.theme.formatAmountEuro
 import es.aviferdev.n3to.ui.theme.maskAmount
+import es.aviferdev.n3to.ui.theme.LocalCurrencySymbol
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.annual_investment_monthly_format
 import n3to.composeapp.generated.resources.annual_no_investments
@@ -51,6 +52,7 @@ fun InvestmentBarChart(
     balancesHidden: Boolean,
     modifier: Modifier = Modifier
 ) {
+    val currency = LocalCurrencySymbol.current
     if (investments.isEmpty()) {
         EmptyInvestmentState(year = year)
         return
@@ -81,7 +83,7 @@ fun InvestmentBarChart(
             Text(
                 text = "Total invertido: ${
                     maskAmount(
-                        formatAmountEuro(totalInvested),
+                        formatAmountEuro(totalInvested, currency),
                         balancesHidden
                     )
                 }",

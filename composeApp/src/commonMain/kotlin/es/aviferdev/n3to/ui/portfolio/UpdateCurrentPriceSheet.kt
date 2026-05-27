@@ -23,6 +23,7 @@ import es.aviferdev.n3to.domain.usecase.asset.DetectPriceAnomalyUseCase
 import es.aviferdev.n3to.ui.common.dialog.PriceAnomalyDialog
 import es.aviferdev.n3to.ui.theme.*
 import es.aviferdev.n3to.ui.theme.formatAmountEuro
+import es.aviferdev.n3to.ui.theme.LocalCurrencySymbol
 import n3to.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.stringResource
 
@@ -51,6 +52,7 @@ fun UpdateCurrentPriceSheet(
     onDismiss: () -> Unit,
     detectAnomaly: DetectPriceAnomalyUseCase? = null
 ) {
+    val currency = LocalCurrencySymbol.current
 
     var price by remember(asset.id) {
         mutableStateOf(asset.currentPrice?.toString() ?: "")
@@ -76,8 +78,8 @@ fun UpdateCurrentPriceSheet(
                     is DetectPriceAnomalyUseCase.Result.Warning -> result.previousPrice
                     is DetectPriceAnomalyUseCase.Result.Suspicious -> result.previousPrice
                     else -> asset.currentPrice ?: 0.0
-                })
-                val newFormatted = formatAmountEuro(pendingPrice)
+                }, currency)
+                val newFormatted = formatAmountEuro(pendingPrice, currency)
             PriceAnomalyDialog(
                 previousPrice = when (result) {
                     is DetectPriceAnomalyUseCase.Result.Warning -> result.previousPrice
@@ -161,7 +163,7 @@ fun UpdateCurrentPriceSheet(
             val currentLabel = if (asset.currentPrice != null) {
                 stringResource(
                     Res.string.portfolio_update_previous_price,
-                    formatAmountEuro(asset.currentPrice)
+                    formatAmountEuro(asset.currentPrice, currency)
                 )
             } else {
                 stringResource(Res.string.portfolio_update_no_price)
@@ -193,7 +195,7 @@ fun UpdateCurrentPriceSheet(
                 ),
                 trailingIcon = {
                     Text(
-                        "€",
+                        currency,
                         fontSize = 20.sp,
                         color = MaterialTheme.appColors.textSecondary,
                         modifier = Modifier.padding(end = 16.dp)

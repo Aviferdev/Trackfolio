@@ -64,6 +64,7 @@ import es.aviferdev.n3to.ui.theme.PrimaryDark
 import es.aviferdev.n3to.ui.theme.formatAmount
 import es.aviferdev.n3to.ui.theme.formatDateLocalized
 import es.aviferdev.n3to.ui.theme.maskAmount
+import es.aviferdev.n3to.ui.theme.LocalCurrencySymbol
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.common_delete
 import n3to.composeapp.generated.resources.realestate_detail_title
@@ -127,13 +128,14 @@ private fun TotalCell(
     label: String, amount: Double, color: Color, prefix: String,
     balancesHidden: Boolean, modifier: Modifier = Modifier
 ) {
+    val currency = LocalCurrencySymbol.current
     Column(
         modifier = modifier.padding(horizontal = 8.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         N3toLabel(text = label, modifier = Modifier.padding(bottom = 4.dp))
         Text(
-            "$prefix ${maskAmount(formatAmount(amount), balancesHidden)} €",
+            "$prefix ${maskAmount(formatAmount(amount), balancesHidden)} $currency",
             fontSize = 12.sp,
             fontWeight = FontWeight.Bold,
             color = color,
@@ -150,6 +152,7 @@ internal fun TransactionCard(
     onEdit: (() -> Unit)?,
     onClick: (() -> Unit)? = null,
 ) {
+    val currency = LocalCurrencySymbol.current
     val isIncome = transaction.isIncome
     val isAdjustment = transaction.isAdjustment
     val isLinkedAsset = transaction.isLinkedToAsset
@@ -260,7 +263,7 @@ internal fun TransactionCard(
             verticalArrangement = Arrangement.Center
         ) {
             Text(
-                "$prefix ${maskAmount(formatAmount(displayAmount), balancesHidden)} €",
+                "$prefix ${maskAmount(formatAmount(displayAmount), balancesHidden)} $currency",
                 fontSize = 13.sp,
                 fontWeight = FontWeight.Bold,
                 color = amountColor,
@@ -268,7 +271,7 @@ internal fun TransactionCard(
             )
             if (isIncome && transaction.grossAmount != null && !balancesHidden) {
                 Text(
-                    "Bruto: ${formatAmount(transaction.grossAmount)} €",
+                    "Bruto: ${formatAmount(transaction.grossAmount)} $currency",
                     fontSize = 9.sp,
                     color = MaterialTheme.appColors.textTertiary,
                     maxLines = 1

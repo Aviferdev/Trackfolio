@@ -35,6 +35,9 @@ import es.aviferdev.n3to.core.security.ThemeManager
 import es.aviferdev.n3to.core.security.getSystemLanguage
 import es.aviferdev.n3to.core.security.setPlatformLanguage
 import es.aviferdev.n3to.data.database.DatabaseInitializer
+import es.aviferdev.n3to.domain.model.AppCurrency
+import es.aviferdev.n3to.domain.model.toCurrencySymbol
+import es.aviferdev.n3to.domain.usecase.account.GetAccountsUseCase
 import es.aviferdev.n3to.domain.usecase.consent.GetConsentUseCase
 import es.aviferdev.n3to.domain.usecase.consent.HasUserDecidedUseCase
 import es.aviferdev.n3to.domain.usecase.onboarding.IsOnboardingCompletedUseCase
@@ -52,10 +55,10 @@ import es.aviferdev.n3to.ui.security.LockScreen
 import es.aviferdev.n3to.ui.splash.SplashScreen
 import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.ui.theme.LocalBalanceHidden
+import es.aviferdev.n3to.ui.theme.LocalCurrencySymbol
 import es.aviferdev.n3to.ui.theme.LocalFiscalAmountsHidden
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import es.aviferdev.n3to.ui.theme.PrimaryDark
-import es.aviferdev.n3to.ui.theme.formatAmountEuro
 import es.aviferdev.n3to.ui.version.VersionBlockScreen
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -92,6 +95,12 @@ fun App() {
     val balancesHidden by balanceVisibility.balancesHidden.collectAsState()
     val versionStatus by versionManager.status.collectAsState()
 
+    val accountSession = koinInject<AccountSession>()
+    val getAccounts = koinInject<GetAccountsUseCase>()
+    val allAccounts by getAccounts().collectAsState(emptyList())
+    val selectedAccountId by accountSession.selectedAccountId.collectAsState()
+    val currencySymbol = allAccounts.find { it.id == selectedAccountId }?.currency?.toCurrencySymbol() ?: AppCurrency.EUR.symbol
+
     val scope = rememberCoroutineScope()
 
     val themeManager = koinInject<ThemeManager>()
@@ -126,7 +135,6 @@ fun App() {
 
     // ── Refresco diario de precios al abrir la app ─────────────────────────
     val priceRefreshUseCase = koinInject<AppStartupRefreshUseCase>()
-    val accountSession = koinInject<AccountSession>()
     val shouldRefreshToday = koinInject<ShouldRefreshTodayUseCase>()
     var refreshMessage by remember { mutableStateOf<String?>(null) }
     var refreshDone by remember { mutableStateOf(false) }
@@ -178,7 +186,8 @@ fun App() {
         N3toTheme(darkTheme = isDarkTheme) {
             CompositionLocalProvider(
                 LocalBalanceHidden provides balancesHidden,
-                LocalFiscalAmountsHidden provides balancesHidden
+                LocalFiscalAmountsHidden provides balancesHidden,
+                LocalCurrencySymbol provides currencySymbol
             ) {
                 when {
                     // Paso 0: Splash screen con el icono de la app

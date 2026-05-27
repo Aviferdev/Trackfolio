@@ -1,6 +1,6 @@
 package es.aviferdev.n3to.domain.model
 
 enum class LimitType(val label: String) {
-    FIXED("Fijo (€)"),
+    FIXED("Fijo"),
     PERCENTAGE("Porcentaje (%)")
 }

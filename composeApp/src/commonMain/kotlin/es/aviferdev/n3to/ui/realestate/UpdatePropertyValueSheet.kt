@@ -44,6 +44,7 @@ fun UpdatePropertyValueSheet(
     } else 0.0
 
     val isValid = newValue > 0
+    val currency = LocalCurrencySymbol.current
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
@@ -74,7 +75,7 @@ fun UpdatePropertyValueSheet(
                     color = MaterialTheme.appColors.textSecondary
                 )
                 Text(
-                    formatAmountEuro(property.currentEstimatedValue),
+                    formatAmountEuro(property.currentEstimatedValue, currency),
                     fontSize = 13.sp,
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.appColors.textPrimary
@@ -108,12 +109,12 @@ fun UpdatePropertyValueSheet(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        stringResource(Res.string.realestate_current_value_label),
+                        stringResource(Res.string.realestate_current_value_label, currency),
                         fontSize = 13.sp,
                         color = MaterialTheme.appColors.textSecondary
                     )
                     DeltaIndicator(
-                        value = "${formatAmountEuro(valueDiff)} (${
+                        value = "${formatAmountEuro(valueDiff, currency)} (${
                             formatPercentSigned(
                                 diffPercent
                             )

@@ -1,6 +1,7 @@
 package es.aviferdev.n3to.ui.fixedincome
 
 import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.LocalCurrencySymbol
 import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.platform.nowMillis
 import androidx.compose.foundation.clickable
@@ -35,10 +36,10 @@ import n3to.composeapp.generated.resources.portfolio_add_tx_notes_label
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
-private fun formatEuro(value: Double): String {
+private fun formatEuro(value: Double, currencySymbol: String = AppCurrency.EUR.symbol): String {
     val intPart = value.toLong()
     val decPart = ((value - intPart) * 100).toInt()
-    return "$intPart,${decPart.toString().padStart(2, '0')} €"
+    return "$intPart,${decPart.toString().padStart(2, '0')} $currencySymbol"
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -49,6 +50,7 @@ fun CloseFixedIncomeBottomSheet(
     onSave: (FixedIncomeCloseType, Long, FixedIncomeEvent) -> Unit,
     onDismiss: () -> Unit
 ) {
+    val currency = LocalCurrencySymbol.current
     var selectedCloseType by remember {
         mutableStateOf(
             preselectedCloseType ?: FixedIncomeCloseType.MATURITY
@@ -162,7 +164,7 @@ fun CloseFixedIncomeBottomSheet(
             OutlinedTextField(
                 value = grossAmountStr,
                 onValueChange = { grossAmountStr = it.filter { c -> c.isDigit() || c == '.' } },
-                label = { Text(stringResource(Res.string.fixedincome_gross_received_label)) },
+                label = { Text(stringResource(Res.string.fixedincome_gross_received_label, currency)) },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
@@ -187,7 +189,7 @@ fun CloseFixedIncomeBottomSheet(
                 OutlinedTextField(
                     value = commissionStr,
                     onValueChange = { commissionStr = it.filter { c -> c.isDigit() || c == '.' } },
-                    label = { Text(stringResource(Res.string.fixedincome_commission_eur_label)) },
+                    label = { Text(stringResource(Res.string.fixedincome_commission_eur_label, currency)) },
                     modifier = Modifier.weight(1f),
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
@@ -231,7 +233,7 @@ fun CloseFixedIncomeBottomSheet(
                         color = MaterialTheme.appColors.textSecondary
                     )
                     Text(
-                        text = formatEuro(netAmount),
+                        text = formatEuro(netAmount, currency),
                         fontSize = 15.sp,
                         fontWeight = FontWeight.SemiBold,
                         color = MaterialTheme.appColors.pnlPositive

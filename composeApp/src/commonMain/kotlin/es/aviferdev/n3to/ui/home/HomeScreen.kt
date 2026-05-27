@@ -57,6 +57,7 @@ import es.aviferdev.n3to.ui.reconciliation.ReconciliationReminderBanner
 import es.aviferdev.n3to.ui.settings.backup.BackupPasswordSheet
 import es.aviferdev.n3to.ui.theme.LocalBalanceHidden
 import es.aviferdev.n3to.ui.theme.LocalBottomNavPadding
+import es.aviferdev.n3to.ui.theme.LocalCurrencySymbol
 import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.ui.version.VersionUpdateBanner
 import n3to.composeapp.generated.resources.Res
@@ -100,6 +101,7 @@ fun HomeScreen(
     val showAddTransaction by viewModel.showAddTransaction.collectAsState()
 
     val balancesHidden = LocalBalanceHidden.current
+    val currency = LocalCurrencySymbol.current
     val showBalancesText = stringResource(Res.string.home_show_balances)
     val confirmIdentityText = stringResource(Res.string.home_confirm_identity)
 
@@ -215,7 +217,7 @@ fun HomeScreen(
         ReconcileBalanceBottomSheet(
             state = reconciliationState,
             onRealBalanceChange = { viewModel.updateRealBalance(it) },
-            onReconcile = { viewModel.reconcile() },
+            onReconcile = { viewModel.reconcile(currency) },
             onDismiss = { viewModel.closeReconciliationSheet() }
         )
     }

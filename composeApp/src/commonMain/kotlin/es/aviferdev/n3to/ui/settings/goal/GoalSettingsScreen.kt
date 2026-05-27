@@ -68,6 +68,7 @@ import es.aviferdev.n3to.ui.settings.goal.components.GoalTypeHeader
 import es.aviferdev.n3to.ui.settings.goal.components.MonthChip
 import es.aviferdev.n3to.ui.settings.goal.components.NavySectionCard
 import es.aviferdev.n3to.ui.theme.appColors
+import es.aviferdev.n3to.ui.theme.LocalCurrencySymbol
 import kotlinx.coroutines.delay
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.common_close
@@ -107,6 +108,7 @@ fun GoalSettingsScreen(
     }
 
     var contentVisible by remember { mutableStateOf(false) }
+    val currency = LocalCurrencySymbol.current
     LaunchedEffect(Unit) { delay(60); contentVisible = true }
 
     LaunchedEffect(state.message) {
@@ -189,7 +191,7 @@ fun GoalSettingsScreen(
                                 },
                                 trailingIcon = {
                                     Text(
-                                        "€",
+                                        currency,
                                         fontSize = 14.sp,
                                         color = MaterialTheme.appColors.textTertiary,
                                         modifier = Modifier.padding(end = 12.dp)
@@ -239,7 +241,7 @@ fun GoalSettingsScreen(
                                 },
                                 trailingIcon = {
                                     Text(
-                                        "€",
+                                        currency,
                                         fontSize = 14.sp,
                                         color = MaterialTheme.appColors.textTertiary,
                                         modifier = Modifier.padding(end = 12.dp)
@@ -395,7 +397,7 @@ fun GoalSettingsScreen(
                                                     viewModel.onMonthSavingsChange(month.month, it)
                                                 },
                                                 placeholder = stringResource(Res.string.goal_base_placeholder),
-                                                suffix = "€",
+                                                suffix = currency,
                                                 singleLine = true,
                                                 containerColor = MaterialTheme.appColors.navySurfaceLight,
                                                 cursorColor = MaterialTheme.appColors.income,
@@ -411,7 +413,7 @@ fun GoalSettingsScreen(
                                                     )
                                                 },
                                                 placeholder = stringResource(Res.string.goal_base_placeholder),
-                                                suffix = "€",
+                                                suffix = currency,
                                                 singleLine = true,
                                                 containerColor = MaterialTheme.appColors.navySurfaceLight,
                                                 cursorColor = MaterialTheme.appColors.cyanAccent,

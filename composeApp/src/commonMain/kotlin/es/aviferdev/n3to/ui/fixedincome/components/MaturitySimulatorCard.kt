@@ -1,6 +1,7 @@
 package es.aviferdev.n3to.ui.fixedincome.components
 
 import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.LocalCurrencySymbol
 import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
@@ -39,6 +40,7 @@ internal fun MaturitySimulatorCard(
     simulation: MaturitySimulation,
     balancesHidden: Boolean
 ) {
+    val currency = LocalCurrencySymbol.current
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
@@ -114,7 +116,7 @@ internal fun MaturitySimulatorCard(
                             formatAmount(simulation.netAtMaturity),
                             balancesHidden
                         )
-                    } €",
+                    } $currency",
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.appColors.cyanAccent
@@ -130,7 +132,7 @@ internal fun MaturitySimulatorCard(
                         formatAmount(simulation.netProfit),
                         balancesHidden
                     )
-                } €",
+                } $currency",
                 fontSize = 13.sp,
                 fontWeight = FontWeight.Medium,
                 color = if (simulation.netProfit >= 0) MaterialTheme.appColors.pnlPositive else MaterialTheme.appColors.pnlNegative
@@ -145,6 +147,7 @@ internal fun SimulatorRow(
     value: String,
     valueColor: Color = MaterialTheme.appColors.textPrimary
 ) {
+    val currency = LocalCurrencySymbol.current
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -153,7 +156,7 @@ internal fun SimulatorRow(
     ) {
         Text(text = label, fontSize = 13.sp, color = MaterialTheme.appColors.textTertiary)
         Text(
-            text = "$value €",
+            text = "$value $currency",
             fontSize = 13.sp,
             fontWeight = FontWeight.Medium,
             color = valueColor

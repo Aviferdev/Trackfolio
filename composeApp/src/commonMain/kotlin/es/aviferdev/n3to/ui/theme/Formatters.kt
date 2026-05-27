@@ -11,6 +11,7 @@ package es.aviferdev.n3to.ui.theme
  *   - [es.aviferdev.n3to.ui.theme.localizedMonthNames] instead of [MONTH_NAMES]
  *   - [es.aviferdev.n3to.ui.theme.localizedMonthShort] instead of [MONTH_SHORT]
  */
+import es.aviferdev.n3to.domain.model.AppCurrency
 import es.aviferdev.n3to.platform.nowMillis
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
@@ -128,9 +129,9 @@ fun formatQty(value: Double, decimals: Int = 2): String {
 
 // ─── Moneda ──────────────────────────────────────────────────────────────────
 
-/** Importe formateado en euros — "1.234,56 €". */
-fun formatAmountEuro(amount: Double): String =
-    "${formatAmount(amount)} €"
+/** Importe formateado con el símbolo de moneda dado — "1.234,56 €". */
+fun formatAmountEuro(amount: Double, currencySymbol: String = AppCurrency.EUR.symbol): String =
+    "${formatAmount(amount)} $currencySymbol"
 
 // ─── Tiempo relativo ─────────────────────────────────────────────────────────
 
@@ -175,28 +176,28 @@ fun formatRelativeTime(epochMillis: Long): String {
  * @param value valor numérico a formatear.
  * @return cadena formateada, ej: "1,2K €", "500 €", "2,5M €".
  */
-fun formatAxisLabel(value: Double): String {
+fun formatAxisLabel(value: Double, currencySymbol: String = AppCurrency.EUR.symbol): String {
     val absVal = if (value < 0) -value else value
     val sign = if (value < 0) "-" else ""
 
     return when {
         absVal >= 1_000_000 -> {
             val m = value / 1_000_000
-            "${sign}${formatCompact(m)}M €"
+            "${sign}${formatCompact(m)}M $currencySymbol"
         }
 
         absVal >= 10_000 -> {
             val k = value / 1_000
-            "${sign}${k.toLong()}K €"
+            "${sign}${k.toLong()}K $currencySymbol"
         }
 
         absVal >= 1_000 -> {
             val k = value / 1_000
-            "${sign}${formatCompact(k)}K €"
+            "${sign}${formatCompact(k)}K $currencySymbol"
         }
 
         else -> {
-            "${sign}${formatAmount(value)} €"
+            "${sign}${formatAmount(value)} $currencySymbol"
         }
     }
 }

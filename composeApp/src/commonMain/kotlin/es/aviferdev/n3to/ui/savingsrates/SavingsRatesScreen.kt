@@ -44,6 +44,7 @@ import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.ui.theme.formatAmount
 import es.aviferdev.n3to.ui.theme.formatDateLocalized
 import es.aviferdev.n3to.ui.theme.formatPercent
+import es.aviferdev.n3to.ui.theme.LocalCurrencySymbol
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.common_update
 import n3to.composeapp.generated.resources.savings_rates_cancellation_no
@@ -170,6 +171,7 @@ fun SavingsRatesScreen(
 
 @Composable
 private fun SavingsRateCard(rate: SavingsRate, modifier: Modifier = Modifier) {
+    val currency = LocalCurrencySymbol.current
     Card(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
@@ -202,10 +204,10 @@ private fun SavingsRateCard(rate: SavingsRate, modifier: Modifier = Modifier) {
 
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 rate.maxAmount?.let { max ->
-                    MetaChip(label = stringResource(Res.string.savings_rates_max), value = "€${formatAmount(max)}")
+                    MetaChip(label = stringResource(Res.string.savings_rates_max), value = "$currency${formatAmount(max)}")
                 }
                 rate.minAmount?.let { min ->
-                    MetaChip(label = stringResource(Res.string.savings_rates_min), value = "€${formatAmount(min)}")
+                    MetaChip(label = stringResource(Res.string.savings_rates_min), value = "$currency${formatAmount(min)}")
                 }
                 rate.termMonths?.let { months ->
                     MetaChip(label = stringResource(Res.string.savings_rates_term), value = "${months}m")

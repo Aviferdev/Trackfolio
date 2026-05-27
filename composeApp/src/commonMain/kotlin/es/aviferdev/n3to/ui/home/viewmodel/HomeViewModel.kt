@@ -7,6 +7,7 @@ import es.aviferdev.n3to.core.security.BalanceVisibilityManager
 import es.aviferdev.n3to.core.security.BiometricAuthenticator
 import es.aviferdev.n3to.core.security.BiometricResult
 import es.aviferdev.n3to.domain.model.Account
+import es.aviferdev.n3to.domain.model.AppCurrency
 import es.aviferdev.n3to.domain.model.Asset
 import es.aviferdev.n3to.domain.model.CategoryBudgetStatus
 import es.aviferdev.n3to.domain.model.EmergencyFundStatus
@@ -254,7 +255,7 @@ class HomeViewModel(
 
     fun updateRealBalance(input: String) = reconciliationDelegate.updateRealBalance(input)
 
-    fun reconcile() = reconciliationDelegate.reconcile()
+    fun reconcile(currencySymbol: String = AppCurrency.EUR.symbol) = reconciliationDelegate.reconcile(currencySymbol)
 
     // ── Backup ────────────────────────────────────────────────────────────────
 

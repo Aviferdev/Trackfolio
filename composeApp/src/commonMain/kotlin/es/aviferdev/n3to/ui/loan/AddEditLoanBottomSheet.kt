@@ -56,6 +56,7 @@ import es.aviferdev.n3to.domain.model.LoanType
 import es.aviferdev.n3to.domain.usecase.loan.SaveLoanUseCase
 import es.aviferdev.n3to.platform.nowMillis
 import es.aviferdev.n3to.ui.account.AccountSession
+import es.aviferdev.n3to.ui.theme.LocalCurrencySymbol
 import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.ui.theme.formatAmount
 import kotlinx.coroutines.launch
@@ -96,6 +97,7 @@ fun AddEditLoanBottomSheet(
     updateLoanUseCase: es.aviferdev.n3to.domain.usecase.loan.UpdateLoanUseCase = koinInject(),
     session: AccountSession = koinInject()
 ) {
+    val currency = LocalCurrencySymbol.current
     val isEditing = loan != null
 
     var name by remember { mutableStateOf(loan?.name ?: "") }
@@ -272,7 +274,7 @@ fun AddEditLoanBottomSheet(
                             color = MaterialTheme.appColors.textSecondary
                         )
                         Text(
-                            "${formatAmount(previewPayment)} €/mes",
+                            "${formatAmount(previewPayment)} $currency/mes",
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Medium,
                             color = MaterialTheme.appColors.primary

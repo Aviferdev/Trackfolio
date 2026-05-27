@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.Transaction
 import es.aviferdev.n3to.domain.model.TransactionType
 import es.aviferdev.n3to.ui.common.toMaterialIcon
+import es.aviferdev.n3to.ui.theme.LocalCurrencySymbol
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.ui.theme.formatAmount
@@ -61,6 +62,7 @@ fun TransactionRow(
     onClick: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
+    val currency = LocalCurrencySymbol.current
     val isIncome = transaction.isIncome
     val isAdjustment = transaction.isAdjustment
     val isLinked = transaction.isLinkedToAsset
@@ -202,7 +204,7 @@ fun TransactionRow(
         // Importe
         Column(horizontalAlignment = Alignment.End) {
             Text(
-                "$prefix ${maskAmount(formatAmount(displayAmount), balancesHidden)} €",
+                "$prefix ${maskAmount(formatAmount(displayAmount), balancesHidden)} $currency",
                 fontSize = 13.sp,
                 fontWeight = FontWeight.Bold,
                 color = amountColor,
@@ -210,7 +212,7 @@ fun TransactionRow(
             )
             if (!compact && isIncome && transaction.grossAmount != null && !balancesHidden) {
                 Text(
-                    stringResource(Res.string.transaction_gross_format, formatAmount(transaction.grossAmount)),
+                    stringResource(Res.string.transaction_gross_format, formatAmount(transaction.grossAmount), currency),
                     fontSize = 9.sp,
                     color = MaterialTheme.appColors.textTertiary,
                     maxLines = 1

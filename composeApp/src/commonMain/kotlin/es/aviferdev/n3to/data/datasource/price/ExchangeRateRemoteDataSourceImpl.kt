@@ -1,5 +1,6 @@
 package es.aviferdev.n3to.data.datasource.price
 
+import es.aviferdev.n3to.domain.model.AppCurrency
 import es.aviferdev.n3to.domain.model.ExchangeRate
 import es.aviferdev.n3to.platform.nowMillis
 import io.ktor.client.HttpClient
@@ -39,7 +40,7 @@ class ExchangeRateRemoteDataSourceImpl(
             println("[PriceRefresh] ✅ ${response.status} EUR/USD")
             val body = response.bodyAsText()
             val rate = parseEurUsdRateResponse(body)
-            println("[PriceRefresh] 💱 EUR/USD = ${rate.usdPerEur} (1€ = ${rate.usdPerEur}$)")
+            println("[PriceRefresh] 💱 EUR/USD = ${rate.usdPerEur} (1${AppCurrency.EUR.symbol} = ${rate.usdPerEur}$)")
             Result.success(rate)
         } catch (e: Exception) {
             println("[PriceRefresh] ❌ EUR/USD → ${e.message}")

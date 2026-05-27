@@ -73,6 +73,7 @@ import es.aviferdev.n3to.ui.home.viewmodel.AddTransactionViewModel
 import es.aviferdev.n3to.ui.home.viewmodel.IAddTransactionForm
 import es.aviferdev.n3to.ui.home.viewmodel.IncomeInputMode
 import es.aviferdev.n3to.ui.home.viewmodel.IrpfInputMode
+import es.aviferdev.n3to.ui.theme.LocalCurrencySymbol
 import es.aviferdev.n3to.ui.theme.appColors
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.common_amount_label
@@ -237,6 +238,7 @@ private fun AddTransactionSheetContent(
     onRequestCategoryPicker: ((TransactionType) -> Unit)?,
     onIncomeTypeTap: () -> Unit,
 ) {
+    val currency = LocalCurrencySymbol.current
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -466,7 +468,7 @@ private fun AddTransactionSheetContent(
                             value = grossAmount,
                             onValueChange = onGrossAmountChange,
                             placeholder = "0,00",
-                            suffix = "€",
+                            suffix = currency,
                             modifier = Modifier.weight(1f)
                         )
                         if (showWithholdingField) {
@@ -490,7 +492,7 @@ private fun AddTransactionSheetContent(
                             value = socialSecurityAmount,
                             onValueChange = onSocialSecurityChange,
                             placeholder = "0,00",
-                            suffix = "€"
+                            suffix = currency
                         )
                     }
 
@@ -501,7 +503,7 @@ private fun AddTransactionSheetContent(
                             value = commissionAmount,
                             onValueChange = onCommissionChange,
                             placeholder = "0,00",
-                            suffix = "€"
+                            suffix = currency
                         )
                     }
 

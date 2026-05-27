@@ -66,6 +66,7 @@ import es.aviferdev.n3to.ui.settings.emergencyfund.components.MethodChip
 import es.aviferdev.n3to.ui.settings.emergencyfund.components.NavySectionCard
 import es.aviferdev.n3to.ui.settings.emergencyfund.components.SectionLabel
 import es.aviferdev.n3to.ui.theme.appColors
+import es.aviferdev.n3to.ui.theme.LocalCurrencySymbol
 import kotlinx.coroutines.delay
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.common_save
@@ -99,6 +100,7 @@ fun EmergencyFundSettingsScreen(
     viewModel: EmergencyFundSettingsViewModel = koinViewModel()
 ) {
     val state by viewModel.uiState.collectAsState()
+    val currency = LocalCurrencySymbol.current
 
     var contentVisible by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) { delay(60); contentVisible = true }
@@ -217,7 +219,7 @@ fun EmergencyFundSettingsScreen(
                     if (state.method == EmergencyFundMethod.MANUAL) {
                         item {
                             NavySectionCard {
-                                SectionLabel("Gasto mensual estimado (€)")
+                                SectionLabel("Gasto mensual estimado ($currency)")
                                 Spacer(Modifier.height(8.dp))
                                 OutlinedTextField(
                                     value = state.manualExpenseText,

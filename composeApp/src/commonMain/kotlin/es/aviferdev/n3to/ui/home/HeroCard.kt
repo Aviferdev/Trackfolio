@@ -23,6 +23,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.HomeBalance
+import es.aviferdev.n3to.ui.theme.LocalCurrencySymbol
 import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.ui.theme.formatAmount
 import es.aviferdev.n3to.ui.theme.maskAmount
@@ -37,6 +38,7 @@ fun HeroCard(
     balancesHidden: Boolean,
     modifier: Modifier = Modifier
 ) {
+    val currency = LocalCurrencySymbol.current
     val netWithDebts = balance.selectedAccountBalance + balance.totalOwed - balance.totalOwing
     val heroStart = MaterialTheme.appColors.heroCardStart
     val heroEnd = MaterialTheme.appColors.heroCardEnd
@@ -92,7 +94,7 @@ fun HeroCard(
         )
         Spacer(Modifier.height(3.dp))
         Text(
-            text = "${maskAmount(formatAmount(balance.selectedAccountBalance), balancesHidden)} €",
+            text = "${maskAmount(formatAmount(balance.selectedAccountBalance), balancesHidden)} $currency",
             fontSize = 36.sp,
             fontWeight = FontWeight.ExtraBold,
             color = Color.White,
@@ -113,7 +115,7 @@ fun HeroCard(
                 color = Color.White.copy(alpha = 0.45f)
             )
             Text(
-                text = "${maskAmount(formatAmount(netWithDebts), balancesHidden)} €",
+                text = "${maskAmount(formatAmount(netWithDebts), balancesHidden)} $currency",
                 fontSize = 13.sp,
                 fontWeight = FontWeight.SemiBold,
                 color = cyanSubtleColor

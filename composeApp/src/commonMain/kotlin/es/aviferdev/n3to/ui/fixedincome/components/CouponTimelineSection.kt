@@ -1,6 +1,7 @@
 package es.aviferdev.n3to.ui.fixedincome.components
 
 import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.LocalCurrencySymbol
 import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -39,6 +40,7 @@ internal fun CouponTimelineSection(
     schedule: List<ScheduledCoupon>,
     balancesHidden: Boolean
 ) {
+    val currency = LocalCurrencySymbol.current
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
@@ -93,7 +95,7 @@ internal fun CouponTimelineSection(
                         }
                     }
                     Text(
-                        text = "${maskAmount(formatAmount(coupon.grossAmount), balancesHidden)} €",
+                        text = "${maskAmount(formatAmount(coupon.grossAmount), balancesHidden)} $currency",
                         fontSize = 13.sp,
                         fontWeight = FontWeight.SemiBold,
                         color = MaterialTheme.appColors.textPrimary

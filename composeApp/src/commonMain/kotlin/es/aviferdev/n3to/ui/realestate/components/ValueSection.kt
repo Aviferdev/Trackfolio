@@ -23,6 +23,7 @@ import es.aviferdev.n3to.domain.model.RealEstateProperty
 import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.ui.theme.formatAmountEuro
 import es.aviferdev.n3to.ui.theme.formatPercent
+import es.aviferdev.n3to.ui.theme.LocalCurrencySymbol
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.realestate_capital_gain_label
 import n3to.composeapp.generated.resources.realestate_effective_value_label
@@ -42,6 +43,7 @@ fun ValueSection(property: RealEstateProperty, onUpdateValue: () -> Unit) {
         elevation = CardDefaults.cardElevation(0.dp),
         modifier = Modifier.fillMaxWidth()
     ) {
+    val currency = LocalCurrencySymbol.current
         Column(modifier = Modifier.padding(16.dp)) {
             Row(
                 Modifier.fillMaxWidth(),
@@ -67,11 +69,11 @@ fun ValueSection(property: RealEstateProperty, onUpdateValue: () -> Unit) {
             Spacer(Modifier.height(4.dp))
             DataRow(
                 stringResource(Res.string.realestate_estimated_value_label),
-                formatAmountEuro(property.currentEstimatedValue)
+                formatAmountEuro(property.currentEstimatedValue, currency)
             )
             DataRow(
                 stringResource(Res.string.realestate_purchase_value_label),
-                formatAmountEuro(property.purchaseValue)
+                formatAmountEuro(property.purchaseValue, currency)
             )
             DataRow(
                 stringResource(Res.string.realestate_ownership_percent_label),
@@ -85,13 +87,13 @@ fun ValueSection(property: RealEstateProperty, onUpdateValue: () -> Unit) {
                 )
                 DataRow(
                     stringResource(Res.string.realestate_sale_price_label),
-                    formatAmountEuro(property.saleValue)
+                    formatAmountEuro(property.saleValue, currency)
                 )
                 val gain = property.realizedGain ?: 0.0
                 val pct = property.realizedGainPercent ?: 0.0
                 DataRow(
                     stringResource(Res.string.realestate_capital_gain_label),
-                    "${if (gain >= 0) "+" else ""}${formatAmountEuro(gain)} (${
+                    "${if (gain >= 0) "+" else ""}${formatAmountEuro(gain, currency)} (${
                         if (pct >= 0) "+" else ""
                     }${formatPercent(pct)}%)"
                 )
@@ -103,7 +105,7 @@ fun ValueSection(property: RealEstateProperty, onUpdateValue: () -> Unit) {
             )
             DataRow(
                 stringResource(Res.string.realestate_effective_value_label),
-                formatAmountEuro(property.effectiveValue)
+                formatAmountEuro(property.effectiveValue, currency)
             )
         }
     }

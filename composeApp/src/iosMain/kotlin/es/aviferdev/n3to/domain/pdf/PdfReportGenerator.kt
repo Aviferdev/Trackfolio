@@ -204,7 +204,7 @@ actual class PdfReportGenerator {
         fun drawPageHeader() {
             fillRect(0.0, 0.0, PAGE_W, 70.0, colorPrimary)
             drawText("INFORME FISCAL ${data.year}",                               MARGIN, 14.0, fontTitle, UIColor.whiteColor)
-            drawText("Cuenta: ${data.accountName}  ·  Moneda: ${"€"}",  MARGIN, 38.0, fontSub,   UIColor.whiteColor)
+            drawText("Cuenta: ${data.accountName}  ·  Moneda: ${data.currencySymbol}",  MARGIN, 38.0, fontSub,   UIColor.whiteColor)
             drawText("Generado: ${formatDate(data.generatedAt)}",                 MARGIN, 52.0, fontSub,   UIColor.whiteColor)
             y = 86.0
         }
@@ -476,7 +476,7 @@ actual class PdfReportGenerator {
             val frac   = ((absVal - int_) * 100 + 0.5).toLong().coerceIn(0, 99)
             val intStr = int_.toString().reversed().chunked(3).joinToString(".").reversed()
             val str    = "$sign$intStr,${frac.toString().padStart(2, '0')}"
-            return "$str €"
+            return "$str ${data.currencySymbol}"
         }
 
         fun fmtPct(v: Double): String {

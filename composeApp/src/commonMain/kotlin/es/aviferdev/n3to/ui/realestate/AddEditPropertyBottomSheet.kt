@@ -137,6 +137,7 @@ fun AddEditPropertyBottomSheet(
     var purchaseExpenses by remember { mutableStateOf(listOf<PropertyExpense>()) }
     var expenseCategories by remember { mutableStateOf(listOf<Category>()) }
     var categoriesLoaded by remember { mutableStateOf(false) }
+    val currency = LocalCurrencySymbol.current
 
     LaunchedEffect(accountId) {
         if (!categoriesLoaded && accountId.isNotBlank()) {
@@ -287,14 +288,14 @@ fun AddEditPropertyBottomSheet(
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 OutlinedTextField(
                     value = purchaseValueText, onValueChange = { purchaseValueText = it },
-                    label = { Text(stringResource(Res.string.realestate_purchase_price_label)) },
+                    label = { Text(stringResource(Res.string.realestate_purchase_price_label, currency)) },
                     singleLine = true, modifier = Modifier.weight(1f),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                     shape = RoundedCornerShape(10.dp), colors = fieldColors()
                 )
                 OutlinedTextField(
                     value = estimatedValueText, onValueChange = { estimatedValueText = it },
-                    label = { Text(stringResource(Res.string.realestate_current_value_label)) },
+                    label = { Text(stringResource(Res.string.realestate_current_value_label, currency)) },
                     singleLine = true, modifier = Modifier.weight(1f),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                     shape = RoundedCornerShape(10.dp), colors = fieldColors()
@@ -355,7 +356,7 @@ fun AddEditPropertyBottomSheet(
                 Spacer(Modifier.height(12.dp))
                 OutlinedTextField(
                     value = monthlyRentText, onValueChange = { monthlyRentText = it },
-                    label = { Text(stringResource(Res.string.realestate_monthly_rent_label)) },
+                    label = { Text(stringResource(Res.string.realestate_monthly_rent_label, currency)) },
                     singleLine = true, modifier = Modifier.fillMaxWidth(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                     shape = RoundedCornerShape(10.dp), colors = fieldColors()
@@ -470,7 +471,7 @@ fun AddEditPropertyBottomSheet(
                         Text(
                             stringResource(
                                 Res.string.realestate_total_expenses_format,
-                                formatAmountEuro(totalPurchaseCosts)
+                                formatAmountEuro(totalPurchaseCosts, currency)
                             ),
                             fontSize = 12.sp,
                             fontWeight = FontWeight.Medium,

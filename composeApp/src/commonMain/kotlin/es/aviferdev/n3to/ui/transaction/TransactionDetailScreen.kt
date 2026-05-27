@@ -32,6 +32,7 @@ import es.aviferdev.n3to.ui.transaction.components.DetailRow
 import es.aviferdev.n3to.ui.transaction.components.DetailSectionHeader
 import es.aviferdev.n3to.ui.transaction.components.formatAmountAbs
 import es.aviferdev.n3to.ui.theme.formatDateFullLocalized
+import es.aviferdev.n3to.ui.theme.LocalCurrencySymbol
 import es.aviferdev.n3to.ui.transaction.components.shouldShowIncomeDetails
 import n3to.composeapp.generated.resources.*
 import org.jetbrains.compose.resources.stringResource
@@ -182,6 +183,7 @@ private fun TransactionDetailContent(
     onEdit: (() -> Unit)?,
     onDelete: () -> Unit,
 ) {
+    val currency = LocalCurrencySymbol.current
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -247,7 +249,7 @@ private fun TransactionDetailContent(
 
                 // Amount
                 Text(
-                    text = "$amountPrefix${formatAmountAbs(absAmount)} €",
+                    text = "$amountPrefix${formatAmountAbs(absAmount)} $currency",
                     fontSize = 34.sp,
                     fontWeight = FontWeight.Bold,
                     color = typeColor,
@@ -339,16 +341,16 @@ private fun TransactionDetailContent(
                     if (hasGross) {
                         DetailRow(
                             label = stringResource(Res.string.portfolio_add_tx_gross),
-                            value = "${formatAmount(grossAmount!!)} €",
+                            value = "${formatAmount(grossAmount!!)} $currency",
                             isLast = !hasTaxLines && !hasCommission && !hasIssuer
                         )
                     }
                     transaction.taxLines.forEachIndexed { index, taxLine ->
                         val isLastTaxLine = index == transaction.taxLines.lastIndex
                         val lineText = if (taxLine.percent != null) {
-                            "${taxLine.percent}% (${formatAmount(taxLine.amount)} €)"
+                            "${taxLine.percent}% (${formatAmount(taxLine.amount)} $currency)"
                         } else {
-                            "${formatAmount(taxLine.amount)} €"
+                            "${formatAmount(taxLine.amount)} $currency"
                         }
                         DetailRow(
                             label = taxLine.name,
@@ -359,7 +361,7 @@ private fun TransactionDetailContent(
                     if (hasCommission) {
                         DetailRow(
                             label = stringResource(Res.string.fiscal_commissions_short),
-                            value = "${formatAmount(commissionAmount!!)} €",
+                            value = "${formatAmount(commissionAmount!!)} $currency",
                             isLast = !hasIssuer
                         )
                     }

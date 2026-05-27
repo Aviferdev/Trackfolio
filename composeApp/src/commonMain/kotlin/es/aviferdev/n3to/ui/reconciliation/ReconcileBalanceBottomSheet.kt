@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.ui.theme.PrimaryDark
 
 import es.aviferdev.n3to.ui.theme.formatAmount
+import es.aviferdev.n3to.ui.theme.LocalCurrencySymbol
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.account_computed_balance
 import n3to.composeapp.generated.resources.reconciliation_adjust_label
@@ -81,6 +82,7 @@ fun ReconcileBalanceBottomSheetContent(
     onRealBalanceChange: (String) -> Unit,
     onReconcile: () -> Unit
 ) {
+    val currency = LocalCurrencySymbol.current
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -112,7 +114,7 @@ fun ReconcileBalanceBottomSheetContent(
         )
 
         Text(
-            text = "${formatAmount(state.computedBalance)} €",
+            text = "${formatAmount(state.computedBalance)} $currency",
             fontSize = 24.sp,
             fontWeight = FontWeight.SemiBold,
             color = MaterialTheme.appColors.textPrimary
@@ -123,7 +125,7 @@ fun ReconcileBalanceBottomSheetContent(
         OutlinedTextField(
             value = state.realBalanceInput,
             onValueChange = onRealBalanceChange,
-            label = { Text(stringResource(Res.string.reconciliation_real_balance)) },
+            label = { Text(stringResource(Res.string.reconciliation_real_balance, currency)) },
             placeholder = { Text(stringResource(Res.string.reconciliation_amount_placeholder)) },
             singleLine = true,
             keyboardOptions = KeyboardOptions(
@@ -156,7 +158,7 @@ fun ReconcileBalanceBottomSheetContent(
                 else -> MaterialTheme.appColors.textSecondary
             }
             Text(
-                text = "Diferencia: ${sign}${formatAmount(diff)} €",
+                text = "Diferencia: ${sign}${formatAmount(diff)} $currency",
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Medium,
                 color = color,

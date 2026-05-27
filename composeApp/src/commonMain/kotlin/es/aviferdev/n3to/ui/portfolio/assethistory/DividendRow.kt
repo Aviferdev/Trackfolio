@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.Transaction
 import es.aviferdev.n3to.ui.portfolio.formatShortDate
+import es.aviferdev.n3to.ui.theme.LocalCurrencySymbol
 import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.ui.theme.formatAmount
 import es.aviferdev.n3to.ui.theme.maskAmount
@@ -43,6 +44,7 @@ fun DividendRow(
     onDelete: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val currency = LocalCurrencySymbol.current
     val gross = dividend.grossAmount ?: dividend.amount
     val irpf =
         dividend.taxLines.firstOrNull { it.role == es.aviferdev.n3to.domain.model.TaxRole.INCOME_TAX }?.amount
@@ -90,19 +92,19 @@ fun DividendRow(
                                 formatAmount(gross),
                                 balancesHidden
                             )
-                        } €  ·  Retención: ${
+                        } $currency  ·  Retención: ${
                             maskAmount(
                                 formatAmount(irpf),
                                 balancesHidden
                             )
-                        } €",
+                        } $currency",
                         fontSize = 9.sp, color = MaterialTheme.appColors.textTertiary
                     )
                 }
             }
             Column(horizontalAlignment = Alignment.End) {
                 Text(
-                    "+ ${maskAmount(formatAmount(dividend.amount), balancesHidden)} €",
+                    "+ ${maskAmount(formatAmount(dividend.amount), balancesHidden)} $currency",
                     fontSize = 12.sp,
                     color = MaterialTheme.appColors.income,
                     fontWeight = FontWeight.Bold

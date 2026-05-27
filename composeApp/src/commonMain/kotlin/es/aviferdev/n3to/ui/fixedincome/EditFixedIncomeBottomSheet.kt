@@ -92,6 +92,7 @@ fun EditFixedIncomeBottomSheet(
     var feeNote by remember { mutableStateOf(position.feeNote ?: "") }
     var showDatePicker by remember { mutableStateOf(false) }
     var autoRenew by remember { mutableStateOf(position.autoRenew) }
+    val currency = LocalCurrencySymbol.current
 
     // Frecuencias permitidas para el tipo seleccionado
     val allowedFrequencies = selectedType.allowedFrequencies.toList()
@@ -428,7 +429,7 @@ fun EditFixedIncomeBottomSheet(
                         onValueChange = {
                             principalStr = it.filter { c -> c.isDigit() || c == '.' }
                         },
-                        label = { Text(stringResource(Res.string.fixedincome_capital_invested_label)) },
+                        label = { Text(stringResource(Res.string.fixedincome_capital_invested_label, currency)) },
                         modifier = Modifier.weight(1f),
                         singleLine = true,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
@@ -439,7 +440,7 @@ fun EditFixedIncomeBottomSheet(
                         onValueChange = {
                             nominalPerUnitStr = it.filter { c -> c.isDigit() || c == '.' }
                         },
-                        label = { Text(stringResource(Res.string.fixedincome_nominal_value_label)) },
+                        label = { Text(stringResource(Res.string.fixedincome_nominal_value_label, currency)) },
                         modifier = Modifier.weight(1f),
                         singleLine = true,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
@@ -456,7 +457,7 @@ fun EditFixedIncomeBottomSheet(
                 OutlinedTextField(
                     value = principalStr,
                     onValueChange = { principalStr = it.filter { c -> c.isDigit() || c == '.' } },
-                    label = { Text(stringResource(Res.string.fixedincome_capital_label)) },
+                    label = { Text(stringResource(Res.string.fixedincome_capital_label, currency)) },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),

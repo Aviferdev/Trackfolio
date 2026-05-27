@@ -41,6 +41,7 @@ import es.aviferdev.n3to.ui.common.input.AmountInputField
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import es.aviferdev.n3to.ui.theme.PrimaryAlpha
 import es.aviferdev.n3to.ui.theme.appColors
+import es.aviferdev.n3to.ui.theme.LocalCurrencySymbol
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.category_annual_limit
 import n3to.composeapp.generated.resources.category_income_percentage
@@ -73,6 +74,7 @@ fun SetCategoryLimitSheet(
         )
     }
     var limitType by remember { mutableStateOf(currentLimitType) }
+    val currency = LocalCurrencySymbol.current
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
@@ -132,7 +134,7 @@ fun SetCategoryLimitSheet(
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 SelectableChip(
-                    label = LimitType.FIXED.label,
+                    label = "${LimitType.FIXED.label} ($currency)",
                     selected = limitType == LimitType.FIXED,
                     onClick = { limitType = LimitType.FIXED },
                     accentColor = MaterialTheme.appColors.primary,

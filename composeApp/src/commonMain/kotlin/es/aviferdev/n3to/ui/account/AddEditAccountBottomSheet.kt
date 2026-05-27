@@ -2,6 +2,7 @@ package es.aviferdev.n3to.ui.account
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,11 +13,15 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -40,6 +45,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.Account
+import es.aviferdev.n3to.domain.model.AppCurrency
 import es.aviferdev.n3to.platform.nowMillis
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import es.aviferdev.n3to.ui.theme.appColors
@@ -68,7 +74,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Composable
 fun AddEditAccountBottomSheet(
     account: Account?,
-    onSave: (name: String, initialBalance: Double) -> Unit,
+    onSave: (name: String, initialBalance: Double, currency: String) -> Unit,
     onDismiss: () -> Unit,
     onDelete: (() -> Unit)? = null
 ) {
@@ -79,6 +85,7 @@ fun AddEditAccountBottomSheet(
     var balanceText by remember { mutableStateOf("") }
     var balanceError by remember { mutableStateOf(false) }
     var showDeleteConfirm by remember { mutableStateOf(false) }
+    var selectedCurrency by remember { mutableStateOf(AppCurrency.fromCode(account?.currency ?: "EUR")) }
 
     ModalBottomSheet(
         onDismissRequest = {
@@ -158,6 +165,44 @@ fun AddEditAccountBottomSheet(
             )
 
             if (!isEditing) {
+                Spacer(Modifier.height(16.dp))
+
+                // ── Moneda ───────────────────────────────────────────────────
+                Text(
+                    text = "Moneda",
+                    fontSize = 12.sp,
+                    color = MaterialTheme.appColors.textSecondary,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+                LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    items(AppCurrency.entries) { currency ->
+                        val selected = currency == selectedCurrency
+                        FilterChip(
+                            selected = selected,
+                            onClick = { selectedCurrency = currency },
+                            label = {
+                                Text(
+                                    text = "${currency.symbol} ${currency.code}",
+                                    fontSize = 13.sp,
+                                    fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal
+                                )
+                            },
+                            colors = FilterChipDefaults.filterChipColors(
+                                selectedContainerColor = MaterialTheme.appColors.cyanAccent,
+                                selectedLabelColor = MaterialTheme.appColors.navyDeep,
+                                containerColor = MaterialTheme.appColors.navySurfaceLight,
+                                labelColor = MaterialTheme.appColors.textSecondary
+                            ),
+                            border = FilterChipDefaults.filterChipBorder(
+                                enabled = true,
+                                selected = selected,
+                                selectedBorderColor = MaterialTheme.appColors.cyanAccent,
+                                borderColor = MaterialTheme.appColors.navyBorder
+                            )
+                        )
+                    }
+                }
+
                 Spacer(Modifier.height(12.dp))
 
                 // ── Saldo inicial ────────────────────────────────────────────
@@ -171,7 +216,7 @@ fun AddEditAccountBottomSheet(
                     placeholder = { Text("0,00") },
                     trailingIcon = {
                         Text(
-                            text = "€",
+                            text = selectedCurrency.symbol,
                             fontSize = 16.sp,
                             color = MaterialTheme.appColors.textSecondary,
                             modifier = Modifier.padding(end = 16.dp)
@@ -239,7 +284,7 @@ fun AddEditAccountBottomSheet(
                         balance = 0.0
                     }
                     if (!valid) return@Button
-                    onSave(name.trim(), balance)
+                    onSave(name.trim(), balance, selectedCurrency.code)
                 },
                 modifier = Modifier.fillMaxWidth().height(52.dp),
                 shape = RoundedCornerShape(11.dp),
@@ -276,7 +321,6 @@ fun AddEditAccountBottomSheet(
                 )
 
                 if (showDeleteConfirm) {
-                    // Estado de confirmación
                     Text(
                         text = stringResource(Res.string.account_delete_confirm_message),
                         fontSize = 12.sp,
@@ -304,7 +348,6 @@ fun AddEditAccountBottomSheet(
                         }
                     }
                 } else {
-                    // Fila para iniciar eliminación
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -332,7 +375,7 @@ private fun AddEditAccountBottomSheetCreatePreview() {
     N3toTheme {
         AddEditAccountBottomSheet(
             account = null,
-            onSave = { _, _ -> },
+            onSave = { _, _, _ -> },
             onDismiss = {}
         )
     }
@@ -350,7 +393,7 @@ private fun AddEditAccountBottomSheetEditPreview() {
                 computedBalance = 5200.0,
                 createdAt = nowMillis()
             ),
-            onSave = { _, _ -> },
+            onSave = { _, _, _ -> },
             onDismiss = {}
         )
     }

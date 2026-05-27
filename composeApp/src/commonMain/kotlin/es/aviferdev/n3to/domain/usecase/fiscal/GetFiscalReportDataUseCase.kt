@@ -4,8 +4,10 @@ import es.aviferdev.n3to.platform.nowMillis
 import es.aviferdev.n3to.domain.model.AssetPosition
 import es.aviferdev.n3to.domain.model.AssetTransaction
 import es.aviferdev.n3to.domain.model.AssetTransactionType
+import es.aviferdev.n3to.domain.model.AppCurrency
 import es.aviferdev.n3to.domain.model.FiscalIncomeTaxBreakdown
 import es.aviferdev.n3to.domain.model.FiscalReportData
+import es.aviferdev.n3to.domain.model.toCurrencySymbol
 import es.aviferdev.n3to.domain.model.IncomeType
 import es.aviferdev.n3to.domain.model.Transaction
 import es.aviferdev.n3to.domain.repository.AccountRepository
@@ -39,6 +41,7 @@ class GetFiscalReportDataUseCase(
         ) { account, annual, monthly, debts, incomes ->
             Base(
                 accountName = account?.name ?: "Cuenta",
+                currencySymbol = account?.currency?.toCurrencySymbol() ?: AppCurrency.EUR.symbol,
                 annualSummary = annual,
                 monthlyBreakdown = monthly,
                 debts = debts,
@@ -83,6 +86,7 @@ class GetFiscalReportDataUseCase(
                     accountName = base.accountName,
                     year = year,
                     generatedAt = nowMillis(),
+                    currencySymbol = base.currencySymbol,
                     annualSummary = adjustedSummary,
                     monthlyBreakdown = base.monthlyBreakdown,
                     activeDebts = base.debts,
@@ -255,6 +259,7 @@ class GetFiscalReportDataUseCase(
 
     private data class Base(
         val accountName: String,
+        val currencySymbol: String,
         val annualSummary: es.aviferdev.n3to.domain.model.AnnualSummary?,
         val monthlyBreakdown: List<es.aviferdev.n3to.domain.model.MonthlyTotals>,
         val debts: List<es.aviferdev.n3to.domain.model.Debt>,

@@ -1,6 +1,7 @@
 package es.aviferdev.n3to.ui.onboarding
 
 import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.LocalCurrencySymbol
 import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.animation.core.EaseInOutCubic
 import androidx.compose.animation.core.RepeatMode
@@ -57,6 +58,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
  */
 @Composable
 fun SlidePatrimonio(modifier: Modifier = Modifier) {
+    val cs = LocalCurrencySymbol.current
     val heroCardBg1 = MaterialTheme.appColors.heroCardStart
     val heroCardBg2 = MaterialTheme.appColors.heroCardEnd
     val appCCyanSubtle = MaterialTheme.appColors.cyanSubtle
@@ -127,7 +129,7 @@ fun SlidePatrimonio(modifier: Modifier = Modifier) {
                     )
                     Spacer(Modifier.width(4.dp))
                     Text(
-                        text = "€",
+                        text = cs,
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color.White.copy(alpha = 0.7f)
@@ -151,7 +153,7 @@ fun SlidePatrimonio(modifier: Modifier = Modifier) {
                 Spacer(Modifier.height(3.dp))
                 // appCCyanSubtle para el valor secundario, igual que HeroCard
                 Text(
-                    text = "11.890,50 €",
+                    text = "11.890,50 $cs",
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
                     color = appCCyanSubtle,
@@ -174,7 +176,7 @@ fun SlidePatrimonio(modifier: Modifier = Modifier) {
                 Text(text = "📈 Portfolio", fontSize = 14.sp, color = Color.Unspecified)
                 Spacer(Modifier.height(4.dp))
                 Text(
-                    text = "+2.209 €",
+                    text = "+2.209 $cs",
                     fontSize = 14.sp,
                     fontWeight = FontWeight.ExtraBold,
                     color = MaterialTheme.appColors.income
@@ -196,7 +198,7 @@ fun SlidePatrimonio(modifier: Modifier = Modifier) {
                 Text(text = "🏠 Hipoteca", fontSize = 14.sp, color = Color.Unspecified)
                 Spacer(Modifier.height(4.dp))
                 Text(
-                    text = "−142.300 €",
+                    text = "−142.300 $cs",
                     fontSize = 14.sp,
                     fontWeight = FontWeight.ExtraBold,
                     color = MaterialTheme.appColors.expense

@@ -31,9 +31,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import es.aviferdev.n3to.domain.model.AppCurrency
 import es.aviferdev.n3to.domain.model.TaxProfileSnapshot
 import es.aviferdev.n3to.ui.common.navigation.StepperArrowButton
 import es.aviferdev.n3to.ui.theme.HIDDEN_AMOUNT_MASK
+import es.aviferdev.n3to.ui.theme.LocalCurrencySymbol
 import es.aviferdev.n3to.ui.theme.LocalFiscalAmountsHidden
 import es.aviferdev.n3to.ui.theme.appColors
 import n3to.composeapp.generated.resources.Res
@@ -155,6 +157,7 @@ internal fun FiscalMetricCell(
     color: Color,
     modifier: Modifier = Modifier
 ) {
+    val currency = LocalCurrencySymbol.current
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(9.dp))
@@ -167,7 +170,7 @@ internal fun FiscalMetricCell(
             Spacer(Modifier.height(3.dp))
             Text(
                 if (LocalFiscalAmountsHidden.current) HIDDEN_AMOUNT_MASK
-                else "${if (amount >= 0) "" else "−"}${formatAmt(abs(amount))} €",
+                else "${if (amount >= 0) "" else "−"}${formatAmt(abs(amount), currency)}",
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Bold,
                 color = color
@@ -224,16 +227,18 @@ internal fun TaxProfileBadge(snapshot: TaxProfileSnapshot) {
 }
 
 @Composable
-internal fun maskedAmt(value: Double): String =
-    if (LocalFiscalAmountsHidden.current) HIDDEN_AMOUNT_MASK else formatAmt(value)
+internal fun maskedAmt(value: Double): String {
+    val currency = LocalCurrencySymbol.current
+    return if (LocalFiscalAmountsHidden.current) HIDDEN_AMOUNT_MASK else formatAmt(value, currency)
+}
 
-internal fun formatAmt(value: Double): String {
+internal fun formatAmt(value: Double, currencySymbol: String = AppCurrency.EUR.symbol): String {
     val sign = if (value < 0) "-" else ""
     val absVal = abs(value)
     val euros = absVal.toLong()
     val cents = ((absVal - euros) * 100 + .5).toLong().coerceIn(0, 99)
     val eurosStr = euros.toString().reversed().chunked(3).joinToString(".").reversed()
-    return "$sign$eurosStr,${cents.toString().padStart(2, '0')} €"
+    return "$sign$eurosStr,${cents.toString().padStart(2, '0')} $currencySymbol"
 }
 
 internal fun formatPct(value: Double): String {

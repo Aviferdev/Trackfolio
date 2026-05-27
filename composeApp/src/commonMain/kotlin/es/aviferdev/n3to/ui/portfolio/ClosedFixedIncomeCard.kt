@@ -38,6 +38,7 @@ import es.aviferdev.n3to.ui.theme.ExpenseRed
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import es.aviferdev.n3to.ui.theme.formatAmount
 import es.aviferdev.n3to.ui.theme.maskAmount
+import es.aviferdev.n3to.ui.theme.LocalCurrencySymbol
 import kotlin.math.abs
 
 import n3to.composeapp.generated.resources.*
@@ -51,6 +52,7 @@ fun ClosedFixedIncomeCard(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val currency = LocalCurrencySymbol.current
     val position = row.position
     val pnlColor = when {
         row.totalProfit > 0 -> MaterialTheme.appColors.pnlPositive
@@ -117,7 +119,7 @@ fun ClosedFixedIncomeCard(
                                 )
                             ), balancesHidden
                         )
-                    } €",
+                    } $currency",
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Bold,
                     color = pnlColor

@@ -18,13 +18,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.Loan
+import es.aviferdev.n3to.ui.theme.LocalCurrencySymbol
 import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.ui.theme.formatAmount
 
 @Composable
 fun LoanSummaryCard(loan: Loan) {
+    val currency = LocalCurrencySymbol.current
     val items = listOf(
-        Triple("Capital inicial", "${formatAmount(loan.totalAmount)} €", ""),
+        Triple("Capital inicial", "${formatAmount(loan.totalAmount)} $currency", ""),
         Triple("Tipo", "${loan.type.emoji} ${loan.type.label}", ""),
         Triple("Amortización", "Francés", ""),
         Triple("Entidad", loan.lenderName ?: "—", ""),

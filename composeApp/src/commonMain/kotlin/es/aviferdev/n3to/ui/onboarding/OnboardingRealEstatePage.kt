@@ -42,6 +42,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 import es.aviferdev.n3to.ui.theme.ExpenseRed
+import es.aviferdev.n3to.ui.theme.LocalCurrencySymbol
 import es.aviferdev.n3to.ui.theme.N3toTheme
 
 import n3to.composeapp.generated.resources.Res
@@ -170,6 +171,7 @@ private fun SectionPill() {
 // ─── Card mockup de vivienda ──────────────────────────────────────────────────
 @Composable
 private fun ViviendaMockCard() {
+    val cs = LocalCurrencySymbol.current
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -242,7 +244,7 @@ private fun ViviendaMockCard() {
                     )
                     Spacer(Modifier.height(3.dp))
                     Text(
-                        text = "285.000 €",
+                        text = "285.000 $cs",
                         fontSize = 16.sp,
                         fontWeight = FontWeight.ExtraBold,
                         letterSpacing = (-0.4).sp,
@@ -259,7 +261,7 @@ private fun ViviendaMockCard() {
                     )
                     Spacer(Modifier.height(3.dp))
                     Text(
-                        text = "−142.300 €",
+                        text = "−142.300 $cs",
                         fontSize = 16.sp,
                         fontWeight = FontWeight.ExtraBold,
                         letterSpacing = (-0.4).sp,
@@ -284,7 +286,7 @@ private fun ViviendaMockCard() {
                     color = MaterialTheme.appColors.textSecondary
                 )
                 Text(
-                    text = "+142.700 €",
+                    text = "+142.700 $cs",
                     fontSize = 18.sp,
                     fontWeight = FontWeight.ExtraBold,
                     letterSpacing = (-0.5).sp,

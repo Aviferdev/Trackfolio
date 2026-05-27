@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.Transaction
 import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.ui.theme.formatAmountEuro
+import es.aviferdev.n3to.ui.theme.LocalCurrencySymbol
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.realestate_expense_default
 import n3to.composeapp.generated.resources.realestate_purchase_expenses
@@ -53,6 +54,7 @@ private fun ExpensesCard(
     title: String,
     expenses: List<Transaction>
 ) {
+    val currency = LocalCurrencySymbol.current
     Card(
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.surface),
@@ -77,7 +79,7 @@ private fun ExpensesCard(
                         fontSize = 12.sp, color = MaterialTheme.appColors.textSecondary
                     )
                     Text(
-                        "-${formatAmountEuro(kotlin.math.abs(tx.amount))}",
+                        "-${formatAmountEuro(kotlin.math.abs(tx.amount), currency)}",
                         fontSize = 12.sp,
                         color = MaterialTheme.appColors.expense,
                         fontWeight = FontWeight.Medium

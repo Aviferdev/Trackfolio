@@ -27,6 +27,7 @@ import es.aviferdev.n3to.ui.theme.SecondaryTeal
 import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.ui.theme.formatAmountEuro
 import es.aviferdev.n3to.ui.theme.formatPercentSigned
+import es.aviferdev.n3to.ui.theme.LocalCurrencySymbol
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.valuable_in_stock
 import n3to.composeapp.generated.resources.valuable_purchase_format
@@ -38,6 +39,7 @@ fun ValuableCard(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val currency = LocalCurrencySymbol.current
     Card(
         modifier = modifier.fillMaxWidth().clickable(onClick = onClick),
         shape = RoundedCornerShape(12.dp),
@@ -71,7 +73,7 @@ fun ValuableCard(
                 Text(
                     text = stringResource(
                         Res.string.valuable_purchase_format,
-                        formatAmountEuro(valuable.purchasePrice)
+                        formatAmountEuro(valuable.purchasePrice, currency)
                     ),
                     fontSize = 11.sp,
                     color = MaterialTheme.appColors.textSecondary
@@ -81,7 +83,7 @@ fun ValuableCard(
             Column(horizontalAlignment = Alignment.End) {
                 if (valuable.isSold) {
                     Text(
-                        text = formatAmountEuro(valuable.salePrice ?: 0.0),
+                        text = formatAmountEuro(valuable.salePrice ?: 0.0, currency),
                         fontWeight = FontWeight.Bold,
                         fontSize = 13.sp,
                         color = MaterialTheme.appColors.income
@@ -94,7 +96,7 @@ fun ValuableCard(
                     }
                 } else {
                     Text(
-                        text = formatAmountEuro(valuable.currentValue),
+                        text = formatAmountEuro(valuable.currentValue, currency),
                         fontWeight = FontWeight.Bold,
                         fontSize = 13.sp,
                         color = MaterialTheme.appColors.textPrimary

@@ -42,6 +42,7 @@ import es.aviferdev.n3to.domain.model.Debt
 import es.aviferdev.n3to.domain.model.DebtDirection
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import es.aviferdev.n3to.ui.theme.appColors
+import es.aviferdev.n3to.ui.theme.LocalCurrencySymbol
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.common_save
 import n3to.composeapp.generated.resources.common_save_changes
@@ -152,6 +153,7 @@ fun AddDebtBottomSheetContent(
     isLoading: Boolean,
     onSave: () -> Unit
 ) {
+    val currency = LocalCurrencySymbol.current
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -240,7 +242,7 @@ fun AddDebtBottomSheetContent(
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
             trailingIcon = {
                 Text(
-                    "€",
+                    currency,
                     fontSize = 16.sp,
                     color = MaterialTheme.appColors.textSecondary,
                     modifier = Modifier.padding(end = 12.dp)

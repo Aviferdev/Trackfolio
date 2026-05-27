@@ -133,7 +133,7 @@
     <string name="home_goals_savings">Savings</string>
     <string name="home_goals_investment">Investment</string>
     <string name="home_goals_projection_above">📈 Projection: %1$s — above target (+%2$s)</string>
-    <string name="home_goals_pace_needed">📊 Current pace: %1$s€/day — Need %2$s€/day to reach target</string>
+    <string name="home_goals_pace_needed">📊 Current pace: %1$s %3$s/day — Need %2$s %3$s/day to reach target</string>
     <string name="home_goals_no_movement">📊 No movement yet this month</string>
 
     <!-- HOME – Banners -->
@@ -370,7 +370,7 @@
     <string name="portfolio_add_tx_gross_placeholder">Enter gross amount</string>
     <string name="portfolio_add_tx_net">Net</string>
     <string name="portfolio_add_tx_fee">Gross</string>
-    <string name="portfolio_add_tx_fee_placeholder">E.g. 0.5%, 1.20 €</string>
+    <string name="portfolio_add_tx_fee_placeholder">E.g. 0.5%, 1.20 %1$s</string>
     <string name="portfolio_add_tx_platform">Platform</string>
     <string name="portfolio_add_tx_notes">Notes</string>
     <string name="portfolio_add_tx_select_asset">Select an asset</string>
@@ -414,8 +414,8 @@
 
     <!-- PORTFOLIO – Subcomponents -->
     <string name="portfolio_category_group_assets">%1$d assets</string>
-    <string name="portfolio_category_invested_format">Invested: %1$s €</string>
-    <string name="portfolio_category_current_format">Current: %1$s €</string>
+    <string name="portfolio_category_invested_format">Invested: %1$s %2$s</string>
+    <string name="portfolio_category_current_format">Current: %1$s %2$s</string>
     <string name="portfolio_category_group_expand">Expand</string>
     <string name="portfolio_category_group_collapse">Collapse</string>
     <string name="portfolio_closed_positions">Closed positions</string>
@@ -656,8 +656,8 @@
     <string name="security_unlock_button">Unlock</string>
     <string name="version_block_message">You need to update N3to to continue using the app.</string>
     <string name="version_block_version_info">Minimum version: %1$s · Your version: %2$s</string>
-    <string name="reconciliation_real_balance">Real balance (€)</string>
-    <string name="reconciliation_diff_format">Difference: %1$s%2$s €</string>
+    <string name="reconciliation_real_balance">Real balance (%1$s)</string>
+    <string name="reconciliation_diff_format">Difference: %1$s%2$s %3$s</string>
     <string name="reconciliation_done">Done</string>
     <string name="reconciliation_adjust_label">Adjust balance</string>
     <string name="fixedincome_delete_event">Delete event</string>
@@ -933,9 +933,9 @@
     <string name="fixedincome_issuer_name_label">Name</string>
     <string name="fixedincome_icon_label">Icon</string>
     <string name="fixedincome_create_issuer">Create</string>
-    <string name="fixedincome_capital_label">Capital (€)</string>
-    <string name="fixedincome_capital_invested_label">Capital invested (€)</string>
-    <string name="fixedincome_nominal_value_label">Face value (€)</string>
+    <string name="fixedincome_capital_label">Capital (%1$s)</string>
+    <string name="fixedincome_capital_invested_label">Capital invested (%1$s)</string>
+    <string name="fixedincome_nominal_value_label">Face value (%1$s)</string>
     <string name="fixedincome_nominal_hint">Face value is the bond\'s par value (basis for interest and amortization calculation)</string>
     <string name="fixedincome_fee_notes_label">Commission notes (optional)</string>
     <string name="fixedincome_select_date_cd">Select date</string>
@@ -950,12 +950,12 @@
     <!-- REAL ESTATE - AddEditProperty -->
     <string name="realestate_name_placeholder">E.g. My house</string>
     <string name="realestate_address_placeholder">E.g. 123 Main St, Madrid</string>
-    <string name="realestate_purchase_price_label">Purchase (€)</string>
-    <string name="realestate_current_value_label">Current value (€)</string>
+    <string name="realestate_purchase_price_label">Purchase (%1$s)</string>
+    <string name="realestate_current_value_label">Current value (%1$s)</string>
     <string name="realestate_acquisition_date_label">Acquisition date</string>
     <string name="realestate_ownership_label">% ownership</string>
     <string name="realestate_rental_status_label">Rental status</string>
-    <string name="realestate_monthly_rent_label">Monthly rent (€)</string>
+    <string name="realestate_monthly_rent_label">Monthly rent (%1$s)</string>
     <string name="realestate_change_mortgage">Change mortgage</string>
     <string name="realestate_link_mortgage">Link mortgage</string>
     <string name="realestate_purchase_expenses_title">Purchase expenses</string>
@@ -1005,9 +1005,9 @@
     <string name="onboarding_realestate_desc">Manage properties, rentals and mortgages</string>
 
     <!-- FIXED INCOME - RegisterCoupon -->
-    <string name="fixedincome_coupon_amount_label">Gross amount (€)</string>
+    <string name="fixedincome_coupon_amount_label">Gross amount (%1$s)</string>
     <string name="fixedincome_irpf_percent_label">Tax withholding (%)</string>
-    <string name="fixedincome_commission_field">Commission (€)</string>
+    <string name="fixedincome_commission_field">Commission (%1$s)</string>
     <string name="fixedincome_register_coupon_btn">Register</string>
 
     <!-- FIXED INCOME - Close -->
@@ -1050,9 +1050,9 @@
     <string name="fixedincome_close_maturity_type">Maturity</string>
     <string name="fixedincome_close_secondary_type">Secondary sale</string>
     <string name="fixedincome_close_early_type">Early cancellation</string>
-    <string name="fixedincome_gross_received_label">Gross amount received (€)</string>
+    <string name="fixedincome_gross_received_label">Gross amount received (%1$s)</string>
     <string name="fixedincome_irpf_label">Withholding (%)</string>
-    <string name="fixedincome_commission_eur_label">Commission (€)</string>
+    <string name="fixedincome_commission_eur_label">Commission (%1$s)</string>
     <string name="fixedincome_net_amount_label">Net amount</string>
     <string name="fixedincome_confirm_close">Confirm settlement</string>
 
@@ -1549,7 +1549,7 @@
     <string name="transaction_social_contribution_default">Social contributions</string>
     <string name="transaction_taxline_social_contribution">Social Contribution</string>
     <string name="transaction_portfolio_badge">Portfolio</string>
-    <string name="transaction_gross_format">Gross: %1$s €</string>
+    <string name="transaction_gross_format">Gross: %1$s %2$s</string>
     <string name="transaction_retention_badge_format"> · %1$d%% withholding</string>
 
     <!-- HOME – additional -->
@@ -1668,7 +1668,7 @@
     <string name="rental_status_new">New status</string>
     <string name="field_acquisition_date">Acquisition date</string>
     <string name="rental_status_label">Rental status</string>
-    <string name="realestate_new_estimated_value">New estimated value (€)</string>
+    <string name="realestate_new_estimated_value">New estimated value (%1$s)</string>
     <string name="fi_collected">Collected</string>
     <string name="income_net_only">Net only</string>
     <string name="label_asset">Asset</string>
@@ -1739,7 +1739,7 @@
     <string name="savings_rates_cancellation_no">Cancellation: No</string>
     <string name="savings_rates_view_all">View all</string>
     <string name="savings_rates_loading">Loading best accounts…</string>
-    <string name="savings_rates_up_to_format">up to €%1$s</string>
+    <string name="savings_rates_up_to_format">up to %2$s%1$s</string>
 
     <!-- REAL ESTATE – Ledger labels -->
     <string name="realestate_income_ledger">Income (ledger)</string>

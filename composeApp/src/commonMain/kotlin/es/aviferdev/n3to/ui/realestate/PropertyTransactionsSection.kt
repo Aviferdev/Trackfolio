@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.Transaction
 import es.aviferdev.n3to.ui.common.SectionHeader
 import es.aviferdev.n3to.ui.theme.*
+import es.aviferdev.n3to.ui.theme.LocalCurrencySymbol
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.realestate_linked_transactions
@@ -26,6 +27,7 @@ fun PropertyTransactionsSection(
     transactions: List<Transaction>,
     modifier: Modifier = Modifier
 ) {
+    val currency = LocalCurrencySymbol.current
     if (transactions.isEmpty()) return
 
     Card(
@@ -57,7 +59,7 @@ fun PropertyTransactionsSection(
                     }
                     Column(horizontalAlignment = androidx.compose.ui.Alignment.End) {
                         Text(
-                            "${if (tx.isIncome) "+" else "-"}${formatAmountEuro(kotlin.math.abs(tx.amount))}",
+                            "${if (tx.isIncome) "+" else "-"}${formatAmountEuro(kotlin.math.abs(tx.amount), currency)}",
                             fontWeight = FontWeight.SemiBold, fontSize = 13.sp,
                             color = if (tx.isIncome) MaterialTheme.appColors.income else MaterialTheme.appColors.expense
                         )

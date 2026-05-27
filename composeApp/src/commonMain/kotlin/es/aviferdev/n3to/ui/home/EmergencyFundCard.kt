@@ -31,6 +31,7 @@ import es.aviferdev.n3to.ui.theme.HIDDEN_AMOUNT_MASK
 import es.aviferdev.n3to.ui.theme.LocalBalanceHidden
 import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.ui.theme.formatAmountEuro
+import es.aviferdev.n3to.ui.theme.LocalCurrencySymbol
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.home_ef_configure_subtitle
 import n3to.composeapp.generated.resources.home_ef_configure_title
@@ -55,6 +56,7 @@ fun EmergencyFundCard(
     onNavigateToSettings: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val currency = LocalCurrencySymbol.current
     if (!status.isConfigured) {
         Card(
             modifier = modifier
@@ -164,7 +166,7 @@ fun EmergencyFundCard(
                         color = MaterialTheme.appColors.textTertiary
                     )
                     Text(
-                        text = if (hidden) HIDDEN_AMOUNT_MASK else formatAmountEuro(status.currentBalance),
+                        text = if (hidden) HIDDEN_AMOUNT_MASK else formatAmountEuro(status.currentBalance, currency),
                         fontSize = 12.sp,
                         fontWeight = FontWeight.SemiBold,
                         color = MaterialTheme.appColors.textPrimary
@@ -177,7 +179,7 @@ fun EmergencyFundCard(
                         color = MaterialTheme.appColors.textTertiary
                     )
                     Text(
-                        text = if (hidden) HIDDEN_AMOUNT_MASK else formatAmountEuro(status.targetAmount),
+                        text = if (hidden) HIDDEN_AMOUNT_MASK else formatAmountEuro(status.targetAmount, currency),
                         fontSize = 12.sp,
                         fontWeight = FontWeight.SemiBold,
                         color = MaterialTheme.appColors.textPrimary
@@ -191,7 +193,7 @@ fun EmergencyFundCard(
                 Text(
                     text = if (hidden) HIDDEN_AMOUNT_MASK else stringResource(
                         Res.string.home_ef_missing_format,
-                        formatAmountEuro(status.missingAmount)
+                        formatAmountEuro(status.missingAmount, currency)
                     ),
                     fontSize = 11.sp,
                     color = MaterialTheme.appColors.expense,
@@ -205,7 +207,7 @@ fun EmergencyFundCard(
                 Text(
                     text = if (hidden) HIDDEN_AMOUNT_MASK else stringResource(
                         Res.string.home_ef_monthly_avg_format,
-                        formatAmountEuro(status.monthlyAverage)
+                        formatAmountEuro(status.monthlyAverage, currency)
                     ),
                     fontSize = 10.sp,
                     color = MaterialTheme.appColors.textTertiary

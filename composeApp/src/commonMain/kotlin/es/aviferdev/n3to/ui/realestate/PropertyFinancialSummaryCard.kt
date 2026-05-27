@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.usecase.realestate.PropertyFinancialSummary
 import es.aviferdev.n3to.ui.common.SectionHeader
 import es.aviferdev.n3to.ui.theme.*
+import es.aviferdev.n3to.ui.theme.LocalCurrencySymbol
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.fixedincome_yield_current
@@ -34,6 +35,7 @@ fun PropertyFinancialSummaryCard(
     summary: PropertyFinancialSummary,
     modifier: Modifier = Modifier
 ) {
+    val currency = LocalCurrencySymbol.current
     Card(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
@@ -58,20 +60,20 @@ fun PropertyFinancialSummaryCard(
                 Spacer(Modifier.height(8.dp))
             }
 
-            DataRowLabel(stringResource(Res.string.realestate_income_ledger), formatAmountEuro(summary.totalIncome))
-            DataRowLabel(stringResource(Res.string.realestate_expenses_ledger), formatAmountEuro(summary.totalExpenses))
+            DataRowLabel(stringResource(Res.string.realestate_income_ledger), formatAmountEuro(summary.totalIncome, currency))
+            DataRowLabel(stringResource(Res.string.realestate_expenses_ledger), formatAmountEuro(summary.totalExpenses, currency))
 
             // Gastos de compra/venta
             if (summary.totalPurchaseExpenses > 0) {
                 DataRowLabel(
                     stringResource(Res.string.realestate_purchase_expenses),
-                    formatAmountEuro(summary.totalPurchaseExpenses)
+                    formatAmountEuro(summary.totalPurchaseExpenses, currency)
                 )
             }
             if (summary.totalSaleExpenses > 0) {
                 DataRowLabel(
                     stringResource(Res.string.realestate_sale_expenses),
-                    formatAmountEuro(summary.totalSaleExpenses)
+                    formatAmountEuro(summary.totalSaleExpenses, currency)
                 )
             }
 
@@ -90,10 +92,10 @@ fun PropertyFinancialSummaryCard(
                     color = MaterialTheme.appColors.textPrimary
                 )
                 Text(
-                    if (summary.netCashflow >= 0) formatAmountEuro(summary.netCashflow) else "-${
+                    if (summary.netCashflow >= 0) formatAmountEuro(summary.netCashflow, currency) else "-${
                         formatAmountEuro(
                             -summary.netCashflow
-                        )
+                        , currency)
                     }",
                     fontWeight = FontWeight.Bold, fontSize = 13.sp,
                     color = if (summary.netCashflow >= 0) MaterialTheme.appColors.income else MaterialTheme.appColors.expense
@@ -117,10 +119,10 @@ fun PropertyFinancialSummaryCard(
                     )
                     Column(horizontalAlignment = androidx.compose.ui.Alignment.End) {
                         Text(
-                            if (summary.totalReturn >= 0) "+${formatAmountEuro(summary.totalReturn)}" else "-${
+                            if (summary.totalReturn >= 0) "+${formatAmountEuro(summary.totalReturn, currency)}" else "-${
                                 formatAmountEuro(
                                     -summary.totalReturn
-                                )
+                                , currency)
                             }",
                             fontWeight = FontWeight.Bold, fontSize = 14.sp,
                             color = if (summary.totalReturn >= 0) MaterialTheme.appColors.income else MaterialTheme.appColors.expense

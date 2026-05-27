@@ -1,6 +1,7 @@
 package es.aviferdev.n3to.ui.fixedincome
 
 import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.LocalCurrencySymbol
 import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.platform.nowMillis
 import androidx.compose.animation.animateColorAsState
@@ -54,6 +55,7 @@ fun FixedIncomeSection(
     balancesHidden: Boolean,
     modifier: Modifier = Modifier
 ) {
+    val currency = LocalCurrencySymbol.current
     Column(modifier = modifier.padding(horizontal = 20.dp, vertical = 8.dp)) {
         Card(
             modifier = Modifier.fillMaxWidth(),
@@ -109,7 +111,7 @@ fun FixedIncomeSection(
                                     formatAmount(summary.totalPrincipal),
                                     balancesHidden
                                 )
-                            } €",
+                            } $currency",
                             fontSize = 14.sp,
                             fontWeight = FontWeight.SemiBold,
                             color = MaterialTheme.appColors.textPrimary
@@ -127,7 +129,7 @@ fun FixedIncomeSection(
                                     formatAmount(summary.totalCurrentValue),
                                     balancesHidden
                                 )
-                            } €",
+                            } $currency",
                             fontSize = 14.sp,
                             fontWeight = FontWeight.SemiBold,
                             color = MaterialTheme.appColors.textPrimary
@@ -154,7 +156,7 @@ fun FixedIncomeSection(
                                     formatAmount(summary.totalCollectedInterest),
                                     balancesHidden
                                 )
-                            } €",
+                            } $currency",
                             fontSize = 14.sp,
                             fontWeight = FontWeight.SemiBold,
                             color = if (summary.totalCollectedInterest >= 0) MaterialTheme.appColors.pnlPositive else MaterialTheme.appColors.textSecondary
@@ -173,7 +175,7 @@ fun FixedIncomeSection(
                                     formatAmount(summary.totalNetProfit),
                                     balancesHidden
                                 )
-                            } € (${formatPercent(summary.totalNetProfitPercent)}%)",
+                            } $currency (${formatPercent(summary.totalNetProfitPercent)}%)",
                             fontSize = 14.sp,
                             fontWeight = FontWeight.SemiBold,
                             color = when {
@@ -211,6 +213,7 @@ fun FixedIncomePositionCard(
     onRegisterCoupon: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
+    val currency = LocalCurrencySymbol.current
     val position = row.position
 
     Card(
@@ -266,7 +269,7 @@ fun FixedIncomePositionCard(
                             formatAmount(position.principal),
                             balancesHidden
                         )
-                    } €",
+                    } $currency",
                     fontSize = 10.sp,
                     color = MaterialTheme.appColors.textTertiary
                 )
@@ -289,7 +292,7 @@ fun FixedIncomePositionCard(
                                     formatAmount(interestToShow),
                                     balancesHidden
                                 )
-                            } €",
+                            } $currency",
                             fontSize = 11.sp,
                             fontWeight = FontWeight.SemiBold,
                             color = MaterialTheme.appColors.pnlPositive

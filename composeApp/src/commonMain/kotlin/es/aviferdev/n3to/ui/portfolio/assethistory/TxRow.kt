@@ -30,6 +30,7 @@ import es.aviferdev.n3to.domain.model.AssetTransaction
 import es.aviferdev.n3to.domain.model.AssetTransactionType
 import es.aviferdev.n3to.domain.model.Platform
 import es.aviferdev.n3to.ui.portfolio.formatShortDate
+import es.aviferdev.n3to.ui.theme.LocalCurrencySymbol
 import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.ui.theme.formatAmount
 import es.aviferdev.n3to.ui.theme.formatQty
@@ -44,6 +45,7 @@ fun TxRow(
     onDelete: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val currency = LocalCurrencySymbol.current
     val isBuy = tx.type == AssetTransactionType.BUY || tx.type == AssetTransactionType.TRANSFER_IN
     val sideColor = if (isBuy) MaterialTheme.appColors.income else MaterialTheme.appColors.expense
     val sideLabel = when (tx.type) {
@@ -92,7 +94,7 @@ fun TxRow(
                                 formatAmount(tx.pricePerUnit),
                                 balancesHidden
                             )
-                        } €", fontSize = 11.sp, color = MaterialTheme.appColors.textPrimary
+                        } $currency", fontSize = 11.sp, color = MaterialTheme.appColors.textPrimary
                     )
                 }
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -136,7 +138,7 @@ fun TxRow(
                             formatAmount(tx.grossAmount),
                             balancesHidden
                         )
-                    } €",
+                    } $currency",
                     fontSize = 12.sp, color = sideColor, fontWeight = FontWeight.Bold
                 )
                 Row {

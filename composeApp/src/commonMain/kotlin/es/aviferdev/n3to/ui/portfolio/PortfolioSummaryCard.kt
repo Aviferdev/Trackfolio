@@ -29,6 +29,7 @@ import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.ui.theme.formatAmount
 import es.aviferdev.n3to.ui.theme.formatPercent
 import es.aviferdev.n3to.ui.theme.maskAmount
+import es.aviferdev.n3to.ui.theme.LocalCurrencySymbol
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.portfolio_summary_invested
 import n3to.composeapp.generated.resources.portfolio_summary_positions_many
@@ -53,6 +54,7 @@ fun PortfolioSummaryCard(
     balancesHidden: Boolean,
     modifier: Modifier = Modifier
 ) {
+    val currency = LocalCurrencySymbol.current
     val heroCardBg1 = MaterialTheme.appColors.heroCardStart
     val heroCardBg2 = MaterialTheme.appColors.heroCardEnd
     val appCCyanGlow = MaterialTheme.appColors.cyanGlow
@@ -103,7 +105,7 @@ fun PortfolioSummaryCard(
             )
             Spacer(Modifier.width(6.dp))
             Text(
-                "€",
+                currency,
                 fontSize = 18.sp,
                 color = Color.White.copy(alpha = 0.75f),
                 fontWeight = FontWeight.Medium,
@@ -120,7 +122,7 @@ fun PortfolioSummaryCard(
         ) {
             PortfolioMetric(
                 label = stringResource(Res.string.portfolio_summary_invested),
-                primary = "${maskAmount(formatAmount(totalInvested), balancesHidden)} €",
+                primary = "${maskAmount(formatAmount(totalInvested), balancesHidden)} $currency",
                 color = Color.White,
                 modifier = Modifier.weight(1f)
             )
@@ -137,7 +139,7 @@ fun PortfolioSummaryCard(
                 primary = if (totalPnL == 0.0) "—"
                 else "${if (totalPnL >= 0) "+" else "−"} ${
                     maskAmount(formatAmount(abs(totalPnL)), balancesHidden)
-                } €",
+                } $currency",
                 secondary = if (totalPnL == 0.0) null
                 else "${if (totalPnLPercent >= 0) "+" else "−"}${formatPercent(abs(totalPnLPercent))}%",
                 color = when {
@@ -202,6 +204,7 @@ fun PortfolioMetric(
 
 @Composable
 fun PnLChip(label: String, amount: Double, masked: Boolean) {
+    val currency = LocalCurrencySymbol.current
     val appCPnlPositive = MaterialTheme.appColors.pnlPositive
     val appCPnlNegative = MaterialTheme.appColors.pnlNegative
     val color = when {
@@ -216,7 +219,7 @@ fun PnLChip(label: String, amount: Double, masked: Boolean) {
             if (amount == 0.0) "—"
             else "${if (amount >= 0) "+" else "−"} ${
                 maskAmount(formatAmount(abs(amount)), masked)
-            } €",
+            } $currency",
             fontSize = 12.sp,
             color = color,
             fontWeight = FontWeight.Medium

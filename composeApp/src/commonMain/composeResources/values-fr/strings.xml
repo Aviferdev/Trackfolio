@@ -133,7 +133,7 @@
     <string name="home_goals_savings">Épargne</string>
     <string name="home_goals_investment">Investissement</string>
     <string name="home_goals_projection_above">📈 Projection : %1$s — au-dessus de l\'objectif (+%2$s)</string>
-    <string name="home_goals_pace_needed">📊 Rythme actuel : %1$s€/jour — Besoin de %2$s€/jour pour atteindre l\'objectif</string>
+    <string name="home_goals_pace_needed">📊 Rythme actuel : %1$s %3$s/jour — Besoin de %2$s %3$s/jour pour atteindre l\'objectif</string>
     <string name="home_goals_no_movement">📊 Aucun mouvement ce mois-ci</string>
 
     <!-- HOME – Banners -->
@@ -352,7 +352,7 @@
     <string name="portfolio_add_tx_gross_placeholder">Saisissez le montant brut</string>
     <string name="portfolio_add_tx_net">Net</string>
     <string name="portfolio_add_tx_fee">Brut</string>
-    <string name="portfolio_add_tx_fee_placeholder">Ex. 0,5%, 1,20 €</string>
+    <string name="portfolio_add_tx_fee_placeholder">Ex. 0,5%, 1,20 %1$s</string>
     <string name="portfolio_add_tx_platform">Plateforme</string>
     <string name="portfolio_add_tx_notes">Notes</string>
     <string name="portfolio_add_tx_select_asset">Sélectionnez un actif</string>
@@ -396,8 +396,8 @@
 
     <!-- PORTFOLIO – Subcomponents -->
     <string name="portfolio_category_group_assets">%1$d actifs</string>
-    <string name="portfolio_category_invested_format">Investi : %1$s €</string>
-    <string name="portfolio_category_current_format">Actuel : %1$s €</string>
+    <string name="portfolio_category_invested_format">Investi : %1$s %2$s</string>
+    <string name="portfolio_category_current_format">Actuel : %1$s %2$s</string>
     <string name="portfolio_category_group_expand">Déplier</string>
     <string name="portfolio_category_group_collapse">Replier</string>
     <string name="portfolio_closed_positions">Positions closes</string>
@@ -624,8 +624,8 @@
     <string name="security_unlock_button">Déverrouiller</string>
     <string name="version_block_message">Vous devez mettre à jour N3to pour continuer à utiliser l\'application.</string>
     <string name="version_block_version_info">Version minimale : %1$s · Votre version : %2$s</string>
-    <string name="reconciliation_real_balance">Solde réel (€)</string>
-    <string name="reconciliation_diff_format">Différence : %1$s%2$s €</string>
+    <string name="reconciliation_real_balance">Solde réel (%1$s)</string>
+    <string name="reconciliation_diff_format">Différence : %1$s%2$s %3$s</string>
     <string name="reconciliation_done">Terminé</string>
     <string name="reconciliation_adjust_label">Ajuster le solde</string>
     <string name="fixedincome_delete_event">Supprimer l\'événement</string>
@@ -1016,8 +1016,8 @@
     <string name="field_acquisition_date">Fecha de adquisición</string>
     <string name="fixedincome_auto_calculated">Calculada automáticamente</string>
     <string name="fixedincome_auto_renew_label">Auto-renovar al vencimiento</string>
-    <string name="fixedincome_capital_invested_label">Capital invertido (€)</string>
-    <string name="fixedincome_capital_label">Capital (€)</string>
+    <string name="fixedincome_capital_invested_label">Capital invertido (%1$s)</string>
+    <string name="fixedincome_capital_label">Capital (%1$s)</string>
     <string name="fixedincome_category_corporate">Deuda corporativa</string>
     <string name="fixedincome_category_deposit">Depósitos</string>
     <string name="fixedincome_category_government">Deuda pública</string>
@@ -1032,10 +1032,10 @@
     <string name="fixedincome_close_secondary_type">Venta en secundario</string>
     <string name="fixedincome_close_title">Liquidar posición</string>
     <string name="fixedincome_close_type_label">Tipo de cierre</string>
-    <string name="fixedincome_commission_eur_label">Comisión (€)</string>
-    <string name="fixedincome_commission_field">Comisión (€)</string>
+    <string name="fixedincome_commission_eur_label">Comisión (%1$s)</string>
+    <string name="fixedincome_commission_field">Comisión (%1$s)</string>
     <string name="fixedincome_confirm_close">Confirmar liquidación</string>
-    <string name="fixedincome_coupon_amount_label">Importe bruto (€)</string>
+    <string name="fixedincome_coupon_amount_label">Importe bruto (%1$s)</string>
     <string name="fixedincome_coupon_register_title">Registrar cupón / interés</string>
     <string name="fixedincome_create_issuer">Crear</string>
     <string name="fixedincome_create_position">Crear posición</string>
@@ -1051,7 +1051,7 @@
     <string name="fixedincome_event_partial_amortization">Amortización parcial</string>
     <string name="fixedincome_event_secondary_sale">Venta en secundario</string>
     <string name="fixedincome_fee_notes_label">Notas de comisiones (opcional)</string>
-    <string name="fixedincome_gross_received_label">Importe bruto recibido (€)</string>
+    <string name="fixedincome_gross_received_label">Importe bruto recibido (%1$s)</string>
     <string name="fixedincome_icon_label">Icono</string>
     <string name="fixedincome_irpf_label">Retención (%)</string>
     <string name="fixedincome_irpf_percent_label">Retención IRPF (%)</string>
@@ -1065,7 +1065,7 @@
     <string name="fixedincome_new_issuer">Nuevo emisor</string>
     <string name="fixedincome_no_issuers_hint">No hay emisores. Crea uno nuevo.</string>
     <string name="fixedincome_nominal_hint">El nominal es el valor facial del bono (base para calcular intereses y amortización)</string>
-    <string name="fixedincome_nominal_value_label">Valor nominal (€)</string>
+    <string name="fixedincome_nominal_value_label">Valor nominal (%1$s)</string>
     <string name="fixedincome_region_title">Región</string>
     <string name="fixedincome_register_coupon_btn">Registrar</string>
     <string name="fixedincome_register_coupon_btn_alt">Registrar cobro</string>
@@ -1391,18 +1391,18 @@
     <string name="realestate_change_rental_date">Fecha del cambio</string>
     <string name="realestate_change_rental_title">Cambiar estado alquiler</string>
     <string name="realestate_confirm_sale">Confirmar venta</string>
-    <string name="realestate_current_value_label">Valor actual (€)</string>
+    <string name="realestate_current_value_label">Valor actual (%1$s)</string>
     <string name="realestate_expense_delete_cd">Eliminar gasto</string>
     <string name="realestate_expenses_ledger">Gastos (ledger)</string>
     <string name="realestate_income_ledger">Ingresos (ledger)</string>
     <string name="realestate_link_mortgage">Vincular hipoteca</string>
     <string name="realestate_linked_transactions">Movimientos vinculados</string>
     <string name="realestate_loan_only_mortgages">Solo hipotecas</string>
-    <string name="realestate_monthly_rent_label">Renta mensual (€)</string>
+    <string name="realestate_monthly_rent_label">Renta mensual (%1$s)</string>
     <string name="realestate_mortgage_amount_format">Hipoteca: %1$s</string>
     <string name="realestate_name_placeholder">Ej: Mi casa</string>
     <string name="realestate_net_proceeds">Efectivo neto</string>
-    <string name="realestate_new_estimated_value">Nuevo valor estimado (€)</string>
+    <string name="realestate_new_estimated_value">Nuevo valor estimado (%1$s)</string>
     <string name="realestate_new_title">Nueva propiedad</string>
     <string name="realestate_new_value">Nuevo valor estimado</string>
     <string name="realestate_no_expenses">No hay gastos de compra. Pulsa "Añadir" para incluir notaría, ITP, tasación, etc.</string>
@@ -1411,7 +1411,7 @@
     <string name="realestate_ownership_label">% de propiedad</string>
     <string name="realestate_profitability_label">Rentabilidad</string>
     <string name="realestate_purchase_expenses_title">Gastos de compra</string>
-    <string name="realestate_purchase_price_label">Compra (€)</string>
+    <string name="realestate_purchase_price_label">Compra (%1$s)</string>
     <string name="realestate_rent_amount">Importe alquiler</string>
     <string name="realestate_rental_history_label">Historial de alquiler</string>
     <string name="realestate_rental_status_label">Estado de alquiler</string>
@@ -1450,7 +1450,7 @@
     <string name="savings_rates_short_term">Corto plazo</string>
     <string name="savings_rates_term">Plazo</string>
     <string name="savings_rates_title">Cuentas remuneradas</string>
-    <string name="savings_rates_up_to_format">hasta €%1$s</string>
+    <string name="savings_rates_up_to_format">hasta %2$s%1$s</string>
     <string name="savings_rates_updated_format">Actualizado: %1$s</string>
     <string name="savings_rates_view_all">Ver todas</string>
     <string name="set_balance_title">Establecer saldo</string>
@@ -1504,7 +1504,7 @@
     <string name="transaction_error_invalid_net">Importe neto inválido</string>
     <string name="transaction_error_no_account">No hay cuenta seleccionada</string>
     <string name="transaction_fallback_label">Movimiento</string>
-    <string name="transaction_gross_format">Bruto: %1$s €</string>
+    <string name="transaction_gross_format">Bruto: %1$s %2$s</string>
     <string name="transaction_income_type_label">Tipo de ingreso</string>
     <string name="transaction_linked_generic">Movimiento vinculado</string>
     <string name="transaction_linked_portfolio">Movimiento del Portfolio</string>

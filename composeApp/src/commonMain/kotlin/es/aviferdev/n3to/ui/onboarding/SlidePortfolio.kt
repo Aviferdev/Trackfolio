@@ -1,6 +1,7 @@
 package es.aviferdev.n3to.ui.onboarding
 
 import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.LocalCurrencySymbol
 import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.EaseInOutCubic
@@ -59,6 +60,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
  */
 @Composable
 fun SlidePortfolio(modifier: Modifier = Modifier) {
+    val cs = LocalCurrencySymbol.current
     val appCCyanAccent = MaterialTheme.appColors.cyanAccent
     val appCCyanSubtle = MaterialTheme.appColors.cyanSubtle
     val appCNavyBorder = MaterialTheme.appColors.navyBorder
@@ -162,7 +164,7 @@ fun SlidePortfolio(modifier: Modifier = Modifier) {
                 Spacer(Modifier.height(10.dp))
 
                 Text(
-                    text = "41.409,90 €",
+                    text = "41.409,90 $cs",
                     fontSize = 26.sp,
                     fontWeight = FontWeight.ExtraBold,
                     color = appCTextPrimary,

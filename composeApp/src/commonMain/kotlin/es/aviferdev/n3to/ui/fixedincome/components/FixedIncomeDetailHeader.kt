@@ -1,6 +1,7 @@
 package es.aviferdev.n3to.ui.fixedincome.components
 
 import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.LocalCurrencySymbol
 import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -48,6 +49,7 @@ internal fun FixedIncomeDetailHeader(
     balancesHidden: Boolean,
     simulation: MaturitySimulation? = null
 ) {
+    val currency = LocalCurrencySymbol.current
     val heroCardBg1 = MaterialTheme.appColors.heroCardStart
     val heroCardBg2 = MaterialTheme.appColors.heroCardEnd
     val appCCyanGlow = MaterialTheme.appColors.cyanGlow
@@ -100,7 +102,7 @@ internal fun FixedIncomeDetailHeader(
                     )
                     Spacer(Modifier.height(4.dp))
                     Text(
-                        "${maskAmount(formatAmount(position.principal), balancesHidden)} €",
+                        "${maskAmount(formatAmount(position.principal), balancesHidden)} $currency",
                         fontSize = 22.sp,
                         fontWeight = FontWeight.Bold,
                         color = appCTextPrimary,
@@ -133,7 +135,7 @@ internal fun FixedIncomeDetailHeader(
                                 position.principal * position.interestRate / 100.0
                             ), balancesHidden
                         )
-                    } €",
+                    } $currency",
                     modifier = Modifier.weight(1f)
                 )
                 DetailCell(

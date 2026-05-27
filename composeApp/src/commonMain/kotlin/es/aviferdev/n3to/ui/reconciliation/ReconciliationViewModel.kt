@@ -2,6 +2,7 @@ package es.aviferdev.n3to.ui.reconciliation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import es.aviferdev.n3to.domain.model.AppCurrency
 import es.aviferdev.n3to.domain.usecase.reconciliation.BalanceAlreadyMatchesException
 import es.aviferdev.n3to.domain.usecase.reconciliation.GetReconciliationReminderIntervalUseCase
 import es.aviferdev.n3to.domain.usecase.reconciliation.ReconcileBalanceUseCase
@@ -73,7 +74,7 @@ class ReconciliationViewModel(
         _uiState.value = _uiState.value.copy(realBalanceInput = filtered)
     }
 
-    fun reconcile() {
+    fun reconcile(currencySymbol: String = AppCurrency.EUR.symbol) {
         val accountId = session.selectedAccountId.value ?: return
         val current = _uiState.value
 
@@ -95,7 +96,8 @@ class ReconciliationViewModel(
             val result = reconcileBalance(
                 accountId = accountId,
                 computedBalance = current.computedBalance,
-                realBalance = realBalance
+                realBalance = realBalance,
+                currencySymbol = currencySymbol
             )
 
             result.fold(
@@ -104,7 +106,7 @@ class ReconciliationViewModel(
                     val sign = if (diff > 0) "+" else ""
                     _uiState.value = _uiState.value.copy(
                         isProcessing = false,
-                        resultMessage = ReconciliationError.Success("Ajuste de ${sign}${formatAmount(diff)}€ registrado"),
+                        resultMessage = ReconciliationError.Success("Ajuste de ${sign}${formatAmount(diff)}$currencySymbol registrado"),
                         isSuccess = true,
                         showBanner = false
                     )

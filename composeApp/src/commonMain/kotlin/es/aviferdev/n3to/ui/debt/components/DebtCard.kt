@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.Debt
 import es.aviferdev.n3to.domain.model.DebtDirection
+import es.aviferdev.n3to.ui.theme.LocalCurrencySymbol
 import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.ui.theme.formatAmount
 import es.aviferdev.n3to.ui.theme.formatDateLocalized
@@ -41,6 +42,7 @@ fun DebtCard(
     onMarkPaid: () -> Unit,
     onEdit: () -> Unit
 ) {
+    val currency = LocalCurrencySymbol.current
     Card(
         modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 6.dp),
         shape = RoundedCornerShape(12.dp),
@@ -71,7 +73,7 @@ fun DebtCard(
             }
             Column(horizontalAlignment = Alignment.End) {
                 Text(
-                    "${maskAmount(formatAmount(debt.amount), hidden)} €",
+                    "${maskAmount(formatAmount(debt.amount), hidden)} $currency",
                     fontSize = 13.sp,
                     fontWeight = FontWeight.Bold,
                     color = if (debt.direction == DebtDirection.THEY_OWE) MaterialTheme.appColors.income else MaterialTheme.appColors.expense

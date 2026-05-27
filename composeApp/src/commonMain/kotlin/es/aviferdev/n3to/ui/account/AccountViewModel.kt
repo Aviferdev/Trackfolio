@@ -131,7 +131,7 @@ class AccountViewModel(
         _uiState.value = _uiState.value.copy(archiveWarning = null, accountToDelete = account, showDeleteConfirm = true)
     }
 
-    fun addAccount(name: String, initialBalance: Double) {
+    fun addAccount(name: String, initialBalance: Double, currency: String = "EUR") {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true)
             val newAccount = Account(
@@ -139,7 +139,8 @@ class AccountViewModel(
                 name = name,
                 initialBalance = 0.0,
                 computedBalance = 0.0,
-                createdAt = nowMillis()
+                createdAt = nowMillis(),
+                currency = currency
             )
             saveAccount(newAccount)
                 .onSuccess {

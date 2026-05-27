@@ -43,6 +43,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.Account
+import es.aviferdev.n3to.domain.model.toCurrencySymbol
 import es.aviferdev.n3to.ui.common.N3toLabel
 import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.ui.theme.formatAmount
@@ -489,7 +490,7 @@ internal fun SettingsAccountCard(
                     color = MaterialTheme.appColors.textPrimary
                 )
                 Text(
-                    "€ · ${formatAmount(account.computedBalance)}",
+                    "${account.currency.toCurrencySymbol()} · ${formatAmount(account.computedBalance)}",
                     fontSize = 11.sp,
                     color = MaterialTheme.appColors.textTertiary
                 )

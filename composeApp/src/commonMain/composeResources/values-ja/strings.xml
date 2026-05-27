@@ -133,7 +133,7 @@
     <string name="home_goals_savings">貯蓄</string>
     <string name="home_goals_investment">投資</string>
     <string name="home_goals_projection_above">📈 予測: %1$s — 目標超過 (+%2$s)</string>
-    <string name="home_goals_pace_needed">📊 現在のペース: %1$s€/日 — 目標達成には%2$s€/日が必要</string>
+    <string name="home_goals_pace_needed">📊 現在のペース: %1$s %3$s/日 — 目標達成には%2$s %3$s/日が必要</string>
     <string name="home_goals_no_movement">📊 今月はまだ動きなし</string>
     <string name="home_locked_no_account_title">アカウントが必要です</string>
     <string name="home_locked_no_account_subtitle">設定からアカウントを作成してこの機能を有効にしてください</string>
@@ -354,7 +354,7 @@
     <string name="portfolio_add_tx_gross_placeholder">総額を入力</string>
     <string name="portfolio_add_tx_net">正味</string>
     <string name="portfolio_add_tx_fee">総額</string>
-    <string name="portfolio_add_tx_fee_placeholder">例: 0.5%、1.20€</string>
+    <string name="portfolio_add_tx_fee_placeholder">例: 0.5%、1.20 %1$s</string>
     <string name="portfolio_add_tx_platform">プラットフォーム</string>
     <string name="portfolio_add_tx_notes">メモ</string>
     <string name="portfolio_add_tx_select_asset">資産を選択</string>
@@ -398,8 +398,8 @@
 
     <!-- PORTFOLIO – Subcomponents -->
     <string name="portfolio_category_group_assets">%1$d資産</string>
-    <string name="portfolio_category_invested_format">投資額: %1$s€</string>
-    <string name="portfolio_category_current_format">現在: %1$s€</string>
+    <string name="portfolio_category_invested_format">投資額: %1$s %2$s</string>
+    <string name="portfolio_category_current_format">現在: %1$s %2$s</string>
     <string name="portfolio_category_group_expand">展開</string>
     <string name="portfolio_category_group_collapse">折りたたむ</string>
     <string name="portfolio_closed_positions">クローズ済みポジション</string>
@@ -626,8 +626,8 @@
     <string name="security_unlock_button">ロック解除</string>
     <string name="version_block_message">アプリを続けて使用するにはN3toを更新する必要があります。</string>
     <string name="version_block_version_info">最低バージョン: %1$s · 現在のバージョン: %2$s</string>
-    <string name="reconciliation_real_balance">実際の残高 (€)</string>
-    <string name="reconciliation_diff_format">差額: %1$s%2$s€</string>
+    <string name="reconciliation_real_balance">実際の残高 (%1$s)</string>
+    <string name="reconciliation_diff_format">差額: %1$s%2$s %3$s</string>
     <string name="reconciliation_done">完了</string>
     <string name="reconciliation_adjust_label">残高を調整</string>
     <string name="fixedincome_delete_event">イベントを削除</string>
@@ -897,9 +897,9 @@
     <string name="fixedincome_issuer_name_label">名前</string>
     <string name="fixedincome_icon_label">アイコン</string>
     <string name="fixedincome_create_issuer">作成</string>
-    <string name="fixedincome_capital_label">元本 (€)</string>
-    <string name="fixedincome_capital_invested_label">投下資本 (€)</string>
-    <string name="fixedincome_nominal_value_label">額面価格 (€)</string>
+    <string name="fixedincome_capital_label">元本 (%1$s)</string>
+    <string name="fixedincome_capital_invested_label">投下資本 (%1$s)</string>
+    <string name="fixedincome_nominal_value_label">額面価格 (%1$s)</string>
     <string name="fixedincome_nominal_hint">額面価格は債券のパー価格です（利息と償還計算の基礎）</string>
     <string name="fixedincome_fee_notes_label">手数料メモ（任意）</string>
     <string name="fixedincome_select_date_cd">日付を選択</string>
@@ -914,12 +914,12 @@
     <!-- REAL ESTATE - AddEditProperty -->
     <string name="realestate_name_placeholder">例: 私の家</string>
     <string name="realestate_address_placeholder">例: 123 Main St, マドリッド</string>
-    <string name="realestate_purchase_price_label">購入価格 (€)</string>
-    <string name="realestate_current_value_label">現在価値 (€)</string>
+    <string name="realestate_purchase_price_label">購入価格 (%1$s)</string>
+    <string name="realestate_current_value_label">現在価値 (%1$s)</string>
     <string name="realestate_acquisition_date_label">取得日</string>
     <string name="realestate_ownership_label">所有%</string>
     <string name="realestate_rental_status_label">賃貸状況</string>
-    <string name="realestate_monthly_rent_label">月額家賃 (€)</string>
+    <string name="realestate_monthly_rent_label">月額家賃 (%1$s)</string>
     <string name="realestate_change_mortgage">住宅ローンを変更</string>
     <string name="realestate_link_mortgage">住宅ローンをリンク</string>
     <string name="realestate_purchase_expenses_title">購入費用</string>
@@ -969,9 +969,9 @@
     <string name="onboarding_realestate_desc">物件、賃貸、住宅ローンを管理</string>
 
     <!-- FIXED INCOME - RegisterCoupon -->
-    <string name="fixedincome_coupon_amount_label">総額 (€)</string>
+    <string name="fixedincome_coupon_amount_label">総額 (%1$s)</string>
     <string name="fixedincome_irpf_percent_label">源泉徴収率(%)</string>
-    <string name="fixedincome_commission_field">手数料 (€)</string>
+    <string name="fixedincome_commission_field">手数料 (%1$s)</string>
     <string name="fixedincome_register_coupon_btn">登録</string>
 
     <!-- FIXED INCOME - Close -->
@@ -1014,9 +1014,9 @@
     <string name="fixedincome_close_maturity_type">満期</string>
     <string name="fixedincome_close_secondary_type">市場売却</string>
     <string name="fixedincome_close_early_type">早期解約</string>
-    <string name="fixedincome_gross_received_label">受取総額 (€)</string>
+    <string name="fixedincome_gross_received_label">受取総額 (%1$s)</string>
     <string name="fixedincome_irpf_label">源泉徴収率(%)</string>
-    <string name="fixedincome_commission_eur_label">手数料 (€)</string>
+    <string name="fixedincome_commission_eur_label">手数料 (%1$s)</string>
     <string name="fixedincome_net_amount_label">正味金額</string>
     <string name="fixedincome_confirm_close">清算を確認</string>
 
@@ -1488,7 +1488,7 @@
     <string name="transaction_social_contribution_default">Social contributions</string>
     <string name="transaction_taxline_social_contribution">Social Contribution</string>
     <string name="transaction_portfolio_badge">Portfolio</string>
-    <string name="transaction_gross_format">Gross: %1$s €</string>
+    <string name="transaction_gross_format">Gross: %1$s %2$s</string>
     <string name="transaction_retention_badge_format"> · %1$d%% withholding</string>
 
     <!-- HOME – additional -->
@@ -1718,7 +1718,7 @@
     <string name="position_total_profit">Beneficio total</string>
     <string name="realestate_expenses_ledger">Gastos (ledger)</string>
     <string name="realestate_income_ledger">Ingresos (ledger)</string>
-    <string name="realestate_new_estimated_value">Nuevo valor estimado (€)</string>
+    <string name="realestate_new_estimated_value">Nuevo valor estimado (%1$s)</string>
     <string name="reconciliation_amount_placeholder">Ej: 1250.00</string>
     <string name="rental_status_change_desc">Selecciona el nuevo estado...</string>
     <string name="rental_status_label">Estado de alquiler</string>
@@ -1734,7 +1734,7 @@
     <string name="savings_rates_short_term">Corto plazo</string>
     <string name="savings_rates_term">Plazo</string>
     <string name="savings_rates_title">Cuentas remuneradas</string>
-    <string name="savings_rates_up_to_format">hasta €%1$s</string>
+    <string name="savings_rates_up_to_format">hasta %2$s%1$s</string>
     <string name="savings_rates_updated_format">Actualizado: %1$s</string>
     <string name="savings_rates_view_all">Ver todas</string>
     <string name="set_balance_title">Establecer saldo</string>

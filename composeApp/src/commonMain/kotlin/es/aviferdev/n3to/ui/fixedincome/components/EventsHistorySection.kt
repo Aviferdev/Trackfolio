@@ -1,6 +1,7 @@
 package es.aviferdev.n3to.ui.fixedincome.components
 
 import androidx.compose.material3.MaterialTheme
+import es.aviferdev.n3to.ui.theme.LocalCurrencySymbol
 import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
@@ -87,6 +88,7 @@ private fun EventItem(
     balancesHidden: Boolean,
     onDelete: () -> Unit
 ) {
+    val currency = LocalCurrencySymbol.current
     Column(modifier = Modifier.fillMaxWidth()) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -108,7 +110,7 @@ private fun EventItem(
             }
             Column(horizontalAlignment = Alignment.End) {
                 Text(
-                    text = "${maskAmount(formatAmount(event.netAmount), balancesHidden)} €",
+                    text = "${maskAmount(formatAmount(event.netAmount), balancesHidden)} $currency",
                     fontSize = 14.sp,
                     fontWeight = FontWeight.SemiBold,
                     color = if (event.netAmount >= 0) MaterialTheme.appColors.pnlPositive else MaterialTheme.appColors.pnlNegative

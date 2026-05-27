@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.Loan
 import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.ui.theme.formatAmountEuro
+import es.aviferdev.n3to.ui.theme.LocalCurrencySymbol
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.realestate_lender_label
 import n3to.composeapp.generated.resources.realestate_loan_label
@@ -38,6 +39,7 @@ fun MortgageSection(
     linkedLoan: Loan?,
     onNavigateToLoan: (String) -> Unit
 ) {
+    val currency = LocalCurrencySymbol.current
     Card(
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.appColors.surface),
@@ -72,11 +74,11 @@ fun MortgageSection(
                 }
                 DataRow(
                     stringResource(Res.string.realestate_pending_capital_label),
-                    formatAmountEuro(linkedLoan.outstandingPrincipal)
+                    formatAmountEuro(linkedLoan.outstandingPrincipal, currency)
                 )
                 DataRow(
                     stringResource(Res.string.realestate_monthly_payment_label),
-                    formatAmountEuro(linkedLoan.monthlyPayment)
+                    formatAmountEuro(linkedLoan.monthlyPayment, currency)
                 )
             } else {
                 Text(

@@ -29,6 +29,7 @@ import es.aviferdev.n3to.ui.theme.N3toTheme
 import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.ui.theme.formatAmount
 import es.aviferdev.n3to.ui.theme.maskAmount
+import es.aviferdev.n3to.ui.theme.LocalCurrencySymbol
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.portfolio_closed_badge
 import n3to.composeapp.generated.resources.portfolio_summary_realized
@@ -43,6 +44,7 @@ fun ClosedAssetCard(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val currency = LocalCurrencySymbol.current
     val asset = row.asset
     val pos = row.position
     val pnlColor = when {
@@ -109,7 +111,7 @@ fun ClosedAssetCard(
                                 )
                             ), balancesHidden
                         )
-                    } €",
+                    } $currency",
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Bold,
                     color = pnlColor

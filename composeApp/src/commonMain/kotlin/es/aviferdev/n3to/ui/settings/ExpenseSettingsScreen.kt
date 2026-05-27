@@ -42,6 +42,7 @@ import es.aviferdev.n3to.ui.common.topbar.TopBarWithActionsApp
 import es.aviferdev.n3to.ui.settings.components.SettingsGroupCard
 import es.aviferdev.n3to.ui.theme.N3toTheme
 import es.aviferdev.n3to.ui.theme.appColors
+import es.aviferdev.n3to.ui.theme.LocalCurrencySymbol
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.annual_tab_expenses
 import n3to.composeapp.generated.resources.common_accept
@@ -198,6 +199,7 @@ fun ExpenseSettingsContent(
     onBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val currency = LocalCurrencySymbol.current
     Column(
         modifier = modifier.fillMaxSize().background(MaterialTheme.appColors.navyDeep)
     ) {
@@ -255,7 +257,7 @@ fun ExpenseSettingsContent(
                                     modifier = Modifier.size(28.dp)
                                 ) {
                                     Text(
-                                        text = "€",
+                                        text = currency,
                                         fontSize = 14.sp,
                                         fontWeight = FontWeight.Bold,
                                         color = MaterialTheme.appColors.cyanAccent

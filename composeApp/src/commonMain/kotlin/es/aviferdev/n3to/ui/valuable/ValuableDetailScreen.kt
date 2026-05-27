@@ -51,6 +51,7 @@ import es.aviferdev.n3to.ui.common.SectionHeader
 import es.aviferdev.n3to.ui.common.dialog.DeleteConfirmDialog
 import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.ui.theme.formatAmountEuro
+import es.aviferdev.n3to.ui.theme.LocalCurrencySymbol
 import es.aviferdev.n3to.ui.valuable.components.DetailRow
 import es.aviferdev.n3to.ui.valuable.components.MetricItem
 import es.aviferdev.n3to.ui.valuable.components.ValuableHeaderCard
@@ -67,6 +68,7 @@ fun ValuableDetailScreen(
     onNavigateBack: () -> Unit,
     viewModel: ValuableDetailViewModel = koinViewModel()
 ) {
+    val currency = LocalCurrencySymbol.current
     val uiState by viewModel.uiState.collectAsState()
     val summary = uiState.summary
 
@@ -141,7 +143,7 @@ fun ValuableDetailScreen(
                                     color = MaterialTheme.appColors.textPrimary
                                 )
                                 Text(
-                                    formatAmountEuro(loan.outstandingPrincipal),
+                                    formatAmountEuro(loan.outstandingPrincipal, currency),
                                     fontSize = 13.sp,
                                     color = MaterialTheme.appColors.textSecondary
                                 )
@@ -288,13 +290,13 @@ fun ValuableDetailScreen(
                             DetailRow("Descripción", valuable.description)
                         }
                         DetailRow(stringResource(Res.string.valuable_purchase_date_short), formatDate(valuable.purchaseDate))
-                        DetailRow(stringResource(Res.string.valuable_purchase_price_short), formatAmountEuro(valuable.purchasePrice))
+                        DetailRow(stringResource(Res.string.valuable_purchase_price_short), formatAmountEuro(valuable.purchasePrice, currency))
                         if (!valuable.isSold) {
-                            DetailRow(stringResource(Res.string.valuable_current_value), formatAmountEuro(valuable.currentValue))
+                            DetailRow(stringResource(Res.string.valuable_current_value), formatAmountEuro(valuable.currentValue, currency))
                         }
                         if (valuable.isSold) {
                             DetailRow(stringResource(Res.string.valuable_sale_date_short), formatDate(valuable.saleDate ?: 0L))
-                            DetailRow(stringResource(Res.string.valuable_sale_price_short), formatAmountEuro(valuable.salePrice ?: 0.0))
+                            DetailRow(stringResource(Res.string.valuable_sale_price_short), formatAmountEuro(valuable.salePrice ?: 0.0, currency))
                         }
                         if (valuable.linkedLoanId != null) {
                             DetailRow(
@@ -359,24 +361,24 @@ fun ValuableDetailScreen(
                             if (summary.purchaseExpenses > 0) {
                                 DetailRow(
                                     stringResource(Res.string.valuable_purchase_expenses_short),
-                                    formatAmountEuro(summary.purchaseExpenses)
+                                    formatAmountEuro(summary.purchaseExpenses, currency)
                                 )
                             }
                             if (summary.holdingExpenses > 0) {
                                 DetailRow(
                                     stringResource(Res.string.valuable_holding_expenses_short),
-                                    formatAmountEuro(summary.holdingExpenses)
+                                    formatAmountEuro(summary.holdingExpenses, currency)
                                 )
                             }
                             if (summary.saleExpenses > 0) {
-                                DetailRow(stringResource(Res.string.valuable_sale_expenses_short), formatAmountEuro(summary.saleExpenses))
+                                DetailRow(stringResource(Res.string.valuable_sale_expenses_short), formatAmountEuro(summary.saleExpenses, currency))
                             }
                             HorizontalDivider(
                                 color = MaterialTheme.appColors.border,
                                 thickness = 0.5.dp,
                                 modifier = Modifier.padding(vertical = 8.dp)
                             )
-                            DetailRow(stringResource(Res.string.valuable_total_expenses), formatAmountEuro(summary.totalExpenses))
+                            DetailRow(stringResource(Res.string.valuable_total_expenses), formatAmountEuro(summary.totalExpenses, currency))
                         }
                     }
                 }

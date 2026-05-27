@@ -25,6 +25,7 @@ import es.aviferdev.n3to.domain.model.FiscalReportData
 import es.aviferdev.n3to.domain.model.MonthlyTotals
 import es.aviferdev.n3to.ui.common.toMaterialIcon
 import es.aviferdev.n3to.ui.theme.HIDDEN_AMOUNT_MASK
+import es.aviferdev.n3to.ui.theme.LocalCurrencySymbol
 import es.aviferdev.n3to.ui.theme.LocalFiscalAmountsHidden
 import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.ui.theme.formatQty
@@ -226,6 +227,7 @@ internal fun IncomeTaxBreakdownCard(report: FiscalReportData) {
 @Composable
 private fun TaxBreakdownRow(item: FiscalIncomeTaxBreakdown) {
     val hidden = LocalFiscalAmountsHidden.current
+    val currency = LocalCurrencySymbol.current
     Row(
         Modifier.fillMaxWidth().padding(vertical = 6.dp),
         verticalAlignment = Alignment.CenterVertically
@@ -262,7 +264,7 @@ private fun TaxBreakdownRow(item: FiscalIncomeTaxBreakdown) {
             if (hidden) {
                 HIDDEN_AMOUNT_MASK
             } else {
-                formatAmt(item.grossTotal)
+                formatAmt(item.grossTotal, currency)
             },
             fontSize = 11.sp,
             color = MaterialTheme.appColors.textPrimary,
@@ -273,7 +275,7 @@ private fun TaxBreakdownRow(item: FiscalIncomeTaxBreakdown) {
             if (hidden) {
                 HIDDEN_AMOUNT_MASK
             } else {
-                formatAmt(item.irpfTotal)
+                formatAmt(item.irpfTotal, currency)
             },
             fontSize = 11.sp,
             color = MaterialTheme.appColors.expense,
@@ -285,7 +287,7 @@ private fun TaxBreakdownRow(item: FiscalIncomeTaxBreakdown) {
             if (hidden) {
                 HIDDEN_AMOUNT_MASK
             } else {
-                formatAmt(item.netTotal)
+                formatAmt(item.netTotal, currency)
             },
             fontSize = 11.sp,
             color = MaterialTheme.appColors.income,
@@ -364,6 +366,7 @@ internal fun MonthlyBreakdownCard(report: FiscalReportData) {
 private fun MonthlyRow(month: Int, data: MonthlyTotals) {
     val balance = data.balance
     val hidden = LocalFiscalAmountsHidden.current
+    val currency = LocalCurrencySymbol.current
     Row(
         Modifier.fillMaxWidth().padding(vertical = 6.dp),
         verticalAlignment = Alignment.CenterVertically
@@ -378,7 +381,7 @@ private fun MonthlyRow(month: Int, data: MonthlyTotals) {
             if (hidden) {
                 HIDDEN_AMOUNT_MASK
             } else {
-                formatAmt(data.totalIncome)
+                formatAmt(data.totalIncome, currency)
             },
             fontSize = 11.sp,
             color = MaterialTheme.appColors.income,
@@ -389,7 +392,7 @@ private fun MonthlyRow(month: Int, data: MonthlyTotals) {
             if (hidden) {
                 HIDDEN_AMOUNT_MASK
             } else {
-                formatAmt(data.totalExpense)
+                formatAmt(data.totalExpense, currency)
             },
             fontSize = 11.sp,
             color = MaterialTheme.appColors.expense,
@@ -400,7 +403,7 @@ private fun MonthlyRow(month: Int, data: MonthlyTotals) {
             if (hidden) {
                 HIDDEN_AMOUNT_MASK
             } else {
-                "${if (balance >= 0) "+" else ""}${formatAmt(balance)}"
+                "${if (balance >= 0) "+" else ""}${formatAmt(balance, currency)}"
             },
             fontSize = 11.sp,
             color = if (balance >= 0) MaterialTheme.appColors.income else MaterialTheme.appColors.expense,
@@ -414,6 +417,7 @@ private fun MonthlyRow(month: Int, data: MonthlyTotals) {
 @Composable
 internal fun DebtsCard(report: FiscalReportData) {
     val hidden = LocalFiscalAmountsHidden.current
+    val currency = LocalCurrencySymbol.current
     ReportCard(stringResource(Res.string.fiscal_debts_title)) {
         report.activeDebts.forEachIndexed { i, debt ->
             if (i > 0) HorizontalDivider(
@@ -451,7 +455,7 @@ internal fun DebtsCard(report: FiscalReportData) {
                     if (hidden) {
                         HIDDEN_AMOUNT_MASK
                     } else {
-                        formatAmt(debt.amount)
+                        formatAmt(debt.amount, currency)
                     },
                     fontSize = 13.sp,
                     color = color,
@@ -465,6 +469,7 @@ internal fun DebtsCard(report: FiscalReportData) {
 @Composable
 internal fun PortfolioCard(report: FiscalReportData) {
     val hidden = LocalFiscalAmountsHidden.current
+    val currency = LocalCurrencySymbol.current
     val positions =
         report.assetPositions.filter { it.netQuantity > 0 || it.totalBought > 0 || it.totalSold > 0 }
     val totalInvested = positions.sumOf { it.totalCost }
@@ -562,7 +567,7 @@ internal fun PortfolioCard(report: FiscalReportData) {
                     if (hidden) {
                         HIDDEN_AMOUNT_MASK
                     } else {
-                        formatAmt(pos.avgCostBasis)
+                        formatAmt(pos.avgCostBasis, currency)
                     },
                     fontSize = 11.sp,
                     color = MaterialTheme.appColors.textSecondary,
@@ -573,7 +578,7 @@ internal fun PortfolioCard(report: FiscalReportData) {
                     if (hidden) {
                         HIDDEN_AMOUNT_MASK
                     } else {
-                        formatAmt(totalPnl)
+                        formatAmt(totalPnl, currency)
                     },
                     fontSize = 11.sp,
                     color = if (totalPnl >= 0) MaterialTheme.appColors.income else MaterialTheme.appColors.expense,
@@ -645,7 +650,7 @@ internal fun PortfolioCard(report: FiscalReportData) {
                         if (hidden) {
                             HIDDEN_AMOUNT_MASK
                         } else {
-                            formatAmt(pos.totalBought)
+                            formatAmt(pos.totalBought, currency)
                         },
                         fontSize = 11.sp,
                         color = MaterialTheme.appColors.income,
@@ -656,7 +661,7 @@ internal fun PortfolioCard(report: FiscalReportData) {
                         if (hidden) {
                             HIDDEN_AMOUNT_MASK
                         } else {
-                            formatAmt(pos.totalSold)
+                            formatAmt(pos.totalSold, currency)
                         },
                         fontSize = 11.sp,
                         color = MaterialTheme.appColors.expense,
@@ -667,7 +672,7 @@ internal fun PortfolioCard(report: FiscalReportData) {
                         if (hidden) {
                             HIDDEN_AMOUNT_MASK
                         } else {
-                            formatAmt(pos.realizedPnl)
+                            formatAmt(pos.realizedPnl, currency)
                         },
                         fontSize = 11.sp,
                         color = if (pos.realizedPnl >= 0) MaterialTheme.appColors.income else MaterialTheme.appColors.expense,
