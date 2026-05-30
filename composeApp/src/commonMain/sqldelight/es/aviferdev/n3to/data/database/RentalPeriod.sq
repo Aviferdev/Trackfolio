@@ -5,7 +5,7 @@ CREATE TABLE RentalPeriodEntity (
     endDate     INTEGER,
     monthlyRent REAL    NOT NULL,
     notes       TEXT,
-    FOREIGN KEY (propertyId) REFERENCES RealEstatePropertyEntity(id)
+    FOREIGN KEY (propertyId) REFERENCES RealEstatePropertyEntity(id) ON DELETE CASCADE
 );
 
 CREATE INDEX idx_rental_period_property ON RentalPeriodEntity(propertyId);

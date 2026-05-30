@@ -27,7 +27,7 @@ CREATE TABLE TransactionEntity (
     -- ── Vínculo con bienes (Valuable) ──────────────────────────────────────────
     linkedValuableId          TEXT,
     FOREIGN KEY (accountId) REFERENCES AccountEntity(id) ON DELETE CASCADE,
-    FOREIGN KEY (categoryId) REFERENCES CategoryEntity(id),
+    FOREIGN KEY (categoryId) REFERENCES CategoryEntity(id) ON DELETE SET NULL,
     FOREIGN KEY (linkedLoanId) REFERENCES LoanEntity(id) ON DELETE SET NULL,
     FOREIGN KEY (linkedPropertyId) REFERENCES RealEstatePropertyEntity(id) ON DELETE SET NULL,
     FOREIGN KEY (linkedValuableId) REFERENCES ValuableEntity(id) ON DELETE SET NULL
