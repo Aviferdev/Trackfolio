@@ -49,7 +49,6 @@ class AccountLocalDataSourceImpl(
                 name = account.name,
                 balance = account.initialBalance,
                 createdAt = account.createdAt,
-                accountType = "GENERAL",  // columna legacy, siempre GENERAL
                 currency = account.currency
             )
         }
