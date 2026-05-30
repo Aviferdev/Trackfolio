@@ -39,6 +39,7 @@ CREATE INDEX idx_transaction_type    ON TransactionEntity(type);
 CREATE INDEX idx_transaction_category     ON TransactionEntity(categoryId);
 CREATE INDEX idx_transaction_linked_property ON TransactionEntity(linkedPropertyId);
 CREATE INDEX idx_transaction_linked_valuable ON TransactionEntity(linkedValuableId);
+CREATE INDEX idx_transaction_linked_asset_tx ON TransactionEntity(linkedAssetTransactionId);
 
 -- ─── Queries básicas ──────────────────────────────────────────────────────────
 

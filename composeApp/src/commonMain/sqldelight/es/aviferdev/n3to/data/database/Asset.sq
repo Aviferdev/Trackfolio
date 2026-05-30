@@ -33,6 +33,7 @@ CREATE TABLE AssetEntity (
 CREATE INDEX idx_asset_account  ON AssetEntity(accountId);
 CREATE INDEX idx_asset_category ON AssetEntity(assetCategoryId);
 CREATE INDEX idx_asset_archived ON AssetEntity(archived);
+CREATE INDEX idx_asset_portfolio ON AssetEntity(portfolioId);
 
 -- ─── Lectura ──────────────────────────────────────────────────────────────────
 

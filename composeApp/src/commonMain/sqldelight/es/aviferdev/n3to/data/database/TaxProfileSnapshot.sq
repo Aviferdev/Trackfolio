@@ -5,6 +5,8 @@ CREATE TABLE TaxProfileSnapshotEntity (
     effectiveFrom TEXT NOT NULL  -- ISO date "YYYY-MM-DD"
 );
 
+CREATE INDEX idx_snapshot_effective_from ON TaxProfileSnapshotEntity(effectiveFrom);
+
 -- ─── Queries ──────────────────────────────────────────────────────────────────
 
 selectAll:

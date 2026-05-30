@@ -37,6 +37,7 @@ CREATE INDEX idx_fi_account  ON FixedIncomePositionEntity(accountId);
 CREATE INDEX idx_fi_archived ON FixedIncomePositionEntity(archived);
 CREATE INDEX idx_fi_maturity ON FixedIncomePositionEntity(maturityDate);
 CREATE INDEX idx_fi_category ON FixedIncomePositionEntity(assetCategoryId);
+CREATE INDEX idx_fi_portfolio ON FixedIncomePositionEntity(portfolioId);
 
 -- ─── Lectura ──────────────────────────────────────────────────────────────────
 

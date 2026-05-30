@@ -2,7 +2,7 @@ CREATE TABLE CategoryBudgetEntity (
     categoryId  TEXT    NOT NULL PRIMARY KEY,
     annualLimit REAL    NOT NULL DEFAULT 0,
     limitType   TEXT    NOT NULL DEFAULT 'FIXED',
-    FOREIGN KEY (categoryId) REFERENCES CategoryEntity(id)
+    FOREIGN KEY (categoryId) REFERENCES CategoryEntity(id) ON DELETE CASCADE
 );
 
 selectByCategoryId:
