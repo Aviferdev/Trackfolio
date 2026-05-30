@@ -5,5 +5,6 @@ data class Category(
     val accountId: String,
     val name: String,
     val type: TransactionType,
-    val isDefault: Boolean
+    val isDefault: Boolean,
+    val archived: Boolean = false
 )
