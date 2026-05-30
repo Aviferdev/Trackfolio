@@ -20,16 +20,5 @@ insert:
 INSERT OR IGNORE INTO AssetRegionEntity(id, name, createdAt)
 VALUES (?, ?, ?);
 
-insertAll:
-INSERT OR IGNORE INTO AssetRegionEntity(id, name, createdAt)
-VALUES 
-    (?, ?, ?),
-    (?, ?, ?),
-    (?, ?, ?),
-    (?, ?, ?),
-    (?, ?, ?),
-    (?, ?, ?),
-    (?, ?, ?);
-
 delete:
 DELETE FROM AssetRegionEntity WHERE id = :id;

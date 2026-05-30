@@ -22,19 +22,5 @@ insert:
 INSERT OR IGNORE INTO AssetSectorEntity(id, name, icon, createdAt)
 VALUES (?, ?, ?, ?);
 
-insertAll:
-INSERT OR IGNORE INTO AssetSectorEntity(id, name, icon, createdAt)
-VALUES 
-    (?, ?, ?, ?),
-    (?, ?, ?, ?),
-    (?, ?, ?, ?),
-    (?, ?, ?, ?),
-    (?, ?, ?, ?),
-    (?, ?, ?, ?),
-    (?, ?, ?, ?),
-    (?, ?, ?, ?),
-    (?, ?, ?, ?),
-    (?, ?, ?, ?);
-
 delete:
 DELETE FROM AssetSectorEntity WHERE id = :id;
