@@ -15,7 +15,7 @@ CREATE TABLE FixedIncomePositionEntity (
     quantity            REAL    NOT NULL DEFAULT 1.0,
     nominalPerUnit      REAL    NOT NULL,
     interestRate        REAL    NOT NULL,
-    interestFrequency   TEXT    NOT NULL DEFAULT 'AT_MATURITY',
+    interestFrequency   TEXT    NOT NULL DEFAULT 'AT_MATURITY' CHECK(interestFrequency IN ('AT_MATURITY', 'MONTHLY', 'QUARTERLY', 'SEMIANNUAL', 'ANNUAL')),
     startDate           INTEGER NOT NULL,
     maturityDate        INTEGER NOT NULL,
     platformId          TEXT    NOT NULL,

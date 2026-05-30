@@ -2,7 +2,7 @@ CREATE TABLE TransactionEntity (
     id                         TEXT    NOT NULL PRIMARY KEY,
     accountId                  TEXT    NOT NULL,
     amount                     REAL    NOT NULL,
-    type                       TEXT    NOT NULL,
+    type                       TEXT    NOT NULL CHECK(type IN ('INCOME', 'EXPENSE', 'ADJUSTMENT')),
     categoryId                 TEXT,
     date                       INTEGER NOT NULL,
     notes                      TEXT,

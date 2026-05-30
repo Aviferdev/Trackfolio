@@ -3,7 +3,7 @@ CREATE TABLE DebtEntity (
     accountId  TEXT    NOT NULL,
     personName TEXT    NOT NULL,
     amount     REAL    NOT NULL,
-    direction  TEXT    NOT NULL,
+    direction  TEXT    NOT NULL CHECK(direction IN ('I_OWE', 'THEY_OWE')),
     date       INTEGER NOT NULL,
     isPaid     INTEGER NOT NULL DEFAULT 0,
     notes      TEXT,

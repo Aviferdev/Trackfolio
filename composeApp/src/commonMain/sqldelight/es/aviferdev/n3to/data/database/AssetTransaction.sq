@@ -2,14 +2,12 @@
 -- propia y la plataforma donde se ejecutó. El P&L del activo se deriva en
 -- el dominio agregando todos sus movimientos en orden cronológico (FIFO).
 --
--- type: "BUY" | "SELL". Se valida en el dominio (no CHECK SQL para evitar
---       depender del dialecto).
 -- feeNote: texto libre informativo, NO entra en cálculos.
 
 CREATE TABLE AssetTransactionEntity (
     id            TEXT    NOT NULL PRIMARY KEY,
     assetId       TEXT    NOT NULL,
-    type          TEXT    NOT NULL,
+    type          TEXT    NOT NULL CHECK(type IN ('BUY', 'SELL')),
     quantity      REAL    NOT NULL,
     pricePerUnit  REAL    NOT NULL,
     date          INTEGER NOT NULL,
