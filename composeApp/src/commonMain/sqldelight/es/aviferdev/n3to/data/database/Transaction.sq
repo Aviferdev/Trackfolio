@@ -28,12 +28,16 @@ CREATE TABLE TransactionEntity (
     linkedValuableId          TEXT,
     FOREIGN KEY (accountId) REFERENCES AccountEntity(id) ON DELETE CASCADE,
     FOREIGN KEY (categoryId) REFERENCES CategoryEntity(id),
-    FOREIGN KEY (linkedLoanId) REFERENCES LoanEntity(id) ON DELETE SET NULL
+    FOREIGN KEY (linkedLoanId) REFERENCES LoanEntity(id) ON DELETE SET NULL,
+    FOREIGN KEY (linkedPropertyId) REFERENCES RealEstatePropertyEntity(id) ON DELETE SET NULL,
+    FOREIGN KEY (linkedValuableId) REFERENCES ValuableEntity(id) ON DELETE SET NULL
 );
 
 CREATE INDEX idx_transaction_account ON TransactionEntity(accountId);
 CREATE INDEX idx_transaction_date    ON TransactionEntity(date);
 CREATE INDEX idx_transaction_type    ON TransactionEntity(type);
+CREATE INDEX idx_transaction_linked_property ON TransactionEntity(linkedPropertyId);
+CREATE INDEX idx_transaction_linked_valuable ON TransactionEntity(linkedValuableId);
 
 -- ─── Queries básicas ──────────────────────────────────────────────────────────
 
