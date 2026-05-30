@@ -15,8 +15,8 @@ CREATE TABLE RealEstatePropertyEntity (
     archived                    INTEGER NOT NULL DEFAULT 0,
     saleDate                    INTEGER,
     saleValue                   REAL,
-    FOREIGN KEY (accountId) REFERENCES AccountEntity(id),
-    FOREIGN KEY (linkedLoanId) REFERENCES LoanEntity(id)
+    FOREIGN KEY (accountId) REFERENCES AccountEntity(id) ON DELETE CASCADE,
+    FOREIGN KEY (linkedLoanId) REFERENCES LoanEntity(id) ON DELETE SET NULL
 );
 
 CREATE INDEX idx_real_estate_account ON RealEstatePropertyEntity(accountId);

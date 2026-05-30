@@ -11,8 +11,8 @@ CREATE TABLE ValuableEntity (
     linkedLoanId     TEXT,
     notes            TEXT,
     createdAt        INTEGER NOT NULL,
-    FOREIGN KEY (accountId) REFERENCES AccountEntity(id),
-    FOREIGN KEY (linkedLoanId) REFERENCES LoanEntity(id)
+    FOREIGN KEY (accountId) REFERENCES AccountEntity(id) ON DELETE CASCADE,
+    FOREIGN KEY (linkedLoanId) REFERENCES LoanEntity(id) ON DELETE SET NULL
 );
 
 CREATE INDEX idx_valuable_account ON ValuableEntity(accountId);
