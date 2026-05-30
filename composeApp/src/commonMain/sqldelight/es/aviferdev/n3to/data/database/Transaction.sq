@@ -33,6 +33,7 @@ CREATE TABLE TransactionEntity (
 
 CREATE INDEX idx_transaction_account ON TransactionEntity(accountId);
 CREATE INDEX idx_transaction_date    ON TransactionEntity(date);
+CREATE INDEX idx_transaction_type    ON TransactionEntity(type);
 
 -- ─── Queries básicas ──────────────────────────────────────────────────────────
 
