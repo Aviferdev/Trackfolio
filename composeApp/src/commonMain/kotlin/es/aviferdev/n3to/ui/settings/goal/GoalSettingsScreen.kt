@@ -97,14 +97,12 @@ fun GoalSettingsScreen(
     viewModel: GoalSettingsViewModel = koinViewModel()
 ) {
     val state by viewModel.uiState.collectAsState()
-    var selectedMonthKey by remember { mutableStateOf<String?>(null) }
+    var selectedMonthKey by remember { mutableStateOf<Int?>(null) }
     val todayYear = remember { nowYear() }
     val todayMonth = remember { nowMonth() }
 
-    fun isPast(monthKey: String): Boolean {
-        val y = state.year.toIntOrNull() ?: return false
-        val m = monthKey.toIntOrNull() ?: return false
-        return y < todayYear || (y == todayYear && m < todayMonth)
+    fun isPast(monthKey: Int): Boolean {
+        return state.year < todayYear || (state.year == todayYear && monthKey < todayMonth)
     }
 
     var contentVisible by remember { mutableStateOf(false) }
@@ -133,7 +131,7 @@ fun GoalSettingsScreen(
         )
 
         TimeStepperHeader(
-            currentValue = state.year,
+            currentValue = state.year.toString(),
             canGoBack = state.canGoPrevious,
             onPrevious = { viewModel.previousYear() },
             onNext = {},

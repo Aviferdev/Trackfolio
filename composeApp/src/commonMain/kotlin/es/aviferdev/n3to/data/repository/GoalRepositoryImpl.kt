@@ -11,26 +11,26 @@ class GoalRepositoryImpl(
     private val dataSource: GoalLocalDataSource
 ) : GoalRepository {
 
-    override fun getMonthlyGoals(accountId: String, year: String): Flow<List<MonthlyGoal>> =
+    override fun getMonthlyGoals(accountId: String, year: Int): Flow<List<MonthlyGoal>> =
         dataSource.getByAccountYear(accountId, year)
 
     override fun getMonthlyGoal(
         accountId: String,
-        year: String,
-        month: String
+        year: Int,
+        month: Int
     ): Flow<MonthlyGoal?> =
         dataSource.getByAccountYearMonth(accountId, year, month)
 
-    override fun getBaseGoal(accountId: String, year: String): Flow<MonthlyGoal?> =
+    override fun getBaseGoal(accountId: String, year: Int): Flow<MonthlyGoal?> =
         dataSource.getBaseGoal(accountId, year)
 
-    override fun getOverrides(accountId: String, year: String): Flow<List<MonthlyGoal>> =
+    override fun getOverrides(accountId: String, year: Int): Flow<List<MonthlyGoal>> =
         dataSource.getOverrides(accountId, year)
 
     override fun getEffectiveMonthlyGoal(
         accountId: String,
-        year: String,
-        month: String
+        year: Int,
+        month: Int
     ): Flow<MonthlyGoal?> = flow {
         // Primero buscar override específico
         val override = dataSource.getByAccountYearMonth(accountId, year, month).first()
@@ -53,7 +53,7 @@ class GoalRepositoryImpl(
 
     override suspend fun saveBaseAndOverrides(
         accountId: String,
-        year: String,
+        year: Int,
         baseGoal: MonthlyGoal?,
         overrides: List<MonthlyGoal>
     ) {
@@ -69,6 +69,6 @@ class GoalRepositoryImpl(
         overrides.forEach { dataSource.upsert(it) }
     }
 
-    override suspend fun deleteMonthlyGoal(accountId: String, year: String, month: String) =
+    override suspend fun deleteMonthlyGoal(accountId: String, year: Int, month: Int) =
         dataSource.delete(accountId, year, month)
 }

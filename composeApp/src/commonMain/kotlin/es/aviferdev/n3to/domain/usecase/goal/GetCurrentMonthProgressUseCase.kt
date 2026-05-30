@@ -4,7 +4,8 @@ import es.aviferdev.n3to.domain.model.MonthlyGoalProgress
 import es.aviferdev.n3to.domain.repository.AssetTransactionRepository
 import es.aviferdev.n3to.domain.repository.GoalRepository
 import es.aviferdev.n3to.domain.repository.TransactionRepository
-import es.aviferdev.n3to.platform.nowLocalDateTime
+import es.aviferdev.n3to.platform.nowMonth
+import es.aviferdev.n3to.platform.nowYear
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
@@ -20,19 +21,20 @@ class GetCurrentMonthProgressUseCase(
 ) {
     @OptIn(ExperimentalCoroutinesApi::class)
     operator fun invoke(accountId: String): Flow<MonthlyGoalProgress> {
-        val now = nowLocalDateTime()
-        val year = now.year.toString()
-        val month = now.monthNumber.toString().padStart(2, '0')
-        val yearMonth = "$year-$month"
+        val year = nowYear()
+        val month = nowMonth()
+        val yearStr = year.toString()
+        val monthStr = month.toString().padStart(2, '0')
+        val yearMonth = "$yearStr-$monthStr"
 
         return combine(
             goalRepository.getEffectiveMonthlyGoal(accountId, year, month),
-            transactionRepository.getMonthlyTotalsByAccount(accountId, year, month),
+            transactionRepository.getMonthlyTotalsByAccount(accountId, yearStr, monthStr),
             assetTransactionRepository.getMonthlyNetInvestmentByMonth(accountId, yearMonth)
         ) { goal, totals, netInvestment ->
             MonthlyGoalProgress.from(
-                year = year,
-                month = month,
+                year = yearStr,
+                month = monthStr,
                 goal = goal,
                 savingsActual = totals.balance,
                 investmentActual = netInvestment?.netAmount ?: 0.0

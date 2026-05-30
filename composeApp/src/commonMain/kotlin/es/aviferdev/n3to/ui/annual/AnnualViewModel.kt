@@ -227,7 +227,8 @@ class AnnualViewModel(
 
         val budgetFlow = getCategoryBudgetStatus(accountId, year)
         val goalFlow = if (getYearlyGoalProgress != null) {
-            getYearlyGoalProgress(accountId, year)
+            val y = year.toIntOrNull()
+            if (y != null) getYearlyGoalProgress(accountId, y) else flowOf(emptyList())
         } else {
             flowOf(emptyList())
         }

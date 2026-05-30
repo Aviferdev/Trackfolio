@@ -17,30 +17,30 @@ class GoalLocalDataSourceImpl(
 
     private val queries = database.monthlyGoalQueries
 
-    override fun getByAccountYear(accountId: String, year: String): Flow<List<MonthlyGoal>> =
-        queries.getByAccountYear(accountId, year)
+    override fun getByAccountYear(accountId: String, year: Int): Flow<List<MonthlyGoal>> =
+        queries.getByAccountYear(accountId, year.toLong())
             .asFlow()
             .mapToList(Dispatchers.IO)
             .map { rows -> rows.map { it.toDomain() } }
 
     override fun getByAccountYearMonth(
         accountId: String,
-        year: String,
-        month: String
+        year: Int,
+        month: Int
     ): Flow<MonthlyGoal?> =
-        queries.getByAccountYearMonth(accountId, year, month)
+        queries.getByAccountYearMonth(accountId, year.toLong(), month.toLong())
             .asFlow()
             .mapToOneOrNull(Dispatchers.IO)
             .map { row -> row?.toDomain() }
 
-    override fun getBaseGoal(accountId: String, year: String): Flow<MonthlyGoal?> =
-        queries.getBaseByAccountYear(accountId, year)
+    override fun getBaseGoal(accountId: String, year: Int): Flow<MonthlyGoal?> =
+        queries.getBaseByAccountYear(accountId, year.toLong())
             .asFlow()
             .mapToOneOrNull(Dispatchers.IO)
             .map { row -> row?.toDomain() }
 
-    override fun getOverrides(accountId: String, year: String): Flow<List<MonthlyGoal>> =
-        queries.getOverridesByAccountYear(accountId, year)
+    override fun getOverrides(accountId: String, year: Int): Flow<List<MonthlyGoal>> =
+        queries.getOverridesByAccountYear(accountId, year.toLong())
             .asFlow()
             .mapToList(Dispatchers.IO)
             .map { rows -> rows.map { it.toDomain() } }
@@ -49,31 +49,31 @@ class GoalLocalDataSourceImpl(
         withContext(Dispatchers.IO) {
             queries.upsert(
                 accountId = goal.accountId,
-                year = goal.year,
-                month = goal.month,
+                year = goal.year.toLong(),
+                month = goal.month.toLong(),
                 savingsTarget = goal.savingsTarget,
                 investmentTarget = goal.investmentTarget
             )
         }
     }
 
-    override suspend fun delete(accountId: String, year: String, month: String) {
+    override suspend fun delete(accountId: String, year: Int, month: Int) {
         withContext(Dispatchers.IO) {
-            queries.deleteByAccountYearMonth(accountId, year, month)
+            queries.deleteByAccountYearMonth(accountId, year.toLong(), month.toLong())
         }
     }
 
-    override suspend fun deleteByAccountYear(accountId: String, year: String) {
+    override suspend fun deleteByAccountYear(accountId: String, year: Int) {
         withContext(Dispatchers.IO) {
-            queries.deleteByAccountYear(accountId, year)
+            queries.deleteByAccountYear(accountId, year.toLong())
         }
     }
 
     private fun es.aviferdev.n3to.data.database.MonthlyGoalEntity.toDomain(): MonthlyGoal =
         MonthlyGoal(
             accountId = accountId,
-            year = year,
-            month = month,
+            year = year.toInt(),
+            month = month.toInt(),
             savingsTarget = savingsTarget,
             investmentTarget = investmentTarget
         )

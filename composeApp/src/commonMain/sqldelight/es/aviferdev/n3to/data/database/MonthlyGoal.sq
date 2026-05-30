@@ -2,19 +2,19 @@
 -- Cada fila representa los objetivos de ahorro e inversión neta.
 --
 -- Convención:
---   month = "00" → objetivo BASE del año (se aplica a todos los meses por defecto)
---   month = "01".."12" → OVERRIDE para un mes concreto
+--   month = 0 → objetivo BASE del año (se aplica a todos los meses por defecto)
+--   month = 1..12 → OVERRIDE para un mes concreto
 --
 -- Para obtener el objetivo efectivo de un mes: si existe override, usarlo;
--- si no, usar el base (month="00").
+-- si no, usar el base (month=0).
 --
 -- savingsTarget:      Objetivo de ahorro (income - expense) en euros.
 -- investmentTarget:   Objetivo de inversión neta (BUY - SELL) en euros.
 
 CREATE TABLE MonthlyGoalEntity (
     accountId TEXT NOT NULL,
-    year TEXT NOT NULL,
-    month TEXT NOT NULL,
+    year INTEGER NOT NULL,
+    month INTEGER NOT NULL,
     savingsTarget REAL NOT NULL DEFAULT 0.0,
     investmentTarget REAL NOT NULL DEFAULT 0.0,
     PRIMARY KEY (accountId, year, month)
@@ -33,11 +33,11 @@ WHERE accountId = :accountId AND year = :year AND month = :month;
 
 getBaseByAccountYear:
 SELECT * FROM MonthlyGoalEntity
-WHERE accountId = :accountId AND year = :year AND month = '00';
+WHERE accountId = :accountId AND year = :year AND month = 0;
 
 getOverridesByAccountYear:
 SELECT * FROM MonthlyGoalEntity
-WHERE accountId = :accountId AND year = :year AND month != '00'
+WHERE accountId = :accountId AND year = :year AND month != 0
 ORDER BY month ASC;
 
 -- ─── Escritura ────────────────────────────────────────────────────────────────

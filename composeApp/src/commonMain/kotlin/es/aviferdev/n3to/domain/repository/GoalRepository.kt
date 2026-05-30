@@ -5,22 +5,22 @@ import kotlinx.coroutines.flow.Flow
 
 interface GoalRepository {
     /** Todos los objetivos de un año (base + overrides). */
-    fun getMonthlyGoals(accountId: String, year: String): Flow<List<MonthlyGoal>>
+    fun getMonthlyGoals(accountId: String, year: Int): Flow<List<MonthlyGoal>>
 
     /** Objetivo de un mes concreto (puede ser null). */
-    fun getMonthlyGoal(accountId: String, year: String, month: String): Flow<MonthlyGoal?>
+    fun getMonthlyGoal(accountId: String, year: Int, month: Int): Flow<MonthlyGoal?>
 
     /** Objetivo base del año (month="00"). */
-    fun getBaseGoal(accountId: String, year: String): Flow<MonthlyGoal?>
+    fun getBaseGoal(accountId: String, year: Int): Flow<MonthlyGoal?>
 
     /** Overrides del año (months "01".."12"). */
-    fun getOverrides(accountId: String, year: String): Flow<List<MonthlyGoal>>
+    fun getOverrides(accountId: String, year: Int): Flow<List<MonthlyGoal>>
 
     /**
      * Objetivo efectivo para un mes: si hay override específico, lo usa;
      * si no, usa el base (month="00"). Si no hay base, devuelve null.
      */
-    fun getEffectiveMonthlyGoal(accountId: String, year: String, month: String): Flow<MonthlyGoal?>
+    fun getEffectiveMonthlyGoal(accountId: String, year: Int, month: Int): Flow<MonthlyGoal?>
 
     /** Guarda o actualiza un objetivo. */
     suspend fun saveMonthlyGoal(goal: MonthlyGoal)
@@ -31,11 +31,11 @@ interface GoalRepository {
      */
     suspend fun saveBaseAndOverrides(
         accountId: String,
-        year: String,
+        year: Int,
         baseGoal: MonthlyGoal?,
         overrides: List<MonthlyGoal>
     )
 
     /** Elimina el objetivo de un mes concreto. */
-    suspend fun deleteMonthlyGoal(accountId: String, year: String, month: String)
+    suspend fun deleteMonthlyGoal(accountId: String, year: Int, month: Int)
 }

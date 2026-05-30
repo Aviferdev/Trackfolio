@@ -5,6 +5,6 @@ import es.aviferdev.n3to.domain.repository.GoalRepository
 import kotlinx.coroutines.flow.Flow
 
 class GetGoalBaseUseCase(private val repository: GoalRepository) {
-    operator fun invoke(accountId: String, year: String): Flow<MonthlyGoal?> =
+    operator fun invoke(accountId: String, year: Int): Flow<MonthlyGoal?> =
         repository.getBaseGoal(accountId, year)
 }

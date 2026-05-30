@@ -6,7 +6,7 @@ import es.aviferdev.n3to.domain.repository.GoalRepository
 class SaveGoalBaseAndOverridesUseCase(private val repository: GoalRepository) {
     suspend operator fun invoke(
         accountId: String,
-        year: String,
+        year: Int,
         baseGoal: MonthlyGoal?,
         overrides: List<MonthlyGoal>
     ) = repository.saveBaseAndOverrides(accountId, year, baseGoal, overrides)

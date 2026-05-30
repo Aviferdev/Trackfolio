@@ -17,29 +17,31 @@ class GetYearlyGoalProgressUseCase(
     private val transactionRepository: TransactionRepository,
     private val assetTransactionRepository: AssetTransactionRepository
 ) {
-    operator fun invoke(accountId: String, year: String): Flow<List<MonthlyGoalProgress>> = flow {
+    operator fun invoke(accountId: String, year: Int): Flow<List<MonthlyGoalProgress>> = flow {
+        val yearStr = year.toString()
+
         // Obtener base y overrides
         val baseGoal = goalRepository.getBaseGoal(accountId, year).first()
         val overrides = goalRepository.getOverrides(accountId, year).first()
         val overridesByMonth = overrides.associateBy { it.month }
 
         // Totales reales del año
-        val breakdown = transactionRepository.getMonthlyBreakdown(accountId, year).first()
+        val breakdown = transactionRepository.getMonthlyBreakdown(accountId, yearStr).first()
         val savingsByMonth = breakdown.associateBy { it.month }
 
         // Inversión neta del año
         val netInvestments =
-            assetTransactionRepository.getMonthlyNetInvestmentsByYear(accountId, year).first()
+            assetTransactionRepository.getMonthlyNetInvestmentsByYear(accountId, yearStr).first()
         val netInvestmentByMonth = netInvestments.associateBy { it.month }
 
         // Construir progreso para los 12 meses
         val progress = (1..12).map { m ->
             val month = m.toString().padStart(2, '0')
             // Objetivo efectivo: override si existe, sino base
-            val goal = overridesByMonth[month] ?: baseGoal?.copy(month = month)
+            val goal = overridesByMonth[m] ?: baseGoal?.copy(month = m)
 
             MonthlyGoalProgress.from(
-                year = year,
+                year = yearStr,
                 month = month,
                 goal = goal,
                 savingsActual = savingsByMonth[month]?.balance ?: 0.0,

@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 data class MonthGoalUi(
-    val month: String,
+    val month: Int,
     val monthLabel: String,
     val savingsText: String = "",
     val investmentText: String = "",
@@ -23,7 +23,7 @@ data class MonthGoalUi(
 )
 
 data class GoalSettingsUiState(
-    val year: String = currentYear(),
+    val year: Int = currentYear(),
     val baseSavingsText: String = "",
     val baseInvestmentText: String = "",
     val months: List<MonthGoalUi> = emptyMonths(),
@@ -34,16 +34,16 @@ data class GoalSettingsUiState(
     val message: String? = null
 ) {
     val canGoPrevious: Boolean
-        get() = (year.toIntOrNull() ?: currentYear().toInt()) < currentYear().toInt()
+        get() = year < currentYear()
     val customizedCount: Int get() = months.count { it.isCustomized }
 }
 
-private fun currentYear(): String = nowYear().toString()
+private fun currentYear(): Int = nowYear()
 
 private fun emptyMonths(): List<MonthGoalUi> =
     monthLabels.mapIndexed { index, label ->
         MonthGoalUi(
-            month = (index + 1).toString().padStart(2, '0'),
+            month = index + 1,
             monthLabel = label
         )
     }
@@ -68,7 +68,7 @@ class GoalSettingsViewModel(
     }
 
     /** Carga los datos de un año desde la BD. */
-    private fun loadYear(year: String) {
+    private fun loadYear(year: Int) {
         val accountId = session.selectedAccountId.value ?: return
         _state.value = _state.value.copy(year = year, isLoading = true)
         viewModelScope.launch {
@@ -78,7 +78,7 @@ class GoalSettingsViewModel(
                 val overridesByMonth = overrides.associateBy { it.month }
 
                 val months = monthLabels.mapIndexed { index, label ->
-                    val month = (index + 1).toString().padStart(2, '0')
+                    val month = index + 1
                     val ov = overridesByMonth[month]
                     if (ov != null) {
                         MonthGoalUi(
@@ -125,7 +125,7 @@ class GoalSettingsViewModel(
         _state.value = _state.value.copy(showMonthDetails = !_state.value.showMonthDetails)
     }
 
-    private fun updateMonth(month: String, transform: (MonthGoalUi) -> MonthGoalUi) {
+    private fun updateMonth(month: Int, transform: (MonthGoalUi) -> MonthGoalUi) {
         val current = _state.value
         val updated = current.months.map { m ->
             if (m.month == month) transform(m) else m
@@ -133,23 +133,22 @@ class GoalSettingsViewModel(
         _state.value = current.copy(months = updated, isDirty = true)
     }
 
-    fun onMonthSavingsChange(month: String, value: String) {
+    fun onMonthSavingsChange(month: Int, value: String) {
         updateMonth(month) { it.copy(savingsText = value, isCustomized = true) }
     }
 
-    fun onMonthInvestmentChange(month: String, value: String) {
+    fun onMonthInvestmentChange(month: Int, value: String) {
         updateMonth(month) { it.copy(investmentText = value, isCustomized = true) }
     }
 
-    fun resetMonth(month: String) {
+    fun resetMonth(month: Int) {
         updateMonth(month) { it.copy(savingsText = "", investmentText = "", isCustomized = false) }
     }
 
     // ── Año ───────────────────────────────────────────────────────────────────
 
     fun previousYear() {
-        val current = _state.value.year.toIntOrNull() ?: return
-        loadYear((current - 1).toString())
+        loadYear(_state.value.year - 1)
     }
 
     // ── Guardar ───────────────────────────────────────────────────────────────
@@ -168,7 +167,7 @@ class GoalSettingsViewModel(
                     MonthlyGoal(
                         accountId = accountId,
                         year = state.year,
-                        month = "00",
+                        month = 0,
                         savingsTarget = baseSavings,
                         investmentTarget = baseInvestment
                     )
