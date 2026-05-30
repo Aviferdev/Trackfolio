@@ -7,6 +7,7 @@ import es.aviferdev.n3to.domain.model.CategoryBreakdown
 import es.aviferdev.n3to.domain.model.IncomeTypeBreakdown
 import es.aviferdev.n3to.domain.model.MonthlyTotals
 import es.aviferdev.n3to.domain.model.Transaction
+import es.aviferdev.n3to.domain.model.TransactionLinkType
 import es.aviferdev.n3to.domain.repository.TransactionRepository
 import kotlinx.coroutines.flow.Flow
 
@@ -69,26 +70,46 @@ class TransactionRepositoryImpl(
     override fun getTransactionById(id: String): Flow<Transaction?> =
         dataSource.getById(id)
 
-    override suspend fun saveTransaction(transaction: Transaction): Result<Unit> =
-        dataSource.insert(transaction.toEntity())
+    override suspend fun saveTransaction(transaction: Transaction): Result<Unit> {
+        return dataSource.insert(transaction.toEntity()).onSuccess {
+            transaction.links.forEach { link ->
+                dataSource.insertLink(link.toEntity(transaction.id))
+            }
+        }
+    }
 
-    override suspend fun updateTransaction(transaction: Transaction): Result<Unit> =
-        dataSource.update(transaction.toEntity())
+    override suspend fun updateTransaction(transaction: Transaction): Result<Unit> {
+        return dataSource.update(transaction.toEntity()).onSuccess {
+            dataSource.deleteLinksByTransaction(transaction.id)
+            transaction.links.forEach { link ->
+                dataSource.insertLink(link.toEntity(transaction.id))
+            }
+        }
+    }
 
     override suspend fun deleteTransaction(id: String): Result<Unit> =
         dataSource.delete(id)
 
     override suspend fun deleteByLinkedAssetTransaction(assetTransactionId: String): Result<Unit> =
-        dataSource.deleteByLinkedAssetTransaction(assetTransactionId)
+        dataSource.deleteByLinkTypeAndEntityId(
+            TransactionLinkType.ASSET_TRANSACTION.name,
+            assetTransactionId
+        )
+
+    override suspend fun deleteByLinkTypeAndEntityId(linkType: TransactionLinkType, entityId: String): Result<Unit> =
+        dataSource.deleteByLinkTypeAndEntityId(linkType.name, entityId)
 
     override fun getByLinkedAssetTransaction(assetTransactionId: String): Flow<Transaction?> =
-        dataSource.getByLinkedAssetTransaction(assetTransactionId)
+        dataSource.getByLinkTypeAndEntityId(
+            TransactionLinkType.ASSET_TRANSACTION.name,
+            assetTransactionId
+        )
 
     override fun getOldestDate(accountId: String): Flow<Long?> =
         dataSource.getOldestDate(accountId)
 
     override fun getDividendsByAsset(assetId: String): Flow<List<Transaction>> =
-        dataSource.getDividendsByAsset(assetId)
+        dataSource.getByAssetIdAndLinkType(assetId, TransactionLinkType.DIVIDEND.name)
 
     override fun getByLinkedProperty(propertyId: String): Flow<List<Transaction>> =
         dataSource.getByLinkedProperty(propertyId)

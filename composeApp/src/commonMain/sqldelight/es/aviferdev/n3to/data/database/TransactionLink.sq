@@ -1,0 +1,56 @@
+-- TransactionLinkEntity: vínculos polimórficos entre transacciones y otras entidades.
+-- Reemplaza los campos linked* de TransactionEntity.
+--
+-- linkType:
+--   ASSET_TRANSACTION  → AssetTransactionEntity.id (compra/venta)
+--   LOAN               → LoanEntity.id
+--   PROPERTY           → RealEstatePropertyEntity.id
+--   VALUABLE           → ValuableEntity.id
+--   DIVIDEND           → ID único del dividendo (vinculado a AssetEntity)
+--   BOND_DEPOSIT       → ID único del evento de bono/depósito
+--
+-- assetId: solo para DIVIDEND y BOND_DEPOSIT, permite buscar por activo.
+
+CREATE TABLE TransactionLinkEntity (
+    id              TEXT    NOT NULL PRIMARY KEY,
+    transactionId   TEXT    NOT NULL,
+    linkType        TEXT    NOT NULL CHECK(linkType IN (
+        'ASSET_TRANSACTION', 'LOAN', 'PROPERTY', 'VALUABLE', 'DIVIDEND', 'BOND_DEPOSIT'
+    )),
+    linkedEntityId  TEXT    NOT NULL,
+    assetId         TEXT,
+    FOREIGN KEY (transactionId) REFERENCES TransactionEntity(id) ON DELETE CASCADE
+);
+
+CREATE INDEX idx_tx_link_transaction ON TransactionLinkEntity(transactionId);
+CREATE INDEX idx_tx_link_type_entity ON TransactionLinkEntity(linkType, linkedEntityId);
+CREATE INDEX idx_tx_link_asset        ON TransactionLinkEntity(assetId);
+
+-- ─── Lectura ──────────────────────────────────────────────────────────────────
+
+selectByTransaction:
+SELECT * FROM TransactionLinkEntity WHERE transactionId = :transactionId;
+
+selectByTransactionAndType:
+SELECT * FROM TransactionLinkEntity
+WHERE transactionId = :transactionId AND linkType = :linkType;
+
+selectByLinkedEntity:
+SELECT * FROM TransactionLinkEntity
+WHERE linkType = :linkType AND linkedEntityId = :linkedEntityId;
+
+selectByAssetId:
+SELECT * FROM TransactionLinkEntity
+WHERE linkType = :linkType AND assetId = :assetId;
+
+-- ─── Escritura ────────────────────────────────────────────────────────────────
+
+insert:
+INSERT INTO TransactionLinkEntity(id, transactionId, linkType, linkedEntityId, assetId)
+VALUES (?, ?, ?, ?, ?);
+
+deleteByTransaction:
+DELETE FROM TransactionLinkEntity WHERE transactionId = :transactionId;
+
+deleteById:
+DELETE FROM TransactionLinkEntity WHERE id = :id;

@@ -29,7 +29,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import es.aviferdev.n3to.domain.model.IncomeType
+import es.aviferdev.n3to.domain.model.MonthlyTotals
 import es.aviferdev.n3to.domain.model.Transaction
+import es.aviferdev.n3to.domain.model.TransactionLink
+import es.aviferdev.n3to.domain.model.TransactionLinkType
 import es.aviferdev.n3to.domain.model.TransactionType
 import es.aviferdev.n3to.ui.common.navigation.TimeStepperHeader
 import es.aviferdev.n3to.ui.common.component.EmptyStateView
@@ -276,14 +279,20 @@ fun TransactionListContentPreview() {
             type = TransactionType.INCOME, categoryId = null,
             date = now, notes = "Dividendo AAPL", createdAt = now,
             incomeType = IncomeType.DIVIDEND,
-            linkedAssetTransactionId = "linked_1"
+            links = listOf(
+                TransactionLink(
+                    id = "link_1",
+                    linkType = TransactionLinkType.ASSET_TRANSACTION,
+                    linkedEntityId = "linked_1"
+                )
+            )
         )
     )
 
     val fakeState = TransactionListUiState(
         transactions = fakeTransactions,
         filteredTransactions = fakeTransactions,
-        totals = es.aviferdev.n3to.domain.model.MonthlyTotals(
+        totals = MonthlyTotals(
             "2024", "03", 1500.0, 45.50
         ),
         categoryNames = mapOf("cat_food" to "Alimentación"),

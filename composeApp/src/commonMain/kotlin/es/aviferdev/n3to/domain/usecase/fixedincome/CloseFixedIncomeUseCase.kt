@@ -7,6 +7,8 @@ import es.aviferdev.n3to.domain.model.FixedIncomeEventType
 import es.aviferdev.n3to.domain.model.FixedIncomePosition
 import es.aviferdev.n3to.domain.model.IncomeType
 import es.aviferdev.n3to.domain.model.Transaction
+import es.aviferdev.n3to.domain.model.TransactionLink
+import es.aviferdev.n3to.domain.model.TransactionLinkType
 import es.aviferdev.n3to.domain.model.TransactionType
 import es.aviferdev.n3to.domain.repository.FixedIncomeEventRepository
 import es.aviferdev.n3to.domain.repository.FixedIncomeRepository
@@ -21,7 +23,8 @@ class CloseFixedIncomeUseCase(
         closeType: FixedIncomeCloseType,
         closeDate: Long,
         settlementEvent: FixedIncomeEvent,
-        accountId: String
+        accountId: String,
+        assetId: String
     ): Result<Unit> {
         val closeResult = positionRepository.close(positionId, closeDate, closeType.name)
         if (closeResult.isFailure) return closeResult
@@ -34,7 +37,8 @@ class CloseFixedIncomeUseCase(
             amount = settlementEvent.netAmount,
             date = settlementEvent.date,
             notes = "Liquidación renta fija: ${settlementEvent.type.label}",
-            linkedEventId = "fi_${settlementEvent.id}"
+            linkedEventId = "fi_${settlementEvent.id}",
+            assetId = assetId
         )
 
         return ledgerResult
@@ -49,8 +53,17 @@ class RecordSettlementTransactionUseCase(
         amount: Double,
         date: Long,
         notes: String?,
-        linkedEventId: String?
+        linkedEventId: String?,
+        assetId: String?
     ): Result<Unit> = runCatching {
+        val link = linkedEventId?.let {
+            TransactionLink(
+                id = "link_$it",
+                linkType = TransactionLinkType.BOND_DEPOSIT,
+                linkedEntityId = it,
+                assetId = assetId
+            )
+        }
         val tx = Transaction(
             id = "tx_${nowMillis()}",
             accountId = accountId,
@@ -62,7 +75,7 @@ class RecordSettlementTransactionUseCase(
             grossAmount = null,
             commissionAmount = null,
             notes = notes,
-            linkedAssetTransactionId = linkedEventId,
+            links = link?.let { listOf(it) } ?: emptyList(),
             createdAt = nowMillis()
         )
         transactionRepository.saveTransaction(tx)

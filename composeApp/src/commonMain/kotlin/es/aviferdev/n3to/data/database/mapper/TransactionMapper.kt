@@ -4,9 +4,13 @@ import es.aviferdev.n3to.data.database.TransactionEntity
 import es.aviferdev.n3to.domain.model.IncomeType
 import es.aviferdev.n3to.domain.model.TaxLine
 import es.aviferdev.n3to.domain.model.Transaction
+import es.aviferdev.n3to.domain.model.TransactionLink
 import es.aviferdev.n3to.domain.model.TransactionType
 
-fun TransactionEntity.toDomain(taxLines: List<TaxLine> = emptyList()): Transaction = Transaction(
+fun TransactionEntity.toDomain(
+    taxLines: List<TaxLine> = emptyList(),
+    links: List<TransactionLink> = emptyList()
+): Transaction = Transaction(
     id = id,
     accountId = accountId,
     amount = amount,
@@ -25,10 +29,7 @@ fun TransactionEntity.toDomain(taxLines: List<TaxLine> = emptyList()): Transacti
     originalCurrency = originalCurrency,
     originalAmount = originalAmount,
     exchangeRate = exchangeRate,
-    linkedAssetTransactionId = linkedAssetTransactionId,
-    linkedLoanId = linkedLoanId,
-    linkedPropertyId = linkedPropertyId,
-    linkedValuableId = linkedValuableId
+    links = links
 )
 
 fun Transaction.toEntity(): TransactionEntity = TransactionEntity(
@@ -48,9 +49,5 @@ fun Transaction.toEntity(): TransactionEntity = TransactionEntity(
     issuerName = issuerName,
     originalCurrency = originalCurrency,
     originalAmount = originalAmount,
-    exchangeRate = exchangeRate,
-    linkedAssetTransactionId = linkedAssetTransactionId,
-    linkedLoanId = linkedLoanId,
-    linkedPropertyId = linkedPropertyId,
-    linkedValuableId = linkedValuableId
+    exchangeRate = exchangeRate
 )

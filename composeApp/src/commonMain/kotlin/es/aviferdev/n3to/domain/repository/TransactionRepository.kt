@@ -5,6 +5,7 @@ import es.aviferdev.n3to.domain.model.CategoryBreakdown
 import es.aviferdev.n3to.domain.model.IncomeTypeBreakdown
 import es.aviferdev.n3to.domain.model.MonthlyTotals
 import es.aviferdev.n3to.domain.model.Transaction
+import es.aviferdev.n3to.domain.model.TransactionLinkType
 import kotlinx.coroutines.flow.Flow
 
 interface TransactionRepository {
@@ -45,6 +46,7 @@ interface TransactionRepository {
     suspend fun updateTransaction(transaction: Transaction): Result<Unit>
     suspend fun deleteTransaction(id: String): Result<Unit>
     suspend fun deleteByLinkedAssetTransaction(assetTransactionId: String): Result<Unit>
+    suspend fun deleteByLinkTypeAndEntityId(linkType: TransactionLinkType, entityId: String): Result<Unit>
     fun getByLinkedAssetTransaction(assetTransactionId: String): Flow<Transaction?>
     fun getOldestDate(accountId: String): Flow<Long?>
     fun getDividendsByAsset(assetId: String): Flow<List<Transaction>>

@@ -5,6 +5,7 @@ import app.cash.sqldelight.coroutines.mapToList
 import app.cash.sqldelight.coroutines.mapToOneOrNull
 import es.aviferdev.n3to.data.database.N3toDatabase
 import es.aviferdev.n3to.data.database.TransactionEntity
+import es.aviferdev.n3to.data.database.TransactionLinkEntity
 import es.aviferdev.n3to.data.database.mapper.toDomain
 import es.aviferdev.n3to.domain.model.AnnualSummary
 import es.aviferdev.n3to.domain.model.CategoryBreakdown
@@ -14,6 +15,7 @@ import es.aviferdev.n3to.domain.model.MonthlyTotals
 import es.aviferdev.n3to.domain.model.TaxLine
 import es.aviferdev.n3to.domain.model.TaxRole
 import es.aviferdev.n3to.domain.model.Transaction
+import es.aviferdev.n3to.domain.model.TransactionLink
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
@@ -26,6 +28,7 @@ class TransactionLocalDataSourceImpl(
 
     private val queries = database.transactionQueries
     private val taxLineQueries = database.taxLineQueries
+    private val linkQueries = database.transactionLinkQueries
 
     private fun loadTaxLines(transactionId: String): List<TaxLine> =
         taxLineQueries.selectByTransaction(transactionId).executeAsList().map { entity ->
@@ -37,14 +40,24 @@ class TransactionLocalDataSourceImpl(
             )
         }
 
-    private fun List<TransactionEntity>.toDomainWithTaxLines(): List<Transaction> =
-        map { entity -> entity.toDomain(loadTaxLines(entity.id)) }
+    private fun loadLinks(transactionId: String): List<TransactionLink> =
+        linkQueries.selectByTransaction(transactionId).executeAsList().map { entity ->
+            TransactionLink(
+                id = entity.id,
+                linkType = es.aviferdev.n3to.domain.model.TransactionLinkType.valueOf(entity.linkType),
+                linkedEntityId = entity.linkedEntityId,
+                assetId = entity.assetId
+            )
+        }
+
+    private fun List<TransactionEntity>.toDomainWithTaxLinesAndLinks(): List<Transaction> =
+        map { entity -> entity.toDomain(loadTaxLines(entity.id), loadLinks(entity.id)) }
 
     override fun getById(id: String): Flow<Transaction?> =
         queries.selectById(id)
             .asFlow()
             .mapToOneOrNull(Dispatchers.IO)
-            .map { it?.toDomain(loadTaxLines(it.id)) }
+            .map { it?.toDomain(loadTaxLines(it.id), loadLinks(it.id)) }
 
     override fun getByMonthAndAccount(
         accountId: String, year: String, month: String
@@ -52,7 +65,7 @@ class TransactionLocalDataSourceImpl(
         queries.selectByMonthAndAccount(accountId, year, month)
             .asFlow()
             .mapToList(Dispatchers.IO)
-            .map { it.toDomainWithTaxLines() }
+            .map { it.toDomainWithTaxLinesAndLinks() }
 
     override fun getMonthlyTotalsByAccount(
         accountId: String, year: String, month: String
@@ -93,7 +106,7 @@ class TransactionLocalDataSourceImpl(
         queries.selectRecentByAccount(accountId, limit)
             .asFlow()
             .mapToList(Dispatchers.IO)
-            .map { it.toDomainWithTaxLines() }
+            .map { it.toDomainWithTaxLinesAndLinks() }
 
     override fun getMonthlyBreakdown(accountId: String, year: String): Flow<List<MonthlyTotals>> =
         queries.getMonthlyBreakdownByAccount(accountId, year)
@@ -114,7 +127,7 @@ class TransactionLocalDataSourceImpl(
         queries.getIncomeByYear(accountId, year)
             .asFlow()
             .mapToList(Dispatchers.IO)
-            .map { it.toDomainWithTaxLines() }
+            .map { it.toDomainWithTaxLinesAndLinks() }
 
     override suspend fun insert(entity: TransactionEntity): Result<Unit> =
         runCatching {
@@ -136,11 +149,7 @@ class TransactionLocalDataSourceImpl(
                     issuerName = entity.issuerName,
                     originalCurrency = entity.originalCurrency,
                     originalAmount = entity.originalAmount,
-                    exchangeRate = entity.exchangeRate,
-                    linkedAssetTransactionId = entity.linkedAssetTransactionId,
-                    linkedLoanId = entity.linkedLoanId,
-                    linkedPropertyId = entity.linkedPropertyId,
-                    linkedValuableId = entity.linkedValuableId
+                    exchangeRate = entity.exchangeRate
                 )
             }
         }
@@ -164,10 +173,6 @@ class TransactionLocalDataSourceImpl(
                     originalCurrency = entity.originalCurrency,
                     originalAmount = entity.originalAmount,
                     exchangeRate = entity.exchangeRate,
-                    linkedAssetTransactionId = entity.linkedAssetTransactionId,
-                    linkedLoanId = entity.linkedLoanId,
-                    linkedPropertyId = entity.linkedPropertyId,
-                    linkedValuableId = entity.linkedValuableId,
                     id = entity.id
                 )
             }
@@ -180,42 +185,72 @@ class TransactionLocalDataSourceImpl(
             }
         }
 
-    override suspend fun deleteByLinkedAssetTransaction(assetTxId: String): Result<Unit> =
+    // ─── Links ──────────────────────────────────────────────────────────────────
+
+    override suspend fun insertLink(link: TransactionLinkEntity): Result<Unit> =
         runCatching {
             withContext(Dispatchers.IO) {
-                queries.deleteByLinkedAssetTransaction(assetTxId)
+                linkQueries.insert(
+                    id = link.id,
+                    transactionId = link.transactionId,
+                    linkType = link.linkType,
+                    linkedEntityId = link.linkedEntityId,
+                    assetId = link.assetId
+                )
             }
         }
 
-    override fun getByLinkedAssetTransaction(assetTxId: String): Flow<Transaction?> =
-        queries.selectByLinkedAssetTransaction(assetTxId)
+    override suspend fun deleteLinksByTransaction(transactionId: String): Result<Unit> =
+        runCatching {
+            withContext(Dispatchers.IO) {
+                linkQueries.deleteByTransaction(transactionId)
+            }
+        }
+
+    override suspend fun deleteByLinkTypeAndEntityId(linkType: String, entityId: String): Result<Unit> =
+        runCatching {
+            withContext(Dispatchers.IO) {
+                queries.deleteByLinkedAssetTransaction(entityId)
+            }
+        }
+
+    override fun getByLinkTypeAndEntityId(linkType: String, entityId: String): Flow<Transaction?> =
+        when (linkType) {
+            "ASSET_TRANSACTION" -> queries.selectByLinkedAssetTransaction(entityId)
+            "PROPERTY" -> queries.selectByLinkedProperty(entityId)
+            "VALUABLE" -> queries.selectByLinkedValuable(entityId)
+            else -> throw IllegalArgumentException("Unsupported linkType: $linkType")
+        }
             .asFlow()
             .mapToOneOrNull(Dispatchers.IO)
-            .map { it?.toDomain(it.id.let(::loadTaxLines)) }
+            .map { it?.toDomain(loadTaxLines(it.id), loadLinks(it.id)) }
+
+    override fun getByAssetIdAndLinkType(assetId: String, linkType: String): Flow<List<Transaction>> =
+        when (linkType) {
+            "DIVIDEND" -> queries.getDividendsByAssetId(assetId)
+            else -> throw IllegalArgumentException("Unsupported linkType for asset query: $linkType")
+        }
+            .asFlow()
+            .mapToList(Dispatchers.IO)
+            .map { it.toDomainWithTaxLinesAndLinks() }
+
+    override fun getByLinkedProperty(propertyId: String): Flow<List<Transaction>> =
+        queries.selectByLinkedProperty(propertyId)
+            .asFlow()
+            .mapToList(Dispatchers.IO)
+            .map { it.toDomainWithTaxLinesAndLinks() }
+
+    override fun getByLinkedValuable(valuableId: String): Flow<List<Transaction>> =
+        queries.selectByLinkedValuable(valuableId)
+            .asFlow()
+            .mapToList(Dispatchers.IO)
+            .map { it.toDomainWithTaxLinesAndLinks() }
 
     override fun getOldestDate(accountId: String): Flow<Long?> =
         queries.getOldestDateByAccount(accountId)
             .asFlow()
             .mapToOneOrNull(Dispatchers.IO)
             .map { it?.oldestDate }
-
-    override fun getDividendsByAsset(assetId: String): Flow<List<Transaction>> =
-        queries.getDividendsByAssetId(assetId)
-            .asFlow()
-            .mapToList(Dispatchers.IO)
-            .map { it.toDomainWithTaxLines() }
-
-    override fun getByLinkedProperty(propertyId: String): Flow<List<Transaction>> =
-        queries.selectByLinkedProperty(propertyId)
-            .asFlow()
-            .mapToList(Dispatchers.IO)
-            .map { it.toDomainWithTaxLines() }
-
-    override fun getByLinkedValuable(valuableId: String): Flow<List<Transaction>> =
-        queries.selectByLinkedValuable(valuableId)
-            .asFlow()
-            .mapToList(Dispatchers.IO)
-            .map { it.toDomainWithTaxLines() }
 
     override fun getExpensesByCategoryPerYear(
         accountId: String,

@@ -108,7 +108,7 @@ class GetEmergencyFundStatusUseCase(
             val expenseTotal = transactions
                 .filter { tx ->
                     tx.type == TransactionType.EXPENSE &&
-                            tx.linkedAssetTransactionId == null &&
+                            !tx.isLinkedToAsset &&
                             tx.categoryId !in fund.excludedCategoryIds
                 }
                 .sumOf { it.amount }

@@ -18,28 +18,14 @@ CREATE TABLE TransactionEntity (
     originalCurrency           TEXT,
     originalAmount             REAL,
     exchangeRate               REAL,
-    -- ── Vínculo con portfolio ─────────────────────────────────────────────────
-    linkedAssetTransactionId   TEXT,
-    -- ── Vínculo con préstamo ──────────────────────────────────────────────────
-    linkedLoanId               TEXT,
-    -- ── Vínculo con propiedad inmobiliaria ─────────────────────────────────────
-    linkedPropertyId           TEXT,
-    -- ── Vínculo con bienes (Valuable) ──────────────────────────────────────────
-    linkedValuableId          TEXT,
     FOREIGN KEY (accountId) REFERENCES AccountEntity(id) ON DELETE CASCADE,
-    FOREIGN KEY (categoryId) REFERENCES CategoryEntity(id) ON DELETE SET NULL,
-    FOREIGN KEY (linkedLoanId) REFERENCES LoanEntity(id) ON DELETE SET NULL,
-    FOREIGN KEY (linkedPropertyId) REFERENCES RealEstatePropertyEntity(id) ON DELETE SET NULL,
-    FOREIGN KEY (linkedValuableId) REFERENCES ValuableEntity(id) ON DELETE SET NULL
+    FOREIGN KEY (categoryId) REFERENCES CategoryEntity(id) ON DELETE SET NULL
 );
 
 CREATE INDEX idx_transaction_account ON TransactionEntity(accountId);
 CREATE INDEX idx_transaction_date    ON TransactionEntity(date);
 CREATE INDEX idx_transaction_type    ON TransactionEntity(type);
 CREATE INDEX idx_transaction_category     ON TransactionEntity(categoryId);
-CREATE INDEX idx_transaction_linked_property ON TransactionEntity(linkedPropertyId);
-CREATE INDEX idx_transaction_linked_valuable ON TransactionEntity(linkedValuableId);
-CREATE INDEX idx_transaction_linked_asset_tx ON TransactionEntity(linkedAssetTransactionId);
 CREATE INDEX idx_transaction_issuer_name ON TransactionEntity(issuerName);
 
 -- ─── Queries básicas ──────────────────────────────────────────────────────────
@@ -74,32 +60,41 @@ LIMIT :limit;
 
 getMonthlyTotalsByAccount:
 SELECT
-    COALESCE(SUM(CASE WHEN type = 'INCOME'  THEN amount ELSE 0.0 END), 0.0) AS totalIncome,
-    COALESCE(SUM(CASE WHEN type = 'EXPENSE' THEN amount ELSE 0.0 END), 0.0) AS totalExpense
-FROM TransactionEntity
-WHERE accountId = :accountId
-  AND linkedAssetTransactionId IS NULL
-  AND strftime('%Y', date / 1000, 'unixepoch') = :year
-  AND strftime('%m', date / 1000, 'unixepoch') = :month;
+    COALESCE(SUM(CASE WHEN t.type = 'INCOME'  THEN t.amount ELSE 0.0 END), 0.0) AS totalIncome,
+    COALESCE(SUM(CASE WHEN t.type = 'EXPENSE' THEN t.amount ELSE 0.0 END), 0.0) AS totalExpense
+FROM TransactionEntity t
+WHERE t.accountId = :accountId
+  AND NOT EXISTS (
+      SELECT 1 FROM TransactionLinkEntity l
+      WHERE l.transactionId = t.id AND l.linkType = 'ASSET_TRANSACTION'
+  )
+  AND strftime('%Y', t.date / 1000, 'unixepoch') = :year
+  AND strftime('%m', t.date / 1000, 'unixepoch') = :month;
 
 getAnnualTotalsByAccount:
 SELECT
-    COALESCE(SUM(CASE WHEN type = 'INCOME'  THEN amount ELSE 0.0 END), 0.0) AS totalIncome,
-    COALESCE(SUM(CASE WHEN type = 'EXPENSE' THEN amount ELSE 0.0 END), 0.0) AS totalExpense
-FROM TransactionEntity
-WHERE accountId = :accountId
-  AND linkedAssetTransactionId IS NULL
-  AND strftime('%Y', date / 1000, 'unixepoch') = :year;
+    COALESCE(SUM(CASE WHEN t.type = 'INCOME'  THEN t.amount ELSE 0.0 END), 0.0) AS totalIncome,
+    COALESCE(SUM(CASE WHEN t.type = 'EXPENSE' THEN t.amount ELSE 0.0 END), 0.0) AS totalExpense
+FROM TransactionEntity t
+WHERE t.accountId = :accountId
+  AND NOT EXISTS (
+      SELECT 1 FROM TransactionLinkEntity l
+      WHERE l.transactionId = t.id AND l.linkType = 'ASSET_TRANSACTION'
+  )
+  AND strftime('%Y', t.date / 1000, 'unixepoch') = :year;
 
 getMonthlyBreakdownByAccount:
 SELECT
-    strftime('%m', date / 1000, 'unixepoch') AS month,
-    COALESCE(SUM(CASE WHEN type = 'INCOME'  THEN amount ELSE 0.0 END), 0.0) AS totalIncome,
-    COALESCE(SUM(CASE WHEN type = 'EXPENSE' THEN amount ELSE 0.0 END), 0.0) AS totalExpense
-FROM TransactionEntity
-WHERE accountId = :accountId
-  AND linkedAssetTransactionId IS NULL
-  AND strftime('%Y', date / 1000, 'unixepoch') = :year
+    strftime('%m', t.date / 1000, 'unixepoch') AS month,
+    COALESCE(SUM(CASE WHEN t.type = 'INCOME'  THEN t.amount ELSE 0.0 END), 0.0) AS totalIncome,
+    COALESCE(SUM(CASE WHEN t.type = 'EXPENSE' THEN t.amount ELSE 0.0 END), 0.0) AS totalExpense
+FROM TransactionEntity t
+WHERE t.accountId = :accountId
+  AND NOT EXISTS (
+      SELECT 1 FROM TransactionLinkEntity l
+      WHERE l.transactionId = t.id AND l.linkType = 'ASSET_TRANSACTION'
+  )
+  AND strftime('%Y', t.date / 1000, 'unixepoch') = :year
 GROUP BY month
 ORDER BY month ASC;
 
@@ -122,20 +117,26 @@ ORDER BY date DESC;
 
 getMonthlyTotals:
 SELECT
-    COALESCE(SUM(CASE WHEN type = 'INCOME' THEN amount ELSE 0 END), 0.0) AS totalIncome,
-    COALESCE(SUM(CASE WHEN type = 'EXPENSE' THEN amount ELSE 0 END), 0.0) AS totalExpense
-FROM TransactionEntity
-WHERE linkedAssetTransactionId IS NULL
-  AND strftime('%Y', date / 1000, 'unixepoch') = :year
-  AND strftime('%m', date / 1000, 'unixepoch') = :month;
+    COALESCE(SUM(CASE WHEN t.type = 'INCOME' THEN t.amount ELSE 0 END), 0.0) AS totalIncome,
+    COALESCE(SUM(CASE WHEN t.type = 'EXPENSE' THEN t.amount ELSE 0 END), 0.0) AS totalExpense
+FROM TransactionEntity t
+WHERE NOT EXISTS (
+    SELECT 1 FROM TransactionLinkEntity l
+    WHERE l.transactionId = t.id AND l.linkType = 'ASSET_TRANSACTION'
+)
+  AND strftime('%Y', t.date / 1000, 'unixepoch') = :year
+  AND strftime('%m', t.date / 1000, 'unixepoch') = :month;
 
 getAnnualTotals:
 SELECT
-    COALESCE(SUM(CASE WHEN type = 'INCOME' THEN amount ELSE 0 END), 0.0) AS totalIncome,
-    COALESCE(SUM(CASE WHEN type = 'EXPENSE' THEN amount ELSE 0 END), 0.0) AS totalExpense
-FROM TransactionEntity
-WHERE linkedAssetTransactionId IS NULL
-  AND strftime('%Y', date / 1000, 'unixepoch') = :year;
+    COALESCE(SUM(CASE WHEN t.type = 'INCOME' THEN t.amount ELSE 0 END), 0.0) AS totalIncome,
+    COALESCE(SUM(CASE WHEN t.type = 'EXPENSE' THEN t.amount ELSE 0 END), 0.0) AS totalExpense
+FROM TransactionEntity t
+WHERE NOT EXISTS (
+    SELECT 1 FROM TransactionLinkEntity l
+    WHERE l.transactionId = t.id AND l.linkType = 'ASSET_TRANSACTION'
+)
+  AND strftime('%Y', t.date / 1000, 'unixepoch') = :year;
 
 -- ─── CRUD ─────────────────────────────────────────────────────────────────────
 
@@ -144,9 +145,8 @@ INSERT INTO TransactionEntity(
     id, accountId, amount, type, categoryId, date, notes, createdAt,
     excludeFromFiscal,
     incomeType, grossAmount, commissionAmount, issuerId, issuerName,
-    originalCurrency, originalAmount, exchangeRate,
-    linkedAssetTransactionId, linkedLoanId, linkedPropertyId, linkedValuableId
-) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+    originalCurrency, originalAmount, exchangeRate
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 
 update:
 UPDATE TransactionEntity
@@ -164,29 +164,38 @@ SET accountId                = :accountId,
     issuerName               = :issuerName,
     originalCurrency         = :originalCurrency,
     originalAmount           = :originalAmount,
-    exchangeRate             = :exchangeRate,
-    linkedAssetTransactionId = :linkedAssetTransactionId,
-    linkedLoanId             = :linkedLoanId,
-    linkedPropertyId         = :linkedPropertyId,
-    linkedValuableId         = :linkedValuableId
+    exchangeRate             = :exchangeRate
 WHERE id = :id;
 
 delete:
 DELETE FROM TransactionEntity WHERE id = :id;
 
--- ─── Portfolio link ───────────────────────────────────────────────────────────
+-- ─── Portfolio link (mediante TransactionLinkEntity) ────────────────────────
 
 deleteByLinkedAssetTransaction:
-DELETE FROM TransactionEntity WHERE linkedAssetTransactionId = :assetTxId;
+DELETE FROM TransactionEntity
+WHERE id IN (
+    SELECT transactionId FROM TransactionLinkEntity
+    WHERE linkType = 'ASSET_TRANSACTION' AND linkedEntityId = :assetTxId
+);
 
 selectByLinkedAssetTransaction:
-SELECT * FROM TransactionEntity WHERE linkedAssetTransactionId = :assetTxId LIMIT 1;
+SELECT t.* FROM TransactionEntity t
+JOIN TransactionLinkEntity l ON l.transactionId = t.id
+WHERE l.linkType = 'ASSET_TRANSACTION' AND l.linkedEntityId = :assetTxId
+LIMIT 1;
 
 selectByLinkedProperty:
-SELECT * FROM TransactionEntity WHERE linkedPropertyId = :propertyId ORDER BY date DESC;
+SELECT t.* FROM TransactionEntity t
+JOIN TransactionLinkEntity l ON l.transactionId = t.id
+WHERE l.linkType = 'PROPERTY' AND l.linkedEntityId = :propertyId
+ORDER BY t.date DESC;
 
 selectByLinkedValuable:
-SELECT * FROM TransactionEntity WHERE linkedValuableId = :valuableId ORDER BY date DESC;
+SELECT t.* FROM TransactionEntity t
+JOIN TransactionLinkEntity l ON l.transactionId = t.id
+WHERE l.linkType = 'VALUABLE' AND l.linkedEntityId = :valuableId
+ORDER BY t.date DESC;
 
 getOldestDateByAccount:
 SELECT MIN(d) AS oldestDate FROM (
@@ -198,10 +207,11 @@ SELECT MIN(d) AS oldestDate FROM (
 );
 
 getDividendsByAssetId:
-SELECT * FROM TransactionEntity
-WHERE linkedAssetTransactionId LIKE ('div_' || :assetId || '_%')
-  AND incomeType = 'DIVIDEND'
-ORDER BY date DESC;
+SELECT t.* FROM TransactionEntity t
+JOIN TransactionLinkEntity l ON l.transactionId = t.id
+WHERE l.linkType = 'DIVIDEND' AND l.assetId = :assetId
+  AND t.incomeType = 'DIVIDEND'
+ORDER BY t.date DESC;
 
 -- ─── Desglose de gastos por categoría (año) ────────────────────────────────────
 
@@ -214,7 +224,10 @@ FROM TransactionEntity t
 LEFT JOIN CategoryEntity c ON t.categoryId = c.id
 WHERE t.accountId = :accountId
   AND t.type = 'EXPENSE'
-  AND t.linkedAssetTransactionId IS NULL
+  AND NOT EXISTS (
+      SELECT 1 FROM TransactionLinkEntity l
+      WHERE l.transactionId = t.id AND l.linkType = 'ASSET_TRANSACTION'
+  )
   AND strftime('%Y', t.date / 1000, 'unixepoch') = :year
 GROUP BY t.categoryId
 ORDER BY totalAmount DESC;
@@ -228,7 +241,10 @@ SELECT
 FROM TransactionEntity t
 WHERE t.accountId = :accountId
   AND t.type = 'INCOME'
-  AND t.linkedAssetTransactionId IS NULL
+  AND NOT EXISTS (
+      SELECT 1 FROM TransactionLinkEntity l
+      WHERE l.transactionId = t.id AND l.linkType = 'ASSET_TRANSACTION'
+  )
   AND strftime('%Y', t.date / 1000, 'unixepoch') = :year
 GROUP BY t.incomeType
 ORDER BY totalAmount DESC;
@@ -244,7 +260,10 @@ FROM TransactionEntity t
 LEFT JOIN CategoryEntity c ON t.categoryId = c.id
 WHERE t.accountId = :accountId
   AND t.type = 'EXPENSE'
-  AND t.linkedAssetTransactionId IS NULL
+  AND NOT EXISTS (
+      SELECT 1 FROM TransactionLinkEntity l
+      WHERE l.transactionId = t.id AND l.linkType = 'ASSET_TRANSACTION'
+  )
   AND strftime('%Y', t.date / 1000, 'unixepoch') = :year
   AND strftime('%m', t.date / 1000, 'unixepoch') = :month
 GROUP BY t.categoryId
@@ -259,7 +278,10 @@ SELECT
 FROM TransactionEntity t
 WHERE t.accountId = :accountId
   AND t.type = 'INCOME'
-  AND t.linkedAssetTransactionId IS NULL
+  AND NOT EXISTS (
+      SELECT 1 FROM TransactionLinkEntity l
+      WHERE l.transactionId = t.id AND l.linkType = 'ASSET_TRANSACTION'
+  )
   AND strftime('%Y', t.date / 1000, 'unixepoch') = :year
   AND strftime('%m', t.date / 1000, 'unixepoch') = :month
 GROUP BY t.incomeType

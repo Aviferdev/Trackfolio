@@ -29,6 +29,8 @@ import es.aviferdev.n3to.domain.model.AssetTransaction
 import es.aviferdev.n3to.domain.model.AssetTransactionType
 import es.aviferdev.n3to.domain.model.Platform
 import es.aviferdev.n3to.domain.model.Transaction
+import es.aviferdev.n3to.domain.model.TransactionLink
+import es.aviferdev.n3to.domain.model.TransactionLinkType
 import es.aviferdev.n3to.domain.model.TransactionType
 import es.aviferdev.n3to.domain.portfolio.AssetPosition
 import es.aviferdev.n3to.ui.common.button.FloatingButtonAdd
@@ -185,7 +187,7 @@ fun AssetHistoryContent(
                                 balancesHidden = balancesHidden,
                                 onDelete = {
                                     onDeleteDividend(
-                                        dividend.linkedAssetTransactionId ?: dividend.id
+                                        dividend.linkedDividendId ?: dividend.id
                                     )
                                 },
                                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
@@ -324,7 +326,14 @@ fun AssetHistoryContentPreview() {
                 date = 1709251200000,
                 notes = "Dividendo Apple",
                 createdAt = 1709251200000,
-                linkedAssetTransactionId = "tx_1"
+                links = listOf(
+                    TransactionLink(
+                        id = "link_1",
+                        linkType = TransactionLinkType.DIVIDEND,
+                        linkedEntityId = "tx_1",
+                        assetId = "asset_1"
+                    )
+                )
             )
         ),
         platforms = listOf(

@@ -35,17 +35,8 @@ data class Transaction(
     /** Tipo de cambio aplicado: 1 originalCurrency = exchangeRate accountCurrency. */
     val exchangeRate: Double? = null,
 
-    // ── Vínculo con portfolio ─────────────────────────────────────────────────
-    val linkedAssetTransactionId: String? = null,
-
-    // ── Vínculo con préstamo ──────────────────────────────────────────────────
-    val linkedLoanId: String? = null,
-
-    // ── Vínculo con propiedad inmobiliaria ────────────────────────────────────
-    val linkedPropertyId: String? = null,
-
-    // ── Vínculo con bienes (Valuable) ─────────────────────────────────────────
-    val linkedValuableId: String? = null,
+    // ── Vínculos con otras entidades (reemplaza linked* fields) ──────────────
+    val links: List<TransactionLink> = emptyList(),
 
     // ── Reconciliación ────────────────────────────────────────────────────────
     /** Si true, esta transacción se excluye del informe fiscal. */
@@ -67,9 +58,37 @@ data class Transaction(
     val isExpense: Boolean get() = type == TransactionType.EXPENSE
     val isAdjustment: Boolean get() = type == TransactionType.ADJUSTMENT
 
-    val isLinkedToAsset: Boolean get() = linkedAssetTransactionId != null
-    val isLinkedToLoan: Boolean get() = linkedLoanId != null
-    val isLinkedToValuable: Boolean get() = linkedValuableId != null
+    // ── Helpers de compatibilidad (derivados de links) ───────────────────────
+
+    val isLinkedToAsset: Boolean
+        get() = links.any { it.linkType == TransactionLinkType.ASSET_TRANSACTION }
+
+    val isLinkedToLoan: Boolean
+        get() = links.any { it.linkType == TransactionLinkType.LOAN }
+
+    val isLinkedToValuable: Boolean
+        get() = links.any { it.linkType == TransactionLinkType.VALUABLE }
+
+    val isLinkedToProperty: Boolean
+        get() = links.any { it.linkType == TransactionLinkType.PROPERTY }
+
+    val linkedAssetTransactionId: String?
+        get() = links.find { it.linkType == TransactionLinkType.ASSET_TRANSACTION }?.linkedEntityId
+
+    val linkedLoanId: String?
+        get() = links.find { it.linkType == TransactionLinkType.LOAN }?.linkedEntityId
+
+    val linkedPropertyId: String?
+        get() = links.find { it.linkType == TransactionLinkType.PROPERTY }?.linkedEntityId
+
+    val linkedValuableId: String?
+        get() = links.find { it.linkType == TransactionLinkType.VALUABLE }?.linkedEntityId
+
+    val linkedDividendId: String?
+        get() = links.find { it.linkType == TransactionLinkType.DIVIDEND }?.linkedEntityId
+
+    val linkedBondDepositId: String?
+        get() = links.find { it.linkType == TransactionLinkType.BOND_DEPOSIT }?.linkedEntityId
 }
 
 enum class TransactionType { INCOME, EXPENSE, ADJUSTMENT }

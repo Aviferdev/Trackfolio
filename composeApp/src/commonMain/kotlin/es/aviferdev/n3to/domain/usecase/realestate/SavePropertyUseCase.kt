@@ -7,6 +7,8 @@ import es.aviferdev.n3to.domain.model.RealEstateProperty
 import es.aviferdev.n3to.domain.model.RentalStatus
 import es.aviferdev.n3to.domain.model.ValidationError
 import es.aviferdev.n3to.domain.model.Transaction
+import es.aviferdev.n3to.domain.model.TransactionLink
+import es.aviferdev.n3to.domain.model.TransactionLinkType
 import es.aviferdev.n3to.domain.model.TransactionType
 import es.aviferdev.n3to.domain.repository.RealEstatePropertyRepository
 import es.aviferdev.n3to.domain.repository.TransactionRepository
@@ -51,6 +53,11 @@ class SavePropertyUseCase(
         if (saveResult.isFailure) return saveResult
 
         val now = nowMillis()
+        val propertyLink = TransactionLink(
+            id = "link_prop_${property.id}",
+            linkType = TransactionLinkType.PROPERTY,
+            linkedEntityId = property.id
+        )
 
         // 2. Sincronizar transacción de compra (crear o actualizar)
         val buyTxId = "prop_buy_${property.id}"
@@ -64,7 +71,7 @@ class SavePropertyUseCase(
             date = property.acquisitionDate,
             notes = "Compra: ${property.name}",
             createdAt = existingBuyTx?.createdAt ?: now,
-            linkedPropertyId = property.id
+            links = listOf(propertyLink)
         )
         if (existingBuyTx != null) {
             transactionRepository.updateTransaction(buyTx)
@@ -90,7 +97,7 @@ class SavePropertyUseCase(
                 date = property.acquisitionDate,
                 notes = expense.notes ?: "Gasto compra: ${property.name}",
                 createdAt = now,
-                linkedPropertyId = property.id
+                links = listOf(propertyLink)
             )
             transactionRepository.saveTransaction(tx)
         }

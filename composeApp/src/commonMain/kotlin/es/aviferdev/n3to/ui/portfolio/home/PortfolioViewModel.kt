@@ -609,7 +609,7 @@ class PortfolioViewModel(
             val finalPosition = if (portfolioId != null && position.portfolioId == null) {
                 position.copy(portfolioId = portfolioId)
             } else position
-            createFixedIncomePosition?.invoke(finalPosition, event)
+            createFixedIncomePosition?.invoke(finalPosition, event, finalPosition.id)
                 ?.onSuccess { closeCreateFixedIncomeSheet() }
                 ?.onFailure {
                     _sheetState.value =
@@ -641,7 +641,7 @@ class PortfolioViewModel(
         val position = _sheetState.value.selectedPositionForCoupon ?: return
         val accountId = session.selectedAccountId.value ?: return
         viewModelScope.launch {
-            registerCoupon?.invoke(event, accountId)
+            registerCoupon?.invoke(event, accountId, position.id)
                 ?.onSuccess { hideRegisterCouponSheet() }
                 ?.onFailure {
                     _sheetState.value =

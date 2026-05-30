@@ -144,7 +144,7 @@ class FixedIncomeDetailViewModel(
                 _error.value = FixedIncomeDetailError.PositionNotFound
                 return@launch
             }
-            registerCoupon(event, position.accountId)
+            registerCoupon(event, position.accountId, position.id)
                 .onSuccess {
                     _showRegisterCouponSheet.value = false
                 }
@@ -165,7 +165,7 @@ class FixedIncomeDetailViewModel(
                 _error.value = FixedIncomeDetailError.PositionNotFound
                 return@launch
             }
-            closeFixedIncome(positionId, closeType, closeDate, settlementEvent, position.accountId)
+            closeFixedIncome(positionId, closeType, closeDate, settlementEvent, position.accountId, position.id)
                 .onSuccess { _showCloseSheet.value = false }
                 .onFailure { _error.value = FixedIncomeDetailError.Unknown(it.message) }
         }

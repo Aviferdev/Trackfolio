@@ -2,6 +2,8 @@ package es.aviferdev.n3to.domain.usecase.valuable
 
 import es.aviferdev.n3to.platform.nowMillis
 import es.aviferdev.n3to.domain.model.Transaction
+import es.aviferdev.n3to.domain.model.TransactionLink
+import es.aviferdev.n3to.domain.model.TransactionLinkType
 import es.aviferdev.n3to.domain.model.TransactionType
 import es.aviferdev.n3to.domain.model.ValuableExpense
 import es.aviferdev.n3to.domain.model.ValidationError
@@ -36,6 +38,11 @@ class SellValuableUseCase(
         if (sellResult.isFailure) return sellResult
 
         val now = nowMillis()
+        val valuableLink = TransactionLink(
+            id = "link_val_sell_$valuableId",
+            linkType = TransactionLinkType.VALUABLE,
+            linkedEntityId = valuableId
+        )
 
         // 2. Transacción de ingreso por venta (crear o actualizar)
         val saleTxId = "val_sell_$valuableId"
@@ -49,7 +56,7 @@ class SellValuableUseCase(
             date = saleDate,
             notes = "Venta: $valuableName",
             createdAt = existingSaleTx?.createdAt ?: now,
-            linkedValuableId = valuableId
+            links = listOf(valuableLink)
         )
         if (existingSaleTx != null) {
             transactionRepository.updateTransaction(saleTx)
@@ -75,7 +82,7 @@ class SellValuableUseCase(
                 date = saleDate,
                 notes = expense.notes ?: "Gasto venta: $valuableName",
                 createdAt = now,
-                linkedValuableId = valuableId
+                links = listOf(valuableLink)
             )
             transactionRepository.saveTransaction(tx)
         }

@@ -2,6 +2,8 @@ package es.aviferdev.n3to.domain.usecase.valuable
 
 import es.aviferdev.n3to.platform.nowMillis
 import es.aviferdev.n3to.domain.model.Transaction
+import es.aviferdev.n3to.domain.model.TransactionLink
+import es.aviferdev.n3to.domain.model.TransactionLinkType
 import es.aviferdev.n3to.domain.model.TransactionType
 import es.aviferdev.n3to.domain.model.Valuable
 import es.aviferdev.n3to.domain.model.ValuableExpense
@@ -42,6 +44,11 @@ class SaveValuableUseCase(
         if (saveResult.isFailure) return saveResult
 
         val now = nowMillis()
+        val valuableLink = TransactionLink(
+            id = "link_val_${valuable.id}",
+            linkType = TransactionLinkType.VALUABLE,
+            linkedEntityId = valuable.id
+        )
 
         // 2. Sincronizar transacción de compra (crear o actualizar)
         val buyTxId = "val_buy_${valuable.id}"
@@ -55,7 +62,7 @@ class SaveValuableUseCase(
             date = valuable.purchaseDate,
             notes = "Compra: ${valuable.name}",
             createdAt = existingBuyTx?.createdAt ?: now,
-            linkedValuableId = valuable.id
+            links = listOf(valuableLink)
         )
         if (existingBuyTx != null) {
             transactionRepository.updateTransaction(buyTx)
@@ -81,7 +88,7 @@ class SaveValuableUseCase(
                 date = valuable.purchaseDate,
                 notes = expense.notes ?: "Gasto compra: ${valuable.name}",
                 createdAt = now,
-                linkedValuableId = valuable.id
+                links = listOf(valuableLink)
             )
             transactionRepository.saveTransaction(tx)
         }
@@ -97,7 +104,7 @@ class SaveValuableUseCase(
                 date = valuable.purchaseDate,
                 notes = expense.notes ?: "Gasto tenencia: ${valuable.name}",
                 createdAt = now,
-                linkedValuableId = valuable.id
+                links = listOf(valuableLink)
             )
             transactionRepository.saveTransaction(tx)
         }

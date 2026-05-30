@@ -37,6 +37,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 import es.aviferdev.n3to.domain.model.Transaction
+import es.aviferdev.n3to.domain.model.TransactionLinkType
 
 sealed class AssetHistoryError {
     data object AssetNotFound : AssetHistoryError()
@@ -459,6 +460,7 @@ class AssetHistoryViewModel(
             val result = syncToLedger.syncDividend(
                 dividendId = dividendId,
                 accountId = asset.accountId,
+                assetId = asset.id,
                 assetName = asset.name,
                 grossAmount = grossAmount,
                 withholdingPercent = irpfPercent,
@@ -472,7 +474,7 @@ class AssetHistoryViewModel(
 
     fun deleteDividend(dividendId: String) {
         viewModelScope.launch {
-            syncToLedger.remove(dividendId)
+            syncToLedger.remove(dividendId, TransactionLinkType.DIVIDEND)
         }
     }
 

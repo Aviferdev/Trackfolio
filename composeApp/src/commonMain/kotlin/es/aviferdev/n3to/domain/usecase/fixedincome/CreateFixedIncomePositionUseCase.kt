@@ -5,12 +5,11 @@ import es.aviferdev.n3to.domain.model.FixedIncomeEvent
 import es.aviferdev.n3to.domain.model.FixedIncomePosition
 import es.aviferdev.n3to.domain.model.IncomeType
 import es.aviferdev.n3to.domain.model.Transaction
+import es.aviferdev.n3to.domain.model.TransactionLink
+import es.aviferdev.n3to.domain.model.TransactionLinkType
 import es.aviferdev.n3to.domain.model.TransactionType
 import es.aviferdev.n3to.domain.repository.FixedIncomeEventRepository
 import es.aviferdev.n3to.domain.repository.FixedIncomeRepository
-
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
 
 class CreateFixedIncomePositionUseCase(
     private val positionRepository: FixedIncomeRepository,
@@ -19,7 +18,8 @@ class CreateFixedIncomePositionUseCase(
 ) {
     suspend operator fun invoke(
         position: FixedIncomePosition,
-        acquisitionEvent: FixedIncomeEvent
+        acquisitionEvent: FixedIncomeEvent,
+        assetId: String
     ): Result<Unit> {
         val posResult = positionRepository.insert(position)
         if (posResult.isFailure) return posResult
@@ -34,7 +34,8 @@ class CreateFixedIncomePositionUseCase(
             date = acquisitionEvent.date,
             incomeTypeId = null,
             notes = "Adquisición: ${position.name}",
-            linkedEventId = "fi_${acquisitionEvent.id}"
+            linkedEventId = "fi_${acquisitionEvent.id}",
+            assetId = assetId
         )
 
         return ledgerResult
@@ -51,8 +52,17 @@ class CreateLedgerTransactionUseCase(
         date: Long,
         incomeTypeId: String?,
         notes: String?,
-        linkedEventId: String?
+        linkedEventId: String?,
+        assetId: String?
     ): Result<Unit> = runCatching {
+        val link = linkedEventId?.let {
+            TransactionLink(
+                id = "link_$it",
+                linkType = TransactionLinkType.BOND_DEPOSIT,
+                linkedEntityId = it,
+                assetId = assetId
+            )
+        }
         val tx = Transaction(
             id = "tx_${nowMillis()}",
             accountId = accountId,
@@ -62,7 +72,7 @@ class CreateLedgerTransactionUseCase(
             categoryId = null,
             incomeType = incomeTypeId?.let { IncomeType.fromName(it) },
             notes = notes,
-            linkedAssetTransactionId = linkedEventId,
+            links = link?.let { listOf(it) } ?: emptyList(),
             createdAt = nowMillis()
         )
         transactionRepository.saveTransaction(tx)

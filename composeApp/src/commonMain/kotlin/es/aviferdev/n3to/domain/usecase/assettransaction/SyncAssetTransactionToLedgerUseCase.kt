@@ -7,6 +7,8 @@ import es.aviferdev.n3to.domain.model.IncomeType
 import es.aviferdev.n3to.domain.model.TaxLine
 import es.aviferdev.n3to.domain.model.TaxRole
 import es.aviferdev.n3to.domain.model.Transaction
+import es.aviferdev.n3to.domain.model.TransactionLink
+import es.aviferdev.n3to.domain.model.TransactionLinkType
 import es.aviferdev.n3to.domain.model.TransactionType
 import es.aviferdev.n3to.domain.repository.TransactionRepository
 import kotlinx.coroutines.flow.firstOrNull
@@ -18,8 +20,7 @@ import kotlinx.coroutines.flow.firstOrNull
  * - SELL → INCOME  (aumenta saldo de la cuenta)
  *
  * Cada [AssetTransaction] queda vinculada a una [Transaction] mediante
- * [Transaction.linkedAssetTransactionId]. Ese movimiento es de solo
- * lectura en el listado de transacciones.
+ * un [TransactionLink] de tipo [ASSET_TRANSACTION].
  */
 class SyncAssetTransactionToLedgerUseCase(
     private val transactionRepository: TransactionRepository
@@ -51,6 +52,12 @@ class SyncAssetTransactionToLedgerUseCase(
             .getByLinkedAssetTransaction(assetTx.id)
             .firstOrNull()
 
+        val link = TransactionLink(
+            id = "link_${assetTx.id}",
+            linkType = TransactionLinkType.ASSET_TRANSACTION,
+            linkedEntityId = assetTx.id
+        )
+
         return if (existing != null) {
             // Actualizar
             transactionRepository.updateTransaction(
@@ -58,7 +65,8 @@ class SyncAssetTransactionToLedgerUseCase(
                     amount = amount,
                     type = txType,
                     date = assetTx.date,
-                    notes = label
+                    notes = label,
+                    links = existing.links.filter { it.linkType != TransactionLinkType.ASSET_TRANSACTION } + link
                 )
             )
         } else {
@@ -73,7 +81,7 @@ class SyncAssetTransactionToLedgerUseCase(
                 date = assetTx.date,
                 notes = label,
                 createdAt = now,
-                linkedAssetTransactionId = assetTx.id
+                links = listOf(link)
             )
             transactionRepository.saveTransaction(transaction)
         }
@@ -82,25 +90,30 @@ class SyncAssetTransactionToLedgerUseCase(
     /**
      * Elimina la Transaction vinculada cuando se borra la AssetTransaction.
      */
-    suspend fun remove(assetTransactionId: String): Result<Unit> =
-        transactionRepository.deleteByLinkedAssetTransaction(assetTransactionId)
+    suspend fun remove(
+        entityId: String,
+        linkType: TransactionLinkType = TransactionLinkType.ASSET_TRANSACTION
+    ): Result<Unit> =
+        transactionRepository.deleteByLinkTypeAndEntityId(linkType, entityId)
 
     /**
      * Crea o actualiza una Transaction de dividendo vinculada al activo.
      * El dividendo es un INCOME con datos fiscales (bruto, IRPF).
      *
-     * @param dividendId ID único del dividendo (se usa como linkedAssetTransactionId)
-     * @param accountId cuenta donde se registra
-     * @param assetName nombre del activo para la nota descriptiva
-     * @param grossAmount importe bruto del dividendo
-     * @param irpfPercent porcentaje de retención IRPF aplicado
-     * @param date fecha del dividendo en epoch millis
-     * @param issuerId ID del emisor (acción)
-     * @param issuerName nombre del emisor
+     * @param dividendId ID único del dividendo.
+     * @param accountId cuenta donde se registra.
+     * @param assetId ID del activo que genera el dividendo.
+     * @param assetName nombre del activo para la nota descriptiva.
+     * @param grossAmount importe bruto del dividendo.
+     * @param irpfPercent porcentaje de retención IRPF aplicado.
+     * @param date fecha del dividendo en epoch millis.
+     * @param issuerId ID del emisor (acción).
+     * @param issuerName nombre del emisor.
      */
     suspend fun syncDividend(
         dividendId: String,
         accountId: String,
+        assetId: String,
         assetName: String,
         grossAmount: Double,
         withholdingPercent: Double,
@@ -124,6 +137,13 @@ class SyncAssetTransactionToLedgerUseCase(
             .getByLinkedAssetTransaction(dividendId)
             .firstOrNull()
 
+        val link = TransactionLink(
+            id = "link_$dividendId",
+            linkType = TransactionLinkType.DIVIDEND,
+            linkedEntityId = dividendId,
+            assetId = assetId
+        )
+
         return if (existing != null) {
             transactionRepository.updateTransaction(
                 existing.copy(
@@ -134,7 +154,8 @@ class SyncAssetTransactionToLedgerUseCase(
                     grossAmount = grossAmount,
                     taxLines = taxLines,
                     issuerId = issuerId,
-                    issuerName = issuerName
+                    issuerName = issuerName,
+                    links = existing.links.filter { it.linkType != TransactionLinkType.DIVIDEND } + link
                 )
             )
         } else {
@@ -153,7 +174,7 @@ class SyncAssetTransactionToLedgerUseCase(
                 taxLines = taxLines,
                 issuerId = issuerId,
                 issuerName = issuerName,
-                linkedAssetTransactionId = dividendId
+                links = listOf(link)
             )
             transactionRepository.saveTransaction(transaction)
         }
@@ -167,6 +188,7 @@ class SyncAssetTransactionToLedgerUseCase(
     suspend fun syncBondDeposit(
         bondDepositId: String,
         accountId: String,
+        assetId: String,
         assetName: String,
         grossAmount: Double,
         withholdingPercent: Double,
@@ -191,6 +213,13 @@ class SyncAssetTransactionToLedgerUseCase(
             .getByLinkedAssetTransaction(bondDepositId)
             .firstOrNull()
 
+        val link = TransactionLink(
+            id = "link_$bondDepositId",
+            linkType = TransactionLinkType.BOND_DEPOSIT,
+            linkedEntityId = bondDepositId,
+            assetId = assetId
+        )
+
         return if (existing != null) {
             transactionRepository.updateTransaction(
                 existing.copy(
@@ -202,7 +231,8 @@ class SyncAssetTransactionToLedgerUseCase(
                     taxLines = taxLines,
                     commissionAmount = commissionAmount,
                     issuerId = issuerId,
-                    issuerName = issuerName
+                    issuerName = issuerName,
+                    links = existing.links.filter { it.linkType != TransactionLinkType.BOND_DEPOSIT } + link
                 )
             )
         } else {
@@ -222,7 +252,7 @@ class SyncAssetTransactionToLedgerUseCase(
                 commissionAmount = commissionAmount,
                 issuerId = issuerId,
                 issuerName = issuerName,
-                linkedAssetTransactionId = bondDepositId
+                links = listOf(link)
             )
             transactionRepository.saveTransaction(transaction)
         }

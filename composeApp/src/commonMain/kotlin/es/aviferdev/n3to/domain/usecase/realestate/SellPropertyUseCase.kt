@@ -4,6 +4,8 @@ import es.aviferdev.n3to.platform.nowMillis
 import com.benasher44.uuid.uuid4
 import es.aviferdev.n3to.domain.model.PropertyExpense
 import es.aviferdev.n3to.domain.model.Transaction
+import es.aviferdev.n3to.domain.model.TransactionLink
+import es.aviferdev.n3to.domain.model.TransactionLinkType
 import es.aviferdev.n3to.domain.model.ValidationError
 import es.aviferdev.n3to.domain.model.TransactionType
 import es.aviferdev.n3to.domain.repository.RealEstatePropertyRepository
@@ -37,6 +39,11 @@ class SellPropertyUseCase(
         if (sellResult.isFailure) return sellResult
 
         val now = nowMillis()
+        val propertyLink = TransactionLink(
+            id = "link_prop_sell_$propertyId",
+            linkType = TransactionLinkType.PROPERTY,
+            linkedEntityId = propertyId
+        )
 
         // 2. Transacción de ingreso por venta (crear o actualizar)
         val saleTxId = "prop_sell_$propertyId"
@@ -50,7 +57,7 @@ class SellPropertyUseCase(
             date = saleDate,
             notes = "Venta: $propertyName",
             createdAt = existingSaleTx?.createdAt ?: now,
-            linkedPropertyId = propertyId
+            links = listOf(propertyLink)
         )
         if (existingSaleTx != null) {
             transactionRepository.updateTransaction(saleTx)
@@ -76,7 +83,7 @@ class SellPropertyUseCase(
                 date = saleDate,
                 notes = expense.notes ?: "Gasto venta: $propertyName",
                 createdAt = now,
-                linkedPropertyId = propertyId
+                links = listOf(propertyLink)
             )
             transactionRepository.saveTransaction(tx)
         }

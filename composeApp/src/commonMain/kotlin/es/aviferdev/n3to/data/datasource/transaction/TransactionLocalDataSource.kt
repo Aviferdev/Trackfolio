@@ -1,6 +1,7 @@
 package es.aviferdev.n3to.data.datasource.transaction
 
 import es.aviferdev.n3to.data.database.TransactionEntity
+import es.aviferdev.n3to.data.database.TransactionLinkEntity
 import es.aviferdev.n3to.domain.model.AnnualSummary
 import es.aviferdev.n3to.domain.model.CategoryBreakdown
 import es.aviferdev.n3to.domain.model.IncomeTypeBreakdown
@@ -48,11 +49,15 @@ interface TransactionLocalDataSource {
     suspend fun update(entity: TransactionEntity): Result<Unit>
     suspend fun delete(id: String): Result<Unit>
 
-    // Portfolio link
-    suspend fun deleteByLinkedAssetTransaction(assetTxId: String): Result<Unit>
-    fun getByLinkedAssetTransaction(assetTxId: String): Flow<Transaction?>
-    fun getOldestDate(accountId: String): Flow<Long?>
-    fun getDividendsByAsset(assetId: String): Flow<List<Transaction>>
+    // Links
+    suspend fun insertLink(link: TransactionLinkEntity): Result<Unit>
+    suspend fun deleteLinksByTransaction(transactionId: String): Result<Unit>
+    suspend fun deleteByLinkTypeAndEntityId(linkType: String, entityId: String): Result<Unit>
+
+    // Queries por link
+    fun getByLinkTypeAndEntityId(linkType: String, entityId: String): Flow<Transaction?>
+    fun getByAssetIdAndLinkType(assetId: String, linkType: String): Flow<List<Transaction>>
     fun getByLinkedProperty(propertyId: String): Flow<List<Transaction>>
     fun getByLinkedValuable(valuableId: String): Flow<List<Transaction>>
+    fun getOldestDate(accountId: String): Flow<Long?>
 }
