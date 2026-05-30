@@ -1,5 +1,6 @@
 package es.aviferdev.n3to.ui.valuable
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,6 +28,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
@@ -38,6 +40,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -108,7 +111,17 @@ fun AddEditValuableBottomSheet(
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
-        containerColor = MaterialTheme.appColors.navySurface
+        sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
+        containerColor = MaterialTheme.appColors.navySurface,
+        dragHandle = {
+            Box(
+                modifier = Modifier
+                    .padding(top = 12.dp, bottom = 4.dp)
+                    .width(40.dp).height(4.dp)
+                    .clip(RoundedCornerShape(2.dp))
+                    .background(MaterialTheme.appColors.navyBorder)
+            )
+        }
     ) {
         Column(
             modifier = Modifier
@@ -288,7 +301,10 @@ fun AddEditValuableBottomSheet(
                 },
                 modifier = Modifier.fillMaxWidth().height(48.dp),
                 shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.appColors.income)
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.appColors.cyanAccent,
+                    contentColor = MaterialTheme.appColors.navyDeep
+                )
             ) {
                 Text(stringResource(Res.string.common_save), fontWeight = FontWeight.SemiBold)
             }
@@ -361,11 +377,13 @@ private fun ExpenseRow(
 
 @Composable
 private fun textFieldColors() = OutlinedTextFieldDefaults.colors(
-    focusedBorderColor = MaterialTheme.appColors.income,
-    unfocusedBorderColor = MaterialTheme.appColors.border,
+    focusedBorderColor = MaterialTheme.appColors.cyanAccent,
+    unfocusedBorderColor = MaterialTheme.appColors.navyBorder,
     focusedTextColor = MaterialTheme.appColors.textPrimary,
     unfocusedTextColor = MaterialTheme.appColors.textPrimary,
-    cursorColor = MaterialTheme.appColors.income,
-    focusedLabelColor = MaterialTheme.appColors.income,
-    unfocusedLabelColor = MaterialTheme.appColors.textSecondary
+    cursorColor = MaterialTheme.appColors.cyanAccent,
+    focusedLabelColor = MaterialTheme.appColors.cyanAccent,
+    unfocusedLabelColor = MaterialTheme.appColors.textSecondary,
+    focusedContainerColor = MaterialTheme.appColors.navySurfaceLight,
+    unfocusedContainerColor = MaterialTheme.appColors.navySurfaceLight
 )

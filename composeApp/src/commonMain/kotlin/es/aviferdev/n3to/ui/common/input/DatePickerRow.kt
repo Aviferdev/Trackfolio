@@ -2,7 +2,6 @@ package es.aviferdev.n3to.ui.common.input
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -22,7 +21,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
@@ -80,21 +78,15 @@ fun DatePickerRow(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(10.dp))
-                .background(MaterialTheme.appColors.surfaceElevated)
+                .background(MaterialTheme.appColors.navySurfaceLight)
                 .clickable { showPicker = true }
-                .padding(horizontal = 14.dp, vertical = 14.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+                .padding(horizontal = 14.dp, vertical = 14.dp)
         ) {
             Text(
                 text = dateText,
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Medium,
                 color = if (dateMillis > 0) MaterialTheme.appColors.textPrimary else MaterialTheme.appColors.textTertiary
-            )
-            Text(
-                text = "📅",
-                fontSize = 16.sp
             )
         }
     }
@@ -121,7 +113,7 @@ fun DatePickerRow(
                 }) {
                     Text(
                         stringResource(Res.string.common_accept),
-                        color = MaterialTheme.appColors.primary
+                        color = MaterialTheme.appColors.cyanAccent
                     )
                 }
             },

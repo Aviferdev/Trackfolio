@@ -56,6 +56,7 @@ import es.aviferdev.n3to.domain.model.LoanType
 import es.aviferdev.n3to.domain.usecase.loan.SaveLoanUseCase
 import es.aviferdev.n3to.platform.nowMillis
 import es.aviferdev.n3to.ui.account.AccountSession
+import es.aviferdev.n3to.ui.common.input.DatePickerRow
 import es.aviferdev.n3to.ui.theme.LocalCurrencySymbol
 import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.ui.theme.formatAmount
@@ -112,7 +113,6 @@ fun AddEditLoanBottomSheet(
     var lenderName by remember { mutableStateOf(loan?.lenderName ?: "") }
     var notes by remember { mutableStateOf(loan?.notes ?: "") }
     var startDateMillis by remember { mutableStateOf(loan?.startDate ?: nowMillis()) }
-    var showStartDatePicker by remember { mutableStateOf(false) }
     var isLoading by remember { mutableStateOf(false) }
 
     val scope = rememberCoroutineScope()
@@ -134,14 +134,14 @@ fun AddEditLoanBottomSheet(
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-        containerColor = MaterialTheme.appColors.surface,
+        containerColor = MaterialTheme.appColors.navySurface,
         dragHandle = {
             Box(
                 modifier = Modifier
                     .padding(top = 12.dp, bottom = 4.dp)
                     .width(40.dp).height(4.dp)
                     .clip(RoundedCornerShape(2.dp))
-                    .background(MaterialTheme.appColors.dragHandle)
+                    .background(MaterialTheme.appColors.navyBorder)
             )
         }
     ) {
@@ -156,7 +156,7 @@ fun AddEditLoanBottomSheet(
                 if (isEditing) stringResource(Res.string.loan_edit_title) else stringResource(Res.string.loan_new_title),
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.appColors.primary
+                color = MaterialTheme.appColors.textPrimary
             )
 
             Spacer(Modifier.height(20.dp))
@@ -174,14 +174,14 @@ fun AddEditLoanBottomSheet(
                     Box(
                         modifier = Modifier
                             .clip(RoundedCornerShape(20.dp))
-                            .background(if (selected) MaterialTheme.appColors.primary else MaterialTheme.appColors.surfaceElevated)
+                            .background(if (selected) MaterialTheme.appColors.cyanAccent else MaterialTheme.appColors.navySurfaceLight)
                             .clickable { selectedType = type }
                             .padding(horizontal = 14.dp, vertical = 8.dp)
                     ) {
                         Text(
                             "${type.emoji} ${type.label}",
                             fontSize = 13.sp,
-                            color = if (selected) Color.White else MaterialTheme.appColors.primary
+                            color = if (selected) MaterialTheme.appColors.navyDeep else MaterialTheme.appColors.cyanAccent
                         )
                     }
                 }
@@ -197,10 +197,7 @@ fun AddEditLoanBottomSheet(
                 placeholder = { Text(stringResource(Res.string.loan_name_placeholder)) },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = MaterialTheme.appColors.primary,
-                    focusedLabelColor = MaterialTheme.appColors.primary
-                )
+                colors = fieldColors()
             )
 
             Spacer(Modifier.height(12.dp))
@@ -216,10 +213,7 @@ fun AddEditLoanBottomSheet(
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = MaterialTheme.appColors.primary,
-                    focusedLabelColor = MaterialTheme.appColors.primary
-                )
+                colors = fieldColors()
             )
 
             Spacer(Modifier.height(12.dp))
@@ -236,10 +230,7 @@ fun AddEditLoanBottomSheet(
                     modifier = Modifier.weight(1f),
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = MaterialTheme.appColors.primary,
-                        focusedLabelColor = MaterialTheme.appColors.primary
-                    )
+                    colors = fieldColors()
                 )
                 OutlinedTextField(
                     value = totalInstallmentsText,
@@ -249,10 +240,7 @@ fun AddEditLoanBottomSheet(
                     modifier = Modifier.weight(1f),
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = MaterialTheme.appColors.primary,
-                        focusedLabelColor = MaterialTheme.appColors.primary
-                    )
+                    colors = fieldColors()
                 )
             }
 
@@ -277,35 +265,19 @@ fun AddEditLoanBottomSheet(
                             "${formatAmount(previewPayment)} $currency/mes",
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Medium,
-                            color = MaterialTheme.appColors.primary
+                            color = MaterialTheme.appColors.cyanAccent
                         )
                     }
                 }
             }
 
             // ── Fecha de inicio ───────────────────────────────────────────────
-            Spacer(Modifier.height(16.dp))
-            Text(
-                stringResource(Res.string.fixedincome_start_date_label),
-                fontSize = 12.sp,
-                color = MaterialTheme.appColors.textSecondary,
-                fontWeight = FontWeight.Medium
+            Spacer(Modifier.height(12.dp))
+            DatePickerRow(
+                label = stringResource(Res.string.fixedincome_start_date_label),
+                dateMillis = startDateMillis,
+                onDateSelected = { startDateMillis = it }
             )
-            Spacer(Modifier.height(6.dp))
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(10.dp))
-                    .border(0.5.dp, MaterialTheme.appColors.border, RoundedCornerShape(10.dp))
-                    .clickable { showStartDatePicker = true }
-                    .padding(horizontal = 14.dp, vertical = 14.dp)
-            ) {
-                Text(
-                    text = formatFullDate(startDateMillis),
-                    fontSize = 14.sp,
-                    color = MaterialTheme.appColors.textPrimary
-                )
-            }
 
             Spacer(Modifier.height(12.dp))
 
@@ -317,10 +289,7 @@ fun AddEditLoanBottomSheet(
                 placeholder = { Text(stringResource(Res.string.loan_lender_placeholder)) },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = MaterialTheme.appColors.primary,
-                    focusedLabelColor = MaterialTheme.appColors.primary
-                )
+                colors = fieldColors()
             )
 
             Spacer(Modifier.height(12.dp))
@@ -332,10 +301,7 @@ fun AddEditLoanBottomSheet(
                 label = { Text(stringResource(Res.string.portfolio_add_tx_notes_label)) },
                 modifier = Modifier.fillMaxWidth(),
                 minLines = 2,
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = MaterialTheme.appColors.primary,
-                    focusedLabelColor = MaterialTheme.appColors.primary
-                )
+                colors = fieldColors()
             )
 
             Spacer(Modifier.height(24.dp))
@@ -429,7 +395,10 @@ fun AddEditLoanBottomSheet(
                 modifier = Modifier.fillMaxWidth().height(50.dp),
                 enabled = isValid && !isLoading,
                 shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.appColors.primary)
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.appColors.cyanAccent,
+                    contentColor = MaterialTheme.appColors.navyDeep
+                )
             ) {
                 if (isLoading) {
                     CircularProgressIndicator(
@@ -450,54 +419,19 @@ fun AddEditLoanBottomSheet(
         }
     }
 
-    // ── Date picker para fecha de inicio ────────────────────────────────────────
-    if (showStartDatePicker) {
-        val pickerState = rememberDatePickerState(
-            initialSelectedDateMillis = startDateMillis
-        )
-        DatePickerDialog(
-            onDismissRequest = { showStartDatePicker = false },
-            confirmButton = {
-                TextButton(onClick = {
-                    val selected = pickerState.selectedDateMillis
-                    if (selected != null) {
-                        startDateMillis = selected
-                    }
-                    showStartDatePicker = false
-                }) {
-                    Text(
-                        stringResource(Res.string.common_accept),
-                        color = MaterialTheme.appColors.primary
-                    )
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { showStartDatePicker = false }) {
-                    Text(
-                        stringResource(Res.string.common_cancel),
-                        color = MaterialTheme.appColors.textSecondary
-                    )
-                }
-            },
-            colors = DatePickerDefaults.colors(containerColor = MaterialTheme.appColors.surface)
-        ) {
-            DatePicker(
-                state = pickerState,
-                colors = DatePickerDefaults.colors(
-                    selectedDayContainerColor = MaterialTheme.appColors.primary,
-                    todayDateBorderColor = MaterialTheme.appColors.primary
-                )
-            )
-        }
-    }
 }
 
-private fun formatFullDate(epochMillis: Long): String {
-    val months = listOf(
-        "enero", "febrero", "marzo", "abril", "mayo", "junio",
-        "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"
-    )
-    val instant = Instant.fromEpochMilliseconds(epochMillis)
-    val ld: LocalDate = instant.toLocalDateTime(TimeZone.currentSystemDefault()).date
-    return "${ld.dayOfMonth} de ${months[ld.monthNumber - 1]} de ${ld.year}"
-}
+@Composable
+private fun fieldColors() = OutlinedTextFieldDefaults.colors(
+    focusedBorderColor = MaterialTheme.appColors.cyanAccent,
+    unfocusedBorderColor = MaterialTheme.appColors.navyBorder,
+    cursorColor = MaterialTheme.appColors.cyanAccent,
+    focusedLabelColor = MaterialTheme.appColors.cyanAccent,
+    unfocusedLabelColor = MaterialTheme.appColors.textSecondary,
+    focusedTextColor = MaterialTheme.appColors.textPrimary,
+    unfocusedTextColor = MaterialTheme.appColors.textPrimary,
+    focusedContainerColor = MaterialTheme.appColors.navySurfaceLight,
+    unfocusedContainerColor = MaterialTheme.appColors.navySurfaceLight
+)
+
+

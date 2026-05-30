@@ -14,7 +14,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
-import androidx.compose.material.icons.outlined.CalendarMonth
 import androidx.compose.material.icons.outlined.ExpandLess
 import androidx.compose.material.icons.outlined.ExpandMore
 import androidx.compose.material.icons.outlined.Search
@@ -40,14 +39,12 @@ import es.aviferdev.n3to.domain.usecase.category.GetCategoriesByTypeUseCase
 import es.aviferdev.n3to.domain.usecase.realestate.SavePropertyUseCase
 import es.aviferdev.n3to.ui.account.AccountSession
 import es.aviferdev.n3to.ui.common.component.SelectableChip
+import es.aviferdev.n3to.ui.common.input.DatePickerRow
 import es.aviferdev.n3to.ui.theme.*
 
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 
-import kotlinx.datetime.Instant
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.common_accept
 import n3to.composeapp.generated.resources.common_cancel
@@ -130,7 +127,6 @@ fun AddEditPropertyBottomSheet(
     }
     var selectedLoanId by remember { mutableStateOf(existingProperty?.linkedLoanId) }
     var showLoanPicker by remember { mutableStateOf(false) }
-    var showDatePicker by remember { mutableStateOf(false) }
     var isLoading by remember { mutableStateOf(false) }
     // Gastos de compra
     var showPurchaseExpenses by remember { mutableStateOf(isEditing) }
@@ -159,8 +155,6 @@ fun AddEditPropertyBottomSheet(
             ownership in 0.0..100.0 &&
             (selectedRentalStatus != RentalStatus.RENTED || (monthlyRent != null && monthlyRent > 0))
 
-    val datePickerState = rememberDatePickerState(initialSelectedDateMillis = acquisitionDateMillis)
-
     if (showLoanPicker) {
         LoanPickerSheet(
             loans = availableLoans, selectedLoanId = selectedLoanId,
@@ -168,50 +162,17 @@ fun AddEditPropertyBottomSheet(
             onDismiss = { showLoanPicker = false }
         )
     }
-    if (showDatePicker) {
-        DatePickerDialog(
-            onDismissRequest = { showDatePicker = false },
-            confirmButton = {
-                TextButton(onClick = {
-                    datePickerState.selectedDateMillis?.let {
-                        acquisitionDateMillis = it
-                    }; showDatePicker = false
-                }) {
-                    Text(
-                        stringResource(Res.string.common_accept),
-                        color = MaterialTheme.appColors.primary
-                    )
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = {
-                    showDatePicker = false
-                }) {
-                    Text(
-                        stringResource(Res.string.common_cancel),
-                        color = MaterialTheme.appColors.textTertiary
-                    )
-                }
-            }
-        ) {
-            DatePicker(
-                state = datePickerState,
-                colors = DatePickerDefaults.colors(containerColor = MaterialTheme.appColors.surface)
-            )
-        }
-    }
-
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-        containerColor = MaterialTheme.appColors.surface,
+        containerColor = MaterialTheme.appColors.navySurface,
         dragHandle = {
             Box(
                 modifier = Modifier
                     .padding(top = 12.dp, bottom = 4.dp)
                     .width(40.dp).height(4.dp)
                     .clip(RoundedCornerShape(2.dp))
-                    .background(MaterialTheme.appColors.dragHandle)
+                    .background(MaterialTheme.appColors.navyBorder)
             )
         }
     ) {
@@ -277,7 +238,9 @@ fun AddEditPropertyBottomSheet(
                     SelectableChip(
                         label = "${type.emoji} ${type.label}",
                         selected = selectedPropertyType == type,
-                        onClick = { selectedPropertyType = type }
+                        onClick = { selectedPropertyType = type },
+                        accentColor = MaterialTheme.appColors.cyanAccent,
+                        borderColorUnselected = MaterialTheme.appColors.navyBorder
                     )
                 }
             }
@@ -305,24 +268,10 @@ fun AddEditPropertyBottomSheet(
             Spacer(Modifier.height(12.dp))
 
             // ── Fecha de adquisición ─────────────────────────────────────────
-            SectionLabel(stringResource(Res.string.realestate_acquisition_date_label))
-            Spacer(Modifier.height(6.dp))
-            OutlinedTextField(
-                value = formatDate(acquisitionDateMillis),
-                onValueChange = {},
-                readOnly = true,
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(10.dp),
-                colors = fieldColors(),
-                trailingIcon = {
-                    IconButton(onClick = { showDatePicker = true }) {
-                        Icon(
-                            Icons.Outlined.CalendarMonth,
-                            stringResource(Res.string.common_action_cd),
-                            tint = MaterialTheme.appColors.textTertiary
-                        )
-                    }
-                }
+            DatePickerRow(
+                label = stringResource(Res.string.realestate_acquisition_date_label),
+                dateMillis = acquisitionDateMillis,
+                onDateSelected = { acquisitionDateMillis = it }
             )
 
             Spacer(Modifier.height(12.dp))
@@ -347,7 +296,9 @@ fun AddEditPropertyBottomSheet(
                     SelectableChip(
                         label = "${status.emoji} ${status.label}",
                         selected = selectedRentalStatus == status,
-                        onClick = { selectedRentalStatus = status }
+                        onClick = { selectedRentalStatus = status },
+                        accentColor = MaterialTheme.appColors.cyanAccent,
+                        borderColorUnselected = MaterialTheme.appColors.navyBorder
                     )
                 }
             }
@@ -370,9 +321,9 @@ fun AddEditPropertyBottomSheet(
                 onClick = { showLoanPicker = true },
                 modifier = Modifier.fillMaxWidth().height(44.dp),
                 shape = RoundedCornerShape(10.dp),
-                colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.appColors.primary),
+                colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.appColors.cyanAccent),
                 border = ButtonDefaults.outlinedButtonBorder(enabled = true).copy(
-                    brush = androidx.compose.ui.graphics.SolidColor(MaterialTheme.appColors.primary)
+                    brush = androidx.compose.ui.graphics.SolidColor(MaterialTheme.appColors.cyanAccent)
                 )
             ) {
                 Icon(Icons.Outlined.Search, null, modifier = Modifier.size(18.dp))
@@ -426,13 +377,13 @@ fun AddEditPropertyBottomSheet(
                             Icons.Outlined.Add,
                             null,
                             modifier = Modifier.size(16.dp),
-                            tint = MaterialTheme.appColors.primary
+                            tint = MaterialTheme.appColors.cyanAccent
                         )
                         Spacer(Modifier.width(4.dp))
                         Text(
                             stringResource(Res.string.realestate_add_expense),
                             fontSize = 12.sp,
-                            color = MaterialTheme.appColors.primary
+                            color = MaterialTheme.appColors.cyanAccent
                         )
                     }
                 }
@@ -520,8 +471,9 @@ fun AddEditPropertyBottomSheet(
                 modifier = Modifier.fillMaxWidth().height(50.dp),
                 shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.appColors.primary,
-                    disabledContainerColor = MaterialTheme.appColors.primary.copy(alpha = 0.38f)
+                    containerColor = MaterialTheme.appColors.cyanAccent,
+                    contentColor = MaterialTheme.appColors.navyDeep,
+                    disabledContainerColor = MaterialTheme.appColors.cyanAccent.copy(alpha = 0.38f)
                 )
             ) {
                 if (isLoading) {
@@ -551,17 +503,15 @@ private fun SectionLabel(text: String) {
 
 @Composable
 private fun fieldColors() = OutlinedTextFieldDefaults.colors(
-    focusedBorderColor = MaterialTheme.appColors.primary,
-    unfocusedBorderColor = MaterialTheme.appColors.border,
-    cursorColor = MaterialTheme.appColors.primary,
-    focusedLabelColor = MaterialTheme.appColors.primary,
-    unfocusedLabelColor = MaterialTheme.appColors.textTertiary,
+    focusedBorderColor = MaterialTheme.appColors.cyanAccent,
+    unfocusedBorderColor = MaterialTheme.appColors.navyBorder,
+    cursorColor = MaterialTheme.appColors.cyanAccent,
+    focusedLabelColor = MaterialTheme.appColors.cyanAccent,
+    unfocusedLabelColor = MaterialTheme.appColors.textSecondary,
     focusedTextColor = MaterialTheme.appColors.textPrimary,
-    unfocusedTextColor = MaterialTheme.appColors.textPrimary
+    unfocusedTextColor = MaterialTheme.appColors.textPrimary,
+    focusedContainerColor = MaterialTheme.appColors.navySurfaceLight,
+    unfocusedContainerColor = MaterialTheme.appColors.navySurfaceLight
 )
 
-private fun formatDate(epochMillis: Long): String {
-    val local =
-        Instant.fromEpochMilliseconds(epochMillis).toLocalDateTime(TimeZone.currentSystemDefault())
-    return "${local.dayOfMonth}/${local.monthNumber}/${local.year}"
-}
+
