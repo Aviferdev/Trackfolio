@@ -20,6 +20,8 @@ CREATE TABLE FixedIncomePositionEntity (
     maturityDate        INTEGER NOT NULL,
     platformId          TEXT    NOT NULL,
     issuerId            TEXT,
+    region              TEXT,
+    sector              TEXT,
     autoRenew           INTEGER NOT NULL DEFAULT 0,
     archived            INTEGER NOT NULL DEFAULT 0,
     closedAt            INTEGER,
@@ -85,9 +87,9 @@ insert:
 INSERT INTO FixedIncomePositionEntity(
     id, accountId, portfolioId, assetCategoryId, name, ticker, type, notes, principal, quantity,
     nominalPerUnit, interestRate, interestFrequency, startDate, maturityDate,
-    platformId, issuerId, autoRenew, archived, closedAt, closeType, feeNote, createdAt
+    platformId, issuerId, region, sector, autoRenew, archived, closedAt, closeType, feeNote, createdAt
 ) VALUES (
-    ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, NULL, NULL, ?, ?
+    ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, NULL, NULL, ?, ?
 );
 
 update:
@@ -97,6 +99,7 @@ SET assetCategoryId = :assetCategoryId, name = :name, ticker = :ticker, type = :
     interestRate = :interestRate, interestFrequency = :interestFrequency,
     startDate = :startDate, maturityDate = :maturityDate,
     platformId = :platformId, issuerId = :issuerId,
+    region = :region, sector = :sector,
     autoRenew = :autoRenew, feeNote = :feeNote
 WHERE id = :id;
 
