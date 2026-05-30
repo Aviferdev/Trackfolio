@@ -1,7 +1,6 @@
 package es.aviferdev.n3to.ui.account
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,7 +21,6 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
@@ -56,17 +54,14 @@ import n3to.composeapp.generated.resources.account_initial_balance_desc
 import n3to.composeapp.generated.resources.account_initial_balance_label
 import n3to.composeapp.generated.resources.account_initial_balance_must_be_positive
 import n3to.composeapp.generated.resources.account_create_button
-import n3to.composeapp.generated.resources.account_delete_confirm_message
 import n3to.composeapp.generated.resources.account_initial_balance_required
 import n3to.composeapp.generated.resources.account_initial_balance_valid_hint
 import n3to.composeapp.generated.resources.account_name_placeholder
 import n3to.composeapp.generated.resources.account_name_supporting_text
-import n3to.composeapp.generated.resources.account_archive_anyway
 import n3to.composeapp.generated.resources.common_cancel
 import n3to.composeapp.generated.resources.portfolio_add_asset_save
 import n3to.composeapp.generated.resources.portfolio_name_required
 import n3to.composeapp.generated.resources.portfolio_platform_name
-import n3to.composeapp.generated.resources.settings_delete_account_label
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -75,8 +70,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 fun AddEditAccountBottomSheet(
     account: Account?,
     onSave: (name: String, initialBalance: Double, currency: String) -> Unit,
-    onDismiss: () -> Unit,
-    onDelete: (() -> Unit)? = null
+    onDismiss: () -> Unit
 ) {
     val isEditing = account != null
 
@@ -84,12 +78,10 @@ fun AddEditAccountBottomSheet(
     var nameError by remember { mutableStateOf(false) }
     var balanceText by remember { mutableStateOf("") }
     var balanceError by remember { mutableStateOf(false) }
-    var showDeleteConfirm by remember { mutableStateOf(false) }
     var selectedCurrency by remember { mutableStateOf(AppCurrency.fromCode(account?.currency ?: "EUR")) }
 
     ModalBottomSheet(
         onDismissRequest = {
-            showDeleteConfirm = false
             onDismiss()
         },
         sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
@@ -303,7 +295,6 @@ fun AddEditAccountBottomSheet(
 
             Spacer(Modifier.height(12.dp))
             TextButton(onClick = {
-                showDeleteConfirm = false
                 onDismiss()
             }, modifier = Modifier.fillMaxWidth()) {
                 Text(
@@ -311,59 +302,6 @@ fun AddEditAccountBottomSheet(
                     fontSize = 14.sp,
                     color = MaterialTheme.appColors.textSecondary
                 )
-            }
-
-            // ── Eliminar cuenta (solo modo edición) ────────────────────────
-            if (isEditing && onDelete != null) {
-                HorizontalDivider(
-                    color = MaterialTheme.appColors.navyBorder,
-                    modifier = Modifier.padding(top = 8.dp, bottom = 8.dp)
-                )
-
-                if (showDeleteConfirm) {
-                    Text(
-                        text = stringResource(Res.string.account_delete_confirm_message),
-                        fontSize = 12.sp,
-                        color = MaterialTheme.appColors.textSecondary,
-                        modifier = Modifier.padding(horizontal = 4.dp, vertical = 8.dp)
-                    )
-                    Row(modifier = Modifier.fillMaxWidth()) {
-                        TextButton(
-                            onClick = { showDeleteConfirm = false },
-                            modifier = Modifier.weight(1f)
-                        ) {
-                            Text(
-                                stringResource(Res.string.common_cancel),
-                                fontSize = 13.sp,
-                                color = MaterialTheme.appColors.textSecondary
-                            )
-                        }
-                        TextButton(onClick = onDelete) {
-                            Text(
-                                stringResource(Res.string.account_archive_anyway),
-                                fontSize = 13.sp,
-                                fontWeight = FontWeight.SemiBold,
-                                color = MaterialTheme.appColors.expense
-                            )
-                        }
-                    }
-                } else {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable { showDeleteConfirm = true }
-                            .padding(horizontal = 4.dp, vertical = 12.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = stringResource(Res.string.settings_delete_account_label),
-                            fontSize = 13.sp,
-                            fontWeight = FontWeight.Medium,
-                            color = MaterialTheme.appColors.expense,
-                            modifier = Modifier.weight(1f)
-                        )
-                    }
-                }
             }
         }
     }

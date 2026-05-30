@@ -3,12 +3,13 @@ package es.aviferdev.n3to.ui.portfolio
 import androidx.compose.material3.MaterialTheme
 import es.aviferdev.n3to.ui.theme.appColors
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -18,6 +19,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.AssetRegion
+import es.aviferdev.n3to.ui.common.dialog.DeleteConfirmDialog
 import es.aviferdev.n3to.domain.usecase.assetmetadata.DeleteRegionUseCase
 import es.aviferdev.n3to.domain.usecase.assetmetadata.GetRegionsUseCase
 import es.aviferdev.n3to.domain.usecase.assetmetadata.SaveRegionUseCase
@@ -26,6 +28,8 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.common_delete
+import n3to.composeapp.generated.resources.portfolio_region_delete_message
+import n3to.composeapp.generated.resources.portfolio_region_delete_title
 import n3to.composeapp.generated.resources.portfolio_region_name
 import n3to.composeapp.generated.resources.portfolio_region_new
 import n3to.composeapp.generated.resources.portfolio_settings_region_section
@@ -47,6 +51,7 @@ fun RegionManagementSheet(
     var newName by remember { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(true) }
     var errorMsg by remember { mutableStateOf<String?>(null) }
+    var pendingDeleteId by remember { mutableStateOf<String?>(null) }
 
     LaunchedEffect(Unit) {
         getRegionsUseCase().collectLatest { list ->
@@ -164,13 +169,24 @@ fun RegionManagementSheet(
                     items(regions, key = { it.id }) { region ->
                         RegionItem(
                             region = region,
-                            onDelete = {
-                                scope.launch { deleteRegionUseCase(region.id) }
-                            }
+                            onDelete = { pendingDeleteId = region.id }
                         )
                     }
                 }
             }
+        }
+
+        pendingDeleteId?.let { id ->
+            val region = regions.find { it.id == id }
+            DeleteConfirmDialog(
+                title = stringResource(Res.string.portfolio_region_delete_title),
+                message = stringResource(Res.string.portfolio_region_delete_message, region?.name ?: ""),
+                onConfirm = {
+                    scope.launch { deleteRegionUseCase(id) }
+                    pendingDeleteId = null
+                },
+                onDismiss = { pendingDeleteId = null }
+            )
         }
     }
 }
@@ -184,7 +200,8 @@ private fun RegionItem(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(10.dp))
-            .background(MaterialTheme.appColors.surfaceElevated)
+            .background(MaterialTheme.appColors.navySurface)
+            .border(0.5.dp, MaterialTheme.appColors.navyBorder, RoundedCornerShape(10.dp))
             .padding(horizontal = 12.dp, vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -199,10 +216,10 @@ private fun RegionItem(
             modifier = Modifier.size(32.dp)
         ) {
             Icon(
-                Icons.Default.Delete,
+                Icons.Outlined.Delete,
                 stringResource(Res.string.common_delete),
-                tint = MaterialTheme.appColors.expense.copy(alpha = 0.7f),
-                modifier = Modifier.size(20.dp)
+                tint = MaterialTheme.appColors.expense,
+                modifier = Modifier.size(16.dp)
             )
         }
     }

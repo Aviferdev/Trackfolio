@@ -12,7 +12,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -23,6 +23,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.AssetSector
+import es.aviferdev.n3to.ui.common.dialog.DeleteConfirmDialog
 import es.aviferdev.n3to.ui.common.toMaterialIcon
 import es.aviferdev.n3to.domain.usecase.assetmetadata.DeleteSectorUseCase
 import es.aviferdev.n3to.domain.usecase.assetmetadata.GetSectorsUseCase
@@ -32,6 +33,8 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import n3to.composeapp.generated.resources.Res
 import n3to.composeapp.generated.resources.common_delete
+import n3to.composeapp.generated.resources.portfolio_sector_delete_message
+import n3to.composeapp.generated.resources.portfolio_sector_delete_title
 import n3to.composeapp.generated.resources.portfolio_sector_name
 import n3to.composeapp.generated.resources.portfolio_sector_new
 import n3to.composeapp.generated.resources.portfolio_settings_sector_section
@@ -59,6 +62,7 @@ fun SectorManagementSheet(
     var newIcon by remember { mutableStateOf("💻") }
     var isLoading by remember { mutableStateOf(true) }
     var errorMsg by remember { mutableStateOf<String?>(null) }
+    var pendingDeleteId by remember { mutableStateOf<String?>(null) }
 
     LaunchedEffect(Unit) {
         getSectorsUseCase().collectLatest { list ->
@@ -227,13 +231,24 @@ fun SectorManagementSheet(
                     items(sectors, key = { it.id }) { sector ->
                         SectorItem(
                             sector = sector,
-                            onDelete = {
-                                scope.launch { deleteSectorUseCase(sector.id) }
-                            }
+                            onDelete = { pendingDeleteId = sector.id }
                         )
                     }
                 }
             }
+        }
+
+        pendingDeleteId?.let { id ->
+            val sector = sectors.find { it.id == id }
+            DeleteConfirmDialog(
+                title = stringResource(Res.string.portfolio_sector_delete_title),
+                message = stringResource(Res.string.portfolio_sector_delete_message, sector?.name ?: ""),
+                onConfirm = {
+                    scope.launch { deleteSectorUseCase(id) }
+                    pendingDeleteId = null
+                },
+                onDismiss = { pendingDeleteId = null }
+            )
         }
     }
 }
@@ -247,7 +262,8 @@ private fun SectorItem(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(10.dp))
-            .background(MaterialTheme.appColors.surfaceElevated)
+            .background(MaterialTheme.appColors.navySurface)
+            .border(0.5.dp, MaterialTheme.appColors.navyBorder, RoundedCornerShape(10.dp))
             .padding(horizontal = 12.dp, vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -269,10 +285,10 @@ private fun SectorItem(
             modifier = Modifier.size(32.dp)
         ) {
             Icon(
-                Icons.Default.Delete,
+                Icons.Outlined.Delete,
                 stringResource(Res.string.common_delete),
-                tint = MaterialTheme.appColors.expense.copy(alpha = 0.7f),
-                modifier = Modifier.size(20.dp)
+                tint = MaterialTheme.appColors.expense,
+                modifier = Modifier.size(16.dp)
             )
         }
     }

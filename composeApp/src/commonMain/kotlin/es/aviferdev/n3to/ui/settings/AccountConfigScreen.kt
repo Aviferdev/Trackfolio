@@ -21,6 +21,7 @@ import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.automirrored.outlined.TrendingDown
 import androidx.compose.material.icons.automirrored.outlined.TrendingUp
 import androidx.compose.material.icons.outlined.AccountBalance
+import androidx.compose.material.icons.outlined.Archive
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.GpsFixed
 import androidx.compose.material.icons.outlined.Shield
@@ -60,9 +61,8 @@ import n3to.composeapp.generated.resources.account_archive_warning_assets_only
 import n3to.composeapp.generated.resources.account_archive_warning_both
 import n3to.composeapp.generated.resources.account_archive_warning_fi_only
 import n3to.composeapp.generated.resources.account_archive_warning_title
-import n3to.composeapp.generated.resources.account_delete_confirm_message
-import n3to.composeapp.generated.resources.account_delete_confirm_title
 import n3to.composeapp.generated.resources.help_account_body
+import n3to.composeapp.generated.resources.settings_delete_account_label
 import n3to.composeapp.generated.resources.home_section_emergency_fund
 import n3to.composeapp.generated.resources.settings_account_section_categories
 import n3to.composeapp.generated.resources.settings_account_section_fiscal
@@ -190,19 +190,25 @@ fun AccountConfigScreen(
                             color = MaterialTheme.appColors.cyanAccent,
                             showChevron = true
                         )
+                        SettingsRowDivider()
+                        ActionRow(
+                            icon = Icons.Outlined.Archive,
+                            label = stringResource(Res.string.settings_delete_account_label),
+                            onClick = { viewModel.requestDelete() },
+                            color = MaterialTheme.appColors.expense
+                        )
                     }
                 }
             }
         }
     }
 
-    // — Edit bottom sheet (con opción de eliminar) —
+    // — Edit bottom sheet (solo editar nombre) —
     if (viewModel.showEditSheet.collectAsState().value && account != null) {
         AddEditAccountBottomSheet(
             account = account,
             onSave = { newName, _, _ -> viewModel.editAccount(account, newName) },
-            onDismiss = { viewModel.closeEditSheet() },
-            onDelete = { viewModel.requestDelete() }
+            onDismiss = { viewModel.closeEditSheet() }
         )
     }
     archiveWarning?.let { openItems ->

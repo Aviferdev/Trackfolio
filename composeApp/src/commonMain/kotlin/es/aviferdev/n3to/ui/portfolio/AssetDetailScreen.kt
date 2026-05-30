@@ -2,7 +2,6 @@ package es.aviferdev.n3to.ui.portfolio
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -45,6 +44,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.aviferdev.n3to.domain.model.Asset
 import es.aviferdev.n3to.domain.model.Platform
+import es.aviferdev.n3to.ui.portfolio.components.PlatformToggleChip
 import es.aviferdev.n3to.ui.common.topbar.TopBarWithActionsApp
 import es.aviferdev.n3to.ui.theme.LocalCurrencySymbol
 import es.aviferdev.n3to.ui.theme.N3toTheme
@@ -271,6 +271,9 @@ private fun AssetHeroCard(asset: Asset, modifier: Modifier = Modifier) {
     val heroCardBg2 = MaterialTheme.appColors.heroCardEnd
     val appCCyanGlow = MaterialTheme.appColors.cyanGlow
     val appCCyanSubtle = MaterialTheme.appColors.cyanSubtle
+    val appCTextPrimary = MaterialTheme.appColors.textPrimary
+    val appCTextSecondary = MaterialTheme.appColors.textSecondary
+    val appCTextTertiary = MaterialTheme.appColors.textTertiary
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -302,7 +305,7 @@ private fun AssetHeroCard(asset: Asset, modifier: Modifier = Modifier) {
         Text(
             text = "ACTIVO",
             fontSize = 11.sp,
-            color = Color.White.copy(alpha = 0.45f),
+            color = appCTextTertiary,
             fontWeight = FontWeight.Normal,
             letterSpacing = 0.8.sp
         )
@@ -311,7 +314,7 @@ private fun AssetHeroCard(asset: Asset, modifier: Modifier = Modifier) {
             text = asset.ticker.ifBlank { asset.name },
             fontSize = 36.sp,
             fontWeight = FontWeight.ExtraBold,
-            color = Color.White,
+            color = appCTextPrimary,
             letterSpacing = (-1.5).sp,
             lineHeight = 36.sp
         )
@@ -320,7 +323,7 @@ private fun AssetHeroCard(asset: Asset, modifier: Modifier = Modifier) {
             Text(
                 text = asset.name,
                 fontSize = 13.sp,
-                color = Color.White.copy(alpha = 0.55f),
+                color = appCTextSecondary,
                 fontWeight = FontWeight.Normal
             )
         }
@@ -336,7 +339,7 @@ private fun AssetHeroCard(asset: Asset, modifier: Modifier = Modifier) {
                 Text(
                     text = stringResource(Res.string.portfolio_update_price_current),
                     fontSize = 11.sp,
-                    color = Color.White.copy(alpha = 0.45f)
+                    color = appCTextTertiary
                 )
                 Text(
                     text = "${formatAmount(price)} $currency",
@@ -373,45 +376,6 @@ private fun NavyCard(content: @Composable () -> Unit) {
             .border(0.5.dp, appCNavyBorder, RoundedCornerShape(14.dp))
     ) {
         content()
-    }
-}
-
-@Composable
-private fun PlatformToggleChip(
-    icon: String,
-    label: String,
-    isSelected: Boolean,
-    onClick: () -> Unit
-) {
-    val appCNavySurfaceLight = MaterialTheme.appColors.navySurfaceLight
-    val appCCyanAccent = MaterialTheme.appColors.cyanAccent
-    val appCNavyBorder = MaterialTheme.appColors.navyBorder
-    val appCTextSecondary = MaterialTheme.appColors.textSecondary
-    val bg = if (isSelected) appCCyanAccent.copy(alpha = 0.12f) else appCNavySurfaceLight
-    val border = if (isSelected) appCCyanAccent else appCNavyBorder
-    val text = if (isSelected) appCCyanAccent else appCTextSecondary
-
-    Row(
-        modifier = Modifier
-            .clip(RoundedCornerShape(20.dp))
-            .background(bg)
-            .border(if (isSelected) 1.5.dp else 0.5.dp, border, RoundedCornerShape(20.dp))
-            .clickable(onClick = onClick)
-            .padding(horizontal = 12.dp, vertical = 8.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(icon, fontSize = 14.sp)
-        Spacer(Modifier.width(6.dp))
-        Text(
-            text = label,
-            fontSize = 13.sp,
-            color = text,
-            fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal
-        )
-        if (isSelected) {
-            Spacer(Modifier.width(4.dp))
-            Text("✓", fontSize = 12.sp, color = appCCyanAccent, fontWeight = FontWeight.Bold)
-        }
     }
 }
 

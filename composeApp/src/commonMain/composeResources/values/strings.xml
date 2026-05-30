@@ -1086,6 +1086,10 @@
     <string name="portfolio_sector_name">Nombre del sector</string>
     <string name="portfolio_region_new">Nueva región</string>
     <string name="portfolio_region_name">Nombre de la región</string>
+    <string name="portfolio_sector_delete_title">Eliminar sector</string>
+    <string name="portfolio_sector_delete_message">¿Eliminar el sector \"%1$s\"? Los activos que lo usan quedarán sin sector asignado.</string>
+    <string name="portfolio_region_delete_title">Eliminar región</string>
+    <string name="portfolio_region_delete_message">¿Eliminar la región \"%1$s\"? Los activos que la usan quedarán sin región asignada.</string>
     <string name="portfolio_asset_detail_title_alt">Detalle activo</string>
     <string name="portfolio_asset_history_title">Historial del activo</string>
     <string name="portfolio_edit_portfolio_title_alt">Editar cartera</string>

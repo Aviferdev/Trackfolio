@@ -18,7 +18,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.Fingerprint
 import androidx.compose.material.icons.outlined.Language
 import androidx.compose.material.icons.outlined.Lightbulb
@@ -500,10 +499,10 @@ internal fun SettingsAccountCard(
                 modifier = Modifier.size(32.dp)
             ) {
                 Icon(
-                    Icons.Outlined.Settings,
+                    Icons.AutoMirrored.Filled.KeyboardArrowRight,
                     contentDescription = stringResource(Res.string.settings_configure_cd),
                     tint = MaterialTheme.appColors.cyanAccent,
-                    modifier = Modifier.size(18.dp)
+                    modifier = Modifier.size(20.dp)
                 )
             }
         }
