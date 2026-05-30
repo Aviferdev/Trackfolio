@@ -30,6 +30,12 @@ class ValuableRepositoryImpl(
     override suspend fun linkLoan(valuableId: String, loanId: String): Result<Unit> =
         localDataSource.updateLinkedLoan(valuableId, loanId)
 
+    override suspend fun archive(id: String): Result<Unit> =
+        localDataSource.archive(id)
+
+    override suspend fun unarchive(id: String): Result<Unit> =
+        localDataSource.unarchive(id)
+
     override suspend fun delete(id: String): Result<Unit> =
         localDataSource.delete(id)
 }

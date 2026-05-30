@@ -10,25 +10,27 @@ CREATE TABLE ValuableEntity (
     saleDate         INTEGER,
     linkedLoanId     TEXT,
     notes            TEXT,
+    archived         INTEGER NOT NULL DEFAULT 0,
     createdAt        INTEGER NOT NULL,
     FOREIGN KEY (accountId) REFERENCES AccountEntity(id) ON DELETE CASCADE,
     FOREIGN KEY (linkedLoanId) REFERENCES LoanEntity(id) ON DELETE SET NULL
 );
 
-CREATE INDEX idx_valuable_account ON ValuableEntity(accountId);
-CREATE INDEX idx_valuable_loan    ON ValuableEntity(linkedLoanId);
+CREATE INDEX idx_valuable_account  ON ValuableEntity(accountId);
+CREATE INDEX idx_valuable_loan     ON ValuableEntity(linkedLoanId);
+CREATE INDEX idx_valuable_archived ON ValuableEntity(archived);
 
 -- ═══ LECTURA ═══
 
 selectByAccount:
 SELECT * FROM ValuableEntity
-WHERE accountId = :accountId
+WHERE accountId = :accountId AND archived = 0
 ORDER BY saleDate IS NULL DESC, purchaseDate DESC;
 
 selectActiveByAccount:
 SELECT * FROM ValuableEntity
 WHERE accountId = :accountId
-  AND saleDate IS NULL
+  AND saleDate IS NULL AND archived = 0
 ORDER BY purchaseDate DESC;
 
 selectById:
@@ -42,29 +44,35 @@ INSERT OR REPLACE INTO ValuableEntity(
     id, accountId, name, description,
     purchasePrice, purchaseDate, estimatedValue,
     salePrice, saleDate, linkedLoanId,
-    notes, createdAt
+    notes, archived, createdAt
 ) VALUES (
     :id, :accountId, :name, :description,
     :purchasePrice, :purchaseDate, :estimatedValue,
     :salePrice, :saleDate, :linkedLoanId,
-    :notes, :createdAt
+    :notes, :archived, :createdAt
 );
 
 sell:
 UPDATE ValuableEntity
 SET salePrice = :salePrice,
     saleDate  = :saleDate
-WHERE id = :id;
+WHERE id = :id AND archived = 0;
 
 updateEstimatedValue:
 UPDATE ValuableEntity
 SET estimatedValue = :value
-WHERE id = :id;
+WHERE id = :id AND archived = 0;
 
 updateLinkedLoan:
 UPDATE ValuableEntity
 SET linkedLoanId = :loanId
 WHERE id = :id;
 
+archive:
+UPDATE ValuableEntity SET archived = 1 WHERE id = :id;
+
+unarchive:
+UPDATE ValuableEntity SET archived = 0 WHERE id = :id;
+
 deleteById:
-DELETE FROM ValuableEntity WHERE id = :id;
+DELETE FROM ValuableEntity WHERE id = :id AND archived = 0;

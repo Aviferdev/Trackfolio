@@ -15,6 +15,7 @@ fun ValuableEntity.toDomain(): Valuable = Valuable(
     saleDate = saleDate,
     linkedLoanId = linkedLoanId,
     notes = notes,
+    archived = archived != 0L,
     createdAt = createdAt
 )
 
@@ -30,5 +31,6 @@ fun Valuable.toEntity(): ValuableEntity = ValuableEntity(
     saleDate = saleDate,
     linkedLoanId = linkedLoanId,
     notes = notes,
+    archived = if (archived) 1L else 0L,
     createdAt = createdAt
 )

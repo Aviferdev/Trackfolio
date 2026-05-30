@@ -22,6 +22,7 @@ package es.aviferdev.n3to.domain.model
  * @property saleDate Fecha de venta. Null si no se ha vendido.
  * @property linkedLoanId Préstamo vinculado a este bien (opcional).
  * @property notes Notas adicionales.
+ * @property archived True si el bien está archivado (oculto, no eliminado).
  * @property createdAt Fecha de creación del registro (epoch millis).
  */
 data class Valuable(
@@ -36,6 +37,7 @@ data class Valuable(
     val saleDate: Long? = null,
     val linkedLoanId: String? = null,
     val notes: String? = null,
+    val archived: Boolean = false,
     val createdAt: Long
 ) {
     // ── Propiedades calculadas ──────────────────────────────────────

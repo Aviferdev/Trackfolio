@@ -49,6 +49,7 @@ class ValuableLocalDataSourceImpl(
                 saleDate = e.saleDate,
                 linkedLoanId = e.linkedLoanId,
                 notes = e.notes,
+                archived = e.archived,
                 createdAt = e.createdAt
             )
         }
@@ -84,6 +85,12 @@ class ValuableLocalDataSourceImpl(
                 )
             }
         }
+
+    override suspend fun archive(id: String): Result<Unit> =
+        runCatching { withContext(Dispatchers.IO) { queries.archive(id) } }
+
+    override suspend fun unarchive(id: String): Result<Unit> =
+        runCatching { withContext(Dispatchers.IO) { queries.unarchive(id) } }
 
     override suspend fun delete(id: String): Result<Unit> =
         runCatching { withContext(Dispatchers.IO) { queries.deleteById(id) } }

@@ -29,6 +29,12 @@ interface ValuableLocalDataSource {
     /** Vincula un préstamo a un bien. */
     suspend fun updateLinkedLoan(valuableId: String, loanId: String): Result<Unit>
 
-    /** Elimina un bien. */
+    /** Archiva un bien (soft-delete). */
+    suspend fun archive(id: String): Result<Unit>
+
+    /** Desarchiva un bien. */
+    suspend fun unarchive(id: String): Result<Unit>
+
+    /** Elimina un bien físicamente. */
     suspend fun delete(id: String): Result<Unit>
 }
