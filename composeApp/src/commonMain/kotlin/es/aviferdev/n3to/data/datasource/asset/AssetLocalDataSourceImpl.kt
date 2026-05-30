@@ -65,8 +65,10 @@ class AssetLocalDataSourceImpl(
                     assetCategoryId = e.assetCategoryId,
                     currentPrice = e.currentPrice,
                     currentPriceUpdatedAt = e.currentPriceUpdatedAt,
+                    archived = e.archived,
                     maturityDate = e.maturityDate,
                     isin = e.isin,
+                    priceSource = e.priceSource,
                     isinValidatedAt = e.isinValidatedAt,
                     isinValidationError = e.isinValidationError
                 )

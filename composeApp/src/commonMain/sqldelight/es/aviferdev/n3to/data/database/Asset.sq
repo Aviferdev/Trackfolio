@@ -74,7 +74,7 @@ ORDER BY createdAt DESC;
 
 insert:
 INSERT INTO AssetEntity(id, accountId, portfolioId, ticker, name, notes, createdAt, assetCategoryId, currentPrice, currentPriceUpdatedAt, archived, maturityDate, isin, priceSource, isinValidatedAt, isinValidationError)
-VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, ?, ?, 'MANUAL', ?, ?);
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 
 update:
 UPDATE AssetEntity

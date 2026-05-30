@@ -65,14 +65,14 @@ class DatabaseInitializer(
                 id = "fixed_cat_commodities",
                 name = "Materias primas",
                 icon = "🪙",
-                sortOrder = 7,
+                sortOrder = 6,
                 createdAt = 0
             ),
             AssetCategory(
                 id = "fixed_cat_crowdlending",
                 name = "Crowdlending",
                 icon = "🤝",
-                sortOrder = 8,
+                sortOrder = 7,
                 createdAt = 0
             ),
         )
