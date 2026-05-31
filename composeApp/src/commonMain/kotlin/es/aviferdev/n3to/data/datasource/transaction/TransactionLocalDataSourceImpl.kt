@@ -215,9 +215,7 @@ class TransactionLocalDataSourceImpl(
                     excludeFromFiscal = entity.excludeFromFiscal,
                     originalCurrency = entity.originalCurrency,
                     originalAmount = entity.originalAmount,
-                    exchangeRate = entity.exchangeRate,
-                    year = entity.year,
-                    month = entity.month
+                    exchangeRate = entity.exchangeRate
                 )
             }
         }
@@ -236,8 +234,6 @@ class TransactionLocalDataSourceImpl(
                     originalCurrency = entity.originalCurrency,
                     originalAmount = entity.originalAmount,
                     exchangeRate = entity.exchangeRate,
-                    year = entity.year,
-                    month = entity.month,
                     id = entity.id
                 )
             }

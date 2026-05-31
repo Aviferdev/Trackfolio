@@ -22,9 +22,6 @@ import es.aviferdev.n3to.domain.model.AssetTag
 import es.aviferdev.n3to.domain.model.AssetTransaction
 import es.aviferdev.n3to.domain.model.AssetTransactionType
 import es.aviferdev.n3to.domain.model.Platform
-import kotlinx.datetime.Instant
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
 
 private fun safePriceSource(name: String): PriceSource =
     PriceSource.entries.firstOrNull { it.name == name } ?: PriceSource.MANUAL
@@ -138,26 +135,18 @@ fun AssetTransactionEntity.toDomain(): AssetTransaction = AssetTransaction(
     createdAt = createdAt
 )
 
-fun AssetTransaction.toEntity(): AssetTransactionEntity {
-    val local = Instant.fromEpochMilliseconds(date)
-        .toLocalDateTime(TimeZone.currentSystemDefault())
-    val year = local.year.toString()
-    val month = local.monthNumber.toString().padStart(2, '0')
-    return AssetTransactionEntity(
-        id = id,
-        assetId = assetId,
-        type = type.name,
-        quantity = quantity,
-        pricePerUnit = pricePerUnit,
-        date = date,
-        year = year,
-        month = month,
-        platformId = platformId,
-        feeNote = feeNote,
-        notes = notes,
-        createdAt = createdAt
-    )
-}
+fun AssetTransaction.toEntity(): AssetTransactionEntity = AssetTransactionEntity(
+    id = id,
+    assetId = assetId,
+    type = type.name,
+    quantity = quantity,
+    pricePerUnit = pricePerUnit,
+    date = date,
+    platformId = platformId,
+    feeNote = feeNote,
+    notes = notes,
+    createdAt = createdAt
+)
 
 fun AssetSectorEntity.toDomain(): AssetSector = AssetSector(
     id = id,

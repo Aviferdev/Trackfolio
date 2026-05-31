@@ -14,8 +14,6 @@ CREATE TABLE AssetTransactionEntity (
     quantity      REAL    NOT NULL,
     pricePerUnit  REAL    NOT NULL,
     date          INTEGER NOT NULL,
-    year          TEXT    NOT NULL DEFAULT '',
-    month         TEXT    NOT NULL DEFAULT '',
     platformId    TEXT    NOT NULL,
     feeNote       TEXT,
     notes         TEXT,
@@ -26,7 +24,11 @@ CREATE TABLE AssetTransactionEntity (
 
 CREATE INDEX idx_asset_tx_asset      ON AssetTransactionEntity(assetId);
 CREATE INDEX idx_asset_tx_asset_date ON AssetTransactionEntity(assetId, date);
-CREATE INDEX idx_asset_tx_asset_ym   ON AssetTransactionEntity(assetId, year, month);
+CREATE INDEX idx_asset_tx_asset_ym   ON AssetTransactionEntity(
+    assetId,
+    strftime('%Y', date / 1000, 'unixepoch'),
+    strftime('%m', date / 1000, 'unixepoch')
+);
 CREATE INDEX idx_asset_tx_platform   ON AssetTransactionEntity(platformId);
 CREATE INDEX idx_asset_tx_date       ON AssetTransactionEntity(date);
 
@@ -57,13 +59,13 @@ SELECT COUNT(*) FROM AssetTransactionEntity WHERE platformId = :platformId;
 -- ─── Escritura ────────────────────────────────────────────────────────────────
 
 insert:
-INSERT INTO AssetTransactionEntity(id, assetId, type, quantity, pricePerUnit, date, year, month, platformId, feeNote, notes, createdAt)
-VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+INSERT INTO AssetTransactionEntity(id, assetId, type, quantity, pricePerUnit, date, platformId, feeNote, notes, createdAt)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 
 update:
 UPDATE AssetTransactionEntity
 SET type = :type, quantity = :quantity, pricePerUnit = :pricePerUnit,
-    date = :date, year = :year, month = :month,
+    date = :date,
     platformId = :platformId, feeNote = :feeNote, notes = :notes
 WHERE id = :id;
 
@@ -81,29 +83,29 @@ WHERE a.accountId = :accountId;
 -- ─── Inversión mensual (compras) por año ──────────────────────────────────────
 getMonthlyInvestmentsByYear:
 SELECT
-    t.month,
+    strftime('%m', t.date / 1000, 'unixepoch') AS month,
     SUM(t.quantity * t.pricePerUnit) AS totalInvested
 FROM AssetTransactionEntity t
 INNER JOIN AssetEntity a ON a.id = t.assetId
 WHERE a.accountId = :accountId
   AND t.type = 'BUY'
-  AND t.year = :year
-GROUP BY t.month
-ORDER BY t.month ASC;
+  AND strftime('%Y', t.date / 1000, 'unixepoch') = :year
+GROUP BY month
+ORDER BY month ASC;
 
 -- ─── Inversión neta mensual (BUY - SELL) por año ──────────────────────────────
 -- Excluye TRANSFER_IN / TRANSFER_OUT para que solo refleje dinero nuevo.
 getMonthlyNetInvestmentsByYear:
 SELECT
-    t.month,
+    strftime('%m', t.date / 1000, 'unixepoch') AS month,
     SUM(CASE WHEN t.type = 'BUY'  THEN t.quantity * t.pricePerUnit ELSE 0.0 END) -
     SUM(CASE WHEN t.type = 'SELL' THEN t.quantity * t.pricePerUnit ELSE 0.0 END) AS netInvested
 FROM AssetTransactionEntity t
 INNER JOIN AssetEntity a ON a.id = t.assetId
 WHERE a.accountId = :accountId
-  AND t.year = :year
-GROUP BY t.month
-ORDER BY t.month ASC;
+  AND strftime('%Y', t.date / 1000, 'unixepoch') = :year
+GROUP BY month
+ORDER BY month ASC;
 
 getMonthlyNetInvestmentByMonth:
 SELECT
@@ -112,5 +114,5 @@ SELECT
 FROM AssetTransactionEntity t
 INNER JOIN AssetEntity a ON a.id = t.assetId
 WHERE a.accountId = :accountId
-  AND t.year = substr(:yearMonth, 1, 4)
-  AND t.month = substr(:yearMonth, 6, 2);
+  AND strftime('%Y', t.date / 1000, 'unixepoch') = substr(:yearMonth, 1, 4)
+  AND strftime('%m', t.date / 1000, 'unixepoch') = substr(:yearMonth, 6, 2);
