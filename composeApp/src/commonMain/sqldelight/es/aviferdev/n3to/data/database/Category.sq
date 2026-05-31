@@ -34,14 +34,6 @@ SELECT * FROM CategoryEntity
 WHERE accountId = :accountId AND type = :type
 ORDER BY name ASC;
 
--- ─── Consultas legacy (sin accountId, para migración) ────────────────────
-
-selectAllGlobal:
-SELECT * FROM CategoryEntity WHERE archived = 0 ORDER BY name ASC;
-
-selectByTypeGlobal:
-SELECT * FROM CategoryEntity WHERE type = :type AND archived = 0 ORDER BY name ASC;
-
 -- ─── Lectura por ID (no necesita accountId) ──────────────────────────────
 
 selectById:

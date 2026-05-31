@@ -106,37 +106,6 @@ WHERE accountId = :accountId
   AND strftime('%Y', date / 1000, 'unixepoch') = :year
 ORDER BY date DESC;
 
--- ─── Retrocompatibilidad (sin filtro de cuenta) ───────────────────────────────
-
-selectByMonth:
-SELECT * FROM TransactionEntity
-WHERE strftime('%Y', date / 1000, 'unixepoch') = :year
-  AND strftime('%m', date / 1000, 'unixepoch') = :month
-ORDER BY date DESC;
-
-getMonthlyTotals:
-SELECT
-    COALESCE(SUM(CASE WHEN t.type = 'INCOME' THEN t.amount ELSE 0 END), 0.0) AS totalIncome,
-    COALESCE(SUM(CASE WHEN t.type = 'EXPENSE' THEN t.amount ELSE 0 END), 0.0) AS totalExpense
-FROM TransactionEntity t
-WHERE NOT EXISTS (
-    SELECT 1 FROM TransactionLinkEntity l
-    WHERE l.transactionId = t.id AND l.linkType = 'ASSET_TRANSACTION'
-)
-  AND strftime('%Y', t.date / 1000, 'unixepoch') = :year
-  AND strftime('%m', t.date / 1000, 'unixepoch') = :month;
-
-getAnnualTotals:
-SELECT
-    COALESCE(SUM(CASE WHEN t.type = 'INCOME' THEN t.amount ELSE 0 END), 0.0) AS totalIncome,
-    COALESCE(SUM(CASE WHEN t.type = 'EXPENSE' THEN t.amount ELSE 0 END), 0.0) AS totalExpense
-FROM TransactionEntity t
-WHERE NOT EXISTS (
-    SELECT 1 FROM TransactionLinkEntity l
-    WHERE l.transactionId = t.id AND l.linkType = 'ASSET_TRANSACTION'
-)
-  AND strftime('%Y', t.date / 1000, 'unixepoch') = :year;
-
 -- ─── CRUD ─────────────────────────────────────────────────────────────────────
 
 insert:
