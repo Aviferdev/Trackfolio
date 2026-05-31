@@ -26,6 +26,9 @@ import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 
+private fun safePriceSource(name: String): PriceSource =
+    PriceSource.entries.firstOrNull { it.name == name } ?: PriceSource.MANUAL
+
 fun AssetEntity.toDomain(): Asset = Asset(
     id = id,
     accountId = accountId,
@@ -40,11 +43,7 @@ fun AssetEntity.toDomain(): Asset = Asset(
     archived = archived != 0L,
     maturityDate = maturityDate,
     isin = isin,
-    priceSource = try {
-        PriceSource.valueOf(priceSource)
-    } catch (_: Exception) {
-        PriceSource.MANUAL
-    },
+    priceSource = safePriceSource(priceSource),
     isinValidatedAt = isinValidatedAt,
     isinValidationError = isinValidationError,
     fixedIncomePercent = fixedIncomePercent.toInt()
@@ -190,11 +189,7 @@ fun SelectQuotableByAccount.toDomain(): Asset = Asset(
     archived = archived != 0L,
     maturityDate = maturityDate,
     isin = isin,
-    priceSource = try {
-        PriceSource.valueOf(priceSource)
-    } catch (_: Exception) {
-        PriceSource.MANUAL
-    },
+    priceSource = safePriceSource(priceSource),
     isinValidatedAt = isinValidatedAt,
     isinValidationError = isinValidationError,
     fixedIncomePercent = fixedIncomePercent.toInt()
@@ -214,11 +209,7 @@ fun SelectAssetsWithBrokenIsin.toDomain(): Asset = Asset(
     archived = archived != 0L,
     maturityDate = maturityDate,
     isin = isin,
-    priceSource = try {
-        PriceSource.valueOf(priceSource)
-    } catch (_: Exception) {
-        PriceSource.MANUAL
-    },
+    priceSource = safePriceSource(priceSource),
     isinValidatedAt = isinValidatedAt,
     isinValidationError = isinValidationError,
     fixedIncomePercent = fixedIncomePercent.toInt()

@@ -6,7 +6,6 @@
 CREATE TABLE PlatformCategoryEntity (
     platformId      TEXT    NOT NULL,
     assetCategoryId TEXT    NOT NULL,
-    createdAt       INTEGER NOT NULL,
     PRIMARY KEY (platformId, assetCategoryId),
     FOREIGN KEY (platformId)      REFERENCES PlatformEntity(id)       ON DELETE CASCADE,
     FOREIGN KEY (assetCategoryId) REFERENCES AssetCategoryEntity(id)  ON DELETE CASCADE
@@ -41,8 +40,8 @@ WHERE platformId = :platformId AND assetCategoryId = :assetCategoryId;
 -- ─── Escritura ────────────────────────────────────────────────────────────────
 
 link:
-INSERT OR IGNORE INTO PlatformCategoryEntity(platformId, assetCategoryId, createdAt)
-VALUES (?, ?, ?);
+INSERT OR IGNORE INTO PlatformCategoryEntity(platformId, assetCategoryId)
+VALUES (?, ?);
 
 unlink:
 DELETE FROM PlatformCategoryEntity

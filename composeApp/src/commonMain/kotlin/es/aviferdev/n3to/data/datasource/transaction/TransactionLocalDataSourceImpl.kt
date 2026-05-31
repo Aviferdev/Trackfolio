@@ -69,14 +69,60 @@ class TransactionLocalDataSourceImpl(
             taxDetails = loadTaxDetails(id)
         )
 
-    private fun List<TransactionEntity>.toDomainWithDeps(): List<Transaction> =
-        map { entity ->
+    private fun List<TransactionEntity>.toDomainWithDeps(): List<Transaction> {
+        if (isEmpty()) return emptyList()
+
+        val ids = map { it.id }
+
+        // Batch load todas las taxLines para estas transacciones (1 query en vez de N)
+        val taxLinesByTx = taxLineQueries.selectByTransactions(ids)
+            .executeAsList()
+            .groupBy { it.transactionId }
+            .mapValues { entry ->
+                entry.value.map { entity ->
+                    TaxLine(
+                        name = entity.name,
+                        role = TaxRole.valueOf(entity.role),
+                        percent = entity.percent,
+                        amount = entity.amount
+                    )
+                }
+            }
+
+        // Batch load todos los links (1 query en vez de N)
+        val linksByTx = linkQueries.selectByTransactions(ids)
+            .executeAsList()
+            .groupBy { it.transactionId }
+            .mapValues { entry ->
+                entry.value.map { entity ->
+                    TransactionLink(
+                        id = entity.id,
+                        linkType = TransactionLinkType.valueOf(entity.linkType),
+                        linkedEntityId = entity.linkedEntityId,
+                        assetId = entity.assetId
+                    )
+                }
+            }
+
+        // Batch load todos los taxDetails (1 query en vez de N)
+        val taxDetailsByTx = taxDetailsQueries.selectByTransactions(ids)
+            .executeAsList()
+            .associateBy { it.transactionId }
+            .mapValues { (_, entity) ->
+                val issuerName = entity.issuerId?.let {
+                    database.issuerQueries.selectById(it).executeAsOneOrNull()?.name
+                }
+                entity.toDomain(issuerName)
+            }
+
+        return map { entity ->
             entity.toDomain(
-                taxLines = loadTaxLines(entity.id),
-                links = loadLinks(entity.id),
-                taxDetails = loadTaxDetails(entity.id)
+                taxLines = taxLinesByTx[entity.id] ?: emptyList(),
+                links = linksByTx[entity.id] ?: emptyList(),
+                taxDetails = taxDetailsByTx[entity.id]
             )
         }
+    }
 
     override fun getById(id: String): Flow<Transaction?> =
         queries.selectById(id)

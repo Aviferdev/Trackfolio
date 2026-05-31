@@ -1,6 +1,5 @@
 package es.aviferdev.n3to.data.datasource.asset
 
-import es.aviferdev.n3to.platform.nowMillis
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
 import app.cash.sqldelight.coroutines.mapToOne
@@ -31,7 +30,7 @@ class AssetPlatformLocalDataSourceImpl(
 
     override suspend fun link(assetId: String, platformId: String): Result<Unit> = runCatching {
         withContext(Dispatchers.IO) {
-            queries.insert(assetId, platformId, nowMillis())
+            queries.insert(assetId, platformId)
         }
     }
 

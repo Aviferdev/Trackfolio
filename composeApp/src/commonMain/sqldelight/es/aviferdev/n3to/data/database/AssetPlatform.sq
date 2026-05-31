@@ -4,7 +4,6 @@
 CREATE TABLE AssetPlatformEntity (
     assetId    TEXT NOT NULL,
     platformId TEXT NOT NULL,
-    createdAt  INTEGER NOT NULL,
     PRIMARY KEY (assetId, platformId),
     FOREIGN KEY (assetId)    REFERENCES AssetEntity(id)    ON DELETE CASCADE,
     FOREIGN KEY (platformId) REFERENCES PlatformEntity(id) ON DELETE CASCADE
@@ -43,8 +42,8 @@ SELECT COUNT(*) FROM AssetPlatformEntity WHERE platformId = :platformId;
 -- ─── Escritura ────────────────────────────────────────────────────────────────
 
 insert:
-INSERT OR IGNORE INTO AssetPlatformEntity(assetId, platformId, createdAt)
-VALUES (?, ?, ?);
+INSERT OR IGNORE INTO AssetPlatformEntity(assetId, platformId)
+VALUES (?, ?);
 
 delete:
 DELETE FROM AssetPlatformEntity WHERE assetId = :assetId AND platformId = :platformId;

@@ -4,6 +4,7 @@ import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
 import es.aviferdev.n3to.data.database.N3toDatabase
 import es.aviferdev.n3to.data.database.TaxProfileSnapshotEntity
+import es.aviferdev.n3to.platform.nowMillis
 import es.aviferdev.n3to.domain.model.TaxProfile
 import es.aviferdev.n3to.domain.model.TaxProfileSnapshot
 import kotlinx.coroutines.Dispatchers
@@ -34,10 +35,11 @@ class TaxProfileSnapshotLocalDataSourceImpl(
         id: String,
         countryCode: String?,
         currency: String,
-        effectiveFrom: LocalDate
+        effectiveFrom: LocalDate,
+        createdAt: Long
     ): Result<Unit> = runCatching {
         withContext(Dispatchers.IO) {
-            queries.insert(id, countryCode, currency, effectiveFrom.toString())
+            queries.insert(id, countryCode, currency, effectiveFrom.toString(), createdAt)
         }
     }
 
@@ -53,7 +55,8 @@ class TaxProfileSnapshotLocalDataSourceImpl(
         return TaxProfileSnapshot(
             id = id,
             profile = profile,
-            effectiveFrom = LocalDate.parse(effectiveFrom)
+            effectiveFrom = LocalDate.parse(effectiveFrom),
+            createdAt = createdAt
         )
     }
 }

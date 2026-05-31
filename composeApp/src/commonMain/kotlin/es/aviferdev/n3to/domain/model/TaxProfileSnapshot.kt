@@ -5,5 +5,6 @@ import kotlinx.datetime.LocalDate
 data class TaxProfileSnapshot(
     val id: String,
     val profile: TaxProfile,
-    val effectiveFrom: LocalDate
+    val effectiveFrom: LocalDate,
+    val createdAt: Long
 )

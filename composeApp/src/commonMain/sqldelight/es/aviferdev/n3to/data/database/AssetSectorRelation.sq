@@ -8,6 +8,8 @@ CREATE TABLE AssetSectorRelationEntity (
     FOREIGN KEY (sectorId) REFERENCES AssetSectorEntity(id) ON DELETE CASCADE
 );
 
+CREATE INDEX idx_asset_sector_rel_sector ON AssetSectorRelationEntity(sectorId);
+
 -- ─── Lectura ──────────────────────────────────────────────────────────────────
 
 selectByAsset:

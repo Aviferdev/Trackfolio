@@ -2,6 +2,7 @@ package es.aviferdev.n3to.data.repository.taxprofile
 
 import com.benasher44.uuid.uuid4
 import es.aviferdev.n3to.data.datasource.taxprofile.TaxProfileSnapshotLocalDataSource
+import es.aviferdev.n3to.platform.nowMillis
 import es.aviferdev.n3to.domain.model.TaxProfile
 import es.aviferdev.n3to.domain.model.TaxProfileSnapshot
 import es.aviferdev.n3to.domain.repository.TaxProfileSnapshotRepository
@@ -22,7 +23,8 @@ class TaxProfileSnapshotRepositoryImpl(
             id = uuid4().toString(),
             countryCode = profile.countryCode,
             currency = profile.currency,
-            effectiveFrom = effectiveFrom
+            effectiveFrom = effectiveFrom,
+            createdAt = nowMillis()
         )
 
     override suspend fun delete(id: String): Result<Unit> = dataSource.delete(id)

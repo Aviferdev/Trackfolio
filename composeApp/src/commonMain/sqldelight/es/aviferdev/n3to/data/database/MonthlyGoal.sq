@@ -17,7 +17,8 @@ CREATE TABLE MonthlyGoalEntity (
     month INTEGER NOT NULL,
     savingsTarget REAL NOT NULL DEFAULT 0.0,
     investmentTarget REAL NOT NULL DEFAULT 0.0,
-    PRIMARY KEY (accountId, year, month)
+    PRIMARY KEY (accountId, year, month),
+    FOREIGN KEY (accountId) REFERENCES AccountEntity(id) ON DELETE CASCADE
 );
 
 CREATE INDEX idx_monthly_goal_account_year ON MonthlyGoalEntity(accountId, year);

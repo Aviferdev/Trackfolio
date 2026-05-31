@@ -31,6 +31,9 @@ CREATE INDEX idx_tx_link_asset        ON TransactionLinkEntity(assetId);
 selectByTransaction:
 SELECT * FROM TransactionLinkEntity WHERE transactionId = :transactionId;
 
+selectByTransactions:
+SELECT * FROM TransactionLinkEntity WHERE transactionId IN :transactionIds;
+
 selectByTransactionAndType:
 SELECT * FROM TransactionLinkEntity
 WHERE transactionId = :transactionId AND linkType = :linkType;

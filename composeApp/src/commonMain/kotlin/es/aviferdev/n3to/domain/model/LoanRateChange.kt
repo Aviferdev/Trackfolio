@@ -6,5 +6,6 @@ data class LoanRateChange(
     val newRate: Double,
     val previousRate: Double,
     val effectiveDate: Long,
-    val createdAt: Long
+    val createdAt: Long,
+    val archived: Boolean = false
 )

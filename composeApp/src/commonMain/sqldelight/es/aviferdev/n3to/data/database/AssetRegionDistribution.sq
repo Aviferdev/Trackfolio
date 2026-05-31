@@ -9,6 +9,8 @@ CREATE TABLE AssetRegionDistributionEntity (
     FOREIGN KEY (regionId) REFERENCES AssetRegionEntity(id) ON DELETE CASCADE
 );
 
+CREATE INDEX idx_asset_region_dist_region ON AssetRegionDistributionEntity(regionId);
+
 -- ─── Lectura ──────────────────────────────────────────────────────────────────
 
 selectByAsset:

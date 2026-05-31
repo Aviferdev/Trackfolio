@@ -11,7 +11,8 @@ interface TaxProfileSnapshotLocalDataSource {
         id: String,
         countryCode: String?,
         currency: String,
-        effectiveFrom: LocalDate
+        effectiveFrom: LocalDate,
+        createdAt: Long
     ): Result<Unit>
 
     suspend fun delete(id: String): Result<Unit>

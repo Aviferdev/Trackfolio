@@ -16,6 +16,9 @@ CREATE INDEX idx_taxline_transaction ON TaxLineEntity(transactionId);
 selectByTransaction:
 SELECT * FROM TaxLineEntity WHERE transactionId = :transactionId;
 
+selectByTransactions:
+SELECT * FROM TaxLineEntity WHERE transactionId IN :transactionIds;
+
 insert:
 INSERT INTO TaxLineEntity(id, transactionId, name, role, percent, amount, createdAt)
 VALUES (?, ?, ?, ?, ?, ?, ?);

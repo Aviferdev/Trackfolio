@@ -2,7 +2,8 @@ CREATE TABLE TaxProfileSnapshotEntity (
     id            TEXT NOT NULL PRIMARY KEY,
     countryCode   TEXT,
     currency      TEXT NOT NULL,
-    effectiveFrom TEXT NOT NULL  -- ISO date "YYYY-MM-DD"
+    effectiveFrom TEXT NOT NULL,  -- ISO date "YYYY-MM-DD"
+    createdAt     INTEGER NOT NULL
 );
 
 CREATE INDEX idx_snapshot_effective_from ON TaxProfileSnapshotEntity(effectiveFrom);
@@ -20,8 +21,8 @@ ORDER BY effectiveFrom DESC
 LIMIT 1;
 
 insert:
-INSERT INTO TaxProfileSnapshotEntity(id, countryCode, currency, effectiveFrom)
-VALUES (?, ?, ?, ?);
+INSERT INTO TaxProfileSnapshotEntity(id, countryCode, currency, effectiveFrom, createdAt)
+VALUES (?, ?, ?, ?, ?);
 
 delete:
 DELETE FROM TaxProfileSnapshotEntity WHERE id = :id;

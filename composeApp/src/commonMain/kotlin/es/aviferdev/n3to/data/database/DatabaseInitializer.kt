@@ -6,6 +6,7 @@ import es.aviferdev.n3to.data.datasource.transaction.TransactionCategoryLocalDat
 import es.aviferdev.n3to.domain.model.AssetCategory
 import es.aviferdev.n3to.domain.model.AssetRegion
 import es.aviferdev.n3to.domain.model.AssetSector
+import es.aviferdev.n3to.domain.model.Category
 import es.aviferdev.n3to.domain.model.TransactionType
 import kotlinx.coroutines.flow.firstOrNull
 
@@ -115,69 +116,69 @@ class DatabaseInitializer(
             AssetRegion(id = "region_spain", name = "España", createdAt = 0),
         )
 
-        fun defaultExpenseCategories(accountId: String): List<CategoryEntity> = listOf(
-            CategoryEntity(
+        fun defaultExpenseCategories(accountId: String): List<Category> = listOf(
+            Category(
                 id = "cat_exp_01",
                 accountId = accountId,
                 name = "Alimentación",
-                type = TransactionType.EXPENSE.name,
-                isDefault = 1L,
-                archived = 0L,
+                type = TransactionType.EXPENSE,
+                isDefault = true,
+                archived = false,
                 createdAt = 0L
             ),
-            CategoryEntity(
+            Category(
                 id = "cat_exp_02",
                 accountId = accountId,
                 name = "Transporte",
-                type = TransactionType.EXPENSE.name,
-                isDefault = 1L,
-                archived = 0L,
+                type = TransactionType.EXPENSE,
+                isDefault = true,
+                archived = false,
                 createdAt = 0L
             ),
-            CategoryEntity(
+            Category(
                 id = "cat_exp_03", accountId = accountId,
-                name = "Hogar", type = TransactionType.EXPENSE.name, isDefault = 1L, archived = 0L,
+                name = "Hogar", type = TransactionType.EXPENSE, isDefault = true, archived = false,
                 createdAt = 0L
             ),
-            CategoryEntity(
+            Category(
                 id = "cat_exp_04", accountId = accountId,
-                name = "Salud", type = TransactionType.EXPENSE.name, isDefault = 1L, archived = 0L,
+                name = "Salud", type = TransactionType.EXPENSE, isDefault = true, archived = false,
                 createdAt = 0L
             ),
-            CategoryEntity(
+            Category(
                 id = "cat_exp_05", accountId = accountId,
-                name = "Ocio", type = TransactionType.EXPENSE.name, isDefault = 1L, archived = 0L,
+                name = "Ocio", type = TransactionType.EXPENSE, isDefault = true, archived = false,
                 createdAt = 0L
             ),
-            CategoryEntity(
+            Category(
                 id = "cat_exp_06", accountId = accountId,
-                name = "Ropa", type = TransactionType.EXPENSE.name, isDefault = 1L, archived = 0L,
+                name = "Ropa", type = TransactionType.EXPENSE, isDefault = true, archived = false,
                 createdAt = 0L
             ),
-            CategoryEntity(
+            Category(
                 id = "cat_exp_07",
                 accountId = accountId,
                 name = "Educación",
-                type = TransactionType.EXPENSE.name,
-                isDefault = 1L,
-                archived = 0L,
+                type = TransactionType.EXPENSE,
+                isDefault = true,
+                archived = false,
                 createdAt = 0L
             ),
-            CategoryEntity(
+            Category(
                 id = "cat_exp_08", accountId = accountId,
-                name = "Otros", type = TransactionType.EXPENSE.name, isDefault = 1L, archived = 0L,
+                name = "Otros", type = TransactionType.EXPENSE, isDefault = true, archived = false,
                 createdAt = 0L
             ),
         )
 
         /** Categoría especial para transacciones de ajuste / reconciliación. */
-        val ADJUSTMENT_CATEGORY = CategoryEntity(
+        val ADJUSTMENT_CATEGORY = Category(
             id = ADJUSTMENT_CATEGORY_ID,
             accountId = "",  // global, compartida entre todas las cuentas
             name = "Ajuste de saldo",
-            type = TransactionType.ADJUSTMENT.name,
-            isDefault = 1L,
-            archived = 0L,
+            type = TransactionType.ADJUSTMENT,
+            isDefault = true,
+            archived = false,
             createdAt = 0L
         )
     }

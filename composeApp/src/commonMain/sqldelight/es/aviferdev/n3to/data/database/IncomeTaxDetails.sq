@@ -22,6 +22,9 @@ CREATE INDEX idx_tax_details_issuer ON IncomeTaxDetailsEntity(issuerId);
 selectByTransaction:
 SELECT * FROM IncomeTaxDetailsEntity WHERE transactionId = :transactionId;
 
+selectByTransactions:
+SELECT * FROM IncomeTaxDetailsEntity WHERE transactionId IN :transactionIds;
+
 -- ─── Escritura ────────────────────────────────────────────────────────────────
 
 insert:

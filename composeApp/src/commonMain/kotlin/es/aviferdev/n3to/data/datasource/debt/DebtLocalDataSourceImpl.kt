@@ -3,8 +3,10 @@ package es.aviferdev.n3to.data.datasource.debt
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
 import app.cash.sqldelight.coroutines.mapToOneOrNull
-import es.aviferdev.n3to.data.database.DebtEntity
 import es.aviferdev.n3to.data.database.N3toDatabase
+import es.aviferdev.n3to.data.database.mapper.toDomain
+import es.aviferdev.n3to.data.database.mapper.toEntity
+import es.aviferdev.n3to.domain.model.Debt
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
@@ -17,20 +19,25 @@ class DebtLocalDataSourceImpl(
 
     private val queries = database.debtQueries
 
-    override fun getActiveByAccount(accountId: String): Flow<List<DebtEntity>> =
+    override fun getActiveByAccount(accountId: String): Flow<List<Debt>> =
         queries.selectActiveByAccount(accountId).asFlow().mapToList(Dispatchers.IO)
+            .map { list -> list.map { it.toDomain() } }
 
-    override fun getActive(): Flow<List<DebtEntity>> =
+    override fun getActive(): Flow<List<Debt>> =
         queries.selectActive().asFlow().mapToList(Dispatchers.IO)
+            .map { list -> list.map { it.toDomain() } }
 
-    override fun getAll(): Flow<List<DebtEntity>> =
+    override fun getAll(): Flow<List<Debt>> =
         queries.selectAll().asFlow().mapToList(Dispatchers.IO)
+            .map { list -> list.map { it.toDomain() } }
 
-    override fun getByAccount(accountId: String): Flow<List<DebtEntity>> =
+    override fun getByAccount(accountId: String): Flow<List<Debt>> =
         queries.selectByAccount(accountId).asFlow().mapToList(Dispatchers.IO)
+            .map { list -> list.map { it.toDomain() } }
 
-    override fun getById(id: String): Flow<DebtEntity?> =
+    override fun getById(id: String): Flow<Debt?> =
         queries.selectById(id).asFlow().mapToOneOrNull(Dispatchers.IO)
+            .map { it?.toDomain() }
 
     override fun getTotalByDirection(direction: String): Flow<Double> =
         queries.getTotalByDirection(direction).asFlow()
@@ -42,33 +49,35 @@ class DebtLocalDataSourceImpl(
             .mapToOneOrNull(Dispatchers.IO)
             .map { it ?: 0.0 }
 
-    override suspend fun insert(entity: DebtEntity): Result<Unit> =
+    override suspend fun insert(entity: Debt): Result<Unit> =
         runCatching {
             withContext(Dispatchers.IO) {
+                val e = entity.toEntity()
                 queries.insert(
-                    id = entity.id,
-                    accountId = entity.accountId,
-                    personName = entity.personName,
-                    amount = entity.amount,
-                    direction = entity.direction,
-                    date = entity.date,
-                    isPaid = entity.isPaid,
-                    notes = entity.notes,
-                    createdAt = entity.createdAt
+                    id = e.id,
+                    accountId = e.accountId,
+                    personName = e.personName,
+                    amount = e.amount,
+                    direction = e.direction,
+                    date = e.date,
+                    isPaid = e.isPaid,
+                    notes = e.notes,
+                    createdAt = e.createdAt
                 )
             }
         }
 
-    override suspend fun update(entity: DebtEntity): Result<Unit> =
+    override suspend fun update(entity: Debt): Result<Unit> =
         runCatching {
             withContext(Dispatchers.IO) {
+                val e = entity.toEntity()
                 queries.update(
-                    personName = entity.personName,
-                    amount = entity.amount,
-                    direction = entity.direction,
-                    date = entity.date,
-                    notes = entity.notes,
-                    id = entity.id
+                    personName = e.personName,
+                    amount = e.amount,
+                    direction = e.direction,
+                    date = e.date,
+                    notes = e.notes,
+                    id = e.id
                 )
             }
         }
