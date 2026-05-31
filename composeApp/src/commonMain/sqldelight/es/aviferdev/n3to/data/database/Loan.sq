@@ -2,7 +2,7 @@ CREATE TABLE LoanEntity (
     id                    TEXT    NOT NULL PRIMARY KEY,
     accountId             TEXT    NOT NULL,
     name                  TEXT    NOT NULL,
-    type                  TEXT    NOT NULL,
+    type                  TEXT    NOT NULL CHECK(type IN ('MORTGAGE', 'CAR', 'STUDENT', 'PERSONAL', 'OTHER')),
     totalAmount           REAL    NOT NULL,
     outstandingPrincipal  REAL    NOT NULL,
     currentInterestRate   REAL    NOT NULL,
@@ -14,6 +14,8 @@ CREATE TABLE LoanEntity (
     lenderName            TEXT,
     notes                 TEXT,
     archived              INTEGER NOT NULL DEFAULT 0,
+    closedAt              INTEGER,
+    closeType             TEXT    CHECK(closeType IS NULL OR closeType IN ('FULLY_PAID', 'EARLY_PAYOFF', 'REFINANCED', 'WRITTEN_OFF')),
     createdAt             INTEGER NOT NULL,
     FOREIGN KEY (accountId) REFERENCES AccountEntity(id) ON DELETE CASCADE
 );
@@ -30,7 +32,7 @@ ORDER BY createdAt DESC;
 
 selectActiveByAccount:
 SELECT * FROM LoanEntity
-WHERE accountId = :accountId AND archived = 0
+WHERE accountId = :accountId AND archived = 0 AND closedAt IS NULL
 ORDER BY endDate ASC;
 
 selectById:
@@ -44,7 +46,7 @@ ORDER BY createdAt DESC;
 getTotalOutstandingByAccount:
 SELECT COALESCE(SUM(outstandingPrincipal), 0.0) AS total
 FROM LoanEntity
-WHERE accountId = :accountId AND archived = 0;
+WHERE accountId = :accountId AND archived = 0 AND closedAt IS NULL;
 
 -- ─── Escritura ────────────────────────────────────────────────────────────────
 
@@ -52,8 +54,8 @@ insert:
 INSERT INTO LoanEntity(
     id, accountId, name, type, totalAmount, outstandingPrincipal,
     currentInterestRate, monthlyPayment, totalInstallments, paidInstallments,
-    startDate, endDate, lenderName, notes, archived, createdAt
-) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, ?);
+    startDate, endDate, lenderName, notes, archived, closedAt, closeType, createdAt
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, NULL, NULL, ?);
 
 update:
 UPDATE LoanEntity
@@ -84,8 +86,16 @@ SET paidInstallments     = paidInstallments + 1,
     outstandingPrincipal = :newOutstanding
 WHERE id = :id;
 
+close:
+UPDATE LoanEntity
+SET closedAt = :closedAt, closeType = :closeType
+WHERE id = :id AND closedAt IS NULL;
+
 archive:
 UPDATE LoanEntity SET archived = 1 WHERE id = :id;
+
+unarchive:
+UPDATE LoanEntity SET archived = 0 WHERE id = :id;
 
 delete:
 DELETE FROM LoanEntity WHERE id = :id;

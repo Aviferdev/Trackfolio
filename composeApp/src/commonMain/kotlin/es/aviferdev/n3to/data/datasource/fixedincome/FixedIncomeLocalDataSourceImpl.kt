@@ -89,8 +89,8 @@ class FixedIncomeLocalDataSourceImpl(
                     maturityDate = e.maturityDate,
                     platformId = e.platformId,
                     issuerId = e.issuerId,
-                    region = e.region,
-                    sector = e.sector,
+                    regionId = e.regionId,
+                    sectorId = e.sectorId,
                     autoRenew = e.autoRenew,
                     feeNote = e.feeNote,
                     createdAt = e.createdAt
@@ -118,8 +118,8 @@ class FixedIncomeLocalDataSourceImpl(
                     maturityDate = e.maturityDate,
                     platformId = e.platformId,
                     issuerId = e.issuerId,
-                    region = e.region,
-                    sector = e.sector,
+                    regionId = e.regionId,
+                    sectorId = e.sectorId,
                     autoRenew = e.autoRenew,
                     feeNote = e.feeNote
                 )

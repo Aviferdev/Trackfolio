@@ -25,6 +25,7 @@ CREATE TABLE AssetEntity (
     priceSource            TEXT    NOT NULL DEFAULT 'MANUAL',
     isinValidatedAt        INTEGER,
     isinValidationError    TEXT,
+    fixedIncomePercent     INTEGER NOT NULL DEFAULT 0,
     FOREIGN KEY (accountId)       REFERENCES AccountEntity(id) ON DELETE CASCADE,
     FOREIGN KEY (assetCategoryId) REFERENCES AssetCategoryEntity(id) ON DELETE SET NULL,
     FOREIGN KEY (portfolioId)     REFERENCES PortfolioEntity(id) ON DELETE SET NULL
@@ -73,8 +74,8 @@ WHERE accountId = :accountId AND portfolioId IS NULL AND archived = 0
 ORDER BY createdAt DESC;
 
 insert:
-INSERT INTO AssetEntity(id, accountId, portfolioId, ticker, name, notes, createdAt, assetCategoryId, currentPrice, currentPriceUpdatedAt, archived, maturityDate, isin, priceSource, isinValidatedAt, isinValidationError)
-VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+INSERT INTO AssetEntity(id, accountId, portfolioId, ticker, name, notes, createdAt, assetCategoryId, currentPrice, currentPriceUpdatedAt, archived, maturityDate, isin, priceSource, isinValidatedAt, isinValidationError, fixedIncomePercent)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 
 update:
 UPDATE AssetEntity
@@ -84,7 +85,8 @@ SET ticker = :ticker, name = :name, notes = :notes,
     currentPrice = :currentPrice, currentPriceUpdatedAt = :currentPriceUpdatedAt,
     maturityDate = :maturityDate,
     isin = :isin, priceSource = :priceSource,
-    isinValidatedAt = :isinValidatedAt, isinValidationError = :isinValidationError
+    isinValidatedAt = :isinValidatedAt, isinValidationError = :isinValidationError,
+    fixedIncomePercent = :fixedIncomePercent
 WHERE id = :id;
 
 updateCurrentPrice:
@@ -106,17 +108,17 @@ DELETE FROM AssetEntity WHERE id = :id;
 -- (bonos/depósitos no tienen precio actual cotizado).
 selectOutdatedByAccount:
 SELECT a.* FROM AssetEntity a
+LEFT JOIN (
+    SELECT assetId,
+           SUM(CASE WHEN type = 'BUY' THEN quantity ELSE 0 END) -
+           SUM(CASE WHEN type = 'SELL' THEN quantity ELSE 0 END) AS openQty
+    FROM AssetTransactionEntity
+    GROUP BY assetId
+) t ON t.assetId = a.id
 WHERE a.accountId = :accountId
   AND a.archived = 0
   AND a.assetCategoryId NOT IN ('fixed_cat_fixedincome')
-  AND (
-    SELECT COALESCE(
-      SUM(CASE WHEN t.type = 'BUY' THEN t.quantity ELSE 0 END) -
-      SUM(CASE WHEN t.type = 'SELL' THEN t.quantity ELSE 0 END),
-      0
-    )
-    FROM AssetTransactionEntity t WHERE t.assetId = a.id
-  ) > 0
+  AND COALESCE(t.openQty, 0) > 0
   AND (a.currentPriceUpdatedAt IS NULL OR a.currentPriceUpdatedAt < :thresholdDate)
 ORDER BY a.name ASC;
 

@@ -4,7 +4,6 @@ import androidx.compose.ui.graphics.Color
 import es.aviferdev.n3to.domain.model.Account
 import es.aviferdev.n3to.domain.model.Asset
 import es.aviferdev.n3to.domain.model.AssetCategory
-import es.aviferdev.n3to.domain.model.AssetComposition
 import es.aviferdev.n3to.domain.model.AssetRegion
 import es.aviferdev.n3to.domain.model.AssetRegionDistribution
 import es.aviferdev.n3to.domain.model.AssetSector
@@ -43,7 +42,6 @@ data class PortfolioStateInput(
     val fiSummary: FixedIncomeSummary?,
     val nearMaturityPositions: List<FixedIncomePosition>,
     val accountId: String? = null,
-    val compositions: List<AssetComposition> = emptyList(),
     val sectorRelations: List<AssetSectorRelation> = emptyList(),
     val regionDistributions: List<AssetRegionDistribution> = emptyList(),
     val bondIssuers: List<Issuer> = emptyList(),
@@ -191,9 +189,8 @@ class PortfolioStateBuilder {
             }
             .sortedByDescending { it.percent }
 
-        val compositionByAsset = compositions.associateBy { it.assetId }
         val compositionSlices = buildCompositionDistribution(
-            allGroups, compositionByAsset, combinedCurrentValue,
+            allGroups, combinedCurrentValue,
             fiRows.sumOf { it.currentValue }, variableIncomeLabel
         )
 
@@ -215,7 +212,7 @@ class PortfolioStateBuilder {
             }
         }
         for (fiRow in fiRows) {
-            val regionKey = fiRow.position.region
+            val regionKey = fiRow.position.regionId
             if (regionKey != null) {
                 regionValues[regionKey] = (regionValues[regionKey] ?: 0.0) + fiRow.currentValue
             } else {
@@ -268,7 +265,7 @@ class PortfolioStateBuilder {
             }
         }
         for (fiRow in fiRows) {
-            val sectorKey = fiRow.position.sector
+            val sectorKey = fiRow.position.sectorId
             if (sectorKey != null) {
                 sectorValues[sectorKey] = (sectorValues[sectorKey] ?: 0.0) + fiRow.currentValue
             } else {
@@ -364,7 +361,7 @@ class PortfolioStateBuilder {
         fiPositions: List<FixedIncomeRow>,
         uncategorizedLabel: String
     ): List<CategoryGroup> {
-        val fiByRegion = fiPositions.groupBy { it.position.region }
+        val fiByRegion = fiPositions.groupBy { it.position.regionId }
         val assetsWithoutRegion = openRows  // assets don't have per-asset region metadata yet
 
         val allRegionKeys = mutableSetOf<String?>()
@@ -404,7 +401,7 @@ class PortfolioStateBuilder {
         fiPositions: List<FixedIncomeRow>,
         uncategorizedLabel: String
     ): List<CategoryGroup> {
-        val fiBySector = fiPositions.groupBy { it.position.sector }
+        val fiBySector = fiPositions.groupBy { it.position.sectorId }
         val assetsWithoutSector = openRows  // assets don't have per-asset sector metadata yet
 
         val allSectorKeys = mutableSetOf<String?>()
@@ -441,7 +438,6 @@ class PortfolioStateBuilder {
 
     private fun buildCompositionDistribution(
         groups: List<CategoryGroup>,
-        compositionByAsset: Map<String, AssetComposition>,
         totalValue: Double,
         fiCurrentValue: Double,
         variableIncomeLabel: String
@@ -453,10 +449,10 @@ class PortfolioStateBuilder {
 
         groups.forEach { group ->
             group.rows.forEach { assetRow ->
-                val composition = compositionByAsset[assetRow.asset.id]
+                val fiPercent = assetRow.asset.fixedIncomePercent
                 val assetValue = assetRow.position.currentValue
-                if (composition != null && composition.fixedIncomePercent > 0) {
-                    val rfPart = assetValue * (composition.fixedIncomePercent / 100.0)
+                if (fiPercent > 0) {
+                    val rfPart = assetValue * (fiPercent / 100.0)
                     rfValue += rfPart
                     rvValue += assetValue - rfPart
                 } else {

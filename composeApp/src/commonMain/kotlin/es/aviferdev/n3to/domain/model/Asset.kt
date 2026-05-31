@@ -26,24 +26,27 @@ package es.aviferdev.n3to.domain.model
  * Valores posibles: "NOT_FOUND", "API_ERROR".
  */
 data class Asset(
-    val id: String,
-    val accountId: String,
-    val portfolioId: String? = null,
-    val ticker: String,
-    val name: String,
-    val notes: String?,
-    val createdAt: Long,
-    val assetCategoryId: String? = null,
+    override val id: String,
+    override val accountId: String,
+    override val portfolioId: String? = null,
+    override val ticker: String,
+    override val name: String,
+    override val notes: String?,
+    override val createdAt: Long,
+    override val assetCategoryId: String? = null,
     val currentPrice: Double? = null,
     val currentPriceUpdatedAt: Long? = null,
-    val archived: Boolean = false,
+    override val archived: Boolean = false,
     val maturityDate: Long? = null,
     // ── Nuevos campos para auto-precio ──
     val isin: String? = null,
     val priceSource: PriceSource = PriceSource.MANUAL,
     val isinValidatedAt: Long? = null,
-    val isinValidationError: String? = null
-) {
+    val isinValidationError: String? = null,
+    /** Porcentaje de renta fija (0-100) para análisis de composición de cartera. */
+    val fixedIncomePercent: Int = 0
+) : FinancialInstrument {
+    override val instrumentType: InstrumentType = InstrumentType.VARIABLE_INCOME
     val hasCurrentPrice: Boolean get() = currentPrice != null
 
     /** True si el activo tiene ISIN y puede obtener precio automático. */

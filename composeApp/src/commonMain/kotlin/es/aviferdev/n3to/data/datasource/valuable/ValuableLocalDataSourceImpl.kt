@@ -47,6 +47,7 @@ class ValuableLocalDataSourceImpl(
                 estimatedValue = e.estimatedValue,
                 salePrice = e.salePrice,
                 saleDate = e.saleDate,
+                closeType = e.closeType,
                 linkedLoanId = e.linkedLoanId,
                 notes = e.notes,
                 archived = e.archived,
@@ -55,12 +56,13 @@ class ValuableLocalDataSourceImpl(
         }
     }
 
-    override suspend fun sell(id: String, saleDate: Long, salePrice: Double): Result<Unit> =
+    override suspend fun sell(id: String, saleDate: Long, salePrice: Double, closeType: String): Result<Unit> =
         runCatching {
             withContext(Dispatchers.IO) {
                 queries.sell(
                     saleDate = saleDate,
                     salePrice = salePrice,
+                    closeType = closeType,
                     id = id
                 )
             }

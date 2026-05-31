@@ -5,6 +5,7 @@ CREATE TABLE TaxLineEntity (
     role          TEXT NOT NULL,
     percent       REAL,
     amount        REAL NOT NULL,
+    createdAt     INTEGER NOT NULL DEFAULT 0,
     FOREIGN KEY (transactionId) REFERENCES TransactionEntity(id) ON DELETE CASCADE
 );
 
@@ -16,8 +17,8 @@ selectByTransaction:
 SELECT * FROM TaxLineEntity WHERE transactionId = :transactionId;
 
 insert:
-INSERT INTO TaxLineEntity(id, transactionId, name, role, percent, amount)
-VALUES (?, ?, ?, ?, ?, ?);
+INSERT INTO TaxLineEntity(id, transactionId, name, role, percent, amount, createdAt)
+VALUES (?, ?, ?, ?, ?, ?, ?);
 
 deleteByTransaction:
 DELETE FROM TaxLineEntity WHERE transactionId = :transactionId;

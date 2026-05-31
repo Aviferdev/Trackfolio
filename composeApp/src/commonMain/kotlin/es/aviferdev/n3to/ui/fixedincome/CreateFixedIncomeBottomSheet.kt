@@ -76,6 +76,8 @@ fun CreateFixedIncomeBottomSheet(
     bankIssuers: List<Issuer>,
     accountId: String,
     selectedPortfolioId: String? = null,
+    allRegions: List<es.aviferdev.n3to.domain.model.AssetRegion> = emptyList(),
+    allSectors: List<es.aviferdev.n3to.domain.model.AssetSector> = emptyList(),
     onSave: (FixedIncomePosition, FixedIncomeEvent) -> Unit,
     onSaveIssuer: (String, String, IssuerType) -> Unit,
     onDismiss: () -> Unit
@@ -96,14 +98,13 @@ fun CreateFixedIncomeBottomSheet(
     var showDatePicker by remember { mutableStateOf(false) }
     val currency = LocalCurrencySymbol.current
 
-    // Región y sector para distribución
-    var selectedRegion by remember { mutableStateOf<String?>(null) }
-    var selectedSector by remember { mutableStateOf<String?>(null) }
+    // Región y sector para distribución (usando catálogos existentes)
+    var selectedRegionId by remember { mutableStateOf<String?>(null) }
+    var selectedSectorId by remember { mutableStateOf<String?>(null) }
 
-    // Valores predefinidos para región y sector
-    val availableRegions = listOf("Europa", "EE.UU.", "España", "Emerging Markets", "Global")
-    val availableSectors =
-        listOf("Gobierno", "Corporativo", "Banca", "Energía", "Inmobiliario", "Otro")
+    // Valores de región y sector desde catálogos (AssetRegionEntity / AssetSectorEntity)
+    val availableRegions = allRegions
+    val availableSectors = allSectors
 
     // Frecuencias permitidas para el tipo seleccionado
     val allowedFrequencies = selectedType.allowedFrequencies.toList()
@@ -497,11 +498,11 @@ fun CreateFixedIncomeBottomSheet(
             ) {
                 availableRegions.forEach { region ->
                     FilterChip(
-                        selected = selectedRegion == region,
+                        selected = selectedRegionId == region.id,
                         onClick = {
-                            selectedRegion = if (selectedRegion == region) null else region
+                            selectedRegionId = if (selectedRegionId == region.id) null else region.id
                         },
-                        label = { Text(region) },
+                        label = { Text(region.name) },
                         colors = FilterChipDefaults.filterChipColors(
                             selectedContainerColor = MaterialTheme.appColors.cyanAccent,
                             selectedLabelColor = MaterialTheme.appColors.navyDeep
@@ -526,11 +527,11 @@ fun CreateFixedIncomeBottomSheet(
             ) {
                 availableSectors.forEach { sector ->
                     FilterChip(
-                        selected = selectedSector == sector,
+                        selected = selectedSectorId == sector.id,
                         onClick = {
-                            selectedSector = if (selectedSector == sector) null else sector
+                            selectedSectorId = if (selectedSectorId == sector.id) null else sector.id
                         },
-                        label = { Text(sector) },
+                        label = { Text(sector.name) },
                         colors = FilterChipDefaults.filterChipColors(
                             selectedContainerColor = MaterialTheme.appColors.cyanAccent,
                             selectedLabelColor = MaterialTheme.appColors.navyDeep
@@ -665,8 +666,8 @@ fun CreateFixedIncomeBottomSheet(
                         maturityDate = maturityDateMillis,
                         platformId = "",
                         issuerId = selectedIssuer?.id,
-                        region = selectedRegion,
-                        sector = selectedSector,
+                        regionId = selectedRegionId,
+                        sectorId = selectedSectorId,
                         autoRenew = false,
                         archived = false,
                         closedAt = null,

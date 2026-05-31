@@ -4,7 +4,7 @@
 CREATE TABLE FixedIncomeEventEntity (
     id               TEXT    NOT NULL PRIMARY KEY,
     positionId       TEXT    NOT NULL,
-    type             TEXT    NOT NULL,
+    type             TEXT    NOT NULL CHECK(type IN ('ACQUISITION', 'COUPON', 'MATURITY_SETTLEMENT', 'SECONDARY_SALE', 'EARLY_CANCELLATION', 'PARTIAL_AMORTIZATION')),
     grossAmount      REAL    NOT NULL,
     irpfPercent      REAL    NOT NULL DEFAULT 0.0,
     commissionAmount REAL    NOT NULL DEFAULT 0.0,

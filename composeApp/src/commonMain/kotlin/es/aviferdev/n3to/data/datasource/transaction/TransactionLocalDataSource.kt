@@ -2,6 +2,7 @@ package es.aviferdev.n3to.data.datasource.transaction
 
 import es.aviferdev.n3to.data.database.TransactionEntity
 import es.aviferdev.n3to.data.database.TransactionLinkEntity
+import es.aviferdev.n3to.data.database.IncomeTaxDetailsEntity
 import es.aviferdev.n3to.domain.model.AnnualSummary
 import es.aviferdev.n3to.domain.model.CategoryBreakdown
 import es.aviferdev.n3to.domain.model.IncomeTypeBreakdown
@@ -48,6 +49,11 @@ interface TransactionLocalDataSource {
     suspend fun insert(entity: TransactionEntity): Result<Unit>
     suspend fun update(entity: TransactionEntity): Result<Unit>
     suspend fun delete(id: String): Result<Unit>
+
+    // Tax Details
+    suspend fun insertTaxDetails(details: IncomeTaxDetailsEntity): Result<Unit>
+    suspend fun updateTaxDetails(details: IncomeTaxDetailsEntity): Result<Unit>
+    suspend fun deleteTaxDetails(transactionId: String): Result<Unit>
 
     // Links
     suspend fun insertLink(link: TransactionLinkEntity): Result<Unit>

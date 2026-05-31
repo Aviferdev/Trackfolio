@@ -39,18 +39,14 @@ import es.aviferdev.n3to.domain.usecase.assetcategory.RenameAssetCategoryUseCase
 import es.aviferdev.n3to.domain.usecase.assetcategory.SaveAssetCategoryUseCase
 import es.aviferdev.n3to.domain.usecase.assetmetadata.DeleteAllRegionDistributionsUseCase
 import es.aviferdev.n3to.domain.usecase.assetmetadata.DeleteAllSectorLinksUseCase
-import es.aviferdev.n3to.domain.usecase.assetmetadata.DeleteAssetCompositionUseCase
 import es.aviferdev.n3to.domain.usecase.assetmetadata.DeleteRegionUseCase
 import es.aviferdev.n3to.domain.usecase.assetmetadata.DeleteSectorUseCase
-import es.aviferdev.n3to.domain.usecase.assetmetadata.GetAllCompositionsUseCase
-import es.aviferdev.n3to.domain.usecase.assetmetadata.GetAssetCompositionUseCase
 import es.aviferdev.n3to.domain.usecase.assetmetadata.GetRegionsByAssetUseCase
 import es.aviferdev.n3to.domain.usecase.assetmetadata.GetRegionsByAssetsUseCase
 import es.aviferdev.n3to.domain.usecase.assetmetadata.GetRegionsUseCase
 import es.aviferdev.n3to.domain.usecase.assetmetadata.GetSectorsByAssetUseCase
 import es.aviferdev.n3to.domain.usecase.assetmetadata.GetSectorsByAssetsUseCase
 import es.aviferdev.n3to.domain.usecase.assetmetadata.GetSectorsUseCase
-import es.aviferdev.n3to.domain.usecase.assetmetadata.SaveAssetCompositionUseCase
 import es.aviferdev.n3to.domain.usecase.assetmetadata.SaveRegionDistributionUseCase
 import es.aviferdev.n3to.domain.usecase.assetmetadata.SaveRegionUseCase
 import es.aviferdev.n3to.domain.usecase.assetmetadata.SaveSectorRelationUseCase
@@ -319,7 +315,7 @@ val useCaseModule = module {
     factory { ArchiveAssetUseCase(get()) }
     factory { UnarchiveAssetUseCase(get()) }
     factory { CheckAssetArchivableUseCase(get()) }
-    factory { GetAssetEditMetadataUseCase(get(), get()) }
+    factory { GetAssetEditMetadataUseCase(get(), get(), get()) }
     factory { GetOutdatedAssetsUseCase(get(), get()) }
     factory { ShouldShowPriceReminderUseCase(get()) }
     factory { SavePriceReminderShownUseCase(get()) }
@@ -382,10 +378,6 @@ val useCaseModule = module {
     factory { GetRegionsUseCase(get()) }
     factory { SaveRegionUseCase(get()) }
     factory { DeleteRegionUseCase(get()) }
-    factory { GetAssetCompositionUseCase(get()) }
-    factory { GetAllCompositionsUseCase(get()) }
-    factory { SaveAssetCompositionUseCase(get()) }
-    factory { DeleteAssetCompositionUseCase(get()) }
     factory { GetSectorsByAssetUseCase(get()) }
     factory { GetSectorsByAssetsUseCase(get()) }
     factory { SaveSectorRelationUseCase(get()) }
@@ -647,7 +639,6 @@ val useCaseModule = module {
             syncToLedger = get(),
             saveAssetPriceHistory = get(),
             getPlatformsByAssets = get(),
-            getAllCompositions = get(),
             getSectorsByAssets = get(),
             getRegionsByAssets = get(),
             getSectors = get(),
@@ -656,9 +647,6 @@ val useCaseModule = module {
             getPlatformsByAsset = get(),
             getSectorsByAsset = get(),
             getRegionsByAsset = get(),
-            getAssetComposition = get(),
-            saveAssetComposition = get(),
-            deleteAssetComposition = get(),
             deleteAllSectorLinks = get(),
             saveSectorRelation = get(),
             deleteAllRegionDistributions = get(),
@@ -719,9 +707,6 @@ val useCaseModule = module {
             getRegions = get(),
             getSectorsByAsset = get(),
             getRegionsByAsset = get(),
-            getAssetComposition = get(),
-            saveAssetComposition = get(),
-            deleteAssetComposition = get(),
             deleteAllSectorLinks = get(),
             saveSectorRelation = get(),
             deleteAllRegionDistributions = get(),
@@ -853,7 +838,8 @@ val useCaseModule = module {
             closeFixedIncome = get(),
             deleteFixedIncomeEvent = get(),
             updatePosition = get(),
-            archivePosition = get()
+            archivePosition = get(),
+            metadataRepository = get()
         )
     }
 

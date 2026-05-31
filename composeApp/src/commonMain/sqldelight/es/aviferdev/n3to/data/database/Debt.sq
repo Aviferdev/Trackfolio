@@ -7,29 +7,36 @@ CREATE TABLE DebtEntity (
     date       INTEGER NOT NULL,
     isPaid     INTEGER NOT NULL DEFAULT 0,
     notes      TEXT,
+    archived   INTEGER NOT NULL DEFAULT 0,
     createdAt  INTEGER NOT NULL,
     FOREIGN KEY (accountId) REFERENCES AccountEntity(id) ON DELETE CASCADE
 );
 
-CREATE INDEX idx_debt_account ON DebtEntity(accountId);
+CREATE INDEX idx_debt_account  ON DebtEntity(accountId);
+CREATE INDEX idx_debt_archived ON DebtEntity(archived);
 
 selectActiveByAccount:
 SELECT * FROM DebtEntity
-WHERE accountId = :accountId AND isPaid = 0
+WHERE accountId = :accountId AND isPaid = 0 AND archived = 0
 ORDER BY date DESC;
 
 selectActive:
-SELECT * FROM DebtEntity WHERE isPaid = 0 ORDER BY date DESC;
+SELECT * FROM DebtEntity WHERE isPaid = 0 AND archived = 0 ORDER BY date DESC;
 
 selectAll:
 SELECT * FROM DebtEntity ORDER BY date DESC;
+
+selectByAccount:
+SELECT * FROM DebtEntity
+WHERE accountId = :accountId AND archived = 0
+ORDER BY date DESC;
 
 selectById:
 SELECT * FROM DebtEntity WHERE id = :id;
 
 insert:
-INSERT INTO DebtEntity(id, accountId, personName, amount, direction, date, isPaid, notes, createdAt)
-VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
+INSERT INTO DebtEntity(id, accountId, personName, amount, direction, date, isPaid, notes, archived, createdAt)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0, ?);
 
 update:
 UPDATE DebtEntity
@@ -40,15 +47,21 @@ WHERE id = :id;
 markAsPaid:
 UPDATE DebtEntity SET isPaid = 1 WHERE id = :id;
 
+archive:
+UPDATE DebtEntity SET archived = 1 WHERE id = :id;
+
+unarchive:
+UPDATE DebtEntity SET archived = 0 WHERE id = :id;
+
 delete:
 DELETE FROM DebtEntity WHERE id = :id;
 
 getTotalByDirection:
 SELECT COALESCE(SUM(amount), 0.0) AS total
 FROM DebtEntity
-WHERE direction = :direction AND isPaid = 0;
+WHERE direction = :direction AND isPaid = 0 AND archived = 0;
 
 getTotalByDirectionAndAccount:
 SELECT COALESCE(SUM(amount), 0.0) AS total
 FROM DebtEntity
-WHERE accountId = :accountId AND direction = :direction AND isPaid = 0;
+WHERE accountId = :accountId AND direction = :direction AND isPaid = 0 AND archived = 0;

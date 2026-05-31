@@ -315,6 +315,8 @@ private fun ListAllPortfolios(
             bankIssuers = state.bankIssuers,
             accountId = state.currentAccountId!!,
             selectedPortfolioId = selectedPortfolioId,
+            allRegions = state.allRegions,
+            allSectors = state.allSectors,
             onSave = { position, event -> viewModel.saveFixedIncomePosition(position, event) },
             onSaveIssuer = { name, icon, type -> viewModel.saveBondIssuer(name, icon, type) },
             onDismiss = { viewModel.closeCreateFixedIncomeSheet() }

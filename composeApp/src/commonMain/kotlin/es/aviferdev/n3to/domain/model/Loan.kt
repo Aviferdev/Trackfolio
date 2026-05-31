@@ -16,6 +16,8 @@ data class Loan(
     val lenderName: String?,
     val notes: String?,
     val archived: Boolean,
+    val closedAt: Long? = null,
+    val closeType: LoanCloseType? = null,
     val createdAt: Long
 ) {
     val remainingInstallments: Int
@@ -29,6 +31,9 @@ data class Loan(
     val isFullyPaid: Boolean
         get() = paidInstallments >= totalInstallments || outstandingPrincipal <= 0.0
 
+    val isOpen: Boolean
+        get() = closedAt == null
+
     /** Importe total que se pagará a lo largo de la vida del préstamo. */
     val totalAmountToRepay: Double
         get() = monthlyPayment * totalInstallments
@@ -40,4 +45,11 @@ data class Loan(
     /** Capital ya amortizado. */
     val principalPaid: Double
         get() = totalAmount - outstandingPrincipal
+}
+
+enum class LoanCloseType {
+    FULLY_PAID,      // Pagado completamente
+    EARLY_PAYOFF,    // Amortización anticipada
+    REFINANCED,      // Refinanciado con otro préstamo
+    WRITTEN_OFF      // Cancelado/baja contable
 }

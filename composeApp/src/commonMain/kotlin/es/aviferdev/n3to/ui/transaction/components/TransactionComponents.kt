@@ -270,8 +270,9 @@ internal fun TransactionCard(
                 maxLines = 1
             )
             if (isIncome && transaction.grossAmount != null && !balancesHidden) {
+                val gross = transaction.grossAmount!!
                 Text(
-                    "Bruto: ${formatAmount(transaction.grossAmount)} $currency",
+                    "Bruto: ${formatAmount(gross)} $currency",
                     fontSize = 9.sp,
                     color = MaterialTheme.appColors.textTertiary,
                     maxLines = 1

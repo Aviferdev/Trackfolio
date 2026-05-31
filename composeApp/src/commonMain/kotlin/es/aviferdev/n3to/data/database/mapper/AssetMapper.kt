@@ -1,7 +1,6 @@
 package es.aviferdev.n3to.data.database.mapper
 
 import es.aviferdev.n3to.data.database.AssetCategoryEntity
-import es.aviferdev.n3to.data.database.AssetCompositionEntity
 import es.aviferdev.n3to.data.database.AssetEntity
 import es.aviferdev.n3to.data.database.SelectAssetsWithBrokenIsin
 import es.aviferdev.n3to.data.database.SelectQuotableByAccount
@@ -15,7 +14,6 @@ import es.aviferdev.n3to.data.database.PlatformEntity
 import es.aviferdev.n3to.domain.model.Asset
 import es.aviferdev.n3to.domain.model.AssetCategory
 import es.aviferdev.n3to.domain.model.PriceSource
-import es.aviferdev.n3to.domain.model.AssetComposition
 import es.aviferdev.n3to.domain.model.AssetRegion
 import es.aviferdev.n3to.domain.model.AssetRegionDistribution
 import es.aviferdev.n3to.domain.model.AssetSector
@@ -24,6 +22,9 @@ import es.aviferdev.n3to.domain.model.AssetTag
 import es.aviferdev.n3to.domain.model.AssetTransaction
 import es.aviferdev.n3to.domain.model.AssetTransactionType
 import es.aviferdev.n3to.domain.model.Platform
+import kotlinx.datetime.Instant
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 
 fun AssetEntity.toDomain(): Asset = Asset(
     id = id,
@@ -45,7 +46,8 @@ fun AssetEntity.toDomain(): Asset = Asset(
         PriceSource.MANUAL
     },
     isinValidatedAt = isinValidatedAt,
-    isinValidationError = isinValidationError
+    isinValidationError = isinValidationError,
+    fixedIncomePercent = fixedIncomePercent.toInt()
 )
 
 fun Asset.toEntity(): AssetEntity = AssetEntity(
@@ -64,7 +66,8 @@ fun Asset.toEntity(): AssetEntity = AssetEntity(
     isin = isin,
     priceSource = priceSource.name,
     isinValidatedAt = isinValidatedAt,
-    isinValidationError = isinValidationError
+    isinValidationError = isinValidationError,
+    fixedIncomePercent = fixedIncomePercent.toLong()
 )
 
 fun AssetCategoryEntity.toDomain(): AssetCategory = AssetCategory(
@@ -136,30 +139,26 @@ fun AssetTransactionEntity.toDomain(): AssetTransaction = AssetTransaction(
     createdAt = createdAt
 )
 
-fun AssetTransaction.toEntity(): AssetTransactionEntity = AssetTransactionEntity(
-    id = id,
-    assetId = assetId,
-    type = type.name,
-    quantity = quantity,
-    pricePerUnit = pricePerUnit,
-    date = date,
-    platformId = platformId,
-    feeNote = feeNote,
-    notes = notes,
-    createdAt = createdAt
-)
-
-fun AssetCompositionEntity.toDomain(): AssetComposition = AssetComposition(
-    assetId = assetId,
-    fixedIncomePercent = fixedIncomePercent.toInt(),
-    createdAt = createdAt
-)
-
-fun AssetComposition.toEntity(): AssetCompositionEntity = AssetCompositionEntity(
-    assetId = assetId,
-    fixedIncomePercent = fixedIncomePercent.toLong(),
-    createdAt = createdAt
-)
+fun AssetTransaction.toEntity(): AssetTransactionEntity {
+    val local = Instant.fromEpochMilliseconds(date)
+        .toLocalDateTime(TimeZone.currentSystemDefault())
+    val year = local.year.toString()
+    val month = local.monthNumber.toString().padStart(2, '0')
+    return AssetTransactionEntity(
+        id = id,
+        assetId = assetId,
+        type = type.name,
+        quantity = quantity,
+        pricePerUnit = pricePerUnit,
+        date = date,
+        year = year,
+        month = month,
+        platformId = platformId,
+        feeNote = feeNote,
+        notes = notes,
+        createdAt = createdAt
+    )
+}
 
 fun AssetSectorEntity.toDomain(): AssetSector = AssetSector(
     id = id,
@@ -197,7 +196,8 @@ fun SelectQuotableByAccount.toDomain(): Asset = Asset(
         PriceSource.MANUAL
     },
     isinValidatedAt = isinValidatedAt,
-    isinValidationError = isinValidationError
+    isinValidationError = isinValidationError,
+    fixedIncomePercent = fixedIncomePercent.toInt()
 )
 
 fun SelectAssetsWithBrokenIsin.toDomain(): Asset = Asset(
@@ -220,7 +220,8 @@ fun SelectAssetsWithBrokenIsin.toDomain(): Asset = Asset(
         PriceSource.MANUAL
     },
     isinValidatedAt = isinValidatedAt,
-    isinValidationError = isinValidationError
+    isinValidationError = isinValidationError,
+    fixedIncomePercent = fixedIncomePercent.toInt()
 )
 
 fun AssetSectorRelationEntity.toDomain(): AssetSectorRelation = AssetSectorRelation(

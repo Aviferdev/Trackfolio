@@ -1,12 +1,10 @@
 package es.aviferdev.n3to.domain.usecase.asset
 
 import es.aviferdev.n3to.domain.model.Asset
-import es.aviferdev.n3to.domain.model.AssetComposition
 import es.aviferdev.n3to.domain.model.AssetRegionDistribution
 import es.aviferdev.n3to.domain.model.AssetSectorRelation
 import es.aviferdev.n3to.domain.repository.AssetMetadataRepository
 import es.aviferdev.n3to.domain.repository.AssetPlatformRepository
-import es.aviferdev.n3to.platform.nowMillis
 
 class UpdateAssetWithMetadataUseCase(
     private val updateAsset: UpdateAssetUseCase,
@@ -20,21 +18,9 @@ class UpdateAssetWithMetadataUseCase(
         regionPercents: Map<String, Int> = emptyMap(),
         platformIds: Set<String> = emptySet()
     ): Result<Unit> {
-        val result = updateAsset(asset)
+        val assetWithComposition = asset.copy(fixedIncomePercent = fixedIncomePercent)
+        val result = updateAsset(assetWithComposition)
         if (result.isFailure) return result
-
-        val now = nowMillis()
-        if (fixedIncomePercent > 0) {
-            assetMetadataRepository.saveComposition(
-                AssetComposition(
-                    assetId = asset.id,
-                    fixedIncomePercent = fixedIncomePercent,
-                    createdAt = now
-                )
-            )
-        } else {
-            assetMetadataRepository.deleteComposition(asset.id)
-        }
 
         assetMetadataRepository.deleteAllSectorLinks(asset.id)
         sectorIds.forEach { sectorId ->

@@ -26,6 +26,9 @@ class DebtLocalDataSourceImpl(
     override fun getAll(): Flow<List<DebtEntity>> =
         queries.selectAll().asFlow().mapToList(Dispatchers.IO)
 
+    override fun getByAccount(accountId: String): Flow<List<DebtEntity>> =
+        queries.selectByAccount(accountId).asFlow().mapToList(Dispatchers.IO)
+
     override fun getById(id: String): Flow<DebtEntity?> =
         queries.selectById(id).asFlow().mapToOneOrNull(Dispatchers.IO)
 
@@ -72,6 +75,12 @@ class DebtLocalDataSourceImpl(
 
     override suspend fun markAsPaid(id: String): Result<Unit> =
         runCatching { withContext(Dispatchers.IO) { queries.markAsPaid(id) } }
+
+    override suspend fun archive(id: String): Result<Unit> =
+        runCatching { withContext(Dispatchers.IO) { queries.archive(id) } }
+
+    override suspend fun unarchive(id: String): Result<Unit> =
+        runCatching { withContext(Dispatchers.IO) { queries.unarchive(id) } }
 
     override suspend fun delete(id: String): Result<Unit> =
         runCatching { withContext(Dispatchers.IO) { queries.delete(id) } }

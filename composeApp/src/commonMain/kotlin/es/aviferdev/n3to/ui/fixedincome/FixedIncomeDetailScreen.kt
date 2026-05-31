@@ -245,7 +245,9 @@ fun FixedIncomeDetailContent(
                         Spacer(Modifier.height(12.dp))
                         DistributionSection(
                             position = state.row.position,
-                            onUpdateRegionSector = onUpdateRegionSector
+                            onUpdateRegionSector = onUpdateRegionSector,
+                            allRegions = state.allRegions,
+                            allSectors = state.allSectors
                         )
                     }
 
@@ -407,8 +409,8 @@ fun FixedIncomeDetailContentPreview() {
                         maturityDate = 1700000000000 + 90L * 24L * 3600L * 1000L,
                         platformId = "",
                         issuerId = null,
-                        region = "Europa",
-                        sector = "Banca",
+                        regionId = null,
+                        sectorId = null,
                         autoRenew = false,
                         archived = false,
                         closedAt = null,

@@ -6,5 +6,6 @@ data class Category(
     val name: String,
     val type: TransactionType,
     val isDefault: Boolean,
-    val archived: Boolean = false
+    val archived: Boolean = false,
+    val createdAt: Long = 0L
 )

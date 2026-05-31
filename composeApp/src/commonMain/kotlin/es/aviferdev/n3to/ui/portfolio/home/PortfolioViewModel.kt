@@ -7,7 +7,6 @@ import es.aviferdev.n3to.domain.model.Account
 import es.aviferdev.n3to.domain.model.Asset
 import es.aviferdev.n3to.domain.model.AssetCategory
 import es.aviferdev.n3to.domain.model.AssetCategoryType
-import es.aviferdev.n3to.domain.model.AssetComposition
 import es.aviferdev.n3to.domain.model.AssetRegion
 import es.aviferdev.n3to.domain.model.AssetRegionDistribution
 import es.aviferdev.n3to.domain.model.AssetSector
@@ -29,7 +28,6 @@ import es.aviferdev.n3to.domain.model.Transaction
 import es.aviferdev.n3to.domain.portfolio.AssetPosition
 import es.aviferdev.n3to.domain.portfolio.CompoundEffect
 import es.aviferdev.n3to.domain.usecase.account.GetAccountByIdUseCase
-import es.aviferdev.n3to.domain.usecase.assetmetadata.GetAllCompositionsUseCase
 import es.aviferdev.n3to.domain.usecase.assetmetadata.GetRegionsByAssetsUseCase
 import es.aviferdev.n3to.domain.usecase.assetmetadata.GetRegionsUseCase
 import es.aviferdev.n3to.domain.usecase.assetmetadata.GetSectorsByAssetsUseCase
@@ -44,11 +42,8 @@ import es.aviferdev.n3to.domain.usecase.asset.ValidateAssetIdentifierUseCase
 import es.aviferdev.n3to.domain.usecase.assetcategory.GetAllAssetCategoriesIncludingArchivedUseCase
 import es.aviferdev.n3to.domain.usecase.assetmetadata.DeleteAllRegionDistributionsUseCase
 import es.aviferdev.n3to.domain.usecase.assetmetadata.DeleteAllSectorLinksUseCase
-import es.aviferdev.n3to.domain.usecase.assetmetadata.DeleteAssetCompositionUseCase
-import es.aviferdev.n3to.domain.usecase.assetmetadata.GetAssetCompositionUseCase
 import es.aviferdev.n3to.domain.usecase.assetmetadata.GetRegionsByAssetUseCase
 import es.aviferdev.n3to.domain.usecase.assetmetadata.GetSectorsByAssetUseCase
-import es.aviferdev.n3to.domain.usecase.assetmetadata.SaveAssetCompositionUseCase
 import es.aviferdev.n3to.domain.usecase.assetmetadata.SaveRegionDistributionUseCase
 import es.aviferdev.n3to.domain.usecase.assetmetadata.SaveSectorRelationUseCase
 import es.aviferdev.n3to.domain.usecase.assetplatform.GetPlatformsByAssetUseCase
@@ -221,7 +216,6 @@ class PortfolioViewModel(
     private val syncToLedger: SyncAssetTransactionToLedgerUseCase,
     private val saveAssetPriceHistory: SaveAssetPriceHistoryUseCase,
     private val getPlatformsByAssets: GetPlatformsByAssetsUseCase,
-    private val getAllCompositions: GetAllCompositionsUseCase,
     private val getSectorsByAssets: GetSectorsByAssetsUseCase,
     private val getRegionsByAssets: GetRegionsByAssetsUseCase,
     private val getSectors: GetSectorsUseCase,
@@ -230,9 +224,6 @@ class PortfolioViewModel(
     private val getPlatformsByAsset: GetPlatformsByAssetUseCase,
     private val getSectorsByAsset: GetSectorsByAssetUseCase,
     private val getRegionsByAsset: GetRegionsByAssetUseCase,
-    private val getAssetComposition: GetAssetCompositionUseCase,
-    private val saveAssetComposition: SaveAssetCompositionUseCase,
-    private val deleteAssetComposition: DeleteAssetCompositionUseCase,
     private val deleteAllSectorLinks: DeleteAllSectorLinksUseCase,
     private val saveSectorRelation: SaveSectorRelationUseCase,
     private val deleteAllRegionDistributions: DeleteAllRegionDistributionsUseCase,
@@ -325,7 +316,6 @@ class PortfolioViewModel(
 
     private data class BasePortfolioData(
         val platformsByAsset: Map<String, List<Platform>>,
-        val compositions: List<AssetComposition>,
         val sectorRelations: List<AssetSectorRelation>,
         val regionDistributions: List<AssetRegionDistribution>
     )
@@ -393,7 +383,6 @@ class PortfolioViewModel(
                                 BasePortfolioData(
                                     emptyMap(),
                                     emptyList(),
-                                    emptyList(),
                                     emptyList()
                                 ),
                                 emptyMap(),
@@ -403,13 +392,11 @@ class PortfolioViewModel(
                     } else {
                         val metaFlow = combine(
                             getPlatformsByAssets(assetIds),
-                            getAllCompositions(),
                             getSectorsByAssets(assetIds),
                             getRegionsByAssets(assetIds)
-                        ) { platformsByAsset, compositions, sectorRelations, regionDistributions ->
+                        ) { platformsByAsset, sectorRelations, regionDistributions ->
                             BasePortfolioData(
                                 platformsByAsset,
-                                compositions,
                                 sectorRelations,
                                 regionDistributions
                             )
@@ -471,7 +458,6 @@ class PortfolioViewModel(
             fiSummary = basicData.fiSummary,
             nearMaturityPositions = basicData.nearMaturityPositions,
             accountId = accountId,
-            compositions = meta.compositions,
             sectorRelations = meta.sectorRelations,
             regionDistributions = meta.regionDistributions,
             bondIssuers = basicData.bondIssuers,
@@ -732,8 +718,7 @@ class PortfolioViewModel(
             val regions = getRegionsByAsset(asset.id).first()
             _editingAssetRegionPercents.value = regions.associate { it.regionId to it.percent }
 
-            val composition = getAssetComposition(asset.id).first()
-            _editingAssetFixedIncomePercent.value = composition?.fixedIncomePercent ?: 0
+            _editingAssetFixedIncomePercent.value = asset.fixedIncomePercent
         }
     }
 
@@ -790,17 +775,11 @@ class PortfolioViewModel(
                 isin = isin,
                 priceSource = PriceSource.MANUAL,
                 isinValidatedAt = if (isin != null) now else null,
-                isinValidationError = null
+                isinValidationError = null,
+                fixedIncomePercent = fixedIncomePercent
             )
             saveAsset(asset)
                 .onSuccess {
-                    if (fixedIncomePercent > 0) {
-                        saveAssetComposition(AssetComposition(
-                            assetId = asset.id,
-                            fixedIncomePercent = fixedIncomePercent,
-                            createdAt = now
-                        ))
-                    }
                     sectorIds.forEach { sectorId ->
                         saveSectorRelation(AssetSectorRelation(assetId = asset.id, sectorId = sectorId))
                     }
@@ -856,18 +835,10 @@ class PortfolioViewModel(
                     isin = isin,
                     priceSource = PriceSource.MANUAL,
                     isinValidatedAt = if (isin != null) nowMillis() else null,
-                    isinValidationError = null
+                    isinValidationError = null,
+                    fixedIncomePercent = fixedIncomePercent
                 )
             ).onSuccess {
-                if (fixedIncomePercent > 0) {
-                    saveAssetComposition(AssetComposition(
-                        assetId = original.id,
-                        fixedIncomePercent = fixedIncomePercent,
-                        createdAt = nowMillis()
-                    ))
-                } else {
-                    deleteAssetComposition(original.id)
-                }
                 deleteAllSectorLinks(original.id)
                 sectorIds.forEach { sectorId ->
                     saveSectorRelation(AssetSectorRelation(assetId = original.id, sectorId = sectorId))

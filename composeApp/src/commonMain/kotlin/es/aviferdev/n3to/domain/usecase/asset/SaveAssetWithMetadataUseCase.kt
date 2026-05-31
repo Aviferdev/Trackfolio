@@ -1,7 +1,6 @@
 package es.aviferdev.n3to.domain.usecase.asset
 
 import es.aviferdev.n3to.domain.model.Asset
-import es.aviferdev.n3to.domain.model.AssetComposition
 import es.aviferdev.n3to.domain.model.AssetRegionDistribution
 import es.aviferdev.n3to.domain.model.AssetSectorRelation
 import es.aviferdev.n3to.domain.repository.AssetMetadataRepository
@@ -19,19 +18,10 @@ class SaveAssetWithMetadataUseCase(
         regionPercents: Map<String, Int> = emptyMap(),
         platformIds: Set<String> = emptySet()
     ): Result<Unit> {
-        val result = saveAsset(asset)
+        val assetWithComposition = asset.copy(fixedIncomePercent = fixedIncomePercent)
+        val result = saveAsset(assetWithComposition)
         if (result.isFailure) return result
 
-        val now = asset.createdAt
-        if (fixedIncomePercent > 0) {
-            assetMetadataRepository.saveComposition(
-                AssetComposition(
-                    assetId = asset.id,
-                    fixedIncomePercent = fixedIncomePercent,
-                    createdAt = now
-                )
-            )
-        }
         sectorIds.forEach { sectorId ->
             assetMetadataRepository.saveSectorRelation(
                 AssetSectorRelation(

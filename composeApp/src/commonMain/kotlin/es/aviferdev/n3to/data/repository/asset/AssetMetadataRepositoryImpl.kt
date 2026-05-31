@@ -1,7 +1,6 @@
 package es.aviferdev.n3to.data.repository.asset
 
 import es.aviferdev.n3to.data.datasource.assetmetadata.AssetMetadataLocalDataSource
-import es.aviferdev.n3to.domain.model.AssetComposition
 import es.aviferdev.n3to.domain.model.AssetRegion
 import es.aviferdev.n3to.domain.model.AssetRegionDistribution
 import es.aviferdev.n3to.domain.model.AssetSector
@@ -12,15 +11,6 @@ import kotlinx.coroutines.flow.Flow
 class AssetMetadataRepositoryImpl(
     private val localDataSource: AssetMetadataLocalDataSource
 ) : AssetMetadataRepository {
-
-    override fun getCompositionByAssetId(assetId: String): Flow<AssetComposition?> =
-        localDataSource.getCompositionByAsset(assetId)
-
-    override fun getAllCompositions(): Flow<List<AssetComposition>> =
-        localDataSource.getAllCompositions()
-
-    override fun getCompositionsByAssetIds(assetIds: List<String>): Flow<List<AssetComposition>> =
-        localDataSource.getCompositionsByAssets(assetIds)
 
     override fun getAllSectors(): Flow<List<AssetSector>> =
         localDataSource.getAllSectors()
@@ -45,12 +35,6 @@ class AssetMetadataRepositoryImpl(
 
     override fun getRegionDistributionsByAssetIds(assetIds: List<String>): Flow<List<AssetRegionDistribution>> =
         localDataSource.getRegionsByAssets(assetIds)
-
-    override suspend fun saveComposition(composition: AssetComposition): Result<Unit> =
-        localDataSource.saveComposition(composition)
-
-    override suspend fun deleteComposition(assetId: String): Result<Unit> =
-        localDataSource.deleteComposition(assetId)
 
     override suspend fun saveSector(sector: AssetSector): Result<Unit> =
         localDataSource.insertSector(sector)

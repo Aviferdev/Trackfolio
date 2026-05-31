@@ -47,7 +47,7 @@ class AccountLocalDataSourceImpl(
             queries.insert(
                 id = account.id,
                 name = account.name,
-                balance = account.initialBalance,
+                initialBalance = account.initialBalance,
                 createdAt = account.createdAt,
                 currency = account.currency
             )
@@ -65,7 +65,7 @@ class AccountLocalDataSourceImpl(
 
     override suspend fun updateInitialBalance(accountId: String, amount: Double) {
         withContext(Dispatchers.IO) {
-            queries.updateInitialBalance(balance = amount, id = accountId)
+            queries.updateInitialBalance(initialBalance = amount, id = accountId)
         }
     }
 

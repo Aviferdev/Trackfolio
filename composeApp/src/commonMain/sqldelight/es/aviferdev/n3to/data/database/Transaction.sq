@@ -5,15 +5,11 @@ CREATE TABLE TransactionEntity (
     type                       TEXT    NOT NULL CHECK(type IN ('INCOME', 'EXPENSE', 'ADJUSTMENT')),
     categoryId                 TEXT,
     date                       INTEGER NOT NULL,
+    year                       TEXT    NOT NULL DEFAULT '',
+    month                      TEXT    NOT NULL DEFAULT '',
     notes                      TEXT,
     createdAt                  INTEGER NOT NULL,
     excludeFromFiscal          INTEGER NOT NULL DEFAULT 0,
-    -- ── Campos de ingreso ─────────────────────────────────────────────────────
-    incomeType                 TEXT,
-    grossAmount                REAL,
-    commissionAmount           REAL,
-    issuerId                   TEXT,
-    issuerName                 TEXT,
     -- ── Divisa original (si difiere de la cuenta) ────────────────────────────
     originalCurrency           TEXT,
     originalAmount             REAL,
@@ -22,11 +18,12 @@ CREATE TABLE TransactionEntity (
     FOREIGN KEY (categoryId) REFERENCES CategoryEntity(id) ON DELETE SET NULL
 );
 
-CREATE INDEX idx_transaction_account ON TransactionEntity(accountId);
-CREATE INDEX idx_transaction_date    ON TransactionEntity(date);
-CREATE INDEX idx_transaction_type    ON TransactionEntity(type);
-CREATE INDEX idx_transaction_category     ON TransactionEntity(categoryId);
-CREATE INDEX idx_transaction_issuer_name ON TransactionEntity(issuerName);
+CREATE INDEX idx_transaction_account         ON TransactionEntity(accountId);
+CREATE INDEX idx_transaction_account_date    ON TransactionEntity(accountId, date);
+CREATE INDEX idx_transaction_account_ym      ON TransactionEntity(accountId, year, month);
+CREATE INDEX idx_transaction_date            ON TransactionEntity(date);
+CREATE INDEX idx_transaction_type            ON TransactionEntity(type);
+CREATE INDEX idx_transaction_category        ON TransactionEntity(categoryId);
 
 -- ─── Queries básicas ──────────────────────────────────────────────────────────
 
@@ -46,8 +43,8 @@ ORDER BY date DESC;
 selectByMonthAndAccount:
 SELECT * FROM TransactionEntity
 WHERE accountId = :accountId
-  AND strftime('%Y', date / 1000, 'unixepoch') = :year
-  AND strftime('%m', date / 1000, 'unixepoch') = :month
+  AND year = :year
+  AND month = :month
 ORDER BY date DESC;
 
 selectRecentByAccount:
@@ -68,8 +65,8 @@ WHERE t.accountId = :accountId
       SELECT 1 FROM TransactionLinkEntity l
       WHERE l.transactionId = t.id AND l.linkType = 'ASSET_TRANSACTION'
   )
-  AND strftime('%Y', t.date / 1000, 'unixepoch') = :year
-  AND strftime('%m', t.date / 1000, 'unixepoch') = :month;
+  AND t.year = :year
+  AND t.month = :month;
 
 getAnnualTotalsByAccount:
 SELECT
@@ -81,11 +78,11 @@ WHERE t.accountId = :accountId
       SELECT 1 FROM TransactionLinkEntity l
       WHERE l.transactionId = t.id AND l.linkType = 'ASSET_TRANSACTION'
   )
-  AND strftime('%Y', t.date / 1000, 'unixepoch') = :year;
+  AND t.year = :year;
 
 getMonthlyBreakdownByAccount:
 SELECT
-    strftime('%m', t.date / 1000, 'unixepoch') AS month,
+    t.month,
     COALESCE(SUM(CASE WHEN t.type = 'INCOME'  THEN t.amount ELSE 0.0 END), 0.0) AS totalIncome,
     COALESCE(SUM(CASE WHEN t.type = 'EXPENSE' THEN t.amount ELSE 0.0 END), 0.0) AS totalExpense
 FROM TransactionEntity t
@@ -94,9 +91,9 @@ WHERE t.accountId = :accountId
       SELECT 1 FROM TransactionLinkEntity l
       WHERE l.transactionId = t.id AND l.linkType = 'ASSET_TRANSACTION'
   )
-  AND strftime('%Y', t.date / 1000, 'unixepoch') = :year
-GROUP BY month
-ORDER BY month ASC;
+  AND t.year = :year
+GROUP BY t.month
+ORDER BY t.month ASC;
 
 -- ─── Ingresos del año (para informe fiscal) ──────────────────────────────────
 
@@ -104,15 +101,15 @@ getIncomeByYear:
 SELECT * FROM TransactionEntity
 WHERE accountId = :accountId
   AND type = 'INCOME'
-  AND strftime('%Y', date / 1000, 'unixepoch') = :year
+  AND year = :year
 ORDER BY date DESC;
 
 -- ─── Retrocompatibilidad (sin filtro de cuenta) ───────────────────────────────
 
 selectByMonth:
 SELECT * FROM TransactionEntity
-WHERE strftime('%Y', date / 1000, 'unixepoch') = :year
-AND strftime('%m', date / 1000, 'unixepoch') = :month
+WHERE year = :year
+  AND month = :month
 ORDER BY date DESC;
 
 getMonthlyTotals:
@@ -124,8 +121,8 @@ WHERE NOT EXISTS (
     SELECT 1 FROM TransactionLinkEntity l
     WHERE l.transactionId = t.id AND l.linkType = 'ASSET_TRANSACTION'
 )
-  AND strftime('%Y', t.date / 1000, 'unixepoch') = :year
-  AND strftime('%m', t.date / 1000, 'unixepoch') = :month;
+  AND t.year = :year
+  AND t.month = :month;
 
 getAnnualTotals:
 SELECT
@@ -136,7 +133,7 @@ WHERE NOT EXISTS (
     SELECT 1 FROM TransactionLinkEntity l
     WHERE l.transactionId = t.id AND l.linkType = 'ASSET_TRANSACTION'
 )
-  AND strftime('%Y', t.date / 1000, 'unixepoch') = :year;
+  AND t.year = :year;
 
 -- ─── CRUD ─────────────────────────────────────────────────────────────────────
 
@@ -144,9 +141,9 @@ insert:
 INSERT INTO TransactionEntity(
     id, accountId, amount, type, categoryId, date, notes, createdAt,
     excludeFromFiscal,
-    incomeType, grossAmount, commissionAmount, issuerId, issuerName,
-    originalCurrency, originalAmount, exchangeRate
-) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+    originalCurrency, originalAmount, exchangeRate,
+    year, month
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 
 update:
 UPDATE TransactionEntity
@@ -157,14 +154,11 @@ SET accountId                = :accountId,
     date                     = :date,
     notes                    = :notes,
     excludeFromFiscal        = :excludeFromFiscal,
-    incomeType               = :incomeType,
-    grossAmount              = :grossAmount,
-    commissionAmount         = :commissionAmount,
-    issuerId                 = :issuerId,
-    issuerName               = :issuerName,
     originalCurrency         = :originalCurrency,
     originalAmount           = :originalAmount,
-    exchangeRate             = :exchangeRate
+    exchangeRate             = :exchangeRate,
+    year                     = :year,
+    month                    = :month
 WHERE id = :id;
 
 delete:
@@ -210,7 +204,10 @@ getDividendsByAssetId:
 SELECT t.* FROM TransactionEntity t
 JOIN TransactionLinkEntity l ON l.transactionId = t.id
 WHERE l.linkType = 'DIVIDEND' AND l.assetId = :assetId
-  AND t.incomeType = 'DIVIDEND'
+  AND EXISTS (
+      SELECT 1 FROM IncomeTaxDetailsEntity d
+      WHERE d.transactionId = t.id AND d.incomeType = 'DIVIDEND'
+  )
 ORDER BY t.date DESC;
 
 -- ─── Desglose de gastos por categoría (año) ────────────────────────────────────
@@ -228,7 +225,7 @@ WHERE t.accountId = :accountId
       SELECT 1 FROM TransactionLinkEntity l
       WHERE l.transactionId = t.id AND l.linkType = 'ASSET_TRANSACTION'
   )
-  AND strftime('%Y', t.date / 1000, 'unixepoch') = :year
+  AND t.year = :year
 GROUP BY t.categoryId
 ORDER BY totalAmount DESC;
 
@@ -236,17 +233,18 @@ ORDER BY totalAmount DESC;
 
 getIncomeByTypePerYear:
 SELECT
-    t.incomeType,
+    d.incomeType,
     SUM(t.amount) AS totalAmount
 FROM TransactionEntity t
+JOIN IncomeTaxDetailsEntity d ON d.transactionId = t.id
 WHERE t.accountId = :accountId
   AND t.type = 'INCOME'
   AND NOT EXISTS (
       SELECT 1 FROM TransactionLinkEntity l
       WHERE l.transactionId = t.id AND l.linkType = 'ASSET_TRANSACTION'
   )
-  AND strftime('%Y', t.date / 1000, 'unixepoch') = :year
-GROUP BY t.incomeType
+  AND t.year = :year
+GROUP BY d.incomeType
 ORDER BY totalAmount DESC;
 
 -- ─── Desglose de gastos por categoría (mes) ──────────────────────────────────
@@ -264,8 +262,8 @@ WHERE t.accountId = :accountId
       SELECT 1 FROM TransactionLinkEntity l
       WHERE l.transactionId = t.id AND l.linkType = 'ASSET_TRANSACTION'
   )
-  AND strftime('%Y', t.date / 1000, 'unixepoch') = :year
-  AND strftime('%m', t.date / 1000, 'unixepoch') = :month
+  AND t.year = :year
+  AND t.month = :month
 GROUP BY t.categoryId
 ORDER BY totalAmount DESC;
 
@@ -273,16 +271,17 @@ ORDER BY totalAmount DESC;
 
 getIncomeByTypePerMonth:
 SELECT
-    t.incomeType,
+    d.incomeType,
     SUM(t.amount) AS totalAmount
 FROM TransactionEntity t
+JOIN IncomeTaxDetailsEntity d ON d.transactionId = t.id
 WHERE t.accountId = :accountId
   AND t.type = 'INCOME'
   AND NOT EXISTS (
       SELECT 1 FROM TransactionLinkEntity l
       WHERE l.transactionId = t.id AND l.linkType = 'ASSET_TRANSACTION'
   )
-  AND strftime('%Y', t.date / 1000, 'unixepoch') = :year
-  AND strftime('%m', t.date / 1000, 'unixepoch') = :month
-GROUP BY t.incomeType
+  AND t.year = :year
+  AND t.month = :month
+GROUP BY d.incomeType
 ORDER BY totalAmount DESC;

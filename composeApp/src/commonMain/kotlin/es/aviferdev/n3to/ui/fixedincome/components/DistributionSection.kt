@@ -26,6 +26,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import es.aviferdev.n3to.domain.model.AssetRegion
+import es.aviferdev.n3to.domain.model.AssetSector
 import es.aviferdev.n3to.domain.model.FixedIncomePosition
 import es.aviferdev.n3to.ui.theme.*
 import n3to.composeapp.generated.resources.Res
@@ -45,13 +47,20 @@ import org.jetbrains.compose.resources.stringResource
 internal fun DistributionSection(
     position: FixedIncomePosition?,
     onUpdateRegionSector: (String?, String?) -> Unit,
+    allRegions: List<AssetRegion>,
+    allSectors: List<AssetSector>,
     modifier: Modifier = Modifier
 ) {
-    val regions = listOf("Europa", "EE.UU.", "España", "Emerging Markets", "Global")
-    val sectors = listOf("Gobierno", "Corporativo", "Banca", "Energía", "Inmobiliario", "Otro")
-
     var showRegionDialog by remember { mutableStateOf(false) }
     var showSectorDialog by remember { mutableStateOf(false) }
+
+    // Look up display names from catalogs by ID
+    val currentRegionName = position?.regionId?.let { regionId ->
+        allRegions.firstOrNull { it.id == regionId }?.name
+    }
+    val currentSectorName = position?.sectorId?.let { sectorId ->
+        allSectors.firstOrNull { it.id == sectorId }?.name
+    }
 
     Card(
         modifier = modifier.fillMaxWidth(),
@@ -80,10 +89,10 @@ internal fun DistributionSection(
                         color = MaterialTheme.appColors.textSecondary
                     )
                     Text(
-                        text = position?.region ?: stringResource(Res.string.fixedincome_no_region),
+                        text = currentRegionName ?: stringResource(Res.string.fixedincome_no_region),
                         fontSize = 13.sp,
                         fontWeight = FontWeight.Medium,
-                        color = if (position?.region != null) MaterialTheme.appColors.textPrimary else MaterialTheme.appColors.textTertiary
+                        color = if (position?.regionId != null) MaterialTheme.appColors.textPrimary else MaterialTheme.appColors.textTertiary
                     )
                 }
                 TextButton(onClick = { showRegionDialog = true }) {
@@ -109,10 +118,10 @@ internal fun DistributionSection(
                         color = MaterialTheme.appColors.textSecondary
                     )
                     Text(
-                        text = position?.sector ?: stringResource(Res.string.fixedincome_no_sector),
+                        text = currentSectorName ?: stringResource(Res.string.fixedincome_no_sector),
                         fontSize = 13.sp,
                         fontWeight = FontWeight.Medium,
-                        color = if (position?.sector != null) MaterialTheme.appColors.textPrimary else MaterialTheme.appColors.textTertiary
+                        color = if (position?.sectorId != null) MaterialTheme.appColors.textPrimary else MaterialTheme.appColors.textTertiary
                     )
                 }
                 TextButton(onClick = { showSectorDialog = true }) {
@@ -139,18 +148,18 @@ internal fun DistributionSection(
             },
             text = {
                 Column {
-                    regions.forEach { region ->
+                    allRegions.forEach { region ->
                         TextButton(
                             onClick = {
-                                onUpdateRegionSector(region, position?.sector)
+                                onUpdateRegionSector(region.id, position?.sectorId)
                                 showRegionDialog = false
                             },
                             modifier = Modifier.fillMaxWidth()
                         ) {
                             Text(
-                                text = region,
-                                color = if (position?.region == region) MaterialTheme.appColors.primary else MaterialTheme.appColors.textPrimary,
-                                fontWeight = if (position?.region == region) FontWeight.Bold else FontWeight.Normal
+                                text = region.name,
+                                color = if (position?.regionId == region.id) MaterialTheme.appColors.primary else MaterialTheme.appColors.textPrimary,
+                                fontWeight = if (position?.regionId == region.id) FontWeight.Bold else FontWeight.Normal
                             )
                         }
                     }
@@ -180,18 +189,18 @@ internal fun DistributionSection(
             },
             text = {
                 Column {
-                    sectors.forEach { sector ->
+                    allSectors.forEach { sector ->
                         TextButton(
                             onClick = {
-                                onUpdateRegionSector(position?.region, sector)
+                                onUpdateRegionSector(position?.regionId, sector.id)
                                 showSectorDialog = false
                             },
                             modifier = Modifier.fillMaxWidth()
                         ) {
                             Text(
-                                text = sector,
-                                color = if (position?.sector == sector) MaterialTheme.appColors.primary else MaterialTheme.appColors.textPrimary,
-                                fontWeight = if (position?.sector == sector) FontWeight.Bold else FontWeight.Normal
+                                text = sector.name,
+                                color = if (position?.sectorId == sector.id) MaterialTheme.appColors.primary else MaterialTheme.appColors.textPrimary,
+                                fontWeight = if (position?.sectorId == sector.id) FontWeight.Bold else FontWeight.Normal
                             )
                         }
                     }

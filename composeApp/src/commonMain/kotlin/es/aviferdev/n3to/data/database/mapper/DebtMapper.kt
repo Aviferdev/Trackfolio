@@ -13,6 +13,7 @@ fun DebtEntity.toDomain(): Debt = Debt(
     date = date,
     isPaid = isPaid != 0L,
     notes = notes,
+    archived = archived != 0L,
     createdAt = createdAt
 )
 
@@ -25,5 +26,6 @@ fun Debt.toEntity(): DebtEntity = DebtEntity(
     date = date,
     isPaid = if (isPaid) 1L else 0L,
     notes = notes,
+    archived = if (archived) 1L else 0L,
     createdAt = createdAt
 )

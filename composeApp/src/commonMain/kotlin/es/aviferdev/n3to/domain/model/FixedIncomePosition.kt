@@ -8,14 +8,14 @@ import kotlinx.datetime.minus
 import kotlinx.datetime.daysUntil
 
 data class FixedIncomePosition(
-    val id: String,
-    val accountId: String,
-    val portfolioId: String? = null,
-    val assetCategoryId: String? = null,
-    val name: String,
-    val ticker: String,
+    override val id: String,
+    override val accountId: String,
+    override val portfolioId: String? = null,
+    override val assetCategoryId: String? = null,
+    override val name: String,
+    override val ticker: String,
     val type: FixedIncomeType,
-    val notes: String?,
+    override val notes: String?,
     val principal: Double,
     val quantity: Double,
     val nominalPerUnit: Double,
@@ -25,15 +25,16 @@ data class FixedIncomePosition(
     val maturityDate: Long,
     val platformId: String,
     val issuerId: String?,
-    val region: String? = null,     // Región para distribución (Europa, EE.UU., Emergentes, etc.)
-    val sector: String? = null,      // Sector para distribución (Gobierno, Corporativo, etc.)
+    val regionId: String? = null,    // ID de AssetRegionEntity para distribución geográfica
+    val sectorId: String? = null,     // ID de AssetSectorEntity para distribución sectorial
     val autoRenew: Boolean,
-    val archived: Boolean,
+    override val archived: Boolean,
     val closedAt: Long?,
     val closeType: FixedIncomeCloseType?,
     val feeNote: String?,
-    val createdAt: Long
-) {
+    override val createdAt: Long
+) : FinancialInstrument {
+    override val instrumentType: InstrumentType = InstrumentType.FIXED_INCOME
     val isOpen: Boolean get() = closedAt == null
 
     val isBond: Boolean

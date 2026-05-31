@@ -1,7 +1,6 @@
 package es.aviferdev.n3to.domain.usecase.assetmetadata
 
 import es.aviferdev.n3to.platform.nowMillis
-import es.aviferdev.n3to.domain.model.AssetComposition
 import es.aviferdev.n3to.domain.model.AssetRegion
 import es.aviferdev.n3to.domain.model.AssetRegionDistribution
 import es.aviferdev.n3to.domain.model.AssetSector
@@ -54,27 +53,6 @@ class SaveRegionUseCase(private val repository: AssetMetadataRepository) {
 
 class DeleteRegionUseCase(private val repository: AssetMetadataRepository) {
     suspend operator fun invoke(regionId: String): Result<Unit> = repository.deleteRegion(regionId)
-}
-
-// ── Composition ───────────────────────────────────────────────────────────────
-
-class GetAssetCompositionUseCase(private val repository: AssetMetadataRepository) {
-    operator fun invoke(assetId: String): Flow<AssetComposition?> =
-        repository.getCompositionByAssetId(assetId)
-}
-
-class GetAllCompositionsUseCase(private val repository: AssetMetadataRepository) {
-    operator fun invoke(): Flow<List<AssetComposition>> = repository.getAllCompositions()
-}
-
-class SaveAssetCompositionUseCase(private val repository: AssetMetadataRepository) {
-    suspend operator fun invoke(composition: AssetComposition): Result<Unit> =
-        repository.saveComposition(composition)
-}
-
-class DeleteAssetCompositionUseCase(private val repository: AssetMetadataRepository) {
-    suspend operator fun invoke(assetId: String): Result<Unit> =
-        repository.deleteComposition(assetId)
 }
 
 // ── Sector relations ──────────────────────────────────────────────────────────

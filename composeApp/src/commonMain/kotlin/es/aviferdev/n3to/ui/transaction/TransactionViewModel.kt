@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.benasher44.uuid.uuid4
 import es.aviferdev.n3to.domain.model.Category
+import es.aviferdev.n3to.domain.model.IncomeTaxDetails
 import es.aviferdev.n3to.domain.model.IncomeType
 import es.aviferdev.n3to.domain.model.Issuer
 import es.aviferdev.n3to.domain.model.MonthlyTotals
@@ -508,12 +509,10 @@ class TransactionViewModel(
                 _formUiState.value = AddTransactionUiState.Error(AddTransactionError.InvalidNet)
                 return
             }
-            val finalIssuerName = issuers.find { it.id == selectedIssuerId }?.name
-            persistTransaction(buildTransaction(accountId = accountId, netAmount = net, now = now, incomeType = incType, issuerId = selectedIssuerId, issuerName = finalIssuerName))
+            persistTransaction(buildTransaction(accountId = accountId, netAmount = net, now = now, incomeType = incType, issuerId = selectedIssuerId))
             return
         }
         val finalIssuerId = selectedIssuerId
-        val finalIssuerName = finalIssuerId?.let { id -> issuers.find { it.id == id }?.name }
         val net = calculatedNet ?: run {
             _formUiState.value = AddTransactionUiState.Error(AddTransactionError.CalculateNet)
             return
@@ -534,7 +533,7 @@ class TransactionViewModel(
             accountId = accountId, netAmount = net, now = now, incomeType = incType,
             grossAmount = gross, taxLines = builtTaxLines,
             commissionAmount = if (incType.hasCommission) commissionAmount.replace(',', '.').toDoubleOrNull() else null,
-            issuerId = finalIssuerId, issuerName = finalIssuerName
+            issuerId = finalIssuerId
         ))
     }
 
@@ -542,11 +541,12 @@ class TransactionViewModel(
         accountId: String, netAmount: Double, now: Long,
         incomeType: IncomeType? = null, grossAmount: Double? = null,
         taxLines: List<TaxLine> = emptyList(), commissionAmount: Double? = null,
-        issuerId: String? = null, issuerName: String? = null
+        issuerId: String? = null
     ): Transaction {
         val existing = editingTransaction
+        val txId = existing?.id ?: uuid4().toString()
         return Transaction(
-            id = existing?.id ?: uuid4().toString(),
+            id = txId,
             accountId = accountId,
             amount = netAmount,
             type = type,
@@ -554,12 +554,16 @@ class TransactionViewModel(
             date = dateMillis,
             notes = notes.ifBlank { null },
             createdAt = existing?.createdAt ?: now,
-            incomeType = incomeType,
-            grossAmount = grossAmount,
-            taxLines = taxLines,
-            commissionAmount = commissionAmount,
-            issuerId = issuerId,
-            issuerName = issuerName
+            taxDetails = incomeType?.let {
+                IncomeTaxDetails(
+                    transactionId = txId,
+                    incomeType = it,
+                    grossAmount = grossAmount,
+                    commissionAmount = commissionAmount,
+                    issuerId = issuerId
+                )
+            },
+            taxLines = taxLines
         )
     }
 

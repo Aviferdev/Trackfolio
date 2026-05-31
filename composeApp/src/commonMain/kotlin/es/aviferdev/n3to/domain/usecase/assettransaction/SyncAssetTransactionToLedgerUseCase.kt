@@ -3,6 +3,7 @@ package es.aviferdev.n3to.domain.usecase.assettransaction
 import es.aviferdev.n3to.platform.nowMillis
 import es.aviferdev.n3to.domain.model.AssetTransaction
 import es.aviferdev.n3to.domain.model.AssetTransactionType
+import es.aviferdev.n3to.domain.model.IncomeTaxDetails
 import es.aviferdev.n3to.domain.model.IncomeType
 import es.aviferdev.n3to.domain.model.TaxLine
 import es.aviferdev.n3to.domain.model.TaxRole
@@ -108,7 +109,6 @@ class SyncAssetTransactionToLedgerUseCase(
      * @param irpfPercent porcentaje de retención IRPF aplicado.
      * @param date fecha del dividendo en epoch millis.
      * @param issuerId ID del emisor (acción).
-     * @param issuerName nombre del emisor.
      */
     suspend fun syncDividend(
         dividendId: String,
@@ -118,8 +118,7 @@ class SyncAssetTransactionToLedgerUseCase(
         grossAmount: Double,
         withholdingPercent: Double,
         date: Long,
-        issuerId: String? = null,
-        issuerName: String? = null
+        issuerId: String? = null
     ): Result<Unit> {
         val withholdingAmount = grossAmount * withholdingPercent / 100.0
         val netAmount = grossAmount - withholdingAmount
@@ -144,17 +143,21 @@ class SyncAssetTransactionToLedgerUseCase(
             assetId = assetId
         )
 
+        val taxDetails = IncomeTaxDetails(
+            transactionId = existing?.id ?: "ledger_$dividendId",
+            incomeType = IncomeType.DIVIDEND,
+            grossAmount = grossAmount,
+            issuerId = issuerId
+        )
+
         return if (existing != null) {
             transactionRepository.updateTransaction(
                 existing.copy(
                     amount = netAmount,
                     date = date,
                     notes = label,
-                    incomeType = IncomeType.DIVIDEND,
-                    grossAmount = grossAmount,
+                    taxDetails = taxDetails,
                     taxLines = taxLines,
-                    issuerId = issuerId,
-                    issuerName = issuerName,
                     links = existing.links.filter { it.linkType != TransactionLinkType.DIVIDEND } + link
                 )
             )
@@ -169,11 +172,8 @@ class SyncAssetTransactionToLedgerUseCase(
                 date = date,
                 notes = label,
                 createdAt = now,
-                incomeType = IncomeType.DIVIDEND,
-                grossAmount = grossAmount,
+                taxDetails = taxDetails,
                 taxLines = taxLines,
-                issuerId = issuerId,
-                issuerName = issuerName,
                 links = listOf(link)
             )
             transactionRepository.saveTransaction(transaction)
@@ -194,8 +194,7 @@ class SyncAssetTransactionToLedgerUseCase(
         withholdingPercent: Double,
         commissionAmount: Double,
         date: Long,
-        issuerId: String? = null,
-        issuerName: String? = null
+        issuerId: String? = null
     ): Result<Unit> {
         val withholdingAmount = grossAmount * withholdingPercent / 100.0
         val netAmount = grossAmount - withholdingAmount - commissionAmount
@@ -220,18 +219,22 @@ class SyncAssetTransactionToLedgerUseCase(
             assetId = assetId
         )
 
+        val taxDetails = IncomeTaxDetails(
+            transactionId = existing?.id ?: "ledger_$bondDepositId",
+            incomeType = IncomeType.BOND_DEPOSIT,
+            grossAmount = grossAmount,
+            commissionAmount = commissionAmount,
+            issuerId = issuerId
+        )
+
         return if (existing != null) {
             transactionRepository.updateTransaction(
                 existing.copy(
                     amount = netAmount,
                     date = date,
                     notes = label,
-                    incomeType = IncomeType.BOND_DEPOSIT,
-                    grossAmount = grossAmount,
+                    taxDetails = taxDetails,
                     taxLines = taxLines,
-                    commissionAmount = commissionAmount,
-                    issuerId = issuerId,
-                    issuerName = issuerName,
                     links = existing.links.filter { it.linkType != TransactionLinkType.BOND_DEPOSIT } + link
                 )
             )
@@ -246,12 +249,8 @@ class SyncAssetTransactionToLedgerUseCase(
                 date = date,
                 notes = label,
                 createdAt = now,
-                incomeType = IncomeType.BOND_DEPOSIT,
-                grossAmount = grossAmount,
+                taxDetails = taxDetails,
                 taxLines = taxLines,
-                commissionAmount = commissionAmount,
-                issuerId = issuerId,
-                issuerName = issuerName,
                 links = listOf(link)
             )
             transactionRepository.saveTransaction(transaction)

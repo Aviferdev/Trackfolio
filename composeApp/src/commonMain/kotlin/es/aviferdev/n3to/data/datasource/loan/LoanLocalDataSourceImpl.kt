@@ -47,7 +47,7 @@ class LoanLocalDataSourceImpl(
         queries.getTotalOutstandingByAccount(accountId)
             .asFlow()
             .mapToOneOrNull(Dispatchers.IO)
-            .map { row -> row?.let { 0.0 } ?: 0.0 }
+            .map { row -> row ?: 0.0 }
 
     override suspend fun insert(loan: Loan): Result<Unit> =
         runCatching {
@@ -125,8 +125,24 @@ class LoanLocalDataSourceImpl(
             }
         }
 
+    override suspend fun close(id: String, closedAt: Long, closeType: String): Result<Unit> =
+        runCatching {
+            withContext(Dispatchers.IO) {
+                queries.close(
+                    closedAt = closedAt,
+                    closeType = closeType,
+                    id = id
+                )
+            }
+        }
+
     override suspend fun archive(id: String): Result<Unit> =
         runCatching {
             withContext(Dispatchers.IO) { queries.archive(id) }
+        }
+
+    override suspend fun unarchive(id: String): Result<Unit> =
+        runCatching {
+            withContext(Dispatchers.IO) { queries.unarchive(id) }
         }
 }

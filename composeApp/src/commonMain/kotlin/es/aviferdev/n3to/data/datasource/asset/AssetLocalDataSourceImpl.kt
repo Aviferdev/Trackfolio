@@ -70,7 +70,8 @@ class AssetLocalDataSourceImpl(
                     isin = e.isin,
                     priceSource = e.priceSource,
                     isinValidatedAt = e.isinValidatedAt,
-                    isinValidationError = e.isinValidationError
+                    isinValidationError = e.isinValidationError,
+                    fixedIncomePercent = e.fixedIncomePercent
                 )
             }
         }
@@ -92,6 +93,7 @@ class AssetLocalDataSourceImpl(
                     priceSource = e.priceSource,
                     isinValidatedAt = e.isinValidatedAt,
                     isinValidationError = e.isinValidationError,
+                    fixedIncomePercent = e.fixedIncomePercent,
                     id = e.id
                 )
             }

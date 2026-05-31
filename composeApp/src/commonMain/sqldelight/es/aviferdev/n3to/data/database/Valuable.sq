@@ -8,6 +8,7 @@ CREATE TABLE ValuableEntity (
     estimatedValue   REAL,
     salePrice        REAL,
     saleDate         INTEGER,
+    closeType        TEXT    CHECK(closeType IS NULL OR closeType IN ('SOLD', 'SCRAPPED', 'DONATED', 'TRANSFERRED', 'LOST')),
     linkedLoanId     TEXT,
     notes            TEXT,
     archived         INTEGER NOT NULL DEFAULT 0,
@@ -40,22 +41,23 @@ WHERE id = :id;
 -- ═══ ESCRITURA ═══
 
 insert:
-INSERT OR REPLACE INTO ValuableEntity(
+INSERT INTO ValuableEntity(
     id, accountId, name, description,
     purchasePrice, purchaseDate, estimatedValue,
-    salePrice, saleDate, linkedLoanId,
+    salePrice, saleDate, closeType, linkedLoanId,
     notes, archived, createdAt
 ) VALUES (
     :id, :accountId, :name, :description,
     :purchasePrice, :purchaseDate, :estimatedValue,
-    :salePrice, :saleDate, :linkedLoanId,
+    :salePrice, :saleDate, :closeType, :linkedLoanId,
     :notes, :archived, :createdAt
 );
 
 sell:
 UPDATE ValuableEntity
 SET salePrice = :salePrice,
-    saleDate  = :saleDate
+    saleDate  = :saleDate,
+    closeType = :closeType
 WHERE id = :id AND archived = 0;
 
 updateEstimatedValue:

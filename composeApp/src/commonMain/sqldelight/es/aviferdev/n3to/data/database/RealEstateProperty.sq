@@ -3,20 +3,25 @@ CREATE TABLE RealEstatePropertyEntity (
     accountId                   TEXT    NOT NULL,
     name                        TEXT    NOT NULL,
     address                     TEXT    NOT NULL,
-    propertyType                TEXT    NOT NULL,
+    propertyType                TEXT    NOT NULL CHECK(propertyType IN ('PRIMARY_HOME', 'SECONDARY_HOME', 'INVESTMENT')),
     purchaseValue               REAL    NOT NULL,
     currentEstimatedValue       REAL    NOT NULL,
     acquisitionDate             INTEGER NOT NULL,
     ownershipPercentage         REAL    NOT NULL,
     linkedLoanId                TEXT,
-    rentalStatus                TEXT    NOT NULL,
+    rentalStatus                TEXT    NOT NULL CHECK(rentalStatus IN ('OWN_USE', 'RENTED', 'VACANT')),
     monthlyRent                 REAL,
     mortgageReminderDismissed   INTEGER NOT NULL DEFAULT 0,
     archived                    INTEGER NOT NULL DEFAULT 0,
     saleDate                    INTEGER,
     saleValue                   REAL,
     FOREIGN KEY (accountId) REFERENCES AccountEntity(id) ON DELETE CASCADE,
-    FOREIGN KEY (linkedLoanId) REFERENCES LoanEntity(id) ON DELETE SET NULL
+    FOREIGN KEY (linkedLoanId) REFERENCES LoanEntity(id) ON DELETE SET NULL,
+    CHECK (
+        (saleDate IS NULL AND saleValue IS NULL)
+        OR
+        (saleDate IS NOT NULL AND saleValue IS NOT NULL)
+    )
 );
 
 CREATE INDEX idx_real_estate_account ON RealEstatePropertyEntity(accountId);
@@ -41,7 +46,7 @@ WHERE id = :id;
 -- ═══ ESCRITURA ═══
 
 insert:
-INSERT OR REPLACE INTO RealEstatePropertyEntity(
+INSERT INTO RealEstatePropertyEntity(
     id, accountId, name, address, propertyType,
     purchaseValue, currentEstimatedValue, acquisitionDate,
     ownershipPercentage, linkedLoanId,

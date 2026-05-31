@@ -20,8 +20,8 @@ interface ValuableLocalDataSource {
     /** Guarda o actualiza un bien. */
     suspend fun insert(valuable: Valuable): Result<Unit>
 
-    /** Marca un bien como vendido. */
-    suspend fun sell(id: String, saleDate: Long, salePrice: Double): Result<Unit>
+    /** Marca un bien como vendido/cerrado. */
+    suspend fun sell(id: String, saleDate: Long, salePrice: Double, closeType: String): Result<Unit>
 
     /** Actualiza el valor estimado de un bien. */
     suspend fun updateEstimatedValue(id: String, value: Double): Result<Unit>

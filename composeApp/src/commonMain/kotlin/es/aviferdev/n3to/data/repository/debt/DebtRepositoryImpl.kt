@@ -22,6 +22,9 @@ class DebtRepositoryImpl(
     override fun getAll(): Flow<List<Debt>> =
         dataSource.getAll().map { it.map { e -> e.toDomain() } }
 
+    override fun getByAccount(accountId: String): Flow<List<Debt>> =
+        dataSource.getByAccount(accountId).map { it.map { e -> e.toDomain() } }
+
     override fun getTotalByDirection(direction: DebtDirection): Flow<Double> =
         dataSource.getTotalByDirection(direction.name)
 
@@ -39,6 +42,12 @@ class DebtRepositoryImpl(
 
     override suspend fun markAsPaid(id: String): Result<Unit> =
         dataSource.markAsPaid(id)
+
+    override suspend fun archive(id: String): Result<Unit> =
+        dataSource.archive(id)
+
+    override suspend fun unarchive(id: String): Result<Unit> =
+        dataSource.unarchive(id)
 
     override suspend fun delete(id: String): Result<Unit> =
         dataSource.delete(id)

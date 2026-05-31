@@ -20,6 +20,8 @@ CREATE TABLE MonthlyGoalEntity (
     PRIMARY KEY (accountId, year, month)
 );
 
+CREATE INDEX idx_monthly_goal_account_year ON MonthlyGoalEntity(accountId, year);
+
 -- ─── Lectura ──────────────────────────────────────────────────────────────────
 
 getByAccountYear:

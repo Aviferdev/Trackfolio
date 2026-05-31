@@ -3,6 +3,7 @@ package es.aviferdev.n3to.domain.usecase.fixedincome
 import es.aviferdev.n3to.platform.nowMillis
 import es.aviferdev.n3to.domain.model.FixedIncomeEvent
 import es.aviferdev.n3to.domain.model.FixedIncomePosition
+import es.aviferdev.n3to.domain.model.IncomeTaxDetails
 import es.aviferdev.n3to.domain.model.IncomeType
 import es.aviferdev.n3to.domain.model.Transaction
 import es.aviferdev.n3to.domain.model.TransactionLink
@@ -63,14 +64,20 @@ class CreateLedgerTransactionUseCase(
                 assetId = assetId
             )
         }
+        val txId = "tx_${nowMillis()}"
         val tx = Transaction(
-            id = "tx_${nowMillis()}",
+            id = txId,
             accountId = accountId,
             amount = amount,
             type = type,
             date = date,
             categoryId = null,
-            incomeType = incomeTypeId?.let { IncomeType.fromName(it) },
+            taxDetails = incomeTypeId?.let {
+                IncomeTaxDetails(
+                    transactionId = txId,
+                    incomeType = IncomeType.fromName(it)
+                )
+            },
             notes = notes,
             links = link?.let { listOf(it) } ?: emptyList(),
             createdAt = nowMillis()

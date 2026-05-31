@@ -1,6 +1,5 @@
 package es.aviferdev.n3to.data.datasource.assetmetadata
 
-import es.aviferdev.n3to.domain.model.AssetComposition
 import es.aviferdev.n3to.domain.model.AssetRegion
 import es.aviferdev.n3to.domain.model.AssetRegionDistribution
 import es.aviferdev.n3to.domain.model.AssetSector
@@ -8,12 +7,6 @@ import es.aviferdev.n3to.domain.model.AssetSectorRelation
 import kotlinx.coroutines.flow.Flow
 
 interface AssetMetadataLocalDataSource {
-    fun getCompositionByAsset(assetId: String): Flow<AssetComposition?>
-    fun getAllCompositions(): Flow<List<AssetComposition>>
-    fun getCompositionsByAssets(assetIds: List<String>): Flow<List<AssetComposition>>
-    suspend fun saveComposition(composition: AssetComposition): Result<Unit>
-    suspend fun deleteComposition(assetId: String): Result<Unit>
-
     fun getAllSectors(): Flow<List<AssetSector>>
     fun getSectorById(sectorId: String): Flow<AssetSector?>
     suspend fun insertSector(sector: AssetSector): Result<Unit>

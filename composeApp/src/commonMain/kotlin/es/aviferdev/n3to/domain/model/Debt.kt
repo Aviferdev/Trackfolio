@@ -2,13 +2,14 @@ package es.aviferdev.n3to.domain.model
 
 data class Debt(
     val id: String,
-    val accountId: String,        // cuenta a la que pertenece esta deuda
+    val accountId: String,
     val personName: String,
     val amount: Double,
     val direction: DebtDirection,
     val date: Long,
     val isPaid: Boolean,
     val notes: String?,
+    val archived: Boolean = false,
     val createdAt: Long
 )
 

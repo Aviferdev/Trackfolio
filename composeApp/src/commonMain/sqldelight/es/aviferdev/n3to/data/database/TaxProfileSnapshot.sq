@@ -6,6 +6,7 @@ CREATE TABLE TaxProfileSnapshotEntity (
 );
 
 CREATE INDEX idx_snapshot_effective_from ON TaxProfileSnapshotEntity(effectiveFrom);
+CREATE INDEX idx_snapshot_country ON TaxProfileSnapshotEntity(countryCode);
 
 -- ─── Queries ──────────────────────────────────────────────────────────────────
 

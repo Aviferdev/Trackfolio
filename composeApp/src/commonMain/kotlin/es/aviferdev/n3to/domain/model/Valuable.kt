@@ -20,6 +20,7 @@ package es.aviferdev.n3to.domain.model
  *                           se usa purchasePrice para el cálculo de patrimonio.
  * @property salePrice Precio de venta. Null si no se ha vendido.
  * @property saleDate Fecha de venta. Null si no se ha vendido.
+ * @property closeType Tipo de cierre (venta, baja, etc.). Null si está abierto.
  * @property linkedLoanId Préstamo vinculado a este bien (opcional).
  * @property notes Notas adicionales.
  * @property archived True si el bien está archivado (oculto, no eliminado).
@@ -35,6 +36,7 @@ data class Valuable(
     val estimatedValue: Double? = null,
     val salePrice: Double? = null,
     val saleDate: Long? = null,
+    val closeType: ValuableCloseType? = null,
     val linkedLoanId: String? = null,
     val notes: String? = null,
     val archived: Boolean = false,
@@ -42,9 +44,13 @@ data class Valuable(
 ) {
     // ── Propiedades calculadas ──────────────────────────────────────
 
-    /** Indica si el bien ha sido vendido. */
+    /** Indica si el bien ha sido vendido o cerrado. */
     val isSold: Boolean
         get() = saleDate != null && salePrice != null
+
+    /** Indica si el bien está abierto (no vendido ni cerrado). */
+    val isOpen: Boolean
+        get() = closeType == null
 
     /** Valor actual del bien.
      *  - Si está vendido: precio de venta.
@@ -64,4 +70,12 @@ data class Valuable(
             val profit = grossProfit ?: return null
             return if (purchasePrice > 0) (profit / purchasePrice) * 100.0 else 0.0
         }
+}
+
+enum class ValuableCloseType {
+    SOLD,          // Venta a terceros
+    SCRAPPED,      // Dado de baja / chatarra
+    DONATED,       // Donación
+    TRANSFERRED,   // Transferido a otra cuenta/persona
+    LOST           // Pérdida
 }

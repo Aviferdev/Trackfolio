@@ -46,7 +46,8 @@ class TransactionCategoryLocalDataSourceImpl(
                     accountId = entity.accountId,
                     name = entity.name,
                     type = entity.type,
-                    isDefault = entity.isDefault
+                    isDefault = entity.isDefault,
+                    createdAt = entity.createdAt
                 )
             }
         }

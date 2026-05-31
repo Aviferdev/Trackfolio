@@ -2,6 +2,8 @@ package es.aviferdev.n3to.ui.fixedincome
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import es.aviferdev.n3to.domain.model.AssetRegion
+import es.aviferdev.n3to.domain.model.AssetSector
 import es.aviferdev.n3to.domain.model.FixedIncomeEvent
 import es.aviferdev.n3to.domain.model.FixedIncomeEventType
 import es.aviferdev.n3to.domain.model.FixedIncomePosition
@@ -9,6 +11,7 @@ import es.aviferdev.n3to.domain.model.FixedIncomeRow
 import es.aviferdev.n3to.domain.portfolio.FixedIncomeCalculator
 import es.aviferdev.n3to.domain.portfolio.MaturitySimulation
 import es.aviferdev.n3to.domain.portfolio.ScheduledCoupon
+import es.aviferdev.n3to.domain.repository.AssetMetadataRepository
 import es.aviferdev.n3to.domain.usecase.fixedincome.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
@@ -26,7 +29,9 @@ data class FixedIncomeDetailUiState(
     val showDeleteEventDialog: Boolean = false,
     val selectedEventForDelete: FixedIncomeEvent? = null,
     val isLoading: Boolean = false,
-    val error: FixedIncomeDetailError? = null
+    val error: FixedIncomeDetailError? = null,
+    val allRegions: List<AssetRegion> = emptyList(),
+    val allSectors: List<AssetSector> = emptyList()
 )
 
 sealed class FixedIncomeDetailError {
@@ -43,7 +48,8 @@ class FixedIncomeDetailViewModel(
     private val closeFixedIncome: CloseFixedIncomeUseCase,
     private val deleteFixedIncomeEvent: DeleteFixedIncomeEventUseCase,
     private val updatePosition: UpdateFixedIncomePositionUseCase,
-    private val archivePosition: ArchiveFixedIncomePositionUseCase
+    private val archivePosition: ArchiveFixedIncomePositionUseCase,
+    private val metadataRepository: AssetMetadataRepository
 ) : ViewModel() {
 
     private val _showRegisterCouponSheet = MutableStateFlow(false)
@@ -55,6 +61,14 @@ class FixedIncomeDetailViewModel(
     private val _selectedEventForDelete = MutableStateFlow<FixedIncomeEvent?>(null)
     private val _error = MutableStateFlow<FixedIncomeDetailError?>(null)
 
+    private val allSectors: StateFlow<List<AssetSector>> =
+        metadataRepository.getAllSectors()
+            .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
+
+    private val allRegions: StateFlow<List<AssetRegion>> =
+        metadataRepository.getAllRegions()
+            .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
+
     val uiState: StateFlow<FixedIncomeDetailUiState> = combine(
         getPositionDetail.getPosition(positionId),
         getPositionDetail.getEvents(positionId),
@@ -64,7 +78,9 @@ class FixedIncomeDetailViewModel(
         _showEditSheet,
         _showDeleteEventDialog,
         _selectedEventForDelete,
-        _error
+        _error,
+        allRegions,
+        allSectors
     ) { values ->
         val row = values[0] as FixedIncomeRow?
 
@@ -77,6 +93,8 @@ class FixedIncomeDetailViewModel(
         val showDelete = values[6] as Boolean
         val eventForDelete = values[7] as FixedIncomeEvent?
         val error = values[8] as FixedIncomeDetailError?
+        val regions = values[9] as List<AssetRegion>
+        val sectors = values[10] as List<AssetSector>
 
         val schedule = row?.let {
             getCouponSchedule(it.position)
@@ -97,7 +115,9 @@ class FixedIncomeDetailViewModel(
             showEditSheet = showEdit,
             showDeleteEventDialog = showDelete,
             selectedEventForDelete = eventForDelete,
-            error = error
+            error = error,
+            allRegions = regions,
+            allSectors = sectors
         )
     }.stateIn(
         scope = viewModelScope,
@@ -203,10 +223,10 @@ class FixedIncomeDetailViewModel(
         }
     }
 
-    fun updateRegionAndSector(region: String?, sector: String?) {
+    fun updateRegionAndSector(regionId: String?, sectorId: String?) {
         viewModelScope.launch {
             val position = uiState.value.row?.position ?: return@launch
-            val updatedPosition = position.copy(region = region, sector = sector)
+            val updatedPosition = position.copy(regionId = regionId, sectorId = sectorId)
             updatePosition(updatedPosition)
                 .onFailure { _error.value = FixedIncomeDetailError.Unknown(it.message) }
         }

@@ -6,16 +6,19 @@ import app.cash.sqldelight.coroutines.mapToOneOrNull
 import es.aviferdev.n3to.data.database.N3toDatabase
 import es.aviferdev.n3to.data.database.TransactionEntity
 import es.aviferdev.n3to.data.database.TransactionLinkEntity
+import es.aviferdev.n3to.data.database.IncomeTaxDetailsEntity
 import es.aviferdev.n3to.data.database.mapper.toDomain
+import es.aviferdev.n3to.data.database.mapper.toEntity
 import es.aviferdev.n3to.domain.model.AnnualSummary
 import es.aviferdev.n3to.domain.model.CategoryBreakdown
+import es.aviferdev.n3to.domain.model.IncomeTaxDetails
 import es.aviferdev.n3to.domain.model.IncomeTypeBreakdown
-import es.aviferdev.n3to.domain.model.IncomeType
 import es.aviferdev.n3to.domain.model.MonthlyTotals
 import es.aviferdev.n3to.domain.model.TaxLine
 import es.aviferdev.n3to.domain.model.TaxRole
 import es.aviferdev.n3to.domain.model.Transaction
 import es.aviferdev.n3to.domain.model.TransactionLink
+import es.aviferdev.n3to.domain.model.TransactionLinkType
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
@@ -29,6 +32,7 @@ class TransactionLocalDataSourceImpl(
     private val queries = database.transactionQueries
     private val taxLineQueries = database.taxLineQueries
     private val linkQueries = database.transactionLinkQueries
+    private val taxDetailsQueries = database.incomeTaxDetailsQueries
 
     private fun loadTaxLines(transactionId: String): List<TaxLine> =
         taxLineQueries.selectByTransaction(transactionId).executeAsList().map { entity ->
@@ -44,20 +48,41 @@ class TransactionLocalDataSourceImpl(
         linkQueries.selectByTransaction(transactionId).executeAsList().map { entity ->
             TransactionLink(
                 id = entity.id,
-                linkType = es.aviferdev.n3to.domain.model.TransactionLinkType.valueOf(entity.linkType),
+                linkType = TransactionLinkType.valueOf(entity.linkType),
                 linkedEntityId = entity.linkedEntityId,
                 assetId = entity.assetId
             )
         }
 
-    private fun List<TransactionEntity>.toDomainWithTaxLinesAndLinks(): List<Transaction> =
-        map { entity -> entity.toDomain(loadTaxLines(entity.id), loadLinks(entity.id)) }
+    private fun loadTaxDetails(transactionId: String): IncomeTaxDetails? =
+        taxDetailsQueries.selectByTransaction(transactionId).executeAsOneOrNull()?.let { entity ->
+            val issuerName = entity.issuerId?.let {
+                database.issuerQueries.selectById(it).executeAsOneOrNull()?.name
+            }
+            entity.toDomain(issuerName)
+        }
+
+    private fun TransactionEntity.toDomainWithDeps(): Transaction =
+        toDomain(
+            taxLines = loadTaxLines(id),
+            links = loadLinks(id),
+            taxDetails = loadTaxDetails(id)
+        )
+
+    private fun List<TransactionEntity>.toDomainWithDeps(): List<Transaction> =
+        map { entity ->
+            entity.toDomain(
+                taxLines = loadTaxLines(entity.id),
+                links = loadLinks(entity.id),
+                taxDetails = loadTaxDetails(entity.id)
+            )
+        }
 
     override fun getById(id: String): Flow<Transaction?> =
         queries.selectById(id)
             .asFlow()
             .mapToOneOrNull(Dispatchers.IO)
-            .map { it?.toDomain(loadTaxLines(it.id), loadLinks(it.id)) }
+            .map { it?.toDomainWithDeps() }
 
     override fun getByMonthAndAccount(
         accountId: String, year: String, month: String
@@ -65,7 +90,7 @@ class TransactionLocalDataSourceImpl(
         queries.selectByMonthAndAccount(accountId, year, month)
             .asFlow()
             .mapToList(Dispatchers.IO)
-            .map { it.toDomainWithTaxLinesAndLinks() }
+            .map { it.toDomainWithDeps() }
 
     override fun getMonthlyTotalsByAccount(
         accountId: String, year: String, month: String
@@ -106,7 +131,7 @@ class TransactionLocalDataSourceImpl(
         queries.selectRecentByAccount(accountId, limit)
             .asFlow()
             .mapToList(Dispatchers.IO)
-            .map { it.toDomainWithTaxLinesAndLinks() }
+            .map { it.toDomainWithDeps() }
 
     override fun getMonthlyBreakdown(accountId: String, year: String): Flow<List<MonthlyTotals>> =
         queries.getMonthlyBreakdownByAccount(accountId, year)
@@ -127,7 +152,7 @@ class TransactionLocalDataSourceImpl(
         queries.getIncomeByYear(accountId, year)
             .asFlow()
             .mapToList(Dispatchers.IO)
-            .map { it.toDomainWithTaxLinesAndLinks() }
+            .map { it.toDomainWithDeps() }
 
     override suspend fun insert(entity: TransactionEntity): Result<Unit> =
         runCatching {
@@ -142,14 +167,11 @@ class TransactionLocalDataSourceImpl(
                     notes = entity.notes,
                     createdAt = entity.createdAt,
                     excludeFromFiscal = entity.excludeFromFiscal,
-                    incomeType = entity.incomeType,
-                    grossAmount = entity.grossAmount,
-                    commissionAmount = entity.commissionAmount,
-                    issuerId = entity.issuerId,
-                    issuerName = entity.issuerName,
                     originalCurrency = entity.originalCurrency,
                     originalAmount = entity.originalAmount,
-                    exchangeRate = entity.exchangeRate
+                    exchangeRate = entity.exchangeRate,
+                    year = entity.year,
+                    month = entity.month
                 )
             }
         }
@@ -165,14 +187,11 @@ class TransactionLocalDataSourceImpl(
                     date = entity.date,
                     notes = entity.notes,
                     excludeFromFiscal = entity.excludeFromFiscal,
-                    incomeType = entity.incomeType,
-                    grossAmount = entity.grossAmount,
-                    commissionAmount = entity.commissionAmount,
-                    issuerId = entity.issuerId,
-                    issuerName = entity.issuerName,
                     originalCurrency = entity.originalCurrency,
                     originalAmount = entity.originalAmount,
                     exchangeRate = entity.exchangeRate,
+                    year = entity.year,
+                    month = entity.month,
                     id = entity.id
                 )
             }
@@ -185,7 +204,42 @@ class TransactionLocalDataSourceImpl(
             }
         }
 
-    // ─── Links ──────────────────────────────────────────────────────────────────
+    // ─── Tax Details ──────────────────────────────────────────────────────────
+
+    override suspend fun insertTaxDetails(details: IncomeTaxDetailsEntity): Result<Unit> =
+        runCatching {
+            withContext(Dispatchers.IO) {
+                taxDetailsQueries.insert(
+                    transactionId = details.transactionId,
+                    incomeType = details.incomeType,
+                    grossAmount = details.grossAmount,
+                    commissionAmount = details.commissionAmount,
+                    issuerId = details.issuerId
+                )
+            }
+        }
+
+    override suspend fun updateTaxDetails(details: IncomeTaxDetailsEntity): Result<Unit> =
+        runCatching {
+            withContext(Dispatchers.IO) {
+                taxDetailsQueries.update(
+                    incomeType = details.incomeType,
+                    grossAmount = details.grossAmount,
+                    commissionAmount = details.commissionAmount,
+                    issuerId = details.issuerId,
+                    transactionId = details.transactionId
+                )
+            }
+        }
+
+    override suspend fun deleteTaxDetails(transactionId: String): Result<Unit> =
+        runCatching {
+            withContext(Dispatchers.IO) {
+                taxDetailsQueries.delete(transactionId)
+            }
+        }
+
+    // ─── Links ────────────────────────────────────────────────────────────────
 
     override suspend fun insertLink(link: TransactionLinkEntity): Result<Unit> =
         runCatching {
@@ -223,7 +277,7 @@ class TransactionLocalDataSourceImpl(
         }
             .asFlow()
             .mapToOneOrNull(Dispatchers.IO)
-            .map { it?.toDomain(loadTaxLines(it.id), loadLinks(it.id)) }
+            .map { it?.toDomainWithDeps() }
 
     override fun getByAssetIdAndLinkType(assetId: String, linkType: String): Flow<List<Transaction>> =
         when (linkType) {
@@ -232,19 +286,19 @@ class TransactionLocalDataSourceImpl(
         }
             .asFlow()
             .mapToList(Dispatchers.IO)
-            .map { it.toDomainWithTaxLinesAndLinks() }
+            .map { it.toDomainWithDeps() }
 
     override fun getByLinkedProperty(propertyId: String): Flow<List<Transaction>> =
         queries.selectByLinkedProperty(propertyId)
             .asFlow()
             .mapToList(Dispatchers.IO)
-            .map { it.toDomainWithTaxLinesAndLinks() }
+            .map { it.toDomainWithDeps() }
 
     override fun getByLinkedValuable(valuableId: String): Flow<List<Transaction>> =
         queries.selectByLinkedValuable(valuableId)
             .asFlow()
             .mapToList(Dispatchers.IO)
-            .map { it.toDomainWithTaxLinesAndLinks() }
+            .map { it.toDomainWithDeps() }
 
     override fun getOldestDate(accountId: String): Flow<Long?> =
         queries.getOldestDateByAccount(accountId)
@@ -278,7 +332,7 @@ class TransactionLocalDataSourceImpl(
             .mapToList(Dispatchers.IO)
             .map { rows ->
                 rows.map { row ->
-                    val incomeType = IncomeType.fromName(row.incomeType)
+                    val incomeType = es.aviferdev.n3to.domain.model.IncomeType.fromName(row.incomeType)
                     IncomeTypeBreakdown(
                         incomeType = row.incomeType ?: "UNKNOWN",
                         label = incomeType?.label ?: "Otro",
@@ -316,7 +370,7 @@ class TransactionLocalDataSourceImpl(
             .mapToList(Dispatchers.IO)
             .map { rows ->
                 rows.map { row ->
-                    val incomeType = IncomeType.fromName(row.incomeType)
+                    val incomeType = es.aviferdev.n3to.domain.model.IncomeType.fromName(row.incomeType)
                     IncomeTypeBreakdown(
                         incomeType = row.incomeType ?: "UNKNOWN",
                         label = incomeType?.label ?: "Otro",

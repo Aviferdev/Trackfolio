@@ -9,7 +9,7 @@ CREATE TABLE FixedIncomePositionEntity (
     assetCategoryId     TEXT,
     name                TEXT    NOT NULL,
     ticker              TEXT    NOT NULL DEFAULT '',
-    type                TEXT    NOT NULL,
+    type                TEXT    NOT NULL CHECK(type IN ('BILL', 'BOND', 'GOVERNMENT_OBLIGATION', 'CORPORATE_BOND', 'DEPOSIT')),
     notes               TEXT,
     principal           REAL    NOT NULL,
     quantity            REAL    NOT NULL DEFAULT 1.0,
@@ -20,8 +20,8 @@ CREATE TABLE FixedIncomePositionEntity (
     maturityDate        INTEGER NOT NULL,
     platformId          TEXT    NOT NULL,
     issuerId            TEXT,
-    region              TEXT,
-    sector              TEXT,
+    regionId            TEXT    REFERENCES AssetRegionEntity(id) ON DELETE SET NULL,
+    sectorId            TEXT    REFERENCES AssetSectorEntity(id) ON DELETE SET NULL,
     autoRenew           INTEGER NOT NULL DEFAULT 0,
     archived            INTEGER NOT NULL DEFAULT 0,
     closedAt            INTEGER,
@@ -30,12 +30,14 @@ CREATE TABLE FixedIncomePositionEntity (
     createdAt           INTEGER NOT NULL,
     FOREIGN KEY (accountId)  REFERENCES AccountEntity(id)  ON DELETE CASCADE,
     FOREIGN KEY (platformId) REFERENCES PlatformEntity(id) ON DELETE RESTRICT,
-    FOREIGN KEY (assetCategoryId) REFERENCES AssetCategoryEntity(id) ON DELETE SET NULL
+    FOREIGN KEY (assetCategoryId) REFERENCES AssetCategoryEntity(id) ON DELETE SET NULL,
+    FOREIGN KEY (issuerId)    REFERENCES IssuerEntity(id)    ON DELETE SET NULL
 );
 
-CREATE INDEX idx_fi_account  ON FixedIncomePositionEntity(accountId);
-CREATE INDEX idx_fi_archived ON FixedIncomePositionEntity(archived);
-CREATE INDEX idx_fi_maturity ON FixedIncomePositionEntity(maturityDate);
+CREATE INDEX idx_fi_account         ON FixedIncomePositionEntity(accountId);
+CREATE INDEX idx_fi_account_maturity ON FixedIncomePositionEntity(accountId, maturityDate);
+CREATE INDEX idx_fi_archived        ON FixedIncomePositionEntity(archived);
+CREATE INDEX idx_fi_maturity        ON FixedIncomePositionEntity(maturityDate);
 CREATE INDEX idx_fi_category ON FixedIncomePositionEntity(assetCategoryId);
 CREATE INDEX idx_fi_portfolio ON FixedIncomePositionEntity(portfolioId);
 CREATE INDEX idx_fi_platform  ON FixedIncomePositionEntity(platformId);
@@ -90,7 +92,7 @@ insert:
 INSERT INTO FixedIncomePositionEntity(
     id, accountId, portfolioId, assetCategoryId, name, ticker, type, notes, principal, quantity,
     nominalPerUnit, interestRate, interestFrequency, startDate, maturityDate,
-    platformId, issuerId, region, sector, autoRenew, archived, closedAt, closeType, feeNote, createdAt
+    platformId, issuerId, regionId, sectorId, autoRenew, archived, closedAt, closeType, feeNote, createdAt
 ) VALUES (
     ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, NULL, NULL, ?, ?
 );
@@ -102,7 +104,7 @@ SET assetCategoryId = :assetCategoryId, name = :name, ticker = :ticker, type = :
     interestRate = :interestRate, interestFrequency = :interestFrequency,
     startDate = :startDate, maturityDate = :maturityDate,
     platformId = :platformId, issuerId = :issuerId,
-    region = :region, sector = :sector,
+    regionId = :regionId, sectorId = :sectorId,
     autoRenew = :autoRenew, feeNote = :feeNote
 WHERE id = :id;
 

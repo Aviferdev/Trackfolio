@@ -6,7 +6,6 @@ import app.cash.sqldelight.coroutines.mapToOneOrNull
 import es.aviferdev.n3to.data.database.N3toDatabase
 import es.aviferdev.n3to.data.database.mapper.toDomain
 import es.aviferdev.n3to.data.database.mapper.toEntity
-import es.aviferdev.n3to.domain.model.AssetComposition
 import es.aviferdev.n3to.domain.model.AssetRegion
 import es.aviferdev.n3to.domain.model.AssetRegionDistribution
 import es.aviferdev.n3to.domain.model.AssetSector
@@ -21,46 +20,10 @@ class AssetMetadataLocalDataSourceImpl(
     private val database: N3toDatabase
 ) : AssetMetadataLocalDataSource {
 
-    private val compQueries = database.assetCompositionQueries
     private val sectorQueries = database.assetSectorQueries
     private val sectorRelQueries = database.assetSectorRelationQueries
     private val regionQueries = database.assetRegionQueries
     private val regionDistQueries = database.assetRegionDistributionQueries
-
-    override fun getCompositionByAsset(assetId: String): Flow<AssetComposition?> =
-        compQueries.selectByAsset(assetId)
-            .asFlow()
-            .mapToOneOrNull(Dispatchers.IO)
-            .map { it?.toDomain() }
-
-    override fun getAllCompositions(): Flow<List<AssetComposition>> =
-        compQueries.selectAll()
-            .asFlow()
-            .mapToList(Dispatchers.IO)
-            .map { list -> list.map { it.toDomain() } }
-
-    override fun getCompositionsByAssets(assetIds: List<String>): Flow<List<AssetComposition>> =
-        compQueries.selectByAssets(assetIds)
-            .asFlow()
-            .mapToList(Dispatchers.IO)
-            .map { list -> list.map { it.toDomain() } }
-
-    override suspend fun saveComposition(composition: AssetComposition): Result<Unit> =
-        runCatching {
-            withContext(Dispatchers.IO) {
-                val e = composition.toEntity()
-                compQueries.insertOrUpdate(
-                    assetId = e.assetId,
-                    fixedIncomePercent = e.fixedIncomePercent,
-                    createdAt = e.createdAt
-                )
-            }
-        }
-
-    override suspend fun deleteComposition(assetId: String): Result<Unit> =
-        runCatching {
-            withContext(Dispatchers.IO) { compQueries.delete(assetId) }
-        }
 
     override fun getAllSectors(): Flow<List<AssetSector>> =
         sectorQueries.selectAll()

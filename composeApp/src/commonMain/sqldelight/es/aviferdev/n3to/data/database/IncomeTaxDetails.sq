@@ -1,0 +1,40 @@
+-- IncomeTaxDetailsEntity: detalles fiscales de transacciones de ingreso.
+-- Relación 1:1 con TransactionEntity (solo para transacciones de tipo INCOME).
+--
+-- Contiene los campos que solo aplican a ingresos y que antes estaban
+-- desnormalizados en TransactionEntity:
+--   incomeType, grossAmount, commissionAmount, issuerId
+
+CREATE TABLE IncomeTaxDetailsEntity (
+    transactionId     TEXT    NOT NULL PRIMARY KEY,
+    incomeType        TEXT,
+    grossAmount       REAL,
+    commissionAmount  REAL,
+    issuerId          TEXT,
+    FOREIGN KEY (transactionId) REFERENCES TransactionEntity(id) ON DELETE CASCADE,
+    FOREIGN KEY (issuerId)      REFERENCES IssuerEntity(id)      ON DELETE SET NULL
+);
+
+CREATE INDEX idx_tax_details_issuer ON IncomeTaxDetailsEntity(issuerId);
+
+-- ─── Lectura ──────────────────────────────────────────────────────────────────
+
+selectByTransaction:
+SELECT * FROM IncomeTaxDetailsEntity WHERE transactionId = :transactionId;
+
+-- ─── Escritura ────────────────────────────────────────────────────────────────
+
+insert:
+INSERT INTO IncomeTaxDetailsEntity(transactionId, incomeType, grossAmount, commissionAmount, issuerId)
+VALUES (?, ?, ?, ?, ?);
+
+update:
+UPDATE IncomeTaxDetailsEntity
+SET incomeType = :incomeType,
+    grossAmount = :grossAmount,
+    commissionAmount = :commissionAmount,
+    issuerId = :issuerId
+WHERE transactionId = :transactionId;
+
+delete:
+DELETE FROM IncomeTaxDetailsEntity WHERE transactionId = :transactionId;

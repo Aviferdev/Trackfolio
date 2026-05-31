@@ -10,7 +10,8 @@ fun CategoryEntity.toDomain(): Category = Category(
     name = name,
     type = TransactionType.valueOf(type),
     isDefault = isDefault != 0L,
-    archived = archived != 0L
+    archived = archived != 0L,
+    createdAt = createdAt
 )
 
 fun Category.toEntity(): CategoryEntity = CategoryEntity(
@@ -19,5 +20,6 @@ fun Category.toEntity(): CategoryEntity = CategoryEntity(
     name = name,
     type = type.name,
     isDefault = if (isDefault) 1L else 0L,
-    archived = if (archived) 1L else 0L
+    archived = if (archived) 1L else 0L,
+    createdAt = createdAt
 )

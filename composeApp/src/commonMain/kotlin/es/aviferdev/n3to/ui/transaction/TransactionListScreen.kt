@@ -4,6 +4,7 @@ import androidx.compose.material3.MaterialTheme
 import es.aviferdev.n3to.ui.theme.appColors
 import es.aviferdev.n3to.platform.nowMillis
 import androidx.compose.animation.AnimatedVisibility
+import es.aviferdev.n3to.domain.model.IncomeTaxDetails
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.background
@@ -266,8 +267,11 @@ fun TransactionListContentPreview() {
             id = "tx_1", accountId = "acc_1", amount = 1500.0,
             type = TransactionType.INCOME, categoryId = null,
             date = now, notes = "Nómina", createdAt = now,
-            incomeType = IncomeType.SALARY,
-            grossAmount = 2000.0
+            taxDetails = IncomeTaxDetails(
+                transactionId = "tx_1",
+                incomeType = IncomeType.SALARY,
+                grossAmount = 2000.0
+            )
         ),
         Transaction(
             id = "tx_2", accountId = "acc_1", amount = -45.50,
@@ -278,7 +282,10 @@ fun TransactionListContentPreview() {
             id = "tx_3", accountId = "acc_1", amount = 25.0,
             type = TransactionType.INCOME, categoryId = null,
             date = now, notes = "Dividendo AAPL", createdAt = now,
-            incomeType = IncomeType.DIVIDEND,
+            taxDetails = IncomeTaxDetails(
+                transactionId = "tx_3",
+                incomeType = IncomeType.DIVIDEND
+            ),
             links = listOf(
                 TransactionLink(
                     id = "link_1",

@@ -34,7 +34,7 @@ class SellValuableUseCase(
         saleExpenses.forEach { if (it.amount <= 0) return Result.failure(ValidationError.ValuableExpenseAmountInvalid) }
 
         // 1. Marcar bien como vendido
-        val sellResult = valuableRepository.sell(valuableId, saleDate, salePrice)
+        val sellResult = valuableRepository.sell(valuableId, saleDate, salePrice, "SOLD")
         if (sellResult.isFailure) return sellResult
 
         val now = nowMillis()

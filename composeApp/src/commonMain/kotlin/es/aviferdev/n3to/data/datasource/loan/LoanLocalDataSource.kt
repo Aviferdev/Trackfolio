@@ -19,5 +19,7 @@ interface LoanLocalDataSource {
     ): Result<Unit>
 
     suspend fun incrementPaidInstallments(id: String, newOutstanding: Double): Result<Unit>
+    suspend fun close(id: String, closedAt: Long, closeType: String): Result<Unit>
     suspend fun archive(id: String): Result<Unit>
+    suspend fun unarchive(id: String): Result<Unit>
 }

@@ -7,23 +7,19 @@ data class Transaction(
      *  Para ADJUSTMENT: positivo = saldo real mayor, negativo = saldo real menor. */
     val amount: Double,
     val type: TransactionType,
-    /** Categoría de gasto. Null para ingresos (usan [incomeType]). */
+    /** Categoría de gasto. Null para ingresos (usan [incomeType] vía [taxDetails]). */
     val categoryId: String?,
     val date: Long,
     val notes: String?,
     val createdAt: Long,
 
-    // ── Campos de ingreso ─────────────────────────────────────────────────────
-    /** Tipo de ingreso. Null para gastos. */
-    val incomeType: IncomeType? = null,
-    /** Importe bruto antes de deducciones. Null si solo se registró neto. */
-    val grossAmount: Double? = null,
-    /** Comisiones aplicadas. Solo para BOND_DEPOSIT. */
-    val commissionAmount: Double? = null,
-    /** ID de la entidad emisora. */
-    val issuerId: String? = null,
-    /** Nombre desnormalizado del emisor para queries rápidas. */
-    val issuerName: String? = null,
+    // ── Detalles fiscales (solo para INCOME) ───────────────────────────────
+    /**
+     * Detalles fiscales de la transacción de ingreso.
+     * Null para gastos y ajustes. Contiene incomeType, grossAmount, commissionAmount, issuerId.
+     */
+    val taxDetails: IncomeTaxDetails? = null,
+
     /** Líneas fiscales (impuestos, cotizaciones...). Vacío = solo neto registrado. */
     val taxLines: List<TaxLine> = emptyList(),
 
@@ -42,6 +38,21 @@ data class Transaction(
     /** Si true, esta transacción se excluye del informe fiscal. */
     val excludeFromFiscal: Boolean = false
 ) {
+    /** Tipo de ingreso. Null para gastos. Acceso directo desde taxDetails. */
+    val incomeType: IncomeType? get() = taxDetails?.incomeType
+
+    /** Importe bruto antes de deducciones. Null si solo se registró neto. */
+    val grossAmount: Double? get() = taxDetails?.grossAmount
+
+    /** Comisiones aplicadas. Solo para BOND_DEPOSIT. */
+    val commissionAmount: Double? get() = taxDetails?.commissionAmount
+
+    /** ID de la entidad emisora. FK a IssuerEntity. */
+    val issuerId: String? get() = taxDetails?.issuerId
+
+    /** Nombre del emisor (transitorio, no persistido). */
+    val issuerName: String? get() = taxDetails?.issuerName
+
     /** True si tiene desglose fiscal completo (modo bruto). */
     val hasFiscalBreakdown: Boolean get() = grossAmount != null && taxLines.isNotEmpty()
 

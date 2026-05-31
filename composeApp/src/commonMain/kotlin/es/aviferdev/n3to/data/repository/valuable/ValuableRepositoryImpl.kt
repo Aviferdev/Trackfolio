@@ -21,8 +21,8 @@ class ValuableRepositoryImpl(
     override suspend fun save(valuable: Valuable): Result<Unit> =
         localDataSource.insert(valuable)
 
-    override suspend fun sell(id: String, saleDate: Long, salePrice: Double): Result<Unit> =
-        localDataSource.sell(id, saleDate, salePrice)
+    override suspend fun sell(id: String, saleDate: Long, salePrice: Double, closeType: String): Result<Unit> =
+        localDataSource.sell(id, saleDate, salePrice, closeType)
 
     override suspend fun updateEstimatedValue(id: String, value: Double): Result<Unit> =
         localDataSource.updateEstimatedValue(id, value)

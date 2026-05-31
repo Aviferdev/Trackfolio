@@ -122,7 +122,8 @@ class DatabaseInitializer(
                 name = "Alimentación",
                 type = TransactionType.EXPENSE.name,
                 isDefault = 1L,
-                archived = 0L
+                archived = 0L,
+                createdAt = 0L
             ),
             CategoryEntity(
                 id = "cat_exp_02",
@@ -130,23 +131,28 @@ class DatabaseInitializer(
                 name = "Transporte",
                 type = TransactionType.EXPENSE.name,
                 isDefault = 1L,
-                archived = 0L
+                archived = 0L,
+                createdAt = 0L
             ),
             CategoryEntity(
                 id = "cat_exp_03", accountId = accountId,
-                name = "Hogar", type = TransactionType.EXPENSE.name, isDefault = 1L, archived = 0L
+                name = "Hogar", type = TransactionType.EXPENSE.name, isDefault = 1L, archived = 0L,
+                createdAt = 0L
             ),
             CategoryEntity(
                 id = "cat_exp_04", accountId = accountId,
-                name = "Salud", type = TransactionType.EXPENSE.name, isDefault = 1L, archived = 0L
+                name = "Salud", type = TransactionType.EXPENSE.name, isDefault = 1L, archived = 0L,
+                createdAt = 0L
             ),
             CategoryEntity(
                 id = "cat_exp_05", accountId = accountId,
-                name = "Ocio", type = TransactionType.EXPENSE.name, isDefault = 1L, archived = 0L
+                name = "Ocio", type = TransactionType.EXPENSE.name, isDefault = 1L, archived = 0L,
+                createdAt = 0L
             ),
             CategoryEntity(
                 id = "cat_exp_06", accountId = accountId,
-                name = "Ropa", type = TransactionType.EXPENSE.name, isDefault = 1L, archived = 0L
+                name = "Ropa", type = TransactionType.EXPENSE.name, isDefault = 1L, archived = 0L,
+                createdAt = 0L
             ),
             CategoryEntity(
                 id = "cat_exp_07",
@@ -154,11 +160,13 @@ class DatabaseInitializer(
                 name = "Educación",
                 type = TransactionType.EXPENSE.name,
                 isDefault = 1L,
-                archived = 0L
+                archived = 0L,
+                createdAt = 0L
             ),
             CategoryEntity(
                 id = "cat_exp_08", accountId = accountId,
-                name = "Otros", type = TransactionType.EXPENSE.name, isDefault = 1L, archived = 0L
+                name = "Otros", type = TransactionType.EXPENSE.name, isDefault = 1L, archived = 0L,
+                createdAt = 0L
             ),
         )
 
@@ -169,7 +177,8 @@ class DatabaseInitializer(
             name = "Ajuste de saldo",
             type = TransactionType.ADJUSTMENT.name,
             isDefault = 1L,
-            archived = 0L
+            archived = 0L,
+            createdAt = 0L
         )
     }
 

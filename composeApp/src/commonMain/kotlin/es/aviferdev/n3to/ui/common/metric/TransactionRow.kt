@@ -78,7 +78,7 @@ fun TransactionRow(
         isAdjustment -> Icons.Outlined.Balance
         isLinked -> Icons.AutoMirrored.Outlined.ShowChart
         isIncome && !compact -> Icons.Outlined.ArrowDownward
-        isIncome && compact && transaction.incomeType != null -> transaction.incomeType.toMaterialIcon()
+        isIncome && compact && transaction.incomeType != null -> transaction.incomeType!!.toMaterialIcon()
         else -> null
     }
     val avatarText = when {
@@ -211,8 +211,9 @@ fun TransactionRow(
                 maxLines = 1
             )
             if (!compact && isIncome && transaction.grossAmount != null && !balancesHidden) {
+                val gross = transaction.grossAmount!!
                 Text(
-                    stringResource(Res.string.transaction_gross_format, formatAmount(transaction.grossAmount), currency),
+                    stringResource(Res.string.transaction_gross_format, formatAmount(gross), currency),
                     fontSize = 9.sp,
                     color = MaterialTheme.appColors.textTertiary,
                     maxLines = 1

@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import es.aviferdev.n3to.domain.model.Asset
 import es.aviferdev.n3to.domain.model.AssetCategory
-import es.aviferdev.n3to.domain.model.AssetComposition
 import es.aviferdev.n3to.domain.model.AssetRegionDistribution
 import es.aviferdev.n3to.domain.model.AssetSectorRelation
 import es.aviferdev.n3to.domain.model.PriceQuote
@@ -19,13 +18,10 @@ import es.aviferdev.n3to.domain.usecase.asset.ValidateAssetIdentifierUseCase
 import es.aviferdev.n3to.domain.usecase.assetcategory.GetAllAssetCategoriesIncludingArchivedUseCase
 import es.aviferdev.n3to.domain.usecase.assetmetadata.DeleteAllRegionDistributionsUseCase
 import es.aviferdev.n3to.domain.usecase.assetmetadata.DeleteAllSectorLinksUseCase
-import es.aviferdev.n3to.domain.usecase.assetmetadata.DeleteAssetCompositionUseCase
-import es.aviferdev.n3to.domain.usecase.assetmetadata.GetAssetCompositionUseCase
 import es.aviferdev.n3to.domain.usecase.assetmetadata.GetRegionsByAssetUseCase
 import es.aviferdev.n3to.domain.usecase.assetmetadata.GetRegionsUseCase
 import es.aviferdev.n3to.domain.usecase.assetmetadata.GetSectorsByAssetUseCase
 import es.aviferdev.n3to.domain.usecase.assetmetadata.GetSectorsUseCase
-import es.aviferdev.n3to.domain.usecase.assetmetadata.SaveAssetCompositionUseCase
 import es.aviferdev.n3to.domain.usecase.assetmetadata.SaveRegionDistributionUseCase
 import es.aviferdev.n3to.domain.usecase.assetmetadata.SaveSectorRelationUseCase
 import es.aviferdev.n3to.domain.usecase.assetplatform.GetPlatformsByAssetUseCase
@@ -85,9 +81,6 @@ class AssetCatalogViewModel(
     private val getRegions: GetRegionsUseCase,
     private val getSectorsByAsset: GetSectorsByAssetUseCase,
     private val getRegionsByAsset: GetRegionsByAssetUseCase,
-    private val getAssetComposition: GetAssetCompositionUseCase,
-    private val saveAssetComposition: SaveAssetCompositionUseCase,
-    private val deleteAssetComposition: DeleteAssetCompositionUseCase,
     private val deleteAllSectorLinks: DeleteAllSectorLinksUseCase,
     private val saveSectorRelation: SaveSectorRelationUseCase,
     private val deleteAllRegionDistributions: DeleteAllRegionDistributionsUseCase,
@@ -201,8 +194,7 @@ class AssetCatalogViewModel(
             val regions = getRegionsByAsset(asset.id).first()
             _editingRegionPercents.value = regions.associate { it.regionId to it.percent }
 
-            val composition = getAssetComposition(asset.id).first()
-            _editingFixedIncomePercent.value = composition?.fixedIncomePercent ?: 0
+            _editingFixedIncomePercent.value = asset.fixedIncomePercent
         }
     }
 
@@ -278,20 +270,11 @@ class AssetCatalogViewModel(
                 isin = isin,
                 priceSource = PriceSource.MANUAL,
                 isinValidatedAt = if (isin != null) now else null,
-                isinValidationError = null
+                isinValidationError = null,
+                fixedIncomePercent = fixedIncomePercent
             )
             saveAsset(asset)
                 .onSuccess {
-                    // Guardar composición RF/RV
-                    if (fixedIncomePercent > 0) {
-                        saveAssetComposition(
-                            AssetComposition(
-                                assetId = asset.id,
-                                fixedIncomePercent = fixedIncomePercent,
-                                createdAt = now
-                            )
-                        )
-                    }
                     // Vincular sectores
                     sectorIds.forEach { sectorId ->
                         saveSectorRelation(
@@ -362,21 +345,10 @@ class AssetCatalogViewModel(
                     isin = isin,
                     priceSource = PriceSource.MANUAL,
                     isinValidatedAt = if (isin != null) nowMillis() else null,
-                    isinValidationError = null
+                    isinValidationError = null,
+                    fixedIncomePercent = fixedIncomePercent
                 )
             ).onSuccess {
-                // Guardar composición RF/RV
-                if (fixedIncomePercent > 0) {
-                    saveAssetComposition(
-                        AssetComposition(
-                            assetId = original.id,
-                            fixedIncomePercent = fixedIncomePercent,
-                            createdAt = nowMillis()
-                        )
-                    )
-                } else {
-                    deleteAssetComposition(original.id)
-                }
                 // Actualizar sectores: borrar todos y recrear
                 deleteAllSectorLinks(original.id)
                 sectorIds.forEach { sectorId ->
