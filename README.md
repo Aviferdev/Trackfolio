@@ -31,6 +31,73 @@ ui/        → Componibles, ViewModels, navegación, tema
 
 Ver [AGENTS.md](./AGENTS.md) para la estructura detallada de paquetes y convenciones.
 
+## Base de datos
+
+La persistencia se implementa con **SQLDelight** (SQLite). El esquema se define en
+30 archivos `.sq` ubicados en `composeApp/src/commonMain/sqldelight/`.
+
+### Esquema completo
+
+El archivo [`docs/database_schema.sql`](./docs/database_schema.sql) contiene el DDL
+unificado con 32 tablas, 60 índices y 41 foreign keys documentados. Para visualizar
+el diagrama entidad-relación:
+
+```bash
+# 1. Crea la base de datos de trabajo
+sqlite3 docs/schema_viewer.db < docs/database_schema.sql
+
+# 2. Ábrela con DBeaver (File → New Connection → SQLite → Select schema_viewer.db)
+#    Luego: Click derecho en la conexión → View Diagram
+```
+
+### Resumen de entidades
+
+| # | Tabla | Sección | Descripción |
+|---|-------|---------|-------------|
+| 1 | `AccountEntity` | Maestras | Cuentas financieras — raíz del modelo |
+| 2 | `AssetCategoryEntity` | Maestras | Tipos de activo: Acciones, ETFs, Cripto… |
+| 3 | `AssetRegionEntity` | Maestras | Regiones geográficas de inversión |
+| 4 | `AssetSectorEntity` | Maestras | Sectores económicos: Tecnología, Salud… |
+| 5 | `PlatformEntity` | Maestras | Brokers / plataformas |
+| 6 | `CategoryEntity` | Maestras | Categorías de ingresos y gastos |
+| 7 | `TaxProfileSnapshotEntity` | Maestras | Snapshots históricos del perfil fiscal |
+| 8 | `PortfolioEntity` | Cuentas | Carteras de inversión |
+| 9 | `IssuerEntity` | Cuentas | Emisores de ingresos (empleador, banco…) |
+| 10 | `DebtEntity` | Cuentas | Deudas informales entre personas |
+| 11 | `LoanEntity` | Cuentas | Préstamos bancarios formales |
+| 12 | `MonthlyGoalEntity` | Cuentas | Metas mensuales de ahorro e inversión |
+| 13 | `AssetEntity` | Activos | Posiciones en activos financieros |
+| 14 | `AssetPriceHistoryEntity` | Activos | Histórico de precios por activo |
+| 15 | `AssetTransactionEntity` | Activos | Compras y ventas de activos |
+| 16 | `AssetRegionDistributionEntity` | Activos | Distribución geográfica (N:M) |
+| 17 | `AssetSectorRelationEntity` | Activos | Relación activo-sector (N:M) |
+| 18 | `AssetTagEntity` | Activos | Etiquetas personalizables |
+| 19 | `AssetTagAssignmentEntity` | Activos | Asignación de etiquetas con peso |
+| 20 | `AssetPlatformEntity` | Activos | Activos por plataforma (N:M) |
+| 21 | `TransactionEntity` | Transacciones | Ingresos, gastos y ajustes |
+| 22 | `IncomeTaxDetailsEntity` | Transacciones | Detalle fiscal del ingreso (1:1) |
+| 23 | `TaxLineEntity` | Transacciones | Líneas de retenciones/impuestos |
+| 24 | `TransactionLinkEntity` | Transacciones | Enlace polimórfico a origen |
+| 25 | `RealEstatePropertyEntity` | Inmobiliario | Propiedades inmobiliarias |
+| 26 | `RentalPeriodEntity` | Inmobiliario | Períodos de alquiler |
+| 27 | `FixedIncomePositionEntity` | Renta Fija | Bonos, letras y depósitos |
+| 28 | `FixedIncomeEventEntity` | Renta Fija | Eventos: cupón, vencimiento… |
+| 29 | `PlatformCategoryEntity` | Soporte | Compatibilidad plataforma-categoría |
+| 30 | `CategoryBudgetEntity` | Soporte | Presupuesto anual por categoría |
+| 31 | `LoanRateChangeEntity` | Soporte | Histórico de cambios de interés |
+| 32 | `ValuableEntity` | Activos | Objetos de valor (arte, joyería…) |
+
+### Patrones del esquema
+
+| Patrón | Uso |
+|--------|-----|
+| **Soft-delete** | Columna `archived INTEGER DEFAULT 0` en 20+ tablas |
+| **Timestamps** | `INTEGER` (epoch millis) excepto `TaxProfileSnapshotEntity.effectiveFrom` (ISO date) |
+| **Claves compuestas** | Tablas N:M usan `PRIMARY KEY (a, b)` sin columna `id` |
+| **Enlace polimórfico** | `TransactionLinkEntity` evita múltiples FK en `TransactionEntity` |
+| **1:1 extensions** | `IncomeTaxDetailsEntity` y `CategoryBudgetEntity` comparten PK con su tabla padre |
+| **ON DELETE** | `CASCADE` para hijos dependientes, `SET NULL` para referencias opcionales, `RESTRICT` para plataformas |
+
 ## Documentación de decisiones (ADR)
 
 Las decisiones importantes de arquitectura y diseño se documentan como
