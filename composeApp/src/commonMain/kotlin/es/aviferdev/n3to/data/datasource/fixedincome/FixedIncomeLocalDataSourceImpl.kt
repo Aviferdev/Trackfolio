@@ -2,10 +2,12 @@ package es.aviferdev.n3to.data.datasource.fixedincome
 
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
+import app.cash.sqldelight.coroutines.mapToOne
 import app.cash.sqldelight.coroutines.mapToOneOrNull
 import es.aviferdev.n3to.data.database.N3toDatabase
 import es.aviferdev.n3to.data.database.mapper.toDomain
 import es.aviferdev.n3to.data.database.mapper.toEntity
+import es.aviferdev.n3to.domain.model.FixedIncomeEvent
 import es.aviferdev.n3to.domain.model.FixedIncomePosition
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -18,6 +20,7 @@ class FixedIncomeLocalDataSourceImpl(
 ) : FixedIncomeLocalDataSource {
 
     private val queries = database.fixedIncomePositionQueries
+    private val eventQueries = database.fixedIncomeEventQueries
 
     override fun getByAccount(accountId: String): Flow<List<FixedIncomePosition>> =
         queries.selectByAccount(accountId)
@@ -136,5 +139,54 @@ class FixedIncomeLocalDataSourceImpl(
     override suspend fun archive(id: String): Result<Unit> =
         runCatching {
             withContext(Dispatchers.IO) { queries.archive(id) }
+        }
+
+    // ── FixedIncomeEvent (fusionado) ──────────────────────────────────────────
+
+    override fun getEventsByPosition(positionId: String): Flow<List<FixedIncomeEvent>> =
+        eventQueries.selectByPosition(positionId)
+            .asFlow()
+            .mapToList(Dispatchers.IO)
+            .map { list -> list.map { it.toDomain() } }
+
+    override fun getEventsByAccount(accountId: String): Flow<List<FixedIncomeEvent>> =
+        eventQueries.selectByAccount(accountId)
+            .asFlow()
+            .mapToList(Dispatchers.IO)
+            .map { list -> list.map { it.toDomain() } }
+
+    override fun totalCollectedByPosition(positionId: String): Flow<Double> =
+        eventQueries.totalCollectedByPosition(positionId)
+            .asFlow()
+            .mapToOne(Dispatchers.IO)
+
+    override suspend fun insertEvent(event: FixedIncomeEvent): Result<Unit> =
+        runCatching {
+            withContext(Dispatchers.IO) {
+                val e = event.toEntity()
+                eventQueries.insert(
+                    id = e.id, positionId = e.positionId, type = e.type,
+                    grossAmount = e.grossAmount, irpfPercent = e.irpfPercent,
+                    commissionAmount = e.commissionAmount, netAmount = e.netAmount,
+                    date = e.date, notes = e.notes, createdAt = e.createdAt
+                )
+            }
+        }
+
+    override suspend fun updateEvent(event: FixedIncomeEvent): Result<Unit> =
+        runCatching {
+            withContext(Dispatchers.IO) {
+                val e = event.toEntity()
+                eventQueries.update(
+                    id = e.id, type = e.type, grossAmount = e.grossAmount,
+                    irpfPercent = e.irpfPercent, commissionAmount = e.commissionAmount,
+                    netAmount = e.netAmount, date = e.date, notes = e.notes
+                )
+            }
+        }
+
+    override suspend fun deleteEvent(id: String): Result<Unit> =
+        runCatching {
+            withContext(Dispatchers.IO) { eventQueries.delete(id) }
         }
 }

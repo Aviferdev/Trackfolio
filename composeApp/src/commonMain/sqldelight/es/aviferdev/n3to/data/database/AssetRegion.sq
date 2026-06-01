@@ -14,6 +14,9 @@ SELECT * FROM AssetRegionEntity ORDER BY name ASC;
 selectById:
 SELECT * FROM AssetRegionEntity WHERE id = :id;
 
+countAll:
+SELECT COUNT(*) FROM AssetRegionEntity;
+
 -- ─── Escritura ──────────────────────────────────────────────────────────────────
 
 insert:

@@ -9,8 +9,7 @@ fun LoanRateChangeEntity.toDomain(): LoanRateChange = LoanRateChange(
     newRate = newRate,
     previousRate = previousRate,
     effectiveDate = effectiveDate,
-    createdAt = createdAt,
-    archived = archived != 0L
+    createdAt = createdAt
 )
 
 fun LoanRateChange.toEntity(): LoanRateChangeEntity = LoanRateChangeEntity(
@@ -19,6 +18,5 @@ fun LoanRateChange.toEntity(): LoanRateChangeEntity = LoanRateChangeEntity(
     newRate = newRate,
     previousRate = previousRate,
     effectiveDate = effectiveDate,
-    createdAt = createdAt,
-    archived = if (archived) 1L else 0L
+    createdAt = createdAt
 )

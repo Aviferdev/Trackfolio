@@ -1,10 +1,11 @@
 CREATE TABLE AssetCategoryEntity (
-    id        TEXT    NOT NULL PRIMARY KEY,
-    name      TEXT    NOT NULL,
-    icon      TEXT    NOT NULL DEFAULT '📦',
-    sortOrder INTEGER NOT NULL DEFAULT 0,
-    archived  INTEGER NOT NULL DEFAULT 0,
-    createdAt INTEGER NOT NULL
+    id         TEXT    NOT NULL PRIMARY KEY,
+    name       TEXT    NOT NULL,
+    icon       TEXT    NOT NULL DEFAULT '📦',
+    sortOrder  INTEGER NOT NULL DEFAULT 0,
+    archived   INTEGER NOT NULL DEFAULT 0,
+    isQuotable INTEGER NOT NULL DEFAULT 0,
+    createdAt  INTEGER NOT NULL
 );
 
 CREATE INDEX idx_asset_category_archived ON AssetCategoryEntity(archived);
@@ -29,8 +30,8 @@ SELECT COUNT(*) FROM AssetCategoryEntity WHERE archived = 0;
 -- ─── Escritura ────────────────────────────────────────────────────────────────
 
 insert:
-INSERT OR IGNORE INTO AssetCategoryEntity(id, name, icon, sortOrder, archived, createdAt)
-VALUES (?, ?, ?, ?, 0, ?);
+INSERT OR IGNORE INTO AssetCategoryEntity(id, name, icon, sortOrder, archived, isQuotable, createdAt)
+VALUES (?, ?, ?, ?, 0, ?, ?);
 
 updateNameAndIcon:
 UPDATE AssetCategoryEntity

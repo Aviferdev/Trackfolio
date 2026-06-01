@@ -1074,10 +1074,10 @@ private fun AddEditAssetBottomSheetPreview() {
     N3toTheme {
         val now = nowMillis()
         val sampleCategories = listOf(
-            AssetCategory("fixed_cat_funds", "Fondos de Inversión", "📊", 0, false, now),
-            AssetCategory("fixed_cat_stocks", "Acciones", "📈", 1, false, now),
-            AssetCategory("fixed_cat_etfs", "ETFs", "📉", 2, false, now),
-            AssetCategory("fixed_cat_pensions", "Planes de Pensiones", "🏦", 3, false, now)
+            AssetCategory(id = "fixed_cat_funds", name = "Fondos de Inversión", icon = "📊", sortOrder = 0, isQuotable = true, createdAt = now),
+            AssetCategory(id = "fixed_cat_stocks", name = "Acciones", icon = "📈", sortOrder = 1, isQuotable = true, createdAt = now),
+            AssetCategory(id = "fixed_cat_etfs", name = "ETFs", icon = "📉", sortOrder = 2, isQuotable = true, createdAt = now),
+            AssetCategory(id = "fixed_cat_pensions", name = "Planes de Pensiones", icon = "🏦", sortOrder = 3, createdAt = now)
         )
         val samplePlatforms = listOf(
             Platform("platform-1", "Banco Santander", "🏦", 0, false, now),

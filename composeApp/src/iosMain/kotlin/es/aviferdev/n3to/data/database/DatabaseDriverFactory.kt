@@ -8,6 +8,9 @@ actual class DatabaseDriverFactory {
         return NativeSqliteDriver(
             schema = N3toDatabase.Schema,
             name = "n3to.db"
-        )
+        ).also { driver ->
+            driver.execute(null, "PRAGMA foreign_keys = ON", 0)
+            driver.execute(null, "PRAGMA journal_mode = WAL", 0)
+        }
     }
 }

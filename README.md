@@ -34,12 +34,12 @@ Ver [AGENTS.md](./AGENTS.md) para la estructura detallada de paquetes y convenci
 ## Base de datos
 
 La persistencia se implementa con **SQLDelight** (SQLite). El esquema se define en
-30 archivos `.sq` ubicados en `composeApp/src/commonMain/sqldelight/`.
+32 archivos `.sq` ubicados en `composeApp/src/commonMain/sqldelight/`.
 
 ### Esquema completo
 
 El archivo [`docs/database_schema.sql`](./docs/database_schema.sql) contiene el DDL
-unificado con 32 tablas, 60 índices y 41 foreign keys documentados. Para visualizar
+unificado con 34 tablas, 68 índices y 43 foreign keys documentados. Para visualizar
 el diagrama entidad-relación:
 
 ```bash
@@ -85,7 +85,9 @@ sqlite3 docs/schema_viewer.db < docs/database_schema.sql
 | 29 | `PlatformCategoryEntity` | Soporte | Compatibilidad plataforma-categoría |
 | 30 | `CategoryBudgetEntity` | Soporte | Presupuesto anual por categoría |
 | 31 | `LoanRateChangeEntity` | Soporte | Histórico de cambios de interés |
-| 32 | `ValuableEntity` | Activos | Objetos de valor (arte, joyería…) |
+| 32 | `EmergencyFundEntity` | Soporte | Fondo de emergencia por cuenta |
+| 33 | `ConsentPreferencesEntity` | Soporte | Consentimiento GDPR/privacidad |
+| 34 | `ValuableEntity` | Activos | Objetos de valor (arte, joyería…) |
 
 ### Patrones del esquema
 

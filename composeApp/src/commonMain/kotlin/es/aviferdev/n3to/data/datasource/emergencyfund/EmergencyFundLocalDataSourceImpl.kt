@@ -1,78 +1,90 @@
 package es.aviferdev.n3to.data.datasource.emergencyfund
 
-import es.aviferdev.n3to.core.security.AppSettings
+import app.cash.sqldelight.coroutines.asFlow
+import app.cash.sqldelight.coroutines.mapToOneOrNull
+import es.aviferdev.n3to.data.database.N3toDatabase
+import es.aviferdev.n3to.data.database.mapper.toDomain
+import es.aviferdev.n3to.data.database.mapper.toEntity
 import es.aviferdev.n3to.domain.model.EmergencyFund
-import es.aviferdev.n3to.domain.model.EmergencyFundMethod
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withContext
 
 /**
- * Implementación de [EmergencyFundLocalDataSource] sobre [AppSettings].
+ * Implementación de [EmergencyFundLocalDataSource] sobre SQLDelight.
  *
- * Claves usadas (por cuenta):
- * - ef_{accountId}_months    → Int (0 = no configurado)
- * - ef_{accountId}_method    → String ("MANUAL" | "AUTO")
- * - ef_{accountId}_expense   → String (Double, solo MANUAL)
- * - ef_{accountId}_excluded  → String (CSV de categoryIds)
+ * Las categorías excluidas se almacenan en una tabla N:M normalizada
+ * ([EmergencyFundExcludedCategoryEntity]) en lugar de un campo TEXT
+ * con IDs separados por comas.
  */
 class EmergencyFundLocalDataSourceImpl(
-    private val settings: AppSettings
+    private val database: N3toDatabase
 ) : EmergencyFundLocalDataSource {
 
-    /**
-     * Trigger interno para notificar cambios tras save/delete.
-     * Como AppSettings no es reactivo, forzamos la reemisión manualmente.
-     */
-    private val refreshTrigger = MutableStateFlow(Unit)
+    private val queries = database.emergencyFundQueries
+    private val excludedQueries = database.emergencyFundExcludedCategoryQueries
 
     override fun getEmergencyFund(accountId: String): Flow<EmergencyFund?> =
-        refreshTrigger.map {
-            readEmergencyFund(accountId)
-        }
-
-    private fun readEmergencyFund(accountId: String): EmergencyFund? {
-        val months = settings.getInt(key(accountId, KEY_MONTHS), 0)
-        if (months <= 0) return null
-
-        return EmergencyFund(
-            accountId = accountId,
-            targetMonths = months,
-            calculationMethod = EmergencyFundMethod.valueOf(
-                settings.getString(key(accountId, KEY_METHOD), "MANUAL")
-            ),
-            manualMonthlyExpense = settings.getString(key(accountId, KEY_EXPENSE), "0.0")
-                .toDouble(),
-            excludedCategoryIds = settings.getString(key(accountId, KEY_EXCLUDED), "")
-                .split(SEPARATOR)
-                .filter { it.isNotBlank() }
-        )
-    }
+        queries.selectByAccount(accountId)
+            .asFlow()
+            .mapToOneOrNull(Dispatchers.IO)
+            .map { entity ->
+                entity?.let { e ->
+                    val excludedIds = excludedQueries.selectByAccount(e.accountId).executeAsList()
+                    e.toDomain(excludedIds)
+                }
+            }
 
     override suspend fun saveEmergencyFund(fund: EmergencyFund) {
-        settings.putInt(key(fund.accountId, KEY_MONTHS), fund.targetMonths)
-        settings.putString(key(fund.accountId, KEY_METHOD), fund.calculationMethod.name)
-        settings.putString(key(fund.accountId, KEY_EXPENSE), fund.manualMonthlyExpense.toString())
-        settings.putString(
-            key(fund.accountId, KEY_EXCLUDED),
-            fund.excludedCategoryIds.joinToString(SEPARATOR)
-        )
-        refreshTrigger.value = Unit
+        withContext(Dispatchers.IO) {
+            val e = fund.toEntity()
+            queries.insertOrReplace(
+                accountId = e.accountId,
+                targetMonths = e.targetMonths,
+                calculationMethod = e.calculationMethod,
+                manualMonthlyExpense = e.manualMonthlyExpense
+            )
+            // Actualizar categorías excluidas en la tabla normalizada
+            setExcludedCategoriesSync(fund.accountId, fund.excludedCategoryIds)
+        }
     }
 
     override suspend fun deleteEmergencyFund(accountId: String) {
-        settings.putInt(key(accountId, KEY_MONTHS), 0)
-        refreshTrigger.value = Unit
+        withContext(Dispatchers.IO) {
+            excludedQueries.deleteByAccount(accountId)
+            queries.deleteByAccount(accountId)
+        }
     }
 
-    private fun key(accountId: String, suffix: String): String =
-        "ef_${accountId}_$suffix"
+    override suspend fun getExcludedCategoryIds(accountId: String): List<String> =
+        withContext(Dispatchers.IO) {
+            excludedQueries.selectByAccount(accountId).executeAsList()
+        }
 
-    private companion object {
-        const val KEY_MONTHS = "months"
-        const val KEY_METHOD = "method"
-        const val KEY_EXPENSE = "expense"
-        const val KEY_EXCLUDED = "excluded"
-        const val SEPARATOR = ","
+    override suspend fun setExcludedCategories(accountId: String, categoryIds: List<String>) {
+        withContext(Dispatchers.IO) {
+            setExcludedCategoriesSync(accountId, categoryIds)
+        }
+    }
+
+    override suspend fun addExcludedCategory(accountId: String, categoryId: String) {
+        withContext(Dispatchers.IO) {
+            excludedQueries.insert(accountId, categoryId)
+        }
+    }
+
+    override suspend fun removeExcludedCategory(accountId: String, categoryId: String) {
+        withContext(Dispatchers.IO) {
+            excludedQueries.deleteByAccountAndCategory(accountId, categoryId)
+        }
+    }
+
+    private fun setExcludedCategoriesSync(accountId: String, categoryIds: List<String>) {
+        excludedQueries.deleteByAccount(accountId)
+        categoryIds.forEach { catId ->
+            excludedQueries.insert(accountId, catId)
+        }
     }
 }

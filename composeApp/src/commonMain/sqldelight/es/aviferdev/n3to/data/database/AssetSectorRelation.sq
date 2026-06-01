@@ -21,6 +21,13 @@ SELECT * FROM AssetSectorRelationEntity WHERE sectorId = :sectorId;
 selectAllByAssets:
 SELECT * FROM AssetSectorRelationEntity WHERE assetId IN :assetIds;
 
+-- Devuelve los sectores con sus datos directamente, evitando N+1
+selectSectorsByAsset:
+SELECT s.* FROM AssetSectorEntity s
+INNER JOIN AssetSectorRelationEntity r ON r.sectorId = s.id
+WHERE r.assetId = :assetId
+ORDER BY s.name ASC;
+
 -- ─── Escritura ──────────────────────────────────────────────────────────────────
 
 insert:

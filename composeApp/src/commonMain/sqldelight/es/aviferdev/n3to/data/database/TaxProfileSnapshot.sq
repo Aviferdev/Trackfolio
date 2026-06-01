@@ -2,7 +2,7 @@ CREATE TABLE TaxProfileSnapshotEntity (
     id            TEXT NOT NULL PRIMARY KEY,
     countryCode   TEXT,
     currency      TEXT NOT NULL,
-    effectiveFrom TEXT NOT NULL,  -- ISO date "YYYY-MM-DD"
+    effectiveFrom INTEGER NOT NULL,  -- epoch days (days since 1970-01-01)
     createdAt     INTEGER NOT NULL
 );
 
@@ -16,7 +16,7 @@ SELECT * FROM TaxProfileSnapshotEntity ORDER BY effectiveFrom ASC;
 
 selectActive:
 SELECT * FROM TaxProfileSnapshotEntity
-WHERE effectiveFrom <= :isoDate
+WHERE effectiveFrom <= :targetEpochDays
 ORDER BY effectiveFrom DESC
 LIMIT 1;
 

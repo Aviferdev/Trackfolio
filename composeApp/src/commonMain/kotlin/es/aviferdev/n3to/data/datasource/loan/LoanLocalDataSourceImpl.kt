@@ -7,6 +7,7 @@ import es.aviferdev.n3to.data.database.N3toDatabase
 import es.aviferdev.n3to.data.database.mapper.toDomain
 import es.aviferdev.n3to.data.database.mapper.toEntity
 import es.aviferdev.n3to.domain.model.Loan
+import es.aviferdev.n3to.domain.model.LoanRateChange
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
@@ -18,6 +19,7 @@ class LoanLocalDataSourceImpl(
 ) : LoanLocalDataSource {
 
     private val queries = database.loanQueries
+    private val rateChangeQueries = database.loanRateChangeQueries
 
     override fun getByAccount(accountId: String): Flow<List<Loan>> =
         queries.selectByAccount(accountId)
@@ -144,5 +146,33 @@ class LoanLocalDataSourceImpl(
     override suspend fun unarchive(id: String): Result<Unit> =
         runCatching {
             withContext(Dispatchers.IO) { queries.unarchive(id) }
+        }
+
+    // ── LoanRateChange (fusionado) ────────────────────────────────────────────
+
+    override fun getRateChangesByLoan(loanId: String): Flow<List<LoanRateChange>> =
+        rateChangeQueries.selectByLoan(loanId)
+            .asFlow()
+            .mapToList(Dispatchers.IO)
+            .map { list -> list.map { it.toDomain() } }
+
+    override suspend fun insertRateChange(rateChange: LoanRateChange): Result<Unit> =
+        runCatching {
+            withContext(Dispatchers.IO) {
+                val e = rateChange.toEntity()
+                rateChangeQueries.insert(
+                    id = e.id,
+                    loanId = e.loanId,
+                    newRate = e.newRate,
+                    previousRate = e.previousRate,
+                    effectiveDate = e.effectiveDate,
+                    createdAt = e.createdAt
+                )
+            }
+        }
+
+    override suspend fun deleteRateChangesByLoan(loanId: String): Result<Unit> =
+        runCatching {
+            withContext(Dispatchers.IO) { rateChangeQueries.deleteByLoan(loanId) }
         }
 }

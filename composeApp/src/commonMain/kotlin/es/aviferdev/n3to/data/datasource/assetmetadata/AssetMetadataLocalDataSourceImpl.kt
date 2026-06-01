@@ -51,15 +51,10 @@ class AssetMetadataLocalDataSourceImpl(
         }
 
     override fun getSectorsByAsset(assetId: String): Flow<List<AssetSector>> =
-        sectorRelQueries.selectByAsset(assetId)
+        sectorRelQueries.selectSectorsByAsset(assetId)
             .asFlow()
             .mapToList(Dispatchers.IO)
-            .map { relations ->
-                relations.mapNotNull { rel ->
-                    sectorQueries.selectById(rel.sectorId)
-                        .executeAsOneOrNull()?.toDomain()
-                }
-            }
+            .map { list -> list.map { it.toDomain() } }
 
     override fun getSectorsByAssets(assetIds: List<String>): Flow<List<AssetSectorRelation>> =
         sectorRelQueries.selectAllByAssets(assetIds)
@@ -142,11 +137,11 @@ class AssetMetadataLocalDataSourceImpl(
 
     override suspend fun countSectors(): Long =
         withContext(Dispatchers.IO) {
-            database.assetSectorQueries.selectAll().executeAsList().size.toLong()
+            database.assetSectorQueries.countAll().executeAsOne()
         }
 
     override suspend fun countRegions(): Long =
         withContext(Dispatchers.IO) {
-            database.assetRegionQueries.selectAll().executeAsList().size.toLong()
+            database.assetRegionQueries.countAll().executeAsOne()
         }
 }

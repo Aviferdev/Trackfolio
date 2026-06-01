@@ -1,0 +1,25 @@
+-- EmergencyFundEntity: configuración del fondo de emergencia por cuenta.
+-- Migrado desde AppSettings (clave-valor) a SQLite para integridad
+-- referencial, reactividad (Flow) y homogeneidad con el resto del stack.
+
+CREATE TABLE EmergencyFundEntity (
+    accountId            TEXT NOT NULL PRIMARY KEY,
+    targetMonths         INTEGER NOT NULL DEFAULT 0,
+    calculationMethod    TEXT NOT NULL DEFAULT 'MANUAL',
+    manualMonthlyExpense REAL NOT NULL DEFAULT 0.0,
+    FOREIGN KEY (accountId) REFERENCES AccountEntity(id) ON DELETE CASCADE
+);
+
+-- ─── Lectura ──────────────────────────────────────────────────────────────────
+
+selectByAccount:
+SELECT * FROM EmergencyFundEntity WHERE accountId = :accountId;
+
+-- ─── Escritura ────────────────────────────────────────────────────────────────
+
+insertOrReplace:
+INSERT OR REPLACE INTO EmergencyFundEntity(accountId, targetMonths, calculationMethod, manualMonthlyExpense)
+VALUES (?, ?, ?, ?);
+
+deleteByAccount:
+DELETE FROM EmergencyFundEntity WHERE accountId = :accountId;

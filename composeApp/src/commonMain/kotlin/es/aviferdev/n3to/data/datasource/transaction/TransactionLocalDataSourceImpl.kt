@@ -18,6 +18,7 @@ import es.aviferdev.n3to.domain.model.TaxLine
 import es.aviferdev.n3to.domain.model.TaxRole
 import es.aviferdev.n3to.domain.model.Transaction
 import es.aviferdev.n3to.domain.model.TransactionLink
+import es.aviferdev.n3to.core.DateRangeHelper
 import es.aviferdev.n3to.domain.model.TransactionLinkType
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -132,16 +133,19 @@ class TransactionLocalDataSourceImpl(
 
     override fun getByMonthAndAccount(
         accountId: String, year: String, month: String
-    ): Flow<List<Transaction>> =
-        queries.selectByMonthAndAccount(accountId, year, month)
+    ): Flow<List<Transaction>> {
+        val (start, end) = monthEpochRange(year, month)
+        return queries.selectByMonthAndAccount(accountId, start, end)
             .asFlow()
             .mapToList(Dispatchers.IO)
             .map { it.toDomainWithDeps() }
+    }
 
     override fun getMonthlyTotalsByAccount(
         accountId: String, year: String, month: String
-    ): Flow<MonthlyTotals> =
-        queries.getMonthlyTotalsByAccount(accountId, year, month)
+    ): Flow<MonthlyTotals> {
+        val (start, end) = monthEpochRange(year, month)
+        return queries.getMonthlyTotalsByAccount(accountId, start, end)
             .asFlow()
             .mapToOneOrNull(Dispatchers.IO)
             .map { row ->
@@ -152,16 +156,18 @@ class TransactionLocalDataSourceImpl(
                     totalExpense = row?.totalExpense ?: 0.0
                 )
             }
+    }
 
     override fun getAnnualTotalsByAccount(
         accountId: String, year: String
     ): Flow<AnnualSummary> {
-        val prevYear = (year.toInt() - 1).toString()
-        return queries.getAnnualTotalsByAccount(accountId, year)
+        val (currStart, currEnd) = yearEpochRange(year)
+        val (prevStart, prevEnd) = yearEpochRange((year.toInt() - 1).toString())
+        return queries.getAnnualTotalsByAccount(accountId, currStart, currEnd)
             .asFlow()
             .mapToOneOrNull(Dispatchers.IO)
             .map { current ->
-                val prev = queries.getAnnualTotalsByAccount(accountId, prevYear)
+                val prev = queries.getAnnualTotalsByAccount(accountId, prevStart, prevEnd)
                     .executeAsOneOrNull()
                 AnnualSummary(
                     year = year,
@@ -179,8 +185,9 @@ class TransactionLocalDataSourceImpl(
             .mapToList(Dispatchers.IO)
             .map { it.toDomainWithDeps() }
 
-    override fun getMonthlyBreakdown(accountId: String, year: String): Flow<List<MonthlyTotals>> =
-        queries.getMonthlyBreakdownByAccount(accountId, year)
+    override fun getMonthlyBreakdown(accountId: String, year: String): Flow<List<MonthlyTotals>> {
+        val (start, end) = yearEpochRange(year)
+        return queries.getMonthlyBreakdownByAccount(accountId, start, end)
             .asFlow()
             .mapToList(Dispatchers.IO)
             .map { rows ->
@@ -193,12 +200,15 @@ class TransactionLocalDataSourceImpl(
                     )
                 }
             }
+    }
 
-    override fun getIncomeByYear(accountId: String, year: String): Flow<List<Transaction>> =
-        queries.getIncomeByYear(accountId, year)
+    override fun getIncomeByYear(accountId: String, year: String): Flow<List<Transaction>> {
+        val (start, end) = yearEpochRange(year)
+        return queries.getIncomeByYear(accountId, start, end)
             .asFlow()
             .mapToList(Dispatchers.IO)
             .map { it.toDomainWithDeps() }
+    }
 
     override suspend fun insert(entity: TransactionEntity): Result<Unit> =
         runCatching {
@@ -315,6 +325,7 @@ class TransactionLocalDataSourceImpl(
             "ASSET_TRANSACTION" -> queries.selectByLinkedAssetTransaction(entityId)
             "PROPERTY" -> queries.selectByLinkedProperty(entityId)
             "VALUABLE" -> queries.selectByLinkedValuable(entityId)
+            "LOAN" -> queries.selectByLinkedLoan(entityId)
             else -> throw IllegalArgumentException("Unsupported linkType: $linkType")
         }
             .asFlow()
@@ -351,8 +362,9 @@ class TransactionLocalDataSourceImpl(
     override fun getExpensesByCategoryPerYear(
         accountId: String,
         year: String
-    ): Flow<List<CategoryBreakdown>> =
-        queries.getExpensesByCategoryPerYear(accountId, year)
+    ): Flow<List<CategoryBreakdown>> {
+        val (start, end) = yearEpochRange(year)
+        return queries.getExpensesByCategoryPerYear(accountId, start, end)
             .asFlow()
             .mapToList(Dispatchers.IO)
             .map { rows ->
@@ -364,12 +376,14 @@ class TransactionLocalDataSourceImpl(
                     )
                 }
             }
+    }
 
     override fun getIncomeByTypePerYear(
         accountId: String,
         year: String
-    ): Flow<List<IncomeTypeBreakdown>> =
-        queries.getIncomeByTypePerYear(accountId, year)
+    ): Flow<List<IncomeTypeBreakdown>> {
+        val (start, end) = yearEpochRange(year)
+        return queries.getIncomeByTypePerYear(accountId, start, end)
             .asFlow()
             .mapToList(Dispatchers.IO)
             .map { rows ->
@@ -383,13 +397,15 @@ class TransactionLocalDataSourceImpl(
                     )
                 }
             }
+    }
 
     override fun getExpensesByCategoryPerMonth(
         accountId: String,
         year: String,
         month: String
-    ): Flow<List<CategoryBreakdown>> =
-        queries.getExpensesByCategoryPerMonth(accountId, year, month)
+    ): Flow<List<CategoryBreakdown>> {
+        val (start, end) = monthEpochRange(year, month)
+        return queries.getExpensesByCategoryPerMonth(accountId, start, end)
             .asFlow()
             .mapToList(Dispatchers.IO)
             .map { rows ->
@@ -401,13 +417,15 @@ class TransactionLocalDataSourceImpl(
                     )
                 }
             }
+    }
 
     override fun getIncomeByTypePerMonth(
         accountId: String,
         year: String,
         month: String
-    ): Flow<List<IncomeTypeBreakdown>> =
-        queries.getIncomeByTypePerMonth(accountId, year, month)
+    ): Flow<List<IncomeTypeBreakdown>> {
+        val (start, end) = monthEpochRange(year, month)
+        return queries.getIncomeByTypePerMonth(accountId, start, end)
             .asFlow()
             .mapToList(Dispatchers.IO)
             .map { rows ->
@@ -421,4 +439,10 @@ class TransactionLocalDataSourceImpl(
                     )
                 }
             }
+    }
+
+    // ─── Helpers para convertir año/mes a epoch millis ─────────────────────────
+    // Ver DateRangeHelper en core/ para la implementación compartida.
+    private val yearEpochRange: (String) -> Pair<Long, Long> = DateRangeHelper::yearEpochRange
+    private val monthEpochRange: (String, String) -> Pair<Long, Long> = DateRangeHelper::monthEpochRange
 }

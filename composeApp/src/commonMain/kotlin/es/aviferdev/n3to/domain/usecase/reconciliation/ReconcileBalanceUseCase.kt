@@ -2,7 +2,6 @@ package es.aviferdev.n3to.domain.usecase.reconciliation
 
 import es.aviferdev.n3to.platform.nowMillis
 import com.benasher44.uuid.uuid4
-import es.aviferdev.n3to.data.database.DatabaseInitializer
 import es.aviferdev.n3to.domain.model.AppCurrency
 import es.aviferdev.n3to.domain.model.Transaction
 import es.aviferdev.n3to.domain.model.TransactionType
@@ -45,7 +44,7 @@ class ReconcileBalanceUseCase(
             accountId = accountId,
             amount = difference, // positivo suma, negativo resta
             type = TransactionType.ADJUSTMENT,
-            categoryId = DatabaseInitializer.ADJUSTMENT_CATEGORY_ID,
+            categoryId = null,  // ajustes de saldo no usan categoría
             date = now,
             notes = "Reconciliación: esperado ${formattedExpected}$currencySymbol, real ${formattedReal}$currencySymbol (${formattedDiff}$currencySymbol)",
             createdAt = now,

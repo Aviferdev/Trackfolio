@@ -1,5 +1,6 @@
 package es.aviferdev.n3to.di
 
+import es.aviferdev.n3to.data.database.N3toDatabase
 import es.aviferdev.n3to.data.datasource.account.AccountLocalDataSource
 import es.aviferdev.n3to.data.datasource.account.AccountLocalDataSourceImpl
 import es.aviferdev.n3to.data.datasource.asset.AssetCategoryLocalDataSource
@@ -20,8 +21,6 @@ import es.aviferdev.n3to.data.datasource.debt.DebtLocalDataSource
 import es.aviferdev.n3to.data.datasource.debt.DebtLocalDataSourceImpl
 import es.aviferdev.n3to.data.datasource.emergencyfund.EmergencyFundLocalDataSource
 import es.aviferdev.n3to.data.datasource.emergencyfund.EmergencyFundLocalDataSourceImpl
-import es.aviferdev.n3to.data.datasource.fixedincome.FixedIncomeEventLocalDataSource
-import es.aviferdev.n3to.data.datasource.fixedincome.FixedIncomeEventLocalDataSourceImpl
 import es.aviferdev.n3to.data.datasource.fixedincome.FixedIncomeLocalDataSource
 import es.aviferdev.n3to.data.datasource.fixedincome.FixedIncomeLocalDataSourceImpl
 import es.aviferdev.n3to.data.datasource.goal.GoalLocalDataSource
@@ -30,18 +29,12 @@ import es.aviferdev.n3to.data.datasource.issuer.IssuerLocalDataSource
 import es.aviferdev.n3to.data.datasource.issuer.IssuerLocalDataSourceImpl
 import es.aviferdev.n3to.data.datasource.loan.LoanLocalDataSource
 import es.aviferdev.n3to.data.datasource.loan.LoanLocalDataSourceImpl
-import es.aviferdev.n3to.data.datasource.loan.LoanRateChangeLocalDataSource
-import es.aviferdev.n3to.data.datasource.loan.LoanRateChangeLocalDataSourceImpl
-import es.aviferdev.n3to.data.datasource.platform.PlatformCategoryLocalDataSource
-import es.aviferdev.n3to.data.datasource.platform.PlatformCategoryLocalDataSourceImpl
 import es.aviferdev.n3to.data.datasource.platform.PlatformLocalDataSource
 import es.aviferdev.n3to.data.datasource.platform.PlatformLocalDataSourceImpl
 import es.aviferdev.n3to.data.datasource.portfolio.PortfolioLocalDataSource
 import es.aviferdev.n3to.data.datasource.portfolio.PortfolioLocalDataSourceImpl
 import es.aviferdev.n3to.data.datasource.realestate.RealEstatePropertyLocalDataSource
 import es.aviferdev.n3to.data.datasource.realestate.RealEstatePropertyLocalDataSourceImpl
-import es.aviferdev.n3to.data.datasource.realestate.RentalPeriodLocalDataSource
-import es.aviferdev.n3to.data.datasource.realestate.RentalPeriodLocalDataSourceImpl
 import es.aviferdev.n3to.data.datasource.taxprofile.TaxProfileSnapshotLocalDataSource
 import es.aviferdev.n3to.data.datasource.taxprofile.TaxProfileSnapshotLocalDataSourceImpl
 import es.aviferdev.n3to.data.datasource.transaction.TransactionCategoryLocalDataSource
@@ -121,22 +114,18 @@ val repositoryModule = module {
     single<AssetCategoryLocalDataSource> { AssetCategoryLocalDataSourceImpl(get()) }
     single<AssetTagLocalDataSource> { AssetTagLocalDataSourceImpl(get()) }
     single<PlatformLocalDataSource> { PlatformLocalDataSourceImpl(get()) }
-    single<PlatformCategoryLocalDataSource> { PlatformCategoryLocalDataSourceImpl(get()) }
     single<AssetTransactionLocalDataSource> { AssetTransactionLocalDataSourceImpl(get()) }
     single<AssetPlatformLocalDataSource> { AssetPlatformLocalDataSourceImpl(get()) }
     single<AssetPriceHistoryLocalDataSource> { AssetPriceHistoryLocalDataSourceImpl(get()) }
     single<AssetMetadataLocalDataSource> { AssetMetadataLocalDataSourceImpl(get()) }
-    single<EmergencyFundLocalDataSource> { EmergencyFundLocalDataSourceImpl(get()) }
+    single<EmergencyFundLocalDataSource> { EmergencyFundLocalDataSourceImpl(get<N3toDatabase>()) }
     single<GoalLocalDataSource> { GoalLocalDataSourceImpl(get()) }
     single<IssuerLocalDataSource> { IssuerLocalDataSourceImpl(get()) }
     single<FixedIncomeLocalDataSource> { FixedIncomeLocalDataSourceImpl(get()) }
-    single<FixedIncomeEventLocalDataSource> { FixedIncomeEventLocalDataSourceImpl(get()) }
     single<LoanLocalDataSource> { LoanLocalDataSourceImpl(get()) }
-    single<LoanRateChangeLocalDataSource> { LoanRateChangeLocalDataSourceImpl(get()) }
 
     // ── Real Estate ────────────────────────────────────────────────────────────
     single<RealEstatePropertyLocalDataSource> { RealEstatePropertyLocalDataSourceImpl(get()) }
-    single<RentalPeriodLocalDataSource> { RentalPeriodLocalDataSourceImpl(get()) }
 
     // ── Valuable (Bienes) ─────────────────────────────────────────────────────
     single<ValuableLocalDataSource> { ValuableLocalDataSourceImpl(get()) }

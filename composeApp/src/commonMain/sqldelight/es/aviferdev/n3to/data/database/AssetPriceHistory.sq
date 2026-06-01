@@ -6,8 +6,9 @@ CREATE TABLE AssetPriceHistoryEntity (
     FOREIGN KEY (assetId) REFERENCES AssetEntity(id) ON DELETE CASCADE
 );
 
-CREATE INDEX idx_price_history_asset ON AssetPriceHistoryEntity(assetId);
-CREATE INDEX idx_price_history_date  ON AssetPriceHistoryEntity(recordedAt);
+CREATE INDEX idx_price_history_asset      ON AssetPriceHistoryEntity(assetId);
+CREATE INDEX idx_price_history_date       ON AssetPriceHistoryEntity(recordedAt);
+CREATE INDEX idx_price_history_asset_date ON AssetPriceHistoryEntity(assetId, recordedAt);
 
 selectByAsset:
 SELECT * FROM AssetPriceHistoryEntity

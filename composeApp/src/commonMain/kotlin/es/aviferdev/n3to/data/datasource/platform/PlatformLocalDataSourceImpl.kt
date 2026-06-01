@@ -18,6 +18,7 @@ class PlatformLocalDataSourceImpl(
 ) : PlatformLocalDataSource {
 
     private val queries = database.platformQueries
+    private val platformCategoryQueries = database.platformCategoryQueries
 
     override fun getAll(): Flow<List<Platform>> =
         queries.selectAll().asFlow().mapToList(Dispatchers.IO)
@@ -73,5 +74,40 @@ class PlatformLocalDataSourceImpl(
 
     override suspend fun unarchive(id: String): Result<Unit> = runCatching {
         withContext(Dispatchers.IO) { queries.unarchive(id) }
+    }
+
+    // ── PlatformCategory (fusionado) ──────────────────────────────────────────
+
+    override fun getPlatformsByCategory(assetCategoryId: String): Flow<List<Platform>> =
+        platformCategoryQueries.selectByCategory(assetCategoryId).asFlow().mapToList(Dispatchers.IO)
+            .map { list -> list.map { it.toDomain() } }
+
+    override fun getPlatformsByCategoryIncludingArchived(assetCategoryId: String): Flow<List<Platform>> =
+        platformCategoryQueries.selectByCategoryIncludingArchived(assetCategoryId).asFlow()
+            .mapToList(Dispatchers.IO)
+            .map { list -> list.map { it.toDomain() } }
+
+    override fun getCategoriesByPlatform(platformId: String): Flow<List<String>> =
+        platformCategoryQueries.selectCategoriesByPlatform(platformId).asFlow().mapToList(Dispatchers.IO)
+            .map { list -> list.map { it } }
+
+    override suspend fun linkPlatformToCategory(platformId: String, assetCategoryId: String): Result<Unit> =
+        runCatching {
+            withContext(Dispatchers.IO) {
+                platformCategoryQueries.link(platformId, assetCategoryId)
+            }
+        }
+
+    override suspend fun unlinkPlatformFromCategory(platformId: String, assetCategoryId: String): Result<Unit> =
+        runCatching {
+            withContext(Dispatchers.IO) {
+                platformCategoryQueries.unlink(platformId, assetCategoryId)
+            }
+        }
+
+    override suspend fun unlinkAllPlatformsByCategory(assetCategoryId: String): Result<Unit> = runCatching {
+        withContext(Dispatchers.IO) {
+            platformCategoryQueries.unlinkAllByCategory(assetCategoryId)
+        }
     }
 }

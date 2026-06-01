@@ -17,11 +17,14 @@ CREATE TABLE LoanEntity (
     closedAt              INTEGER,
     closeType             TEXT    CHECK(closeType IS NULL OR closeType IN ('FULLY_PAID', 'EARLY_PAYOFF', 'REFINANCED', 'WRITTEN_OFF')),
     createdAt             INTEGER NOT NULL,
-    FOREIGN KEY (accountId) REFERENCES AccountEntity(id) ON DELETE CASCADE
+    FOREIGN KEY (accountId) REFERENCES AccountEntity(id) ON DELETE CASCADE,
+    CHECK (endDate > startDate),
+    CHECK (paidInstallments <= totalInstallments)
 );
 
-CREATE INDEX idx_loan_account  ON LoanEntity(accountId);
-CREATE INDEX idx_loan_archived ON LoanEntity(archived);
+CREATE INDEX idx_loan_account           ON LoanEntity(accountId);
+CREATE INDEX idx_loan_account_active    ON LoanEntity(accountId, archived, closedAt);
+CREATE INDEX idx_loan_archived          ON LoanEntity(archived);
 
 -- ─── Lectura ──────────────────────────────────────────────────────────────────
 

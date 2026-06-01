@@ -24,6 +24,7 @@ CREATE TABLE TransactionLinkEntity (
 
 CREATE INDEX idx_tx_link_transaction ON TransactionLinkEntity(transactionId);
 CREATE INDEX idx_tx_link_type_entity ON TransactionLinkEntity(linkType, linkedEntityId);
+CREATE INDEX idx_tx_link_tx_type     ON TransactionLinkEntity(transactionId, linkType);
 CREATE INDEX idx_tx_link_asset        ON TransactionLinkEntity(assetId);
 
 -- ─── Lectura ──────────────────────────────────────────────────────────────────

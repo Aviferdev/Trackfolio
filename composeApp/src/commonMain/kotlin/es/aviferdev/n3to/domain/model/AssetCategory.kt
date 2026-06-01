@@ -6,6 +6,9 @@ package es.aviferdev.n3to.domain.model
  *
  * Es una entidad totalmente independiente de [Category] (que se usa para
  * gastos/ingresos).
+ *
+ * @property isQuotable Indica si los activos de esta categoría pueden tener
+ * precio automático (vía ISIN). Reemplaza los IDs hardcodeados en consultas SQL.
  */
 data class AssetCategory(
     val id: String,
@@ -13,5 +16,6 @@ data class AssetCategory(
     val icon: String = "📦",
     val sortOrder: Int = 0,
     val archived: Boolean = false,
+    val isQuotable: Boolean = false,
     val createdAt: Long
 )

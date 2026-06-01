@@ -14,12 +14,18 @@ CREATE TABLE ValuableEntity (
     archived         INTEGER NOT NULL DEFAULT 0,
     createdAt        INTEGER NOT NULL,
     FOREIGN KEY (accountId) REFERENCES AccountEntity(id) ON DELETE CASCADE,
-    FOREIGN KEY (linkedLoanId) REFERENCES LoanEntity(id) ON DELETE SET NULL
+    FOREIGN KEY (linkedLoanId) REFERENCES LoanEntity(id) ON DELETE SET NULL,
+    CHECK (
+        (saleDate IS NULL AND salePrice IS NULL AND closeType IS NULL)
+        OR
+        (saleDate IS NOT NULL AND salePrice IS NOT NULL AND closeType IS NOT NULL)
+    )
 );
 
-CREATE INDEX idx_valuable_account  ON ValuableEntity(accountId);
-CREATE INDEX idx_valuable_loan     ON ValuableEntity(linkedLoanId);
-CREATE INDEX idx_valuable_archived ON ValuableEntity(archived);
+CREATE INDEX idx_valuable_account           ON ValuableEntity(accountId);
+CREATE INDEX idx_valuable_account_active    ON ValuableEntity(accountId, archived, saleDate);
+CREATE INDEX idx_valuable_loan              ON ValuableEntity(linkedLoanId);
+CREATE INDEX idx_valuable_archived          ON ValuableEntity(archived);
 
 -- ═══ LECTURA ═══
 

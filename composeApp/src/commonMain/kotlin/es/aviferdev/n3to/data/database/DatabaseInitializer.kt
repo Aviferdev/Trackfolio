@@ -2,7 +2,6 @@ package es.aviferdev.n3to.data.database
 
 import es.aviferdev.n3to.data.datasource.asset.AssetCategoryLocalDataSource
 import es.aviferdev.n3to.data.datasource.assetmetadata.AssetMetadataLocalDataSource
-import es.aviferdev.n3to.data.datasource.transaction.TransactionCategoryLocalDataSource
 import es.aviferdev.n3to.domain.model.AssetCategory
 import es.aviferdev.n3to.domain.model.AssetRegion
 import es.aviferdev.n3to.domain.model.AssetSector
@@ -11,13 +10,11 @@ import es.aviferdev.n3to.domain.model.TransactionType
 import kotlinx.coroutines.flow.firstOrNull
 
 class DatabaseInitializer(
-    private val transactionCategoryDataSource: TransactionCategoryLocalDataSource,
     private val assetCategoryDataSource: AssetCategoryLocalDataSource,
     private val assetMetadataDataSource: AssetMetadataLocalDataSource? = null,
+    private val migrationHelper: DatabaseMigrationHelper? = null,
 ) {
     companion object {
-
-        const val ADJUSTMENT_CATEGORY_ID = "cat_adj_reconciliation"
 
         val DEFAULT_ASSET_CATEGORIES = listOf(
             AssetCategory(
@@ -25,6 +22,7 @@ class DatabaseInitializer(
                 name = "Acciones",
                 icon = "📊",
                 sortOrder = 0,
+                isQuotable = true,
                 createdAt = 0
             ),
             AssetCategory(
@@ -32,6 +30,7 @@ class DatabaseInitializer(
                 name = "ETFs",
                 icon = "📈",
                 sortOrder = 1,
+                isQuotable = true,
                 createdAt = 0
             ),
             AssetCategory(
@@ -39,6 +38,7 @@ class DatabaseInitializer(
                 name = "Fondos de inversión",
                 icon = "💼",
                 sortOrder = 2,
+                isQuotable = true,
                 createdAt = 0
             ),
             AssetCategory(
@@ -46,6 +46,7 @@ class DatabaseInitializer(
                 name = "Criptomonedas",
                 icon = "₿",
                 sortOrder = 3,
+                isQuotable = true,
                 createdAt = 0
             ),
             AssetCategory(
@@ -67,6 +68,7 @@ class DatabaseInitializer(
                 name = "Materias primas",
                 icon = "🪙",
                 sortOrder = 6,
+                isQuotable = true,
                 createdAt = 0
             ),
             AssetCategory(
@@ -171,21 +173,9 @@ class DatabaseInitializer(
             ),
         )
 
-        /** Categoría especial para transacciones de ajuste / reconciliación. */
-        val ADJUSTMENT_CATEGORY = Category(
-            id = ADJUSTMENT_CATEGORY_ID,
-            accountId = "",  // global, compartida entre todas las cuentas
-            name = "Ajuste de saldo",
-            type = TransactionType.ADJUSTMENT,
-            isDefault = true,
-            archived = false,
-            createdAt = 0L
-        )
     }
 
     suspend fun initializeIfNeeded() {
-        transactionCategoryDataSource.insert(ADJUSTMENT_CATEGORY)
-
         if (assetCategoryDataSource.count().firstOrNull() == 0L) {
             DEFAULT_ASSET_CATEGORIES.forEach { assetCategoryDataSource.insert(it) }
         }
@@ -198,6 +188,9 @@ class DatabaseInitializer(
                 DEFAULT_ASSET_REGIONS.forEach { metadata.insertRegion(it) }
             }
         }
+
+        // Registrar la versión del esquema como completada
+        migrationHelper?.markMigrationComplete()
     }
 
 }

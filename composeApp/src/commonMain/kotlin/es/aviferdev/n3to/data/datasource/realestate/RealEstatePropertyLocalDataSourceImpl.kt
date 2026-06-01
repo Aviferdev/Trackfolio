@@ -7,6 +7,7 @@ import es.aviferdev.n3to.data.database.N3toDatabase
 import es.aviferdev.n3to.data.database.mapper.toDomain
 import es.aviferdev.n3to.data.database.mapper.toEntity
 import es.aviferdev.n3to.domain.model.RealEstateProperty
+import es.aviferdev.n3to.domain.model.RentalPeriod
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
@@ -18,6 +19,7 @@ class RealEstatePropertyLocalDataSourceImpl(
 ) : RealEstatePropertyLocalDataSource {
 
     private val queries = database.realEstatePropertyQueries
+    private val rentalPeriodQueries = database.rentalPeriodQueries
 
     override fun getByAccount(accountId: String): Flow<List<RealEstateProperty>> =
         queries.selectByAccount(accountId)
@@ -92,6 +94,32 @@ class RealEstatePropertyLocalDataSourceImpl(
                     saleValue = saleValue,
                     id = id
                 )
+            }
+        }
+
+    // ── RentalPeriod (fusionado) ──────────────────────────────────────────────
+
+    override fun getRentalPeriodsByProperty(propertyId: String): Flow<List<RentalPeriod>> =
+        rentalPeriodQueries.selectByProperty(propertyId)
+            .asFlow().mapToList(Dispatchers.IO)
+            .map { list -> list.map { it.toDomain() } }
+
+    override fun getActiveRentalPeriodByProperty(propertyId: String): Flow<RentalPeriod?> =
+        rentalPeriodQueries.selectActiveByProperty(propertyId)
+            .asFlow().mapToOneOrNull(Dispatchers.IO)
+            .map { it?.toDomain() }
+
+    override suspend fun insertRentalPeriod(period: RentalPeriod): Result<Unit> = runCatching {
+        withContext(Dispatchers.IO) {
+            val e = period.toEntity()
+            rentalPeriodQueries.insert(e.id, e.propertyId, e.startDate, e.endDate, e.monthlyRent, e.notes)
+        }
+    }
+
+    override suspend fun closeRentalPeriod(periodId: String, endDate: Long): Result<Unit> =
+        runCatching {
+            withContext(Dispatchers.IO) {
+                rentalPeriodQueries.closePeriod(id = periodId, endDate = endDate)
             }
         }
 }

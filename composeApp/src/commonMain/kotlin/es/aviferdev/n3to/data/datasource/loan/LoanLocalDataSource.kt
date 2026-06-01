@@ -1,9 +1,11 @@
 package es.aviferdev.n3to.data.datasource.loan
 
 import es.aviferdev.n3to.domain.model.Loan
+import es.aviferdev.n3to.domain.model.LoanRateChange
 import kotlinx.coroutines.flow.Flow
 
 interface LoanLocalDataSource {
+    // ── Loan ──────────────────────────────────────────────────────────────────
     fun getByAccount(accountId: String): Flow<List<Loan>>
     fun getActiveByAccount(accountId: String): Flow<List<Loan>>
     fun getById(id: String): Flow<Loan?>
@@ -22,4 +24,9 @@ interface LoanLocalDataSource {
     suspend fun close(id: String, closedAt: Long, closeType: String): Result<Unit>
     suspend fun archive(id: String): Result<Unit>
     suspend fun unarchive(id: String): Result<Unit>
+
+    // ── LoanRateChange (fusionado) ────────────────────────────────────────────
+    fun getRateChangesByLoan(loanId: String): Flow<List<LoanRateChange>>
+    suspend fun insertRateChange(rateChange: LoanRateChange): Result<Unit>
+    suspend fun deleteRateChangesByLoan(loanId: String): Result<Unit>
 }

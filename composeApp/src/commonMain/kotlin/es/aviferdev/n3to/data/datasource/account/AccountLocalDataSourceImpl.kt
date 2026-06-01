@@ -37,10 +37,9 @@ class AccountLocalDataSourceImpl(
             .mapToOne(Dispatchers.IO)
 
     override fun count(): Flow<Long> =
-        queries.selectAll()
+        queries.countAll()
             .asFlow()
-            .mapToList(Dispatchers.IO)
-            .map { it.size.toLong() }
+            .mapToOne(Dispatchers.IO)
 
     override suspend fun insertAccount(account: Account) {
         withContext(Dispatchers.IO) {

@@ -41,6 +41,7 @@ class AssetCategoryLocalDataSourceImpl(
                 name = category.name,
                 icon = category.icon,
                 sortOrder = category.sortOrder.toLong(),
+                isQuotable = if (category.isQuotable) 1L else 0L,
                 createdAt = category.createdAt
             )
         }

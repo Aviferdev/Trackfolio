@@ -1,16 +1,17 @@
 CREATE TABLE CategoryEntity (
     id        TEXT    NOT NULL PRIMARY KEY,
-    accountId TEXT    NOT NULL DEFAULT '',
+    accountId TEXT    NOT NULL,
     name      TEXT    NOT NULL,
-    type      TEXT    NOT NULL,
+    type      TEXT    NOT NULL CHECK(type IN ('INCOME', 'EXPENSE')),
     isDefault INTEGER NOT NULL DEFAULT 0,
     archived  INTEGER NOT NULL DEFAULT 0,
-    createdAt INTEGER NOT NULL DEFAULT 0,
+    createdAt INTEGER NOT NULL,
     FOREIGN KEY (accountId) REFERENCES AccountEntity(id) ON DELETE CASCADE
 );
 
-CREATE INDEX idx_category_account ON CategoryEntity(accountId);
-CREATE INDEX idx_category_archived ON CategoryEntity(archived);
+CREATE INDEX idx_category_account           ON CategoryEntity(accountId);
+CREATE INDEX idx_category_account_type_archived ON CategoryEntity(accountId, type, archived);
+CREATE INDEX idx_category_archived           ON CategoryEntity(archived);
 
 -- ─── Lectura por cuenta (filtradas por accountId + no archivadas) ──────────
 

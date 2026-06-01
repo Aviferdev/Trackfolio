@@ -16,16 +16,12 @@ CREATE TABLE TransactionEntity (
     FOREIGN KEY (categoryId) REFERENCES CategoryEntity(id) ON DELETE SET NULL
 );
 
-CREATE INDEX idx_transaction_account         ON TransactionEntity(accountId);
-CREATE INDEX idx_transaction_account_date    ON TransactionEntity(accountId, date);
-CREATE INDEX idx_transaction_account_ym      ON TransactionEntity(
-    accountId,
-    strftime('%Y', date / 1000, 'unixepoch'),
-    strftime('%m', date / 1000, 'unixepoch')
-);
-CREATE INDEX idx_transaction_date            ON TransactionEntity(date);
-CREATE INDEX idx_transaction_type            ON TransactionEntity(type);
-CREATE INDEX idx_transaction_category        ON TransactionEntity(categoryId);
+CREATE INDEX idx_transaction_account          ON TransactionEntity(accountId);
+CREATE INDEX idx_transaction_account_date     ON TransactionEntity(accountId, date);
+CREATE INDEX idx_transaction_account_type_date ON TransactionEntity(accountId, type, date);
+CREATE INDEX idx_transaction_date             ON TransactionEntity(date);
+CREATE INDEX idx_transaction_type             ON TransactionEntity(type);
+CREATE INDEX idx_transaction_category         ON TransactionEntity(categoryId);
 
 -- ─── Queries básicas ──────────────────────────────────────────────────────────
 
@@ -45,8 +41,7 @@ ORDER BY date DESC;
 selectByMonthAndAccount:
 SELECT * FROM TransactionEntity
 WHERE accountId = :accountId
-  AND strftime('%Y', date / 1000, 'unixepoch') = :year
-  AND strftime('%m', date / 1000, 'unixepoch') = :month
+  AND date >= :monthStartEpoch AND date < :monthEndEpoch
 ORDER BY date DESC;
 
 selectRecentByAccount:
@@ -67,8 +62,7 @@ WHERE t.accountId = :accountId
       SELECT 1 FROM TransactionLinkEntity l
       WHERE l.transactionId = t.id AND l.linkType = 'ASSET_TRANSACTION'
   )
-  AND strftime('%Y', t.date / 1000, 'unixepoch') = :year
-  AND strftime('%m', t.date / 1000, 'unixepoch') = :month;
+  AND t.date >= :monthStartEpoch AND t.date < :monthEndEpoch;
 
 getAnnualTotalsByAccount:
 SELECT
@@ -80,7 +74,7 @@ WHERE t.accountId = :accountId
       SELECT 1 FROM TransactionLinkEntity l
       WHERE l.transactionId = t.id AND l.linkType = 'ASSET_TRANSACTION'
   )
-  AND strftime('%Y', t.date / 1000, 'unixepoch') = :year;
+  AND t.date >= :yearStartEpoch AND t.date < :yearEndEpoch;
 
 getMonthlyBreakdownByAccount:
 SELECT
@@ -93,7 +87,7 @@ WHERE t.accountId = :accountId
       SELECT 1 FROM TransactionLinkEntity l
       WHERE l.transactionId = t.id AND l.linkType = 'ASSET_TRANSACTION'
   )
-  AND strftime('%Y', t.date / 1000, 'unixepoch') = :year
+  AND t.date >= :yearStartEpoch AND t.date < :yearEndEpoch
 GROUP BY month
 ORDER BY month ASC;
 
@@ -103,7 +97,7 @@ getIncomeByYear:
 SELECT * FROM TransactionEntity
 WHERE accountId = :accountId
   AND type = 'INCOME'
-  AND strftime('%Y', date / 1000, 'unixepoch') = :year
+  AND date >= :yearStartEpoch AND date < :yearEndEpoch
 ORDER BY date DESC;
 
 -- ─── CRUD ─────────────────────────────────────────────────────────────────────
@@ -159,6 +153,12 @@ JOIN TransactionLinkEntity l ON l.transactionId = t.id
 WHERE l.linkType = 'VALUABLE' AND l.linkedEntityId = :valuableId
 ORDER BY t.date DESC;
 
+selectByLinkedLoan:
+SELECT t.* FROM TransactionEntity t
+JOIN TransactionLinkEntity l ON l.transactionId = t.id
+WHERE l.linkType = 'LOAN' AND l.linkedEntityId = :loanId
+ORDER BY t.date DESC;
+
 getOldestDateByAccount:
 SELECT MIN(d) AS oldestDate FROM (
     SELECT date AS d FROM TransactionEntity WHERE accountId = :accountId
@@ -193,7 +193,7 @@ WHERE t.accountId = :accountId
       SELECT 1 FROM TransactionLinkEntity l
       WHERE l.transactionId = t.id AND l.linkType = 'ASSET_TRANSACTION'
   )
-  AND strftime('%Y', t.date / 1000, 'unixepoch') = :year
+  AND t.date >= :yearStartEpoch AND t.date < :yearEndEpoch
 GROUP BY t.categoryId
 ORDER BY totalAmount DESC;
 
@@ -211,7 +211,7 @@ WHERE t.accountId = :accountId
       SELECT 1 FROM TransactionLinkEntity l
       WHERE l.transactionId = t.id AND l.linkType = 'ASSET_TRANSACTION'
   )
-  AND strftime('%Y', t.date / 1000, 'unixepoch') = :year
+  AND t.date >= :yearStartEpoch AND t.date < :yearEndEpoch
 GROUP BY d.incomeType
 ORDER BY totalAmount DESC;
 
@@ -230,8 +230,7 @@ WHERE t.accountId = :accountId
       SELECT 1 FROM TransactionLinkEntity l
       WHERE l.transactionId = t.id AND l.linkType = 'ASSET_TRANSACTION'
   )
-  AND strftime('%Y', t.date / 1000, 'unixepoch') = :year
-  AND strftime('%m', t.date / 1000, 'unixepoch') = :month
+  AND t.date >= :monthStartEpoch AND t.date < :monthEndEpoch
 GROUP BY t.categoryId
 ORDER BY totalAmount DESC;
 
@@ -249,7 +248,6 @@ WHERE t.accountId = :accountId
       SELECT 1 FROM TransactionLinkEntity l
       WHERE l.transactionId = t.id AND l.linkType = 'ASSET_TRANSACTION'
   )
-  AND strftime('%Y', t.date / 1000, 'unixepoch') = :year
-  AND strftime('%m', t.date / 1000, 'unixepoch') = :month
+  AND t.date >= :monthStartEpoch AND t.date < :monthEndEpoch
 GROUP BY d.incomeType
 ORDER BY totalAmount DESC;

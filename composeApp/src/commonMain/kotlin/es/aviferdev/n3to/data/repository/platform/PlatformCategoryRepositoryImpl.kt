@@ -1,29 +1,29 @@
 package es.aviferdev.n3to.data.repository.platform
 
-import es.aviferdev.n3to.data.datasource.platform.PlatformCategoryLocalDataSource
+import es.aviferdev.n3to.data.datasource.platform.PlatformLocalDataSource
 import es.aviferdev.n3to.domain.model.Platform
 import es.aviferdev.n3to.domain.repository.PlatformCategoryRepository
 import kotlinx.coroutines.flow.Flow
 
 class PlatformCategoryRepositoryImpl(
-    private val dataSource: PlatformCategoryLocalDataSource
+    private val platformDataSource: PlatformLocalDataSource
 ) : PlatformCategoryRepository {
 
     override fun getByCategory(assetCategoryId: String): Flow<List<Platform>> =
-        dataSource.getByCategory(assetCategoryId)
+        platformDataSource.getPlatformsByCategory(assetCategoryId)
 
     override fun getByCategoryIncludingArchived(assetCategoryId: String): Flow<List<Platform>> =
-        dataSource.getByCategoryIncludingArchived(assetCategoryId)
+        platformDataSource.getPlatformsByCategoryIncludingArchived(assetCategoryId)
 
     override fun getCategoriesByPlatform(platformId: String): Flow<List<String>> =
-        dataSource.getCategoriesByPlatform(platformId)
+        platformDataSource.getCategoriesByPlatform(platformId)
 
     override suspend fun link(platformId: String, assetCategoryId: String): Result<Unit> =
-        dataSource.link(platformId, assetCategoryId)
+        platformDataSource.linkPlatformToCategory(platformId, assetCategoryId)
 
     override suspend fun unlink(platformId: String, assetCategoryId: String): Result<Unit> =
-        dataSource.unlink(platformId, assetCategoryId)
+        platformDataSource.unlinkPlatformFromCategory(platformId, assetCategoryId)
 
     override suspend fun unlinkAllByCategory(assetCategoryId: String): Result<Unit> =
-        dataSource.unlinkAllByCategory(assetCategoryId)
+        platformDataSource.unlinkAllPlatformsByCategory(assetCategoryId)
 }

@@ -20,28 +20,33 @@ CREATE TABLE FixedIncomePositionEntity (
     maturityDate        INTEGER NOT NULL,
     platformId          TEXT    NOT NULL,
     issuerId            TEXT,
-    regionId            TEXT    REFERENCES AssetRegionEntity(id) ON DELETE SET NULL,
-    sectorId            TEXT    REFERENCES AssetSectorEntity(id) ON DELETE SET NULL,
+    regionId            TEXT,
+    sectorId            TEXT,
     autoRenew           INTEGER NOT NULL DEFAULT 0,
     archived            INTEGER NOT NULL DEFAULT 0,
     closedAt            INTEGER,
     closeType           TEXT,
     feeNote             TEXT,
     createdAt           INTEGER NOT NULL,
-    FOREIGN KEY (accountId)  REFERENCES AccountEntity(id)  ON DELETE CASCADE,
-    FOREIGN KEY (platformId) REFERENCES PlatformEntity(id) ON DELETE RESTRICT,
+    FOREIGN KEY (accountId)       REFERENCES AccountEntity(id)       ON DELETE CASCADE,
+    FOREIGN KEY (platformId)      REFERENCES PlatformEntity(id)      ON DELETE RESTRICT,
     FOREIGN KEY (assetCategoryId) REFERENCES AssetCategoryEntity(id) ON DELETE SET NULL,
-    FOREIGN KEY (issuerId)    REFERENCES IssuerEntity(id)    ON DELETE SET NULL
+    FOREIGN KEY (issuerId)        REFERENCES IssuerEntity(id)        ON DELETE SET NULL,
+    FOREIGN KEY (portfolioId)     REFERENCES PortfolioEntity(id)     ON DELETE SET NULL,
+    FOREIGN KEY (regionId)        REFERENCES AssetRegionEntity(id)   ON DELETE SET NULL,
+    FOREIGN KEY (sectorId)        REFERENCES AssetSectorEntity(id)   ON DELETE SET NULL,
+    CHECK (maturityDate > startDate)
 );
 
-CREATE INDEX idx_fi_account         ON FixedIncomePositionEntity(accountId);
+CREATE INDEX idx_fi_account          ON FixedIncomePositionEntity(accountId);
 CREATE INDEX idx_fi_account_maturity ON FixedIncomePositionEntity(accountId, maturityDate);
-CREATE INDEX idx_fi_archived        ON FixedIncomePositionEntity(archived);
-CREATE INDEX idx_fi_maturity        ON FixedIncomePositionEntity(maturityDate);
-CREATE INDEX idx_fi_category ON FixedIncomePositionEntity(assetCategoryId);
-CREATE INDEX idx_fi_portfolio ON FixedIncomePositionEntity(portfolioId);
-CREATE INDEX idx_fi_platform  ON FixedIncomePositionEntity(platformId);
-CREATE INDEX idx_fi_issuer    ON FixedIncomePositionEntity(issuerId);
+CREATE INDEX idx_fi_account_active   ON FixedIncomePositionEntity(accountId, archived, closedAt);
+CREATE INDEX idx_fi_archived         ON FixedIncomePositionEntity(archived);
+CREATE INDEX idx_fi_maturity         ON FixedIncomePositionEntity(maturityDate);
+CREATE INDEX idx_fi_category         ON FixedIncomePositionEntity(assetCategoryId);
+CREATE INDEX idx_fi_portfolio        ON FixedIncomePositionEntity(portfolioId);
+CREATE INDEX idx_fi_platform         ON FixedIncomePositionEntity(platformId);
+CREATE INDEX idx_fi_issuer           ON FixedIncomePositionEntity(issuerId);
 
 -- ─── Lectura ──────────────────────────────────────────────────────────────────
 

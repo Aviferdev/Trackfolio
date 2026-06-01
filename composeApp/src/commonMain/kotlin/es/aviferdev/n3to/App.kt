@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.ui.unit.dp
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -20,7 +19,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -32,23 +30,20 @@ import es.aviferdev.n3to.core.security.AppLockManager
 import es.aviferdev.n3to.core.security.BalanceVisibilityManager
 import es.aviferdev.n3to.core.security.LanguageManager
 import es.aviferdev.n3to.core.security.ThemeManager
-import es.aviferdev.n3to.core.security.getSystemLanguage
 import es.aviferdev.n3to.core.security.setPlatformLanguage
 import es.aviferdev.n3to.data.database.DatabaseInitializer
 import es.aviferdev.n3to.domain.model.AppCurrency
 import es.aviferdev.n3to.domain.model.toCurrencySymbol
 import es.aviferdev.n3to.domain.usecase.account.GetAccountsUseCase
+import es.aviferdev.n3to.domain.usecase.asset.AppStartupRefreshUseCase
+import es.aviferdev.n3to.domain.usecase.asset.ShouldRefreshTodayUseCase
 import es.aviferdev.n3to.domain.usecase.consent.GetConsentUseCase
 import es.aviferdev.n3to.domain.usecase.consent.HasUserDecidedUseCase
 import es.aviferdev.n3to.domain.usecase.onboarding.IsOnboardingCompletedUseCase
-import es.aviferdev.n3to.domain.usecase.onboarding.ResetOnboardingUseCase
+import es.aviferdev.n3to.ui.account.AccountSession
 import es.aviferdev.n3to.platform.AnalyticsTracker
 import es.aviferdev.n3to.platform.CrashlyticsTracker
 import es.aviferdev.n3to.ui.consent.ConsentScreen
-import es.aviferdev.n3to.domain.model.PriceRefreshResult
-import es.aviferdev.n3to.domain.usecase.asset.AppStartupRefreshUseCase
-import es.aviferdev.n3to.domain.usecase.asset.ShouldRefreshTodayUseCase
-import es.aviferdev.n3to.ui.account.AccountSession
 import es.aviferdev.n3to.ui.navigation.N3toNavHost
 import es.aviferdev.n3to.ui.onboarding.OnboardingScreen
 import es.aviferdev.n3to.ui.security.LockScreen
@@ -61,47 +56,21 @@ import es.aviferdev.n3to.ui.theme.N3toTheme
 import es.aviferdev.n3to.ui.theme.PrimaryDark
 import es.aviferdev.n3to.ui.version.VersionBlockScreen
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.koin.compose.getKoin
 import org.koin.compose.koinInject
 import org.koin.core.qualifier.named
 
 @Composable
 fun App() {
-    val databaseInitializer = koinInject<DatabaseInitializer>()
+    val koin = getKoin()
     val appLockManager = koinInject<AppLockManager>()
     val balanceVisibility = koinInject<BalanceVisibilityManager>()
-    val hasUserDecided = koinInject<HasUserDecidedUseCase>()
-    val getConsent = koinInject<GetConsentUseCase>()
     val analyticsTracker = koinInject<AnalyticsTracker>()
     val crashlyticsTracker = koinInject<CrashlyticsTracker>()
     val versionManager = koinInject<VersionManager>()
     val openStore: () -> Unit = koinInject(named("openStore"))
     val currentVersion: String = koinInject(named("appVersion"))
-
-    val isOnboardingCompleted = koinInject<IsOnboardingCompletedUseCase>()
-    val resetOnboarding = koinInject<ResetOnboardingUseCase>()
-
-    var needsConsent by remember { mutableStateOf<Boolean?>(null) }
-    var needsOnboarding by remember { mutableStateOf(true) }
-
-    var splashFinished by remember { mutableStateOf(false) }
-
-    var isLocked by remember {
-        appLockManager.onAppStart()
-        mutableStateOf(appLockManager.isLocked)
-    }
-
-    val balancesHidden by balanceVisibility.balancesHidden.collectAsState()
-    val versionStatus by versionManager.status.collectAsState()
-
-    val accountSession = koinInject<AccountSession>()
-    val getAccounts = koinInject<GetAccountsUseCase>()
-    val allAccounts by getAccounts().collectAsState(emptyList())
-    val selectedAccountId by accountSession.selectedAccountId.collectAsState()
-    val currencySymbol = allAccounts.find { it.id == selectedAccountId }?.currency?.toCurrencySymbol() ?: AppCurrency.EUR.symbol
-
-    val scope = rememberCoroutineScope()
 
     val themeManager = koinInject<ThemeManager>()
     val isDarkTheme by themeManager.isDark.collectAsState()
@@ -109,47 +78,57 @@ fun App() {
     val languageManager = koinInject<LanguageManager>()
     val languageCode by languageManager.languageCode.collectAsState()
 
-    // Sincronizar el locale de la plataforma con la preferencia del usuario
-    LaunchedEffect(languageCode) {
-        setPlatformLanguage(languageCode)
+    // ─── Estado de inicialización ─────────────────────────────────────────────
+    var dbReady by remember { mutableStateOf(false) }
+    var needsConsent by remember { mutableStateOf<Boolean?>(null) }
+    var needsOnboarding by remember { mutableStateOf(true) }
+    var splashFinished by remember { mutableStateOf(false) }
+    var isLocked by remember {
+        appLockManager.onAppStart()
+        mutableStateOf(appLockManager.isLocked)
     }
+    val balancesHidden by balanceVisibility.balancesHidden.collectAsState()
+    val versionStatus by versionManager.status.collectAsState()
 
-    // Inicializar base de datos, estado de consentimiento y estado de onboarding
+    // ─── Inicialización pesada en background ──────────────────────────────────
     LaunchedEffect(Unit) {
+        // 1. Crear BD y seed inicial (background)
         withContext(Dispatchers.Default) {
-            databaseInitializer.initializeIfNeeded()
+            koin.get<DatabaseInitializer>().initializeIfNeeded()
         }
-        val decided = hasUserDecided()
+
+        // 2. Consentimiento y onboarding (dependen de BD, ya disponible)
+        val decided = koin.get<HasUserDecidedUseCase>().invoke()
         needsConsent = !decided
         if (decided) {
-            val prefs = getConsent()
+            val prefs = koin.get<GetConsentUseCase>().invoke()
             analyticsTracker.setEnabled(prefs.analytics)
             crashlyticsTracker.setCrashReportingEnabled(prefs.crashReporting)
         }
-        needsOnboarding = !isOnboardingCompleted()
-        // Version check inmediato (no depende de consentimiento)
+        needsOnboarding = !koin.get<IsOnboardingCompletedUseCase>().invoke()
         versionManager.checkVersion()
+
+        // 3. Marcar BD como lista → se renderiza el resto de la UI
+        dbReady = true
     }
 
-    val appReady = !(needsConsent ?: true)
+    val appReady = dbReady && !(needsConsent ?: true)
 
-    // ── Refresco diario de precios al abrir la app ─────────────────────────
-    val priceRefreshUseCase = koinInject<AppStartupRefreshUseCase>()
-    val shouldRefreshToday = koinInject<ShouldRefreshTodayUseCase>()
+    // ─── Refresco diario de precios (solo cuando appReady) ────────────────────
     var refreshMessage by remember { mutableStateOf<String?>(null) }
     var refreshDone by remember { mutableStateOf(false) }
 
     LaunchedEffect(appReady, refreshDone) {
         if (appReady && !refreshDone) {
-            val accountId = accountSession.selectedAccountId.value
+            val accountId = koin.get<AccountSession>().selectedAccountId.value
             if (accountId == null) {
                 println("[PriceRefresh] ⏭️ Sin cuenta seleccionada, se omite refresco")
-            } else if (!shouldRefreshToday()) {
+            } else if (!koin.get<ShouldRefreshTodayUseCase>().invoke()) {
                 println("[PriceRefresh] ⏭️ Ya se refrescó hoy, se omite")
             } else {
                 println("[PriceRefresh] 🚀 Lanzando refresco diario...")
                 withContext(Dispatchers.Default) {
-                    val (_, priceResult) = priceRefreshUseCase(accountId)
+                    val (_, priceResult) = koin.get<AppStartupRefreshUseCase>().invoke(accountId)
                     if (priceResult.hasUpdates || priceResult.hasNotFound || priceResult.hasFailures) {
                         refreshMessage = priceResult.summary
                     }
@@ -159,6 +138,7 @@ fun App() {
         }
     }
 
+    // ─── Lifecycle observer ──────────────────────────────────────────────────
     val lifecycleOwner = LocalLifecycleOwner.current
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
@@ -167,11 +147,9 @@ fun App() {
                     appLockManager.onAppBackground()
                     isLocked = appLockManager.isLocked
                 }
-
                 Lifecycle.Event.ON_START -> {
                     isLocked = appLockManager.isLocked
                 }
-
                 else -> Unit
             }
         }
@@ -179,25 +157,48 @@ fun App() {
         onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
     }
 
-    // key(languageCode) fuerza la recreación completa del árbol de composición
-    // al cambiar de idioma, haciendo que todos los stringResource() se reevalúen
-    // con el nuevo locale activo.
+    // ─── Sincronizar locale ──────────────────────────────────────────────────
+    LaunchedEffect(languageCode) {
+        setPlatformLanguage(languageCode)
+    }
+
+    // ─── Árbol de composición ─────────────────────────────────────────────────
     key(languageCode) {
         N3toTheme(darkTheme = isDarkTheme) {
+            val currencySymbol = if (dbReady) {
+                val selectedAccountId = koin.get<AccountSession>().selectedAccountId.value
+                val allAccounts = koin.get<GetAccountsUseCase>().invoke().collectAsState(emptyList()).value
+                allAccounts.find { it.id == selectedAccountId }?.currency?.toCurrencySymbol()
+                    ?: AppCurrency.EUR.symbol
+            } else {
+                AppCurrency.EUR.symbol
+            }
+
             CompositionLocalProvider(
                 LocalBalanceHidden provides balancesHidden,
                 LocalFiscalAmountsHidden provides balancesHidden,
                 LocalCurrencySymbol provides currencySymbol
             ) {
                 when {
-                    // Paso 0: Splash screen con el icono de la app
+                    // Paso 0: Splash screen
                     !splashFinished -> {
                         SplashScreen(
                             onSplashFinished = { splashFinished = true }
                         )
                     }
 
-                    // Paso 1: Chequeo de versión (antes de cualquier contenido)
+                    // Paso 1: Esperar a que la BD esté lista
+                    !dbReady -> {
+                        Box(
+                            modifier = Modifier.fillMaxSize()
+                                .background(MaterialTheme.appColors.background),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator(color = PrimaryDark)
+                        }
+                    }
+
+                    // Paso 2: Chequeo de versión
                     versionStatus is VersionManager.Status.Checking -> {
                         Box(
                             modifier = Modifier.fillMaxSize()
@@ -208,7 +209,7 @@ fun App() {
                         }
                     }
 
-                    // Paso 2: Bloqueo por versión obsoleta (hard block)
+                    // Paso 3: Bloqueo por versión obsoleta
                     versionStatus is VersionManager.Status.UpdateRequired -> {
                         val info = (versionStatus as VersionManager.Status.UpdateRequired).info
                         VersionBlockScreen(
@@ -221,7 +222,7 @@ fun App() {
                         )
                     }
 
-                    // Paso 3: Bloqueo de seguridad biométrica
+                    // Paso 4: Bloqueo de seguridad biométrica
                     isLocked -> {
                         LockScreen(
                             onUnlocked = {
@@ -231,25 +232,24 @@ fun App() {
                         )
                     }
 
-                    // Paso 4: Onboarding (primera vez o tras reset desde Ajustes)
+                    // Paso 5: Onboarding
                     needsOnboarding -> {
                         OnboardingScreen(
                             onComplete = { needsOnboarding = false }
                         )
                     }
 
-                    // Paso 5: Consentimiento GDPR (tras ver valor de la app)
+                    // Paso 6: Consentimiento GDPR
                     needsConsent == true -> {
                         ConsentScreen(
                             onConsentSaved = { needsConsent = false }
                         )
                     }
 
-                    // Paso 6: App principal
+                    // Paso 7: App principal
                     else -> {
                         val snackbarHostState = remember { SnackbarHostState() }
 
-                        // Mostrar resultado del refresco de precios
                         LaunchedEffect(refreshMessage) {
                             refreshMessage?.let { msg ->
                                 snackbarHostState.showSnackbar(msg)

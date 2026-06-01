@@ -28,7 +28,7 @@ class TaxProfileSnapshotLocalDataSourceImpl(
 
     override suspend fun getActive(date: LocalDate): TaxProfileSnapshot? =
         withContext(Dispatchers.IO) {
-            queries.selectActive(date.toString()).executeAsOneOrNull()?.toDomain()
+            queries.selectActive(date.toEpochDays().toLong()).executeAsOneOrNull()?.toDomain()
         }
 
     override suspend fun insert(
@@ -39,7 +39,7 @@ class TaxProfileSnapshotLocalDataSourceImpl(
         createdAt: Long
     ): Result<Unit> = runCatching {
         withContext(Dispatchers.IO) {
-            queries.insert(id, countryCode, currency, effectiveFrom.toString(), createdAt)
+            queries.insert(id, countryCode, currency, effectiveFrom.toEpochDays().toLong(), createdAt)
         }
     }
 
@@ -55,7 +55,7 @@ class TaxProfileSnapshotLocalDataSourceImpl(
         return TaxProfileSnapshot(
             id = id,
             profile = profile,
-            effectiveFrom = LocalDate.parse(effectiveFrom),
+            effectiveFrom = LocalDate.fromEpochDays(effectiveFrom.toInt()),
             createdAt = createdAt
         )
     }

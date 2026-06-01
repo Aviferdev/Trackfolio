@@ -1,5 +1,6 @@
 package es.aviferdev.n3to.di
 
+import es.aviferdev.n3to.data.database.N3toDatabase
 import es.aviferdev.n3to.data.datasource.ConsentLocalDataSource
 import es.aviferdev.n3to.data.datasource.ConsentLocalDataSourceImpl
 import es.aviferdev.n3to.data.repository.ConsentRepositoryImpl
@@ -17,7 +18,7 @@ val consentModule = module {
 
     // Data
     single<ConsentLocalDataSource> {
-        ConsentLocalDataSourceImpl(get()) // AppSettings
+        ConsentLocalDataSourceImpl(get<N3toDatabase>())
     }
     single<ConsentRepository> {
         ConsentRepositoryImpl(get())

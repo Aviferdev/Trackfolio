@@ -72,6 +72,7 @@ fun AssetCategoryEntity.toDomain(): AssetCategory = AssetCategory(
     icon = icon,
     sortOrder = sortOrder.toInt(),
     archived = archived != 0L,
+    isQuotable = isQuotable != 0L,
     createdAt = createdAt
 )
 
@@ -81,6 +82,7 @@ fun AssetCategory.toEntity(): AssetCategoryEntity = AssetCategoryEntity(
     icon = icon,
     sortOrder = sortOrder.toLong(),
     archived = if (archived) 1L else 0L,
+    isQuotable = if (isQuotable) 1L else 0L,
     createdAt = createdAt
 )
 

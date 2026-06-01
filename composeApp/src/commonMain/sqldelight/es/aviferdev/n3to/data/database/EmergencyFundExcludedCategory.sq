@@ -1,0 +1,35 @@
+-- EmergencyFundExcludedCategoryEntity: categorías excluidas del cálculo
+-- del fondo de emergencia (relación N:M entre fondo y categoría).
+-- Normaliza el campo `excludedCategoryIds` que antes era TEXT con IDs separados
+-- por comas, violando la 1FN.
+
+CREATE TABLE EmergencyFundExcludedCategoryEntity (
+    emergencyFundAccountId TEXT NOT NULL,
+    categoryId             TEXT NOT NULL,
+    PRIMARY KEY (emergencyFundAccountId, categoryId),
+    FOREIGN KEY (emergencyFundAccountId) REFERENCES EmergencyFundEntity(accountId) ON DELETE CASCADE,
+    FOREIGN KEY (categoryId)            REFERENCES CategoryEntity(id)             ON DELETE CASCADE
+);
+
+CREATE INDEX idx_ef_excluded_category_fund     ON EmergencyFundExcludedCategoryEntity(emergencyFundAccountId);
+CREATE INDEX idx_ef_excluded_category_category ON EmergencyFundExcludedCategoryEntity(categoryId);
+
+-- ─── Lectura ──────────────────────────────────────────────────────────────────
+
+selectByAccount:
+SELECT categoryId FROM EmergencyFundExcludedCategoryEntity
+WHERE emergencyFundAccountId = :accountId
+ORDER BY categoryId ASC;
+
+-- ─── Escritura ────────────────────────────────────────────────────────────────
+
+insert:
+INSERT OR IGNORE INTO EmergencyFundExcludedCategoryEntity(emergencyFundAccountId, categoryId)
+VALUES (?, ?);
+
+deleteByAccount:
+DELETE FROM EmergencyFundExcludedCategoryEntity WHERE emergencyFundAccountId = :accountId;
+
+deleteByAccountAndCategory:
+DELETE FROM EmergencyFundExcludedCategoryEntity
+WHERE emergencyFundAccountId = :accountId AND categoryId = :categoryId;

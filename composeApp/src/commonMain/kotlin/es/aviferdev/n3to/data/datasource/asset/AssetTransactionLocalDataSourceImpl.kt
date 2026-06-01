@@ -7,6 +7,7 @@ import app.cash.sqldelight.coroutines.mapToOneOrNull
 import es.aviferdev.n3to.data.database.N3toDatabase
 import es.aviferdev.n3to.data.database.mapper.toDomain
 import es.aviferdev.n3to.data.database.mapper.toEntity
+import es.aviferdev.n3to.core.DateRangeHelper
 import es.aviferdev.n3to.domain.model.AssetTransaction
 import es.aviferdev.n3to.domain.model.MonthlyInvestment
 import es.aviferdev.n3to.domain.model.MonthlyNetInvestment
@@ -86,8 +87,9 @@ class AssetTransactionLocalDataSourceImpl(
     override fun getMonthlyInvestmentsByYear(
         accountId: String,
         year: String
-    ): Flow<List<MonthlyInvestment>> =
-        queries.getMonthlyInvestmentsByYear(accountId, year)
+    ): Flow<List<MonthlyInvestment>> {
+        val (start, end) = yearEpochRange(year)
+        return queries.getMonthlyInvestmentsByYear(accountId, start, end)
             .asFlow()
             .mapToList(Dispatchers.IO)
             .map { rows ->
@@ -99,12 +101,14 @@ class AssetTransactionLocalDataSourceImpl(
                     )
                 }
             }
+    }
 
     override fun getMonthlyNetInvestmentsByYear(
         accountId: String,
         year: String
-    ): Flow<List<MonthlyNetInvestment>> =
-        queries.getMonthlyNetInvestmentsByYear(accountId, year)
+    ): Flow<List<MonthlyNetInvestment>> {
+        val (start, end) = yearEpochRange(year)
+        return queries.getMonthlyNetInvestmentsByYear(accountId, start, end)
             .asFlow()
             .mapToList(Dispatchers.IO)
             .map { rows ->
@@ -116,12 +120,14 @@ class AssetTransactionLocalDataSourceImpl(
                     )
                 }
             }
+    }
 
     override fun getMonthlyNetInvestmentByMonth(
         accountId: String,
         yearMonth: String
-    ): Flow<MonthlyNetInvestment?> =
-        queries.getMonthlyNetInvestmentByMonth(accountId, yearMonth)
+    ): Flow<MonthlyNetInvestment?> {
+        val (start, end) = monthEpochRange(yearMonth)
+        return queries.getMonthlyNetInvestmentByMonth(accountId, start, end)
             .asFlow()
             .mapToOneOrNull(Dispatchers.IO)
             .map { row ->
@@ -133,4 +139,12 @@ class AssetTransactionLocalDataSourceImpl(
                     )
                 }
             }
+    }
+
+    // ─── Helpers para convertir año/mes a epoch millis ─────────────────────────
+    // Ver DateRangeHelper en core/ para la implementación compartida.
+    private val yearEpochRange: (String) -> Pair<Long, Long> = DateRangeHelper::yearEpochRange
+    private val monthEpochRange: (String) -> Pair<Long, Long> = { yearMonth ->
+        DateRangeHelper.monthEpochRange(yearMonth)
+    }
 }

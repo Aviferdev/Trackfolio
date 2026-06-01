@@ -24,11 +24,6 @@ CREATE TABLE AssetTransactionEntity (
 
 CREATE INDEX idx_asset_tx_asset      ON AssetTransactionEntity(assetId);
 CREATE INDEX idx_asset_tx_asset_date ON AssetTransactionEntity(assetId, date);
-CREATE INDEX idx_asset_tx_asset_ym   ON AssetTransactionEntity(
-    assetId,
-    strftime('%Y', date / 1000, 'unixepoch'),
-    strftime('%m', date / 1000, 'unixepoch')
-);
 CREATE INDEX idx_asset_tx_platform   ON AssetTransactionEntity(platformId);
 CREATE INDEX idx_asset_tx_date       ON AssetTransactionEntity(date);
 
@@ -89,7 +84,7 @@ FROM AssetTransactionEntity t
 INNER JOIN AssetEntity a ON a.id = t.assetId
 WHERE a.accountId = :accountId
   AND t.type = 'BUY'
-  AND strftime('%Y', t.date / 1000, 'unixepoch') = :year
+  AND t.date >= :yearStartEpoch AND t.date < :yearEndEpoch
 GROUP BY month
 ORDER BY month ASC;
 
@@ -103,7 +98,7 @@ SELECT
 FROM AssetTransactionEntity t
 INNER JOIN AssetEntity a ON a.id = t.assetId
 WHERE a.accountId = :accountId
-  AND strftime('%Y', t.date / 1000, 'unixepoch') = :year
+  AND t.date >= :yearStartEpoch AND t.date < :yearEndEpoch
 GROUP BY month
 ORDER BY month ASC;
 
@@ -114,5 +109,4 @@ SELECT
 FROM AssetTransactionEntity t
 INNER JOIN AssetEntity a ON a.id = t.assetId
 WHERE a.accountId = :accountId
-  AND strftime('%Y', t.date / 1000, 'unixepoch') = substr(:yearMonth, 1, 4)
-  AND strftime('%m', t.date / 1000, 'unixepoch') = substr(:yearMonth, 6, 2);
+  AND t.date >= :monthStartEpoch AND t.date < :monthEndEpoch;

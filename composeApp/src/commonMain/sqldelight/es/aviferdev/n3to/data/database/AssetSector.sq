@@ -16,6 +16,9 @@ SELECT * FROM AssetSectorEntity ORDER BY name ASC;
 selectById:
 SELECT * FROM AssetSectorEntity WHERE id = :id;
 
+countAll:
+SELECT COUNT(*) FROM AssetSectorEntity;
+
 -- ─── Escritura ──────────────────────────────────────────────────────────────────
 
 insert:

@@ -17,6 +17,9 @@ SELECT * FROM AccountEntity WHERE archived = 0 ORDER BY createdAt ASC;
 selectById:
 SELECT * FROM AccountEntity WHERE id = :id;
 
+countAll:
+SELECT COUNT(*) FROM AccountEntity WHERE archived = 0;
+
 insert:
 INSERT INTO AccountEntity(id, name, initialBalance, createdAt, currency)
 VALUES (?, ?, ?, ?, ?);
@@ -74,26 +77,15 @@ ORDER BY a.createdAt ASC;
 
 getTotalComputedBalance:
 SELECT
-    COALESCE(SUM(
-        COALESCE(a.initialBalance, 0.0)
-        + COALESCE(inc.total, 0.0)
-        - COALESCE(exp.total, 0.0)
-        + COALESCE(adj.total, 0.0)
-    ), 0.0) AS totalBalance
+    COALESCE(SUM(a.initialBalance), 0.0)
+    + COALESCE(SUM(t.netBalance), 0.0) AS totalBalance
 FROM AccountEntity a
 LEFT JOIN (
-    SELECT accountId, SUM(amount) AS total
-    FROM TransactionEntity WHERE type = 'INCOME'
+    SELECT accountId,
+        SUM(CASE WHEN type = 'INCOME' THEN amount ELSE 0.0 END)
+        - SUM(CASE WHEN type = 'EXPENSE' THEN amount ELSE 0.0 END)
+        + SUM(CASE WHEN type = 'ADJUSTMENT' THEN amount ELSE 0.0 END) AS netBalance
+    FROM TransactionEntity
     GROUP BY accountId
-) inc ON inc.accountId = a.id
-LEFT JOIN (
-    SELECT accountId, SUM(amount) AS total
-    FROM TransactionEntity WHERE type = 'EXPENSE'
-    GROUP BY accountId
-) exp ON exp.accountId = a.id
-LEFT JOIN (
-    SELECT accountId, SUM(amount) AS total
-    FROM TransactionEntity WHERE type = 'ADJUSTMENT'
-    GROUP BY accountId
-) adj ON adj.accountId = a.id
+) t ON t.accountId = a.id
 WHERE a.archived = 0;
